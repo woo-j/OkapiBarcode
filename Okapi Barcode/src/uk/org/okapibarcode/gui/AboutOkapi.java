@@ -1,18 +1,18 @@
 package uk.org.okapibarcode.gui;
 
 /**
- * Show "About Zint" information
+ * Show "About Okapi" information
  *
  * @author Robin Stuart <rstuart114@gmail.com>
  */
 public class AboutOkapi extends javax.swing.JFrame {
 
     /**
-     * Creates new form AboutZint
+     * Creates new form AboutOkapi
      */
     public AboutOkapi() {
         initComponents();
-        titleLabel.setText("<html><b>Zint Barcode Studio 3.0</b><br><br>" 
+        titleLabel.setText("<html><b>Okapi Barcode</b><br><br>" 
                 + "A free barcode generator<br>"
                 + "&copy; 2014 Robin Stuart &amp; Robert Elliott<br>"
                 + "Available as open-source, license TBC<br><br>"
@@ -33,7 +33,7 @@ public class AboutOkapi extends javax.swing.JFrame {
         okButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("About Zint");
+        setTitle("About Okapi");
         setResizable(false);
 
         titleLabel.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N

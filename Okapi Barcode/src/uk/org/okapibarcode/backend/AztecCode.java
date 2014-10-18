@@ -499,7 +499,7 @@ public class AztecCode extends Symbol {
                 }
             }
             if (count == codeword_size) {
-                adjusted_string = adjusted_string.substring(1, adjusted_length - 1) + '0';
+                adjusted_string = adjusted_string.substring(0, adjusted_length - 1) + '0';
             }
 
             if (debug) {

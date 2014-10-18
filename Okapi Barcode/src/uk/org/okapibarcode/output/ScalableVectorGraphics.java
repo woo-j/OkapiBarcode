@@ -1,3 +1,18 @@
+/*
+ * Copyright 2014 Robin Stuart
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package uk.org.okapibarcode.output;
 
 import java.awt.Rectangle;
@@ -12,8 +27,8 @@ import java.util.ArrayList;
  */
 public class ScalableVectorGraphics {
     public static ArrayList<Rectangle> rectangle = new ArrayList<>();
-    public static ArrayList<uk.org.okapibarcode.TextBox> textbox = new ArrayList<>();
-    public static ArrayList<uk.org.okapibarcode.Hexagon> hexagon = new ArrayList<>();
+    public static ArrayList<uk.org.okapibarcode.backend.TextBox> textbox = new ArrayList<>();
+    public static ArrayList<uk.org.okapibarcode.backend.Hexagon> hexagon = new ArrayList<>();
     public static ArrayList<Ellipse2D.Double> ellipse = new ArrayList<>();
     private int symbol_width;
     private int symbol_height;
@@ -21,8 +36,8 @@ public class ScalableVectorGraphics {
     private String fgColour = "000000";
     private String bgColour = "FFFFFF";
     
-    public void setShapes(ArrayList<Rectangle> bcs, ArrayList<uk.org.okapibarcode.TextBox> txt,
-            ArrayList<uk.org.okapibarcode.Hexagon> hex, ArrayList<Ellipse2D.Double> target) {
+    public void setShapes(ArrayList<Rectangle> bcs, ArrayList<uk.org.okapibarcode.backend.TextBox> txt,
+            ArrayList<uk.org.okapibarcode.backend.Hexagon> hex, ArrayList<Ellipse2D.Double> target) {
         rectangle = bcs;
         textbox = txt;
         hexagon = hex;

@@ -121,6 +121,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
             }
         };
         dataInputField.getDocument().addDocumentListener(dl);
+        compositeInputField.getDocument().addDocumentListener(dl);
         
         folderField.setText(System.getProperty("user.home") + File.separator);
     }

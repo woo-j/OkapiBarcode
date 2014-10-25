@@ -68,9 +68,7 @@ public class CodablockF extends Symbol {
         int k1_sum, k2_sum;
         int k1_check, k2_check;
         byte[] inputBytes;
-        int writer, flip_flop;
         
-        source = new int[content.length()];
         input_length = content.length();
         final_mode = cfMode.MODEA;
 
@@ -86,10 +84,11 @@ public class CodablockF extends Symbol {
             return false;
         }
 
-        source = new int[input_length];
+        source = new int[input_length + 1];
         for (i = 0; i < input_length; i++) {
             source[i] = inputBytes[i] & 0xFF;
         }
+        source[input_length] = 0x00;
 
         /* Make a guess at how many characters will be needed to encode the data */
         estimate_codelength = 0.0;
@@ -289,10 +288,11 @@ public class CodablockF extends Symbol {
 
     private boolean data_encode_blockf() {
         int i, j, input_position, current_row;
-        int column_position, c, done, exit_status;
+        int column_position, c;
         cfMode current_mode;
+        boolean done, exit_status;
 
-        exit_status = 0;
+        exit_status = false;
         current_row = 0;
         current_mode = cfMode.MODEA;
         column_position = 0;
@@ -300,7 +300,7 @@ public class CodablockF extends Symbol {
         c = 0;
 
         do {
-            done = 0;
+            done = false;
             /* 'done' ensures that the instructions are followed in the correct order for each input character */
 
             if (column_position == 0) {
@@ -321,10 +321,10 @@ public class CodablockF extends Symbol {
                 column_position++;
                 c--;
                 input_position++;
-                done = 1;
+                done = true;
             }
 
-            if (done == 0) {
+            if (!done) {
                 if (c <= 2) {
                     /* Annex B section 1 rule 1 */
                     /* Ensure that there is sufficient encodation capacity to continue (using the rules of Annex B.2). */
@@ -335,7 +335,7 @@ public class CodablockF extends Symbol {
                                 column_position++;
                                 c--;
                                 input_position++;
-                                done = 1;
+                                done = true;
                             }
 
                             if ((findSubset(source[input_position]) == Mode.SHIFTB) && (c == 1)) {
@@ -343,10 +343,10 @@ public class CodablockF extends Symbol {
                                 blockmatrix[current_row][column_position] = 100; /* Code B */
                                 column_position++;
                                 c--;
-                                done = 1;
+                                done = true;
                             }
 
-                            if ((source[input_position] >= 244) && (done == 0)) {
+                            if ((source[input_position] >= 244) && (!done)) {
                                 /* Needs three symbols */
                                 blockmatrix[current_row][column_position] = 100; /* Code B */
                                 column_position++;
@@ -356,16 +356,16 @@ public class CodablockF extends Symbol {
                                     column_position++;
                                     c--;
                                 }
-                                done = 1;
+                                done = true;
                             }
 
-                            if ((source[input_position] >= 128) && (done == 0)) {
+                            if ((source[input_position] >= 128) && (!done)) {
                                 /* Needs two symbols */
                                 if (c == 1) {
                                     blockmatrix[current_row][column_position] = 100; /* Code B */
                                     column_position++;
                                     c--;
-                                    done = 1;
+                                    done = true;
                                 }
                             }
                             break;
@@ -375,7 +375,7 @@ public class CodablockF extends Symbol {
                                 column_position++;
                                 c--;
                                 input_position++;
-                                done = 1;
+                                done = true;
                             }
 
                             if ((findSubset(source[input_position]) == Mode.SHIFTA) && (c == 1)) {
@@ -383,11 +383,11 @@ public class CodablockF extends Symbol {
                                 blockmatrix[current_row][column_position] = 101; /* Code A */
                                 column_position++;
                                 c--;
-                                done = 1;
+                                done = true;
                             }
 
                             if (((source[input_position] >= 128) 
-                                    && (source[input_position] <= 159)) && (done == 0)) {
+                                    && (source[input_position] <= 159)) && (!done)) {
                                 /* Needs three symbols */
                                 blockmatrix[current_row][column_position] = 101; /* Code A */
                                 column_position++;
@@ -397,16 +397,16 @@ public class CodablockF extends Symbol {
                                     column_position++;
                                     c--;
                                 }
-                                done = 1;
+                                done = true;
                             }
 
-                            if ((source[input_position] >= 160) && (done == 0)) {
+                            if ((source[input_position] >= 160) && (!done)) {
                                 /* Needs two symbols */
                                 if (c == 1) {
                                     blockmatrix[current_row][column_position] = 101; /* Code A */
                                     column_position++;
                                     c--;
-                                    done = 1;
+                                    done = true;
                                 }
                             }
                             break;
@@ -416,7 +416,7 @@ public class CodablockF extends Symbol {
                                 blockmatrix[current_row][column_position] = 101; /* Code A */
                                 column_position++;
                                 c--;
-                                done = 1;
+                                done = true;
                             }
 
                             if (((findSubset(source[input_position]) == Mode.ABORC) 
@@ -426,7 +426,7 @@ public class CodablockF extends Symbol {
                                 blockmatrix[current_row][column_position] = 101; /* Code A */
                                 column_position++;
                                 c--;
-                                done = 1;
+                                done = true;
                             }
 
                             if (source[input_position] >= 128) {
@@ -445,7 +445,7 @@ public class CodablockF extends Symbol {
                 }
             }
 
-            if (done == 0) {
+            if (!done) {
                 if (((findSubset(source[input_position]) == Mode.AORB) 
                         || (findSubset(source[input_position]) == Mode.SHIFTA)) 
                         && (current_mode == cfMode.MODEA)) {
@@ -462,11 +462,11 @@ public class CodablockF extends Symbol {
                     column_position++;
                     c--;
                     input_position++;
-                    done = 1;
+                    done = true;
                 }
             }
 
-            if (done == 0) {
+            if (!done) {
                 if (((findSubset(source[input_position]) == Mode.AORB) 
                         || (findSubset(source[input_position]) == Mode.SHIFTB)) 
                         && (current_mode == cfMode.MODEB)) {
@@ -483,11 +483,11 @@ public class CodablockF extends Symbol {
                     column_position++;
                     c--;
                     input_position++;
-                    done = 1;
+                    done = true;
                 }
             }
 
-            if (done == 0) {
+            if (!done) {
                 if (((findSubset(source[input_position]) == Mode.ABORC) 
                         && (findSubset(source[input_position + 1]) == Mode.ABORC)) 
                         && (current_mode == cfMode.MODEC)) {
@@ -499,11 +499,11 @@ public class CodablockF extends Symbol {
                     column_position++;
                     c--;
                     input_position += 2;
-                    done = 1;
+                    done = true;
                 }
             }
 
-            if (done == 0) {
+            if (!done) {
                 if (((current_mode == cfMode.MODEA) || (current_mode == cfMode.MODEB)) 
                         && ((findSubset(source[input_position]) == Mode.ABORC) 
                         || (gs1 && (source[input_position] == '[')))) {
@@ -545,18 +545,18 @@ public class CodablockF extends Symbol {
                             c--;
                             input_position++;
                         }
-                        done = 1;
+                        done = true;
                     } else {
                         blockmatrix[current_row][column_position] = a3_convert(source[input_position]);
                         column_position++;
                         c--;
                         input_position++;
-                        done = 1;
+                        done = true;
                     }
                 }
             }
 
-            if (done == 0) {
+            if (!done) {
                 if ((current_mode == cfMode.MODEB) && (findSubset(source[input_position]) == Mode.SHIFTA)) {
                     /* Annex B section 1 rule 6 */
                     /*  When in subset B and an ASCII control character occurs in the data:
@@ -595,11 +595,11 @@ public class CodablockF extends Symbol {
                         input_position++;
                         current_mode = cfMode.MODEA;
                     }
-                    done = 1;
+                    done = true;
                 }
             }
 
-            if (done == 0) {
+            if (!done) {
                 if ((current_mode == cfMode.MODEA) && (findSubset(source[input_position]) == Mode.SHIFTB)) {
                     /* Annex B section 1 rule 7 */
                     /* When in subset A and a lower case character occurs in the data:
@@ -639,11 +639,11 @@ public class CodablockF extends Symbol {
                         input_position++;
                         current_mode = cfMode.MODEB;
                     }
-                    done = 1;
+                    done = true;
                 }
             }
 
-            if (done == 0) {
+            if (!done) {
                 if ((current_mode == cfMode.MODEC) && ((findSubset(source[input_position]) != Mode.ABORC)
                         || (findSubset(source[input_position + 1]) != Mode.ABORC))) {
                     /* Annex B section 1 rule 8 */
@@ -686,7 +686,7 @@ public class CodablockF extends Symbol {
                         input_position++;
                         current_mode = cfMode.MODEB;
                     }
-                    done = 1;
+                    done = true;
                 }
             }
 
@@ -730,7 +730,7 @@ public class CodablockF extends Symbol {
 
                 /* If (c == 2) { do nothing } */
 
-                exit_status = 1;
+                exit_status = true;
                  final_mode = current_mode;
             } else {
                 if (c <= 0) {
@@ -743,7 +743,7 @@ public class CodablockF extends Symbol {
                 }
             }
 
-        } while (exit_status == 0);
+        } while (!exit_status);
         
 	if(current_row == 0) { 
 		/* fill up the first row */

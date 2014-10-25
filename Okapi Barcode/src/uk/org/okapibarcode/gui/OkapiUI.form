@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <Form version="1.3" maxVersion="1.8" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
+  <NonVisualComponents>
+    <Component class="javax.swing.ButtonGroup" name="aztecButtonGroup">
+    </Component>
+    <Component class="javax.swing.ButtonGroup" name="gridmatrixButtonGroup">
+    </Component>
+    <Component class="javax.swing.ButtonGroup" name="microQrButtonGroup">
+    </Component>
+    <Component class="javax.swing.ButtonGroup" name="qrButtonGroup">
+    </Component>
+  </NonVisualComponents>
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="3"/>
     <Property name="title" type="java.lang.String" value="Okapi Barcode"/>
@@ -84,7 +94,7 @@
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
       <SubComponents>
-        <Container class="javax.swing.JPanel" name="tab1Panel">
+        <Container class="javax.swing.JPanel" name="singlePanel">
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
               <JTabbedPaneConstraints tabName="Single">
@@ -215,7 +225,7 @@
             </Container>
           </SubComponents>
         </Container>
-        <Container class="javax.swing.JPanel" name="tab2Panel">
+        <Container class="javax.swing.JPanel" name="batchPanel">
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
               <JTabbedPaneConstraints tabName="Batch">
@@ -499,33 +509,36 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="encodeInfoArea" max="32767" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                  </Group>
+                  <Component id="attributeScrollPane" alignment="0" pref="656" max="32767" attributes="0"/>
                   <Group type="102" alignment="1" attributes="0">
-                      <EmptySpace pref="136" max="32767" attributes="0"/>
+                      <EmptySpace max="32767" attributes="0"/>
                       <Component id="inkButton" min="-2" pref="130" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="paperButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="resetColourButton" min="-2" pref="130" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="121" max="-2" attributes="0"/>
-                  </Group>
-                  <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="encodeInfoArea" max="32767" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="122" max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace min="-2" pref="88" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="inkButton" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="paperButton" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="resetColourButton" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace pref="266" max="32767" attributes="0"/>
-                      <Component id="encodeInfoArea" min="-2" pref="174" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="attributeScrollPane" pref="381" max="32767" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="encodeInfoArea" min="-2" pref="120" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -557,7 +570,1189 @@
               </Events>
             </Component>
             <Component class="java.awt.TextArea" name="encodeInfoArea">
+              <Properties>
+                <Property name="editable" type="boolean" value="false"/>
+              </Properties>
             </Component>
+            <Container class="javax.swing.JScrollPane" name="attributeScrollPane">
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+              <SubComponents>
+                <Container class="javax.swing.JPanel" name="attributeScrollPanel">
+
+                  <Layout>
+                    <DimensionLayout dim="0">
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="aztecPanel" alignment="0" max="32767" attributes="0"/>
+                          <Component id="channelPanel" alignment="0" max="32767" attributes="0"/>
+                          <Component id="code39Panel" alignment="0" max="32767" attributes="0"/>
+                          <Component id="codeOnePanel" alignment="0" max="32767" attributes="0"/>
+                          <Component id="databarPanel" alignment="0" max="32767" attributes="0"/>
+                          <Component id="datamatrixPanel" alignment="0" max="32767" attributes="0"/>
+                          <Component id="gridmatrixPanel" alignment="0" max="32767" attributes="0"/>
+                          <Component id="maxicodePanel" alignment="0" max="32767" attributes="0"/>
+                          <Component id="microPdfPanel" alignment="0" max="32767" attributes="0"/>
+                          <Component id="microQrPanel" alignment="0" max="32767" attributes="0"/>
+                          <Component id="msiPanel" alignment="0" max="32767" attributes="0"/>
+                          <Component id="pdfPanel" alignment="0" max="32767" attributes="0"/>
+                          <Component id="qrPanel" alignment="0" max="32767" attributes="0"/>
+                      </Group>
+                    </DimensionLayout>
+                    <DimensionLayout dim="1">
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="aztecPanel" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="channelPanel" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="code39Panel" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="codeOnePanel" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="databarPanel" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="datamatrixPanel" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="gridmatrixPanel" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="maxicodePanel" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="microPdfPanel" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="microQrPanel" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="msiPanel" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="pdfPanel" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="qrPanel" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace pref="124" max="32767" attributes="0"/>
+                          </Group>
+                      </Group>
+                    </DimensionLayout>
+                  </Layout>
+                  <SubComponents>
+                    <Container class="javax.swing.JPanel" name="aztecPanel">
+                      <Properties>
+                        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                          <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                            <TitledBorder title="Aztec Code"/>
+                          </Border>
+                        </Property>
+                      </Properties>
+
+                      <Layout>
+                        <DimensionLayout dim="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" attributes="0">
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                      <Component id="aztecAutoSize" alignment="0" max="32767" attributes="0"/>
+                                      <Component id="aztecUserSize" alignment="0" max="32767" attributes="0"/>
+                                      <Component id="aztecUserEcc" alignment="0" pref="270" max="32767" attributes="0"/>
+                                  </Group>
+                                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Component id="aztecUserSizeCombo" max="32767" attributes="0"/>
+                                      <Component id="aztecUserEccCombo" max="32767" attributes="0"/>
+                                  </Group>
+                                  <EmptySpace max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                        </DimensionLayout>
+                        <DimensionLayout dim="1">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" alignment="0" attributes="0">
+                                  <Component id="aztecAutoSize" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Component id="aztecUserSizeCombo" min="-2" max="-2" attributes="0"/>
+                                      <Component id="aztecUserSize" alignment="0" min="-2" pref="23" max="-2" attributes="0"/>
+                                  </Group>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="3" attributes="0">
+                                      <Component id="aztecUserEccCombo" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="aztecUserEcc" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <EmptySpace min="-2" pref="1" max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                        </DimensionLayout>
+                      </Layout>
+                      <SubComponents>
+                        <Component class="javax.swing.JRadioButton" name="aztecAutoSize">
+                          <Properties>
+                            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                              <ComponentRef name="aztecButtonGroup"/>
+                            </Property>
+                            <Property name="selected" type="boolean" value="true"/>
+                            <Property name="text" type="java.lang.String" value="Automatic Resizing"/>
+                          </Properties>
+                          <Events>
+                            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="aztecAutoSizeActionPerformed"/>
+                          </Events>
+                        </Component>
+                        <Component class="javax.swing.JRadioButton" name="aztecUserSize">
+                          <Properties>
+                            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                              <ComponentRef name="aztecButtonGroup"/>
+                            </Property>
+                            <Property name="text" type="java.lang.String" value="Adjust Size To:"/>
+                          </Properties>
+                          <Events>
+                            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="aztecUserSizeActionPerformed"/>
+                          </Events>
+                        </Component>
+                        <Component class="javax.swing.JRadioButton" name="aztecUserEcc">
+                          <Properties>
+                            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                              <ComponentRef name="aztecButtonGroup"/>
+                            </Property>
+                            <Property name="text" type="java.lang.String" value="Add Minimum Error Correction:"/>
+                          </Properties>
+                          <Events>
+                            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="aztecUserEccActionPerformed"/>
+                          </Events>
+                        </Component>
+                        <Component class="javax.swing.JComboBox" name="aztecUserSizeCombo">
+                          <Properties>
+                            <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+                              <StringArray count="36">
+                                <StringItem index="0" value="15 X 15 Compact"/>
+                                <StringItem index="1" value="19 X 19 Compact"/>
+                                <StringItem index="2" value="23 X 23 Compact"/>
+                                <StringItem index="3" value="27 X 27 Compact"/>
+                                <StringItem index="4" value="19 X 19"/>
+                                <StringItem index="5" value="23 X 23"/>
+                                <StringItem index="6" value="27 X 27"/>
+                                <StringItem index="7" value="31 X 31"/>
+                                <StringItem index="8" value="37 X 37"/>
+                                <StringItem index="9" value="41 X 41"/>
+                                <StringItem index="10" value="45 X 45"/>
+                                <StringItem index="11" value="49 X 49"/>
+                                <StringItem index="12" value="53 X 53"/>
+                                <StringItem index="13" value="57 X 57"/>
+                                <StringItem index="14" value="61 X 61"/>
+                                <StringItem index="15" value="67 X 67"/>
+                                <StringItem index="16" value="71 X 71"/>
+                                <StringItem index="17" value="75 X 75"/>
+                                <StringItem index="18" value="79 X 79"/>
+                                <StringItem index="19" value="83 X 83"/>
+                                <StringItem index="20" value="87 X 87"/>
+                                <StringItem index="21" value="91 X 91"/>
+                                <StringItem index="22" value="95 X 95"/>
+                                <StringItem index="23" value="101 X 101"/>
+                                <StringItem index="24" value="105 X 105"/>
+                                <StringItem index="25" value="109 X 109"/>
+                                <StringItem index="26" value="113 X 113"/>
+                                <StringItem index="27" value="117 X 117"/>
+                                <StringItem index="28" value="121 X 121"/>
+                                <StringItem index="29" value="125 X 125"/>
+                                <StringItem index="30" value="131 X 131"/>
+                                <StringItem index="31" value="135 X 135"/>
+                                <StringItem index="32" value="139 X 139"/>
+                                <StringItem index="33" value="143 X 143"/>
+                                <StringItem index="34" value="147 X 147"/>
+                                <StringItem index="35" value="151 X 151"/>
+                              </StringArray>
+                            </Property>
+                            <Property name="enabled" type="boolean" value="false"/>
+                          </Properties>
+                        </Component>
+                        <Component class="javax.swing.JComboBox" name="aztecUserEccCombo">
+                          <Properties>
+                            <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+                              <StringArray count="4">
+                                <StringItem index="0" value="10% + 3 words"/>
+                                <StringItem index="1" value="23% + 3 words"/>
+                                <StringItem index="2" value="36% + 3 words"/>
+                                <StringItem index="3" value="50% + 3 words"/>
+                              </StringArray>
+                            </Property>
+                            <Property name="enabled" type="boolean" value="false"/>
+                          </Properties>
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                    <Container class="javax.swing.JPanel" name="channelPanel">
+                      <Properties>
+                        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                          <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                            <TitledBorder title="Channel Code"/>
+                          </Border>
+                        </Property>
+                      </Properties>
+
+                      <Layout>
+                        <DimensionLayout dim="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" alignment="0" attributes="0">
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="channelNoOfChannels" min="-2" pref="268" max="-2" attributes="0"/>
+                                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                                  <Component id="channelChannelsCombo" max="32767" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                        </DimensionLayout>
+                        <DimensionLayout dim="1">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="channelNoOfChannels" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="channelChannelsCombo" alignment="3" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                        </DimensionLayout>
+                      </Layout>
+                      <SubComponents>
+                        <Component class="javax.swing.JLabel" name="channelNoOfChannels">
+                          <Properties>
+                            <Property name="text" type="java.lang.String" value="Number of Channels:"/>
+                          </Properties>
+                        </Component>
+                        <Component class="javax.swing.JComboBox" name="channelChannelsCombo">
+                          <Properties>
+                            <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+                              <StringArray count="7">
+                                <StringItem index="0" value="Automatic"/>
+                                <StringItem index="1" value="3"/>
+                                <StringItem index="2" value="4"/>
+                                <StringItem index="3" value="5"/>
+                                <StringItem index="4" value="6"/>
+                                <StringItem index="5" value="7"/>
+                                <StringItem index="6" value="8"/>
+                              </StringArray>
+                            </Property>
+                          </Properties>
+                          <Events>
+                            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="channelChannelsComboActionPerformed"/>
+                          </Events>
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                    <Container class="javax.swing.JPanel" name="code39Panel">
+                      <Properties>
+                        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                          <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                            <TitledBorder title="Code 39"/>
+                          </Border>
+                        </Property>
+                      </Properties>
+
+                      <Layout>
+                        <DimensionLayout dim="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" alignment="0" attributes="0">
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="code39CheckLabel" min="-2" pref="271" max="-2" attributes="0"/>
+                                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                                  <Component id="code39CheckCombo" min="-2" pref="316" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                        </DimensionLayout>
+                        <DimensionLayout dim="1">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="code39CheckLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="code39CheckCombo" alignment="3" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                        </DimensionLayout>
+                      </Layout>
+                      <SubComponents>
+                        <Component class="javax.swing.JLabel" name="code39CheckLabel">
+                          <Properties>
+                            <Property name="text" type="java.lang.String" value="Check Digit Option:"/>
+                          </Properties>
+                        </Component>
+                        <Component class="javax.swing.JComboBox" name="code39CheckCombo">
+                          <Properties>
+                            <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+                              <StringArray count="2">
+                                <StringItem index="0" value="No Check Digit"/>
+                                <StringItem index="1" value="Mod-43 Check Digit"/>
+                              </StringArray>
+                            </Property>
+                          </Properties>
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                    <Container class="javax.swing.JPanel" name="codeOnePanel">
+                      <Properties>
+                        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                          <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                            <TitledBorder title="Code One"/>
+                          </Border>
+                        </Property>
+                      </Properties>
+
+                      <Layout>
+                        <DimensionLayout dim="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" alignment="0" attributes="0">
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="codeOneSizeLabel" min="-2" pref="276" max="-2" attributes="0"/>
+                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                  <Component id="codeOneSizeCombo" max="32767" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                        </DimensionLayout>
+                        <DimensionLayout dim="1">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="codeOneSizeLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="codeOneSizeCombo" alignment="3" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                        </DimensionLayout>
+                      </Layout>
+                      <SubComponents>
+                        <Component class="javax.swing.JLabel" name="codeOneSizeLabel">
+                          <Properties>
+                            <Property name="text" type="java.lang.String" value="Symbol Size:"/>
+                          </Properties>
+                        </Component>
+                        <Component class="javax.swing.JComboBox" name="codeOneSizeCombo">
+                          <Properties>
+                            <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+                              <StringArray count="11">
+                                <StringItem index="0" value="Automatic"/>
+                                <StringItem index="1" value="16 X 18 (Version A)"/>
+                                <StringItem index="2" value="22 X 22 (Version B)"/>
+                                <StringItem index="3" value="28 X 32 (Version C)"/>
+                                <StringItem index="4" value="40 X 42 (Version D)"/>
+                                <StringItem index="5" value="52 X 54 (Version E)"/>
+                                <StringItem index="6" value="70 X 76 (Version F)"/>
+                                <StringItem index="7" value="104 X 98 (Version G)"/>
+                                <StringItem index="8" value="148 X 134 (Version H)"/>
+                                <StringItem index="9" value="8X Height (Version S)"/>
+                                <StringItem index="10" value="16X Height (Version T)"/>
+                              </StringArray>
+                            </Property>
+                          </Properties>
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                    <Container class="javax.swing.JPanel" name="databarPanel">
+                      <Properties>
+                        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                          <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                            <TitledBorder title="DataBar Expanded Stacked"/>
+                          </Border>
+                        </Property>
+                      </Properties>
+
+                      <Layout>
+                        <DimensionLayout dim="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" alignment="0" attributes="0">
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="databarColumnsLabel" min="-2" pref="267" max="-2" attributes="0"/>
+                                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                                  <Component id="databarColumnsCombo" max="32767" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                        </DimensionLayout>
+                        <DimensionLayout dim="1">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="databarColumnsLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="databarColumnsCombo" alignment="3" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                        </DimensionLayout>
+                      </Layout>
+                      <SubComponents>
+                        <Component class="javax.swing.JLabel" name="databarColumnsLabel">
+                          <Properties>
+                            <Property name="text" type="java.lang.String" value="Number of Columns:"/>
+                          </Properties>
+                        </Component>
+                        <Component class="javax.swing.JComboBox" name="databarColumnsCombo">
+                          <Properties>
+                            <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+                              <StringArray count="10">
+                                <StringItem index="0" value="Automatic"/>
+                                <StringItem index="1" value="1"/>
+                                <StringItem index="2" value="2"/>
+                                <StringItem index="3" value="3"/>
+                                <StringItem index="4" value="4"/>
+                                <StringItem index="5" value="5"/>
+                                <StringItem index="6" value="6"/>
+                                <StringItem index="7" value="7"/>
+                                <StringItem index="8" value="8"/>
+                                <StringItem index="9" value="9"/>
+                              </StringArray>
+                            </Property>
+                          </Properties>
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                    <Container class="javax.swing.JPanel" name="datamatrixPanel">
+                      <Properties>
+                        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                          <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                            <TitledBorder title="Data Matrix"/>
+                          </Border>
+                        </Property>
+                      </Properties>
+
+                      <Layout>
+                        <DimensionLayout dim="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" alignment="0" attributes="0">
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Group type="102" attributes="0">
+                                          <Component id="dataMatrixSquareOnlyCheck" min="-2" pref="356" max="-2" attributes="0"/>
+                                          <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                                      </Group>
+                                      <Group type="102" attributes="0">
+                                          <Component id="dataMatrixSizeLabel" min="-2" pref="278" max="-2" attributes="0"/>
+                                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                          <Component id="dataMatrixSizeCombo" max="32767" attributes="0"/>
+                                      </Group>
+                                  </Group>
+                                  <EmptySpace max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                        </DimensionLayout>
+                        <DimensionLayout dim="1">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" attributes="0">
+                                  <Group type="103" groupAlignment="3" attributes="0">
+                                      <Component id="dataMatrixSizeLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="dataMatrixSizeCombo" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="dataMatrixSquareOnlyCheck" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                        </DimensionLayout>
+                      </Layout>
+                      <SubComponents>
+                        <Component class="javax.swing.JLabel" name="dataMatrixSizeLabel">
+                          <Properties>
+                            <Property name="text" type="java.lang.String" value="Symbol Size:"/>
+                          </Properties>
+                        </Component>
+                        <Component class="javax.swing.JComboBox" name="dataMatrixSizeCombo">
+                          <Properties>
+                            <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+                              <StringArray count="31">
+                                <StringItem index="0" value="Automatic"/>
+                                <StringItem index="1" value="10 X 10"/>
+                                <StringItem index="2" value="12 X 12"/>
+                                <StringItem index="3" value="14 X 14"/>
+                                <StringItem index="4" value="16 X 16"/>
+                                <StringItem index="5" value="18 X 18"/>
+                                <StringItem index="6" value="20 X 20"/>
+                                <StringItem index="7" value="22 X 22"/>
+                                <StringItem index="8" value="24 X 24"/>
+                                <StringItem index="9" value="26 X 26"/>
+                                <StringItem index="10" value="32 X 32"/>
+                                <StringItem index="11" value="36 X 36"/>
+                                <StringItem index="12" value="40 X 40"/>
+                                <StringItem index="13" value="44 X 44"/>
+                                <StringItem index="14" value="48 X 48"/>
+                                <StringItem index="15" value="52 X 52"/>
+                                <StringItem index="16" value="64 X 64"/>
+                                <StringItem index="17" value="72 X 72"/>
+                                <StringItem index="18" value="80 X 80"/>
+                                <StringItem index="19" value="88 X 88"/>
+                                <StringItem index="20" value="96 X 96"/>
+                                <StringItem index="21" value="104 X 104"/>
+                                <StringItem index="22" value="120 X 120"/>
+                                <StringItem index="23" value="132 X 132"/>
+                                <StringItem index="24" value="144 X 144"/>
+                                <StringItem index="25" value="8 X 18"/>
+                                <StringItem index="26" value="8 X 32"/>
+                                <StringItem index="27" value="12 X 26"/>
+                                <StringItem index="28" value="12 X 36"/>
+                                <StringItem index="29" value="16 X 36"/>
+                                <StringItem index="30" value="16 X 48"/>
+                              </StringArray>
+                            </Property>
+                          </Properties>
+                        </Component>
+                        <Component class="javax.swing.JCheckBox" name="dataMatrixSquareOnlyCheck">
+                          <Properties>
+                            <Property name="selected" type="boolean" value="true"/>
+                            <Property name="text" type="java.lang.String" value="Supress Rectangular Symbols in Automatic Mode"/>
+                          </Properties>
+                          <Events>
+                            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="dataMatrixSquareOnlyCheckActionPerformed"/>
+                          </Events>
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                    <Container class="javax.swing.JPanel" name="gridmatrixPanel">
+                      <Properties>
+                        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                          <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                            <TitledBorder title="Grid Matrix"/>
+                          </Border>
+                        </Property>
+                      </Properties>
+
+                      <Layout>
+                        <DimensionLayout dim="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" attributes="0">
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                      <Component id="gridmatrixAutoSize" alignment="0" max="32767" attributes="0"/>
+                                      <Component id="gridmatrixUserSize" alignment="0" max="32767" attributes="0"/>
+                                      <Component id="gridmatrixUserEcc" alignment="0" pref="276" max="32767" attributes="0"/>
+                                  </Group>
+                                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Component id="gridmatrixUserSizeCombo" max="32767" attributes="0"/>
+                                      <Component id="gridmatrixUserEccCombo" max="32767" attributes="0"/>
+                                  </Group>
+                                  <EmptySpace max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                        </DimensionLayout>
+                        <DimensionLayout dim="1">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" alignment="0" attributes="0">
+                                  <Component id="gridmatrixAutoSize" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="3" attributes="0">
+                                      <Component id="gridmatrixUserSize" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="gridmatrixUserSizeCombo" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="3" attributes="0">
+                                      <Component id="gridmatrixUserEcc" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="gridmatrixUserEccCombo" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                              </Group>
+                          </Group>
+                        </DimensionLayout>
+                      </Layout>
+                      <SubComponents>
+                        <Component class="javax.swing.JRadioButton" name="gridmatrixAutoSize">
+                          <Properties>
+                            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                              <ComponentRef name="gridmatrixButtonGroup"/>
+                            </Property>
+                            <Property name="selected" type="boolean" value="true"/>
+                            <Property name="text" type="java.lang.String" value="Automatic Resizing"/>
+                          </Properties>
+                          <Events>
+                            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="gridmatrixAutoSizeActionPerformed"/>
+                          </Events>
+                        </Component>
+                        <Component class="javax.swing.JRadioButton" name="gridmatrixUserSize">
+                          <Properties>
+                            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                              <ComponentRef name="gridmatrixButtonGroup"/>
+                            </Property>
+                            <Property name="text" type="java.lang.String" value="Adjust Size To:"/>
+                          </Properties>
+                          <Events>
+                            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="gridmatrixUserSizeActionPerformed"/>
+                          </Events>
+                        </Component>
+                        <Component class="javax.swing.JRadioButton" name="gridmatrixUserEcc">
+                          <Properties>
+                            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                              <ComponentRef name="gridmatrixButtonGroup"/>
+                            </Property>
+                            <Property name="text" type="java.lang.String" value="Add Minimum Error Correction:"/>
+                          </Properties>
+                          <Events>
+                            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="gridmatrixUserEccActionPerformed"/>
+                          </Events>
+                        </Component>
+                        <Component class="javax.swing.JComboBox" name="gridmatrixUserSizeCombo">
+                          <Properties>
+                            <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+                              <StringArray count="13">
+                                <StringItem index="0" value="18 X 18 (Version 1)"/>
+                                <StringItem index="1" value="30 X 30 (Version 2)"/>
+                                <StringItem index="2" value="42 X 42 (Version 3)"/>
+                                <StringItem index="3" value="54 X 54 (Version 4)"/>
+                                <StringItem index="4" value="66 X 66 (Version 5)"/>
+                                <StringItem index="5" value="78 X 78 (Version 6)"/>
+                                <StringItem index="6" value="90 X 90 (Version 7)"/>
+                                <StringItem index="7" value="102 X 102 (Version 8)"/>
+                                <StringItem index="8" value="114 X 114 (Version 9)"/>
+                                <StringItem index="9" value="126 X 126 (Version 10)"/>
+                                <StringItem index="10" value="138 X 138 (Version 11)"/>
+                                <StringItem index="11" value="150 X 150 (Version 12)"/>
+                                <StringItem index="12" value="162 X 162 (Version 13)"/>
+                              </StringArray>
+                            </Property>
+                            <Property name="enabled" type="boolean" value="false"/>
+                          </Properties>
+                        </Component>
+                        <Component class="javax.swing.JComboBox" name="gridmatrixUserEccCombo">
+                          <Properties>
+                            <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+                              <StringArray count="5">
+                                <StringItem index="0" value="Approx 10%"/>
+                                <StringItem index="1" value="Approx 20%"/>
+                                <StringItem index="2" value="Approx 30%"/>
+                                <StringItem index="3" value="Approx 40%"/>
+                                <StringItem index="4" value="Approx 50%"/>
+                              </StringArray>
+                            </Property>
+                            <Property name="enabled" type="boolean" value="false"/>
+                          </Properties>
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                    <Container class="javax.swing.JPanel" name="maxicodePanel">
+                      <Properties>
+                        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                          <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                            <TitledBorder title="Maxicode"/>
+                          </Border>
+                        </Property>
+                      </Properties>
+
+                      <Layout>
+                        <DimensionLayout dim="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" attributes="0">
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                      <Component id="maxiEncodeModeLabel" pref="285" max="32767" attributes="0"/>
+                                      <Component id="maxiPrimaryDataLabel" max="32767" attributes="0"/>
+                                  </Group>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Component id="maxiEncodingModeCombo" max="32767" attributes="0"/>
+                                      <Component id="maxiPrimaryData" max="32767" attributes="0"/>
+                                  </Group>
+                                  <EmptySpace max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                        </DimensionLayout>
+                        <DimensionLayout dim="1">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" alignment="0" attributes="0">
+                                  <Group type="103" groupAlignment="3" attributes="0">
+                                      <Component id="maxiEncodeModeLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="maxiEncodingModeCombo" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="3" attributes="0">
+                                      <Component id="maxiPrimaryDataLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="maxiPrimaryData" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                              </Group>
+                          </Group>
+                        </DimensionLayout>
+                      </Layout>
+                      <SubComponents>
+                        <Component class="javax.swing.JLabel" name="maxiEncodeModeLabel">
+                          <Properties>
+                            <Property name="text" type="java.lang.String" value="Encoding Mode:"/>
+                          </Properties>
+                        </Component>
+                        <Component class="javax.swing.JLabel" name="maxiPrimaryDataLabel">
+                          <Properties>
+                            <Property name="text" type="java.lang.String" value="Primary Data:"/>
+                            <Property name="enabled" type="boolean" value="false"/>
+                          </Properties>
+                        </Component>
+                        <Component class="javax.swing.JComboBox" name="maxiEncodingModeCombo">
+                          <Properties>
+                            <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+                              <StringArray count="4">
+                                <StringItem index="0" value="Structured Carrier Message (Mode 2 or 3)"/>
+                                <StringItem index="1" value="Standard Symbol, SEC (Mode 4)"/>
+                                <StringItem index="2" value="Full ECC Symbol (Mode 5)"/>
+                                <StringItem index="3" value="Reader Program, SEC (Mode 6)"/>
+                              </StringArray>
+                            </Property>
+                          </Properties>
+                        </Component>
+                        <Component class="javax.swing.JTextField" name="maxiPrimaryData">
+                          <Properties>
+                            <Property name="text" type="java.lang.String" value="Primary Data Here!"/>
+                            <Property name="enabled" type="boolean" value="false"/>
+                          </Properties>
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                    <Container class="javax.swing.JPanel" name="microPdfPanel">
+                      <Properties>
+                        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                          <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                            <TitledBorder title="Micro PDF417"/>
+                          </Border>
+                        </Property>
+                      </Properties>
+
+                      <Layout>
+                        <DimensionLayout dim="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" alignment="0" attributes="0">
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="microPdfColumnsLabel" min="-2" pref="279" max="-2" attributes="0"/>
+                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                  <Component id="microPdfColumnsCombo" max="32767" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                        </DimensionLayout>
+                        <DimensionLayout dim="1">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="microPdfColumnsLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="microPdfColumnsCombo" alignment="3" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                        </DimensionLayout>
+                      </Layout>
+                      <SubComponents>
+                        <Component class="javax.swing.JLabel" name="microPdfColumnsLabel">
+                          <Properties>
+                            <Property name="text" type="java.lang.String" value="Number of Data Columns:"/>
+                          </Properties>
+                        </Component>
+                        <Component class="javax.swing.JComboBox" name="microPdfColumnsCombo">
+                          <Properties>
+                            <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+                              <StringArray count="5">
+                                <StringItem index="0" value="Automatic"/>
+                                <StringItem index="1" value="1"/>
+                                <StringItem index="2" value="2"/>
+                                <StringItem index="3" value="3"/>
+                                <StringItem index="4" value="4"/>
+                              </StringArray>
+                            </Property>
+                          </Properties>
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                    <Container class="javax.swing.JPanel" name="microQrPanel">
+                      <Properties>
+                        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                          <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                            <TitledBorder title="Micro QR Code"/>
+                          </Border>
+                        </Property>
+                      </Properties>
+
+                      <Layout>
+                        <DimensionLayout dim="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" attributes="0">
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                      <Component id="microQrAutoSize" max="32767" attributes="0"/>
+                                      <Component id="microQrUserSize" max="32767" attributes="0"/>
+                                      <Component id="microQrUserEcc" pref="278" max="32767" attributes="0"/>
+                                  </Group>
+                                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Component id="microQrUserSizeCombo" max="32767" attributes="0"/>
+                                      <Component id="microQrUserEccCombo" max="32767" attributes="0"/>
+                                  </Group>
+                                  <EmptySpace max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                        </DimensionLayout>
+                        <DimensionLayout dim="1">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" alignment="0" attributes="0">
+                                  <Component id="microQrAutoSize" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="3" attributes="0">
+                                      <Component id="microQrUserSize" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="microQrUserSizeCombo" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="3" attributes="0">
+                                      <Component id="microQrUserEcc" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="microQrUserEccCombo" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                              </Group>
+                          </Group>
+                        </DimensionLayout>
+                      </Layout>
+                      <SubComponents>
+                        <Component class="javax.swing.JRadioButton" name="microQrAutoSize">
+                          <Properties>
+                            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                              <ComponentRef name="microQrButtonGroup"/>
+                            </Property>
+                            <Property name="selected" type="boolean" value="true"/>
+                            <Property name="text" type="java.lang.String" value="Automatic Resizing"/>
+                          </Properties>
+                          <Events>
+                            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="microQrAutoSizeActionPerformed"/>
+                          </Events>
+                        </Component>
+                        <Component class="javax.swing.JRadioButton" name="microQrUserSize">
+                          <Properties>
+                            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                              <ComponentRef name="microQrButtonGroup"/>
+                            </Property>
+                            <Property name="text" type="java.lang.String" value="Adjust Size To:"/>
+                          </Properties>
+                          <Events>
+                            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="microQrUserSizeActionPerformed"/>
+                          </Events>
+                        </Component>
+                        <Component class="javax.swing.JRadioButton" name="microQrUserEcc">
+                          <Properties>
+                            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                              <ComponentRef name="microQrButtonGroup"/>
+                            </Property>
+                            <Property name="text" type="java.lang.String" value="Add Minimum Error Correction:"/>
+                          </Properties>
+                          <Events>
+                            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="microQrUserEccActionPerformed"/>
+                          </Events>
+                        </Component>
+                        <Component class="javax.swing.JComboBox" name="microQrUserSizeCombo">
+                          <Properties>
+                            <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+                              <StringArray count="4">
+                                <StringItem index="0" value="11 X 11 (Version M1)"/>
+                                <StringItem index="1" value="13 X 13 (Version M2)"/>
+                                <StringItem index="2" value="15 X 15 (Version M3)"/>
+                                <StringItem index="3" value="17 X 17 (Version M4)"/>
+                              </StringArray>
+                            </Property>
+                            <Property name="enabled" type="boolean" value="false"/>
+                          </Properties>
+                        </Component>
+                        <Component class="javax.swing.JComboBox" name="microQrUserEccCombo">
+                          <Properties>
+                            <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+                              <StringArray count="3">
+                                <StringItem index="0" value="Approx 20% (Level L)"/>
+                                <StringItem index="1" value="Approx 37% (Level M)"/>
+                                <StringItem index="2" value="Approx 55% (Level Q)"/>
+                              </StringArray>
+                            </Property>
+                            <Property name="enabled" type="boolean" value="false"/>
+                          </Properties>
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                    <Container class="javax.swing.JPanel" name="msiPanel">
+                      <Properties>
+                        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                          <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                            <TitledBorder title="MSI Plessey">
+                              <Border PropertyName="innerBorder" info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                                <TitledBorder title="MSI Plessey"/>
+                              </Border>
+                            </TitledBorder>
+                          </Border>
+                        </Property>
+                      </Properties>
+
+                      <Layout>
+                        <DimensionLayout dim="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" alignment="0" attributes="0">
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="msiCheckDigitLabel" min="-2" pref="284" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="msiCheckDigitCombo" max="32767" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                        </DimensionLayout>
+                        <DimensionLayout dim="1">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="msiCheckDigitLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="msiCheckDigitCombo" alignment="3" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                        </DimensionLayout>
+                      </Layout>
+                      <SubComponents>
+                        <Component class="javax.swing.JLabel" name="msiCheckDigitLabel">
+                          <Properties>
+                            <Property name="text" type="java.lang.String" value="Check Digit:"/>
+                          </Properties>
+                        </Component>
+                        <Component class="javax.swing.JComboBox" name="msiCheckDigitCombo">
+                          <Properties>
+                            <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+                              <StringArray count="5">
+                                <StringItem index="0" value="None"/>
+                                <StringItem index="1" value="Mod-10"/>
+                                <StringItem index="2" value="Mod-10 &amp; Mod-10"/>
+                                <StringItem index="3" value="Mod-11"/>
+                                <StringItem index="4" value="Mod-11 &amp; Mod-10"/>
+                              </StringArray>
+                            </Property>
+                          </Properties>
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                    <Container class="javax.swing.JPanel" name="pdfPanel">
+                      <Properties>
+                        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                          <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                            <TitledBorder title="PDF417"/>
+                          </Border>
+                        </Property>
+                      </Properties>
+
+                      <Layout>
+                        <DimensionLayout dim="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" attributes="0">
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                      <Component id="pdfDataColumnsLabel" max="32767" attributes="0"/>
+                                      <Component id="pdfEccLabel" pref="284" max="32767" attributes="0"/>
+                                  </Group>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Component id="pdfColumnsCombo" max="32767" attributes="0"/>
+                                      <Component id="pdfEccCombo" max="32767" attributes="0"/>
+                                  </Group>
+                                  <EmptySpace max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                        </DimensionLayout>
+                        <DimensionLayout dim="1">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" alignment="0" attributes="0">
+                                  <Group type="103" groupAlignment="3" attributes="0">
+                                      <Component id="pdfDataColumnsLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="pdfColumnsCombo" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="3" attributes="0">
+                                      <Component id="pdfEccLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="pdfEccCombo" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                              </Group>
+                          </Group>
+                        </DimensionLayout>
+                      </Layout>
+                      <SubComponents>
+                        <Component class="javax.swing.JLabel" name="pdfDataColumnsLabel">
+                          <Properties>
+                            <Property name="text" type="java.lang.String" value="Number of Data Columns:"/>
+                          </Properties>
+                        </Component>
+                        <Component class="javax.swing.JLabel" name="pdfEccLabel">
+                          <Properties>
+                            <Property name="text" type="java.lang.String" value="Error Correction Capacity:"/>
+                          </Properties>
+                        </Component>
+                        <Component class="javax.swing.JComboBox" name="pdfColumnsCombo">
+                          <Properties>
+                            <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+                              <StringArray count="21">
+                                <StringItem index="0" value="Automatic"/>
+                                <StringItem index="1" value="1"/>
+                                <StringItem index="2" value="2"/>
+                                <StringItem index="3" value="3"/>
+                                <StringItem index="4" value="4"/>
+                                <StringItem index="5" value="5"/>
+                                <StringItem index="6" value="6"/>
+                                <StringItem index="7" value="7"/>
+                                <StringItem index="8" value="8"/>
+                                <StringItem index="9" value="9"/>
+                                <StringItem index="10" value="10"/>
+                                <StringItem index="11" value="11"/>
+                                <StringItem index="12" value="12"/>
+                                <StringItem index="13" value="13"/>
+                                <StringItem index="14" value="14"/>
+                                <StringItem index="15" value="15"/>
+                                <StringItem index="16" value="16"/>
+                                <StringItem index="17" value="17"/>
+                                <StringItem index="18" value="18"/>
+                                <StringItem index="19" value="19"/>
+                                <StringItem index="20" value="20"/>
+                              </StringArray>
+                            </Property>
+                          </Properties>
+                        </Component>
+                        <Component class="javax.swing.JComboBox" name="pdfEccCombo">
+                          <Properties>
+                            <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+                              <StringArray count="10">
+                                <StringItem index="0" value="Automatic"/>
+                                <StringItem index="1" value="2 words"/>
+                                <StringItem index="2" value="4 words"/>
+                                <StringItem index="3" value="8 words"/>
+                                <StringItem index="4" value="16 words"/>
+                                <StringItem index="5" value="32 words"/>
+                                <StringItem index="6" value="64 words"/>
+                                <StringItem index="7" value="128 words"/>
+                                <StringItem index="8" value="256 words"/>
+                                <StringItem index="9" value="512 words"/>
+                              </StringArray>
+                            </Property>
+                          </Properties>
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                    <Container class="javax.swing.JPanel" name="qrPanel">
+                      <Properties>
+                        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                          <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                            <TitledBorder title="QR Code"/>
+                          </Border>
+                        </Property>
+                      </Properties>
+
+                      <Layout>
+                        <DimensionLayout dim="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" attributes="0">
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                      <Component id="qrAutoSize" max="32767" attributes="0"/>
+                                      <Component id="qrUserSize" max="32767" attributes="0"/>
+                                      <Component id="qrUserEcc" pref="285" max="32767" attributes="0"/>
+                                  </Group>
+                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Component id="qrUserSizeCombo" max="32767" attributes="0"/>
+                                      <Component id="qrUserEccCombo" max="32767" attributes="0"/>
+                                  </Group>
+                                  <EmptySpace max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                        </DimensionLayout>
+                        <DimensionLayout dim="1">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" alignment="0" attributes="0">
+                                  <Component id="qrAutoSize" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Component id="qrUserSizeCombo" min="-2" max="-2" attributes="0"/>
+                                      <Component id="qrUserSize" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="3" attributes="0">
+                                      <Component id="qrUserEcc" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="qrUserEccCombo" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <EmptySpace max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                        </DimensionLayout>
+                      </Layout>
+                      <SubComponents>
+                        <Component class="javax.swing.JRadioButton" name="qrAutoSize">
+                          <Properties>
+                            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                              <ComponentRef name="qrButtonGroup"/>
+                            </Property>
+                            <Property name="selected" type="boolean" value="true"/>
+                            <Property name="text" type="java.lang.String" value="Automatic Resizing"/>
+                          </Properties>
+                          <Events>
+                            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="qrAutoSizeActionPerformed"/>
+                          </Events>
+                        </Component>
+                        <Component class="javax.swing.JRadioButton" name="qrUserSize">
+                          <Properties>
+                            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                              <ComponentRef name="qrButtonGroup"/>
+                            </Property>
+                            <Property name="text" type="java.lang.String" value="Adjust Size To:"/>
+                          </Properties>
+                          <Events>
+                            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="qrUserSizeActionPerformed"/>
+                          </Events>
+                        </Component>
+                        <Component class="javax.swing.JRadioButton" name="qrUserEcc">
+                          <Properties>
+                            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                              <ComponentRef name="qrButtonGroup"/>
+                            </Property>
+                            <Property name="text" type="java.lang.String" value="Add Minimum Error Correction:"/>
+                          </Properties>
+                          <Events>
+                            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="qrUserEccActionPerformed"/>
+                          </Events>
+                        </Component>
+                        <Component class="javax.swing.JComboBox" name="qrUserSizeCombo">
+                          <Properties>
+                            <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+                              <StringArray count="40">
+                                <StringItem index="0" value="21 X 21 (Version 1)"/>
+                                <StringItem index="1" value="25 X 25 (Version 2)"/>
+                                <StringItem index="2" value="29 X 29 (Version 3)"/>
+                                <StringItem index="3" value="33 X 33 (Version 4)"/>
+                                <StringItem index="4" value="37 X 37 (Version 5)"/>
+                                <StringItem index="5" value="41 X 41 (Version 6)"/>
+                                <StringItem index="6" value="45 X 45 (Version 7)"/>
+                                <StringItem index="7" value="49 X 49 (Version 8)"/>
+                                <StringItem index="8" value="53 X 53 (Version 9)"/>
+                                <StringItem index="9" value="57 X 57 (Version 10)"/>
+                                <StringItem index="10" value="61 X 61 (Version 11)"/>
+                                <StringItem index="11" value="65 X 65 (Version 12)"/>
+                                <StringItem index="12" value="69 X 69 (Version 13)"/>
+                                <StringItem index="13" value="73 X 73 (Version 14)"/>
+                                <StringItem index="14" value="77 X 77 (Version 15)"/>
+                                <StringItem index="15" value="81 X 81 (Version 16)"/>
+                                <StringItem index="16" value="85 X 85 (Version 17)"/>
+                                <StringItem index="17" value="89 X 89 (Version 18)"/>
+                                <StringItem index="18" value="93 X 93 (Version 19)"/>
+                                <StringItem index="19" value="97 X 97 (Version 20)"/>
+                                <StringItem index="20" value="101 X 101 (Version 21)"/>
+                                <StringItem index="21" value="105 X 105 (Version 22)"/>
+                                <StringItem index="22" value="109 X 109 (Version 23)"/>
+                                <StringItem index="23" value="113 X 113 (Version 24)"/>
+                                <StringItem index="24" value="117 X 117 (Version 25)"/>
+                                <StringItem index="25" value="121 X 121 (Version 26)"/>
+                                <StringItem index="26" value="125 X 125 (Version 27)"/>
+                                <StringItem index="27" value="129 X 129 (Version 28)"/>
+                                <StringItem index="28" value="133 X 133 (Version 29)"/>
+                                <StringItem index="29" value="137 X 137 (Version 30)"/>
+                                <StringItem index="30" value="141 X 141 (Version 31)"/>
+                                <StringItem index="31" value="145 X 145 (Version 32)"/>
+                                <StringItem index="32" value="149 X 149 (Version 33)"/>
+                                <StringItem index="33" value="153 X 153 (Version 34)"/>
+                                <StringItem index="34" value="157 X 157 (Version 35)"/>
+                                <StringItem index="35" value="161 X 161 (Version 36)"/>
+                                <StringItem index="36" value="165 X 165 (Version 37)"/>
+                                <StringItem index="37" value="169 X 169 (Version 38)"/>
+                                <StringItem index="38" value="173 X 173 (Version 39)"/>
+                                <StringItem index="39" value="177 X 177 (Version 40)"/>
+                              </StringArray>
+                            </Property>
+                            <Property name="enabled" type="boolean" value="false"/>
+                          </Properties>
+                          <Events>
+                            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="qrUserSizeComboActionPerformed"/>
+                          </Events>
+                        </Component>
+                        <Component class="javax.swing.JComboBox" name="qrUserEccCombo">
+                          <Properties>
+                            <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+                              <StringArray count="4">
+                                <StringItem index="0" value="Approx 20% (Level L)"/>
+                                <StringItem index="1" value="Approx 37% (Level M)"/>
+                                <StringItem index="2" value="Approx 55% (Level Q)"/>
+                                <StringItem index="3" value="Approx 65% (Level H)"/>
+                              </StringArray>
+                            </Property>
+                            <Property name="enabled" type="boolean" value="false"/>
+                          </Properties>
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                  </SubComponents>
+                </Container>
+              </SubComponents>
+            </Container>
           </SubComponents>
         </Container>
       </SubComponents>

@@ -135,10 +135,14 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        aztecButtonGroup = new javax.swing.ButtonGroup();
+        gridmatrixButtonGroup = new javax.swing.ButtonGroup();
+        microQrButtonGroup = new javax.swing.ButtonGroup();
+        qrButtonGroup = new javax.swing.ButtonGroup();
         symbolPane = new javax.swing.JScrollPane();
         symbolTree = new JTree(treeTop);
         mainTabs = new javax.swing.JTabbedPane();
-        tab1Panel = new javax.swing.JPanel();
+        singlePanel = new javax.swing.JPanel();
         compositeInputField = new javax.swing.JTextField();
         compositeLabel = new javax.swing.JLabel();
         dataInputField = new javax.swing.JTextField();
@@ -146,7 +150,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         loadDataButton = new javax.swing.JButton();
         topPanel = new javax.swing.JPanel();
         errorLabel = new javax.swing.JLabel();
-        tab2Panel = new javax.swing.JPanel();
+        batchPanel = new javax.swing.JPanel();
         startField = new javax.swing.JTextField();
         stopField = new javax.swing.JTextField();
         incrementField = new javax.swing.JTextField();
@@ -175,6 +179,64 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         paperButton = new javax.swing.JButton();
         resetColourButton = new javax.swing.JButton();
         encodeInfoArea = new java.awt.TextArea();
+        attributeScrollPane = new javax.swing.JScrollPane();
+        attributeScrollPanel = new javax.swing.JPanel();
+        aztecPanel = new javax.swing.JPanel();
+        aztecAutoSize = new javax.swing.JRadioButton();
+        aztecUserSize = new javax.swing.JRadioButton();
+        aztecUserEcc = new javax.swing.JRadioButton();
+        aztecUserSizeCombo = new javax.swing.JComboBox();
+        aztecUserEccCombo = new javax.swing.JComboBox();
+        channelPanel = new javax.swing.JPanel();
+        channelNoOfChannels = new javax.swing.JLabel();
+        channelChannelsCombo = new javax.swing.JComboBox();
+        code39Panel = new javax.swing.JPanel();
+        code39CheckLabel = new javax.swing.JLabel();
+        code39CheckCombo = new javax.swing.JComboBox();
+        codeOnePanel = new javax.swing.JPanel();
+        codeOneSizeLabel = new javax.swing.JLabel();
+        codeOneSizeCombo = new javax.swing.JComboBox();
+        databarPanel = new javax.swing.JPanel();
+        databarColumnsLabel = new javax.swing.JLabel();
+        databarColumnsCombo = new javax.swing.JComboBox();
+        datamatrixPanel = new javax.swing.JPanel();
+        dataMatrixSizeLabel = new javax.swing.JLabel();
+        dataMatrixSizeCombo = new javax.swing.JComboBox();
+        dataMatrixSquareOnlyCheck = new javax.swing.JCheckBox();
+        gridmatrixPanel = new javax.swing.JPanel();
+        gridmatrixAutoSize = new javax.swing.JRadioButton();
+        gridmatrixUserSize = new javax.swing.JRadioButton();
+        gridmatrixUserEcc = new javax.swing.JRadioButton();
+        gridmatrixUserSizeCombo = new javax.swing.JComboBox();
+        gridmatrixUserEccCombo = new javax.swing.JComboBox();
+        maxicodePanel = new javax.swing.JPanel();
+        maxiEncodeModeLabel = new javax.swing.JLabel();
+        maxiPrimaryDataLabel = new javax.swing.JLabel();
+        maxiEncodingModeCombo = new javax.swing.JComboBox();
+        maxiPrimaryData = new javax.swing.JTextField();
+        microPdfPanel = new javax.swing.JPanel();
+        microPdfColumnsLabel = new javax.swing.JLabel();
+        microPdfColumnsCombo = new javax.swing.JComboBox();
+        microQrPanel = new javax.swing.JPanel();
+        microQrAutoSize = new javax.swing.JRadioButton();
+        microQrUserSize = new javax.swing.JRadioButton();
+        microQrUserEcc = new javax.swing.JRadioButton();
+        microQrUserSizeCombo = new javax.swing.JComboBox();
+        microQrUserEccCombo = new javax.swing.JComboBox();
+        msiPanel = new javax.swing.JPanel();
+        msiCheckDigitLabel = new javax.swing.JLabel();
+        msiCheckDigitCombo = new javax.swing.JComboBox();
+        pdfPanel = new javax.swing.JPanel();
+        pdfDataColumnsLabel = new javax.swing.JLabel();
+        pdfEccLabel = new javax.swing.JLabel();
+        pdfColumnsCombo = new javax.swing.JComboBox();
+        pdfEccCombo = new javax.swing.JComboBox();
+        qrPanel = new javax.swing.JPanel();
+        qrAutoSize = new javax.swing.JRadioButton();
+        qrUserSize = new javax.swing.JRadioButton();
+        qrUserEcc = new javax.swing.JRadioButton();
+        qrUserSizeCombo = new javax.swing.JComboBox();
+        qrUserEccCombo = new javax.swing.JComboBox();
         exitButton = new javax.swing.JButton();
         saveButton = new javax.swing.JButton();
         aboutButton = new javax.swing.JButton();
@@ -224,20 +286,20 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 .addGap(194, 194, 194))
         );
 
-        javax.swing.GroupLayout tab1PanelLayout = new javax.swing.GroupLayout(tab1Panel);
-        tab1Panel.setLayout(tab1PanelLayout);
-        tab1PanelLayout.setHorizontalGroup(
-            tab1PanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(tab1PanelLayout.createSequentialGroup()
+        javax.swing.GroupLayout singlePanelLayout = new javax.swing.GroupLayout(singlePanel);
+        singlePanel.setLayout(singlePanelLayout);
+        singlePanelLayout.setHorizontalGroup(
+            singlePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(singlePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(tab1PanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(singlePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(compositeLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE)
-                    .addGroup(tab1PanelLayout.createSequentialGroup()
+                    .addGroup(singlePanelLayout.createSequentialGroup()
                         .addComponent(inputLabel)
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(tab1PanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(tab1PanelLayout.createSequentialGroup()
+                .addGroup(singlePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(singlePanelLayout.createSequentialGroup()
                         .addComponent(dataInputField, javax.swing.GroupLayout.PREFERRED_SIZE, 493, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(loadDataButton))
@@ -245,23 +307,23 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 .addContainerGap())
             .addComponent(topPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 656, Short.MAX_VALUE)
         );
-        tab1PanelLayout.setVerticalGroup(
-            tab1PanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, tab1PanelLayout.createSequentialGroup()
+        singlePanelLayout.setVerticalGroup(
+            singlePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, singlePanelLayout.createSequentialGroup()
                 .addComponent(topPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 490, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(tab1PanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(singlePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(dataInputField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(inputLabel)
                     .addComponent(loadDataButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(tab1PanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(singlePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(compositeInputField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(compositeLabel))
                 .addContainerGap())
         );
 
-        mainTabs.addTab("Single", tab1Panel);
+        mainTabs.addTab("Single", singlePanel);
 
         startField.setText("1");
 
@@ -329,98 +391,98 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
             }
         });
 
-        javax.swing.GroupLayout tab2PanelLayout = new javax.swing.GroupLayout(tab2Panel);
-        tab2Panel.setLayout(tab2PanelLayout);
-        tab2PanelLayout.setHorizontalGroup(
-            tab2PanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(tab2PanelLayout.createSequentialGroup()
+        javax.swing.GroupLayout batchPanelLayout = new javax.swing.GroupLayout(batchPanel);
+        batchPanel.setLayout(batchPanelLayout);
+        batchPanelLayout.setHorizontalGroup(
+            batchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(batchPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(tab2PanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(batchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(batchOutputArea, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(sequenceArea, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(tab2PanelLayout.createSequentialGroup()
-                        .addGroup(tab2PanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(batchPanelLayout.createSequentialGroup()
+                        .addGroup(batchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(incrementLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 98, Short.MAX_VALUE)
                             .addComponent(stopLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(startLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(tab2PanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addGroup(batchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addComponent(stopField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 182, Short.MAX_VALUE)
                             .addComponent(incrementField)
                             .addComponent(startField))
                         .addGap(18, 18, 18)
-                        .addGroup(tab2PanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(tab2PanelLayout.createSequentialGroup()
+                        .addGroup(batchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(batchPanelLayout.createSequentialGroup()
                                 .addComponent(formatLabel)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(formatField, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, tab2PanelLayout.createSequentialGroup()
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, batchPanelLayout.createSequentialGroup()
                                 .addGap(0, 0, Short.MAX_VALUE)
-                                .addGroup(tab2PanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(batchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(batchFileButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, tab2PanelLayout.createSequentialGroup()
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, batchPanelLayout.createSequentialGroup()
                                         .addComponent(resetButton, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(createButton, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))))))
-                    .addGroup(tab2PanelLayout.createSequentialGroup()
-                        .addGroup(tab2PanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(batchPanelLayout.createSequentialGroup()
+                        .addGroup(batchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(destinationLabel)
                             .addComponent(prefixLabel)
                             .addComponent(outFileNameLabel)
                             .addComponent(outFileFormatLabel))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(tab2PanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addGroup(batchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addComponent(outFilenameCombo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(prefixField, javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(folderField, javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(outFormatCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 365, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 47, Short.MAX_VALUE)
-                        .addGroup(tab2PanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addGroup(batchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(directoryButton, javax.swing.GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE)
                             .addComponent(runBatchButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap())
         );
-        tab2PanelLayout.setVerticalGroup(
-            tab2PanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(tab2PanelLayout.createSequentialGroup()
-                .addGroup(tab2PanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+        batchPanelLayout.setVerticalGroup(
+            batchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(batchPanelLayout.createSequentialGroup()
+                .addGroup(batchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(startField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(startLabel)
                     .addComponent(formatLabel)
                     .addComponent(formatField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(tab2PanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(batchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(stopField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(stopLabel)
                     .addComponent(resetButton)
                     .addComponent(createButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(tab2PanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(batchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(incrementField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(incrementLabel)
                     .addComponent(batchFileButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(sequenceArea, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(tab2PanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(batchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(folderField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(destinationLabel)
                     .addComponent(directoryButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(tab2PanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(batchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(prefixField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(prefixLabel))
-                .addGroup(tab2PanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(tab2PanelLayout.createSequentialGroup()
+                .addGroup(batchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(batchPanelLayout.createSequentialGroup()
                         .addGap(11, 11, 11)
                         .addComponent(outFileNameLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(outFileFormatLabel))
-                    .addGroup(tab2PanelLayout.createSequentialGroup()
+                    .addGroup(batchPanelLayout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(outFilenameCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(tab2PanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addGroup(batchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(outFormatCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(runBatchButton))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -428,7 +490,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 .addContainerGap())
         );
 
-        mainTabs.addTab("Batch", tab2Panel);
+        mainTabs.addTab("Batch", batchPanel);
 
         inkButton.setText("Select Ink Colour");
         inkButton.addActionListener(new java.awt.event.ActionListener() {
@@ -451,33 +513,613 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
             }
         });
 
+        encodeInfoArea.setEditable(false);
+
+        aztecPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Aztec Code"));
+
+        aztecButtonGroup.add(aztecAutoSize);
+        aztecAutoSize.setSelected(true);
+        aztecAutoSize.setText("Automatic Resizing");
+        aztecAutoSize.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                aztecAutoSizeActionPerformed(evt);
+            }
+        });
+
+        aztecButtonGroup.add(aztecUserSize);
+        aztecUserSize.setText("Adjust Size To:");
+        aztecUserSize.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                aztecUserSizeActionPerformed(evt);
+            }
+        });
+
+        aztecButtonGroup.add(aztecUserEcc);
+        aztecUserEcc.setText("Add Minimum Error Correction:");
+        aztecUserEcc.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                aztecUserEccActionPerformed(evt);
+            }
+        });
+
+        aztecUserSizeCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "15 X 15 Compact", "19 X 19 Compact", "23 X 23 Compact", "27 X 27 Compact", "19 X 19", "23 X 23", "27 X 27", "31 X 31", "37 X 37", "41 X 41", "45 X 45", "49 X 49", "53 X 53", "57 X 57", "61 X 61", "67 X 67", "71 X 71", "75 X 75", "79 X 79", "83 X 83", "87 X 87", "91 X 91", "95 X 95", "101 X 101", "105 X 105", "109 X 109", "113 X 113", "117 X 117", "121 X 121", "125 X 125", "131 X 131", "135 X 135", "139 X 139", "143 X 143", "147 X 147", "151 X 151" }));
+        aztecUserSizeCombo.setEnabled(false);
+
+        aztecUserEccCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "10% + 3 words", "23% + 3 words", "36% + 3 words", "50% + 3 words" }));
+        aztecUserEccCombo.setEnabled(false);
+
+        javax.swing.GroupLayout aztecPanelLayout = new javax.swing.GroupLayout(aztecPanel);
+        aztecPanel.setLayout(aztecPanelLayout);
+        aztecPanelLayout.setHorizontalGroup(
+            aztecPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(aztecPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(aztecPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(aztecAutoSize, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(aztecUserSize, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(aztecUserEcc, javax.swing.GroupLayout.DEFAULT_SIZE, 270, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addGroup(aztecPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(aztecUserSizeCombo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(aztecUserEccCombo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        aztecPanelLayout.setVerticalGroup(
+            aztecPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(aztecPanelLayout.createSequentialGroup()
+                .addComponent(aztecAutoSize)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(aztecPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(aztecUserSizeCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(aztecUserSize, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(aztecPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(aztecUserEccCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(aztecUserEcc))
+                .addGap(1, 1, 1))
+        );
+
+        channelPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel Code"));
+
+        channelNoOfChannels.setText("Number of Channels:");
+
+        channelChannelsCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Automatic", "3", "4", "5", "6", "7", "8" }));
+        channelChannelsCombo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                channelChannelsComboActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout channelPanelLayout = new javax.swing.GroupLayout(channelPanel);
+        channelPanel.setLayout(channelPanelLayout);
+        channelPanelLayout.setHorizontalGroup(
+            channelPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(channelPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(channelNoOfChannels, javax.swing.GroupLayout.PREFERRED_SIZE, 268, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(channelChannelsCombo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        channelPanelLayout.setVerticalGroup(
+            channelPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(channelPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addComponent(channelNoOfChannels)
+                .addComponent(channelChannelsCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+
+        code39Panel.setBorder(javax.swing.BorderFactory.createTitledBorder("Code 39"));
+
+        code39CheckLabel.setText("Check Digit Option:");
+
+        code39CheckCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "No Check Digit", "Mod-43 Check Digit" }));
+
+        javax.swing.GroupLayout code39PanelLayout = new javax.swing.GroupLayout(code39Panel);
+        code39Panel.setLayout(code39PanelLayout);
+        code39PanelLayout.setHorizontalGroup(
+            code39PanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(code39PanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(code39CheckLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 271, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(code39CheckCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 316, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+        code39PanelLayout.setVerticalGroup(
+            code39PanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(code39PanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addComponent(code39CheckLabel)
+                .addComponent(code39CheckCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+
+        codeOnePanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Code One"));
+
+        codeOneSizeLabel.setText("Symbol Size:");
+
+        codeOneSizeCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Automatic", "16 X 18 (Version A)", "22 X 22 (Version B)", "28 X 32 (Version C)", "40 X 42 (Version D)", "52 X 54 (Version E)", "70 X 76 (Version F)", "104 X 98 (Version G)", "148 X 134 (Version H)", "8X Height (Version S)", "16X Height (Version T)" }));
+
+        javax.swing.GroupLayout codeOnePanelLayout = new javax.swing.GroupLayout(codeOnePanel);
+        codeOnePanel.setLayout(codeOnePanelLayout);
+        codeOnePanelLayout.setHorizontalGroup(
+            codeOnePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(codeOnePanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(codeOneSizeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 276, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(codeOneSizeCombo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        codeOnePanelLayout.setVerticalGroup(
+            codeOnePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(codeOnePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addComponent(codeOneSizeLabel)
+                .addComponent(codeOneSizeCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+
+        databarPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("DataBar Expanded Stacked"));
+
+        databarColumnsLabel.setText("Number of Columns:");
+
+        databarColumnsCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Automatic", "1", "2", "3", "4", "5", "6", "7", "8", "9" }));
+
+        javax.swing.GroupLayout databarPanelLayout = new javax.swing.GroupLayout(databarPanel);
+        databarPanel.setLayout(databarPanelLayout);
+        databarPanelLayout.setHorizontalGroup(
+            databarPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(databarPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(databarColumnsLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 267, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(databarColumnsCombo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        databarPanelLayout.setVerticalGroup(
+            databarPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(databarPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addComponent(databarColumnsLabel)
+                .addComponent(databarColumnsCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+
+        datamatrixPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Data Matrix"));
+
+        dataMatrixSizeLabel.setText("Symbol Size:");
+
+        dataMatrixSizeCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Automatic", "10 X 10", "12 X 12", "14 X 14", "16 X 16", "18 X 18", "20 X 20", "22 X 22", "24 X 24", "26 X 26", "32 X 32", "36 X 36", "40 X 40", "44 X 44", "48 X 48", "52 X 52", "64 X 64", "72 X 72", "80 X 80", "88 X 88", "96 X 96", "104 X 104", "120 X 120", "132 X 132", "144 X 144", "8 X 18", "8 X 32", "12 X 26", "12 X 36", "16 X 36", "16 X 48" }));
+
+        dataMatrixSquareOnlyCheck.setSelected(true);
+        dataMatrixSquareOnlyCheck.setText("Supress Rectangular Symbols in Automatic Mode");
+        dataMatrixSquareOnlyCheck.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                dataMatrixSquareOnlyCheckActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout datamatrixPanelLayout = new javax.swing.GroupLayout(datamatrixPanel);
+        datamatrixPanel.setLayout(datamatrixPanelLayout);
+        datamatrixPanelLayout.setHorizontalGroup(
+            datamatrixPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(datamatrixPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(datamatrixPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(datamatrixPanelLayout.createSequentialGroup()
+                        .addComponent(dataMatrixSquareOnlyCheck, javax.swing.GroupLayout.PREFERRED_SIZE, 356, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(datamatrixPanelLayout.createSequentialGroup()
+                        .addComponent(dataMatrixSizeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 278, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(dataMatrixSizeCombo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addContainerGap())
+        );
+        datamatrixPanelLayout.setVerticalGroup(
+            datamatrixPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(datamatrixPanelLayout.createSequentialGroup()
+                .addGroup(datamatrixPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(dataMatrixSizeLabel)
+                    .addComponent(dataMatrixSizeCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(dataMatrixSquareOnlyCheck))
+        );
+
+        gridmatrixPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Grid Matrix"));
+
+        gridmatrixButtonGroup.add(gridmatrixAutoSize);
+        gridmatrixAutoSize.setSelected(true);
+        gridmatrixAutoSize.setText("Automatic Resizing");
+        gridmatrixAutoSize.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                gridmatrixAutoSizeActionPerformed(evt);
+            }
+        });
+
+        gridmatrixButtonGroup.add(gridmatrixUserSize);
+        gridmatrixUserSize.setText("Adjust Size To:");
+        gridmatrixUserSize.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                gridmatrixUserSizeActionPerformed(evt);
+            }
+        });
+
+        gridmatrixButtonGroup.add(gridmatrixUserEcc);
+        gridmatrixUserEcc.setText("Add Minimum Error Correction:");
+        gridmatrixUserEcc.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                gridmatrixUserEccActionPerformed(evt);
+            }
+        });
+
+        gridmatrixUserSizeCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "18 X 18 (Version 1)", "30 X 30 (Version 2)", "42 X 42 (Version 3)", "54 X 54 (Version 4)", "66 X 66 (Version 5)", "78 X 78 (Version 6)", "90 X 90 (Version 7)", "102 X 102 (Version 8)", "114 X 114 (Version 9)", "126 X 126 (Version 10)", "138 X 138 (Version 11)", "150 X 150 (Version 12)", "162 X 162 (Version 13)" }));
+        gridmatrixUserSizeCombo.setEnabled(false);
+
+        gridmatrixUserEccCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Approx 10%", "Approx 20%", "Approx 30%", "Approx 40%", "Approx 50%" }));
+        gridmatrixUserEccCombo.setEnabled(false);
+
+        javax.swing.GroupLayout gridmatrixPanelLayout = new javax.swing.GroupLayout(gridmatrixPanel);
+        gridmatrixPanel.setLayout(gridmatrixPanelLayout);
+        gridmatrixPanelLayout.setHorizontalGroup(
+            gridmatrixPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(gridmatrixPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(gridmatrixPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(gridmatrixAutoSize, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(gridmatrixUserSize, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(gridmatrixUserEcc, javax.swing.GroupLayout.DEFAULT_SIZE, 276, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addGroup(gridmatrixPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(gridmatrixUserSizeCombo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(gridmatrixUserEccCombo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        gridmatrixPanelLayout.setVerticalGroup(
+            gridmatrixPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(gridmatrixPanelLayout.createSequentialGroup()
+                .addComponent(gridmatrixAutoSize)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(gridmatrixPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(gridmatrixUserSize)
+                    .addComponent(gridmatrixUserSizeCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(gridmatrixPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(gridmatrixUserEcc)
+                    .addComponent(gridmatrixUserEccCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+        );
+
+        maxicodePanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Maxicode"));
+
+        maxiEncodeModeLabel.setText("Encoding Mode:");
+
+        maxiPrimaryDataLabel.setText("Primary Data:");
+        maxiPrimaryDataLabel.setEnabled(false);
+
+        maxiEncodingModeCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Structured Carrier Message (Mode 2 or 3)", "Standard Symbol, SEC (Mode 4)", "Full ECC Symbol (Mode 5)", "Reader Program, SEC (Mode 6)" }));
+
+        maxiPrimaryData.setText("Primary Data Here!");
+        maxiPrimaryData.setEnabled(false);
+
+        javax.swing.GroupLayout maxicodePanelLayout = new javax.swing.GroupLayout(maxicodePanel);
+        maxicodePanel.setLayout(maxicodePanelLayout);
+        maxicodePanelLayout.setHorizontalGroup(
+            maxicodePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(maxicodePanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(maxicodePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(maxiEncodeModeLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 285, Short.MAX_VALUE)
+                    .addComponent(maxiPrimaryDataLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(maxicodePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(maxiEncodingModeCombo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(maxiPrimaryData))
+                .addContainerGap())
+        );
+        maxicodePanelLayout.setVerticalGroup(
+            maxicodePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(maxicodePanelLayout.createSequentialGroup()
+                .addGroup(maxicodePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(maxiEncodeModeLabel)
+                    .addComponent(maxiEncodingModeCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(maxicodePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(maxiPrimaryDataLabel)
+                    .addComponent(maxiPrimaryData, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+        );
+
+        microPdfPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Micro PDF417"));
+
+        microPdfColumnsLabel.setText("Number of Data Columns:");
+
+        microPdfColumnsCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Automatic", "1", "2", "3", "4" }));
+
+        javax.swing.GroupLayout microPdfPanelLayout = new javax.swing.GroupLayout(microPdfPanel);
+        microPdfPanel.setLayout(microPdfPanelLayout);
+        microPdfPanelLayout.setHorizontalGroup(
+            microPdfPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(microPdfPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(microPdfColumnsLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 279, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(microPdfColumnsCombo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        microPdfPanelLayout.setVerticalGroup(
+            microPdfPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(microPdfPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addComponent(microPdfColumnsLabel)
+                .addComponent(microPdfColumnsCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+
+        microQrPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Micro QR Code"));
+
+        microQrButtonGroup.add(microQrAutoSize);
+        microQrAutoSize.setSelected(true);
+        microQrAutoSize.setText("Automatic Resizing");
+        microQrAutoSize.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                microQrAutoSizeActionPerformed(evt);
+            }
+        });
+
+        microQrButtonGroup.add(microQrUserSize);
+        microQrUserSize.setText("Adjust Size To:");
+        microQrUserSize.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                microQrUserSizeActionPerformed(evt);
+            }
+        });
+
+        microQrButtonGroup.add(microQrUserEcc);
+        microQrUserEcc.setText("Add Minimum Error Correction:");
+        microQrUserEcc.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                microQrUserEccActionPerformed(evt);
+            }
+        });
+
+        microQrUserSizeCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "11 X 11 (Version M1)", "13 X 13 (Version M2)", "15 X 15 (Version M3)", "17 X 17 (Version M4)" }));
+        microQrUserSizeCombo.setEnabled(false);
+
+        microQrUserEccCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Approx 20% (Level L)", "Approx 37% (Level M)", "Approx 55% (Level Q)" }));
+        microQrUserEccCombo.setEnabled(false);
+
+        javax.swing.GroupLayout microQrPanelLayout = new javax.swing.GroupLayout(microQrPanel);
+        microQrPanel.setLayout(microQrPanelLayout);
+        microQrPanelLayout.setHorizontalGroup(
+            microQrPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(microQrPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(microQrPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(microQrAutoSize, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(microQrUserSize, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(microQrUserEcc, javax.swing.GroupLayout.DEFAULT_SIZE, 278, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addGroup(microQrPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(microQrUserSizeCombo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(microQrUserEccCombo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        microQrPanelLayout.setVerticalGroup(
+            microQrPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(microQrPanelLayout.createSequentialGroup()
+                .addComponent(microQrAutoSize)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(microQrPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(microQrUserSize)
+                    .addComponent(microQrUserSizeCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(microQrPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(microQrUserEcc)
+                    .addComponent(microQrUserEccCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+        );
+
+        msiPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createTitledBorder("MSI Plessey"), "MSI Plessey"));
+
+        msiCheckDigitLabel.setText("Check Digit:");
+
+        msiCheckDigitCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "None", "Mod-10", "Mod-10 & Mod-10", "Mod-11", "Mod-11 & Mod-10" }));
+
+        javax.swing.GroupLayout msiPanelLayout = new javax.swing.GroupLayout(msiPanel);
+        msiPanel.setLayout(msiPanelLayout);
+        msiPanelLayout.setHorizontalGroup(
+            msiPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(msiPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(msiCheckDigitLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 284, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(msiCheckDigitCombo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        msiPanelLayout.setVerticalGroup(
+            msiPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(msiPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addComponent(msiCheckDigitLabel)
+                .addComponent(msiCheckDigitCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+
+        pdfPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("PDF417"));
+
+        pdfDataColumnsLabel.setText("Number of Data Columns:");
+
+        pdfEccLabel.setText("Error Correction Capacity:");
+
+        pdfColumnsCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Automatic", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20" }));
+
+        pdfEccCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Automatic", "2 words", "4 words", "8 words", "16 words", "32 words", "64 words", "128 words", "256 words", "512 words" }));
+
+        javax.swing.GroupLayout pdfPanelLayout = new javax.swing.GroupLayout(pdfPanel);
+        pdfPanel.setLayout(pdfPanelLayout);
+        pdfPanelLayout.setHorizontalGroup(
+            pdfPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pdfPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(pdfPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(pdfDataColumnsLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(pdfEccLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 284, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(pdfPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(pdfColumnsCombo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(pdfEccCombo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        pdfPanelLayout.setVerticalGroup(
+            pdfPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pdfPanelLayout.createSequentialGroup()
+                .addGroup(pdfPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(pdfDataColumnsLabel)
+                    .addComponent(pdfColumnsCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(pdfPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(pdfEccLabel)
+                    .addComponent(pdfEccCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+        );
+
+        qrPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("QR Code"));
+
+        qrButtonGroup.add(qrAutoSize);
+        qrAutoSize.setSelected(true);
+        qrAutoSize.setText("Automatic Resizing");
+        qrAutoSize.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                qrAutoSizeActionPerformed(evt);
+            }
+        });
+
+        qrButtonGroup.add(qrUserSize);
+        qrUserSize.setText("Adjust Size To:");
+        qrUserSize.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                qrUserSizeActionPerformed(evt);
+            }
+        });
+
+        qrButtonGroup.add(qrUserEcc);
+        qrUserEcc.setText("Add Minimum Error Correction:");
+        qrUserEcc.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                qrUserEccActionPerformed(evt);
+            }
+        });
+
+        qrUserSizeCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "21 X 21 (Version 1)", "25 X 25 (Version 2)", "29 X 29 (Version 3)", "33 X 33 (Version 4)", "37 X 37 (Version 5)", "41 X 41 (Version 6)", "45 X 45 (Version 7)", "49 X 49 (Version 8)", "53 X 53 (Version 9)", "57 X 57 (Version 10)", "61 X 61 (Version 11)", "65 X 65 (Version 12)", "69 X 69 (Version 13)", "73 X 73 (Version 14)", "77 X 77 (Version 15)", "81 X 81 (Version 16)", "85 X 85 (Version 17)", "89 X 89 (Version 18)", "93 X 93 (Version 19)", "97 X 97 (Version 20)", "101 X 101 (Version 21)", "105 X 105 (Version 22)", "109 X 109 (Version 23)", "113 X 113 (Version 24)", "117 X 117 (Version 25)", "121 X 121 (Version 26)", "125 X 125 (Version 27)", "129 X 129 (Version 28)", "133 X 133 (Version 29)", "137 X 137 (Version 30)", "141 X 141 (Version 31)", "145 X 145 (Version 32)", "149 X 149 (Version 33)", "153 X 153 (Version 34)", "157 X 157 (Version 35)", "161 X 161 (Version 36)", "165 X 165 (Version 37)", "169 X 169 (Version 38)", "173 X 173 (Version 39)", "177 X 177 (Version 40)" }));
+        qrUserSizeCombo.setEnabled(false);
+        qrUserSizeCombo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                qrUserSizeComboActionPerformed(evt);
+            }
+        });
+
+        qrUserEccCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Approx 20% (Level L)", "Approx 37% (Level M)", "Approx 55% (Level Q)", "Approx 65% (Level H)" }));
+        qrUserEccCombo.setEnabled(false);
+
+        javax.swing.GroupLayout qrPanelLayout = new javax.swing.GroupLayout(qrPanel);
+        qrPanel.setLayout(qrPanelLayout);
+        qrPanelLayout.setHorizontalGroup(
+            qrPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(qrPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(qrPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(qrAutoSize, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(qrUserSize, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(qrUserEcc, javax.swing.GroupLayout.DEFAULT_SIZE, 285, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(qrPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(qrUserSizeCombo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(qrUserEccCombo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        qrPanelLayout.setVerticalGroup(
+            qrPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(qrPanelLayout.createSequentialGroup()
+                .addComponent(qrAutoSize)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(qrPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(qrUserSizeCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(qrUserSize))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(qrPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(qrUserEcc)
+                    .addComponent(qrUserEccCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
+        );
+
+        javax.swing.GroupLayout attributeScrollPanelLayout = new javax.swing.GroupLayout(attributeScrollPanel);
+        attributeScrollPanel.setLayout(attributeScrollPanelLayout);
+        attributeScrollPanelLayout.setHorizontalGroup(
+            attributeScrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(aztecPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(channelPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(code39Panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(codeOnePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(databarPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(datamatrixPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(gridmatrixPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(maxicodePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(microPdfPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(microQrPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(msiPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(pdfPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(qrPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        attributeScrollPanelLayout.setVerticalGroup(
+            attributeScrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(attributeScrollPanelLayout.createSequentialGroup()
+                .addComponent(aztecPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(channelPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(code39Panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(codeOnePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(databarPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(datamatrixPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(gridmatrixPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(maxicodePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(microPdfPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(microQrPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(msiPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(pdfPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(qrPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(124, Short.MAX_VALUE))
+        );
+
+        attributeScrollPane.setViewportView(attributeScrollPanel);
+
         javax.swing.GroupLayout attributePanelLayout = new javax.swing.GroupLayout(attributePanel);
         attributePanel.setLayout(attributePanelLayout);
         attributePanelLayout.setHorizontalGroup(
             attributePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(attributePanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(encodeInfoArea, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+            .addComponent(attributeScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 656, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, attributePanelLayout.createSequentialGroup()
-                .addContainerGap(136, Short.MAX_VALUE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(inkButton, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(paperButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(resetColourButton, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(121, 121, 121))
-            .addGroup(attributePanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(encodeInfoArea, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addGap(122, 122, 122))
         );
         attributePanelLayout.setVerticalGroup(
             attributePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(attributePanelLayout.createSequentialGroup()
-                .addGap(88, 88, 88)
+                .addContainerGap()
                 .addGroup(attributePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(inkButton)
                     .addComponent(paperButton)
                     .addComponent(resetColourButton))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 266, Short.MAX_VALUE)
-                .addComponent(encodeInfoArea, javax.swing.GroupLayout.PREFERRED_SIZE, 174, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(attributeScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 381, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(encodeInfoArea, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
@@ -784,6 +1426,90 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         setInk(Color.BLACK);
         setPaper(Color.WHITE);
     }//GEN-LAST:event_resetColourButtonActionPerformed
+
+    private void aztecUserSizeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aztecUserSizeActionPerformed
+        // TODO add your handling code here:
+        aztecUserSizeCombo.setEnabled(true);
+        aztecUserEccCombo.setEnabled(false);
+    }//GEN-LAST:event_aztecUserSizeActionPerformed
+
+    private void aztecAutoSizeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aztecAutoSizeActionPerformed
+        // TODO add your handling code here:
+        aztecUserSizeCombo.setEnabled(false);
+        aztecUserEccCombo.setEnabled(false);
+    }//GEN-LAST:event_aztecAutoSizeActionPerformed
+
+    private void aztecUserEccActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aztecUserEccActionPerformed
+        // TODO add your handling code here:
+        aztecUserSizeCombo.setEnabled(false);
+        aztecUserEccCombo.setEnabled(true);
+    }//GEN-LAST:event_aztecUserEccActionPerformed
+
+    private void channelChannelsComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_channelChannelsComboActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_channelChannelsComboActionPerformed
+
+    private void dataMatrixSquareOnlyCheckActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dataMatrixSquareOnlyCheckActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_dataMatrixSquareOnlyCheckActionPerformed
+
+    private void gridmatrixAutoSizeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gridmatrixAutoSizeActionPerformed
+        // TODO add your handling code here:
+        gridmatrixUserSizeCombo.setEnabled(false);
+        gridmatrixUserEccCombo.setEnabled(false);
+    }//GEN-LAST:event_gridmatrixAutoSizeActionPerformed
+
+    private void gridmatrixUserSizeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gridmatrixUserSizeActionPerformed
+        // TODO add your handling code here:
+        gridmatrixUserSizeCombo.setEnabled(true);
+        gridmatrixUserEccCombo.setEnabled(false);
+    }//GEN-LAST:event_gridmatrixUserSizeActionPerformed
+
+    private void gridmatrixUserEccActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gridmatrixUserEccActionPerformed
+        // TODO add your handling code here:
+        gridmatrixUserSizeCombo.setEnabled(false);
+        gridmatrixUserEccCombo.setEnabled(true);
+    }//GEN-LAST:event_gridmatrixUserEccActionPerformed
+
+    private void microQrAutoSizeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_microQrAutoSizeActionPerformed
+        // TODO add your handling code here:
+        microQrUserSizeCombo.setEnabled(false);
+        microQrUserEccCombo.setEnabled(false);
+    }//GEN-LAST:event_microQrAutoSizeActionPerformed
+
+    private void microQrUserSizeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_microQrUserSizeActionPerformed
+        // TODO add your handling code here:
+        microQrUserSizeCombo.setEnabled(true);
+        microQrUserEccCombo.setEnabled(false);
+    }//GEN-LAST:event_microQrUserSizeActionPerformed
+
+    private void microQrUserEccActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_microQrUserEccActionPerformed
+        // TODO add your handling code here:
+        microQrUserSizeCombo.setEnabled(false);
+        microQrUserEccCombo.setEnabled(true);
+    }//GEN-LAST:event_microQrUserEccActionPerformed
+
+    private void qrAutoSizeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_qrAutoSizeActionPerformed
+        // TODO add your handling code here:
+        qrUserSizeCombo.setEnabled(false);
+        qrUserEccCombo.setEnabled(false);
+    }//GEN-LAST:event_qrAutoSizeActionPerformed
+
+    private void qrUserSizeComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_qrUserSizeComboActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_qrUserSizeComboActionPerformed
+
+    private void qrUserSizeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_qrUserSizeActionPerformed
+        // TODO add your handling code here:
+        qrUserSizeCombo.setEnabled(true);
+        qrUserEccCombo.setEnabled(false);
+    }//GEN-LAST:event_qrUserSizeActionPerformed
+
+    private void qrUserEccActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_qrUserEccActionPerformed
+        // TODO add your handling code here:
+        qrUserSizeCombo.setEnabled(false);
+        qrUserEccCombo.setEnabled(true);
+    }//GEN-LAST:event_qrUserEccActionPerformed
 
     /**
      * @param args the command line arguments
@@ -1205,12 +1931,38 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton aboutButton;
     private javax.swing.JPanel attributePanel;
+    private javax.swing.JScrollPane attributeScrollPane;
+    private javax.swing.JPanel attributeScrollPanel;
+    private javax.swing.JRadioButton aztecAutoSize;
+    private javax.swing.ButtonGroup aztecButtonGroup;
+    private javax.swing.JPanel aztecPanel;
+    private javax.swing.JRadioButton aztecUserEcc;
+    private javax.swing.JComboBox aztecUserEccCombo;
+    private javax.swing.JRadioButton aztecUserSize;
+    private javax.swing.JComboBox aztecUserSizeCombo;
     private javax.swing.JButton batchFileButton;
     private java.awt.TextArea batchOutputArea;
+    private javax.swing.JPanel batchPanel;
+    private javax.swing.JComboBox channelChannelsCombo;
+    private javax.swing.JLabel channelNoOfChannels;
+    private javax.swing.JPanel channelPanel;
+    private javax.swing.JComboBox code39CheckCombo;
+    private javax.swing.JLabel code39CheckLabel;
+    private javax.swing.JPanel code39Panel;
+    private javax.swing.JPanel codeOnePanel;
+    private javax.swing.JComboBox codeOneSizeCombo;
+    private javax.swing.JLabel codeOneSizeLabel;
     private javax.swing.JTextField compositeInputField;
     private javax.swing.JLabel compositeLabel;
     private javax.swing.JButton createButton;
     public static javax.swing.JTextField dataInputField;
+    private javax.swing.JComboBox dataMatrixSizeCombo;
+    private javax.swing.JLabel dataMatrixSizeLabel;
+    private javax.swing.JCheckBox dataMatrixSquareOnlyCheck;
+    private javax.swing.JComboBox databarColumnsCombo;
+    private javax.swing.JLabel databarColumnsLabel;
+    private javax.swing.JPanel databarPanel;
+    private javax.swing.JPanel datamatrixPanel;
     private javax.swing.JLabel destinationLabel;
     private javax.swing.JButton directoryButton;
     private java.awt.TextArea encodeInfoArea;
@@ -1219,32 +1971,68 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
     private javax.swing.JTextField folderField;
     private javax.swing.JTextField formatField;
     private javax.swing.JLabel formatLabel;
+    private javax.swing.JRadioButton gridmatrixAutoSize;
+    private javax.swing.ButtonGroup gridmatrixButtonGroup;
+    private javax.swing.JPanel gridmatrixPanel;
+    private javax.swing.JRadioButton gridmatrixUserEcc;
+    private javax.swing.JComboBox gridmatrixUserEccCombo;
+    private javax.swing.JRadioButton gridmatrixUserSize;
+    private javax.swing.JComboBox gridmatrixUserSizeCombo;
     private javax.swing.JTextField incrementField;
     private javax.swing.JLabel incrementLabel;
     private javax.swing.JButton inkButton;
     private javax.swing.JLabel inputLabel;
     private javax.swing.JButton loadDataButton;
     private javax.swing.JTabbedPane mainTabs;
+    private javax.swing.JLabel maxiEncodeModeLabel;
+    private javax.swing.JComboBox maxiEncodingModeCombo;
+    private javax.swing.JTextField maxiPrimaryData;
+    private javax.swing.JLabel maxiPrimaryDataLabel;
+    private javax.swing.JPanel maxicodePanel;
+    private javax.swing.JComboBox microPdfColumnsCombo;
+    private javax.swing.JLabel microPdfColumnsLabel;
+    private javax.swing.JPanel microPdfPanel;
+    private javax.swing.JRadioButton microQrAutoSize;
+    private javax.swing.ButtonGroup microQrButtonGroup;
+    private javax.swing.JPanel microQrPanel;
+    private javax.swing.JRadioButton microQrUserEcc;
+    private javax.swing.JComboBox microQrUserEccCombo;
+    private javax.swing.JRadioButton microQrUserSize;
+    private javax.swing.JComboBox microQrUserSizeCombo;
+    private javax.swing.JComboBox msiCheckDigitCombo;
+    private javax.swing.JLabel msiCheckDigitLabel;
+    private javax.swing.JPanel msiPanel;
     private javax.swing.JLabel outFileFormatLabel;
     private javax.swing.JLabel outFileNameLabel;
     private javax.swing.JComboBox outFilenameCombo;
     private javax.swing.JComboBox outFormatCombo;
     private javax.swing.JButton paperButton;
+    private javax.swing.JComboBox pdfColumnsCombo;
+    private javax.swing.JLabel pdfDataColumnsLabel;
+    private javax.swing.JComboBox pdfEccCombo;
+    private javax.swing.JLabel pdfEccLabel;
+    private javax.swing.JPanel pdfPanel;
     private javax.swing.JTextField prefixField;
     private javax.swing.JLabel prefixLabel;
+    private javax.swing.JRadioButton qrAutoSize;
+    private javax.swing.ButtonGroup qrButtonGroup;
+    private javax.swing.JPanel qrPanel;
+    private javax.swing.JRadioButton qrUserEcc;
+    private javax.swing.JComboBox qrUserEccCombo;
+    private javax.swing.JRadioButton qrUserSize;
+    private javax.swing.JComboBox qrUserSizeCombo;
     private javax.swing.JButton resetButton;
     private javax.swing.JButton resetColourButton;
     private javax.swing.JButton runBatchButton;
     private javax.swing.JButton saveButton;
     private java.awt.TextArea sequenceArea;
+    private javax.swing.JPanel singlePanel;
     private javax.swing.JTextField startField;
     private javax.swing.JLabel startLabel;
     private javax.swing.JTextField stopField;
     private javax.swing.JLabel stopLabel;
     private javax.swing.JScrollPane symbolPane;
     private javax.swing.JTree symbolTree;
-    private javax.swing.JPanel tab1Panel;
-    private javax.swing.JPanel tab2Panel;
     private static javax.swing.JPanel topPanel;
     // End of variables declaration//GEN-END:variables
 }

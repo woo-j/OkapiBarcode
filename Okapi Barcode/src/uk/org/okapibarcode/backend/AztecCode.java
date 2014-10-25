@@ -24,7 +24,7 @@ package uk.org.okapibarcode.backend;
  */
 public class AztecCode extends Symbol {
 
-    private int[] CompactAztecMap = { //27 x 27 data grid
+    private final int[] CompactAztecMap = { //27 x 27 data grid
         609, 608, 411, 413, 415, 417, 419, 421, 423, 425, 427, 429, 431, 433, 435, 437, 439, 441, 443, 445, 447, 449, 451, 453, 455, 457, 459,
         607, 606, 410, 412, 414, 416, 418, 420, 422, 424, 426, 428, 430, 432, 434, 436, 438, 440, 442, 444, 446, 448, 450, 452, 454, 456, 458,
         605, 604, 409, 408, 243, 245, 247, 249, 251, 253, 255, 257, 259, 261, 263, 265, 267, 269, 271, 273, 275, 277, 279, 281, 283, 460, 461,
@@ -54,9 +54,9 @@ public class AztecCode extends Symbol {
         559, 557, 555, 553, 551, 549, 547, 545, 543, 541, 539, 537, 535, 533, 531, 529, 527, 525, 523, 521, 519, 517, 515, 513, 511, 508, 509
     };
 
-    private int[][] AztecMap = new int[151][151];
+    private final int[][] AztecMap = new int[151][151];
 
-    private int[] AztecCodeSet = { /* From Table 2 */
+    private final int[] AztecCodeSet = { /* From Table 2 */
         32, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 12, 32, 32, 32, 32, 32, 32,
         32, 32, 32, 32, 32, 32, 32, 4, 4, 4, 4, 4, 23, 8, 8, 8, 8, 8, 8, 8,
         8, 8, 8, 8, 24, 8, 24, 8, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 8, 8,
@@ -66,7 +66,7 @@ public class AztecCode extends Symbol {
         2, 2, 2, 8, 4, 8, 4, 4
     };
 
-    private int[] AztecSymbolChar = { /* From Table 2 */
+    private final int[] AztecSymbolChar = { /* From Table 2 */
         0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 300, 14, 15, 16, 17, 18, 19,
         20, 21, 22, 23, 24, 25, 26, 15, 16, 17, 18, 19, 1, 6, 7, 8, 9, 10, 11, 12,
         13, 14, 15, 16, 301, 18, 302, 20, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 21, 22,
@@ -82,73 +82,73 @@ public class AztecCode extends Symbol {
 	302: Full Stop (ASCII 46)
 */
 
-    private String[] hexbit = {
+    private final String[] hexbit = {
         "00000", "00001", "00010", "00011", "00100", "00101", "00110", "00111", "01000", "01001",
             "01010", "01011", "01100", "01101", "01110", "01111", "10000", "10001", "10010", "10011", "10100", "10101",
             "10110", "10111", "11000", "11001", "11010", "11011", "11100", "11101", "11110", "11111"
     };
 
-    private String[] pentbit = {
+    private final String[] pentbit = {
         "0000", "0001", "0010", "0011", "0100", "0101", "0110", "0111", "1000", "1001",
             "1010", "1011", "1100", "1101", "1110", "1111"
     };
 
-    private String[] tribit = {
+    private final String[] tribit = {
         "000", "001", "010", "011", "100", "101", "110", "111"
     };
 
-    private int[] AztecSizes = { /* Codewords per symbol */
+    private final int[] AztecSizes = { /* Codewords per symbol */
         21, 48, 60, 88, 120, 156, 196, 240, 230, 272, 316, 364, 416, 470, 528, 588, 652, 720, 790,
         864, 940, 1020, 920, 992, 1066, 1144, 1224, 1306, 1392, 1480, 1570, 1664
     };
 
-    private int[] AztecCompactSizes = {
+    private final int[] AztecCompactSizes = {
         17, 40, 51, 76
     };
 
-    private int[] Aztec10DataSizes = { /* Data bits per symbol maximum with 10% error correction */
+    private final int[] Aztec10DataSizes = { /* Data bits per symbol maximum with 10% error correction */
         96, 246, 408, 616, 840, 1104, 1392, 1704, 2040, 2420, 2820, 3250, 3720, 4200, 4730,
         5270, 5840, 6450, 7080, 7750, 8430, 9150, 9900, 10680, 11484, 12324, 13188, 14076,
         15000, 15948, 16920, 17940
     };
 
-    private int[] Aztec23DataSizes = { /* Data bits per symbol maximum with 23% error correction */
+    private final int[] Aztec23DataSizes = { /* Data bits per symbol maximum with 23% error correction */
         84, 204, 352, 520, 720, 944, 1184, 1456, 1750, 2070, 2410, 2780, 3180, 3590, 4040,
         4500, 5000, 5520, 6060, 6630, 7210, 7830, 8472, 9132, 9816, 10536, 11280, 12036,
         12828, 13644, 14472, 15348
     };
 
-    private int[] Aztec36DataSizes = { /* Data bits per symbol maximum with 36% error correction */
+    private final int[] Aztec36DataSizes = { /* Data bits per symbol maximum with 36% error correction */
         66, 168, 288, 432, 592, 776, 984, 1208, 1450, 1720, 2000, 2300, 2640, 2980, 3350,
         3740, 4150, 4580, 5030, 5500, 5990, 6500, 7032, 7584, 8160, 8760, 9372, 9996, 10656,
         11340, 12024, 12744
     };
 
-    private int[] Aztec50DataSizes = { /* Data bits per symbol maximum with 50% error correction */
+    private final int[] Aztec50DataSizes = { /* Data bits per symbol maximum with 50% error correction */
         48, 126, 216, 328, 456, 600, 760, 936, 1120, 1330, 1550, 1790, 2050, 2320, 2610,
         2910, 3230, 3570, 3920, 4290, 4670, 5070, 5484, 5916, 6360, 6828, 7308, 7800, 8316,
         8844, 9384, 9948
     };
 
-    private int[] AztecCompact10DataSizes = {
+    private final int[] AztecCompact10DataSizes = {
         78, 198, 336, 520
     };
-    private int[] AztecCompact23DataSizes = {
+    private final int[] AztecCompact23DataSizes = {
         66, 168, 288, 440
     };
-    private int[] AztecCompact36DataSizes = {
+    private final int[] AztecCompact36DataSizes = {
         48, 138, 232, 360
     };
-    private int[] AztecCompact50DataSizes = {
+    private final int[] AztecCompact50DataSizes = {
         36, 102, 176, 280
     };
 
-    private int[] AztecOffset = {
+    private final int[] AztecOffset = {
         66, 64, 62, 60, 57, 55, 53, 51, 49, 47, 45, 42, 40, 38, 36, 34, 32, 30, 28, 25, 23, 21,
         19, 17, 15, 13, 10, 8, 6, 4, 2, 0
     };
 
-    private int[] AztecCompactOffset = {
+    private final int[] AztecCompactOffset = {
         6, 4, 2, 0
     };
 
@@ -1011,7 +1011,7 @@ public class AztecCode extends Symbol {
             }
 
             /* look for adjacent blocks which can use the same table (right to left search) */
-            for (i = blocks - 1; i > 0; i--) {
+            for (i = blocks - 2; i > 0; i--) {
                 if ((blockmap0[i] & blockmap0[i + 1]) != 0) {
                     blockmap0[i] = (blockmap0[i] & blockmap0[i + 1]);
                 }
@@ -1046,7 +1046,7 @@ public class AztecCode extends Symbol {
                 } else {
                     i++;
                 }
-            } while (i < blocks);
+            } while (i < blocks - 1);
         }
 
         /* Put the adjusted block data back into typemap */

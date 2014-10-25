@@ -36,7 +36,7 @@ abstract class Symbol {
     public String[] pattern;
     public int row_count;
     public int[] row_height;
-    public boolean debug = true;
+    public boolean debug = false;
     public String error_msg;
     public int symbol_height;
     public int symbol_width;

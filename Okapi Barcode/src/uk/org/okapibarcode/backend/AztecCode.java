@@ -325,6 +325,8 @@ public class AztecCode extends Symbol {
         int[] desc_ecc = new int[6];
         int y, x, weight;
         String bin;
+        int t;
+        boolean done;
         
         if(readerInit) { 
             comp_loop = 1; 
@@ -349,11 +351,12 @@ public class AztecCode extends Symbol {
             error_msg = "Input too long or too many extended ASCII characters";
             return false;
         }
-
-        ecc_level = -1; // FIXME: Initial value should be set externally
-
-        if ((ecc_level == -1) || (ecc_level == 0)) {
+        
+        // Set the error correction level
+        if ((option1 <= 0) || (option1 > 4)) {
             ecc_level = 2;
+        } else {
+            ecc_level = option1;
         }
 
         data_length = binary_string.length();
@@ -361,125 +364,237 @@ public class AztecCode extends Symbol {
         layers = 0; /* Keep compiler happy! */
         data_maxsize = 0; /* Keep compiler happy! */
         adjustment_size = 0;
-        //if(symbol->option_2 == 0) { /* The size of the symbol can be determined by Zint */
-        do {
-            /* Decide what size symbol to use - the smallest that fits the data */
-            compact = false; /* 1 = Aztec Compact, 0 = Normal Aztec */
-            layers = 0;
+        
+        if(option2 == 0) { /* The size of the symbol can be determined by Zint */
+            do {
+                /* Decide what size symbol to use - the smallest that fits the data */
+                compact = false; /* 1 = Aztec Compact, 0 = Normal Aztec */
+                layers = 0;
 
-            switch (ecc_level) {
-                /* For each level of error correction work out the smallest symbol which
-				the data will fit in */
-            case 1:
-                for (i = 32; i > 0; i--) {
-                    if ((data_length + adjustment_size) < Aztec10DataSizes[i - 1]) {
-                        layers = i;
-                        compact = false;
-                        data_maxsize = Aztec10DataSizes[i - 1];
+                switch (ecc_level) {
+                    /* For each level of error correction work out the smallest symbol which
+                                    the data will fit in */
+                case 1:
+                    for (i = 32; i > 0; i--) {
+                        if ((data_length + adjustment_size) < Aztec10DataSizes[i - 1]) {
+                            layers = i;
+                            compact = false;
+                            data_maxsize = Aztec10DataSizes[i - 1];
+                        }
+                    }
+                    for (i = comp_loop; i > 0; i--) {
+                        if ((data_length + adjustment_size) < AztecCompact10DataSizes[i - 1]) {
+                            layers = i;
+                            compact = true;
+                            data_maxsize = AztecCompact10DataSizes[i - 1];
+                        }
+                    }
+                    break;
+                case 2:
+                    for (i = 32; i > 0; i--) {
+                        if ((data_length + adjustment_size) < Aztec23DataSizes[i - 1]) {
+                            layers = i;
+                            compact = false;
+                            data_maxsize = Aztec23DataSizes[i - 1];
+                        }
+                    }
+                    for (i = comp_loop; i > 0; i--) {
+                        if ((data_length + adjustment_size) < AztecCompact23DataSizes[i - 1]) {
+                            layers = i;
+                            compact = true;
+                            data_maxsize = AztecCompact23DataSizes[i - 1];
+                        }
+                    }
+                    break;
+                case 3:
+                    for (i = 32; i > 0; i--) {
+                        if ((data_length + adjustment_size) < Aztec36DataSizes[i - 1]) {
+                            layers = i;
+                            compact = false;
+                            data_maxsize = Aztec36DataSizes[i - 1];
+                        }
+                    }
+                    for (i = comp_loop; i > 0; i--) {
+                        if ((data_length + adjustment_size) < AztecCompact36DataSizes[i - 1]) {
+                            layers = i;
+                            compact = true;
+                            data_maxsize = AztecCompact36DataSizes[i - 1];
+                        }
+                    }
+                    break;
+                case 4:
+                    for (i = 32; i > 0; i--) {
+                        if ((data_length + adjustment_size) < Aztec50DataSizes[i - 1]) {
+                            layers = i;
+                            compact = false;
+                            data_maxsize = Aztec50DataSizes[i - 1];
+                        }
+                    }
+                    for (i = comp_loop; i > 0; i--) {
+                        if ((data_length + adjustment_size) < AztecCompact50DataSizes[i - 1]) {
+                            layers = i;
+                            compact = true;
+                            data_maxsize = AztecCompact50DataSizes[i - 1];
+                        }
+                    }
+                    break;
+                }
+
+                if (layers == 0) { /* Couldn't find a symbol which fits the data */
+                    error_msg = "Input too long (too many bits for selected ECC)";
+                    return false;
+                }
+
+                /* Determine codeword bitlength - Table 3 */
+                codeword_size = 6; /* if (layers <= 2) */
+                if ((layers >= 3) && (layers <= 8)) {
+                    codeword_size = 8;
+                }
+                if ((layers >= 9) && (layers <= 22)) {
+                    codeword_size = 10;
+                }
+                if (layers >= 23) {
+                    codeword_size = 12;
+                }
+
+                j = 0;
+                i = 0;
+
+                do {
+                    if ((j + 1) % codeword_size == 0) {
+                        /* Last bit of codeword */
+                        done = false;
+                        count = 0;
+
+                        /* Discover how many '1's in current codeword */
+                        for (t = 0; t < (codeword_size - 1); t++) {
+                            if (binary_string.charAt((i - (codeword_size - 1)) + t) == '1') count++;
+                        }
+
+                        if (count == (codeword_size - 1)) {
+                            adjusted_string += '0';
+                            j++;
+                            done = true;
+                        }
+
+                        if (count == 0) {
+                            adjusted_string += '1';
+                            j++;
+                            done = true;
+                        }
+
+                        if (!done) {
+                            adjusted_string += binary_string.charAt(i);
+                            j++;
+                            i++;
+                        }
+                    } else {
+                        adjusted_string += binary_string.charAt(i);
+                        j++;
+                        i++;
+                    }
+                } while (i < data_length);
+
+                adjusted_length = adjusted_string.length();
+                adjustment_size = adjusted_length - data_length;
+
+                /* Add padding */
+                remainder = adjusted_length % codeword_size;
+
+                padbits = codeword_size - remainder;
+                if (padbits == codeword_size) {
+                    padbits = 0;
+                }
+
+                for (i = 0; i < padbits; i++) {
+                    adjusted_string += "1";
+                }
+                adjusted_length = adjusted_string.length();
+
+                count = 0;
+                for (i = (adjusted_length - codeword_size); i < adjusted_length; i++) {
+                    if (adjusted_string.charAt(i) == '1') {
+                        count++;
                     }
                 }
-                for (i = comp_loop; i > 0; i--) {
-                    if ((data_length + adjustment_size) < AztecCompact10DataSizes[i - 1]) {
-                        layers = i;
-                        compact = true;
-                        data_maxsize = AztecCompact10DataSizes[i - 1];
-                    }
+                if (count == codeword_size) {
+                    adjusted_string = adjusted_string.substring(0, adjusted_length - 1) + '0';
                 }
-                break;
-            case 2:
-                for (i = 32; i > 0; i--) {
-                    if ((data_length + adjustment_size) < Aztec23DataSizes[i - 1]) {
-                        layers = i;
-                        compact = false;
-                        data_maxsize = Aztec23DataSizes[i - 1];
+
+                if (debug) {
+                    System.out.printf("Codewords:\n");
+                    for (i = 0; i < (adjusted_length / codeword_size); i++) {
+                        int l = 0, m = (1 << (codeword_size - 1));
+                        for (j = 0; j < codeword_size; j++) {
+                            if (adjusted_string.charAt((i * codeword_size) + j) == '1') {
+                                l += m;
+                            }
+                            m = m >> 1;
+                        }
+                        System.out.print("[" + l + "] ");
                     }
+                    System.out.println();
                 }
-                for (i = comp_loop; i > 0; i--) {
-                    if ((data_length + adjustment_size) < AztecCompact23DataSizes[i - 1]) {
-                        layers = i;
-                        compact = true;
-                        data_maxsize = AztecCompact23DataSizes[i - 1];
-                    }
-                }
-                break;
-            case 3:
-                for (i = 32; i > 0; i--) {
-                    if ((data_length + adjustment_size) < Aztec36DataSizes[i - 1]) {
-                        layers = i;
-                        compact = false;
-                        data_maxsize = Aztec36DataSizes[i - 1];
-                    }
-                }
-                for (i = comp_loop; i > 0; i--) {
-                    if ((data_length + adjustment_size) < AztecCompact36DataSizes[i - 1]) {
-                        layers = i;
-                        compact = true;
-                        data_maxsize = AztecCompact36DataSizes[i - 1];
-                    }
-                }
-                break;
-            case 4:
-                for (i = 32; i > 0; i--) {
-                    if ((data_length + adjustment_size) < Aztec50DataSizes[i - 1]) {
-                        layers = i;
-                        compact = false;
-                        data_maxsize = Aztec50DataSizes[i - 1];
-                    }
-                }
-                for (i = comp_loop; i > 0; i--) {
-                    if ((data_length + adjustment_size) < AztecCompact50DataSizes[i - 1]) {
-                        layers = i;
-                        compact = true;
-                        data_maxsize = AztecCompact50DataSizes[i - 1];
-                    }
-                }
-                break;
+
+            } while (adjusted_length > data_maxsize);
+            /* This loop will only repeat on the rare occasions when the rule about not having all 1s or all 0s
+                    means that the binary string has had to be lengthened beyond the maximum number of bits that can
+                    be encoded in a symbol of the selected size */
+        } else {
+            /* The size of the symbol has been specified by the user */
+            compact = false;
+            if((readerInit) && ((option2 >= 2) && (option2 <= 4))) {
+                option2 = 5;
             }
-
-            if (layers == 0) { /* Couldn't find a symbol which fits the data */
-                error_msg = "Input too long (too many bits for selected ECC)";
+            if((option2 >= 1) && (option2 <= 4)) {
+                compact = true;
+                layers = option2;
+            }
+            if((option2 >= 5) && (option2 <= 36)) {
+                layers = option2 - 4;
+            }
+            if((option2 < 0) || (option2 > 36)) {
+                error_msg = "Invalid Aztec Code size";
                 return false;
             }
-
             /* Determine codeword bitlength - Table 3 */
-            codeword_size = 6; /* if (layers <= 2) */
-            if ((layers >= 3) && (layers <= 8)) {
-                codeword_size = 8;
+            codeword_size = 6;
+            if((layers >= 3) && (layers <= 8)) { 
+                codeword_size = 8; 
             }
-            if ((layers >= 9) && (layers <= 22)) {
-                codeword_size = 10;
+            if((layers >= 9) && (layers <= 22)) { 
+                codeword_size = 10; 
             }
-            if (layers >= 23) {
-                codeword_size = 12;
+            if(layers >= 23) { 
+                codeword_size = 12; 
             }
-
-            j = 0;
-            i = 0;
-
+            j = 0; i = 0;
             do {
-                if ((j + 1) % codeword_size == 0) {
+                if(((j + 1) % codeword_size) == 0) {
                     /* Last bit of codeword */
-                    int t, done = 0;
+                    done = false;
                     count = 0;
 
                     /* Discover how many '1's in current codeword */
-                    for (t = 0; t < (codeword_size - 1); t++) {
-                        if (binary_string.charAt((i - (codeword_size - 1)) + t) == '1') count++;
+                    for(t = 0; t < (codeword_size - 1); t++) {
+                        if(binary_string.charAt((i - (codeword_size - 1)) + t) == '1') {
+                            count++;
+                        }
                     }
 
-                    if (count == (codeword_size - 1)) {
+                    if(count == (codeword_size - 1)) {
                         adjusted_string += '0';
                         j++;
-                        done = 1;
+                        done = true;
                     }
 
-                    if (count == 0) {
+                    if(count == 0) {
                         adjusted_string += '1';
                         j++;
-                        done = 1;
+                        done = true;
                     }
 
-                    if (done == 0) {
+                    if(!done) {
                         adjusted_string += binary_string.charAt(i);
                         j++;
                         i++;
@@ -489,53 +604,53 @@ public class AztecCode extends Symbol {
                     j++;
                     i++;
                 }
-            } while (i < data_length);
-
-            adjusted_length = adjusted_string.length();
-            adjustment_size = adjusted_length - data_length;
-
-            /* Add padding */
-            remainder = adjusted_length % codeword_size;
-
-            padbits = codeword_size - remainder;
-            if (padbits == codeword_size) {
-                padbits = 0;
-            }
-
-            for (i = 0; i < padbits; i++) {
+        } while (i < binary_string.length());
+        
+        adjusted_length = adjusted_string.length();
+        remainder = adjusted_length % codeword_size;
+        padbits = codeword_size - remainder;
+        
+        if(padbits == codeword_size) { padbits = 0; }
+            for(i = 0; i < padbits; i++) {
                 adjusted_string += "1";
             }
+            
             adjusted_length = adjusted_string.length();
-
             count = 0;
-            for (i = (adjusted_length - codeword_size); i < adjusted_length; i++) {
-                if (adjusted_string.charAt(i) == '1') {
+            
+            for(i = (adjusted_length - codeword_size); i < adjusted_length; i++) {
+                if(adjusted_string.charAt(i) == '1') { 
                     count++;
                 }
             }
-            if (count == codeword_size) {
-                adjusted_string = adjusted_string.substring(0, adjusted_length - 1) + '0';
+            
+            if(count == codeword_size) { 
+                adjusted_string = adjusted_string.substring(0, adjusted_length - 1) + '0'; 
             }
-
+            
+            /* Check if the data actually fits into the selected symbol size */
+            if (compact) {
+                data_maxsize = codeword_size * (AztecCompactSizes[layers - 1] - 3);
+            } else {
+                data_maxsize = codeword_size * (AztecSizes[layers - 1] - 3);
+            }
+            
+            if (adjusted_length > data_maxsize) {
+                error_msg = "Data too long for specified Aztec Code symbol size";
+                return false;
+            }
+            
             if (debug) {
                 System.out.printf("Codewords:\n");
                 for (i = 0; i < (adjusted_length / codeword_size); i++) {
-                    int l = 0, m = (1 << (codeword_size - 1));
                     for (j = 0; j < codeword_size; j++) {
-                        if (adjusted_string.charAt((i * codeword_size) + j) == '1') {
-                            l += m;
-                        }
-                        m = m >> 1;
+                        System.out.printf("%c", adjusted_string.charAt((i * codeword_size) + j));
                     }
-                    System.out.print("[" + l + "] ");
+                    System.out.printf("\n");
                 }
-                System.out.println();
             }
-
-        } while (adjusted_length > data_maxsize);
-        /* This loop will only repeat on the rare occasions when the rule about not having all 1s or all 0s
-		means that the binary string has had to be lengthened beyond the maximum number of bits that can
-		be encoded in a symbol of the selected size */
+        }
+        
         if(readerInit && (layers > 22)) {
             error_msg = "Data too long for reader initialisation symbol";
             return false;

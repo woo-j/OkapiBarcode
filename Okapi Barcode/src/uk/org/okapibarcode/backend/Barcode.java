@@ -39,6 +39,9 @@ public class Barcode {
     private boolean isComposite;
     public String encodeInfo;
 
+    private int option1;
+    private int option2;
+    
     public ArrayList < Rectangle > rect = new ArrayList < > ();
     public ArrayList < TextBox > txt = new ArrayList < > ();
     public ArrayList < Hexagon > hex = new ArrayList < > ();
@@ -76,6 +79,14 @@ public class Barcode {
         isComposite = true;
     }
 
+    public void setOption1(int input) {
+        option1 = input;
+    }
+
+    public void setOption2(int input) {
+        option2 = input;
+    }
+    
     public boolean encode(String inputSymbology, String inputData) {
         symbology = inputSymbology;
         content = inputData;
@@ -770,6 +781,8 @@ public class Barcode {
             aztecCode.gs1 = this.gs1;
             aztecCode.hibc = this.hibc;
             aztecCode.readerInit = this.readerInit;
+            aztecCode.option1 = this.option1;
+            aztecCode.option2 = this.option2;
             if (aztecCode.setContent(this.content)) {
                 this.rect = aztecCode.rect;
                 this.symbol_height = aztecCode.symbol_height;

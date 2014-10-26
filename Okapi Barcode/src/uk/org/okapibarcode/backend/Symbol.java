@@ -45,6 +45,9 @@ abstract class Symbol {
     public boolean hibc;
     public boolean readerInit;
     public String encodeInfo = "";
+    
+    public int option1;
+    public int option2;
 
     public ArrayList < Rectangle > rect = new ArrayList < > ();
     public ArrayList < TextBox > txt = new ArrayList < > ();

@@ -1692,7 +1692,11 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
     }    
     
     public boolean encodeMe() {
+        // Send input data to Barcode backend for encoding
+        
         Barcode barcode = new Barcode();
+        int option1 = 0; // For most symbologies this is user selected ECC
+        int option2 = 0; // For most symbologies this is user selected size
 
         errorOutput = "";
         encodeInfo = "";
@@ -1702,6 +1706,77 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
             encodeInfo = "Error: No symbology selected";
             return false;
         }
+        
+        switch (symbology) {
+            case "BARCODE_PDF417": 
+            case "BARCODE_PDF417TRUNC":
+            case "BARCODE_HIBC_PDF":
+                option2 = pdfColumnsCombo.getSelectedIndex();
+                option1 = pdfEccCombo.getSelectedIndex();
+                break;
+            case "BARCODE_MICROPDF417":
+            case "BARCODE_HIBC_MICPDF":
+                option2 = microPdfColumnsCombo.getSelectedIndex();
+                break;
+            case "BARCODE_RSS_EXPSTACK":
+                option2 = databarColumnsCombo.getSelectedIndex();
+                break;
+            case "BARCODE_DATAMATRIX":
+            case "BARCODE_HIBC_DM":
+                option2 = dataMatrixSizeCombo.getSelectedIndex();
+                break;
+            case "BARCODE_QRCODE":
+            case "BARCODE_HIBC_QR":
+                if (qrUserSize.isSelected()) {
+                    option2 = qrUserSizeCombo.getSelectedIndex() + 1;
+                }
+                if (qrUserEcc.isSelected()) {
+                    option1 = qrUserEccCombo.getSelectedIndex() + 1;
+                }
+                break;
+            case "BARCODE_MICROQR":
+                if (microQrUserSize.isSelected()) {
+                    option2 = microQrUserSizeCombo.getSelectedIndex() + 1;
+                }
+                if (microQrUserEcc.isSelected()) {
+                    option1 = microQrUserEccCombo.getSelectedIndex() + 1;
+                }
+                break;
+            case "BARCODE_MAXICODE":
+                option1 = maxiEncodingModeCombo.getSelectedIndex();
+                // FIXME: Get primary data
+                break;
+            case "BARCODE_AZTEC":
+            case "BARCODE_HIBC_AZTEC":
+                if (aztecUserSize.isSelected()) {
+                    option2 = aztecUserSizeCombo.getSelectedIndex() + 1;
+                }
+                if (aztecUserEcc.isSelected()) {
+                    option1 = aztecUserEccCombo.getSelectedIndex() + 1;
+                }
+                break;
+            case "BARCODE_CODEONE":
+                option2 = codeOneSizeCombo.getSelectedIndex();
+                break;
+            case "BARCODE_GRIDMATRIX":
+                if (gridmatrixUserSize.isSelected()) {
+                    option2 = gridmatrixUserSizeCombo.getSelectedIndex();
+                }
+                if (gridmatrixUserEcc.isSelected()) {
+                    option1 = gridmatrixUserEccCombo.getSelectedIndex();
+                }
+                break;
+            case "BARCODE_CODE39":
+            case "BARCODE_EXCODE39":
+                option2 = code39CheckCombo.getSelectedIndex();
+                break;
+            case "BARCODE_CHANNEL":
+                option2 = channelChannelsCombo.getSelectedIndex();
+                break;
+        }
+        
+        barcode.setOption1(option1);
+        barcode.setOption2(option2);
         
         barcode.setNormalMode();
         if (dataInput.charAt(0) == '[') {
@@ -1731,14 +1806,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
             height += 10;
         }
         
-        if (!(errorOutput.isEmpty())) {
-//            System.out.print("Encoding error: ");
-//            System.out.println(MainInterface.errorOutput);
-            return false;
-        } else {
-//            System.out.println("Success!");
-            return true;
-        }
+        return (!(errorOutput.isEmpty()));
     }
     
     private static void createNodes(DefaultMutableTreeNode top) {

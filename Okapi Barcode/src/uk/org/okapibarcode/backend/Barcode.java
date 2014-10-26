@@ -37,6 +37,8 @@ public class Barcode {
     private boolean readerInit = false;
     private Composite composite;
     private boolean isComposite;
+    private int option1;
+    private int option2;
     public String encodeInfo;
 
     public ArrayList < Rectangle > rect = new ArrayList < > ();
@@ -74,6 +76,14 @@ public class Barcode {
     public void setCompositeContent(String inputData) {
         compositeContent = inputData;
         isComposite = true;
+    }
+    
+    public void setOption1(int input) {
+        option1 = input;
+    }
+    
+    public void setOption2(int input) {
+        option2 = input;
     }
 
     public boolean encode(String inputSymbology, String inputData) {

@@ -40,6 +40,7 @@ import java.awt.event.WindowEvent;
 
 import javax.swing.JColorChooser;
 import javax.swing.JDialog;
+import uk.org.okapibarcode.backend.Barcode;
 
 /**
  *
@@ -70,7 +71,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
     public static String encodeInfo = "";
     
     /**
-     * Creates new form ZintUI
+     * Creates new form OkapiUI: the main interface
      */
     public OkapiUI() {
         initComponents();
@@ -115,8 +116,8 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
             }
             
             public void updateMe() {
-                dataInput = dataInputField.getText().toString();
-                compositeInput = compositeInputField.getText().toString();
+                dataInput = dataInputField.getText();
+                compositeInput = compositeInputField.getText();
                 encodeData();
             }
         };
@@ -1215,8 +1216,8 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
             File file = fileChooser.getSelectedFile();
             try {
                 SaveImage saveImage = new SaveImage();
-                dataInput = dataInputField.getText().toString();
-                compositeInput = compositeInputField.getText().toString();
+                dataInput = dataInputField.getText();
+                compositeInput = compositeInputField.getText();
                 encodeData(); 
                 saveImage.SaveImage(file, savePanel);
             } catch (Exception e) {
@@ -1284,7 +1285,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
             File file = fileChooser.getSelectedFile();
             try {
                 sequenceArea.setText(OpenFile.ReadFile(file, true));
-            } catch (Exception e) {
+            } catch (java.io.IOException e) {
                 System.out.println("Cannot read from file" + fileChooser.getSelectedFile().toString());
             }
         }
@@ -1297,7 +1298,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         String fullFileName;
         String outputCount;
         int inputCount = 0;
-        String errorLog = "";
+        String errorLog;
         String progressLog = "";
         int i;
         int lineCount = 0;
@@ -1549,6 +1550,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 new OkapiUI().setVisible(true);
             }
@@ -1577,8 +1579,8 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
             if (node.isLeaf()) {
                 selectedSymbol = (SymbolType)nodeInfo;
                 symbology = selectedSymbol.mnemonic;
-                dataInput = dataInputField.getText().toString();
-                compositeInput = compositeInputField.getText().toString();
+                dataInput = dataInputField.getText();
+                compositeInput = compositeInputField.getText();
                 encodeData();       
             }
         }
@@ -1590,7 +1592,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         double bWidth;
         double bHeight;
 
-        Encoder en = new Encoder();
         DrawSymbol drawSymbol = new DrawSymbol();
         SaveSymbol saveSymbol = new SaveSymbol();
 
@@ -1606,7 +1607,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
             return;
         }
         
-        if (!(en.encodeMe())) {
+        if (!(encodeMe())) {
             errorLabel.setText(errorOutput);
             topPanel.add(errorLabel);
             topPanel.updateUI();
@@ -1689,6 +1690,56 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         
         return reversed;
     }    
+    
+    public boolean encodeMe() {
+        Barcode barcode = new Barcode();
+
+        errorOutput = "";
+        encodeInfo = "";
+
+        if (symbology == null) {
+            errorOutput = "No symbology selected";
+            encodeInfo = "Error: No symbology selected";
+            return false;
+        }
+        
+        barcode.setNormalMode();
+        if (dataInput.charAt(0) == '[') {
+            // FIXME: Should get option from user instead
+            barcode.setGs1Mode();
+        }
+        
+        if (!(compositeInput.isEmpty())) {
+            barcode.setCompositeContent(compositeInput);
+        }
+
+        if (barcode.encode(symbology, dataInput)) {
+            bcs = barcode.rect;
+            height = barcode.symbol_height;
+            width = barcode.symbol_width;
+            txt = barcode.txt;
+            hex = barcode.hex;
+            target = barcode.target;
+            encodeInfo = barcode.encodeInfo;
+        } else {
+            errorOutput = barcode.error_msg;
+            encodeInfo = barcode.error_msg;
+        }
+
+        if (!(txt.isEmpty())) {
+            // Add some space for text
+            height += 10;
+        }
+        
+        if (!(errorOutput.isEmpty())) {
+//            System.out.print("Encoding error: ");
+//            System.out.println(MainInterface.errorOutput);
+            return false;
+        } else {
+//            System.out.println("Success!");
+            return true;
+        }
+    }
     
     private static void createNodes(DefaultMutableTreeNode top) {
         // Defines symbology selection tree

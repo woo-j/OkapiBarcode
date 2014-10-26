@@ -626,7 +626,7 @@
                               <Component id="pdfPanel" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="qrPanel" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="124" max="32767" attributes="0"/>
+                              <EmptySpace pref="119" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -649,12 +649,12 @@
                                   <Group type="103" groupAlignment="0" max="-2" attributes="0">
                                       <Component id="aztecAutoSize" alignment="0" max="32767" attributes="0"/>
                                       <Component id="aztecUserSize" alignment="0" max="32767" attributes="0"/>
-                                      <Component id="aztecUserEcc" alignment="0" pref="270" max="32767" attributes="0"/>
+                                      <Component id="aztecUserEcc" alignment="0" max="32767" attributes="0"/>
                                   </Group>
-                                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                                  <EmptySpace max="32767" attributes="0"/>
                                   <Group type="103" groupAlignment="0" attributes="0">
-                                      <Component id="aztecUserSizeCombo" max="32767" attributes="0"/>
-                                      <Component id="aztecUserEccCombo" max="32767" attributes="0"/>
+                                      <Component id="aztecUserEccCombo" alignment="1" min="-2" pref="350" max="-2" attributes="0"/>
+                                      <Component id="aztecUserSizeCombo" alignment="1" min="-2" pref="350" max="-2" attributes="0"/>
                                   </Group>
                                   <EmptySpace max="-2" attributes="0"/>
                               </Group>
@@ -665,9 +665,9 @@
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="aztecAutoSize" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Group type="103" groupAlignment="0" attributes="0">
-                                      <Component id="aztecUserSizeCombo" min="-2" max="-2" attributes="0"/>
-                                      <Component id="aztecUserSize" alignment="0" min="-2" pref="23" max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="3" attributes="0">
+                                      <Component id="aztecUserSize" alignment="3" min="-2" pref="23" max="-2" attributes="0"/>
+                                      <Component id="aztecUserSizeCombo" alignment="3" min="-2" max="-2" attributes="0"/>
                                   </Group>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="3" attributes="0">
@@ -788,9 +788,9 @@
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" alignment="0" attributes="0">
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="channelNoOfChannels" min="-2" pref="268" max="-2" attributes="0"/>
-                                  <EmptySpace type="separate" max="-2" attributes="0"/>
-                                  <Component id="channelChannelsCombo" max="32767" attributes="0"/>
+                                  <Component id="channelNoOfChannels" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="32767" attributes="0"/>
+                                  <Component id="channelChannelsCombo" min="-2" pref="350" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                               </Group>
                           </Group>
@@ -844,9 +844,9 @@
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" alignment="0" attributes="0">
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="code39CheckLabel" min="-2" pref="271" max="-2" attributes="0"/>
-                                  <EmptySpace type="separate" max="-2" attributes="0"/>
-                                  <Component id="code39CheckCombo" min="-2" pref="316" max="-2" attributes="0"/>
+                                  <Component id="code39CheckLabel" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="32767" attributes="0"/>
+                                  <Component id="code39CheckCombo" min="-2" pref="350" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                               </Group>
                           </Group>
@@ -892,9 +892,9 @@
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" alignment="0" attributes="0">
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="codeOneSizeLabel" min="-2" pref="276" max="-2" attributes="0"/>
-                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                  <Component id="codeOneSizeCombo" max="32767" attributes="0"/>
+                                  <Component id="codeOneSizeLabel" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="32767" attributes="0"/>
+                                  <Component id="codeOneSizeCombo" min="-2" pref="350" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                               </Group>
                           </Group>
@@ -949,9 +949,9 @@
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" alignment="0" attributes="0">
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="databarColumnsLabel" min="-2" pref="267" max="-2" attributes="0"/>
-                                  <EmptySpace type="separate" max="-2" attributes="0"/>
-                                  <Component id="databarColumnsCombo" max="32767" attributes="0"/>
+                                  <Component id="databarColumnsLabel" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="32767" attributes="0"/>
+                                  <Component id="databarColumnsCombo" min="-2" pref="350" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                               </Group>
                           </Group>
@@ -1007,13 +1007,13 @@
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="0" attributes="0">
                                       <Group type="102" attributes="0">
-                                          <Component id="dataMatrixSquareOnlyCheck" min="-2" pref="356" max="-2" attributes="0"/>
+                                          <Component id="dataMatrixSquareOnlyCheck" min="-2" max="-2" attributes="0"/>
                                           <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                                       </Group>
                                       <Group type="102" attributes="0">
-                                          <Component id="dataMatrixSizeLabel" min="-2" pref="278" max="-2" attributes="0"/>
-                                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                          <Component id="dataMatrixSizeCombo" max="32767" attributes="0"/>
+                                          <Component id="dataMatrixSizeLabel" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace max="32767" attributes="0"/>
+                                          <Component id="dataMatrixSizeCombo" min="-2" pref="350" max="-2" attributes="0"/>
                                       </Group>
                                   </Group>
                                   <EmptySpace max="-2" attributes="0"/>
@@ -1102,18 +1102,18 @@
                         <DimensionLayout dim="0">
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" attributes="0">
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                  <EmptySpace min="-2" max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" attributes="0">
                                       <Component id="gridmatrixAutoSize" alignment="0" max="32767" attributes="0"/>
                                       <Component id="gridmatrixUserSize" alignment="0" max="32767" attributes="0"/>
-                                      <Component id="gridmatrixUserEcc" alignment="0" pref="276" max="32767" attributes="0"/>
+                                      <Component id="gridmatrixUserEcc" alignment="0" max="32767" attributes="0"/>
                                   </Group>
-                                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                                  <EmptySpace min="-2" pref="74" max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="0" attributes="0">
-                                      <Component id="gridmatrixUserSizeCombo" max="32767" attributes="0"/>
-                                      <Component id="gridmatrixUserEccCombo" max="32767" attributes="0"/>
+                                      <Component id="gridmatrixUserSizeCombo" alignment="1" min="-2" pref="350" max="-2" attributes="0"/>
+                                      <Component id="gridmatrixUserEccCombo" alignment="1" min="-2" pref="350" max="-2" attributes="0"/>
                                   </Group>
-                                  <EmptySpace max="-2" attributes="0"/>
+                                  <EmptySpace min="-2" max="-2" attributes="0"/>
                               </Group>
                           </Group>
                         </DimensionLayout>
@@ -1191,6 +1191,9 @@
                             </Property>
                             <Property name="enabled" type="boolean" value="false"/>
                           </Properties>
+                          <Events>
+                            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="gridmatrixUserSizeComboActionPerformed"/>
+                          </Events>
                         </Component>
                         <Component class="javax.swing.JComboBox" name="gridmatrixUserEccCombo">
                           <Properties>
@@ -1221,15 +1224,15 @@
                         <DimensionLayout dim="0">
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" attributes="0">
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                      <Component id="maxiEncodeModeLabel" pref="285" max="32767" attributes="0"/>
-                                      <Component id="maxiPrimaryDataLabel" max="32767" attributes="0"/>
-                                  </Group>
-                                  <EmptySpace max="-2" attributes="0"/>
+                                  <EmptySpace min="-2" max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="0" attributes="0">
-                                      <Component id="maxiEncodingModeCombo" max="32767" attributes="0"/>
-                                      <Component id="maxiPrimaryData" max="32767" attributes="0"/>
+                                      <Component id="maxiEncodeModeLabel" min="-2" max="-2" attributes="0"/>
+                                      <Component id="maxiPrimaryDataLabel" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <EmptySpace max="32767" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Component id="maxiEncodingModeCombo" alignment="1" min="-2" pref="350" max="-2" attributes="0"/>
+                                      <Component id="maxiPrimaryData" alignment="1" min="-2" pref="350" max="-2" attributes="0"/>
                                   </Group>
                                   <EmptySpace max="-2" attributes="0"/>
                               </Group>
@@ -1240,13 +1243,14 @@
                               <Group type="102" alignment="0" attributes="0">
                                   <Group type="103" groupAlignment="3" attributes="0">
                                       <Component id="maxiEncodeModeLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                                      <Component id="maxiEncodingModeCombo" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="maxiEncodingModeCombo" alignment="3" min="-2" pref="20" max="-2" attributes="0"/>
                                   </Group>
-                                  <EmptySpace max="-2" attributes="0"/>
+                                  <EmptySpace min="-2" pref="9" max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="3" attributes="0">
-                                      <Component id="maxiPrimaryDataLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                                       <Component id="maxiPrimaryData" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="maxiPrimaryDataLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                                   </Group>
+                                  <EmptySpace min="-2" pref="2" max="-2" attributes="0"/>
                               </Group>
                           </Group>
                         </DimensionLayout>
@@ -1297,19 +1301,17 @@
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" alignment="0" attributes="0">
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="microPdfColumnsLabel" min="-2" pref="279" max="-2" attributes="0"/>
-                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                                  <Component id="microPdfColumnsCombo" max="32767" attributes="0"/>
+                                  <Component id="microPdfColumnsLabel" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="32767" attributes="0"/>
+                                  <Component id="microPdfColumnsCombo" min="-2" pref="350" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                               </Group>
                           </Group>
                         </DimensionLayout>
                         <DimensionLayout dim="1">
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Group type="103" groupAlignment="3" attributes="0">
-                                  <Component id="microPdfColumnsLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  <Component id="microPdfColumnsCombo" alignment="3" min="-2" max="-2" attributes="0"/>
-                              </Group>
+                              <Component id="microPdfColumnsCombo" alignment="1" min="-2" max="-2" attributes="0"/>
+                              <Component id="microPdfColumnsLabel" alignment="1" min="-2" max="-2" attributes="0"/>
                           </Group>
                         </DimensionLayout>
                       </Layout>
@@ -1347,18 +1349,18 @@
                         <DimensionLayout dim="0">
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" attributes="0">
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                  <EmptySpace min="-2" max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" attributes="0">
                                       <Component id="microQrAutoSize" max="32767" attributes="0"/>
                                       <Component id="microQrUserSize" max="32767" attributes="0"/>
-                                      <Component id="microQrUserEcc" pref="278" max="32767" attributes="0"/>
+                                      <Component id="microQrUserEcc" max="32767" attributes="0"/>
                                   </Group>
-                                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                                  <EmptySpace min="-2" pref="14" max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="0" attributes="0">
-                                      <Component id="microQrUserSizeCombo" max="32767" attributes="0"/>
-                                      <Component id="microQrUserEccCombo" max="32767" attributes="0"/>
+                                      <Component id="microQrUserSizeCombo" alignment="1" min="-2" pref="350" max="-2" attributes="0"/>
+                                      <Component id="microQrUserEccCombo" alignment="1" min="-2" pref="350" max="-2" attributes="0"/>
                                   </Group>
-                                  <EmptySpace max="-2" attributes="0"/>
+                                  <EmptySpace min="-2" max="-2" attributes="0"/>
                               </Group>
                           </Group>
                         </DimensionLayout>
@@ -1460,9 +1462,9 @@
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" alignment="0" attributes="0">
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="msiCheckDigitLabel" min="-2" pref="284" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="msiCheckDigitCombo" max="32767" attributes="0"/>
+                                  <Component id="msiCheckDigitLabel" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="32767" attributes="0"/>
+                                  <Component id="msiCheckDigitCombo" min="-2" pref="350" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                               </Group>
                           </Group>
@@ -1513,12 +1515,12 @@
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="0" max="-2" attributes="0">
                                       <Component id="pdfDataColumnsLabel" max="32767" attributes="0"/>
-                                      <Component id="pdfEccLabel" pref="284" max="32767" attributes="0"/>
+                                      <Component id="pdfEccLabel" max="32767" attributes="0"/>
                                   </Group>
-                                  <EmptySpace max="-2" attributes="0"/>
+                                  <EmptySpace max="32767" attributes="0"/>
                                   <Group type="103" groupAlignment="0" attributes="0">
-                                      <Component id="pdfColumnsCombo" max="32767" attributes="0"/>
-                                      <Component id="pdfEccCombo" max="32767" attributes="0"/>
+                                      <Component id="pdfColumnsCombo" alignment="1" min="-2" pref="350" max="-2" attributes="0"/>
+                                      <Component id="pdfEccCombo" alignment="1" min="-2" pref="350" max="-2" attributes="0"/>
                                   </Group>
                                   <EmptySpace max="-2" attributes="0"/>
                               </Group>
@@ -1617,12 +1619,12 @@
                                   <Group type="103" groupAlignment="0" max="-2" attributes="0">
                                       <Component id="qrAutoSize" max="32767" attributes="0"/>
                                       <Component id="qrUserSize" max="32767" attributes="0"/>
-                                      <Component id="qrUserEcc" pref="285" max="32767" attributes="0"/>
+                                      <Component id="qrUserEcc" max="32767" attributes="0"/>
                                   </Group>
-                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                  <EmptySpace max="32767" attributes="0"/>
                                   <Group type="103" groupAlignment="0" attributes="0">
-                                      <Component id="qrUserSizeCombo" max="32767" attributes="0"/>
-                                      <Component id="qrUserEccCombo" max="32767" attributes="0"/>
+                                      <Component id="qrUserSizeCombo" alignment="1" min="-2" pref="350" max="-2" attributes="0"/>
+                                      <Component id="qrUserEccCombo" alignment="1" min="-2" pref="350" max="-2" attributes="0"/>
                                   </Group>
                                   <EmptySpace max="-2" attributes="0"/>
                               </Group>
@@ -1633,9 +1635,9 @@
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="qrAutoSize" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Group type="103" groupAlignment="0" attributes="0">
-                                      <Component id="qrUserSizeCombo" min="-2" max="-2" attributes="0"/>
-                                      <Component id="qrUserSize" min="-2" max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="3" attributes="0">
+                                      <Component id="qrUserSize" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="qrUserSizeCombo" alignment="3" min="-2" max="-2" attributes="0"/>
                                   </Group>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="3" attributes="0">

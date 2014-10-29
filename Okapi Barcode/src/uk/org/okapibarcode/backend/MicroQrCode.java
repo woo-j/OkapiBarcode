@@ -1,4 +1,4 @@
-/*
+ /*
  * Copyright 2014 Robin Stuart
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -41,14 +41,14 @@ public class MicroQrCode extends Symbol {
     private int[] grid;
     private int[] eval;
 
-    private char[] rhodium = {
+    private final char[] rhodium = {
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 
         'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 
         'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', ' ', '$', '%', '*', '\'', '+', 
         '-', '.', '/', ':'
     };
 
-    private int[] qr_annex_c1 = {
+    private final int[] qr_annex_c1 = {
         /* Micro QR Code format information */
         0x4445, 0x4172, 0x4e2b, 0x4b1c, 0x55ae, 0x5099, 0x5fc0, 0x5af7, 0x6793, 
         0x62a4, 0x6dfd, 0x68ca, 0x7678, 0x734f, 0x7c16, 0x7921, 0x06de, 0x03e9, 
@@ -147,10 +147,20 @@ public class MicroQrCode extends Symbol {
 
         /* Eliminate possible versions depending on error correction level specified */
         ecc_level = eccMode.L;
-        //if((symbol->option_1 >= 1) && (symbol->option_2 <= 4)) {
-        //	ecc_level = symbol->option_1;
-        //}
-        //FIXME: Get value from user
+        
+        if((option1 >= 1) && (option2 <= 4)) {
+            switch (option1) {
+                case 1: ecc_level = eccMode.L;
+                    break;
+                case 2: ecc_level = eccMode.M;
+                    break;
+                case 3: ecc_level = eccMode.Q;
+                    break;
+                default: ecc_level = eccMode.H;
+                    break;
+            }
+        }
+        
         if (ecc_level == eccMode.H) {
             error_msg = "Error correction level H not available";
             return false;
@@ -193,12 +203,11 @@ public class MicroQrCode extends Symbol {
 
         version = autoversion;
         /* Get version from user */
-        //	if((symbol->option_2 >= 1) && (symbol->option_2 <= 4)) {
-        //		if(symbol->option_2 >= autoversion) {
-        //			version = symbol->option_2;
-        //		}
-        //	}
-
+        if((option2 >= 1) && (option2 <= 4)) {
+            if(option2 >= autoversion) {
+                version = option2;
+            }
+        }
 
         /* If there is enough unused space then increase the error correction level */
         if (version == 3) {
@@ -1439,7 +1448,7 @@ public class MicroQrCode extends Symbol {
     private int applyBitmask(int size) {
         int x, y;
         int p;
-        int pattern;
+        int local_pattern;
         int[] value = new int[8];
         int best_val, best_pattern;
         int bit;
@@ -1486,16 +1495,16 @@ public class MicroQrCode extends Symbol {
         }
 
         /* Evaluate result */
-        for (pattern = 0; pattern < 4; pattern++) {
-            value[pattern] = evaluateBitmask(size, pattern);
+        for (local_pattern = 0; local_pattern < 4; local_pattern++) {
+            value[local_pattern] = evaluateBitmask(size, local_pattern);
         }
 
         best_pattern = 0;
         best_val = value[0];
-        for (pattern = 1; pattern < 4; pattern++) {
-            if (value[pattern] > best_val) {
-                best_pattern = pattern;
-                best_val = value[pattern];
+        for (local_pattern = 1; local_pattern < 4; local_pattern++) {
+            if (value[local_pattern] > best_val) {
+                best_pattern = local_pattern;
+                best_val = value[local_pattern];
             }
         }
 

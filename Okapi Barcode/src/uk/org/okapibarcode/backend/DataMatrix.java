@@ -152,8 +152,13 @@ public class DataMatrix extends Symbol {
             error_msg = "Data too long to fit in symbol";
             return false;
         }
-
-        optionsize = -1; // FIXME: Value should come from user
+        
+        if ((option2 >= 1) && (option2 <= 30)) {
+            optionsize = intsymbol[option2 - 1];
+        } else {
+            optionsize = -1;
+        }
+        
         calcsize = 29;
         for (i = 29; i > -1; i--) {
             if (matrixbytes[i] >= binlen) {
@@ -215,16 +220,20 @@ public class DataMatrix extends Symbol {
             grid[i] = 0;
         }
         for (y = 0; y < H; y += FH) {
-            for (x = 0; x < W; x++)
-            grid[y * W + x] = 1;
-            for (x = 0; x < W; x += 2)
-            grid[(y + FH - 1) * W + x] = 1;
+            for (x = 0; x < W; x++) {
+                grid[y * W + x] = 1;
+            }
+            for (x = 0; x < W; x += 2) {
+                grid[(y + FH - 1) * W + x] = 1;
+            }
         }
         for (x = 0; x < W; x += FW) {
-            for (y = 0; y < H; y++)
-            grid[y * W + x] = 1;
-            for (y = 0; y < H; y += 2)
-            grid[y * W + x + FW - 1] = 1;
+            for (y = 0; y < H; y++) {
+                grid[y * W + x] = 1;
+            }
+            for (y = 0; y < H; y += 2) {
+                grid[y * W + x + FW - 1] = 1;
+            }
         }
         for (y = 0; y < NR; y++) {
             for (x = 0; x < NC; x++) {
@@ -948,7 +957,6 @@ public class DataMatrix extends Symbol {
             }
 
             /* step (p) */
-            done = 0;
             if ((inputData[sp] >= ' ') && (inputData[sp] <= '^')) {
                 edf_count += (3.0 / 4.0);
             } else {
@@ -993,7 +1001,6 @@ public class DataMatrix extends Symbol {
         }
 
         if (c40_count <= best_count) {
-            best_count = c40_count;
             best_scheme = dm_mode.DM_C40;
         }
 
@@ -1114,9 +1121,11 @@ public class DataMatrix extends Symbol {
     private void placeData(int NR, int NC) {
         int r, c, p;
         // invalidate
-        for (r = 0; r < NR; r++)
-        for (c = 0; c < NC; c++)
-        places[r * NC + c] = 0;
+        for (r = 0; r < NR; r++) {
+            for (c = 0; c < NC; c++) {
+                places[r * NC + c] = 0;
+            }
+        }
         // start
         p = 1;
         r = 4;

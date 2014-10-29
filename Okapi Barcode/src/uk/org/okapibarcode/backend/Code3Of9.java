@@ -23,7 +23,7 @@ package uk.org.okapibarcode.backend;
  */
 public class Code3Of9 extends Symbol {
 
-    private String Code39[] = {
+    private final String Code39[] = {
         "1112212111", "2112111121", "1122111121", "2122111111", "1112211121", 
         "2112211111", "1122211111", "1112112121", "2112112111", "1122112111", 
         "2111121121", "1121121121", "2121121111", "1111221121", "2111221111", 
@@ -35,7 +35,7 @@ public class Code3Of9 extends Symbol {
         "1212111211", "1211121211", "1112121211"
     };
 
-    private char LookUp[] = {
+    private final char LookUp[] = {
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 
         'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 
         'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '-', '.', ' ', '$', '/', '+', 
@@ -55,17 +55,56 @@ public class Code3Of9 extends Symbol {
         int l = content.length();
         int charval;
         char thischar;
+        int counter = 0;
+        char check_digit = ' ';
 
         dest = "1211212111"; // Start
         for (int i = 0; i < l; i++) {
             thischar = content.charAt(i);
             charval = positionOf(thischar, LookUp);
+            counter += charval;
             p += Code39[charval];
         }
         dest += p;
+        
+        if (option2 == 1) {
+            //User has requested Mod-43 check digit
+            
+            counter = counter % 43;
+            if(counter < 10) {
+                check_digit = (char)(counter + '0');
+            } else {
+                if(counter < 36) {
+                    check_digit = (char)((counter - 10) + 'A');
+                } else {
+                    switch(counter) {
+                        case 36: check_digit = '-'; break;
+                        case 37: check_digit = '.'; break;
+                        case 38: check_digit = ' '; break;
+                        case 39: check_digit = '$'; break;
+                        case 40: check_digit = '/'; break;
+                        case 41: check_digit = '+'; break;
+                        default: check_digit = 37; break;
+                    }
+                }
+            }
+
+            charval = positionOf(check_digit, LookUp);
+            p += Code39[charval]; 
+
+            /* Display a space check digit as _, otherwise it looks like an error */
+            if(check_digit == ' ') {
+                check_digit = '_';
+            }
+        }
+        
         dest += "121121211"; // Stop
 
-        readable = "*" + content + "*";
+        if (option2 == 1) {
+            readable = "*" + content + check_digit + "*";
+        } else {
+            readable = "*" + content + "*";
+        }
         pattern = new String[1];
         pattern[0] = dest;
         row_count = 1;

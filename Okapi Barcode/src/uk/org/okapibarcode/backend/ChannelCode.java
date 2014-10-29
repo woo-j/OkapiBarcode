@@ -28,18 +28,13 @@ public class ChannelCode extends Symbol {
     private double currentValue;
     private double targetValue;
     private String horizontalSpacing;
-    private int requestedNumberOfChannels;
-
-    public ChannelCode() {
-        requestedNumberOfChannels = 0;
-    }
 
     @Override
     public boolean encode() {
         int numberOfChannels;
         int i;
-        int range = 0;
         int leadingZeroCount;
+        int requestedNumberOfChannels = option2 + 2;
 
         targetValue = 0;
         horizontalSpacing = "";
@@ -54,14 +49,10 @@ public class ChannelCode extends Symbol {
             return false;
         }
 
-        if ((requestedNumberOfChannels < 2) || (requestedNumberOfChannels > 8)) {
+        if ((requestedNumberOfChannels <= 2) || (requestedNumberOfChannels > 8)) {
             numberOfChannels = 3;
         } else {
             numberOfChannels = requestedNumberOfChannels;
-        }
-
-        if (numberOfChannels == 2) {
-            numberOfChannels = 3;
         }
 
         for (i = 0; i < content.length(); i++) {

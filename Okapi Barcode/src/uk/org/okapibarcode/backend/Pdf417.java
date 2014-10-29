@@ -39,7 +39,7 @@ public class Pdf417 extends Symbol {
     private pdfMode symbolMode;
     private int[] inputData;
 
-    private int[] coefrs = {
+    private final int[] coefrs = {
         /* k = 2 */
         27, 917,
 
@@ -125,7 +125,7 @@ public class Pdf417 extends Symbol {
         63, 310, 863, 251, 366, 304, 282, 738, 675, 410, 389, 244, 31, 121, 303, 263
     };
 
-    private String[] codagemc = {
+    private final String[] codagemc = {
         "urA", "xfs", "ypy", "unk", "xdw", "yoz", "pDA", "uls", "pBk", "eBA",
             "pAs", "eAk", "prA", "uvs", "xhy", "pnk", "utw", "xgz", "fDA", "pls", "fBk", "frA", "pvs",
             "uxy", "fnk", "ptw", "uwz", "fls", "psy", "fvs", "pxy", "ftw", "pwz", "fxy", "yrx", "ufk",
@@ -343,39 +343,38 @@ public class Pdf417 extends Symbol {
             "Ayv", "kze", "kzd", "Aye", "Byu", "Ayd", "Byt", "szp"
     };
 
-    private char[] brSet = {
+    private final char[] brSet = {
         'A', 'B', 'C', 'D', 'E', 'F', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
             'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '*', '+', '-'
     };
 
-    private String[] PDFttf = {
+    private final String[] PDFttf = {
         "00000", "00001", "00010", "00011", "00100", "00101", "00110", "00111",
             "01000", "01001", "01010", "01011", "01100", "01101", "01110", "01111", "10000", "10001",
             "10010", "10011", "10100", "10101", "10110", "10111", "11000", "11001", "11010",
             "11011", "11100", "11101", "11110", "11111", "01", "1111111101010100", "11111101000101001"
     };
 
-    private int[] asciix = {
+    private final int[] asciix = {
         7, 8, 8, 4, 12, 4, 4, 8, 8, 8, 12, 4, 12, 12, 12, 12, 4, 4, 4, 4, 4, 4, 4, 4,
         4, 4, 12, 8, 8, 4, 8, 8, 8, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
         1, 1, 1, 1, 8, 8, 8, 4, 8, 8, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
         2, 2, 2, 2, 8, 8, 8, 8
     };
 
-    private int[] asciiy = {
+    private final int[] asciiy = {
         26, 10, 20, 15, 18, 21, 10, 28, 23, 24, 22, 20, 13, 16, 17, 19, 0, 1, 2, 3,
         4, 5, 6, 7, 8, 9, 14, 0, 1, 23, 2, 25, 3, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
         16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 4, 5, 6, 24, 7, 8, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
         11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 21, 27, 9
     };
     
-    private int[] MicroAutosize = {
+private final int[] MicroAutosize = {
     4, 6, 7, 8, 10, 12, 13, 14, 16, 18, 19, 20, 24, 29, 30, 33, 34, 37, 39, 46, 54, 58, 70, 72, 82, 90, 108, 126,
-	1, 14, 2, 7, 3, 25, 8, 16, 5, 17, 9, 6, 10, 11, 28, 12, 19, 13, 29, 20, 30, 21, 22, 31, 23, 32, 33, 34
-};
+	1, 14, 2, 7, 3, 25, 8, 16, 5, 17, 9, 6, 10, 11, 28, 12, 19, 13, 29, 20, 30, 21, 22, 31, 23, 32, 33, 34 };
     
     /* rows, columns, error codewords, k-offset of valid MicroPDF417 sizes from ISO/IEC 24728:2006 */
-private int[] MicroVariants =
+private final int[] MicroVariants =
 {	1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
 	11, 14, 17, 20, 24, 28, 8, 11, 14, 17, 20, 23, 26, 6, 8, 10, 12, 15, 20, 26, 32, 38, 44, 4, 6, 8, 10, 12, 15, 20, 26, 32, 38, 44,
 	7, 7, 7, 8, 8, 8, 8, 9, 9, 10, 11, 13, 15, 12, 14, 16, 18, 21, 26, 32, 38, 44, 50, 8, 12, 14, 16, 18, 21, 26, 32, 38, 44, 50,
@@ -383,14 +382,14 @@ private int[] MicroVariants =
 /* rows, columns, error codewords, k-offset */
 
 /* following is Left RAP, Centre RAP, Right RAP and Start Cluster from ISO/IEC 24728:2006 tables 10, 11 and 12 */
-private int[] RAPTable =
+private final int[] RAPTable =
 {	1, 8, 36, 19, 9, 25, 1, 1, 8, 36, 19, 9, 27, 1, 7, 15, 25, 37, 1, 1, 21, 15, 1, 47, 1, 7, 15, 25, 37, 1, 1, 21, 15, 1,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 7, 15, 25, 37, 17, 9, 29, 31, 25, 19, 1, 7, 15, 25, 37, 17, 9, 29, 31, 25,
 	9, 8, 36, 19, 17, 33, 1, 9, 8, 36, 19, 17, 35, 1, 7, 15, 25, 37, 33, 17, 37, 47, 49, 43, 1, 7, 15, 25, 37, 33, 17, 37, 47, 49,
 	0, 3, 6, 0, 6, 0, 0, 0, 3, 6, 0, 6, 6, 0, 0, 6, 0, 0, 0, 0, 6, 6, 0, 3, 0, 0, 6, 0, 0, 0, 0, 6, 6, 0 };
 
 /* Left and Right Row Address Pattern from Table 2 */
-private String[] RAPLR = {"", "221311", "311311", "312211", "222211", "213211", "214111", "223111",
+private final String[] RAPLR = {"", "221311", "311311", "312211", "222211", "213211", "214111", "223111",
 	"313111", "322111", "412111", "421111", "331111", "241111", "232111", "231211", "321211",
 	"411211", "411121", "411112", "321112", "312112", "311212", "311221", "311131", "311122",
 	"311113", "221113", "221122", "221131", "221221", "222121", "312121", "321121", "231121",
@@ -398,7 +397,7 @@ private String[] RAPLR = {"", "221311", "311311", "312211", "222211", "213211", 
 	"211123", "211132", "211141", "211231", "211222", "211312", "211321", "211411", "212311" };
 
 /* Centre Row Address Pattern from Table 2 */
-private String[] RAPC = {"", "112231", "121231", "122131", "131131", "131221", "132121", "141121",
+private final String[] RAPC = {"", "112231", "121231", "122131", "131131", "131221", "132121", "141121",
 	"141211", "142111", "133111", "132211", "131311", "122311", "123211", "124111", "115111",
 	"114211", "114121", "123121", "123112", "122212", "122221", "121321", "121411", "112411",
 	"113311", "113221", "113212", "113122", "122122", "131122", "131113", "122113", "113113",
@@ -406,7 +405,7 @@ private String[] RAPC = {"", "112231", "121231", "122131", "131131", "131221", "
 	"111133", "111124", "111214", "112114", "121114", "121123", "121132", "112132", "112141" };
     
 /* MicroPDF417 coefficients from ISO/IEC 24728:2006 Annex F */
-private int[] Microcoeffs = {
+private final int[] Microcoeffs = {
 	/* k = 7 */
 	76, 925, 537, 597, 784, 691, 437,
 	
@@ -593,6 +592,12 @@ private int[] Microcoeffs = {
         /* now compress the data */
         blockCount = 0;
         codeWordCount = 0;
+        
+        if (readerInit) {
+            codeWords[codeWordCount] = 921; /* Reader Initialisation */
+            codeWordCount++;
+        }
+        
         for (i = 0; i < blockIndex; i++) {
             switch (blockType[i]) {
             case TEX:
@@ -621,18 +626,21 @@ private int[] Microcoeffs = {
 
         /* Now take care of the number of CWs per row */
 
-        selectedECCLevel = 6;
-        if (codeWordCount <= 863) {
-            selectedECCLevel = 5;
-        }
-        if (codeWordCount <= 320) {
-            selectedECCLevel = 4;
-        }
-        if (codeWordCount <= 160) {
-            selectedECCLevel = 3;
-        }
-        if (codeWordCount <= 40) {
-            selectedECCLevel = 2;
+        selectedECCLevel = option1;
+        if (selectedECCLevel < 0) {
+            selectedECCLevel = 6;
+            if (codeWordCount <= 863) {
+                selectedECCLevel = 5;
+            }
+            if (codeWordCount <= 320) {
+                selectedECCLevel = 4;
+            }
+            if (codeWordCount <= 160) {
+                selectedECCLevel = 3;
+            }
+            if (codeWordCount <= 40) {
+                selectedECCLevel = 2;
+            }
         }
 
         k = 1;
@@ -640,7 +648,14 @@ private int[] Microcoeffs = {
             k *= 2;
         }
         longueur = codeWordCount;
-        selectedSymbolWidth = (int)(0.5 + Math.sqrt((longueur + k) / 3.0));
+        
+        selectedSymbolWidth = option2;
+        if (selectedSymbolWidth > 30) {
+            selectedSymbolWidth = 30;
+        }
+        if (selectedSymbolWidth < 1) {
+            selectedSymbolWidth = (int)(0.5 + Math.sqrt((longueur + k) / 3.0));
+        }
         if (((longueur + k) / selectedSymbolWidth) > 90) {
             /* stop the symbol from becoming too high */
             selectedSymbolWidth++;
@@ -883,10 +898,11 @@ private int[] Microcoeffs = {
 	/* 541 - now compress the data */
 	blockCount = 0;
 	codeWordCount = 0;
-	//if(symbol->output_options & READER_INIT) {
-	//	codeWords[codeWordCount] = 921; /* Reader Initialisation */
-	//	codeWordCount++;
-	//}
+	if(readerInit) {
+		codeWords[codeWordCount] = 921; /* Reader Initialisation */
+		codeWordCount++;
+        }
+        
 	for(i = 0; i < blockIndex; i++) {
 		switch(blockType[i]) {
 			case TEX: /* 547 - text mode */
@@ -908,9 +924,10 @@ private int[] Microcoeffs = {
             error_msg = "Input data too long";
             return false;
 	}
-	//if(selectedSymbolWidth > 4) {
+        selectedSymbolWidth = option2;
+	if(selectedSymbolWidth > 4) {
 		selectedSymbolWidth = 0;
-	//}
+	}
 
 	if(debug) {
 		System.out.printf("\nEncoded Data Stream:\n");

@@ -21,11 +21,13 @@ package uk.org.okapibarcode.backend;
  */
 public class MsiPlessey extends Symbol {
 
-    String MSI_PlessTable[] = {
+    private final String MSI_PlessTable[] = {
         "12121212", "12121221", "12122112", "12122121", "12211212", "12211221", 
         "12212112", "12212121", "21121212", "21121221"
     };
 
+    //FIXME: Doesn't catch option2, doesn't add check digits.
+    @Override
     public boolean encode() {
         if (!(content.matches("[0-9]+?"))) {
             error_msg = "Invalid characters in input";

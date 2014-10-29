@@ -1710,7 +1710,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
             case "BARCODE_PDF417TRUNC":
             case "BARCODE_HIBC_PDF":
                 option2 = pdfColumnsCombo.getSelectedIndex();
-                option1 = pdfEccCombo.getSelectedIndex();
+                option1 = pdfEccCombo.getSelectedIndex() - 1;
                 break;
             case "BARCODE_MICROPDF417":
             case "BARCODE_HIBC_MICPDF":
@@ -1770,6 +1770,9 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 break;
             case "BARCODE_CHANNEL":
                 option2 = channelChannelsCombo.getSelectedIndex();
+                break;
+            case "BARCODE_MSI_PLESSEY":
+                option2 = msiCheckDigitCombo.getSelectedIndex();
                 break;
         }
         

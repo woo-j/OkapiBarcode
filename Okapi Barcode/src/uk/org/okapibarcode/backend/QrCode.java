@@ -31,80 +31,79 @@ public class QrCode extends Symbol {
         L, M, Q, H
     }
     private qrMode[] inputMode;
-    private int userEccLevel = 1;
     private String binary;
     private int[] datastream;
     private int[] fullstream;
     private byte[] grid;
     private byte[] eval;
 
-    private char[] rhodium = {
+    private final char[] rhodium = {
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E',
             'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
             'U', 'V', 'W', 'X', 'Y', 'Z', ' ', '$', '%', '*', '\'', '+', '-', '.',
             '/', ':'
     };
 
-    private int[] qr_data_codewords_L = {
+    private final int[] qr_data_codewords_L = {
         19, 34, 55, 80, 108, 136, 156, 194, 232, 274, 324, 370, 428, 461, 523, 589, 647,
         721, 795, 861, 932, 1006, 1094, 1174, 1276, 1370, 1468, 1531, 1631,
         1735, 1843, 1955, 2071, 2191, 2306, 2434, 2566, 2702, 2812, 2956
     };
 
-    private int[] qr_data_codewords_M = {
+    private final int[] qr_data_codewords_M = {
         16, 28, 44, 64, 86, 108, 124, 154, 182, 216, 254, 290, 334, 365, 415, 453, 507,
         563, 627, 669, 714, 782, 860, 914, 1000, 1062, 1128, 1193, 1267,
         1373, 1455, 1541, 1631, 1725, 1812, 1914, 1992, 2102, 2216, 2334
     };
 
-    private int[] qr_data_codewords_Q = {
+    private final int[] qr_data_codewords_Q = {
         13, 22, 34, 48, 62, 76, 88, 110, 132, 154, 180, 206, 244, 261, 295, 325, 367,
         397, 445, 485, 512, 568, 614, 664, 718, 754, 808, 871, 911,
         985, 1033, 1115, 1171, 1231, 1286, 1354, 1426, 1502, 1582, 1666
     };
 
-    private int[] qr_data_codewords_H = {
+    private final int[] qr_data_codewords_H = {
         9, 16, 26, 36, 46, 60, 66, 86, 100, 122, 140, 158, 180, 197, 223, 253, 283,
         313, 341, 385, 406, 442, 464, 514, 538, 596, 628, 661, 701,
         745, 793, 845, 901, 961, 986, 1054, 1096, 1142, 1222, 1276
     };
 
-    private int[] qr_blocks_L = {
+    private final int[] qr_blocks_L = {
         1, 1, 1, 1, 1, 2, 2, 2, 2, 4, 4, 4, 4, 4, 6, 6, 6, 6, 7, 8, 8, 9, 9, 10, 12, 12,
         12, 13, 14, 15, 16, 17, 18, 19, 19, 20, 21, 22, 24, 25
     };
 
-    private int[] qr_blocks_M = {
+    private final int[] qr_blocks_M = {
         1, 1, 1, 2, 2, 4, 4, 4, 5, 5, 5, 8, 9, 9, 10, 10, 11, 13, 14, 16, 17, 17, 18, 20,
         21, 23, 25, 26, 28, 29, 31, 33, 35, 37, 38, 40, 43, 45, 47, 49
     };
 
-    private int[] qr_blocks_Q = {
+    private final int[] qr_blocks_Q = {
         1, 1, 2, 2, 4, 4, 6, 6, 8, 8, 8, 10, 12, 16, 12, 17, 16, 18, 21, 20, 23, 23, 25,
         27, 29, 34, 34, 35, 38, 40, 43, 45, 48, 51, 53, 56, 59, 62, 65, 68
     };
 
-    private int[] qr_blocks_H = {
+    private final int[] qr_blocks_H = {
         1, 1, 2, 4, 4, 4, 5, 6, 8, 8, 11, 11, 16, 16, 18, 16, 19, 21, 25, 25, 25, 34, 30,
         32, 35, 37, 40, 42, 45, 48, 51, 54, 57, 60, 63, 66, 70, 74, 77, 81
     };
 
-    private int[] qr_total_codewords = {
+    private final int[] qr_total_codewords = {
         26, 44, 70, 100, 134, 172, 196, 242, 292, 346, 404, 466, 532, 581, 655, 733, 815,
         901, 991, 1085, 1156, 1258, 1364, 1474, 1588, 1706, 1828, 1921, 2051,
         2185, 2323, 2465, 2611, 2761, 2876, 3034, 3196, 3362, 3532, 3706
     };
 
-    private int[] qr_sizes = {
+    private final int[] qr_sizes = {
         21, 25, 29, 33, 37, 41, 45, 49, 53, 57, 61, 65, 69, 73, 77, 81, 85, 89, 93, 97,
         101, 105, 109, 113, 117, 121, 125, 129, 133, 137, 141, 145, 149, 153, 157, 161, 165, 169, 173, 177
     };
 
-    private int[] qr_align_loopsize = {
+    private final int[] qr_align_loopsize = {
         0, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7
     };
 
-    private int[] qr_table_e1 = {
+    private final int[] qr_table_e1 = {
         6, 18, 0, 0, 0, 0, 0,
         6, 22, 0, 0, 0, 0, 0,
         6, 26, 0, 0, 0, 0, 0,
@@ -146,14 +145,14 @@ public class QrCode extends Symbol {
         6, 30, 58, 86, 114, 142, 170
     };
 
-    private int[] qr_annex_c = {
+    private final int[] qr_annex_c = {
         /* Format information bit sequences */
         0x5412, 0x5125, 0x5e7c, 0x5b4b, 0x45f9, 0x40ce, 0x4f97, 0x4aa0, 0x77c4, 0x72f3, 0x7daa, 0x789d,
         0x662f, 0x6318, 0x6c41, 0x6976, 0x1689, 0x13be, 0x1ce7, 0x19d0, 0x0762, 0x0255, 0x0d0c, 0x083b,
         0x355f, 0x3068, 0x3f31, 0x3a06, 0x24b4, 0x2183, 0x2eda, 0x2bed
     };
 
-    private long[] qr_annex_d = {
+    private final long[] qr_annex_d = {
         /* Version information bit sequences */
         0x07c94, 0x085bc, 0x09a99, 0x0a4d3, 0x0bbf6, 0x0c762, 0x0d847, 0x0e60d, 0x0f928, 0x10b78,
         0x1145d, 0x12a17, 0x13532, 0x149a6, 0x15683, 0x168c9, 0x177ec, 0x18ec4, 0x191e1, 0x1afab,
@@ -177,7 +176,7 @@ public class QrCode extends Symbol {
         define_mode();
         est_binlen = estimate_binary_length();
 
-        switch (userEccLevel) {
+        switch (option1) {
         case 1:
             ecc_level = eccMode.L;
             max_cw = 2956;
@@ -231,16 +230,12 @@ public class QrCode extends Symbol {
             }
         }
 
-        /* 	if((symbol->option_2 >= 1) && (symbol->option_2 <= 40)) {
-		if (symbol->option_2 > autosize) {
-			version = symbol->option_2;
-		} else {
-			version = autosize;
-		}
-	} else {
-		version = autosize;
-	} */
         version = autosize;
+        if((option2 >= 1) && (option2 <= 40)) {
+            if (option2 > autosize) {
+                    version = option2;
+            }
+        }
 
         /* Ensure maxium error correction capacity */
         if (est_binlen <= qr_data_codewords_M[version - 1]) {
@@ -1095,8 +1090,6 @@ public class QrCode extends Symbol {
 
         if ((fullstream[i / 8] & (0x80 >> (i % 8))) != 0) {
             resultant = true;
-        } else {
-            resultant = false;
         }
 
         return resultant;
@@ -1105,7 +1098,7 @@ public class QrCode extends Symbol {
     private int apply_bitmask(int size) {
         int x, y;
         char p;
-        int pattern;
+        int local_pattern;
         int best_val, best_pattern;
         int[] penalty = new int[8];
         byte[] mask = new byte[size * size];
@@ -1160,16 +1153,16 @@ public class QrCode extends Symbol {
 
 
         /* Evaluate result */
-        for (pattern = 0; pattern < 8; pattern++) {
-            penalty[pattern] = evaluate(size, pattern);
+        for (local_pattern = 0; local_pattern < 8; local_pattern++) {
+            penalty[local_pattern] = evaluate(size, local_pattern);
         }
 
         best_pattern = 0;
         best_val = penalty[0];
-        for (pattern = 1; pattern < 8; pattern++) {
-            if (penalty[pattern] < best_val) {
-                best_pattern = pattern;
-                best_val = penalty[pattern];
+        for (local_pattern = 1; local_pattern < 8; local_pattern++) {
+            if (penalty[local_pattern] < best_val) {
+                best_pattern = local_pattern;
+                best_val = penalty[local_pattern];
             }
         }
 

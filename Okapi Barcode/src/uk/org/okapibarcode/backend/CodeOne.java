@@ -23,7 +23,7 @@ import java.math.*;
  * @author Robin Stuart <rstuart114@gmail.com>
  */
 public class CodeOne extends Symbol {
-    private int[] c40_shift = {
+    private final int[] c40_shift = {
         1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
         1, 1, 1, 1, 1, 1, 1, 1, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 
@@ -32,7 +32,7 @@ public class CodeOne extends Symbol {
         3, 3, 3, 3, 3, 3, 3, 3
     };
 
-    private int[] c40_value = {
+    private final int[] c40_value = {
         0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 
         20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 3, 0, 1, 2, 3, 4, 5, 6, 
         7, 8, 9, 10, 11, 12, 13, 14, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16, 
@@ -42,7 +42,7 @@ public class CodeOne extends Symbol {
         20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31
     };
 
-    private int[] text_shift = {
+    private final int[] text_shift = {
         1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
         1, 1, 1, 1, 1, 1, 1, 1, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 
@@ -51,7 +51,7 @@ public class CodeOne extends Symbol {
         0, 0, 0, 3, 3, 3, 3, 3
     };
 
-    private int[] text_value = {
+    private final int[] text_value = {
         0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 
         20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 3, 0, 1, 2, 3, 4, 5, 6, 
         7, 8, 9, 10, 11, 12, 13, 14, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16, 
@@ -61,35 +61,34 @@ public class CodeOne extends Symbol {
         33, 34, 35, 36, 37, 38, 39, 27, 28, 29, 30, 31
     };
 
-    private int[] c1_height = {
+    private final int[] c1_height = {
         16, 22, 28, 40, 52, 70, 104, 148
     };
-    private int[] c1_width = {
+    private final int[] c1_width = {
         18, 22, 32, 42, 54, 76, 98, 134
     };
-    private int[] c1_data_length = {
+    private final int[] c1_data_length = {
         10, 19, 44, 91, 182, 370, 732, 1480
     };
-    private int[] c1_ecc_length = {
+    private final int[] c1_ecc_length = {
         10, 16, 26, 44, 70, 140, 280, 560
     };
-    private int[] c1_blocks = {
+    private final int[] c1_blocks = {
         1, 1, 1, 1, 1, 2, 4, 8
     };
-    private int[] c1_data_blocks = {
+    private final int[] c1_data_blocks = {
         10, 19, 44, 91, 182, 185, 183, 185
     };
-    private int[] c1_ecc_blocks = {
+    private final int[] c1_ecc_blocks = {
         10, 16, 26, 44, 70, 70, 70, 70
     };
-    private int[] c1_grid_width = {
+    private final int[] c1_grid_width = {
         4, 5, 7, 9, 12, 17, 22, 30
     };
-    private int[] c1_grid_height = {
+    private final int[] c1_grid_height = {
         5, 7, 10, 15, 21, 30, 46, 68
     };
 
-    private int option_2 = -1; //FIXME: Should come from user
     private enum c1Mode {
         C1_ASCII, C1_C40, C1_DECIMAL, C1_TEXT, C1_EDI, C1_BYTE
     };
@@ -116,7 +115,7 @@ public class CodeOne extends Symbol {
         int[] sub_data = new int[190];
         String bin;
 
-        if (option_2 == 9) {
+        if (option2 == 9) {
             /* Version S */
             
             encodeInfo += "Version: S";
@@ -210,7 +209,7 @@ public class CodeOne extends Symbol {
             symbol_width = 10 * sub_version + 1;
         }
 
-        if (option_2 == 10) {
+        if (option2 == 10) {
             /* Version T */
             
             encodeInfo += "Version: T\n";
@@ -306,7 +305,7 @@ public class CodeOne extends Symbol {
             symbol_width = (sub_version * 16) + 1;
         }
 
-        if ((option_2 != 9) && (option_2 != 10)) {
+        if ((option2 != 9) && (option2 != 10)) {
             /* Version A to H */
             for (i = 0; i < 1500; i++) {
                 data[i] = 0;
@@ -324,8 +323,8 @@ public class CodeOne extends Symbol {
                 }
             }
 
-            if (option_2 > size) {
-                size = option_2;
+            if (option2 > size) {
+                size = option2;
             }
             
             encodeInfo += "Version:  " + (char)((size - 1) + 'A') + "\n";
@@ -922,9 +921,7 @@ public class CodeOne extends Symbol {
             }
 
             if (current_mode == c1Mode.C1_C40) { /* Step C - C40 encodation */
-                value = 0;
                 done = false;
-                latch = false;
                 next_mode = c1Mode.C1_C40;
                 if (c40_p == 0) {
                     if ((length - sourcePoint) >= 12) {
@@ -1026,9 +1023,7 @@ public class CodeOne extends Symbol {
             }
 
             if (current_mode == c1Mode.C1_TEXT) { /* Step D - Text encodation */
-                value = 0;
                 done = false;
-                latch = false;
                 next_mode = c1Mode.C1_TEXT;
                 if (text_p == 0) {
                     if ((length - sourcePoint) >= 12) {
@@ -1132,8 +1127,6 @@ public class CodeOne extends Symbol {
             if (current_mode == c1Mode.C1_EDI) { /* Step E - EDI Encodation */
 
                 value = 0;
-                done = false;
-                latch = false;
                 next_mode = c1Mode.C1_EDI;
                 if (edi_p == 0) {
                     if ((length - sourcePoint) >= 12) {
@@ -1148,7 +1141,6 @@ public class CodeOne extends Symbol {
 
                         if (j == 12) {
                             next_mode = c1Mode.C1_ASCII;
-                            done = true;
                         }
                     }
 
@@ -1175,7 +1167,6 @@ public class CodeOne extends Symbol {
 
                         if ((j == 8) && latch) {
                             next_mode = c1Mode.C1_ASCII;
-                            done = true;
                         }
                     }
 
@@ -1236,7 +1227,6 @@ public class CodeOne extends Symbol {
 
             if (current_mode == c1Mode.C1_DECIMAL) { /* Step F - Decimal encodation */
 
-                value = 0;
                 next_mode = c1Mode.C1_DECIMAL;
 
                 data_left = length - sourcePoint;
@@ -1731,7 +1721,6 @@ public class CodeOne extends Symbol {
             }
 
             if (byte_count <= best_count) {
-                best_count = (int) byte_count;
                 best_scheme = c1Mode.C1_BYTE;
             }
         } else {
@@ -1750,7 +1739,6 @@ public class CodeOne extends Symbol {
                 if (c40_count < edi_count) {
                     best_scheme = c1Mode.C1_C40;
                 } else {
-                    done = 0;
                     if (c40_count == edi_count) {
                         if (preferEdi(sourcelen, position)) {
                             best_scheme = c1Mode.C1_EDI;
@@ -1791,7 +1779,7 @@ public class CodeOne extends Symbol {
     }
 
     private double roundUpToNextInteger(double input) {
-        double fraction, output = 0.0;
+        double fraction, output;
 
         fraction = input - (int) input;
         if (fraction > 0.01) {

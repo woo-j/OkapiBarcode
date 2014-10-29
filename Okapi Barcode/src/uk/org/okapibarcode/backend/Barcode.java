@@ -377,6 +377,7 @@ public class Barcode {
         case "BARCODE_CODE39":
         case "BARCODE_HIBC_39":
             code3of9.hibc = this.hibc;
+            code3of9.option2 = this.option2;
             if (code3of9.setContent(this.content)) {
                 this.rect = code3of9.rect;
                 this.symbol_height = code3of9.symbol_height;
@@ -437,6 +438,7 @@ public class Barcode {
             };
             break;
         case "BARCODE_EXCODE39":
+            code3of9ext.option2 = this.option2;
             if (code3of9ext.setContent(this.content)) {
                 this.rect = code3of9ext.rect;
                 this.symbol_height = code3of9ext.symbol_height;
@@ -679,6 +681,7 @@ public class Barcode {
             }
             break;
         case "BARCODE_CHANNEL":
+            channelCode.option2 = this.option2;
             if (channelCode.setContent(this.content)) {
                 this.rect = channelCode.rect;
                 this.symbol_height = channelCode.symbol_height;
@@ -730,6 +733,7 @@ public class Barcode {
         case "BARCODE_HIBC_PDF":
             pdf417.gs1 = this.gs1;
             pdf417.hibc = this.hibc;
+            pdf417.option2 = this.option2;
             pdf417.readerInit = this.readerInit;
             pdf417.setNormalMode();
             if (pdf417.setContent(this.content)) {
@@ -746,6 +750,7 @@ public class Barcode {
         case "BARCODE_PDF417TRUNC":
             pdf417.gs1 = this.gs1;
             pdf417.hibc = this.hibc;
+            pdf417.option2 = this.option2;
             pdf417.readerInit = this.readerInit;
             pdf417.setTruncMode();
             if (pdf417.setContent(this.content)) {
@@ -764,6 +769,7 @@ public class Barcode {
             pdf417.gs1 = this.gs1;
             pdf417.hibc = this.hibc;
             pdf417.readerInit = this.readerInit;
+            pdf417.option2 = this.option2;
             pdf417.setMicroMode();
             if (pdf417.setContent(this.content)) {
                 this.rect = pdf417.rect;
@@ -811,6 +817,7 @@ public class Barcode {
             dataMatrix.gs1 = this.gs1;
             dataMatrix.hibc = this.hibc;
             dataMatrix.readerInit = this.readerInit;
+            dataMatrix.option2 = this.option2;
             if (dataMatrix.setContent(this.content)) {
                 this.rect = dataMatrix.rect;
                 this.symbol_height = dataMatrix.symbol_height;
@@ -838,6 +845,8 @@ public class Barcode {
         case "BARCODE_HIBC_QR":
             qrCode.gs1 = this.gs1;
             qrCode.hibc = this.hibc;
+            qrCode.option1 = this.option1;
+            qrCode.option2 = this.option2;
             qrCode.readerInit = this.readerInit;
             if (qrCode.setContent(this.content)) {
                 this.rect = qrCode.rect;
@@ -851,6 +860,8 @@ public class Barcode {
             }
             break;
         case "BARCODE_MICROQR":
+            microQrCode.option1 = this.option1;
+            microQrCode.option2 = this.option2;
             if (microQrCode.setContent(this.content)) {
                 this.rect = microQrCode.rect;
                 this.symbol_height = microQrCode.symbol_height;
@@ -866,6 +877,7 @@ public class Barcode {
             codeOne.gs1 = this.gs1;
             codeOne.hibc = this.hibc;
             codeOne.readerInit = this.readerInit;
+            codeOne.option2 = this.option2;
             if (codeOne.setContent(this.content)) {
                 this.rect = codeOne.rect;
                 this.symbol_height = codeOne.symbol_height;
@@ -881,6 +893,8 @@ public class Barcode {
             gridMatrix.gs1 = this.gs1;
             gridMatrix.hibc = this.hibc;
             gridMatrix.readerInit = this.readerInit;
+            gridMatrix.option1 = this.option1;
+            gridMatrix.option2 = this.option2;
             if (gridMatrix.setContent(this.content)) {
                 this.rect = gridMatrix.rect;
                 this.symbol_height = gridMatrix.symbol_height;

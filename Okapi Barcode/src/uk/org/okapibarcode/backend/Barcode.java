@@ -363,6 +363,7 @@ public class Barcode {
             };
             break;
         case "BARCODE_MSI_PLESSEY":
+            msiPlessey.option2 = this.option2;
             if (msiPlessey.setContent(this.content)) {
                 this.rect = msiPlessey.rect;
                 this.symbol_height = msiPlessey.symbol_height;

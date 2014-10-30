@@ -797,6 +797,12 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         maxiPrimaryDataLabel.setEnabled(false);
 
         maxiEncodingModeCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Structured Carrier Message (Mode 2 or 3)", "Standard Symbol, SEC (Mode 4)", "Full ECC Symbol (Mode 5)", "Reader Program, SEC (Mode 6)" }));
+        maxiEncodingModeCombo.setSelectedIndex(1);
+        maxiEncodingModeCombo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                maxiEncodingModeComboActionPerformed(evt);
+            }
+        });
 
         maxiPrimaryData.setText("Primary Data Here!");
         maxiPrimaryData.setEnabled(false);
@@ -1521,6 +1527,17 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         // TODO add your handling code here:
     }//GEN-LAST:event_gridmatrixUserSizeComboActionPerformed
 
+    private void maxiEncodingModeComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_maxiEncodingModeComboActionPerformed
+        // TODO add your handling code here:
+        if (maxiEncodingModeCombo.getSelectedIndex() == 0) {
+            maxiPrimaryData.setEnabled(true);
+            maxiPrimaryDataLabel.setEnabled(true);
+        } else {
+            maxiPrimaryData.setEnabled(false);
+            maxiPrimaryDataLabel.setEnabled(false);
+        }
+    }//GEN-LAST:event_maxiEncodingModeComboActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -1745,7 +1762,9 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 break;
             case "BARCODE_MAXICODE":
                 option1 = maxiEncodingModeCombo.getSelectedIndex();
-                // FIXME: Get primary data
+                if (option1 == 0) {
+                    barcode.setPrimary(maxiPrimaryData.getText());
+                }
                 break;
             case "BARCODE_AZTEC":
             case "BARCODE_HIBC_AZTEC":

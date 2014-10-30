@@ -1277,7 +1277,11 @@
                                 <StringItem index="3" value="Reader Program, SEC (Mode 6)"/>
                               </StringArray>
                             </Property>
+                            <Property name="selectedIndex" type="int" value="1"/>
                           </Properties>
+                          <Events>
+                            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="maxiEncodingModeComboActionPerformed"/>
+                          </Events>
                         </Component>
                         <Component class="javax.swing.JTextField" name="maxiPrimaryData">
                           <Properties>

@@ -25,7 +25,7 @@ import java.awt.geom.Ellipse2D;
  */
 public class MaxiCode extends Symbol {
 
-    private int[] MaxiGrid = { /* ISO/IEC 16023 Figure 5 - MaxiCode Module Sequence */ /* 30 x 33 data grid */
+    private final int[] MaxiGrid = { /* ISO/IEC 16023 Figure 5 - MaxiCode Module Sequence */ /* 30 x 33 data grid */
         122, 121, 128, 127, 134, 133, 140, 139, 146, 145, 152, 151, 158, 157, 164, 163, 170, 169, 176, 175, 182, 181, 188, 187, 194, 193, 200, 199, 0, 0,
         124, 123, 130, 129, 136, 135, 142, 141, 148, 147, 154, 153, 160, 159, 166, 165, 172, 171, 178, 177, 184, 183, 190, 189, 196, 195, 202, 201, 817, 0,
         126, 125, 132, 131, 138, 137, 144, 143, 150, 149, 156, 155, 162, 161, 168, 167, 174, 173, 180, 179, 186, 185, 192, 191, 198, 197, 204, 203, 819, 818,
@@ -60,7 +60,7 @@ public class MaxiCode extends Symbol {
         736, 735, 742, 741, 748, 747, 754, 753, 760, 759, 766, 765, 772, 771, 778, 777, 784, 783, 790, 789, 796, 795, 802, 801, 808, 807, 814, 813, 862, 0,
         738, 737, 744, 743, 750, 749, 756, 755, 762, 761, 768, 767, 774, 773, 780, 779, 786, 785, 792, 791, 798, 797, 804, 803, 810, 809, 816, 815, 864, 863
     };
-    private int[] maxiCodeSet = { /* from Appendix A - ASCII character to Code Set (e.g. 2 = Set B) */
+    private final int[] maxiCodeSet = { /* from Appendix A - ASCII character to Code Set (e.g. 2 = Set B) */
         /* set 0 refers to special characters that fit into more than one set (e.g. GS) */
         5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0, 5, 5, 5, 5, 5, 5,
         5, 5, 5, 5, 5, 5, 5, 5, 0, 0, 0, 5, 0, 2, 1, 1, 1, 1, 1, 1,
@@ -76,7 +76,7 @@ public class MaxiCode extends Symbol {
         3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
         4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4
     };
-    private int[] maxiSymbolChar = { /* from Appendix A - ASCII character to symbol value */
+    private final int[] maxiSymbolChar = { /* from Appendix A - ASCII character to symbol value */
         0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
         20, 21, 22, 23, 24, 25, 26, 30, 28, 29, 30, 35, 32, 53, 34, 35, 36, 37, 38, 39,
         40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 37,
@@ -92,21 +92,16 @@ public class MaxiCode extends Symbol {
         16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 32, 33, 34, 35, 36
     };
     private int[] maxi_codeword = new int[144];
-    private String primary = "";
     private int[] source;
     private int[] set = new int[144];
     private int[] character = new int[144];
     private boolean[][] grid = new boolean[33][30];
 
-    public void setPrimary(String input) {
-        primary = input;
-    }
-
     @Override
     public boolean encode() {
         byte[] inputBytes;
-        int i, j, block, bit, mode, countrycode = 0, service = 0, lp = 0;
-        int internal_error = 0, eclen, error_number;
+        int i, j, block, bit, mode, countrycode = 0, service = 0;
+        int eclen;
         int[] bit_pattern = new int[7];
         String postcode;
         String countrystr;
@@ -126,25 +121,39 @@ public class MaxiCode extends Symbol {
             source[i] = inputBytes[i] & 0xFF;
         }
 
-        mode = -1;
+        mode = option1 + 2;
+        
+        if (mode >= 3) {
+            mode++;
+        }
+        
+        if (mode == 2) {
+            for (i = 0; i < 10 && i < primaryData.length(); i++) {
+                if ((primaryData.charAt(i) < '0') || (primaryData.charAt(i) > '9')) {
+                    mode = 3;
+                    break;
+                }
+            }
+        }
+        
         postcode = "";
         countrystr = "";
         servicestr = "";
 
-        if (mode == -1) { /* If mode is unspecified */
-            lp = primary.length();
-            if (lp == 0) {
-                mode = 4;
-            } else {
-                mode = 2;
-                for (i = 0; i < 10 && i < lp; i++) {
-                    if ((primary.charAt(i) < '0') || (primary.charAt(i) > '9')) {
-                        mode = 3;
-                        break;
-                    }
-                }
-            }
-        }
+//        if (mode == -1) { /* If mode is unspecified */
+//            lp = primaryData.length();
+//            if (lp == 0) {
+//                mode = 4;
+//            } else {
+//                mode = 2;
+//                for (i = 0; i < 10 && i < lp; i++) {
+//                    if ((primaryData.charAt(i) < '0') || (primaryData.charAt(i) > '9')) {
+//                        mode = 3;
+//                        break;
+//                    }
+//                }
+//            }
+//        }
 
         if ((mode < 2) || (mode > 6)) { /* Only codes 2 to 6 supported */
             error_msg = "Invalid Maxicode Mode";
@@ -152,25 +161,23 @@ public class MaxiCode extends Symbol {
         }
 
         if ((mode == 2) || (mode == 3)) { /* Modes 2 and 3 need data in symbol->primary */
-            if (lp == 0) { /* Mode set manually means lp doesn't get set */
-                lp = primary.length();
-            }
-            if (lp != 15) {
+            
+            if (primaryData.length() != 15) {
                 error_msg = "Invalid Primary String";
                 return false;
             }
 
             for (i = 9; i < 15; i++) { /* check that country code and service are numeric */
-                if ((primary.charAt(i) < '0') || (primary.charAt(i) > '9')) {
+                if ((primaryData.charAt(i) < '0') || (primaryData.charAt(i) > '9')) {
                     error_msg = "Invalid Primary String";
                     return false;
                 }
             }
 
-            postcode = primary.substring(0, 9);
+            postcode = primaryData.substring(0, 9);
 
             if (mode == 2) {
-                for (i = 0; i < 10; i++) {
+                for (i = 0; i < 9; i++) {
                     if (postcode.charAt(i) == ' ') {
                         postcode = postcode.substring(0, i);
                     }
@@ -181,8 +188,8 @@ public class MaxiCode extends Symbol {
 
             }
 
-            countrystr = primary.substring(9, 12);
-            servicestr = primary.substring(12, 15);
+            countrystr = primaryData.substring(9, 12);
+            servicestr = primaryData.substring(12, 15);
 
             for (i = 0; i < countrystr.length(); i++) {
                 countrycode *= 10;
@@ -298,7 +305,7 @@ public class MaxiCode extends Symbol {
         /* Format structured primary for Mode 2 */
         int postcode_length, postcode_num = 0, i;
 
-        for (i = 0; i < 10; i++) {
+        for (i = 0; i < 9; i++) {
             if ((postcode.charAt(i) < '0') || (postcode.charAt(i) > '9')) {
                 postcode = postcode.substring(0, i);
             }
@@ -363,8 +370,9 @@ public class MaxiCode extends Symbol {
          compressing data, but should suffice for most applications */
 
         int length = content.length();
-        int i, j, done, count, current_set;
+        int i, j, count, current_set;
         int value;
+        boolean done;
 
         if (length > 138) {
             return false;
@@ -393,7 +401,7 @@ public class MaxiCode extends Symbol {
 
         for (i = 1; i < length; i++) {
             if (set[i] == 0) {
-                done = 0;
+                done = false;
                 /* Special character */
                 if (character[i] == 13) {
                     /* Carriage Return */
@@ -409,10 +417,10 @@ public class MaxiCode extends Symbol {
                             set[i] = 1;
                         }
                     }
-                    done = 1;
+                    done = true;
                 }
 
-                if ((character[i] == 28) && (done == 0)) {
+                if ((character[i] == 28) && (!done)) {
                     /* FS */
                     if (set[i - 1] == 5) {
                         character[i] = 32;
@@ -420,10 +428,10 @@ public class MaxiCode extends Symbol {
                     } else {
                         set[i] = set[i - 1];
                     }
-                    done = 1;
+                    done = true;
                 }
 
-                if ((character[i] == 29) && (done == 0)) {
+                if ((character[i] == 29) && (!done)) {
                     /* GS */
                     if (set[i - 1] == 5) {
                         character[i] = 33;
@@ -431,10 +439,10 @@ public class MaxiCode extends Symbol {
                     } else {
                         set[i] = set[i - 1];
                     }
-                    done = 1;
+                    done = true;
                 }
 
-                if ((character[i] == 30) && (done == 0)) {
+                if ((character[i] == 30) && (!done)) {
                     /* RS */
                     if (set[i - 1] == 5) {
                         character[i] = 34;
@@ -442,10 +450,10 @@ public class MaxiCode extends Symbol {
                     } else {
                         set[i] = set[i - 1];
                     }
-                    done = 1;
+                    done = true;
                 }
 
-                if ((character[i] == 32) && (done == 0)) {
+                if ((character[i] == 32) && (!done)) {
                     /* Space */
                     if (set[i - 1] == 1) {
                         character[i] = 32;
@@ -474,10 +482,10 @@ public class MaxiCode extends Symbol {
                             set[i] = set[i - 1];
                         }
                     }
-                    done = 1;
+                    done = true;
                 }
 
-                if ((character[i] == 44) && (done == 0)) {
+                if ((character[i] == 44) && (!done)) {
                     /* Comma */
                     if (set[i - 1] == 2) {
                         character[i] = 48;
@@ -490,10 +498,10 @@ public class MaxiCode extends Symbol {
                             set[i] = 1;
                         }
                     }
-                    done = 1;
+                    done = true;
                 }
 
-                if ((character[i] == 46) && (done == 0)) {
+                if ((character[i] == 46) && (!done)) {
                     /* Full Stop */
                     if (set[i - 1] == 2) {
                         character[i] = 49;
@@ -506,10 +514,10 @@ public class MaxiCode extends Symbol {
                             set[i] = 1;
                         }
                     }
-                    done = 1;
+                    done = true;
                 }
 
-                if ((character[i] == 47) && (done == 0)) {
+                if ((character[i] == 47) && (!done)) {
                     /* Slash */
                     if (set[i - 1] == 2) {
                         character[i] = 50;
@@ -522,10 +530,10 @@ public class MaxiCode extends Symbol {
                             set[i] = 1;
                         }
                     }
-                    done = 1;
+                    done = true;
                 }
 
-                if ((character[i] == 58) && (done == 0)) {
+                if ((character[i] == 58) && (!done)) {
                     /* Colon */
                     if (set[i - 1] == 2) {
                         character[i] = 51;
@@ -538,7 +546,6 @@ public class MaxiCode extends Symbol {
                             set[i] = 1;
                         }
                     }
-                    done = 1;
                 }
             }
         }

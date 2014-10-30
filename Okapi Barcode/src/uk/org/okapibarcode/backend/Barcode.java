@@ -38,6 +38,7 @@ public class Barcode {
     private Composite composite;
     private boolean isComposite;
     public String encodeInfo;
+    private String primaryData = "";
 
     private int option1;
     private int option2;
@@ -72,6 +73,10 @@ public class Barcode {
         hibc = false;
         readerInit = true;
         isComposite = false;
+    }
+    
+    public void setPrimary(String input) {
+        primaryData = input;
     }
     
     public void setCompositeContent(String inputData) {
@@ -1022,6 +1027,8 @@ public class Barcode {
             }
             break;
         case "BARCODE_MAXICODE":
+            maxiCode.setPrimary(this.primaryData);
+            maxiCode.option1 = this.option1;
             if (maxiCode.setContent(this.content)) {
                 this.hex = maxiCode.hex;
                 this.target = maxiCode.target;

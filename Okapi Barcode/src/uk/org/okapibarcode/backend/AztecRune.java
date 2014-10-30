@@ -152,7 +152,9 @@ public class AztecRune extends Symbol {
             }
         }
 
-        System.out.println("Binary: " + reversedBinaryDataStream);
+        if (debug) {
+            System.out.println("Binary: " + reversedBinaryDataStream);
+        }
 
         rowBinary = "";
         readable = "";

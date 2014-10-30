@@ -819,6 +819,11 @@ public class Barcode {
             dataMatrix.hibc = this.hibc;
             dataMatrix.readerInit = this.readerInit;
             dataMatrix.option2 = this.option2;
+            if (option1 == 1) {
+                dataMatrix.forceSquare(true);
+            } else {
+                dataMatrix.forceSquare(false);
+            }
             if (dataMatrix.setContent(this.content)) {
                 this.rect = dataMatrix.rect;
                 this.symbol_height = dataMatrix.symbol_height;

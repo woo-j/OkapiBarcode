@@ -1721,6 +1721,9 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 break;
             case "BARCODE_DATAMATRIX":
             case "BARCODE_HIBC_DM":
+                if (dataMatrixSquareOnlyCheck.isSelected()) {
+                    option1 = 1;
+                }
                 option2 = dataMatrixSizeCombo.getSelectedIndex();
                 break;
             case "BARCODE_QRCODE":

@@ -125,7 +125,7 @@ public class Barcode {
 		case "BARCODE_DATAMATRIX":
 		case "BARCODE_CODEONE":
 		case "BARCODE_CODE49":
-		case "BARCODE_QR":
+		case "BARCODE_QRCODE":
                 case "BARCODE_CODABLOCKF":
                     return encodeData();
                     // break;

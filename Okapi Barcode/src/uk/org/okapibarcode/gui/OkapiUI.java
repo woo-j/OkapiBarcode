@@ -151,6 +151,8 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         loadDataButton = new javax.swing.JButton();
         topPanel = new javax.swing.JPanel();
         errorLabel = new javax.swing.JLabel();
+        addCompositeButton = new javax.swing.JButton();
+        useGS1Check = new javax.swing.JCheckBox();
         batchPanel = new javax.swing.JPanel();
         startField = new javax.swing.JTextField();
         stopField = new javax.swing.JTextField();
@@ -275,43 +277,65 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         topPanelLayout.setHorizontalGroup(
             topPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, topPanelLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(186, Short.MAX_VALUE)
                 .addComponent(errorLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 322, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(164, 164, 164))
         );
         topPanelLayout.setVerticalGroup(
             topPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, topPanelLayout.createSequentialGroup()
-                .addContainerGap(268, Short.MAX_VALUE)
+                .addContainerGap(237, Short.MAX_VALUE)
                 .addComponent(errorLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(194, 194, 194))
         );
+
+        addCompositeButton.setText("...");
+        addCompositeButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addCompositeButtonActionPerformed(evt);
+            }
+        });
+
+        useGS1Check.setText("Use GS1 Data Encodation");
+        useGS1Check.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                useGS1CheckActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout singlePanelLayout = new javax.swing.GroupLayout(singlePanel);
         singlePanel.setLayout(singlePanelLayout);
         singlePanelLayout.setHorizontalGroup(
             singlePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(singlePanelLayout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, singlePanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(singlePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(compositeLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 78, Short.MAX_VALUE)
+                    .addComponent(compositeLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 70, Short.MAX_VALUE)
                     .addGroup(singlePanelLayout.createSequentialGroup()
                         .addComponent(inputLabel)
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(singlePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(singlePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(useGS1Check, javax.swing.GroupLayout.PREFERRED_SIZE, 245, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(singlePanelLayout.createSequentialGroup()
-                        .addComponent(dataInputField, javax.swing.GroupLayout.PREFERRED_SIZE, 493, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(loadDataButton))
-                    .addComponent(compositeInputField))
+                        .addGroup(singlePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(dataInputField, javax.swing.GroupLayout.DEFAULT_SIZE, 520, Short.MAX_VALUE)
+                            .addComponent(compositeInputField))
+                        .addGap(8, 8, 8)
+                        .addGroup(singlePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(loadDataButton, javax.swing.GroupLayout.DEFAULT_SIZE, 60, Short.MAX_VALUE)
+                            .addComponent(addCompositeButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap())
-            .addComponent(topPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 656, Short.MAX_VALUE)
+            .addGroup(singlePanelLayout.createSequentialGroup()
+                .addComponent(topPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 672, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 16, Short.MAX_VALUE))
         );
         singlePanelLayout.setVerticalGroup(
             singlePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, singlePanelLayout.createSequentialGroup()
-                .addComponent(topPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 490, Short.MAX_VALUE)
+                .addComponent(topPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 459, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 9, Short.MAX_VALUE)
+                .addComponent(useGS1Check)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(singlePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(dataInputField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -320,7 +344,8 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(singlePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(compositeInputField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(compositeLabel))
+                    .addComponent(compositeLabel)
+                    .addComponent(addCompositeButton))
                 .addContainerGap())
         );
 
@@ -437,7 +462,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                             .addComponent(prefixField, javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(folderField, javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(outFormatCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 365, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 47, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 79, Short.MAX_VALUE)
                         .addGroup(batchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(directoryButton, javax.swing.GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE)
                             .addComponent(runBatchButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
@@ -545,9 +570,19 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         aztecUserSizeCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "15 X 15 Compact", "19 X 19 Compact", "23 X 23 Compact", "27 X 27 Compact", "19 X 19", "23 X 23", "27 X 27", "31 X 31", "37 X 37", "41 X 41", "45 X 45", "49 X 49", "53 X 53", "57 X 57", "61 X 61", "67 X 67", "71 X 71", "75 X 75", "79 X 79", "83 X 83", "87 X 87", "91 X 91", "95 X 95", "101 X 101", "105 X 105", "109 X 109", "113 X 113", "117 X 117", "121 X 121", "125 X 125", "131 X 131", "135 X 135", "139 X 139", "143 X 143", "147 X 147", "151 X 151" }));
         aztecUserSizeCombo.setEnabled(false);
+        aztecUserSizeCombo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                aztecUserSizeComboActionPerformed(evt);
+            }
+        });
 
         aztecUserEccCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "10% + 3 words", "23% + 3 words", "36% + 3 words", "50% + 3 words" }));
         aztecUserEccCombo.setEnabled(false);
+        aztecUserEccCombo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                aztecUserEccComboActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout aztecPanelLayout = new javax.swing.GroupLayout(aztecPanel);
         aztecPanel.setLayout(aztecPanelLayout);
@@ -614,6 +649,11 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         code39CheckLabel.setText("Check Digit Option:");
 
         code39CheckCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "No Check Digit", "Mod-43 Check Digit" }));
+        code39CheckCombo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                code39CheckComboActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout code39PanelLayout = new javax.swing.GroupLayout(code39Panel);
         code39Panel.setLayout(code39PanelLayout);
@@ -638,6 +678,11 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         codeOneSizeLabel.setText("Symbol Size:");
 
         codeOneSizeCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Automatic", "16 X 18 (Version A)", "22 X 22 (Version B)", "28 X 32 (Version C)", "40 X 42 (Version D)", "52 X 54 (Version E)", "70 X 76 (Version F)", "104 X 98 (Version G)", "148 X 134 (Version H)", "8X Height (Version S)", "16X Height (Version T)" }));
+        codeOneSizeCombo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                codeOneSizeComboActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout codeOnePanelLayout = new javax.swing.GroupLayout(codeOnePanel);
         codeOnePanel.setLayout(codeOnePanelLayout);
@@ -662,6 +707,11 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         databarColumnsLabel.setText("Number of Columns:");
 
         databarColumnsCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Automatic", "1", "2", "3", "4", "5", "6", "7", "8", "9" }));
+        databarColumnsCombo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                databarColumnsComboActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout databarPanelLayout = new javax.swing.GroupLayout(databarPanel);
         databarPanel.setLayout(databarPanelLayout);
@@ -686,6 +736,11 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         dataMatrixSizeLabel.setText("Symbol Size:");
 
         dataMatrixSizeCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Automatic", "10 X 10", "12 X 12", "14 X 14", "16 X 16", "18 X 18", "20 X 20", "22 X 22", "24 X 24", "26 X 26", "32 X 32", "36 X 36", "40 X 40", "44 X 44", "48 X 48", "52 X 52", "64 X 64", "72 X 72", "80 X 80", "88 X 88", "96 X 96", "104 X 104", "120 X 120", "132 X 132", "144 X 144", "8 X 18", "8 X 32", "12 X 26", "12 X 36", "16 X 36", "16 X 48" }));
+        dataMatrixSizeCombo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                dataMatrixSizeComboActionPerformed(evt);
+            }
+        });
 
         dataMatrixSquareOnlyCheck.setSelected(true);
         dataMatrixSquareOnlyCheck.setText("Supress Rectangular Symbols in Automatic Mode");
@@ -758,6 +813,11 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         gridmatrixUserEccCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Approx 10%", "Approx 20%", "Approx 30%", "Approx 40%", "Approx 50%" }));
         gridmatrixUserEccCombo.setEnabled(false);
+        gridmatrixUserEccCombo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                gridmatrixUserEccComboActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout gridmatrixPanelLayout = new javax.swing.GroupLayout(gridmatrixPanel);
         gridmatrixPanel.setLayout(gridmatrixPanelLayout);
@@ -806,6 +866,11 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         maxiPrimaryData.setText("Primary Data Here!");
         maxiPrimaryData.setEnabled(false);
+        maxiPrimaryData.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                maxiPrimaryDataActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout maxicodePanelLayout = new javax.swing.GroupLayout(maxicodePanel);
         maxicodePanel.setLayout(maxicodePanelLayout);
@@ -840,6 +905,11 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         microPdfColumnsLabel.setText("Number of Data Columns:");
 
         microPdfColumnsCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Automatic", "1", "2", "3", "4" }));
+        microPdfColumnsCombo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                microPdfColumnsComboActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout microPdfPanelLayout = new javax.swing.GroupLayout(microPdfPanel);
         microPdfPanel.setLayout(microPdfPanelLayout);
@@ -887,9 +957,19 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         microQrUserSizeCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "11 X 11 (Version M1)", "13 X 13 (Version M2)", "15 X 15 (Version M3)", "17 X 17 (Version M4)" }));
         microQrUserSizeCombo.setEnabled(false);
+        microQrUserSizeCombo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                microQrUserSizeComboActionPerformed(evt);
+            }
+        });
 
         microQrUserEccCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Approx 20% (Level L)", "Approx 37% (Level M)", "Approx 55% (Level Q)" }));
         microQrUserEccCombo.setEnabled(false);
+        microQrUserEccCombo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                microQrUserEccComboActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout microQrPanelLayout = new javax.swing.GroupLayout(microQrPanel);
         microQrPanel.setLayout(microQrPanelLayout);
@@ -926,6 +1006,11 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         msiCheckDigitLabel.setText("Check Digit:");
 
         msiCheckDigitCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "None", "Mod-10", "Mod-10 & Mod-10", "Mod-11", "Mod-11 & Mod-10" }));
+        msiCheckDigitCombo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                msiCheckDigitComboActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout msiPanelLayout = new javax.swing.GroupLayout(msiPanel);
         msiPanel.setLayout(msiPanelLayout);
@@ -952,8 +1037,18 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         pdfEccLabel.setText("Error Correction Capacity:");
 
         pdfColumnsCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Automatic", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20" }));
+        pdfColumnsCombo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                pdfColumnsComboActionPerformed(evt);
+            }
+        });
 
         pdfEccCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Automatic", "2 words", "4 words", "8 words", "16 words", "32 words", "64 words", "128 words", "256 words", "512 words" }));
+        pdfEccCombo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                pdfEccComboActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout pdfPanelLayout = new javax.swing.GroupLayout(pdfPanel);
         pdfPanel.setLayout(pdfPanelLayout);
@@ -1019,6 +1114,11 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         qrUserEccCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Approx 20% (Level L)", "Approx 37% (Level M)", "Approx 55% (Level Q)", "Approx 65% (Level H)" }));
         qrUserEccCombo.setEnabled(false);
+        qrUserEccCombo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                qrUserEccComboActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout qrPanelLayout = new javax.swing.GroupLayout(qrPanel);
         qrPanel.setLayout(qrPanelLayout);
@@ -1110,7 +1210,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 .addContainerGap()
                 .addComponent(encodeInfoArea, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
-            .addComponent(attributeScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 656, Short.MAX_VALUE)
+            .addComponent(attributeScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 688, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, attributePanelLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(inkButton, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1167,13 +1267,14 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 .addComponent(symbolPane, javax.swing.GroupLayout.PREFERRED_SIZE, 209, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(mainTabs)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(aboutButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(461, 461, 461)
                         .addComponent(saveButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(exitButton)))
+                        .addComponent(exitButton)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(mainTabs))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -1184,7 +1285,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                     .addComponent(symbolPane)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(mainTabs)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGap(11, 11, 11)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(exitButton)
                             .addComponent(saveButton)
@@ -1443,88 +1544,105 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         // TODO add your handling code here:
         aztecUserSizeCombo.setEnabled(true);
         aztecUserEccCombo.setEnabled(false);
+        encodeData();
     }//GEN-LAST:event_aztecUserSizeActionPerformed
 
     private void aztecAutoSizeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aztecAutoSizeActionPerformed
         // TODO add your handling code here:
         aztecUserSizeCombo.setEnabled(false);
         aztecUserEccCombo.setEnabled(false);
+        encodeData();
+        
     }//GEN-LAST:event_aztecAutoSizeActionPerformed
 
     private void aztecUserEccActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aztecUserEccActionPerformed
         // TODO add your handling code here:
         aztecUserSizeCombo.setEnabled(false);
         aztecUserEccCombo.setEnabled(true);
+        encodeData();
     }//GEN-LAST:event_aztecUserEccActionPerformed
 
     private void channelChannelsComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_channelChannelsComboActionPerformed
         // TODO add your handling code here:
+        encodeData();
     }//GEN-LAST:event_channelChannelsComboActionPerformed
 
     private void dataMatrixSquareOnlyCheckActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dataMatrixSquareOnlyCheckActionPerformed
         // TODO add your handling code here:
+        encodeData();
     }//GEN-LAST:event_dataMatrixSquareOnlyCheckActionPerformed
 
     private void gridmatrixAutoSizeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gridmatrixAutoSizeActionPerformed
         // TODO add your handling code here:
         gridmatrixUserSizeCombo.setEnabled(false);
         gridmatrixUserEccCombo.setEnabled(false);
+        encodeData();
     }//GEN-LAST:event_gridmatrixAutoSizeActionPerformed
 
     private void gridmatrixUserSizeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gridmatrixUserSizeActionPerformed
         // TODO add your handling code here:
         gridmatrixUserSizeCombo.setEnabled(true);
         gridmatrixUserEccCombo.setEnabled(false);
+        encodeData();
     }//GEN-LAST:event_gridmatrixUserSizeActionPerformed
 
     private void gridmatrixUserEccActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gridmatrixUserEccActionPerformed
         // TODO add your handling code here:
         gridmatrixUserSizeCombo.setEnabled(false);
         gridmatrixUserEccCombo.setEnabled(true);
+        encodeData();
     }//GEN-LAST:event_gridmatrixUserEccActionPerformed
 
     private void microQrAutoSizeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_microQrAutoSizeActionPerformed
         // TODO add your handling code here:
         microQrUserSizeCombo.setEnabled(false);
         microQrUserEccCombo.setEnabled(false);
+        encodeData();
     }//GEN-LAST:event_microQrAutoSizeActionPerformed
 
     private void microQrUserSizeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_microQrUserSizeActionPerformed
         // TODO add your handling code here:
         microQrUserSizeCombo.setEnabled(true);
         microQrUserEccCombo.setEnabled(false);
+        encodeData();
     }//GEN-LAST:event_microQrUserSizeActionPerformed
 
     private void microQrUserEccActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_microQrUserEccActionPerformed
         // TODO add your handling code here:
         microQrUserSizeCombo.setEnabled(false);
         microQrUserEccCombo.setEnabled(true);
+        encodeData();
     }//GEN-LAST:event_microQrUserEccActionPerformed
 
     private void qrAutoSizeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_qrAutoSizeActionPerformed
         // TODO add your handling code here:
         qrUserSizeCombo.setEnabled(false);
         qrUserEccCombo.setEnabled(false);
+        encodeData();
     }//GEN-LAST:event_qrAutoSizeActionPerformed
 
     private void qrUserSizeComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_qrUserSizeComboActionPerformed
         // TODO add your handling code here:
+        encodeData();
     }//GEN-LAST:event_qrUserSizeComboActionPerformed
 
     private void qrUserSizeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_qrUserSizeActionPerformed
         // TODO add your handling code here:
         qrUserSizeCombo.setEnabled(true);
         qrUserEccCombo.setEnabled(false);
+        encodeData();
     }//GEN-LAST:event_qrUserSizeActionPerformed
 
     private void qrUserEccActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_qrUserEccActionPerformed
         // TODO add your handling code here:
         qrUserSizeCombo.setEnabled(false);
         qrUserEccCombo.setEnabled(true);
+        encodeData();
     }//GEN-LAST:event_qrUserEccActionPerformed
 
     private void gridmatrixUserSizeComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gridmatrixUserSizeComboActionPerformed
         // TODO add your handling code here:
+        encodeData();
     }//GEN-LAST:event_gridmatrixUserSizeComboActionPerformed
 
     private void maxiEncodingModeComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_maxiEncodingModeComboActionPerformed
@@ -1536,7 +1654,95 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
             maxiPrimaryData.setEnabled(false);
             maxiPrimaryDataLabel.setEnabled(false);
         }
+        encodeData();
     }//GEN-LAST:event_maxiEncodingModeComboActionPerformed
+
+    private void addCompositeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addCompositeButtonActionPerformed
+        // TODO add your handling code here:
+        AddComposite addme = new AddComposite();
+        addme.setLocationRelativeTo(this);
+        addme.setVisible(true);
+    }//GEN-LAST:event_addCompositeButtonActionPerformed
+
+    private void aztecUserSizeComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aztecUserSizeComboActionPerformed
+        // TODO add your handling code here:
+        encodeData();
+    }//GEN-LAST:event_aztecUserSizeComboActionPerformed
+
+    private void aztecUserEccComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aztecUserEccComboActionPerformed
+        // TODO add your handling code here:
+        encodeData();
+    }//GEN-LAST:event_aztecUserEccComboActionPerformed
+
+    private void code39CheckComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_code39CheckComboActionPerformed
+        // TODO add your handling code here:
+        encodeData();
+    }//GEN-LAST:event_code39CheckComboActionPerformed
+
+    private void codeOneSizeComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_codeOneSizeComboActionPerformed
+        // TODO add your handling code here:
+        encodeData();
+    }//GEN-LAST:event_codeOneSizeComboActionPerformed
+
+    private void databarColumnsComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_databarColumnsComboActionPerformed
+        // TODO add your handling code here:
+        encodeData();
+    }//GEN-LAST:event_databarColumnsComboActionPerformed
+
+    private void dataMatrixSizeComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dataMatrixSizeComboActionPerformed
+        // TODO add your handling code here:
+        encodeData();
+    }//GEN-LAST:event_dataMatrixSizeComboActionPerformed
+
+    private void gridmatrixUserEccComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gridmatrixUserEccComboActionPerformed
+        // TODO add your handling code here:
+        encodeData();
+    }//GEN-LAST:event_gridmatrixUserEccComboActionPerformed
+
+    private void maxiPrimaryDataActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_maxiPrimaryDataActionPerformed
+        // TODO add your handling code here:
+        encodeData();
+    }//GEN-LAST:event_maxiPrimaryDataActionPerformed
+
+    private void microPdfColumnsComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_microPdfColumnsComboActionPerformed
+        // TODO add your handling code here:
+        encodeData();
+    }//GEN-LAST:event_microPdfColumnsComboActionPerformed
+
+    private void microQrUserSizeComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_microQrUserSizeComboActionPerformed
+        // TODO add your handling code here:
+        encodeData();
+    }//GEN-LAST:event_microQrUserSizeComboActionPerformed
+
+    private void microQrUserEccComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_microQrUserEccComboActionPerformed
+        // TODO add your handling code here:
+        encodeData();
+    }//GEN-LAST:event_microQrUserEccComboActionPerformed
+
+    private void msiCheckDigitComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_msiCheckDigitComboActionPerformed
+        // TODO add your handling code here:
+        encodeData();
+    }//GEN-LAST:event_msiCheckDigitComboActionPerformed
+
+    private void pdfColumnsComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pdfColumnsComboActionPerformed
+        // TODO add your handling code here:
+        encodeData();
+    }//GEN-LAST:event_pdfColumnsComboActionPerformed
+
+    private void pdfEccComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pdfEccComboActionPerformed
+        // TODO add your handling code here:
+        encodeData();
+    }//GEN-LAST:event_pdfEccComboActionPerformed
+
+    private void qrUserEccComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_qrUserEccComboActionPerformed
+        // TODO add your handling code here:
+        encodeData();
+    }//GEN-LAST:event_qrUserEccComboActionPerformed
+
+    private void useGS1CheckActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_useGS1CheckActionPerformed
+        // TODO add your handling code here:
+        encodeData();
+    }//GEN-LAST:event_useGS1CheckActionPerformed
 
     /**
      * @param args the command line arguments
@@ -1598,6 +1804,21 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 symbology = selectedSymbol.mnemonic;
                 dataInput = dataInputField.getText();
                 compositeInput = compositeInputField.getText();
+                
+                switch(symbology) {
+                    case "BARCODE_AZTEC":
+                    case "BARCODE_CODE128":
+                    case "BARCODE_CODE16K":
+                    case "BARCODE_CODE49":
+                    case "BARCODE_CODEONE":
+                    case "BARCODE_DATAMATRIX":
+                    case "BARCODE_QRCODE":
+                        useGS1Check.setEnabled(true);
+                        break;
+                    default:
+                        useGS1Check.setEnabled(false);
+                }
+                
                 encodeData();       
             }
         }
@@ -1801,10 +2022,10 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         barcode.setOption1(option1);
         barcode.setOption2(option2);
         
-        barcode.setNormalMode();
-        if (dataInput.charAt(0) == '[') {
-            // FIXME: Should get option from user instead
+        if (useGS1Check.isSelected()) {
             barcode.setGs1Mode();
+        } else {
+            barcode.setNormalMode();
         }
         
         if (!(compositeInput.isEmpty())) {
@@ -2081,6 +2302,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton aboutButton;
+    private javax.swing.JButton addCompositeButton;
     private javax.swing.JPanel attributePanel;
     private javax.swing.JScrollPane attributeScrollPane;
     private javax.swing.JPanel attributeScrollPanel;
@@ -2103,7 +2325,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
     private javax.swing.JPanel codeOnePanel;
     private javax.swing.JComboBox codeOneSizeCombo;
     private javax.swing.JLabel codeOneSizeLabel;
-    private javax.swing.JTextField compositeInputField;
+    public static javax.swing.JTextField compositeInputField;
     private javax.swing.JLabel compositeLabel;
     private javax.swing.JButton createButton;
     public static javax.swing.JTextField dataInputField;
@@ -2185,5 +2407,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
     private javax.swing.JScrollPane symbolPane;
     private javax.swing.JTree symbolTree;
     private static javax.swing.JPanel topPanel;
+    private javax.swing.JCheckBox useGS1Check;
     // End of variables declaration//GEN-END:variables
 }

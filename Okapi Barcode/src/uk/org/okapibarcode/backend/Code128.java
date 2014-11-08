@@ -674,7 +674,7 @@ public class Code128 extends Symbol {
                 if (debug) {
                     System.out.print("Composite Latch A/B  ");
                 }
-                encodeInfo += "Linkage flag" + linkage_flag;
+                encodeInfo += "Linkage flag: " + linkage_flag + '\n';
                 break;
             case CCC:
                 /* CC-C 2D component */

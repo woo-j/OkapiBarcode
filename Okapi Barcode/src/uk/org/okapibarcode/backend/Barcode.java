@@ -1083,21 +1083,68 @@ public class Barcode {
         ArrayList < Rectangle > combine_rect = new ArrayList < > ();
         ArrayList < TextBox > combine_txt = new ArrayList < > ();
         int i;
+        int top_shift = 0;
+        int bottom_shift = 0;
+        int max_x = 0;
+        
+        /* Determine horizontal alignment
+                (according to section 12.3 of ISO/IEC 24723) */
+        switch(symbology) {
+            case "BARCODE_EANX":
+                if (eanCalculateVersion() == 8) {
+                    bottom_shift = 8;
+                } else {
+                    top_shift = 3;
+                }
+                break;
+            case "BARCODE_CODE128":
+                if (composite.getCcMode() == 3) {
+                    // CC-C component with GS1-128 linear
+                    bottom_shift = 7;
+                }
+                break;
+            case "BARCODE_RSS14":
+                bottom_shift = 4;
+                break;
+            case "BARCODE_RSS_LTD":
+                top_shift = 1;
+                break;
+            case "BARCODE_RSS_EXP":
+                top_shift = 2;
+                break;
+            case "BARCODE_UPCA":
+            case "BARCODE_UPCE":
+                top_shift = 3;
+                break;
+            case "BARCODE_RSS14STACK":
+            case "BARCODE_RSS14STACK_OMNI":
+                top_shift = 1;
+                break;
+            case "BARCODE_RSS_EXPSTACK":
+                top_shift = 2;
+                break;
+        }
         
         for (i = 0; i < composite.rect.size(); i++) {
-            Rectangle comprect = new Rectangle(composite.rect.get(i).x, composite.rect.get(i).y, composite.rect.get(i).width, composite.rect.get(i).height);
+            Rectangle comprect = new Rectangle(composite.rect.get(i).x + top_shift, composite.rect.get(i).y, composite.rect.get(i).width, composite.rect.get(i).height);
+            if ((composite.rect.get(i).x + top_shift + composite.rect.get(i).width) > max_x) {
+                max_x = composite.rect.get(i).x + top_shift + composite.rect.get(i).width;
+            }
             combine_rect.add(comprect);
         }
         
         for (i = 0; i < this.rect.size(); i++) {
-            Rectangle linrect = new Rectangle(this.rect.get(i).x, this.rect.get(i).y, this.rect.get(i).width, this.rect.get(i).height);
+            Rectangle linrect = new Rectangle(this.rect.get(i).x + bottom_shift, this.rect.get(i).y, this.rect.get(i).width, this.rect.get(i).height);
             linrect.y += composite.symbol_height;
+            if ((this.rect.get(i).x + bottom_shift + this.rect.get(i).width) > max_x) {
+                max_x = this.rect.get(i).x + bottom_shift + this.rect.get(i).width;
+            }
             combine_rect.add(linrect);
         }
         
         for (i = 0; i < this.txt.size(); i++) {
             TextBox lintxt = new TextBox();
-            lintxt.xPos = this.txt.get(i).xPos;
+            lintxt.xPos = this.txt.get(i).xPos + bottom_shift;
             lintxt.yPos = this.txt.get(i).yPos;
             lintxt.arg = this.txt.get(i).arg;
             lintxt.yPos += composite.symbol_height;
@@ -1109,7 +1156,7 @@ public class Barcode {
         this.symbol_height += composite.symbol_height;
         
         if (composite.symbol_width > this.symbol_width) {
-            this.symbol_width = composite.symbol_width;
+            this.symbol_width = max_x;
         }
     }
     

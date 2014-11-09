@@ -632,8 +632,6 @@ public class Composite extends Symbol {
                     break;
             }
         }
-        
-        System.out.printf("Recieved: %s\n", content);
 
         if ((content.charAt(0) == '1') && ((content.charAt(1) == '0') || (content.charAt(1) == '1') || (content.charAt(1) == '7')) && (content.length() > 8)) {
             /* Source starts (10), (11) or (17) */
@@ -1382,9 +1380,6 @@ public class Composite extends Symbol {
 
         if (debug) {
             System.out.println("     Resultant binary length: " + binary_string.length());
-            System.out.printf("Binary: %s\n", binary_string);
-            System.out.printf("cc_mode = %d\n", cc_mode);
-            System.out.printf("cc_width = %d\n", cc_width);
         }
 
         binary_length = binary_string.length();

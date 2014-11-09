@@ -442,6 +442,8 @@ public class Composite extends Symbol {
     private int[] bitStr = new int[13];
     private int[] inputData;
     private int cc_mode;
+    private String linearContent;
+    private int userPreferredMode;
 
     public void setSymbology(String input) {
         symbology = input;
@@ -449,6 +451,14 @@ public class Composite extends Symbol {
 
     public int getCcMode() {
         return cc_mode;
+    }
+    
+    public void setLinear(String input) {
+        linearContent = input;
+    }
+    
+    public void setPreferred(int userMode) {
+        userPreferredMode = userMode;
     }
 
     @Override
@@ -459,30 +469,36 @@ public class Composite extends Symbol {
             return false;
         }
 
-        cc_mode = 1;
-        //        FIXME: cc_mode = symbol->option_1;
-        if ((cc_mode == 3) && (!(symbology.equals("CODE 128")))) {
+        cc_mode = userPreferredMode;
+        
+        if ((cc_mode == 3) && (!(symbology.equals("BARCODE_CODE128")))) {
             /* CC-C can only be used with a GS1-128 linear part */
             error_msg = "Invalid mode (CC-C only valid with GS1-128 linear component)";
             return false;
         }
 
         switch (symbology) {
-            case "UPCE":
-            case "DATABAR-14 OMNI":
-            case "DATABAR-14 STACKED":
+            /* Determine width of 2D component according to ISO/IEC 24723 Table 1 */
+            case "BARCODE_EANX":
+                if (eanCalculateVersion() == 8) {
+                    cc_width = 3;
+                } else {
+                    cc_width = 4;
+                }
+                break;
+            case "BARCODE_UPCE":
+            case "BARCODE_RSS14STACK_OMNI":
+            case "BARCODE_RSS14STACK":
                 cc_width = 2;
                 break;
-            case "EAN 8":
-            case "DATABAR LIMITED":
+            case "BARCODE_RSS_LTD":
                 cc_width = 3;
                 break;
-            case "EAN 13":
-            case "CODE 128":
-            case "DATABAR-14":
-            case "DATABAR EXPANDED":
-            case "UPCA":
-            case "DATABAR EXPANDED STACK":
+            case "BARCODE_CODE128":
+            case "BARCODE_RSS14":
+            case "BARCODE_RSS_EXP":
+            case "BARCODE_UPCA":
+            case "BARCODE_RSS_EXPSTACK":
                 cc_width = 4;
                 break;
         }
@@ -551,6 +567,33 @@ public class Composite extends Symbol {
         plotSymbol();
         return true;
     }
+    
+    private int eanCalculateVersion() {
+        /* Determine if EAN-8 or EAN-13 is being used */
+        
+        int length = 0;
+        int i;
+        boolean latch;
+        
+        latch = true;
+        for (i = 0; i < linearContent.length(); i++) {
+            if ((linearContent.charAt(i) >= '0') && (linearContent.charAt(i) <= '9')) {
+                if (latch) {
+                    length++;
+                }
+            } else {
+                latch = false;
+            }
+        }
+        
+        if (length <= 7) {
+            // EAN-8
+            return 8;
+        } else {
+            // EAN-13
+            return 13;
+        }
+    }
 
     private boolean cc_binary_string(int cc_mode) {
         /* Handles all data encodation from section 5 of ISO/IEC 24723 */
@@ -589,6 +632,8 @@ public class Composite extends Symbol {
                     break;
             }
         }
+        
+        System.out.printf("Recieved: %s\n", content);
 
         if ((content.charAt(0) == '1') && ((content.charAt(1) == '0') || (content.charAt(1) == '1') || (content.charAt(1) == '7')) && (content.length() > 8)) {
             /* Source starts (10), (11) or (17) */
@@ -1337,6 +1382,9 @@ public class Composite extends Symbol {
 
         if (debug) {
             System.out.println("     Resultant binary length: " + binary_string.length());
+            System.out.printf("Binary: %s\n", binary_string);
+            System.out.printf("cc_mode = %d\n", cc_mode);
+            System.out.printf("cc_width = %d\n", cc_width);
         }
 
         binary_length = binary_string.length();

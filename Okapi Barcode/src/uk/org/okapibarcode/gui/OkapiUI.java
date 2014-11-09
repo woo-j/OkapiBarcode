@@ -153,6 +153,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         errorLabel = new javax.swing.JLabel();
         addCompositeButton = new javax.swing.JButton();
         useGS1Check = new javax.swing.JCheckBox();
+        useCompositeCheck = new javax.swing.JCheckBox();
         batchPanel = new javax.swing.JPanel();
         startField = new javax.swing.JTextField();
         stopField = new javax.swing.JTextField();
@@ -240,6 +241,9 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         qrUserEcc = new javax.swing.JRadioButton();
         qrUserSizeCombo = new javax.swing.JComboBox();
         qrUserEccCombo = new javax.swing.JComboBox();
+        compositePanel = new javax.swing.JPanel();
+        compositeModeLabel = new javax.swing.JLabel();
+        compositeUserMode = new javax.swing.JComboBox();
         exitButton = new javax.swing.JButton();
         saveButton = new javax.swing.JButton();
         aboutButton = new javax.swing.JButton();
@@ -252,7 +256,10 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         mainTabs.setName(""); // NOI18N
 
+        compositeInputField.setEnabled(false);
+
         compositeLabel.setText("Composite:");
+        compositeLabel.setEnabled(false);
 
         dataInputField.setText("Your Data Here!");
 
@@ -290,6 +297,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         );
 
         addCompositeButton.setText("...");
+        addCompositeButton.setEnabled(false);
         addCompositeButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 addCompositeButtonActionPerformed(evt);
@@ -300,6 +308,13 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         useGS1Check.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 useGS1CheckActionPerformed(evt);
+            }
+        });
+
+        useCompositeCheck.setText("Add Composite Component");
+        useCompositeCheck.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                useCompositeCheckActionPerformed(evt);
             }
         });
 
@@ -316,7 +331,10 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(singlePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(useGS1Check, javax.swing.GroupLayout.PREFERRED_SIZE, 245, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(singlePanelLayout.createSequentialGroup()
+                        .addComponent(useGS1Check, javax.swing.GroupLayout.PREFERRED_SIZE, 245, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(useCompositeCheck, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(singlePanelLayout.createSequentialGroup()
                         .addGroup(singlePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(dataInputField, javax.swing.GroupLayout.DEFAULT_SIZE, 520, Short.MAX_VALUE)
@@ -335,7 +353,9 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, singlePanelLayout.createSequentialGroup()
                 .addComponent(topPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 459, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 9, Short.MAX_VALUE)
-                .addComponent(useGS1Check)
+                .addGroup(singlePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(useGS1Check)
+                    .addComponent(useCompositeCheck))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(singlePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(dataInputField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -828,7 +848,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 .addGroup(gridmatrixPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(gridmatrixAutoSize, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(gridmatrixUserSize, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(gridmatrixUserEcc, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(gridmatrixUserEcc, javax.swing.GroupLayout.DEFAULT_SIZE, 217, Short.MAX_VALUE))
                 .addGap(74, 74, 74)
                 .addGroup(gridmatrixPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(gridmatrixUserSizeCombo, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1151,6 +1171,36 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 .addContainerGap())
         );
 
+        compositePanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Composite Component"));
+
+        compositeModeLabel.setText("Composite Component Mode:");
+
+        compositeUserMode.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Automatic", "CC-A", "CC-B", "CC-C" }));
+        compositeUserMode.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                compositeUserModeActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout compositePanelLayout = new javax.swing.GroupLayout(compositePanel);
+        compositePanel.setLayout(compositePanelLayout);
+        compositePanelLayout.setHorizontalGroup(
+            compositePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(compositePanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(compositeModeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(compositeUserMode, javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+        compositePanelLayout.setVerticalGroup(
+            compositePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(compositePanelLayout.createSequentialGroup()
+                .addComponent(compositeModeLabel)
+                .addGap(0, 0, Short.MAX_VALUE))
+            .addComponent(compositeUserMode)
+        );
+
         javax.swing.GroupLayout attributeScrollPanelLayout = new javax.swing.GroupLayout(attributeScrollPanel);
         attributeScrollPanel.setLayout(attributeScrollPanelLayout);
         attributeScrollPanelLayout.setHorizontalGroup(
@@ -1159,7 +1209,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
             .addComponent(channelPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(code39Panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(codeOnePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(databarPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(datamatrixPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(gridmatrixPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(maxicodePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -1168,6 +1217,8 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
             .addComponent(msiPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(pdfPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(qrPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(compositePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(databarPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         attributeScrollPanelLayout.setVerticalGroup(
             attributeScrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1179,6 +1230,8 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 .addComponent(code39Panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(codeOnePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(compositePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(databarPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1197,7 +1250,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 .addComponent(pdfPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(qrPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(119, Short.MAX_VALUE))
+                .addContainerGap(112, Short.MAX_VALUE))
         );
 
         attributeScrollPane.setViewportView(attributeScrollPanel);
@@ -1744,6 +1797,25 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         encodeData();
     }//GEN-LAST:event_useGS1CheckActionPerformed
 
+    private void compositeUserModeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_compositeUserModeActionPerformed
+        // TODO add your handling code here:
+        encodeData();
+    }//GEN-LAST:event_compositeUserModeActionPerformed
+
+    private void useCompositeCheckActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_useCompositeCheckActionPerformed
+        // TODO add your handling code here:
+        if (useCompositeCheck.isSelected()) {
+            compositeLabel.setEnabled(true);
+            compositeInputField.setEnabled(true);
+            addCompositeButton.setEnabled(true);
+        } else {
+            compositeLabel.setEnabled(false);
+            compositeInputField.setEnabled(false);
+            addCompositeButton.setEnabled(false);
+        }
+        encodeData();
+    }//GEN-LAST:event_useCompositeCheckActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -2030,6 +2102,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         
         if (!(compositeInput.isEmpty())) {
             barcode.setCompositeContent(compositeInput);
+            barcode.setCompositePreferredMode(compositeUserMode.getSelectedIndex());
         }
 
         if (barcode.encode(symbology, dataInput)) {
@@ -2327,6 +2400,9 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
     private javax.swing.JLabel codeOneSizeLabel;
     public static javax.swing.JTextField compositeInputField;
     private javax.swing.JLabel compositeLabel;
+    private javax.swing.JLabel compositeModeLabel;
+    private javax.swing.JPanel compositePanel;
+    private javax.swing.JComboBox compositeUserMode;
     private javax.swing.JButton createButton;
     public static javax.swing.JTextField dataInputField;
     private javax.swing.JComboBox dataMatrixSizeCombo;
@@ -2407,6 +2483,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
     private javax.swing.JScrollPane symbolPane;
     private javax.swing.JTree symbolTree;
     private static javax.swing.JPanel topPanel;
+    private javax.swing.JCheckBox useCompositeCheck;
     private javax.swing.JCheckBox useGS1Check;
     // End of variables declaration//GEN-END:variables
 }

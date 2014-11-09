@@ -93,7 +93,7 @@ public class Ean extends Symbol {
             }
         }
         
-        if (useAddOn) {
+        if ((retval) && (useAddOn)) {
             addOnData = addOn.calcAddOn(addOnContent);
             if (addOnData.length() == 0) {
                 error_msg = "Invalid Add-On data";
@@ -114,7 +114,7 @@ public class Ean extends Symbol {
             }
         }
 
-        if (retval == true) {
+        if (retval) {
             plotSymbol();
         }
 

@@ -39,6 +39,7 @@ public class Barcode {
     private boolean isComposite;
     public String encodeInfo;
     private String primaryData = "";
+    private int compositeUserMode;
 
     private int option1;
     private int option2;
@@ -82,6 +83,10 @@ public class Barcode {
     public void setCompositeContent(String inputData) {
         compositeContent = inputData;
         isComposite = true;
+    }
+    
+    public void setCompositePreferredMode(int input) {
+        compositeUserMode = input;
     }
 
     public void setOption1(int input) {
@@ -203,6 +208,8 @@ public class Barcode {
             isComposite = true;
             composite.gs1 = true;
             composite.setSymbology(symbology);
+            composite.setLinear(content);
+            composite.setPreferred(compositeUserMode);
             if (!(composite.setContent(compositeContent))) {
                 this.error_msg = composite.error_msg;
                 return false;
@@ -250,7 +257,7 @@ public class Barcode {
             };
             break;
         case "BARCODE_EANX":
-            if(this.content.length() <= 7) {
+            if (eanCalculateVersion() == 8) {
                 ean.setEan8Mode();
             } else {
                 ean.setEan13Mode();
@@ -1103,6 +1110,33 @@ public class Barcode {
         
         if (composite.symbol_width > this.symbol_width) {
             this.symbol_width = composite.symbol_width;
+        }
+    }
+    
+    private int eanCalculateVersion() {
+        /* Determine if EAN-8 or EAN-13 is being used */
+        
+        int length = 0;
+        int i;
+        boolean latch;
+        
+        latch = true;
+        for (i = 0; i < content.length(); i++) {
+            if ((content.charAt(i) >= '0') && (content.charAt(i) <= '9')) {
+                if (latch) {
+                    length++;
+                }
+            } else {
+                latch = false;
+            }
+        }
+        
+        if (length <= 7) {
+            // EAN-8
+            return 8;
+        } else {
+            // EAN-13
+            return 13;
         }
     }
 }

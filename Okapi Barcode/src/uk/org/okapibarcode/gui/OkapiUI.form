@@ -118,7 +118,11 @@
                       </Group>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="useGS1Check" min="-2" pref="245" max="-2" attributes="0"/>
+                          <Group type="102" attributes="0">
+                              <Component id="useGS1Check" min="-2" pref="245" max="-2" attributes="0"/>
+                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                              <Component id="useCompositeCheck" min="-2" pref="236" max="-2" attributes="0"/>
+                          </Group>
                           <Group type="102" attributes="0">
                               <Group type="103" groupAlignment="0" max="-2" attributes="0">
                                   <Component id="dataInputField" pref="520" max="32767" attributes="0"/>
@@ -144,7 +148,10 @@
                   <Group type="102" alignment="1" attributes="0">
                       <Component id="topPanel" min="-2" pref="459" max="-2" attributes="0"/>
                       <EmptySpace pref="9" max="32767" attributes="0"/>
-                      <Component id="useGS1Check" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="useGS1Check" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="useCompositeCheck" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="dataInputField" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -164,6 +171,9 @@
           </Layout>
           <SubComponents>
             <Component class="javax.swing.JTextField" name="compositeInputField">
+              <Properties>
+                <Property name="enabled" type="boolean" value="false"/>
+              </Properties>
               <AuxValues>
                 <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="9"/>
               </AuxValues>
@@ -171,6 +181,7 @@
             <Component class="javax.swing.JLabel" name="compositeLabel">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Composite:"/>
+                <Property name="enabled" type="boolean" value="false"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JTextField" name="dataInputField">
@@ -242,6 +253,7 @@
             <Component class="javax.swing.JButton" name="addCompositeButton">
               <Properties>
                 <Property name="text" type="java.lang.String" value="..."/>
+                <Property name="enabled" type="boolean" value="false"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="addCompositeButtonActionPerformed"/>
@@ -253,6 +265,14 @@
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="useGS1CheckActionPerformed"/>
+              </Events>
+            </Component>
+            <Component class="javax.swing.JCheckBox" name="useCompositeCheck">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Add Composite Component"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="useCompositeCheckActionPerformed"/>
               </Events>
             </Component>
           </SubComponents>
@@ -619,7 +639,6 @@
                           <Component id="channelPanel" alignment="0" max="32767" attributes="0"/>
                           <Component id="code39Panel" alignment="0" max="32767" attributes="0"/>
                           <Component id="codeOnePanel" alignment="0" max="32767" attributes="0"/>
-                          <Component id="databarPanel" alignment="0" max="32767" attributes="0"/>
                           <Component id="datamatrixPanel" alignment="0" max="32767" attributes="0"/>
                           <Component id="gridmatrixPanel" alignment="0" max="32767" attributes="0"/>
                           <Component id="maxicodePanel" alignment="0" max="32767" attributes="0"/>
@@ -628,6 +647,8 @@
                           <Component id="msiPanel" alignment="0" max="32767" attributes="0"/>
                           <Component id="pdfPanel" alignment="0" max="32767" attributes="0"/>
                           <Component id="qrPanel" alignment="0" max="32767" attributes="0"/>
+                          <Component id="compositePanel" alignment="0" max="32767" attributes="0"/>
+                          <Component id="databarPanel" alignment="1" max="32767" attributes="0"/>
                       </Group>
                     </DimensionLayout>
                     <DimensionLayout dim="1">
@@ -640,6 +661,8 @@
                               <Component id="code39Panel" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="codeOnePanel" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="compositePanel" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="databarPanel" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
@@ -658,7 +681,7 @@
                               <Component id="pdfPanel" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="qrPanel" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="119" max="32767" attributes="0"/>
+                              <EmptySpace pref="112" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -1156,7 +1179,7 @@
                                   <Group type="103" groupAlignment="0" attributes="0">
                                       <Component id="gridmatrixAutoSize" alignment="0" max="32767" attributes="0"/>
                                       <Component id="gridmatrixUserSize" alignment="0" max="32767" attributes="0"/>
-                                      <Component id="gridmatrixUserEcc" alignment="0" max="32767" attributes="0"/>
+                                      <Component id="gridmatrixUserEcc" alignment="0" pref="217" max="32767" attributes="0"/>
                                   </Group>
                                   <EmptySpace min="-2" pref="74" max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="0" attributes="0">
@@ -1828,6 +1851,60 @@
                           </Properties>
                           <Events>
                             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="qrUserEccComboActionPerformed"/>
+                          </Events>
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                    <Container class="javax.swing.JPanel" name="compositePanel">
+                      <Properties>
+                        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                          <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                            <TitledBorder title="Composite Component"/>
+                          </Border>
+                        </Property>
+                      </Properties>
+
+                      <Layout>
+                        <DimensionLayout dim="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" alignment="0" attributes="0">
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="compositeModeLabel" min="-2" pref="172" max="-2" attributes="0"/>
+                                  <EmptySpace max="32767" attributes="0"/>
+                                  <Component id="compositeUserMode" min="-2" pref="350" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                        </DimensionLayout>
+                        <DimensionLayout dim="1">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" attributes="0">
+                                  <Component id="compositeModeLabel" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                              </Group>
+                              <Component id="compositeUserMode" alignment="0" max="32767" attributes="0"/>
+                          </Group>
+                        </DimensionLayout>
+                      </Layout>
+                      <SubComponents>
+                        <Component class="javax.swing.JLabel" name="compositeModeLabel">
+                          <Properties>
+                            <Property name="text" type="java.lang.String" value="Composite Component Mode:"/>
+                          </Properties>
+                        </Component>
+                        <Component class="javax.swing.JComboBox" name="compositeUserMode">
+                          <Properties>
+                            <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+                              <StringArray count="4">
+                                <StringItem index="0" value="Automatic"/>
+                                <StringItem index="1" value="CC-A"/>
+                                <StringItem index="2" value="CC-B"/>
+                                <StringItem index="3" value="CC-C"/>
+                              </StringArray>
+                            </Property>
+                          </Properties>
+                          <Events>
+                            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="compositeUserModeActionPerformed"/>
                           </Events>
                         </Component>
                       </SubComponents>

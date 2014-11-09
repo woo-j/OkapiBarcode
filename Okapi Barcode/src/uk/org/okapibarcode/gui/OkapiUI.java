@@ -1891,6 +1891,31 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                         useGS1Check.setEnabled(false);
                 }
                 
+                switch(symbology) {
+                    case "BARCODE_EANX":
+                    case "BARCODE_CODE128":
+                    case "BARCODE_UPCE":
+                    case "BARCODE_RSS14STACK_OMNI":
+                    case "BARCODE_RSS14STACK":
+                    case "BARCODE_RSS_LTD":
+                    case "BARCODE_RSS14":
+                    case "BARCODE_RSS_EXP":
+                    case "BARCODE_UPCA":
+                    case "BARCODE_RSS_EXPSTACK":
+                        useCompositeCheck.setEnabled(true);
+                        if (useCompositeCheck.isSelected()) {
+                            compositeLabel.setEnabled(true);
+                            compositeInputField.setEnabled(true);
+                            addCompositeButton.setEnabled(true);
+                        }
+                        break;
+                    default:
+                        useCompositeCheck.setEnabled(false);
+                        compositeLabel.setEnabled(false);
+                        compositeInputField.setEnabled(false);
+                        addCompositeButton.setEnabled(false);
+                }
+                
                 encodeData();       
             }
         }
@@ -2100,7 +2125,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
             barcode.setNormalMode();
         }
         
-        if (!(compositeInput.isEmpty())) {
+        if (useCompositeCheck.isEnabled() && useCompositeCheck.isSelected()) {
             barcode.setCompositeContent(compositeInput);
             barcode.setCompositePreferredMode(compositeUserMode.getSelectedIndex());
         }

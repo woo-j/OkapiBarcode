@@ -26,6 +26,7 @@ public class AddComposite extends javax.swing.JFrame {
      */
     public AddComposite() {
         initComponents();
+        pullData();
     }
 
     /**
@@ -112,6 +113,10 @@ public class AddComposite extends javax.swing.JFrame {
         dispose();
     }//GEN-LAST:event_okButtonActionPerformed
 
+    private void pullData() {
+        compositeText.setText(OkapiUI.compositeInputField.getText());
+    }
+    
     /**
      * @param args the command line arguments
      */

@@ -551,6 +551,19 @@ public class Composite extends Symbol {
                     break;
             }
         }
+        
+        switch (cc_mode) {
+            case 1:
+                encodeInfo += "Composite type: CC-A\n";
+                break;
+            case 2:
+                encodeInfo += "Composite type: CC-B\n";
+                break;
+            case 3:
+                encodeInfo += "Composite type: CC-C\n";
+                break;
+        }
+        encodeInfo += "Composite width: " + cc_width + " modules\n";
 
         switch (cc_mode) { /* Note that ecc_level is only relevant to CC-C */
             case 1:
@@ -643,10 +656,8 @@ public class Composite extends Symbol {
             encoding_method = 3;
         }
 
-        if (debug) {
-            System.out.println("     Encoding method " + encoding_method);
-        }
-
+        encodeInfo += "Composite encoding: " + encoding_method + "\n";
+        
         binary_string = "";
 
         if (encoding_method == 1) {
@@ -1601,9 +1612,9 @@ public class Composite extends Symbol {
             //		if(codewords_used > symbol->option_3) {
             //			return ZERROR_TOO_LONG;
             //		}
-            /* *(cc_width) = 0.5 + sqrt((codewords_used) / 3); */
+            cc_width = (int)(0.5 + Math.sqrt((codewords_used) / 3.0));
             // FIXME:		*(cc_width) = (lin_width - 62) / 17;
-            cc_width = (200 - 62) / 17;
+            //cc_width = (200 - 62) / 17;
             if ((codewords_used / cc_width) > 90) {
                 /* stop the symbol from becoming too high */
                 cc_width = cc_width + 1;
@@ -1890,9 +1901,9 @@ public class Composite extends Symbol {
             //		if(codewords_used > symbol->option_3) {
             //			return ZERROR_TOO_LONG;
             //		}
-            /* *(cc_width) = 0.5 + sqrt((codewords_used) / 3); */
+            cc_width = (int)(0.5 + Math.sqrt((codewords_used) / 3.0));
             // FIXME:		*(cc_width) = (lin_width - 62) / 17;
-            cc_width = (200 - 62) / 17;
+            //cc_width = (200 - 62) / 17;
             if ((codewords_used / cc_width) > 90) {
                 /* stop the symbol from becoming too high */
                 cc_width = cc_width + 1;
@@ -1917,7 +1928,7 @@ public class Composite extends Symbol {
         if (debug) {
             System.out.println("     2nd pass target size is " + target_bitsize + ", room left is " + (target_bitsize - binary_string.length()));
         }
-
+        
         if (binary_length < target_bitsize) {
             /* Now add padding to binary string */
             if (alpha_pad == 1) {
@@ -2742,7 +2753,7 @@ public class Composite extends Symbol {
         row_height = new int[row_count];
         System.out.println("cwc" + codeWordCount + "ccw" + cc_width);
         System.out.println("rows needed " + row_count);
-
+        
         /* we now encode each row */
         for (i = 0; i <= (codeWordCount / cc_width) - 1; i++) {
             for (j = 0; j < cc_width; j++) {

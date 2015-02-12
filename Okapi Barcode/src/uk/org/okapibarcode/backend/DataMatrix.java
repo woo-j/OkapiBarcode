@@ -320,6 +320,35 @@ public class DataMatrix extends Symbol {
                 if(debug) System.out.printf("RP ");
             }
         }
+        
+        /* Check for Macro05/Macro06 */
+        /* "[)>[RS]05[GS]...[RS][EOT]" -> CW 236 */
+        /* "[)>[RS]06[GS]...[RS][EOT]" -> CW 237 */
+        
+        if (tp == 0 & sp == 0 && inputlen >= 9) {
+            if (inputData[0] == '[' && inputData[1] == ')' && inputData[2] == '>'
+                    && inputData[3] == '\u001e' && inputData[4] == '0'
+                    && (inputData[5] == '5' || inputData[5] == '6')
+                    && inputData[6] == '\u001d'
+                    && inputData[inputlen - 2] == '\u001e'
+                    && inputData[inputlen - 1] == '\u0004') {
+                /* Output macro Codeword */
+		if (inputData[5] == '5') {
+			target[tp] = 236;
+			if (debug) System.out.printf("Macro05 ");
+		} else {
+			target[tp] = 237;
+			if (debug) System.out.printf("Macro06 ");
+		}
+		tp++;
+		binary[binary_length] = ' ';
+                binary_length++;
+		/* Remove macro characters from input string */
+		sp = 7;
+		inputlen -= 2;
+            }
+        }
+        
         while (sp < inputlen) {
 
             current_mode = next_mode;

@@ -11,3 +11,6 @@ hs_err_pid*
 build/
 dist/
 bin/
+.settings/
+.classpath
+.project

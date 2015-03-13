@@ -15,8 +15,8 @@
  */
 package uk.org.okapibarcode.backend;
 
-import java.util.Locale;
 import java.awt.Rectangle;
+import java.util.Locale;
 
 /**
  *
@@ -26,15 +26,15 @@ public class RoyalMail4State extends Symbol {
     /* Handles the 4 State barcodes used in the UK by Royal Mail */
 
     private String[] RoyalTable = {
-        "TTFF", "TDAF", "TDFA", "DTAF", "DTFA", "DDAA", "TADF", "TFTF", "TFDA", 
-        "DATF", "DADA", "DFTA", "TAFD", "TFAD", "TFFT", "DAAD", "DAFT", "DFAT", 
-        "ATDF", "ADTF", "ADDA", "FTTF", "FTDA", "FDTA", "ATFD", "ADAD", "ADFT", 
+        "TTFF", "TDAF", "TDFA", "DTAF", "DTFA", "DDAA", "TADF", "TFTF", "TFDA",
+        "DATF", "DADA", "DFTA", "TAFD", "TFAD", "TFFT", "DAAD", "DAFT", "DFAT",
+        "ATDF", "ADTF", "ADDA", "FTTF", "FTDA", "FDTA", "ATFD", "ADAD", "ADFT",
         "FTAD", "FTFT", "FDAT", "AADD", "AFTD", "AFDT", "FATD", "FADT", "FFTT"
     };
 
     private char[] krSet = {
-        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 
-        'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D',
+        'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R',
         'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
     };
 
@@ -71,8 +71,8 @@ public class RoyalMail4State extends Symbol {
 
         dest += RoyalTable[(6 * row) + column];
 
-        encodeInfo += "Check Digit: " + (int)((6 * row) + column) + "\n";
-        
+        encodeInfo += "Check Digit: " + ((6 * row) + column) + "\n";
+
         /* Stop character */
         dest += "F";
 

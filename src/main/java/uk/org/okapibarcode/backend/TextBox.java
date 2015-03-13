@@ -24,19 +24,19 @@ public class TextBox {
     public double xPos;
     public double yPos;
     public String arg;
-    
+
     public void TextBox() {
         xPos = 0.0;
         yPos = 0.0;
         arg = "";
     }
-    
+
     public void setvalues(double x, double y, String a) {
         xPos = x;
         yPos = y;
         arg = a;
     }
-    
+
     public void printvalues() {
         System.out.println("Text  X:" + xPos + " Y:" + yPos + " A:" + arg);
     }

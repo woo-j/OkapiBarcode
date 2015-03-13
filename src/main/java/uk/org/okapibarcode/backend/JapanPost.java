@@ -15,25 +15,25 @@
  */
 package uk.org.okapibarcode.backend;
 
-import java.util.Locale;
 import java.awt.Rectangle;
+import java.util.Locale;
 /**
  *
  * @author Robin Stuart <rstuart114@gmail.com>
  */
 public class JapanPost extends Symbol {
     private String[] JapanTable = {
-        "FFT", "FDA", "DFA", "FAD", "FTF", "DAF", "AFD", "ADF", "TFF", "FTT", 
+        "FFT", "FDA", "DFA", "FAD", "FTF", "DAF", "AFD", "ADF", "TFF", "FTT",
         "TFT", "DAT", "DTA", "ADT", "TDA", "ATD", "TAD", "TTF", "FFF"
     };
 
     private char[] kasutSet = {
-        '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', 'a', 'b', 'c', 
+        '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', 'a', 'b', 'c',
         'd', 'e', 'f', 'g', 'h'
     };
 
     private char[] chKasutSet = {
-        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', 'a', 'b', 'c', 
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', 'a', 'b', 'c',
         'd', 'e', 'f', 'g', 'h'
     };
 
@@ -97,7 +97,7 @@ public class JapanPost extends Symbol {
         check = 19 - (sum % 19);
         dest += JapanTable[positionOf(chKasutSet[check], kasutSet)];
         dest += "DF";
-        
+
         encodeInfo += "Check Digit: " + check + "\n";
 
         readable = "";

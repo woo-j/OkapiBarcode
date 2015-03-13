@@ -55,6 +55,7 @@ public class AddComposite extends javax.swing.JFrame {
 
         cancelButton.setText("Cancel");
         cancelButton.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cancelButtonActionPerformed(evt);
             }
@@ -62,6 +63,7 @@ public class AddComposite extends javax.swing.JFrame {
 
         okButton.setText("OK");
         okButton.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 okButtonActionPerformed(evt);
             }
@@ -116,7 +118,7 @@ public class AddComposite extends javax.swing.JFrame {
     private void pullData() {
         compositeText.setText(OkapiUI.compositeInputField.getText());
     }
-    
+
     /**
      * @param args the command line arguments
      */
@@ -124,7 +126,7 @@ public class AddComposite extends javax.swing.JFrame {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
@@ -146,6 +148,7 @@ public class AddComposite extends javax.swing.JFrame {
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 new AddComposite().setVisible(true);
             }

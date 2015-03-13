@@ -16,7 +16,7 @@
 package uk.org.okapibarcode.backend;
 
 import java.io.UnsupportedEncodingException;
-import java.math.*;
+import java.math.BigInteger;
 /**
  * Implements Code 1
  *
@@ -24,40 +24,40 @@ import java.math.*;
  */
 public class CodeOne extends Symbol {
     private final int[] c40_shift = {
-        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 
-        3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2,
+        3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
         3, 3, 3, 3, 3, 3, 3, 3
     };
 
     private final int[] c40_value = {
-        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 
-        20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 3, 0, 1, 2, 3, 4, 5, 6, 
-        7, 8, 9, 10, 11, 12, 13, 14, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16, 
-        17, 18, 19, 20, 21, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 
-        27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 22, 23, 24, 25, 26, 
-        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 
+        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+        20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 3, 0, 1, 2, 3, 4, 5, 6,
+        7, 8, 9, 10, 11, 12, 13, 14, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16,
+        17, 18, 19, 20, 21, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26,
+        27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 22, 23, 24, 25, 26,
+        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
         20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31
     };
 
     private final int[] text_shift = {
-        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 
-        3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 
-        3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3,
+        3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 2, 2, 2, 2,
+        3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 3, 3, 3, 3, 3
     };
 
     private final int[] text_value = {
-        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 
-        20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 3, 0, 1, 2, 3, 4, 5, 6, 
-        7, 8, 9, 10, 11, 12, 13, 14, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16, 
-        17, 18, 19, 20, 21, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 
-        16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 22, 23, 24, 25, 26, 0, 14, 
-        15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 
+        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+        20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 3, 0, 1, 2, 3, 4, 5, 6,
+        7, 8, 9, 10, 11, 12, 13, 14, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16,
+        17, 18, 19, 20, 21, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+        16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 22, 23, 24, 25, 26, 0, 14,
+        15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
         33, 34, 35, 36, 37, 38, 39, 27, 28, 29, 30, 31
     };
 
@@ -117,7 +117,7 @@ public class CodeOne extends Symbol {
 
         if (option2 == 9) {
             /* Version S */
-            
+
             encodeInfo += "Version: S";
 
             if (length > 18) {
@@ -211,7 +211,7 @@ public class CodeOne extends Symbol {
 
         if (option2 == 10) {
             /* Version T */
-            
+
             encodeInfo += "Version: T\n";
 
             for (i = 0; i < 40; i++) {
@@ -326,7 +326,7 @@ public class CodeOne extends Symbol {
             if (option2 > size) {
                 size = option2;
             }
-            
+
             encodeInfo += "Version:  " + (char)((size - 1) + 'A') + "\n";
 
             for (i = data_length; i < c1_data_length[size - 1]; i++) {
@@ -347,11 +347,11 @@ public class CodeOne extends Symbol {
                 }
                 rs.encode(c1_data_blocks[size - 1], sub_data);
                 for (j = 0; j < c1_ecc_blocks[size - 1]; j++) {
-                    ecc[c1_ecc_length[size - 1] - (j * data_blocks + i) - 1] 
+                    ecc[c1_ecc_length[size - 1] - (j * data_blocks + i) - 1]
                             = rs.getResult(j);
                 }
             }
-            
+
             encodeInfo += "Data Codewords: " + c1_data_length[size - 1] + "\n";
             encodeInfo += "ECC Codewords: " + c1_ecc_length[size - 1] + "\n";
 
@@ -399,7 +399,7 @@ public class CodeOne extends Symbol {
                     i++;
                 }
             }
-            
+
             if(debug) {
                 System.out.println("Data Grid:");
                 for(i = 0; i < (c1_grid_height[size - 1] * 2); i++) {
@@ -409,7 +409,7 @@ public class CodeOne extends Symbol {
                     System.out.println();
 		}
             }
-            
+
             encodeInfo += "Grid Size: " + c1_grid_width[size - 1] + " X " +
                     c1_grid_height[size - 1] + "\n";
 
@@ -812,7 +812,7 @@ public class CodeOne extends Symbol {
                     if (j == 13) {
                         latch = false;
                         for (i = sourcePoint + 13; i < length; i++) {
-                            if (!((source[sourcePoint + i] >= '0') && 
+                            if (!((source[sourcePoint + i] >= '0') &&
                                     (source[sourcePoint + i] <= '9'))) {
                                 latch = true;
                             }
@@ -831,7 +831,7 @@ public class CodeOne extends Symbol {
                         if ((source[sourcePoint] >= '0') && (source[sourcePoint] <= '9')) {
                             if ((source[sourcePoint + 1] >= '0') && (source[sourcePoint + 1] <= '9')) {
                                 // remaining data consists of two numeric digits
-                                data[targetPoint] = (10 * (source[sourcePoint] - '0')) 
+                                data[targetPoint] = (10 * (source[sourcePoint] - '0'))
                                         + (source[sourcePoint + 1] - '0') + 130;
                                 targetPoint++;
                                 sourcePoint += 2;
@@ -839,7 +839,7 @@ public class CodeOne extends Symbol {
                             }
                         }
                     }
-                    
+
                     if (!(isTwoDigits)) {
                         if ((gs1) && (source[sourcePoint] == '[')) {
                             if ((length - sourcePoint) >= 15) { /* Step B4 */
@@ -1148,7 +1148,7 @@ public class CodeOne extends Symbol {
                         j = 0;
 
                         for (i = 0; i < 8; i++) {
-                            if ((source[sourcePoint + i] >= '0') && 
+                            if ((source[sourcePoint + i] >= '0') &&
                                     (source[sourcePoint + i] <= '9')) {
                                 j++;
                             }
@@ -1275,7 +1275,7 @@ public class CodeOne extends Symbol {
                     if ((bits_left_in_byte == 4) || (bits_left_in_byte == 6)) {
                         if (decimal_count >= 1) {
                             sub_value = source[sourcePoint] - '0' + 1;
-                            
+
                             for (i = 0x08; i > 0; i = i >> 1) {
                                 if ((sub_value & i) != 0) {
                                     decimal_binary += "1";
@@ -1307,7 +1307,7 @@ public class CodeOne extends Symbol {
                             if(decimal_binary.charAt(8 + i) == '1') {
                                 data[targetPoint] += 128 >> i;
                             }
-                            
+
                         }
                         targetPoint++;
                     }
@@ -1316,7 +1316,7 @@ public class CodeOne extends Symbol {
                             if(decimal_binary.charAt(16 + i) == '1') {
                                 data[targetPoint] += 128 >> i;
                             }
-                            
+
                         }
                         targetPoint++;
                     }
@@ -1324,8 +1324,8 @@ public class CodeOne extends Symbol {
                     next_mode = c1Mode.C1_ASCII;
                 } else {
                     /* There are three digits - convert the value to binary */
-                    value = (100 * (source[sourcePoint] - '0')) 
-                            + (10 * (source[sourcePoint + 1] - '0')) 
+                    value = (100 * (source[sourcePoint] - '0'))
+                            + (10 * (source[sourcePoint + 1] - '0'))
                             + (source[sourcePoint + 2] - '0') + 1;
 
                     for (i = 0x200; i > 0; i = i >> 1) {
@@ -1344,15 +1344,15 @@ public class CodeOne extends Symbol {
                         if (decimal_binary.charAt(i) == '1') {
                             data[targetPoint] += 128 >> i;
                         }
-                        
+
                         if (decimal_binary.charAt(8 + i) == '1') {
                             data[targetPoint + 1] += 128 >> i;
                         }
-                        
+
                         if (decimal_binary.charAt(16 + i) == '1') {
                             data[targetPoint + 2] += 128 >> i;
                         }
-                        
+
                     }
                     targetPoint += 3;
 
@@ -1408,7 +1408,7 @@ public class CodeOne extends Symbol {
             int iv;
 
             c40_buffer[2] = 1;
-            iv = (1600 * c40_buffer[0]) + (40 * c40_buffer[1]) 
+            iv = (1600 * c40_buffer[0]) + (40 * c40_buffer[1])
                     + (c40_buffer[2]) + 1;
             data[targetPoint] = iv / 256;
             targetPoint++;
@@ -1422,7 +1422,7 @@ public class CodeOne extends Symbol {
 
             c40_buffer[1] = 1;
             c40_buffer[2] = 31; /* Pad */
-            iv = (1600 * c40_buffer[0]) + (40 * c40_buffer[1]) 
+            iv = (1600 * c40_buffer[0]) + (40 * c40_buffer[1])
                     + (c40_buffer[2]) + 1;
             data[targetPoint] = iv / 256;
             targetPoint++;
@@ -1435,7 +1435,7 @@ public class CodeOne extends Symbol {
             int iv;
 
             text_buffer[2] = 1;
-            iv = (1600 * text_buffer[0]) + (40 * text_buffer[1]) 
+            iv = (1600 * text_buffer[0]) + (40 * text_buffer[1])
                     + (text_buffer[2]) + 1;
             data[targetPoint] = iv / 256;
             targetPoint++;
@@ -1449,7 +1449,7 @@ public class CodeOne extends Symbol {
 
             text_buffer[1] = 1;
             text_buffer[2] = 31; /* Pad */
-            iv = (1600 * text_buffer[0]) + (40 * text_buffer[1]) 
+            iv = (1600 * text_buffer[0]) + (40 * text_buffer[1])
                     + (text_buffer[2]) + 1;
             data[targetPoint] = iv / 256;
             targetPoint++;
@@ -1539,7 +1539,7 @@ public class CodeOne extends Symbol {
             error_msg = "Input data too long";
             return 0;
         }
-        
+
         if (debug) {
             System.out.println("targets:");
             for(i = 0; i < targetPoint; i++) {
@@ -1547,11 +1547,11 @@ public class CodeOne extends Symbol {
             }
             System.out.println();
         }
-	
+
         return targetPoint;
     }
 
-    private c1Mode lookAheadTest(int sourcelen, int position, 
+    private c1Mode lookAheadTest(int sourcelen, int position,
             c1Mode current_mode) {
         double ascii_count, c40_count, text_count, edi_count, byte_count;
         int reduced_char;
@@ -1726,14 +1726,14 @@ public class CodeOne extends Symbol {
         } else {
             /* Step Q */
 
-            if (((edi_count + 1.0 <= ascii_count) 
-                    && (edi_count + 1.0 <= c40_count)) 
-                    && ((edi_count + 1.0 <= byte_count) 
+            if (((edi_count + 1.0 <= ascii_count)
+                    && (edi_count + 1.0 <= c40_count))
+                    && ((edi_count + 1.0 <= byte_count)
                     && (edi_count + 1.0 <= text_count))) {
                 best_scheme = c1Mode.C1_EDI;
             }
 
-            if ((c40_count + 1.0 <= ascii_count) 
+            if ((c40_count + 1.0 <= ascii_count)
                     && (c40_count + 1.0 <= text_count)) {
 
                 if (c40_count < edi_count) {
@@ -1749,30 +1749,30 @@ public class CodeOne extends Symbol {
                 }
             }
 
-            if (((text_count + 1.0 <= ascii_count) 
-                    && (text_count + 1.0 <= c40_count)) 
-                    && ((text_count + 1.0 <= byte_count) 
+            if (((text_count + 1.0 <= ascii_count)
+                    && (text_count + 1.0 <= c40_count))
+                    && ((text_count + 1.0 <= byte_count)
                     && (text_count + 1.0 <= edi_count))) {
                 best_scheme = c1Mode.C1_TEXT;
             }
 
-            if (((ascii_count + 1.0 <= byte_count) 
-                    && (ascii_count + 1.0 <= c40_count)) 
-                    && ((ascii_count + 1.0 <= text_count) 
+            if (((ascii_count + 1.0 <= byte_count)
+                    && (ascii_count + 1.0 <= c40_count))
+                    && ((ascii_count + 1.0 <= text_count)
                     && (ascii_count + 1.0 <= edi_count))) {
                 best_scheme = c1Mode.C1_ASCII;
             }
 
-            if (((byte_count + 1.0 <= ascii_count) 
-                    && (byte_count + 1.0 <= c40_count)) 
-                    && ((byte_count + 1.0 <= text_count) 
+            if (((byte_count + 1.0 <= ascii_count)
+                    && (byte_count + 1.0 <= c40_count))
+                    && ((byte_count + 1.0 <= text_count)
                     && (byte_count + 1.0 <= edi_count))) {
                 best_scheme = c1Mode.C1_BYTE;
             }
         }
-        
+
         if(debug) {
-            System.out.printf("> scores: ASCII %.2f  C40 %.2f  TEXT %.2f  EDI %.2f  BYTE %.2f\n", ascii_count, c40_count, text_count, edi_count, byte_count); 
+            System.out.printf("> scores: ASCII %.2f  C40 %.2f  TEXT %.2f  EDI %.2f  BYTE %.2f\n", ascii_count, c40_count, text_count, edi_count, byte_count);
         }
 
         return best_scheme;
@@ -1794,7 +1794,7 @@ public class CodeOne extends Symbol {
     private boolean preferEdi(int sourcelen, int position) {
         int i;
 
-        for (i = position; isEdiEncodable(source[position + i]) 
+        for (i = position; isEdiEncodable(source[position + i])
                 && ((position + i) < sourcelen); i++);
 
         if ((position + i) == sourcelen) {
@@ -1894,7 +1894,7 @@ public class CodeOne extends Symbol {
         }
     }
 
-    private void plotDataBlock(int start_row, int start_col, int height, 
+    private void plotDataBlock(int start_row, int start_col, int height,
             int width, int row_offset, int col_offset) {
         int i, j;
 

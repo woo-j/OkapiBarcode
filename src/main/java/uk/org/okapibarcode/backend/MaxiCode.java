@@ -15,8 +15,8 @@
  */
 package uk.org.okapibarcode.backend;
 
-import java.io.UnsupportedEncodingException;
 import java.awt.geom.Ellipse2D;
+import java.io.UnsupportedEncodingException;
 
 /**
  * Implements Maxicode According to ISO 16023:2000
@@ -122,11 +122,11 @@ public class MaxiCode extends Symbol {
         }
 
         mode = option1 + 2;
-        
+
         if (mode >= 3) {
             mode++;
         }
-        
+
         if (mode == 2) {
             for (i = 0; i < 10 && i < primaryData.length(); i++) {
                 if ((primaryData.charAt(i) < '0') || (primaryData.charAt(i) > '9')) {
@@ -135,7 +135,7 @@ public class MaxiCode extends Symbol {
                 }
             }
         }
-        
+
         postcode = "";
         countrystr = "";
         servicestr = "";
@@ -161,7 +161,7 @@ public class MaxiCode extends Symbol {
         }
 
         if ((mode == 2) || (mode == 3)) { /* Modes 2 and 3 need data in symbol->primary */
-            
+
             if (primaryData.length() != 15) {
                 error_msg = "Invalid Primary String";
                 return false;
@@ -193,11 +193,11 @@ public class MaxiCode extends Symbol {
 
             for (i = 0; i < countrystr.length(); i++) {
                 countrycode *= 10;
-                countrycode += (int) (countrystr.charAt(i) - '0');
+                countrycode += countrystr.charAt(i) - '0';
             }
             for (i = 0; i < servicestr.length(); i++) {
                 service *= 10;
-                service += (int) (servicestr.charAt(i) - '0');
+                service += servicestr.charAt(i) - '0';
             }
 
             if (debug) {
@@ -230,10 +230,10 @@ public class MaxiCode extends Symbol {
         } else {
             eclen = 40;  // 84 data codewords,  40 error corrections
         }
-        
+
         encodeInfo += "Mode: " + mode + "\n";
         encodeInfo += "ECC Codewords: " + eclen + "\n";
-        
+
         maxi_do_secondary_chk_even(eclen / 2);  // do error correction of even
         maxi_do_secondary_chk_odd(eclen / 2);   // do error correction of odd
 
@@ -314,7 +314,7 @@ public class MaxiCode extends Symbol {
         postcode_length = postcode.length();
         for (i = 0; i < postcode_length; i++) {
             postcode_num *= 10;
-            postcode_num += (int) (postcode.charAt(i) - '0');
+            postcode_num += postcode.charAt(i) - '0';
         }
 
         maxi_codeword[0] = ((postcode_num & 0x03) << 4) | 2;
@@ -835,7 +835,7 @@ public class MaxiCode extends Symbol {
             maxi_codeword[ datalen + (2 * j) + 20] = results[ecclen - 1 - j];
         }
     }
-    
+
     @Override
     public void plotSymbol() {
         int row, col;
@@ -846,25 +846,25 @@ public class MaxiCode extends Symbol {
         double[] radii = {
             10.85, 8.97, 7.10, 5.22, 3.31, 1.43
         };
-        
+
         // Hexagons
         for (row = 0; row < 33; row++) {
             for (col = 0; col < 30; col++) {
                 if (grid[row][col]) {
                     thisHex = new Hexagon();
-                    
+
                     x = (2.46 * col) + 1.23;
                     if ((row & 1) != 0) {
                         x += 1.23;
                     }
                     y = (2.135 * row) + 1.43;
-                    
+
                     thisHex.setCentre(x, y);
                     hex.add(thisHex);
                 }
             }
         }
-        
+
         // Circles
         for (i = 0; i < 6; i++) {
             thisEllipse = new Ellipse2D.Double();

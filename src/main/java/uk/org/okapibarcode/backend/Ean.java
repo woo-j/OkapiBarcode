@@ -27,24 +27,24 @@ public class Ean extends Symbol {
 
     private boolean useAddOn;
     private String addOnContent;
-    
+
     private enum ean_mode {
         EAN8, EAN13
     };
-    
+
     private ean_mode mode;
     private boolean linkageFlag;
 
     private String[] EAN13Parity = {
-        "AAAAAA", "AABABB", "AABBAB", "AABBBA", "ABAABB", "ABBAAB", "ABBBAA", 
+        "AAAAAA", "AABABB", "AABBAB", "AABBBA", "ABAABB", "ABBAAB", "ABBBAA",
         "ABABAB", "ABABBA", "ABBABA"
     };
     private String[] EANsetA = {
-        "3211", "2221", "2122", "1411", "1132", "1231", "1114", "1312", "1213", 
+        "3211", "2221", "2122", "1411", "1132", "1231", "1114", "1312", "1213",
         "3112"
     };
     private String[] EANsetB = {
-        "1123", "1222", "2212", "1141", "2311", "1321", "4111", "2131", "3121", 
+        "1123", "1222", "2212", "1141", "2311", "1321", "4111", "2131", "3121",
         "2113"
     };
 
@@ -69,14 +69,14 @@ public class Ean extends Symbol {
 
     public void unsetLinkageFlag() {
         linkageFlag = false;
-    }       
+    }
 
     @Override
     public boolean encode() {
         boolean retval = false;
         AddOn addOn = new AddOn();
         String addOnData = "";
-        
+
         separateContent();
 
         if(content.length() == 0) {
@@ -92,7 +92,7 @@ public class Ean extends Symbol {
                 break;
             }
         }
-        
+
         if ((retval) && (useAddOn)) {
             addOnData = addOn.calcAddOn(addOnContent);
             if (addOnData.length() == 0) {
@@ -100,7 +100,7 @@ public class Ean extends Symbol {
                 retval = false;
             } else {
                 pattern[0] = pattern[0] + "9" + addOnData;
-                
+
                 //add leading zeroes to add-on text
                 if(addOnContent.length() == 1) {
                     addOnContent = "0" + addOnContent;
@@ -120,10 +120,10 @@ public class Ean extends Symbol {
 
         return retval;
     }
-    
+
     private void separateContent() {
         int splitPoint;
-        
+
         splitPoint = content.indexOf('+');
         if(splitPoint != -1) {
             // There is a '+' in the input data, use an add-on EAN2 or EAN5
@@ -146,7 +146,7 @@ public class Ean extends Symbol {
             error_msg = "Invalid characters in input";
             return false;
         }
-        
+
         if (content.length() > 12) {
             error_msg = "Input data too long";
             return false;
@@ -159,8 +159,8 @@ public class Ean extends Symbol {
 
         accumulator += calcDigit(accumulator);
 
-        parity = EAN13Parity[(int)(accumulator.charAt(0) - '0')];
-        
+        parity = EAN13Parity[accumulator.charAt(0) - '0'];
+
         encodeInfo += "Parity Digit: " + accumulator.charAt(0) + "\n";
 
         /* Start character */
@@ -173,17 +173,17 @@ public class Ean extends Symbol {
 
             if ((i >= 1) && (i <= 6)) {
                 if (parity.charAt(i - 1) == 'B') {
-                    dest += EANsetB[(int)(accumulator.charAt(i) - '0')];
+                    dest += EANsetB[accumulator.charAt(i) - '0'];
                 } else {
-                    dest += EANsetA[(int)(accumulator.charAt(i) - '0')];
+                    dest += EANsetA[accumulator.charAt(i) - '0'];
                 }
             } else {
-                dest += EANsetA[(int)(accumulator.charAt(i) - '0')];
+                dest += EANsetA[accumulator.charAt(i) - '0'];
             }
         }
 
         dest += "111";
-        
+
         readable = accumulator;
         pattern = new String[1];
         pattern[0] = dest;
@@ -202,7 +202,7 @@ public class Ean extends Symbol {
             error_msg = "Invalid characters in input";
             return false;
         }
-        
+
         if (content.length() > 7) {
             error_msg = "Input data too long";
             return false;
@@ -223,7 +223,7 @@ public class Ean extends Symbol {
             dest += EANsetA[Character.getNumericValue(accumulator.charAt(i))];
         }
         dest += "111";
-        
+
         readable = accumulator;
         pattern = new String[1];
         pattern[0] = dest;
@@ -249,7 +249,7 @@ public class Ean extends Symbol {
         if (cdigit == 10) {
             cdigit = 0;
         }
-        
+
         encodeInfo += "Check Digit: " + cdigit + "\n";
 
         return (char)(cdigit + '0');
@@ -264,7 +264,7 @@ public class Ean extends Symbol {
         TextBox t2 = new TextBox();
         TextBox t3 = new TextBox();
         TextBox t4 = new TextBox();
-        int compositeOffset = 0;        
+        int compositeOffset = 0;
 
         rect.clear();
         txt.clear();
@@ -272,7 +272,7 @@ public class Ean extends Symbol {
         x = 0;
         if (linkageFlag) {
             compositeOffset = 6;
-        }        
+        }
         for (xBlock = 0; xBlock < pattern[0].length(); xBlock++) {
             if (black == true) {
                 y = 0;
@@ -297,7 +297,7 @@ public class Ean extends Symbol {
                             h += 2;
                             y -= 2;
                         }
-                    }                    
+                    }
                 }
                 if (mode == ean_mode.EAN8) {
                     if ((x < 3) || (x > 62)) {
@@ -316,7 +316,7 @@ public class Ean extends Symbol {
                             h += 2;
                             y -= 2;
                         }
-                    }                    
+                    }
                 }
                 Rectangle thisrect = new Rectangle(x + 6, y + compositeOffset, w, h);
                 rect.add(thisrect);
@@ -342,7 +342,7 @@ public class Ean extends Symbol {
                 rect.add(new Rectangle(-1 + 6, 2, 1, 2));
                 rect.add(new Rectangle(67 + 6, 2, 1, 2));
             }
-        }        
+        }
         symbol_height = default_height + 5;
         /* Now add the text */
         if (mode == ean_mode.EAN13) {

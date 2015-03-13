@@ -27,7 +27,7 @@ public class AboutOkapi extends javax.swing.JFrame {
      */
     public AboutOkapi() {
         initComponents();
-        titleLabel.setText("<html><b>Okapi Barcode</b><br><br>" 
+        titleLabel.setText("<html><b>Okapi Barcode</b><br><br>"
                 + "A free barcode generator<br>"
                 + "&copy; 2014 Robin Stuart &amp; Robert Elliott<br>"
                 + "Licensed under the Apache License, Version 2.0<br><br>"
@@ -57,6 +57,7 @@ public class AboutOkapi extends javax.swing.JFrame {
         okButton.setText("OK");
         okButton.setName("btnOK"); // NOI18N
         okButton.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 okButtonActionPerformed(evt);
             }
@@ -100,7 +101,7 @@ public class AboutOkapi extends javax.swing.JFrame {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {

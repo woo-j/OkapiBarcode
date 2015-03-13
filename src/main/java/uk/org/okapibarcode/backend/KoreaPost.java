@@ -22,7 +22,7 @@ package uk.org.okapibarcode.backend;
 public class KoreaPost extends Symbol {
 
     String[] KoreaTable = {
-        "1313150613", "0713131313", "0417131313", "1506131313", "0413171313", 
+        "1313150613", "0713131313", "0417131313", "1506131313", "0413171313",
         "17171313", "1315061313", "0413131713", "17131713", "13171713"
     };
 
@@ -34,7 +34,7 @@ public class KoreaPost extends Symbol {
             error_msg = "Invalid characters in input";
             return false;
         }
-        
+
         if (content.length() > 6) {
             error_msg = "Input data too long";
             return false;
@@ -66,7 +66,7 @@ public class KoreaPost extends Symbol {
             System.out.println("Check: " + checkd);
         }
         encodeInfo += "Check Digit: " + checkd + "\n";
-        
+
         accumulator += KoreaTable[checkd];
 
         readable = add_zero + checkd;

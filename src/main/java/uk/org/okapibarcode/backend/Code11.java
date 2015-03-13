@@ -44,7 +44,7 @@ public class Code11 extends Symbol {
         int checkDigitC, weightC = 1, countC = 0, checkDigitK, weightK = 1, countK = 0;
         int[] weight = new int[128];
         char thisCharacter;
-        
+
         horizontalSpacing = "112211";
         for (i = 0; i < length; i++) {
             thisCharacter = content.charAt(i);
@@ -62,7 +62,7 @@ public class Code11 extends Symbol {
             }
         }
         checkDigitC = countC % 11;
-        
+
         encodeInfo += "Check Digit C: " + checkDigitC + "\n";
 
         weight[length] = checkDigitC;
@@ -77,7 +77,7 @@ public class Code11 extends Symbol {
             }
         }
         checkDigitK = countK % 11;
-        
+
         encodeInfo += "Check Digit K: " + checkDigitK + "\n";
 
         horizontalSpacing += code11Table[checkDigitC];

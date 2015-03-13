@@ -18,7 +18,7 @@ package uk.org.okapibarcode.backend;
 /**
  * Implements Aztec Code bar code symbology
  * According to ISO/IEC 24778:2008
- * 
+ *
  * @author Robin Stuart <rstuart114@gmail.com>
  * @version 0.2
  */
@@ -327,11 +327,11 @@ public class AztecCode extends Symbol {
         String bin;
         int t;
         boolean done;
-        
-        if(readerInit) { 
-            comp_loop = 1; 
+
+        if(readerInit) {
+            comp_loop = 1;
         }
-	
+
         if((gs1) && (readerInit)) {
 		error_msg = "Cannot encode in GS1 and Reader Initialisation mode at the same time";
 		return false;
@@ -351,7 +351,7 @@ public class AztecCode extends Symbol {
             error_msg = "Input too long or too many extended ASCII characters";
             return false;
         }
-        
+
         // Set the error correction level
         if ((option1 <= 0) || (option1 > 4)) {
             ecc_level = 2;
@@ -364,7 +364,7 @@ public class AztecCode extends Symbol {
         layers = 0; /* Keep compiler happy! */
         data_maxsize = 0; /* Keep compiler happy! */
         adjustment_size = 0;
-        
+
         if(option2 == 0) { /* The size of the symbol can be determined by Zint */
             do {
                 /* Decide what size symbol to use - the smallest that fits the data */
@@ -559,14 +559,14 @@ public class AztecCode extends Symbol {
             }
             /* Determine codeword bitlength - Table 3 */
             codeword_size = 6;
-            if((layers >= 3) && (layers <= 8)) { 
-                codeword_size = 8; 
+            if((layers >= 3) && (layers <= 8)) {
+                codeword_size = 8;
             }
-            if((layers >= 9) && (layers <= 22)) { 
-                codeword_size = 10; 
+            if((layers >= 9) && (layers <= 22)) {
+                codeword_size = 10;
             }
-            if(layers >= 23) { 
-                codeword_size = 12; 
+            if(layers >= 23) {
+                codeword_size = 12;
             }
             j = 0; i = 0;
             do {
@@ -605,41 +605,41 @@ public class AztecCode extends Symbol {
                     i++;
                 }
         } while (i < binary_string.length());
-        
+
         adjusted_length = adjusted_string.length();
         remainder = adjusted_length % codeword_size;
         padbits = codeword_size - remainder;
-        
+
         if(padbits == codeword_size) { padbits = 0; }
             for(i = 0; i < padbits; i++) {
                 adjusted_string += "1";
             }
-            
+
             adjusted_length = adjusted_string.length();
             count = 0;
-            
+
             for(i = (adjusted_length - codeword_size); i < adjusted_length; i++) {
-                if(adjusted_string.charAt(i) == '1') { 
+                if(adjusted_string.charAt(i) == '1') {
                     count++;
                 }
             }
-            
-            if(count == codeword_size) { 
-                adjusted_string = adjusted_string.substring(0, adjusted_length - 1) + '0'; 
+
+            if(count == codeword_size) {
+                adjusted_string = adjusted_string.substring(0, adjusted_length - 1) + '0';
             }
-            
+
             /* Check if the data actually fits into the selected symbol size */
             if (compact) {
                 data_maxsize = codeword_size * (AztecCompactSizes[layers - 1] - 3);
             } else {
                 data_maxsize = codeword_size * (AztecSizes[layers - 1] - 3);
             }
-            
+
             if (adjusted_length > data_maxsize) {
                 error_msg = "Data too long for specified Aztec Code symbol size";
                 return false;
             }
-            
+
             if (debug) {
                 System.out.printf("Codewords:\n");
                 for (i = 0; i < (adjusted_length / codeword_size); i++) {
@@ -650,7 +650,7 @@ public class AztecCode extends Symbol {
                 }
             }
         }
-        
+
         if(readerInit && (layers > 22)) {
             error_msg = "Data too long for reader initialisation symbol";
             return false;
@@ -681,7 +681,7 @@ public class AztecCode extends Symbol {
             System.out.printf(" codewords of %d-bits\n", codeword_size);
             System.out.printf("    (%d data words, %d ecc words)\n", data_blocks, ecc_blocks);
         }
-        
+
         encodeInfo += "Compact Mode: ";
         if (compact) {
             encodeInfo += "TRUE\n";
@@ -776,7 +776,7 @@ public class AztecCode extends Symbol {
                     if (adjusted_string.charAt((i * codeword_size) + weight) == '1') {
                         data_part[i] += (2048 >> weight);
                     }
-                }                
+                }
             }
             rs.init_gf(0x1069);
             rs.init_code(ecc_blocks, 1);
@@ -860,7 +860,7 @@ public class AztecCode extends Symbol {
                     descriptor += '0';
                 }
             }
-            
+
             if (debug) System.out.printf("Mode Message = %s\n", descriptor);
             j = 4;
         }

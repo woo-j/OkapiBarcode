@@ -24,10 +24,10 @@ import java.awt.Rectangle;
  * @version 0.2
  */
 public class Upc extends Symbol {
-    
+
     private boolean useAddOn;
     private String addOnContent;
-    
+
     private enum upc_mode {
         UPCA, UPCE
     };
@@ -35,19 +35,19 @@ public class Upc extends Symbol {
     private boolean linkageFlag;
 
     private String[] setAC = {
-        "3211", "2221", "2122", "1411", "1132", "1231", "1114", "1312", 
+        "3211", "2221", "2122", "1411", "1132", "1231", "1114", "1312",
         "1213", "3112"
     };
     private String[] setB = {
-        "1123", "1222", "2212", "1141", "2311", "1321", "4111", "2131", 
+        "1123", "1222", "2212", "1141", "2311", "1321", "4111", "2131",
         "3121", "2113"
     };
     private String[] UPCParity0 = {
-        "BBBAAA", "BBABAA", "BBAABA", "BBAAAB", "BABBAA", "BAABBA", "BAAABB", 
+        "BBBAAA", "BBABAA", "BBAABA", "BBAAAB", "BABBAA", "BAABBA", "BAAABB",
         "BABABA", "BABAAB", "BAABAB"
     }; /* Number set for UPC-E symbol (EN Table 4) */
     private String[] UPCParity1 = {
-        "AAABBB", "AABABB", "AABBAB", "AABBBA", "ABAABB", "ABBAAB", "ABBBAA", 
+        "AAABBB", "AABABB", "AABBAB", "AABBBA", "ABAABB", "ABBAAB", "ABBBAA",
         "ABABAB", "ABABBA", "ABBABA"
     }; /* Not covered by BS EN 797 */
 
@@ -63,21 +63,21 @@ public class Upc extends Symbol {
     public void setUpceMode() {
         mode = upc_mode.UPCE;
     }
-    
+
     public void setLinkageFlag() {
         linkageFlag = true;
     }
 
     public void unsetLinkageFlag() {
         linkageFlag = false;
-    }       
+    }
 
     @Override
     public boolean encode() {
         boolean retval;
         AddOn addOn = new AddOn();
         String addOnData = "";
-        
+
         separateContent();
         if(content.length() == 0) {
             error_msg = "Missing UPC data";
@@ -89,7 +89,7 @@ public class Upc extends Symbol {
                 retval = upce();
             }
         }
-        
+
         if (useAddOn) {
             addOnData = addOn.calcAddOn(addOnContent);
             if (addOnData.length() == 0) {
@@ -97,7 +97,7 @@ public class Upc extends Symbol {
                 retval = false;
             } else {
                 pattern[0] = pattern[0] + "9" + addOnData;
-                
+
                 //add leading zeroes to add-on text
                 if(addOnContent.length() == 1) {
                     addOnContent = "0" + addOnContent;
@@ -119,7 +119,7 @@ public class Upc extends Symbol {
 
     private void separateContent() {
         int splitPoint;
-        
+
         splitPoint = content.indexOf('+');
         if(splitPoint != -1) {
             // There is a '+' in the input data, use an add-on EAN2 or EAN5
@@ -132,7 +132,7 @@ public class Upc extends Symbol {
             }
         }
     }
-    
+
     private boolean upca() {
         String accumulator;
         String dest;
@@ -143,12 +143,12 @@ public class Upc extends Symbol {
             error_msg = "Invalid characters in input";
             return false;
         }
-        
+
         if (content.length() > 11) {
             error_msg = "Input data too long";
             return false;
         }
-        
+
         accumulator = "";
         for (i = content.length(); i < 11; i++) {
             accumulator += "0";
@@ -164,7 +164,7 @@ public class Upc extends Symbol {
             dest += setAC[Character.getNumericValue(accumulator.charAt(i))];
         }
         dest += "111";
-        
+
         encodeInfo += "Check Digit: " + check + "\n";
 
         readable = accumulator;
@@ -187,7 +187,7 @@ public class Upc extends Symbol {
             error_msg = "Invalid characters in input";
             return false;
         }
-        
+
         if (content.length() > 7) {
             error_msg = "Input data too long";
             return false;
@@ -234,7 +234,7 @@ public class Upc extends Symbol {
             equivalent[3] = source.charAt(3);
             equivalent[9] = source.charAt(4);
             equivalent[10] = source.charAt(5);
-            if (((source.charAt(3) == '0') || (source.charAt(3) == '1')) 
+            if (((source.charAt(3) == '0') || (source.charAt(3) == '1'))
                     || (source.charAt(3) == '2')) {
                 /* Note 1 - "X3 shall not be equal to 0, 1 or 2" */
                 error_msg = "Invalid UPC-E data";
@@ -274,7 +274,7 @@ public class Upc extends Symbol {
 
         /* Get the check digit from the expanded UPCA code */
         check = calcDigit(equiv);
-        
+
         encodeInfo += "Check Digit: " + check + "\n";
 
         /* Use the number system and check digit information to choose a parity scheme */
@@ -292,10 +292,10 @@ public class Upc extends Symbol {
         for (i = 0; i <= 5; i++) {
             switch (parity.charAt(i)) {
             case 'A':
-                dest += setAC[(int)(source.charAt(i + 1) - '0')];
+                dest += setAC[source.charAt(i + 1) - '0'];
                 break;
             case 'B':
-                dest += setB[(int)(source.charAt(i + 1) - '0')];
+                dest += setB[source.charAt(i + 1) - '0'];
                 break;
             }
         }
@@ -453,7 +453,7 @@ public class Upc extends Symbol {
                     t4.setvalues(80.0, 6.0 + compositeOffset, addOnContent);
                     txt.add(t4);
                 }
-            }            
+            }
         }
     }
 }

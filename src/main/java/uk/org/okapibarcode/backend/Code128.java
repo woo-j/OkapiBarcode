@@ -34,21 +34,21 @@ public class Code128 extends Symbol {
     }
 
     private String[] code128Table = {
-        "212222", "222122", "222221", "121223", "121322", "131222", "122213", 
-        "122312", "132212", "221213", "221312", "231212", "112232", "122132", 
-        "122231", "113222", "123122", "123221", "223211", "221132", "221231", 
-        "213212", "223112", "312131", "311222", "321122", "321221", "312212", 
-        "322112", "322211", "212123", "212321", "232121", "111323", "131123", 
-        "131321", "112313", "132113", "132311", "211313", "231113", "231311", 
-        "112133", "112331", "132131", "113123", "113321", "133121", "313121", 
-        "211331", "231131", "213113", "213311", "213131", "311123", "311321", 
-        "331121", "312113", "312311", "332111", "314111", "221411", "431111", 
-        "111224", "111422", "121124", "121421", "141122", "141221", "112214", 
-        "112412", "122114", "122411", "142112", "142211", "241211", "221114", 
-        "413111", "241112", "134111", "111242", "121142", "121241", "114212", 
-        "124112", "124211", "411212", "421112", "421211", "212141", "214121", 
-        "412121", "111143", "111341", "131141", "114113", "114311", "411113", 
-        "411311", "113141", "114131", "311141", "411131", "211412", "211214", 
+        "212222", "222122", "222221", "121223", "121322", "131222", "122213",
+        "122312", "132212", "221213", "221312", "231212", "112232", "122132",
+        "122231", "113222", "123122", "123221", "223211", "221132", "221231",
+        "213212", "223112", "312131", "311222", "321122", "321221", "312212",
+        "322112", "322211", "212123", "212321", "232121", "111323", "131123",
+        "131321", "112313", "132113", "132311", "211313", "231113", "231311",
+        "112133", "112331", "132131", "113123", "113321", "133121", "313121",
+        "211331", "231131", "213113", "213311", "213131", "311123", "311321",
+        "331121", "312113", "312311", "332111", "314111", "221411", "431111",
+        "111224", "111422", "121124", "121421", "141122", "141221", "112214",
+        "112412", "122114", "122411", "142112", "142211", "241211", "221114",
+        "413111", "241112", "134111", "111242", "121142", "121241", "114212",
+        "124112", "124211", "411212", "421112", "421211", "212141", "214121",
+        "412121", "111143", "111341", "131141", "114113", "114311", "411113",
+        "411311", "113141", "114131", "311141", "411131", "211412", "211214",
         "211232", "2331112"
     };
 
@@ -58,20 +58,20 @@ public class Code128 extends Symbol {
     private boolean modeCSupression;
     private enum Composite { OFF, CCA, CCB, CCC };
     private Composite compositeMode;
-    
+
     public Code128() {
         modeCSupression = false;
         compositeMode = Composite.OFF;
     }
-    
+
     public void useModeC() {
         modeCSupression = false;
     }
-    
+
     public void stopModeC() {
         modeCSupression = true;
     }
-    
+
     public void setCca() {
         compositeMode = Composite.CCA;
     }
@@ -79,11 +79,11 @@ public class Code128 extends Symbol {
     public void setCcb() {
         compositeMode = Composite.CCB;
     }
-    
+
     public void setCcc() {
         compositeMode = Composite.CCC;
     }
-    
+
     public void unsetCc() {
         compositeMode = Composite.OFF;
     }
@@ -176,7 +176,7 @@ public class Code128 extends Symbol {
         mode = findSubset(inputData[input_point]);
         mode_type[0] = mode;
         mode_length[0] = 1;
-        
+
         if(gs1) {
             mode = Mode.ABORC;
         }
@@ -184,7 +184,7 @@ public class Code128 extends Symbol {
         if((modeCSupression) && (mode == Mode.ABORC)) {
             mode = Mode.AORB;
         }
-        
+
         for (i = 1; i < sourcelen; i++) {
             last_mode = mode;
             mode = findSubset(inputData[i]);
@@ -206,7 +206,7 @@ public class Code128 extends Symbol {
 
         reduceSubsetChanges();
 
-        
+
         if (gs1) {
             /* Put set data into set[] */
             read = 0;
@@ -216,7 +216,7 @@ public class Code128 extends Symbol {
                     read++;
                 }
             }
-            
+
             /* Resolve odd length LATCHC blocks */
             c_count = 0;
             for(i = 0; i < read; i++) {
@@ -252,14 +252,14 @@ public class Code128 extends Symbol {
 		}
             }
             for(i = 1; i < read - 1; i++) {
-                if((set[i] == Mode.LATCHC) && ((set[i - 1] == Mode.LATCHB) 
+                if((set[i] == Mode.LATCHC) && ((set[i - 1] == Mode.LATCHB)
                         && (set[i + 1] == Mode.LATCHB))) {
                     set[i] = Mode.LATCHB;
                 }
             }
 	} else {
             /* Resolve odd length LATCHC blocks */
-        
+
             if ((mode_type[0] == Mode.LATCHC) && ((mode_length[0] & 1) != 0)) {
                 /* Rule 2 */
                 mode_length[1]++;
@@ -279,7 +279,7 @@ public class Code128 extends Symbol {
                     }
                 }
             }
-            
+
             /* Put set data into set[] */
             for (i = 0; i < index_point; i++) {
                 for (j = 0; j < mode_length[i]; j++) {
@@ -374,9 +374,9 @@ public class Code128 extends Symbol {
                     dest += code128Table[96]; /* FNC3 */
                     values[1] = 96;
                     bar_characters++;
-                    if(debug) { 
+                    if(debug) {
                         System.out.println("\tStart B\n\tFNC3");
-                    } 
+                    }
                     break;
                 default: /* Start C */
                     dest += code128Table[104]; /* Start B */
@@ -425,7 +425,7 @@ public class Code128 extends Symbol {
             }
         }
         bar_characters++;
-        
+
         if (gs1) {
             dest += code128Table[102];
             values[1] = 102;
@@ -583,7 +583,7 @@ public class Code128 extends Symbol {
             if (!(gs1 && (inputData[read] == '['))) {
                 /* Encode data characters */
                 c = inputData[read];
-                switch (set[read]) { 
+                switch (set[read]) {
                 case SHIFTA:
                 case LATCHA:
                     if (c > 127) {
@@ -630,7 +630,7 @@ public class Code128 extends Symbol {
                     break;
                 case LATCHC:
                     int weight;
-                    int d = (int) inputData[read + 1];
+                    int d = inputData[read + 1];
 
                     weight = (10 * (c - '0')) + (d - '0');
                     dest += code128Table[weight];
@@ -656,10 +656,10 @@ public class Code128 extends Symbol {
             }
 
         } while (read < sourcelen);
-        
+
         /* "...note that the linkage flag is an extra code set character between
 	the last data character and the Symbol Check Character" (GS1 Specification) */
-	
+
 	/* Linkage flags in GS1-128 are determined by ISO/IEC 24723 section 7.4 */
 
 	switch(compositeMode) {
@@ -691,7 +691,7 @@ public class Code128 extends Symbol {
             default:
                 break;
 	}
-	
+
 	if(linkage_flag != 0) {
             dest += code128Table[linkage_flag];
             values[bar_characters] = linkage_flag;
@@ -724,11 +724,11 @@ public class Code128 extends Symbol {
         if (!(gs1)) {
             readable = content;
         }
-        
+
         if (hibc) {
             readable = "*" + content + "*";
         }
-        
+
         if (compositeMode == Composite.OFF) {
             pattern = new String[1];
             pattern[0] = dest;

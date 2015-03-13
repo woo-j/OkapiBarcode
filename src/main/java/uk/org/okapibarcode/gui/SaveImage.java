@@ -17,10 +17,12 @@ package uk.org.okapibarcode.gui;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
-import uk.org.okapibarcode.output.ScalableVectorGraphics;
+
 import uk.org.okapibarcode.output.PostScript;
+import uk.org.okapibarcode.output.ScalableVectorGraphics;
 
 /**
  * Save bar code image to image file

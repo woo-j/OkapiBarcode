@@ -266,7 +266,7 @@ public class Code2Of5 extends Symbol {
             error_msg = "Invalid characters in input";
             return false;
         }
-        
+
         if (input_length > 13) {
             error_msg = "Input data too long";
             return false;
@@ -279,10 +279,10 @@ public class Code2Of5 extends Symbol {
 
         readable += content;
         for (i = 12; i >= 0; i--) {
-            count += (int)(readable.charAt(i) - '0');
+            count += readable.charAt(i) - '0';
 
             if ((i & 1) == 0) {
-                count += 2 * ((int)(readable.charAt(i) - '0'));
+                count += 2 * (readable.charAt(i) - '0');
             }
         }
 
@@ -315,7 +315,7 @@ public class Code2Of5 extends Symbol {
             error_msg = "Invalid characters in input";
             return false;
         }
-        
+
         if (input_length > 13) {
             error_msg = "Input data too long";
             return false;
@@ -329,10 +329,10 @@ public class Code2Of5 extends Symbol {
         readable += content;
 
         for (i = 12; i >= 0; i--) {
-            count += 4 * (int)(readable.charAt(i) - '0');
+            count += 4 * (readable.charAt(i) - '0');
 
             if ((i & 1) != 0) {
-                count += 5 * (int)(readable.charAt(i) - '0');
+                count += 5 * (readable.charAt(i) - '0');
             }
         }
 
@@ -365,7 +365,7 @@ public class Code2Of5 extends Symbol {
             error_msg = "Invalid characters in input";
             return false;
         }
-        
+
         if (input_length > 11) {
             error_msg = "Input data too long";
             return false;
@@ -378,10 +378,10 @@ public class Code2Of5 extends Symbol {
 
         readable += content;
         for (i = 10; i >= 0; i--) {
-            count += 4 * (int)(readable.charAt(i) - '0');
+            count += 4 * (readable.charAt(i) - '0');
 
             if ((i & 1) != 0) {
-                count += 5 * (int)(readable.charAt(i) - '0');
+                count += 5 * (readable.charAt(i) - '0');
             }
         }
 
@@ -404,14 +404,14 @@ public class Code2Of5 extends Symbol {
         row_height[0] = -1;
         return true;
     }
-    
+
     @Override
     public void plotSymbol() {
         int xBlock;
         int x, y, w, h;
         boolean black;
         int offset = 0;
-        
+
         rect.clear();
         txt.clear();
         y = 0;
@@ -441,7 +441,7 @@ public class Code2Of5 extends Symbol {
             x += (double) (pattern[0].charAt(xBlock) - '0');
         }
         symbol_height = h;
- 
+
         if (mode == tof_mode.ITF14) {
             // Add bounding box
             Rectangle topBar = new Rectangle(0, 0, symbol_width, 4);
@@ -456,9 +456,9 @@ public class Code2Of5 extends Symbol {
         if (!(readable.isEmpty())) {
             TextBox thistext = new TextBox();
             // Calculated position is approximately central
-            thistext.setvalues(((symbol_width - (5.0 * readable.length())) / 2), 
+            thistext.setvalues(((symbol_width - (5.0 * readable.length())) / 2),
                     symbol_height + 8.0, readable);
             txt.add(thistext);
         }
-    }    
+    }
 }

@@ -16,7 +16,7 @@
 package uk.org.okapibarcode.backend;
 
 import java.io.UnsupportedEncodingException;
-import java.math.*;
+import java.math.BigInteger;
 /**
  * Implements PDF417 bar code symbology and MicroPDF417 bar code symbology
  * According to ISO/IEC 15438:2006 and ISO/IEC 24728:2006 respectively
@@ -30,7 +30,7 @@ public class Pdf417 extends Symbol {
     private enum pdfMode {
         NORMAL, TRUNCATED, MICRO
     };
-    
+
     private int blockLength[] = new int[1000];
     private pdfEncodingMode blockType[] = new pdfEncodingMode[1000];
     private int blockIndex;
@@ -368,11 +368,11 @@ public class Pdf417 extends Symbol {
         16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 4, 5, 6, 24, 7, 8, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
         11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 21, 27, 9
     };
-    
+
 private final int[] MicroAutosize = {
     4, 6, 7, 8, 10, 12, 13, 14, 16, 18, 19, 20, 24, 29, 30, 33, 34, 37, 39, 46, 54, 58, 70, 72, 82, 90, 108, 126,
 	1, 14, 2, 7, 3, 25, 8, 16, 5, 17, 9, 6, 10, 11, 28, 12, 19, 13, 29, 20, 30, 21, 22, 31, 23, 32, 33, 34 };
-    
+
     /* rows, columns, error codewords, k-offset of valid MicroPDF417 sizes from ISO/IEC 24728:2006 */
 private final int[] MicroVariants =
 {	1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
@@ -403,65 +403,65 @@ private final String[] RAPC = {"", "112231", "121231", "122131", "131131", "1312
 	"113311", "113221", "113212", "113122", "122122", "131122", "131113", "122113", "113113",
 	"112213", "112222", "112312", "112321", "111421", "111331", "111322", "111232", "111223",
 	"111133", "111124", "111214", "112114", "121114", "121123", "121132", "112132", "112141" };
-    
+
 /* MicroPDF417 coefficients from ISO/IEC 24728:2006 Annex F */
 private final int[] Microcoeffs = {
 	/* k = 7 */
 	76, 925, 537, 597, 784, 691, 437,
-	
+
 	/* k = 8 */
 	237, 308, 436, 284, 646, 653, 428, 379,
-	
+
 	/* k = 9 */
 	567, 527, 622, 257, 289, 362, 501, 441, 205,
-	
+
 	/* k = 10 */
 	377, 457, 64, 244, 826, 841, 818, 691, 266, 612,
-	
+
 	/* k = 11 */
 	462, 45, 565, 708, 825, 213, 15, 68, 327, 602, 904,
-	
+
 	/* k = 12 */
 	597, 864, 757, 201, 646, 684, 347, 127, 388, 7, 69, 851,
-	
+
 	/* k = 13 */
 	764, 713, 342, 384, 606, 583, 322, 592, 678, 204, 184, 394, 692,
-	
+
 	/* k = 14 */
 	669, 677, 154, 187, 241, 286, 274, 354, 478, 915, 691, 833, 105, 215,
-	
+
 	/* k = 15 */
 	460, 829, 476, 109, 904, 664, 230, 5, 80, 74, 550, 575, 147, 868, 642,
-	
+
 	/* k = 16 */
 	274, 562, 232, 755, 599, 524, 801, 132, 295, 116, 442, 428, 295, 42, 176, 65,
-	
+
 	/* k = 18 */
 	279, 577, 315, 624, 37, 855, 275, 739, 120, 297, 312, 202, 560, 321, 233, 756,
 	760, 573,
-	
+
 	/* k = 21 */
 	108, 519, 781, 534, 129, 425, 681, 553, 422, 716, 763, 693, 624, 610, 310, 691,
 	347, 165, 193, 259, 568,
-	
+
 	/* k = 26 */
 	443, 284, 887, 544, 788, 93, 477, 760, 331, 608, 269, 121, 159, 830, 446, 893,
 	699, 245, 441, 454, 325, 858, 131, 847, 764, 169,
-	
+
 	/* k = 32 */
 	361, 575, 922, 525, 176, 586, 640, 321, 536, 742, 677, 742, 687, 284, 193, 517,
 	273, 494, 263, 147, 593, 800, 571, 320, 803, 133, 231, 390, 685, 330, 63, 410,
-	
+
 	/* k = 38 */
 	234, 228, 438, 848, 133, 703, 529, 721, 788, 322, 280, 159, 738, 586, 388, 684,
 	445, 680, 245, 595, 614, 233, 812, 32, 284, 658, 745, 229, 95, 689, 920, 771,
 	554, 289, 231, 125, 117, 518,
-	
+
 	/* k = 44 */
 	476, 36, 659, 848, 678, 64, 764, 840, 157, 915, 470, 876, 109, 25, 632, 405,
 	417, 436, 714, 60, 376, 97, 413, 706, 446, 21, 3, 773, 569, 267, 272, 213,
 	31, 560, 231, 758, 103, 271, 572, 436, 339, 730, 82, 285,
-	
+
 	/* k = 50 */
 	923, 797, 576, 875, 156, 706, 63, 81, 257, 874, 411, 416, 778, 50, 205, 303,
 	188, 535, 909, 155, 637, 230, 534, 96, 575, 102, 264, 233, 919, 593, 865, 26,
@@ -471,38 +471,38 @@ private final int[] Microcoeffs = {
     public Pdf417() {
         symbolMode = pdfMode.NORMAL;
     }
-    
+
     public void setNormalMode() {
         symbolMode = pdfMode.NORMAL;
     }
-    
+
     public void setTruncMode() {
         symbolMode = pdfMode.TRUNCATED;
     }
-    
+
     public void setMicroMode() {
         symbolMode = pdfMode.MICRO;
     }
-    
+
     @Override
     public boolean encode() {
         boolean retval = false;
         byte[] inputBytes;
         int i;
         int sourceLength = content.length();
-        
+
         try {
             inputBytes = content.getBytes("ISO8859_1");
         } catch (UnsupportedEncodingException e) {
             error_msg = "Invalid character in input data";
             return false;
         }
-        
+
         inputData = new int[sourceLength];
         for(i = 0; i < sourceLength; i++) {
             inputData[i] = inputBytes[i] & 0xFF;
         }
-        
+
         switch(symbolMode) {
             case NORMAL:
             case TRUNCATED:
@@ -512,7 +512,7 @@ private final int[] Microcoeffs = {
                 retval = micro_pdf417();
                 break;
         }
-        
+
         if(retval == true) {
             plotSymbol();
         }
@@ -551,7 +551,7 @@ private final int[] Microcoeffs = {
             }
             blockIndex++;
         } while (blockCount < length);
-        
+
         /* Watch for numeric blocks longer than 44 characters */
         for (i = 0; i < blockIndex; i++) {
             if ((blockType[i] == pdfEncodingMode.NUM) && (blockLength[i] > 44)) {
@@ -567,7 +567,7 @@ private final int[] Microcoeffs = {
         }
 
         pdfsmooth();
-        
+
         if (debug) {
             System.out.printf("Initial block pattern:\n");
             for (i = 0; i < blockIndex; i++) {
@@ -592,12 +592,12 @@ private final int[] Microcoeffs = {
         /* now compress the data */
         blockCount = 0;
         codeWordCount = 0;
-        
+
         if (readerInit) {
             codeWords[codeWordCount] = 921; /* Reader Initialisation */
             codeWordCount++;
         }
-        
+
         for (i = 0; i < blockIndex; i++) {
             switch (blockType[i]) {
             case TEX:
@@ -615,7 +615,7 @@ private final int[] Microcoeffs = {
             }
             blockCount = blockCount + blockLength[i];
         }
-        
+
         if(debug) {
 		System.out.printf("\nCompressed data stream:\n");
 		for(i = 0; i < codeWordCount; i++) {
@@ -648,7 +648,7 @@ private final int[] Microcoeffs = {
             k *= 2;
         }
         longueur = codeWordCount;
-        
+
         selectedSymbolWidth = option2;
         if (selectedSymbolWidth > 30) {
             selectedSymbolWidth = 30;
@@ -738,7 +738,7 @@ private final int[] Microcoeffs = {
             }
             mccorrection[0] = (929 - (total * coefrs[offset + j]) % 929) % 929;
         }
-        
+
         encodeInfo += "Data Codewords: " + longueur + "\n";
         encodeInfo += "ECC Codewords: " + k + "\n";
 
@@ -746,7 +746,7 @@ private final int[] Microcoeffs = {
         for (i = k - 1; i >= 0; i--) {
             codeWords[codeWordCount++] = mccorrection[i] != 0 ? 929 - mccorrection[i] : 0;
         }
-        
+
         if(debug) {
 		System.out.printf("\nFull codeword stream:\n");
 		for(i = 0; i < codeWordCount; i++) {
@@ -764,9 +764,9 @@ private final int[] Microcoeffs = {
         pattern = new String[codeWordCount / selectedSymbolWidth];
         row_count = codeWordCount / selectedSymbolWidth;
         row_height = new int[codeWordCount / selectedSymbolWidth];
-        
+
         encodeInfo += "Grid Size: " + selectedSymbolWidth + " X " + row_count + "\n";
-        
+
         if(debug) {
             System.out.println("Zebu equivalent:");
         }
@@ -812,12 +812,12 @@ private final int[] Microcoeffs = {
             if(symbolMode != pdfMode.TRUNCATED) {
                 codebarre += "-";
             }
-            
+
             bin = "";
             for (j = 0; j < codebarre.length(); j++) {
                 bin += PDFttf[positionOf(codebarre.charAt(j), brSet)];
             }
-            
+
             if(debug) {
                 System.out.println("   " + codebarre);
             }
@@ -826,9 +826,9 @@ private final int[] Microcoeffs = {
         }
         return true;
     }
-    
+
     private boolean micro_pdf417() { /* like PDF417 only much smaller! */
-	
+
 	int i, k, j, blockCount, longueur, offset;
 	int total;
 	int variant, LeftRAPStart, CentreRAPStart, RightRAPStart, StartCluster;
@@ -840,19 +840,19 @@ private final int[] Microcoeffs = {
         pdfEncodingMode currentEncodingMode;
         int selectedSymbolWidth;
         String bin;
-	
+
 	/* Encoding starts out the same as PDF417, so use the same code */
-	
+
 	/* 456 */
 	blockIndex = 0;
 	blockCount = 0;
-	
+
 	currentEncodingMode = chooseMode(inputData[blockCount]);
-	
+
 	for(i = 0; i < 1000; i++) {
 		blockLength[i] = 0;
 	}
-	
+
 	/* 463 */
 	do {
 		blockType[blockIndex] = currentEncodingMode;
@@ -879,7 +879,7 @@ private final int[] Microcoeffs = {
                 blockIndex++;
             }
         }
-        
+
 	pdfsmooth();
 
 	if(debug) {
@@ -894,7 +894,7 @@ private final int[] Microcoeffs = {
 			}
 		}
 	}
-	
+
 	/* 541 - now compress the data */
 	blockCount = 0;
 	codeWordCount = 0;
@@ -902,7 +902,7 @@ private final int[] Microcoeffs = {
 		codeWords[codeWordCount] = 921; /* Reader Initialisation */
 		codeWordCount++;
         }
-        
+
 	for(i = 0; i < blockIndex; i++) {
 		switch(blockType[i]) {
 			case TEX: /* 547 - text mode */
@@ -919,7 +919,7 @@ private final int[] Microcoeffs = {
 	}
 
 	/* This is where it all changes! */
-	
+
 	if(codeWordCount > 126) {
             error_msg = "Input data too long";
             return false;
@@ -936,26 +936,26 @@ private final int[] Microcoeffs = {
 		}
 		System.out.printf("\n");
 	}
-	
+
 	/* Now figure out which variant of the symbol to use and load values accordingly */
-	
+
 	variant = 0;
-	
+
 	if((selectedSymbolWidth == 1) && (codeWordCount > 20)) {
 		/* the user specified 1 column but the data doesn't fit - go to automatic */
 		selectedSymbolWidth = 0;
 	}
-	
+
 	if((selectedSymbolWidth == 2) && (codeWordCount > 37)) {
 		/* the user specified 2 columns but the data doesn't fit - go to automatic */
 		selectedSymbolWidth = 0;
 	}
-	
+
 	if((selectedSymbolWidth == 3) && (codeWordCount > 82)) {
 		/* the user specified 3 columns but the data doesn't fit - go to automatic */
 		selectedSymbolWidth = 0;
 	}
-	
+
 	if(selectedSymbolWidth == 1) {
 		/* the user specified 1 column and the data does fit */
 		variant = 6;
@@ -1009,7 +1009,7 @@ private final int[] Microcoeffs = {
 	if(variant == 0) {
 		/* Zint can choose automatically from all available variations */
 		for(i = 27; i >= 0; i--) {
-			
+
 			if(MicroAutosize[i] >= codeWordCount) {
 				variant = MicroAutosize[i + 28];
 			}
@@ -1031,7 +1031,7 @@ private final int[] Microcoeffs = {
 		System.out.printf("%d data codewords (including %d pads), %d ecc codewords\n", longueur, i, k);
 		System.out.printf("\n");
 	}
-        
+
         encodeInfo += "Data Codewords: " + longueur + "\n";
         encodeInfo += "ECC Codewords: " + k + "\n";
 
@@ -1041,13 +1041,13 @@ private final int[] Microcoeffs = {
 		codeWordCount++;
 		i--;
 	}
-	
+
 	/* Reed-Solomon error correction */
 	longueur = codeWordCount;
 	for(loop = 0; loop < 50; loop++) {
 		mccorrection[loop] = 0;
 	}
-	
+
 	for(i = 0; i < longueur; i++) {
 		total = (codeWords[i] + mccorrection[k - 1]) % 929;
 		for(j = k - 1; j >= 0; j--) {
@@ -1058,7 +1058,7 @@ private final int[] Microcoeffs = {
 			}
 		}
 	}
-	
+
 	for(j = 0; j < k; j++) {
 		if(mccorrection[j] != 0) { mccorrection[j] = 929 - mccorrection[j]; }
 	}
@@ -1075,27 +1075,27 @@ private final int[] Microcoeffs = {
 		}
 		System.out.printf("\n");
 	}
-	
+
 	/* Now get the RAP (Row Address Pattern) start values */
 	LeftRAPStart = RAPTable[variant];
 	CentreRAPStart = RAPTable[variant + 34];
 	RightRAPStart = RAPTable[variant + 68];
 	StartCluster = RAPTable[variant + 102] / 3;
-	
+
 	/* That's all values loaded, get on with the encoding */
-	
+
 	LeftRAP = LeftRAPStart;
 	CentreRAP = CentreRAPStart;
 	RightRAP = RightRAPStart;
 	Cluster = StartCluster; /* Cluster can be 0, 1 or 2 for Cluster(0), Cluster(3) and Cluster(6) */
-        
+
         readable = "";
         pattern = new String[rows];
         row_count = rows;
         row_height = new int[rows];
-        
+
         encodeInfo += "Grid Size: " + selectedSymbolWidth + " X " + row_count + "\n";
-	
+
 	if(debug) System.out.printf("\nInternal row representation:\n");
 	for(i = 0; i < rows; i++) {
 		if(debug) System.out.printf("row %d: ", i);
@@ -1108,7 +1108,7 @@ private final int[] Microcoeffs = {
 			dummy[j + 1] = codeWords[i * selectedSymbolWidth + j];
 			if(debug) System.out.printf("[%d] ", dummy[j + 1]);
 		}
-		
+
 		/* Copy the data into codebarre */
 		codebarre += RAPLR[LeftRAP];
 		codebarre += "1";
@@ -1138,9 +1138,9 @@ private final int[] Microcoeffs = {
 		codebarre += RAPLR[RightRAP];
 		codebarre += "1"; /* stop */
 		if(debug) System.out.printf("%s\n", codebarre);
-		
+
 		/* Now codebarre is a mixture of letters and numbers */
-		
+
 		flip = 1;
                 bin = "";
 		for(loop = 0; loop < codebarre.length(); loop++) {
@@ -1161,17 +1161,17 @@ private final int[] Microcoeffs = {
 				bin += PDFttf[positionOf(codebarre.charAt(loop), brSet)];
 			}
 		}
-		
+
 		/* so now pattern[] holds the string of '1's and '0's. - copy this to the symbol */
 		pattern[i] = bin2pat(bin);
 		row_height[i] = 2;
-	
+
 		/* Set up RAPs and Cluster for next row */
 		LeftRAP++;
 		CentreRAP++;
 		RightRAP++;
 		Cluster++;
-		
+
 		if(LeftRAP == 53) {
 			LeftRAP = 1;
 		}
@@ -1579,12 +1579,12 @@ private final int[] Microcoeffs = {
         BigInteger tVal, dVal;
         int[] d = new int[16];
         int cw_count, i;
-        
+
         codeWords[codeWordCount++] = 902; /* Latch numeric mode */
-        
+
         t += content.substring(start, (start + length));
         tVal = new BigInteger(t);
-        
+
         cw_count = 0;
         do {
             dVal = tVal.mod(BigInteger.valueOf(900));
@@ -1592,7 +1592,7 @@ private final int[] Microcoeffs = {
             tVal = tVal.divide(BigInteger.valueOf(900));
             cw_count++;
         } while(tVal.compareTo(BigInteger.ZERO) == 1);
-        
+
         for(i = cw_count - 1; i >= 0; i--) {
             codeWords[codeWordCount++] = d[i];
         }

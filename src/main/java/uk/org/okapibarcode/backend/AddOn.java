@@ -24,13 +24,13 @@ package uk.org.okapibarcode.backend;
 public class AddOn{
     private String content;
     private String dest;
-    
+
     private String[] EANsetA = {
-        "3211", "2221", "2122", "1411", "1132", "1231", "1114", "1312", "1213", 
+        "3211", "2221", "2122", "1411", "1132", "1231", "1114", "1312", "1213",
         "3112"
     };
     private String[] EANsetB = {
-        "1123", "1222", "2212", "1141", "2311", "1321", "4111", "2131", "3121", 
+        "1123", "1222", "2212", "1141", "2311", "1321", "4111", "2131", "3121",
         "2113"
     };
 
@@ -38,32 +38,32 @@ public class AddOn{
         "AA", "AB", "BA", "BB"
     };
     private String[] EAN5Parity = {
-        "BBAAA", "BABAA", "BAABA", "BAAAB", "ABBAA", "AABBA", "AAABB", "ABABA", 
+        "BBAAA", "BABAA", "BAABA", "BAAAB", "ABBAA", "AABBA", "AAABB", "ABABA",
         "ABAAB", "AABAB"
     };
-    
+
     public String calcAddOn(String input) {
         dest = "";
         content = input;
-        
+
         if (!(content.matches("[0-9]{1,5}"))) {
             return "";
         }
-        
+
         if (content.length() > 2) {
             ean5();
         } else {
             ean2();
         }
-        
+
         return dest;
     }
-    
+
     private void ean2() {
         String parity;
         String accumulator = "";
         int i, code_value;
-        
+
         if (!(content.matches("[0-9]+?"))) {
             return;
         }
@@ -73,8 +73,8 @@ public class AddOn{
         }
         accumulator += content;
 
-        code_value = (int)(((accumulator.charAt(0) - '0') * 10) 
-                + (accumulator.charAt(1) - '0'));
+        code_value = ((accumulator.charAt(0) - '0') * 10)
+                + (accumulator.charAt(1) - '0');
         parity = EAN2Parity[code_value % 4];
 
         dest = "112"; /* Start */
@@ -94,7 +94,7 @@ public class AddOn{
         String parity;
         String accumulator = "";
         int i, parity_sum;
-        
+
         if (!(content.matches("[0-9]+?"))) {
             return;
         }
@@ -107,9 +107,9 @@ public class AddOn{
         parity_sum = 0;
         for (i = 0; i < 5; i++) {
             if ((i % 2) == 0) {
-                parity_sum += 3 * (int)(accumulator.charAt(i) - '0');
+                parity_sum += 3 * (accumulator.charAt(i) - '0');
             } else {
-                parity_sum += 9 * (int)(accumulator.charAt(i) - '0');
+                parity_sum += 9 * (accumulator.charAt(i) - '0');
             }
         }
 

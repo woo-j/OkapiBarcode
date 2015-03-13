@@ -17,12 +17,19 @@ package uk.org.okapibarcode.gui;
 
 import java.awt.Color;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.TextEvent;
 import java.awt.event.TextListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.geom.Ellipse2D;
 import java.io.File;
 import java.util.ArrayList;
+
 import javax.swing.BorderFactory;
+import javax.swing.JColorChooser;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JTree;
@@ -33,13 +40,6 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeSelectionModel;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-
-import javax.swing.JColorChooser;
-import javax.swing.JDialog;
 import uk.org.okapibarcode.backend.Barcode;
 
 /**
@@ -69,24 +69,24 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
     public static Color inkColour = new Color(0, 0, 0);
     public static Color paperColour = new Color(255, 255, 255);
     public static String encodeInfo = "";
-    
+
     /**
      * Creates new form OkapiUI: the main interface
      */
     public OkapiUI() {
         initComponents();
         createNodes (treeTop);
-        
+
         symbolTree.getSelectionModel().setSelectionMode
                 (TreeSelectionModel.SINGLE_TREE_SELECTION);
         symbolTree.addTreeSelectionListener(this);
         symbolTree.expandRow(0);
         symbolTree.expandRow(1);
         symbolTree.setSelectionRow(7); // Selects Code 128 as default
-       
+
         add(savePanel);
         savePanel.setVisible(false);
-        
+
         TextListener tl = new TextListener() {
             @Override
             public void textValueChanged(TextEvent e) {
@@ -97,24 +97,24 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 }
             }
         };
-        sequenceArea.addTextListener(tl);        
-        
+        sequenceArea.addTextListener(tl);
+
         DocumentListener dl = new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
                 updateMe();
             }
-            
+
             @Override
             public void removeUpdate(DocumentEvent e) {
                 updateMe();
             }
-            
+
             @Override
             public void changedUpdate(DocumentEvent e) {
                 updateMe();
             }
-            
+
             public void updateMe() {
                 dataInput = dataInputField.getText();
                 compositeInput = compositeInputField.getText();
@@ -123,7 +123,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         };
         dataInputField.getDocument().addDocumentListener(dl);
         compositeInputField.getDocument().addDocumentListener(dl);
-        
+
         folderField.setText(System.getProperty("user.home") + File.separator);
     }
 
@@ -267,6 +267,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         loadDataButton.setText("...");
         loadDataButton.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 loadDataButtonActionPerformed(evt);
             }
@@ -299,6 +300,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         addCompositeButton.setText("...");
         addCompositeButton.setEnabled(false);
         addCompositeButton.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 addCompositeButtonActionPerformed(evt);
             }
@@ -306,6 +308,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         useGS1Check.setText("Use GS1 Data Encodation");
         useGS1Check.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 useGS1CheckActionPerformed(evt);
             }
@@ -313,6 +316,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         useCompositeCheck.setText("Add Composite Component");
         useCompositeCheck.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 useCompositeCheckActionPerformed(evt);
             }
@@ -385,6 +389,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         batchFileButton.setText("Import");
         batchFileButton.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 batchFileButtonActionPerformed(evt);
             }
@@ -392,6 +397,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         createButton.setText("Create");
         createButton.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 createButtonActionPerformed(evt);
             }
@@ -414,6 +420,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         runBatchButton.setText("Run Batch");
         runBatchButton.setEnabled(false);
         runBatchButton.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 runBatchButtonActionPerformed(evt);
             }
@@ -423,6 +430,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         directoryButton.setText("Select Directory");
         directoryButton.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 directoryButtonActionPerformed(evt);
             }
@@ -430,6 +438,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         resetButton.setText("Reset");
         resetButton.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 resetButtonActionPerformed(evt);
             }
@@ -538,6 +547,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         inkButton.setText("Select Ink Colour");
         inkButton.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 inkButtonActionPerformed(evt);
             }
@@ -545,6 +555,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         paperButton.setText("Select Paper Colour");
         paperButton.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 paperButtonActionPerformed(evt);
             }
@@ -552,6 +563,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         resetColourButton.setText("Reset Colours");
         resetColourButton.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 resetColourButtonActionPerformed(evt);
             }
@@ -565,6 +577,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         aztecAutoSize.setSelected(true);
         aztecAutoSize.setText("Automatic Resizing");
         aztecAutoSize.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 aztecAutoSizeActionPerformed(evt);
             }
@@ -573,6 +586,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         aztecButtonGroup.add(aztecUserSize);
         aztecUserSize.setText("Adjust Size To:");
         aztecUserSize.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 aztecUserSizeActionPerformed(evt);
             }
@@ -581,6 +595,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         aztecButtonGroup.add(aztecUserEcc);
         aztecUserEcc.setText("Add Minimum Error Correction:");
         aztecUserEcc.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 aztecUserEccActionPerformed(evt);
             }
@@ -589,6 +604,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         aztecUserSizeCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "15 X 15 Compact", "19 X 19 Compact", "23 X 23 Compact", "27 X 27 Compact", "19 X 19", "23 X 23", "27 X 27", "31 X 31", "37 X 37", "41 X 41", "45 X 45", "49 X 49", "53 X 53", "57 X 57", "61 X 61", "67 X 67", "71 X 71", "75 X 75", "79 X 79", "83 X 83", "87 X 87", "91 X 91", "95 X 95", "101 X 101", "105 X 105", "109 X 109", "113 X 113", "117 X 117", "121 X 121", "125 X 125", "131 X 131", "135 X 135", "139 X 139", "143 X 143", "147 X 147", "151 X 151" }));
         aztecUserSizeCombo.setEnabled(false);
         aztecUserSizeCombo.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 aztecUserSizeComboActionPerformed(evt);
             }
@@ -597,6 +613,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         aztecUserEccCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "10% + 3 words", "23% + 3 words", "36% + 3 words", "50% + 3 words" }));
         aztecUserEccCombo.setEnabled(false);
         aztecUserEccCombo.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 aztecUserEccComboActionPerformed(evt);
             }
@@ -639,6 +656,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         channelChannelsCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Automatic", "3", "4", "5", "6", "7", "8" }));
         channelChannelsCombo.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 channelChannelsComboActionPerformed(evt);
             }
@@ -668,6 +686,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         code39CheckCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "No Check Digit", "Mod-43 Check Digit" }));
         code39CheckCombo.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 code39CheckComboActionPerformed(evt);
             }
@@ -697,6 +716,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         codeOneSizeCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Automatic", "16 X 18 (Version A)", "22 X 22 (Version B)", "28 X 32 (Version C)", "40 X 42 (Version D)", "52 X 54 (Version E)", "70 X 76 (Version F)", "104 X 98 (Version G)", "148 X 134 (Version H)", "8X Height (Version S)", "16X Height (Version T)" }));
         codeOneSizeCombo.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 codeOneSizeComboActionPerformed(evt);
             }
@@ -726,6 +746,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         databarColumnsCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Automatic", "1", "2", "3", "4", "5", "6", "7", "8", "9" }));
         databarColumnsCombo.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 databarColumnsComboActionPerformed(evt);
             }
@@ -755,6 +776,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         dataMatrixSizeCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Automatic", "10 X 10", "12 X 12", "14 X 14", "16 X 16", "18 X 18", "20 X 20", "22 X 22", "24 X 24", "26 X 26", "32 X 32", "36 X 36", "40 X 40", "44 X 44", "48 X 48", "52 X 52", "64 X 64", "72 X 72", "80 X 80", "88 X 88", "96 X 96", "104 X 104", "120 X 120", "132 X 132", "144 X 144", "8 X 18", "8 X 32", "12 X 26", "12 X 36", "16 X 36", "16 X 48" }));
         dataMatrixSizeCombo.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 dataMatrixSizeComboActionPerformed(evt);
             }
@@ -763,6 +785,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         dataMatrixSquareOnlyCheck.setSelected(true);
         dataMatrixSquareOnlyCheck.setText("Supress Rectangular Symbols in Automatic Mode");
         dataMatrixSquareOnlyCheck.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 dataMatrixSquareOnlyCheckActionPerformed(evt);
             }
@@ -800,6 +823,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         gridmatrixAutoSize.setSelected(true);
         gridmatrixAutoSize.setText("Automatic Resizing");
         gridmatrixAutoSize.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 gridmatrixAutoSizeActionPerformed(evt);
             }
@@ -808,6 +832,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         gridmatrixButtonGroup.add(gridmatrixUserSize);
         gridmatrixUserSize.setText("Adjust Size To:");
         gridmatrixUserSize.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 gridmatrixUserSizeActionPerformed(evt);
             }
@@ -816,6 +841,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         gridmatrixButtonGroup.add(gridmatrixUserEcc);
         gridmatrixUserEcc.setText("Add Minimum Error Correction:");
         gridmatrixUserEcc.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 gridmatrixUserEccActionPerformed(evt);
             }
@@ -824,6 +850,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         gridmatrixUserSizeCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "18 X 18 (Version 1)", "30 X 30 (Version 2)", "42 X 42 (Version 3)", "54 X 54 (Version 4)", "66 X 66 (Version 5)", "78 X 78 (Version 6)", "90 X 90 (Version 7)", "102 X 102 (Version 8)", "114 X 114 (Version 9)", "126 X 126 (Version 10)", "138 X 138 (Version 11)", "150 X 150 (Version 12)", "162 X 162 (Version 13)" }));
         gridmatrixUserSizeCombo.setEnabled(false);
         gridmatrixUserSizeCombo.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 gridmatrixUserSizeComboActionPerformed(evt);
             }
@@ -832,6 +859,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         gridmatrixUserEccCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Approx 10%", "Approx 20%", "Approx 30%", "Approx 40%", "Approx 50%" }));
         gridmatrixUserEccCombo.setEnabled(false);
         gridmatrixUserEccCombo.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 gridmatrixUserEccComboActionPerformed(evt);
             }
@@ -877,6 +905,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         maxiEncodingModeCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Structured Carrier Message (Mode 2 or 3)", "Standard Symbol, SEC (Mode 4)", "Full ECC Symbol (Mode 5)", "Reader Program, SEC (Mode 6)" }));
         maxiEncodingModeCombo.setSelectedIndex(1);
         maxiEncodingModeCombo.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 maxiEncodingModeComboActionPerformed(evt);
             }
@@ -885,6 +914,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         maxiPrimaryData.setText("Primary Data Here!");
         maxiPrimaryData.setEnabled(false);
         maxiPrimaryData.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 maxiPrimaryDataActionPerformed(evt);
             }
@@ -924,6 +954,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         microPdfColumnsCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Automatic", "1", "2", "3", "4" }));
         microPdfColumnsCombo.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 microPdfColumnsComboActionPerformed(evt);
             }
@@ -952,6 +983,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         microQrAutoSize.setSelected(true);
         microQrAutoSize.setText("Automatic Resizing");
         microQrAutoSize.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 microQrAutoSizeActionPerformed(evt);
             }
@@ -960,6 +992,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         microQrButtonGroup.add(microQrUserSize);
         microQrUserSize.setText("Adjust Size To:");
         microQrUserSize.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 microQrUserSizeActionPerformed(evt);
             }
@@ -968,6 +1001,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         microQrButtonGroup.add(microQrUserEcc);
         microQrUserEcc.setText("Add Minimum Error Correction:");
         microQrUserEcc.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 microQrUserEccActionPerformed(evt);
             }
@@ -976,6 +1010,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         microQrUserSizeCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "11 X 11 (Version M1)", "13 X 13 (Version M2)", "15 X 15 (Version M3)", "17 X 17 (Version M4)" }));
         microQrUserSizeCombo.setEnabled(false);
         microQrUserSizeCombo.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 microQrUserSizeComboActionPerformed(evt);
             }
@@ -984,6 +1019,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         microQrUserEccCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Approx 20% (Level L)", "Approx 37% (Level M)", "Approx 55% (Level Q)" }));
         microQrUserEccCombo.setEnabled(false);
         microQrUserEccCombo.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 microQrUserEccComboActionPerformed(evt);
             }
@@ -1025,6 +1061,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         msiCheckDigitCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "None", "Mod-10", "Mod-10 & Mod-10", "Mod-11", "Mod-11 & Mod-10" }));
         msiCheckDigitCombo.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 msiCheckDigitComboActionPerformed(evt);
             }
@@ -1056,6 +1093,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         pdfColumnsCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Automatic", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20" }));
         pdfColumnsCombo.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 pdfColumnsComboActionPerformed(evt);
             }
@@ -1063,6 +1101,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         pdfEccCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Automatic", "2 words", "4 words", "8 words", "16 words", "32 words", "64 words", "128 words", "256 words", "512 words" }));
         pdfEccCombo.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 pdfEccComboActionPerformed(evt);
             }
@@ -1101,6 +1140,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         qrAutoSize.setSelected(true);
         qrAutoSize.setText("Automatic Resizing");
         qrAutoSize.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 qrAutoSizeActionPerformed(evt);
             }
@@ -1109,6 +1149,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         qrButtonGroup.add(qrUserSize);
         qrUserSize.setText("Adjust Size To:");
         qrUserSize.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 qrUserSizeActionPerformed(evt);
             }
@@ -1117,6 +1158,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         qrButtonGroup.add(qrUserEcc);
         qrUserEcc.setText("Add Minimum Error Correction:");
         qrUserEcc.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 qrUserEccActionPerformed(evt);
             }
@@ -1125,6 +1167,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         qrUserSizeCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "21 X 21 (Version 1)", "25 X 25 (Version 2)", "29 X 29 (Version 3)", "33 X 33 (Version 4)", "37 X 37 (Version 5)", "41 X 41 (Version 6)", "45 X 45 (Version 7)", "49 X 49 (Version 8)", "53 X 53 (Version 9)", "57 X 57 (Version 10)", "61 X 61 (Version 11)", "65 X 65 (Version 12)", "69 X 69 (Version 13)", "73 X 73 (Version 14)", "77 X 77 (Version 15)", "81 X 81 (Version 16)", "85 X 85 (Version 17)", "89 X 89 (Version 18)", "93 X 93 (Version 19)", "97 X 97 (Version 20)", "101 X 101 (Version 21)", "105 X 105 (Version 22)", "109 X 109 (Version 23)", "113 X 113 (Version 24)", "117 X 117 (Version 25)", "121 X 121 (Version 26)", "125 X 125 (Version 27)", "129 X 129 (Version 28)", "133 X 133 (Version 29)", "137 X 137 (Version 30)", "141 X 141 (Version 31)", "145 X 145 (Version 32)", "149 X 149 (Version 33)", "153 X 153 (Version 34)", "157 X 157 (Version 35)", "161 X 161 (Version 36)", "165 X 165 (Version 37)", "169 X 169 (Version 38)", "173 X 173 (Version 39)", "177 X 177 (Version 40)" }));
         qrUserSizeCombo.setEnabled(false);
         qrUserSizeCombo.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 qrUserSizeComboActionPerformed(evt);
             }
@@ -1133,6 +1176,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         qrUserEccCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Approx 20% (Level L)", "Approx 37% (Level M)", "Approx 55% (Level Q)", "Approx 65% (Level H)" }));
         qrUserEccCombo.setEnabled(false);
         qrUserEccCombo.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 qrUserEccComboActionPerformed(evt);
             }
@@ -1175,6 +1219,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         compositeUserMode.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Automatic", "CC-A", "CC-B", "CC-C" }));
         compositeUserMode.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 compositeUserModeActionPerformed(evt);
             }
@@ -1290,6 +1335,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         exitButton.setText("Exit");
         exitButton.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 exitButtonActionPerformed(evt);
             }
@@ -1297,6 +1343,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         saveButton.setText("Save");
         saveButton.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 saveButtonActionPerformed(evt);
             }
@@ -1304,6 +1351,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         aboutButton.setText("About");
         aboutButton.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 aboutButtonActionPerformed(evt);
             }
@@ -1375,7 +1423,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 SaveImage saveImage = new SaveImage();
                 dataInput = dataInputField.getText();
                 compositeInput = compositeInputField.getText();
-                encodeData(); 
+                encodeData();
                 saveImage.SaveImage(file, savePanel);
             } catch (Exception e) {
                 System.out.println("Cannot wright to file" + fileChooser.getSelectedFile().toString());
@@ -1407,7 +1455,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         int step;
         int i;
         String resultant = "";
-        
+
         try {
             start = Integer.parseInt(startField.getText());
             stop = Integer.parseInt(stopField.getText());
@@ -1416,23 +1464,23 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
             System.out.println("Invalid input value");
             return;
         }
-        
+
         if (step <= 0) {
             System.out.println("Invalid increment value");
             return;
         }
-        
+
         if (start >= stop) {
             System.out.println("Invalid sequence");
             return;
         }
-        
+
         for (i = start; i <= stop; i += step) {
             resultant += applyFormat(Integer.toString(i));
             resultant += '\n';
         }
-        
-        sequenceArea.setText(resultant);        
+
+        sequenceArea.setText(resultant);
     }//GEN-LAST:event_createButtonActionPerformed
 
     private void batchFileButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_batchFileButtonActionPerformed
@@ -1460,24 +1508,24 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         int i;
         int lineCount = 0;
         double percentage;
-        
+
         errorLog = "Starting batch process..." + '\n';
         batchOutputArea.setText(errorLog);
-        
+
         switch(outFormatCombo.getSelectedIndex()) {
-            case 0: 
+            case 0:
                 extension = ".png";
                 break;
-            case 1: 
+            case 1:
                 extension = ".jpg";
                 break;
-            case 2: 
+            case 2:
                 extension = ".gif";
                 break;
-            case 3: 
+            case 3:
                 extension = ".bmp";
                 break;
-            case 4: 
+            case 4:
                 extension = ".svg";
                 break;
             case 5:
@@ -1485,27 +1533,27 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 extension = ".eps";
                 break;
         }
-        
+
         for(i = 0; i < sequenceArea.getText().length(); i++) {
             if (sequenceArea.getText().charAt(i) == '\n') {
                 inputCount++;
             }
         }
-        
+
         for(i = 0; i < sequenceArea.getText().length(); i++) {
             if (sequenceArea.getText().charAt(i) == '\n') {
                 outputCount = Integer.toString(lineCount);
                 if (!(thisData.isEmpty())) {
                     SaveImage saveImage = new SaveImage();
                     if (outFilenameCombo.getSelectedIndex() == 0) {
-                        fullFileName = folderField.getText() 
+                        fullFileName = folderField.getText()
                                 + prefixField.getText() + thisData + extension;
                     } else {
-                        fullFileName = folderField.getText() 
+                        fullFileName = folderField.getText()
                                 + prefixField.getText() + outputCount + extension;
                     }
                     try {
-                        File file = new File(fullFileName);                  
+                        File file = new File(fullFileName);
                         dataInput = thisData;
                         compositeInput = "";
                         encodeData();
@@ -1523,7 +1571,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 lineCount++;
                 percentage = (double)(lineCount) / (double)(inputCount);
                 percentage *= 100;
-                progressLog = "Completed line " + lineCount + " of " 
+                progressLog = "Completed line " + lineCount + " of "
                         + inputCount + " (" + (int)(percentage) + "% done)";
                 batchOutputArea.setText(errorLog + progressLog);
             } else {
@@ -1531,7 +1579,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
             }
         }
         progressLog += '\n' + "Finished!";
-        batchOutputArea.setText(errorLog + progressLog);        
+        batchOutputArea.setText(errorLog + progressLog);
     }//GEN-LAST:event_runBatchButtonActionPerformed
 
     private void inkButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_inkButtonActionPerformed
@@ -1546,7 +1594,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         boolean modal = false;
 
-        JDialog dialog = JColorChooser.createDialog(this, "Ink Colour", modal, 
+        JDialog dialog = JColorChooser.createDialog(this, "Ink Colour", modal,
                 chooser, okListener, null);
         dialog.setVisible(true);
 
@@ -1571,7 +1619,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         boolean modal = false;
 
-        JDialog dialog = JColorChooser.createDialog(this, "Paper Colour", 
+        JDialog dialog = JColorChooser.createDialog(this, "Paper Colour",
                 modal, chooser, okListener, null);
         dialog.setVisible(true);
 
@@ -1602,7 +1650,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         aztecUserSizeCombo.setEnabled(false);
         aztecUserEccCombo.setEnabled(false);
         encodeData();
-        
+
     }//GEN-LAST:event_aztecAutoSizeActionPerformed
 
     private void aztecUserEccActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aztecUserEccActionPerformed
@@ -1820,7 +1868,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
@@ -1847,25 +1895,25 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 new OkapiUI().setVisible(true);
             }
         });
-    } 
-    
+    }
+
     public static void setInk(Color input) {
         inkColour = input;
     }
-    
+
     public static void setPaper(Color input) {
         paperColour = input;
         displayPanel.setBackground(paperColour);
         topPanel.updateUI();
     }
-    
+
     @Override
     public void valueChanged(TreeSelectionEvent e) {
         DefaultMutableTreeNode node = (DefaultMutableTreeNode)
                 symbolTree.getLastSelectedPathComponent();
         SymbolType selectedSymbol;
         Object nodeInfo;
-        
+
         if (node != null) {
             nodeInfo = node.getUserObject();
             if (node.isLeaf()) {
@@ -1873,7 +1921,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 symbology = selectedSymbol.mnemonic;
                 dataInput = dataInputField.getText();
                 compositeInput = compositeInputField.getText();
-                
+
                 switch(symbology) {
                     case "BARCODE_AZTEC":
                     case "BARCODE_CODE128":
@@ -1887,7 +1935,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                     default:
                         useGS1Check.setEnabled(false);
                 }
-                
+
                 switch(symbology) {
                     case "BARCODE_EANX":
                     case "BARCODE_CODE128":
@@ -1912,12 +1960,12 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                         compositeInputField.setEnabled(false);
                         addCompositeButton.setEnabled(false);
                 }
-                
-                encodeData();       
+
+                encodeData();
             }
         }
-    }    
-    
+    }
+
     public void encodeData() {
         int pWidth = 480;
         int pHeight = 480;
@@ -1928,17 +1976,17 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         SaveSymbol saveSymbol = new SaveSymbol();
 
         topPanel.removeAll();
-        savePanel.removeAll(); 
+        savePanel.removeAll();
         displayPanel.removeAll();
         errorLabel.setText("");
-        
+
         if (dataInput.isEmpty()) {
             errorLabel.setText("No input data");
             topPanel.add(errorLabel);
             topPanel.updateUI();
             return;
         }
-        
+
         if (!(encodeMe())) {
             errorLabel.setText(errorOutput);
             topPanel.add(errorLabel);
@@ -1968,21 +2016,21 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         encodeInfoArea.setText(encodeInfo);
         topPanel.updateUI();
         pack();
-    }    
-    
+    }
+
     private String applyFormat(String rawNumber) {
         String format = formatField.getText();
         String adjusted = "";
         String reversed = "";
-        
+
         int formatLength, inputLength, i, position;
 	char formatChar;
-	
+
 	inputLength = rawNumber.length();
 	formatLength = format.length();
-	
+
 	position = inputLength;
-	
+
 	for(i = formatLength; i > 0; i--) {
             formatChar = format.charAt(i - 1);
             switch(formatChar) {
@@ -2015,14 +2063,14 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                     break;
             }
 	}
-	
+
 	for(i = formatLength; i > 0; i--) {
             reversed += adjusted.charAt(i - 1);
 	}
-        
+
         return reversed;
-    }    
-    
+    }
+
     public boolean encodeMe() {
         Barcode barcode = new Barcode();
         int option1 = 0; // For most symbologies this is user selected ECC
@@ -2036,7 +2084,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
             encodeInfo = "Error: No symbology selected";
             return false;
         }
-        
+
         switch (symbology) {
             case "BARCODE_PDF417":
             case "BARCODE_PDF417TRUNC":
@@ -2112,16 +2160,16 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 option2 = msiCheckDigitCombo.getSelectedIndex();
                 break;
         }
-        
+
         barcode.setOption1(option1);
         barcode.setOption2(option2);
-        
+
         if (useGS1Check.isSelected()) {
             barcode.setGs1Mode();
         } else {
             barcode.setNormalMode();
         }
-        
+
         if (useCompositeCheck.isEnabled() && useCompositeCheck.isSelected()) {
             barcode.setCompositeContent(compositeInput);
             barcode.setCompositePreferredMode(compositeUserMode.getSelectedIndex());
@@ -2144,256 +2192,256 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
             // Add some space for text
             height += 10;
         }
-        
+
         return (errorOutput.isEmpty());
     }
-    
+
     private static void createNodes(DefaultMutableTreeNode top) {
         // Defines symbology selection tree
-        
+
         DefaultMutableTreeNode symbolType;
         DefaultMutableTreeNode symbolSubType;
         DefaultMutableTreeNode symbolName;
-        
+
         symbolType = new DefaultMutableTreeNode("One-Dimensional");
         top.add(symbolType);
-        
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("Channel Code", "BARCODE_CHANNEL", 140));
-        symbolType.add(symbolName);        
-        
+        symbolType.add(symbolName);
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("Codabar", "BARCODE_CODABAR", 18));
-        symbolType.add(symbolName);        
-        
+        symbolType.add(symbolName);
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("Code 11", "BARCODE_CODE11", 1));
         symbolType.add(symbolName);
-        
+
         symbolSubType = new DefaultMutableTreeNode("Code 2 of 5");
         symbolType.add(symbolSubType);
-        
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("Standard", "BARCODE_C25MATRIX", 2));
         symbolSubType.add(symbolName);
-        
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("IATA", "BARCODE_C25IATA", 4));
         symbolSubType.add(symbolName);
-        
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("Industrial", "BARCODE_C25IND", 7));
         symbolSubType.add(symbolName);
-        
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("Interleaved", "BARCODE_C25INTER", 3));
         symbolSubType.add(symbolName);
-        
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("Data Logic", "BARCODE_C25LOGIC", 6));
         symbolSubType.add(symbolName);
-        
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("ITF-14", "BARCODE_ITF14", 89));
         symbolSubType.add(symbolName);
-        
+
         symbolSubType = new DefaultMutableTreeNode("Code 39");
         symbolType.add(symbolSubType);
-        
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("Standard", "BARCODE_CODE39", 8));
         symbolSubType.add(symbolName);
-        
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("Extended", "BARCODE_EXCODE39", 9));
         symbolSubType.add(symbolName);
-        
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("Code 93", "BARCODE_CODE93", 25));
         symbolSubType.add(symbolName);
-        
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("LOGMARS", "BARCODE_LOGMARS", 50));
         symbolSubType.add(symbolName);
-        
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("Code 128", "BARCODE_CODE128", 20));
-        symbolType.add(symbolName);        
-        
+        symbolType.add(symbolName);
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("European Article Number", "BARCODE_EANX", 13));
         symbolType.add(symbolName);
-        
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("MSI Plessey", "BARCODE_MSI_PLESSEY", 47));
         symbolType.add(symbolName);
-        
+
         symbolSubType = new DefaultMutableTreeNode("Telepen");
         symbolType.add(symbolSubType);
-        
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("Alpha", "BARCODE_TELEPEN", 32));
         symbolSubType.add(symbolName);
-        
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("Numeric", "BARCODE_TELEPEN_NUM", 87));
-        symbolSubType.add(symbolName);        
-        
+        symbolSubType.add(symbolName);
+
         symbolSubType = new DefaultMutableTreeNode("Universal Product Code");
         symbolType.add(symbolSubType);
-        
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("Version A", "BARCODE_UPCA", 34));
         symbolSubType.add(symbolName);
-        
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("Version E", "BARCODE_UPCE", 37));
         symbolSubType.add(symbolName);
-        
+
         symbolType = new DefaultMutableTreeNode("Stacked");
         top.add(symbolType);
-        
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("Codablock-F", "BARCODE_CODABLOCKF", 74));
-        symbolType.add(symbolName); 
-        
+        symbolType.add(symbolName);
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("Code 16K", "BARCODE_CODE16K", 23));
         symbolType.add(symbolName);
-        
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("Code 49", "BARCODE_CODE49", 24));
-        symbolType.add(symbolName);    
-        
+        symbolType.add(symbolName);
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("PDF417", "BARCODE_PDF417", 55));
         symbolType.add(symbolName);
-        
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("PDF417 Truncated", "BARCODE_PDF417TRUNC", 56));
         symbolType.add(symbolName);
-        
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("Micro PDF417", "BARCODE_MICROPDF417", 84));
         symbolType.add(symbolName);
-        
+
         symbolType = new DefaultMutableTreeNode("Two-Dimensional");
-        top.add(symbolType);        
-        
+        top.add(symbolType);
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("Aztec Code", "BARCODE_AZTEC", 92));
-        symbolType.add(symbolName);            
-        
+        symbolType.add(symbolName);
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("Aztec Runes", "BARCODE_AZRUNE", 128));
-        symbolType.add(symbolName);            
-        
+        symbolType.add(symbolName);
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("Data Matrix", "BARCODE_DATAMATRIX", 71));
-        symbolType.add(symbolName);   
-        
+        symbolType.add(symbolName);
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("Code One", "BARCODE_CODEONE", 141));
-        symbolType.add(symbolName);           
-        
+        symbolType.add(symbolName);
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("Grid Matrix", "BARCODE_GRIDMATRIX", 142));
-        symbolType.add(symbolName);              
-        
+        symbolType.add(symbolName);
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("Maxicode", "BARCODE_MAXICODE", 57));
-        symbolType.add(symbolName);                  
-        
+        symbolType.add(symbolName);
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("QR Code", "BARCODE_QRCODE", 58));
-        symbolType.add(symbolName);    
-        
+        symbolType.add(symbolName);
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("Micro QR Code", "BARCODE_MICROQR", 97));
-        symbolType.add(symbolName);         
-        
+        symbolType.add(symbolName);
+
         symbolType = new DefaultMutableTreeNode("GS1 DataBar");
         top.add(symbolType);
-        
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("DB-14", "BARCODE_RSS14", 29));
         symbolType.add(symbolName);
-        
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("DB-14 Stacked", "BARCODE_RSS14STACK", 79));
         symbolType.add(symbolName);
-        
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("DB-14 Stacked Omni", "BARCODE_RSS14STACK_OMNI", 80));
-        symbolType.add(symbolName);                
-        
+        symbolType.add(symbolName);
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("Limited", "BARCODE_RSS_LTD", 30));
         symbolType.add(symbolName);
-        
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("Expanded", "BARCODE_RSS_EXP", 31));
         symbolType.add(symbolName);
-        
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("Expanded Stacked", "BARCODE_RSS_EXPSTACK", 81));
         symbolType.add(symbolName);
-        
+
         symbolType = new DefaultMutableTreeNode("Postal");
         top.add(symbolType);
-        
+
         symbolSubType = new DefaultMutableTreeNode("Australia Post");
-        symbolType.add(symbolSubType);   
-        
+        symbolType.add(symbolSubType);
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("Customer", "BARCODE_AUSPOST", 63));
         symbolSubType.add(symbolName);
-        
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("Reply Paid", "BARCODE_AUSREPLY", 66));
         symbolSubType.add(symbolName);
-        
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("Routing", "BARCODE_AUSROUTE", 67));
-        symbolSubType.add(symbolName);       
-        
+        symbolSubType.add(symbolName);
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("Redirect", "BARCODE_AUSREDIRECT", 68));
-        symbolSubType.add(symbolName);        
-        
+        symbolSubType.add(symbolName);
+
         symbolSubType = new DefaultMutableTreeNode("Deutsche Post");
         symbolType.add(symbolSubType);
-        
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("Leitcode", "BARCODE_DPLEIT", 21));
         symbolSubType.add(symbolName);
-        
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("Identcode", "BARCODE_DPIDENT", 22));
         symbolSubType.add(symbolName);
-        
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("Dutch Post KIX", "BARCODE_KIX", 90));
-        symbolType.add(symbolName);     
-        
+        symbolType.add(symbolName);
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("Japan Post", "BARCODE_JAPANPOST", 76));
-        symbolType.add(symbolName);     
-        
+        symbolType.add(symbolName);
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("Korea Post", "BARCODE_KOREAPOST", 77));
-        symbolType.add(symbolName);         
-        
+        symbolType.add(symbolName);
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("Royal Mail", "BARCODE_RM4SCC", 70));
-        symbolType.add(symbolName);             
-        
+        symbolType.add(symbolName);
+
         symbolSubType = new DefaultMutableTreeNode("USPS");
-        symbolType.add(symbolSubType);          
-        
+        symbolType.add(symbolSubType);
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("OneCode", "BARCODE_ONECODE", 85));
         symbolSubType.add(symbolName);
-        
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("PostNet", "BARCODE_POSTNET", 40));
-        symbolSubType.add(symbolName);       
-        
+        symbolSubType.add(symbolName);
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("PLANET", "BARCODE_PLANET", 82));
-        symbolSubType.add(symbolName);         
-        
+        symbolSubType.add(symbolName);
+
         symbolType = new DefaultMutableTreeNode("Medical");
         top.add(symbolType);
-        
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("Code 32", "BARCODE_CODE32", 129));
         symbolType.add(symbolName);
-        
+
         symbolSubType = new DefaultMutableTreeNode("HIBC");
         symbolType.add(symbolSubType);
-        
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("Aztec Code", "BARCODE_HIBC_AZTEC", 112));
-        symbolSubType.add(symbolName);        
-        
+        symbolSubType.add(symbolName);
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("Codablock-F", "BARCODE_HIBC_BLOCKF", 111));
-        symbolSubType.add(symbolName);        
-        
+        symbolSubType.add(symbolName);
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("Code 39", "BARCODE_HIBC_39", 99));
         symbolSubType.add(symbolName);
-        
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("Code 128", "BARCODE_HIBC_128", 98));
-        symbolSubType.add(symbolName);        
-        
+        symbolSubType.add(symbolName);
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("Data Matrix", "BARCODE_HIBC_DM", 102));
-        symbolSubType.add(symbolName);        
-        
+        symbolSubType.add(symbolName);
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("PDF417", "BARCODE_HIBC_PDF", 106));
         symbolSubType.add(symbolName);
-        
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("Micro PDF417", "BARCODE_HIBC_MICPDF", 108));
         symbolSubType.add(symbolName);
-        
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("QR Code", "BARCODE_HIBC_QR", 104));
-        symbolSubType.add(symbolName);      
-        
+        symbolSubType.add(symbolName);
+
         symbolSubType = new DefaultMutableTreeNode("Pharmacode");
         symbolType.add(symbolSubType);
-        
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("One Track", "BARCODE_PHARMA", 51));
         symbolSubType.add(symbolName);
-        
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("Two Track", "BARCODE_PHARMA_TWO", 53));
         symbolSubType.add(symbolName);
-                
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("PZN", "BARCODE_PZN", 52));
-        symbolType.add(symbolName);                
+        symbolType.add(symbolName);
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton aboutButton;

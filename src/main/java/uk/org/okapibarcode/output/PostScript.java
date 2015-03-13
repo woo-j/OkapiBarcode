@@ -17,8 +17,8 @@ package uk.org.okapibarcode.output;
 
 import java.awt.Rectangle;
 import java.awt.geom.Ellipse2D;
-import java.io.FileOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -37,7 +37,7 @@ public class PostScript {
     private String symbol_text = "";
     double fgRed, fgGreen, fgBlue;
     double bgRed, bgGreen, bgBlue;
-    
+
     public void setShapes(ArrayList<Rectangle> bcs, ArrayList<uk.org.okapibarcode.backend.TextBox> txt,
             ArrayList<uk.org.okapibarcode.backend.Hexagon> hex, ArrayList<Ellipse2D.Double> target) {
         rectangle = bcs;
@@ -45,7 +45,7 @@ public class PostScript {
         hexagon = hex;
         ellipse = target;
     }
-    
+
     public void setValues (String readable, int width, int height) {
         symbol_width = width;
         symbol_height = height;
@@ -53,13 +53,13 @@ public class PostScript {
         fgRed = fgGreen = fgBlue = 0.0;
         bgRed = bgGreen = bgBlue = 1.0;
     }
-    
+
     public boolean write(File file) {
         String outStream;
         int i, j;
-        
+
         // All y-dimensions are reversed because EPS co-ord (0,0) is bottom left
-        
+
         try (FileOutputStream fos = new FileOutputStream(file)) {
             // Header
             outStream = "%!PS-Adobe-3.0 EPSF-3.0\n";
@@ -70,10 +70,10 @@ public class PostScript {
                 outStream += "%%Title: " + symbol_text + "\n";
             }
             outStream += "%%Pages: 0\n";
-            outStream += "%%BoundingBox: 0 0 " + symbol_width + " " 
+            outStream += "%%BoundingBox: 0 0 " + symbol_width + " "
                     + symbol_height + "\n";
             outStream += "%%EndComments\n";
-            
+
             // Definitions
             outStream += "/TL { setlinewidth moveto lineto stroke } bind def\n";
             outStream += "/TC { moveto 0 360 arc 360 0 arcn fill } bind def\n";
@@ -82,20 +82,20 @@ public class PostScript {
             outStream += "/TR { newpath 4 1 roll exch moveto 1 index 0 rlineto 0 exch rlineto neg 0 rlineto closepath fill } bind def\n";
             outStream += "/TE { pop pop } bind def\n";
             outStream += "newpath\n";
-            
-            outStream += String.format("%.2f", fgRed) + " " 
+
+            outStream += String.format("%.2f", fgRed) + " "
                     + String.format("%.2f", fgGreen) + " "
                     + String.format("%.2f", fgBlue) + " setrgbcolor\n";
-            outStream += String.format("%.2f", bgRed) + " " 
+            outStream += String.format("%.2f", bgRed) + " "
                     + String.format("%.2f", bgGreen) + " "
                     + String.format("%.2f", bgBlue) + " setrgbcolor\n";
             outStream += symbol_height + ".00 0.00 TB 0.00 " + symbol_width + ".00 TR\n";
-            
+
             // Rectangles
             for (i = 0; i < rectangle.size(); i++) {
                 if (i == 0) {
                     outStream += "TE\n";
-                    outStream += String.format("%.2f", fgRed) + " " 
+                    outStream += String.format("%.2f", fgRed) + " "
                             + String.format("%.2f", fgGreen) + " "
                             + String.format("%.2f", fgBlue) + " setrgbcolor\n";
                     outStream += rectangle.get(i).height + ".00 "
@@ -106,9 +106,9 @@ public class PostScript {
                     if ((rectangle.get(i).height != rectangle.get(i - 1).height)
                                 || (rectangle.get(i).y != rectangle.get(i - 1).y)) {
                         outStream += "TE\n";
-                        outStream += String.format("%.2f", fgRed) + " " 
+                        outStream += String.format("%.2f", fgRed) + " "
                                 + String.format("%.2f", fgGreen) + " "
-                                + String.format("%.2f", fgBlue) + " setrgbcolor\n";                        
+                                + String.format("%.2f", fgBlue) + " setrgbcolor\n";
                         outStream += rectangle.get(i).height + ".00 "
                                 + (symbol_height - rectangle.get(i).y) + ".00 ";
                     }
@@ -116,20 +116,20 @@ public class PostScript {
                             + rectangle.get(i).width + ".00 TR\n";
                 }
             }
-            
+
             // Text
             for(i = 0; i < textbox.size(); i++) {
                 if (i == 0) {
                     outStream += "TE\n";
-                    outStream += String.format("%.2f", fgRed) + " " 
+                    outStream += String.format("%.2f", fgRed) + " "
                             + String.format("%.2f", fgGreen) + " "
                             + String.format("%.2f", fgBlue) + " setrgbcolor\\n";
                 }
                 outStream += "matrix currentmatrix\n";
                 outStream += "/Helvetica findfont\n";
                 outStream += "8.00 scalefont setfont\n";
-                outStream += " 0 0 moveto " 
-                        + String.format("%.2f", textbox.get(i).xPos) 
+                outStream += " 0 0 moveto "
+                        + String.format("%.2f", textbox.get(i).xPos)
                         + " " + String.format("%.2f", symbol_height - textbox.get(i).yPos)
                         + " translate 0.00 rotate 0 0 moveto\n";
                 outStream += " (" + textbox.get(i).arg + ") stringwidth\n";
@@ -138,17 +138,17 @@ public class PostScript {
                 outStream += " (" + textbox.get(i).arg + ") show\n";
                 outStream += "setmatrix\n";
             }
-            
+
             // Circles
             for (i = 0; i < ellipse.size(); i += 2) {
                 if (i == 0) {
                     outStream += "TE\n";
-                    outStream += String.format("%.2f", fgRed) + " " 
+                    outStream += String.format("%.2f", fgRed) + " "
                             + String.format("%.2f", fgGreen) + " "
                             + String.format("%.2f", fgBlue) + " setrgbcolor\n";
-                    outStream += String.format("%.2f", fgRed) + " " 
+                    outStream += String.format("%.2f", fgRed) + " "
                             + String.format("%.2f", fgGreen) + " "
-                            + String.format("%.2f", fgBlue) + " setrgbcolor\n";                    
+                            + String.format("%.2f", fgBlue) + " setrgbcolor\n";
                 }
                 outStream += String.format("%.2f", symbol_height - ellipse.get(i).x + (ellipse.get(i).width / 2))
                         + " " + String.format("%.2f", ellipse.get(i).y + (ellipse.get(i).width / 2))
@@ -157,26 +157,26 @@ public class PostScript {
                         + " " + String.format("%.2f", symbol_height - ellipse.get(i + 1).y + (ellipse.get(i + 1).width / 2))
                         + " " + String.format("%.2f", ellipse.get(i + 1).width / 2)
                         + " TC\n";
-            }            
-            
+            }
+
             // Hexagons
             for(i = 0; i < hexagon.size(); i++) {
                 for(j = 0; j < 6; j++) {
-                    outStream += String.format("%.2f", hexagon.get(i).pointX[j]) + " " 
+                    outStream += String.format("%.2f", hexagon.get(i).pointX[j]) + " "
                             + String.format("%.2f", symbol_height - hexagon.get(i).pointY[j]) + " ";
                 }
                 outStream += " TH\n";
             }
-            
+
             // Footer
             outStream += "\nshowpage\n";
-            
+
             // Output data to file
             for (i = 0; i < outStream.length(); i++) {
                 fos.write(outStream.charAt(i));
             }
         }
-        
+
         catch (IOException ioe) {
             System.err.println("I/O error: " + ioe.getMessage());
         }

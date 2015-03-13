@@ -26,18 +26,18 @@ public class Hexagon {
     public double[] pointX = new double [6];
     public double[] pointY = new double [6];
     private double inkSpread = 1.25;
-    
+
     private double[] yOffset = {
         1.0, 0.5, -0.5, -1.0, -0.5, 0.5
     };
-    
+
     private double[] xOffset = {
         0.0, 0.86, 0.86, 0.0, -0.86, -0.86
     };
-    
+
     public void setCentre(double x, double y) {
         int i;
-        
+
         centreX = x;
         centreY = y;
         for (i = 0; i < 6; i++) {

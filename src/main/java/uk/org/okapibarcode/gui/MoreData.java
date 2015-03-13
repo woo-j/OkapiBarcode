@@ -16,11 +16,12 @@
 package uk.org.okapibarcode.gui;
 
 import java.io.File;
+
 import javax.swing.JFileChooser;
 
 /**
  * Allow user to enter larger data, or input from file
- * 
+ *
  * @author Robin Stuart <rstuart114@gmail.com>
  */
 public class MoreData extends javax.swing.JFrame {
@@ -60,6 +61,7 @@ public class MoreData extends javax.swing.JFrame {
 
         fromFileButton.setText("From File...");
         fromFileButton.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 fromFileButtonActionPerformed(evt);
             }
@@ -67,6 +69,7 @@ public class MoreData extends javax.swing.JFrame {
 
         resetButton.setText("Reset");
         resetButton.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 resetButtonActionPerformed(evt);
             }
@@ -74,6 +77,7 @@ public class MoreData extends javax.swing.JFrame {
 
         cancelButton.setText("Cancel");
         cancelButton.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cancelButtonActionPerformed(evt);
             }
@@ -81,6 +85,7 @@ public class MoreData extends javax.swing.JFrame {
 
         okButton.setText("OK");
         okButton.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 okButtonActionPerformed(evt);
             }
@@ -154,11 +159,11 @@ public class MoreData extends javax.swing.JFrame {
         OkapiUI.dataInputField.setText(dataInputArea.getText());
         dispose();
     }//GEN-LAST:event_okButtonActionPerformed
-    
+
     private void pullData() {
         dataInputArea.setText(OkapiUI.dataInputField.getText());
     }
-    
+
     /**
      * @param args the command line arguments
      */
@@ -166,7 +171,7 @@ public class MoreData extends javax.swing.JFrame {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {

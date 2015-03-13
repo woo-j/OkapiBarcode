@@ -22,11 +22,11 @@ import java.awt.Rectangle;
  */
 public class Postnet extends Symbol {
     private String[] PNTable = {
-        "LLSSS", "SSSLL", "SSLSL", "SSLLS", "SLSSL", "SLSLS", "SLLSS", "LSSSL", 
+        "LLSSS", "SSSLL", "SSLSL", "SSLLS", "SLSSL", "SLSLS", "SLLSS", "LSSSL",
         "LSSLS", "LSLSS"
     };
     private String[] PLTable = {
-        "SSLLL", "LLLSS", "LLSLS", "LLSSL", "LSLLS", "LSLSL", "LSSLL", "SLLLS", 
+        "SSLLL", "LLLSS", "LLSLS", "LLSSL", "LSLLS", "LSLSL", "LSSLL", "SLLLS",
         "SLLSL", "SLSLL"
     };
 
@@ -83,13 +83,13 @@ public class Postnet extends Symbol {
         dest = "L";
 
         for (i = 0; i < content.length(); i++) {
-            dest += PNTable[(int)(content.charAt(i) - '0')];
-            sum += (int)(content.charAt(i) - '0');
+            dest += PNTable[content.charAt(i) - '0'];
+            sum += content.charAt(i) - '0';
         }
 
         check_digit = (10 - (sum % 10)) % 10;
         encodeInfo += "Check Digit: " + check_digit + "\n";
-        
+
         dest += PNTable[check_digit];
 
         dest += "L";
@@ -120,13 +120,13 @@ public class Postnet extends Symbol {
         dest = "L";
 
         for (i = 0; i < content.length(); i++) {
-            dest += PLTable[(int)(content.charAt(i) - '0')];
-            sum += (int)(content.charAt(i) - '0');
+            dest += PLTable[content.charAt(i) - '0'];
+            sum += content.charAt(i) - '0';
         }
 
         check_digit = (10 - (sum % 10)) % 10;
         encodeInfo += "Check Digit: " + check_digit + "\n";
-        
+
         dest += PLTable[check_digit];
 
         dest += "L";

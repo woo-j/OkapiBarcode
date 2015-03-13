@@ -45,31 +45,31 @@ public class AustraliaPost extends Symbol{
             "210", "211", "212", "213", "220", "221", "222", "223", "230", "231", "232", "233", "300",
             "301", "302", "303", "310", "311", "312", "313", "320", "321", "322", "323", "330", "331",
             "332", "333"};
-    
+
     private enum ausMode {AUSPOST, AUSREPLY, AUSROUTE, AUSREDIRECT};
-    
+
     private ausMode mode;
-    
+
     public AustraliaPost() {
         mode = ausMode.AUSPOST;
     }
-    
+
     public void setPostMode() {
         mode = ausMode.AUSPOST;
     }
-    
+
     public void setReplyMode() {
         mode = ausMode.AUSREPLY;
     }
-    
+
     public void setRouteMode() {
         mode = ausMode.AUSROUTE;
     }
-    
+
     public void setRedirectMode() {
         mode = ausMode.AUSREDIRECT;
     }
-    
+
     @Override
     public boolean encode() {
         String formatControlCode = "00";
@@ -77,7 +77,7 @@ public class AustraliaPost extends Symbol{
         String barStateValues;
         String zeroPaddedInput = "";
         int i;
-        
+
         switch(mode) {
             case AUSPOST:
                 switch(content.length()) {
@@ -97,7 +97,7 @@ public class AustraliaPost extends Symbol{
                         if (!(content.matches("[0-9]+?"))) {
                             error_msg = "Invalid characters in data";
                             return false;
-                        }                    
+                        }
                         break;
                     default: error_msg = "Auspost input is wrong length";
                         return false;
@@ -126,23 +126,23 @@ public class AustraliaPost extends Symbol{
                 } else {
                     formatControlCode = "92";
                 }
-                break;                
+                break;
         }
-        
+
         encodeInfo += "FCC: " + formatControlCode + '\n';
-        
+
         if(mode != ausMode.AUSPOST) {
             for (i = content.length(); i < 8; i++) {
                 zeroPaddedInput += "0";
             }
         }
         zeroPaddedInput += content;
-        
+
         if (!(content.matches("[0-9A-Za-z #]+?"))) {
             error_msg = "Invalid characters in data";
             return false;
         }
-        
+
         /* Verify that the first 8 characters are numbers */
         deliveryPointId = zeroPaddedInput.substring(0, 8);
 
@@ -150,22 +150,22 @@ public class AustraliaPost extends Symbol{
             error_msg = "Invalid characters in DPID";
             return false;
         }
-        
+
         encodeInfo += "DPID: " + deliveryPointId + '\n';
-        
+
         /* Start */
         barStateValues = "13";
-        
+
         /* Encode the FCC */
         for(i = 0; i < 2; i++) {
             barStateValues += nEncodingTable[formatControlCode.charAt(i) - '0'];
         }
-        
+
         /* Delivery Point Identifier (DPID) */
         for(i = 0; i < 8; i++) {
             barStateValues += nEncodingTable[deliveryPointId.charAt(i) - '0'];
         }
-        
+
         /* Customer Information */
         switch(zeroPaddedInput.length()) {
             case 13:
@@ -181,7 +181,7 @@ public class AustraliaPost extends Symbol{
                 }
                 break;
         }
-    
+
         /* Filler bar */
         switch(barStateValues.length()) {
             case 22:
@@ -190,15 +190,15 @@ public class AustraliaPost extends Symbol{
                 barStateValues += "3";
                 break;
         }
-        
+
         /* Reed Solomon error correction */
         barStateValues += calcReedSolomon(barStateValues);
-        
+
         /* Stop character */
         barStateValues += "13";
-        
+
         encodeInfo += "Total length: " + barStateValues.length() + '\n';
-        
+
         readable = "";
         pattern = new String[1];
         pattern[0] = barStateValues;
@@ -208,43 +208,43 @@ public class AustraliaPost extends Symbol{
         plotSymbol();
         return true;
     }
-    
+
     private String calcReedSolomon(String oldBarStateValues) {
         ReedSolomon rs = new ReedSolomon();
         String newBarStateValues = "";
-        
+
         /* Adds Reed-Solomon error correction to auspost */
-        
+
         int barStateCount;
         int tripleValueCount = 0;
         int[] tripleValue = new int[31];
-        
+
         for(barStateCount = 2; barStateCount < oldBarStateValues.length(); barStateCount += 3, tripleValueCount++) {
             tripleValue[tripleValueCount] = barStateToDecimal(oldBarStateValues.charAt(barStateCount), 4)
                     + barStateToDecimal(oldBarStateValues.charAt(barStateCount + 1), 2)
                     + barStateToDecimal(oldBarStateValues.charAt(barStateCount + 2), 0);
 	}
-        
+
         rs.init_gf(0x43);
         rs.init_code(4, 1);
         rs.encode(tripleValueCount, tripleValue);
-        
+
         for(barStateCount = 4; barStateCount > 0; barStateCount--) {
             newBarStateValues += barValueTable[rs.getResult(barStateCount - 1)];
         }
-        
+
         return newBarStateValues;
     }
-    
+
     private int barStateToDecimal (char oldBarStateValues, int shift) {
         return (oldBarStateValues - '0') << shift;
     }
-    
+
     @Override
     public void plotSymbol() {
         int xBlock;
         int x, y, w, h;
-        
+
         rect.clear();
         x = 0;
         w = 1;
@@ -269,7 +269,7 @@ public class AustraliaPost extends Symbol{
                     h = 2;
                     break;
             }
-            
+
             Rectangle thisrect = new Rectangle(x, y, w, h);
             rect.add(thisrect);
 

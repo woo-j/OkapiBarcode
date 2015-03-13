@@ -17,14 +17,14 @@ package uk.org.okapibarcode.backend;
 
 /**
  * Implements Code 32 (AKA Italian Pharmacode)
- * 
+ *
  * @author Robin Stuart <rstuart114@gmail.com>
  * @version 0.1
  */
 public class Code32 extends Symbol {
     private char[] tabella = {
-        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'B', 'C', 'D', 'F', 
-        'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'B', 'C', 'D', 'F',
+        'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V',
         'W', 'X', 'Y', 'Z'
     };
 

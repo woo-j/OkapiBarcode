@@ -61,7 +61,7 @@ public class Pharmazentralnummer extends Symbol {
             error_msg = "Not a valid PZN identifier";
             return false;
         }
-        
+
         encodeInfo += "Check Digit: " + check_digit + "\n";
 
         localstr += (char)(check_digit + '0');

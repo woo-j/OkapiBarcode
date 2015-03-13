@@ -25,7 +25,6 @@ import java.math.BigInteger;
  */
 public class Composite extends Symbol {
     /* CC-A component coefficients from ISO/IEC 24728:2006 Annex F */
-
     private int[] ccaCoeffs = {
         /* k = 4 */
         522, 568, 723, 809,
@@ -452,11 +451,11 @@ public class Composite extends Symbol {
     public int getCcMode() {
         return cc_mode;
     }
-    
+
     public void setLinear(String input) {
         linearContent = input;
     }
-    
+
     public void setPreferred(int userMode) {
         userPreferredMode = userMode;
     }
@@ -470,7 +469,7 @@ public class Composite extends Symbol {
         }
 
         cc_mode = userPreferredMode;
-        
+
         if ((cc_mode == 3) && (!(symbology.equals("BARCODE_CODE128")))) {
             /* CC-C can only be used with a GS1-128 linear part */
             error_msg = "Invalid mode (CC-C only valid with GS1-128 linear component)";
@@ -530,7 +529,7 @@ public class Composite extends Symbol {
         }
 
         if (cc_mode == 3) {
-            /* If the data didn't fit in CC-B (and linear 
+            /* If the data didn't fit in CC-B (and linear
              * part is GS1-128) it is recalculated for CC-C */
             if (!(cc_binary_string(cc_mode))) {
                 error_msg = "Input too long";
@@ -551,7 +550,7 @@ public class Composite extends Symbol {
                     break;
             }
         }
-        
+
         switch (cc_mode) {
             case 1:
                 encodeInfo += "Composite type: CC-A\n";
@@ -580,14 +579,14 @@ public class Composite extends Symbol {
         plotSymbol();
         return true;
     }
-    
+
     private int eanCalculateVersion() {
         /* Determine if EAN-8 or EAN-13 is being used */
-        
+
         int length = 0;
         int i;
         boolean latch;
-        
+
         latch = true;
         for (i = 0; i < linearContent.length(); i++) {
             if ((linearContent.charAt(i) >= '0') && (linearContent.charAt(i) <= '9')) {
@@ -598,7 +597,7 @@ public class Composite extends Symbol {
                 latch = false;
             }
         }
-        
+
         if (length <= 7) {
             // EAN-8
             return 8;
@@ -657,7 +656,7 @@ public class Composite extends Symbol {
         }
 
         encodeInfo += "Composite encoding: " + encoding_method + "\n";
-        
+
         binary_string = "";
 
         if (encoding_method == 1) {
@@ -862,7 +861,7 @@ public class Composite extends Symbol {
                 numeric_value = 0;
                 for (i = 0; i < numeric_part.length(); i++) {
                     numeric_value *= 10;
-                    numeric_value += (int) (numeric_part.charAt(i) - '0');
+                    numeric_value += numeric_part.charAt(i) - '0';
                 }
 
                 table3_letter = -1;
@@ -1928,7 +1927,7 @@ public class Composite extends Symbol {
         if (debug) {
             System.out.println("     2nd pass target size is " + target_bitsize + ", room left is " + (target_bitsize - binary_string.length()));
         }
-        
+
         if (binary_length < target_bitsize) {
             /* Now add padding to binary string */
             if (alpha_pad == 1) {
@@ -2266,7 +2265,7 @@ public class Composite extends Symbol {
             bin = "";
             for (loop = 0; loop < codebarre.length(); loop++) {
                 if ((codebarre.charAt(loop) >= '0') && (codebarre.charAt(loop) <= '9')) {
-                    for (k = 0; k < (int) (codebarre.charAt(loop) - '0'); k++) {
+                    for (k = 0; k < codebarre.charAt(loop) - '0'; k++) {
                         if (flip == 0) {
                             bin += '0';
                         } else {
@@ -2602,7 +2601,7 @@ public class Composite extends Symbol {
             bin = "";
             for (loop = 0; loop < codebarre.length(); loop++) {
                 if ((codebarre.charAt(loop) >= '0') && (codebarre.charAt(loop) <= '9')) {
-                    for (k = 0; k < (int) (codebarre.charAt(loop) - '0'); k++) {
+                    for (k = 0; k < codebarre.charAt(loop) - '0'; k++) {
                         if (flip == 0) {
                             bin += '0';
                         } else {
@@ -2753,7 +2752,7 @@ public class Composite extends Symbol {
         row_height = new int[row_count];
         System.out.println("cwc" + codeWordCount + "ccw" + cc_width);
         System.out.println("rows needed " + row_count);
-        
+
         /* we now encode each row */
         for (i = 0; i <= (codeWordCount / cc_width) - 1; i++) {
             for (j = 0; j < cc_width; j++) {
@@ -2761,7 +2760,7 @@ public class Composite extends Symbol {
             }
             k = (i / 3) * 30;
             switch (i % 3) {
-                /* follows this pattern from US Patent 5,243,655: 
+                /* follows this pattern from US Patent 5,243,655:
                  Row 0: L0 (row #, # of rows)         R0 (row #, # of columns)
                  Row 1: L1 (row #, security level)    R1 (row #, # of rows)
                  Row 2: L2 (row #, # of columns)      R2 (row #, security level)

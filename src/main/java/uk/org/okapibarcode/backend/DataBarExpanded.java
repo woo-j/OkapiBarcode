@@ -42,41 +42,41 @@ public class DataBarExpanded extends Symbol {
         2, 4, 5, 6, 8
     };
     private int[] checksum_weight_exp = { /* Table 14 */
-        1, 3, 9, 27, 81, 32, 96, 77, 20, 60, 180, 118, 143, 7, 21, 63, 189, 
-        145, 13, 39, 117, 140, 209, 205, 193, 157, 49, 147, 19, 57, 171, 91, 
-        62, 186, 136, 197, 169, 85, 44, 132, 185, 133, 188, 142, 4, 12, 36, 
-        108, 113, 128, 173, 97, 80, 29, 87, 50, 150, 28, 84, 41, 123, 158, 52, 
-        156, 46, 138, 203, 187, 139, 206, 196, 166, 76, 17, 51, 153, 37, 111, 
-        122, 155, 43, 129, 176, 106, 107, 110, 119, 146, 16, 48, 144, 10, 30, 
-        90, 59, 177, 109, 116, 137, 200, 178, 112, 125, 164, 70, 210, 208, 202, 
-        184, 130, 179, 115, 134, 191, 151, 31, 93, 68, 204, 190, 148, 22, 66, 
-        198, 172, 94, 71, 2, 6, 18, 54, 162, 64, 192, 154, 40, 120, 149, 25, 
-        75, 14, 42, 126, 167, 79, 26, 78, 23, 69, 207, 199, 175, 103, 98, 83, 
-        38, 114, 131, 182, 124, 161, 61, 183, 127, 170, 88, 53, 159, 55, 165, 
+        1, 3, 9, 27, 81, 32, 96, 77, 20, 60, 180, 118, 143, 7, 21, 63, 189,
+        145, 13, 39, 117, 140, 209, 205, 193, 157, 49, 147, 19, 57, 171, 91,
+        62, 186, 136, 197, 169, 85, 44, 132, 185, 133, 188, 142, 4, 12, 36,
+        108, 113, 128, 173, 97, 80, 29, 87, 50, 150, 28, 84, 41, 123, 158, 52,
+        156, 46, 138, 203, 187, 139, 206, 196, 166, 76, 17, 51, 153, 37, 111,
+        122, 155, 43, 129, 176, 106, 107, 110, 119, 146, 16, 48, 144, 10, 30,
+        90, 59, 177, 109, 116, 137, 200, 178, 112, 125, 164, 70, 210, 208, 202,
+        184, 130, 179, 115, 134, 191, 151, 31, 93, 68, 204, 190, 148, 22, 66,
+        198, 172, 94, 71, 2, 6, 18, 54, 162, 64, 192, 154, 40, 120, 149, 25,
+        75, 14, 42, 126, 167, 79, 26, 78, 23, 69, 207, 199, 175, 103, 98, 83,
+        38, 114, 131, 182, 124, 161, 61, 183, 127, 170, 88, 53, 159, 55, 165,
         73, 8, 24, 72, 5, 15, 45, 135, 194, 160, 58, 174, 100, 89
     };
     private int[] finder_pattern_exp = { /* Table 15 */
-        1, 8, 4, 1, 1, 1, 1, 4, 8, 1, 3, 6, 4, 1, 1, 1, 1, 4, 6, 3, 3, 4, 6, 1, 
-        1, 1, 1, 6, 4, 3, 3, 2, 8, 1, 1, 1, 1, 8, 2, 3, 2, 6, 5, 1, 1, 1, 1, 5, 
+        1, 8, 4, 1, 1, 1, 1, 4, 8, 1, 3, 6, 4, 1, 1, 1, 1, 4, 6, 3, 3, 4, 6, 1,
+        1, 1, 1, 6, 4, 3, 3, 2, 8, 1, 1, 1, 1, 8, 2, 3, 2, 6, 5, 1, 1, 1, 1, 5,
         6, 2, 2, 2, 9, 1, 1, 1, 1, 9, 2, 2
     };
     private int[] finder_sequence = { /* Table 16 */
-        1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 4, 3, 0, 0, 0, 0, 0, 0, 0, 0, 1, 6, 
-        3, 8, 0, 0, 0, 0, 0, 0, 0, 1, 10, 3, 8, 5, 0, 0, 0, 0, 0, 0, 1, 10, 3, 
-        8, 7, 12, 0, 0, 0, 0, 0, 1, 10, 3, 8, 9, 12, 11, 0, 0, 0, 0, 1, 2, 3, 
-        4, 5, 6, 7, 8, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 10, 9, 0, 0, 1, 2, 3, 4, 
+        1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 4, 3, 0, 0, 0, 0, 0, 0, 0, 0, 1, 6,
+        3, 8, 0, 0, 0, 0, 0, 0, 0, 1, 10, 3, 8, 5, 0, 0, 0, 0, 0, 0, 1, 10, 3,
+        8, 7, 12, 0, 0, 0, 0, 0, 1, 10, 3, 8, 9, 12, 11, 0, 0, 0, 0, 1, 2, 3,
+        4, 5, 6, 7, 8, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 10, 9, 0, 0, 1, 2, 3, 4,
         5, 6, 7, 10, 11, 12, 0, 1, 2, 3, 4, 5, 8, 7, 10, 9, 12, 11
     };
     private int[] weight_rows = {
-        0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 6, 
-        3, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 10, 3, 4, 
-        13, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 17, 18, 3, 4, 13, 
-        14, 7, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 17, 18, 3, 4, 13, 14, 
-        11, 12, 21, 22, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 17, 18, 3, 4, 13, 14, 
-        15, 16, 21, 22, 19, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 
-        8, 9, 10, 11, 12, 13, 14, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 
-        9, 10, 11, 12, 17, 18, 15, 16, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 
-        9, 10, 11, 12, 17, 18, 19, 20, 21, 22, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 
+        0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 6,
+        3, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 10, 3, 4,
+        13, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 17, 18, 3, 4, 13,
+        14, 7, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 17, 18, 3, 4, 13, 14,
+        11, 12, 21, 22, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 17, 18, 3, 4, 13, 14,
+        15, 16, 21, 22, 19, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7,
+        8, 9, 10, 11, 12, 13, 14, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8,
+        9, 10, 11, 12, 17, 18, 15, 16, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8,
+        9, 10, 11, 12, 17, 18, 19, 20, 21, 22, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8,
         13, 14, 11, 12, 17, 18, 15, 16, 21, 22, 19, 20
     };
 
@@ -153,7 +153,7 @@ public class DataBarExpanded extends Symbol {
         boolean black;
         boolean left_to_right;
         int compositeOffset;
-        
+
         source = content;
 
         if (linkageFlag) {
@@ -321,9 +321,9 @@ public class DataBarExpanded extends Symbol {
             for (j = 0; j < (writer / 49); j++) {
                 k = (49 * j) + 18;
                 for (i = 0; i < 15; i++) {
-                    if ((seperator_binary.charAt(i + k - 1) == '1') 
+                    if ((seperator_binary.charAt(i + k - 1) == '1')
                             && (seperator_binary.charAt(i + k) == '1')) {
-                        seperator_binary = seperator_binary.substring(0, (i + k)) 
+                        seperator_binary = seperator_binary.substring(0, (i + k))
                                 + "0" + seperator_binary.substring(i + k + 1);
                     }
                 }
@@ -344,7 +344,7 @@ public class DataBarExpanded extends Symbol {
             if ((blocksPerRow < 1) || (blocksPerRow > 10)) {
                 blocksPerRow = 2;
             }
-            
+
             if (linkageFlag && (blocksPerRow == 1)) {
                 /* "There shall be a minimum of four symbol characters in the
                 first row of an RSS Expanded Stacked symbol when it is the linear
@@ -377,9 +377,9 @@ public class DataBarExpanded extends Symbol {
                 /* Row Data */
                 reader = 0;
                 do {
-                    if ((((blocksPerRow & 1) != 0) || ((current_row & 1) != 0)) 
-                            || ((current_row == stack_rows) 
-                            && (codeblocks != (current_row * blocksPerRow)) 
+                    if ((((blocksPerRow & 1) != 0) || ((current_row & 1) != 0))
+                            || ((current_row == stack_rows)
+                            && (codeblocks != (current_row * blocksPerRow))
                             && ((((current_row * blocksPerRow) - codeblocks) & 1)) != 0)) {
                         /* left to right */
                         left_to_right = true;
@@ -426,8 +426,8 @@ public class DataBarExpanded extends Symbol {
                     pattern[symbol_row + compositeOffset] = "0";
                     black = false;
                 } else {
-                    if ((current_row == stack_rows) 
-                            && (codeblocks != (current_row * blocksPerRow)) 
+                    if ((current_row == stack_rows)
+                            && (codeblocks != (current_row * blocksPerRow))
                             && ((((current_row * blocksPerRow) - codeblocks) & 1) != 0)) {
                         /* Special case bottom row */
                         special_case_row = true;
@@ -458,17 +458,17 @@ public class DataBarExpanded extends Symbol {
                     k = (49 * j) + (special_case_row ? 19 : 18);
                     if (left_to_right) {
                         for (i = 0; i < 15; i++) {
-                            if ((seperator_binary.charAt(i + k - 1) == '1') 
+                            if ((seperator_binary.charAt(i + k - 1) == '1')
                                     && (seperator_binary.charAt(i + k) == '1')) {
-                                seperator_binary = seperator_binary.substring(0, (i + k)) 
+                                seperator_binary = seperator_binary.substring(0, (i + k))
                                         + "0" + seperator_binary.substring(i + k + 1);
                             }
                         }
                     } else {
                         for (i = 14; i >= 0; i--) {
-                            if ((seperator_binary.charAt(i + k + 1) == '1') 
+                            if ((seperator_binary.charAt(i + k + 1) == '1')
                                     && (seperator_binary.charAt(i + k) == '1')) {
-                                seperator_binary = seperator_binary.substring(0, (i + k)) 
+                                seperator_binary = seperator_binary.substring(0, (i + k))
                                         + "0" + seperator_binary.substring(i + k + 1);
                             }
                         }
@@ -481,7 +481,7 @@ public class DataBarExpanded extends Symbol {
                     row_height[0] = 1;
                     pattern[0] = seperator_pattern;
                 }
-                
+
                 if (current_row != 1) {
                     /* middle separator pattern (above current row) */
                     pattern[symbol_row - 2 + compositeOffset] = "05";
@@ -526,7 +526,7 @@ public class DataBarExpanded extends Symbol {
         /* Decide whether a compressed data field is required and if so what
 	method to use - method 2 = no compressed data field */
 
-        if ((source.length() >= 16) && ((source.charAt(0) == '0') 
+        if ((source.length() >= 16) && ((source.charAt(0) == '0')
                 && (source.charAt(1) == '1'))) {
             /* (01) and other AIs */
             encoding_method = 1;
@@ -537,7 +537,7 @@ public class DataBarExpanded extends Symbol {
             if (debug) System.out.printf("Choosing Mehod 2\n");
         }
 
-        if (((source.length() >= 20) && (encoding_method == 1)) 
+        if (((source.length() >= 20) && (encoding_method == 1))
                 && ((source.charAt(2) == '9') && (source.charAt(16) == '3'))) {
             /* Possibly encoding method > 2 */
             if (debug) System.out.printf("Checking for other methods\n");
@@ -607,7 +607,7 @@ public class DataBarExpanded extends Symbol {
 
                     if (weight < 99999.0) { /* Maximum weight = 99999 */
 
-                        if (((source.charAt(19) == '2') || (source.charAt(19) == '3')) 
+                        if (((source.charAt(19) == '2') || (source.charAt(19) == '3'))
                                 && (source.length() == 26)) {
                             /* (01) and (3202)/(3203) */
 
@@ -654,12 +654,12 @@ public class DataBarExpanded extends Symbol {
 
             if (source.charAt(17) == '9') {
                 /* Methods 5 and 6 */
-                if ((source.charAt(18) == '2') && ((source.charAt(19) >= '0') 
+                if ((source.charAt(18) == '2') && ((source.charAt(19) >= '0')
                         && (source.charAt(19) <= '3'))) {
                     /* (01) and (392x) */
                     encoding_method = 5;
                 }
-                if ((source.charAt(18) == '3') && ((source.charAt(19) >= '0') 
+                if ((source.charAt(18) == '3') && ((source.charAt(19) >= '0')
                         && (source.charAt(19) <= '3'))) {
                     /* (01) and (393x) */
                     encoding_method = 6;
@@ -749,7 +749,7 @@ public class DataBarExpanded extends Symbol {
         if (debug) System.out.printf("Proceeding to encode data\n");
         if (encoding_method == 1) {
             /* Encoding method field "1" - general item identification data */
-            group_val = (int)(source.charAt(2) - '0');
+            group_val = source.charAt(2) - '0';
 
             for (j = 0; j < 4; j++) {
                 if ((group_val & (0x08 >> j)) == 0) {
@@ -760,9 +760,9 @@ public class DataBarExpanded extends Symbol {
             }
 
             for (i = 1; i < 5; i++) {
-                group_val = 100 * (int)(source.charAt(i * 3) - '0');
-                group_val += 10 * (int)(source.charAt((i * 3) + 1) - '0');
-                group_val += (int)(source.charAt((i * 3) + 2) - '0');
+                group_val = 100 * (source.charAt(i * 3) - '0');
+                group_val += 10 * (source.charAt((i * 3) + 1) - '0');
+                group_val += source.charAt((i * 3) + 2) - '0';
 
                 for (j = 0; j < 10; j++) {
                     if ((group_val & (0x200 >> j)) == 0) {
@@ -795,7 +795,7 @@ public class DataBarExpanded extends Symbol {
             group_val = 0;
             for (i = 0; i < 6; i++) {
                 group_val *= 10;
-                group_val += (int)(source.charAt(20 + i) - '0');
+                group_val += source.charAt(20 + i) - '0';
             }
 
             for (j = 0; j < 15; j++) {
@@ -829,7 +829,7 @@ public class DataBarExpanded extends Symbol {
             group_val = 0;
             for (i = 0; i < 6; i++) {
                 group_val *= 10;
-                group_val += (int)(source.charAt(20 + i) - '0');
+                group_val += source.charAt(20 + i) - '0';
             }
 
             if (source.charAt(19) == '3') {
@@ -863,11 +863,11 @@ public class DataBarExpanded extends Symbol {
                 }
             }
 
-            group_val = (int)(source.charAt(19) - '0');
+            group_val = source.charAt(19) - '0';
 
             for (i = 0; i < 5; i++) {
                 group_val *= 10;
-                group_val += (int)(source.charAt(21 + i) - '0');
+                group_val += source.charAt(21 + i) - '0';
             }
 
             for (j = 0; j < 20; j++) {
@@ -880,11 +880,11 @@ public class DataBarExpanded extends Symbol {
 
             if (source.length() == 34) {
                 /* Date information is included */
-                group_val = ((10 * (source.charAt(28) - '0')) 
+                group_val = ((10 * (source.charAt(28) - '0'))
                         + (source.charAt(29) - '0')) * 384;
-                group_val += (((10 * (source.charAt(30) - '0')) 
+                group_val += (((10 * (source.charAt(30) - '0'))
                         + (source.charAt(31) - '0')) - 1) * 32;
-                group_val += (10 * (source.charAt(32) - '0')) 
+                group_val += (10 * (source.charAt(32) - '0'))
                         + (source.charAt(33) - '0');
             } else {
                 group_val = 38400;
@@ -968,7 +968,7 @@ public class DataBarExpanded extends Symbol {
             group_val = 0;
             for (i = 0; i < 3; i++) {
                 group_val *= 10;
-                group_val += (int)(source.charAt(20 + i) - '0');
+                group_val += source.charAt(20 + i) - '0';
             }
 
             for (j = 0; j < 10; j++) {
@@ -1059,14 +1059,14 @@ public class DataBarExpanded extends Symbol {
             }
 
             for (i = 0; i < general_field.length() - 1; i++) {
-                if ((general_field_type[i] == encodeMode.ISOIEC) 
+                if ((general_field_type[i] == encodeMode.ISOIEC)
                         && (general_field.charAt(i + 1) == '[')) {
                     general_field_type[i + 1] = encodeMode.ISOIEC;
                 }
             }
 
             for (i = 0; i < general_field.length() - 1; i++) {
-                if ((general_field_type[i] == encodeMode.ALPHA_OR_ISO) 
+                if ((general_field_type[i] == encodeMode.ALPHA_OR_ISO)
                         && (general_field.charAt(i + 1) == '[')) {
                     general_field_type[i + 1] = encodeMode.ALPHA_OR_ISO;
                 }
@@ -1100,7 +1100,7 @@ public class DataBarExpanded extends Symbol {
                         if (debug) System.out.printf("<NUMERIC LATCH>\n");
                     }
 
-                    if (debug) System.out.printf("  %c%c > ", general_field.charAt(i), 
+                    if (debug) System.out.printf("  %c%c > ", general_field.charAt(i),
                             general_field.charAt(i + 1));
                     if (general_field.charAt(i) != '[') {
                         d1 = general_field.charAt(i) - '0';
@@ -1194,7 +1194,7 @@ public class DataBarExpanded extends Symbol {
                         }
                     }
 
-                    if ((general_field.charAt(i) >= '0') 
+                    if ((general_field.charAt(i) >= '0')
                             && (general_field.charAt(i) <= '9')) {
 
                         value = general_field.charAt(i) - 43;
@@ -1208,7 +1208,7 @@ public class DataBarExpanded extends Symbol {
                         }
                     }
 
-                    if ((general_field.charAt(i) >= 'A') 
+                    if ((general_field.charAt(i) >= 'A')
                             && (general_field.charAt(i) <= 'Z')) {
 
                         value = general_field.charAt(i) - 1;
@@ -1222,7 +1222,7 @@ public class DataBarExpanded extends Symbol {
                         }
                     }
 
-                    if ((general_field.charAt(i) >= 'a') 
+                    if ((general_field.charAt(i) >= 'a')
                             && (general_field.charAt(i) <= 'z')) {
 
                         value = general_field.charAt(i) - 7;
@@ -1369,15 +1369,15 @@ public class DataBarExpanded extends Symbol {
         }
 
         if (encoding_method == 1) {
-            binary_string = binary_string.substring(0, 2) + patch 
+            binary_string = binary_string.substring(0, 2) + patch
                     + binary_string.substring(4);
         }
         if (encoding_method == 2) {
-            binary_string = binary_string.substring(0, 3) + patch 
+            binary_string = binary_string.substring(0, 3) + patch
                     + binary_string.substring(5);
         }
         if ((encoding_method == 5) || (encoding_method == 6)) {
-            binary_string = binary_string.substring(0, 6) + patch 
+            binary_string = binary_string.substring(0, 6) + patch
                     + binary_string.substring(8);
         }
         if (debug) System.out.printf("Resultant binary = %s\n", binary_string);
@@ -1492,7 +1492,7 @@ public class DataBarExpanded extends Symbol {
             }
         }
 
-        if ((blockType[block_count - 1] == encodeMode.NUMERIC) 
+        if ((blockType[block_count - 1] == encodeMode.NUMERIC)
                 && ((blockLength[block_count - 1] & 1) != 0)) {
             /* If the last block is numeric and an odd size, further
 		processing needs to be done outside this procedure */
@@ -1541,9 +1541,9 @@ public class DataBarExpanded extends Symbol {
                 /* get all combinations */
                 subVal = getCombinations(n - elmWidth - 1, elements - bar - 2);
                 /* less combinations with no single-module element */
-                if ((noNarrow == 0) && (narrowMask == 0) 
+                if ((noNarrow == 0) && (narrowMask == 0)
                         && (n - elmWidth - (elements - bar - 1) >= elements - bar - 1)) {
-                    subVal -= getCombinations(n - elmWidth - (elements - bar), 
+                    subVal -= getCombinations(n - elmWidth - (elements - bar),
                             elements - bar - 2);
                 }
                 /* less combinations with elements > maxVal */
@@ -1552,7 +1552,7 @@ public class DataBarExpanded extends Symbol {
                     for (mxwElement = n - elmWidth - (elements - bar - 2);
                     mxwElement > maxWidth;
                     mxwElement--) {
-                        lessVal += getCombinations(n - elmWidth - mxwElement - 1, 
+                        lessVal += getCombinations(n - elmWidth - mxwElement - 1,
                                 elements - bar - 3);
                     }
                     subVal -= lessVal * (elements - 1 - bar);

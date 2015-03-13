@@ -15,9 +15,9 @@
  */
 package uk.org.okapibarcode.backend;
 
-import java.util.ArrayList;
 import java.awt.Rectangle;
 import java.awt.geom.Ellipse2D;
+import java.util.ArrayList;
 /**
  * Generic barcode symbology class
  *
@@ -25,12 +25,12 @@ import java.awt.geom.Ellipse2D;
  * @version 0.1
  */
 abstract class Symbol {
-    public char[] technetium = { '0', '1', '2', '3', '4', '5', '6', '7', '8', 
-        '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 
-        'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '-', 
+    public char[] technetium = { '0', '1', '2', '3', '4', '5', '6', '7', '8',
+        '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
+        'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '-',
         '.', ' ', '$', '/', '+', '%'
     };
-    
+
     public String content;
     public String readable;
     public String[] pattern;
@@ -46,14 +46,14 @@ abstract class Symbol {
     public boolean readerInit;
     public String encodeInfo = "";
     public String primaryData = "";
-    
+
     public int option1;
     public int option2;
 
     public ArrayList < Rectangle > rect = new ArrayList < > ();
     public ArrayList < TextBox > txt = new ArrayList < > ();
     public ArrayList < Hexagon > hex = new ArrayList < > ();
-    public static ArrayList<Ellipse2D.Double> target = new ArrayList < > ();    
+    public static ArrayList<Ellipse2D.Double> target = new ArrayList < > ();
 
     public Symbol() {
         readable = "";
@@ -109,13 +109,13 @@ abstract class Symbol {
 
     public boolean setContent(String input_data) {
         int i;
-        
+
         content = input_data; // default action
-        
+
         if (gs1) {
             content = gs1SanityCheck(input_data);
         }
-        
+
         if (gs1) {
             readable = "";
             for (i = 0; i < input_data.length(); i++) {
@@ -129,18 +129,18 @@ abstract class Symbol {
                 }
             }
         }
-        
+
         if (hibc) {
             content = hibcProcess(input_data);
         }
-        
+
         if (content.length() != 0) {
             return encode();
         } else {
             return false;
         }
     }
-    
+
     public void setPrimary(String input) {
         // Only used for Maxicode
         primaryData = input;
@@ -186,11 +186,11 @@ abstract class Symbol {
             }
             y += h;
         }
-        
+
         if (!(readable.isEmpty())) {
             TextBox thistext = new TextBox();
             // Calculated position is approximately central
-            thistext.setvalues(((symbol_width - (5.0 * readable.length())) / 2), 
+            thistext.setvalues(((symbol_width - (5.0 * readable.length())) / 2),
                     symbol_height + 8.0, readable);
             txt.add(thistext);
         }
@@ -199,7 +199,7 @@ abstract class Symbol {
     public String gs1SanityCheck(String source) {
         // Enforce compliance with GS1 General Specification
         // http://www.gs1.org/docs/gsmp/barcodes/GS1_General_Specifications.pdf
-        
+
         String reduced = "";
 
         int i, j, last_ai;
@@ -241,7 +241,7 @@ abstract class Symbol {
         ai_latch = false;
         for (i = 0; i < src_len; i++) {
             ai_length += j;
-            if (((j == 1) && (source.charAt(i) != ']')) 
+            if (((j == 1) && (source.charAt(i) != ']'))
                     && ((source.charAt(i) < '0') || (source.charAt(i) > '9'))) {
                 ai_latch = true;
             }
@@ -386,13 +386,13 @@ abstract class Symbol {
                 break;
             }
             if (
-            ((ai_value[i] >= 100) && (ai_value[i] <= 179)) 
-                    || ((ai_value[i] >= 1000) && (ai_value[i] <= 1799)) 
-                    || ((ai_value[i] >= 200) && (ai_value[i] <= 229)) 
-                    || ((ai_value[i] >= 2000) && (ai_value[i] <= 2299)) 
-                    || ((ai_value[i] >= 300) && (ai_value[i] <= 309)) 
-                    || ((ai_value[i] >= 3000) && (ai_value[i] <= 3099)) 
-                    || ((ai_value[i] >= 31) && (ai_value[i] <= 36)) 
+            ((ai_value[i] >= 100) && (ai_value[i] <= 179))
+                    || ((ai_value[i] >= 1000) && (ai_value[i] <= 1799))
+                    || ((ai_value[i] >= 200) && (ai_value[i] <= 229))
+                    || ((ai_value[i] >= 2000) && (ai_value[i] <= 2299))
+                    || ((ai_value[i] >= 300) && (ai_value[i] <= 309))
+                    || ((ai_value[i] >= 3000) && (ai_value[i] <= 3099))
+                    || ((ai_value[i] >= 31) && (ai_value[i] <= 36))
                     || ((ai_value[i] >= 310) && (ai_value[i] <= 369))) {
                 error_latch = 2;
             }
@@ -402,7 +402,7 @@ abstract class Symbol {
                 }
             }
             if (
-            ((ai_value[i] >= 370) && (ai_value[i] <= 379)) 
+            ((ai_value[i] >= 370) && (ai_value[i] <= 379))
                     || ((ai_value[i] >= 3700) && (ai_value[i] <= 3799))) {
                 error_latch = 2;
             }
@@ -412,19 +412,19 @@ abstract class Symbol {
                 }
             }
             if (
-            ((ai_value[i] >= 4100) && (ai_value[i] <= 4199)) 
-                    || ((ai_value[i] >= 700) && (ai_value[i] <= 703)) 
-                    || ((ai_value[i] >= 800) && (ai_value[i] <= 810)) 
-                    || ((ai_value[i] >= 900) && (ai_value[i] <= 999)) 
+            ((ai_value[i] >= 4100) && (ai_value[i] <= 4199))
+                    || ((ai_value[i] >= 700) && (ai_value[i] <= 703))
+                    || ((ai_value[i] >= 800) && (ai_value[i] <= 810))
+                    || ((ai_value[i] >= 900) && (ai_value[i] <= 999))
                     || ((ai_value[i] >= 9000) && (ai_value[i] <= 9999))) {
                 error_latch = 2;
             }
-            
+
             if (error_latch == 1) {
                 error_msg = "Invalid data length for AI";
                 return "";
             }
-            
+
             if (error_latch == 2) {
                 error_msg = "Invalid AI value";
                 return "";
@@ -444,13 +444,13 @@ abstract class Symbol {
                 if (ai_latch) {
                     reduced += '[';
                 }
-                last_ai = (10 * Character.getNumericValue(source.charAt(i + 1))) 
+                last_ai = (10 * Character.getNumericValue(source.charAt(i + 1)))
                         + Character.getNumericValue(source.charAt(i + 2));
                 System.out.println("last AI " + last_ai);
-                if ( ((last_ai >= 0) && (last_ai <= 4)) 
-                        || ((last_ai >= 11) && (last_ai <= 20)) 
-                        || (last_ai == 23) /* legacy support - see 5.3.8.2.2 */ 
-                        || ((last_ai >= 31) && (last_ai <= 36)) 
+                if ( ((last_ai >= 0) && (last_ai <= 4))
+                        || ((last_ai >= 11) && (last_ai <= 20))
+                        || (last_ai == 23) /* legacy support - see 5.3.8.2.2 */
+                        || ((last_ai >= 31) && (last_ai <= 36))
                         || (last_ai == 41)) {
                     // The end of the current data block doesn't need FNC1
                     ai_latch = false;
@@ -465,12 +465,12 @@ abstract class Symbol {
         /* the character '[' in the reduced string refers to the FNC1 character */
         return reduced;
     }
-    
+
     public String hibcProcess(String source) {
 	int counter, i;
         String to_process;
         char check_digit;
-	
+
 	if(source.length() > 36) {
 		error_msg = "Data too long for HIBC LIC";
 		return "";
@@ -480,13 +480,13 @@ abstract class Symbol {
             error_msg = "Invalid characters in input";
             return "";
         }
-	
+
 	counter = 41;
 	for(i = 0; i < source.length(); i++) {
             counter += positionOf(source.charAt(i), technetium);
 	}
 	counter = counter % 43;
-	
+
 	if(counter < 10) {
 		check_digit = (char) (counter + '0');
 	} else {
@@ -505,9 +505,9 @@ abstract class Symbol {
 			}
 		}
 	}
-        
+
         encodeInfo += "HIBC Check Digit: " + counter + " (" + check_digit + ")\n";
-	
+
 	to_process = "+" + source + check_digit;
         return to_process;
     }

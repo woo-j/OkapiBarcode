@@ -17,7 +17,9 @@ package uk.org.okapibarcode.output;
 
 import java.awt.Rectangle;
 import java.awt.geom.Ellipse2D;
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -35,7 +37,7 @@ public class ScalableVectorGraphics {
     private String symbol_text = "";
     private String fgColour = "000000";
     private String bgColour = "FFFFFF";
-    
+
     public void setShapes(ArrayList<Rectangle> bcs, ArrayList<uk.org.okapibarcode.backend.TextBox> txt,
             ArrayList<uk.org.okapibarcode.backend.Hexagon> hex, ArrayList<Ellipse2D.Double> target) {
         rectangle = bcs;
@@ -43,24 +45,24 @@ public class ScalableVectorGraphics {
         hexagon = hex;
         ellipse = target;
     }
-    
+
     public void setValues (String readable, int width, int height) {
         symbol_width = width;
         symbol_height = height;
         symbol_text = readable;
     }
-    
+
     public boolean write(File file) {
         String outStream;
         int i, j;
         String nowColour;
-        
+
         try (FileOutputStream fos = new FileOutputStream(file)) {
             // Header
             outStream = "<?xml version=\"1.0\" standalone=\"no\"?>\n";
             outStream += "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\"\n";
             outStream += "   \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n";
-            outStream += "<svg width=\"" + symbol_width + "\" height=\"" 
+            outStream += "<svg width=\"" + symbol_width + "\" height=\""
                     + symbol_height + "\" version=\"1.1\"\n";
             outStream += "   xmlns=\"http://www.w3.org/2000/svg\">\n";
             if (symbol_text.length() == 0) {
@@ -70,18 +72,18 @@ public class ScalableVectorGraphics {
             }
             outStream += "   </desc>\n";
             outStream += "\n   <g id=\"barcode\" fill=\"#" + fgColour + "\">\n";
-            outStream += "      <rect x=\"0\" y=\"0\" width=\"" + symbol_width 
-                    + "\" height=\"" + symbol_height + "\" fill=\"#" 
+            outStream += "      <rect x=\"0\" y=\"0\" width=\"" + symbol_width
+                    + "\" height=\"" + symbol_height + "\" fill=\"#"
                     + bgColour + "\" />\n";
-            
+
             // Rectangles
             for (i = 0; i < rectangle.size(); i++) {
-                outStream += "      <rect x=\"" + rectangle.get(i).x  
-                        + ".00\" y=\"" + rectangle.get(i).y + ".00\" width=\"" 
-                        + rectangle.get(i).width + ".00\" height=\"" 
+                outStream += "      <rect x=\"" + rectangle.get(i).x
+                        + ".00\" y=\"" + rectangle.get(i).y + ".00\" width=\""
+                        + rectangle.get(i).width + ".00\" height=\""
                         + rectangle.get(i).height + ".00\" />\n";
             }
-            
+
             // Text
             for(i = 0; i < textbox.size(); i++) {
                 outStream += "      <text x=\"" + textbox.get(i).xPos + "\" y=\""
@@ -91,7 +93,7 @@ public class ScalableVectorGraphics {
                 outStream += "         " + textbox.get(i).arg + "\n";
                 outStream += "      </text>\n";
             }
-            
+
             // Circles
             for (i = 0; i < ellipse.size(); i++) {
                 if ((i & 1) == 0) {
@@ -101,12 +103,12 @@ public class ScalableVectorGraphics {
                 }
                 outStream += "      <circle cx=\""
                         + String.format("%.2f", ellipse.get(i).x + (ellipse.get(i).width / 2))
-                        + "\" cy=\"" 
+                        + "\" cy=\""
                         + String.format("%.2f", ellipse.get(i).y + (ellipse.get(i).width / 2))
                         + "\" r=\"" + String.format("%.2f", ellipse.get(i).width / 2)
                         + "\" fill=\"#" + nowColour + "\" />\n";
-            }            
-            
+            }
+
             // Hexagons
             for(i = 0; i < hexagon.size(); i++) {
                 outStream += "      <path d=\"";
@@ -116,22 +118,22 @@ public class ScalableVectorGraphics {
                     } else {
                         outStream += "L ";
                     }
-                    outStream += String.format("%.2f", hexagon.get(i).pointX[j]) + " " 
+                    outStream += String.format("%.2f", hexagon.get(i).pointX[j]) + " "
                             + String.format("%.2f", hexagon.get(i).pointY[j]) + " ";
                 }
                 outStream += "Z\" />\n";
             }
-            
+
             // Footer
             outStream += "   </g>\n";
             outStream += "</svg>\n";
-            
+
             // Output data to file
             for (i = 0; i < outStream.length(); i++) {
                 fos.write(outStream.charAt(i));
             }
         }
-        
+
         catch (IOException ioe) {
             System.err.println("I/O error: " + ioe.getMessage());
         }

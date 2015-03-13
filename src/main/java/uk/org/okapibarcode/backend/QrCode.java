@@ -278,7 +278,7 @@ public class QrCode extends Symbol {
         size = qr_sizes[version - 1];
 
         grid = new byte[size * size];
-        
+
         encodeInfo += "Version: " + version + "\n";
         encodeInfo += "ECC Level: ";
         switch (ecc_level) {
@@ -876,15 +876,15 @@ public class QrCode extends Symbol {
             }
 
             for (j = 0; j < short_data_block_length; j++) {
-                interleaved_data[(j * blocks) + i] = (int) data_block[j];
+                interleaved_data[(j * blocks) + i] = data_block[j];
             }
 
             if (i >= qty_short_blocks) {
-                interleaved_data[(short_data_block_length * blocks) + (i - qty_short_blocks)] = (int) data_block[short_data_block_length];
+                interleaved_data[(short_data_block_length * blocks) + (i - qty_short_blocks)] = data_block[short_data_block_length];
             }
 
             for (j = 0; j < ecc_block_length; j++) {
-                interleaved_ecc[(j * blocks) + i] = (int) ecc_block[ecc_block_length - j - 1];
+                interleaved_ecc[(j * blocks) + i] = ecc_block[ecc_block_length - j - 1];
             }
 
             posn += length_this_block;

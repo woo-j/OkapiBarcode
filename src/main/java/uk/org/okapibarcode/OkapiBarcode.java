@@ -1,7 +1,8 @@
 
 package uk.org.okapibarcode;
 
-import uk.org.okapibarcode.gui.*;
+import uk.org.okapibarcode.gui.OkapiUI;
+
 /**
  *
  * @author Robin Stuart <rstuart114@gmail.com>
@@ -16,5 +17,5 @@ public class OkapiBarcode {
         OkapiUI okapiUi = new OkapiUI();
         okapiUi.setVisible(true);
     }
-    
+
 }

@@ -15,7 +15,6 @@
  */
 package uk.org.okapibarcode.gui;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -25,9 +24,9 @@ import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.font.TextAttribute;
 import java.awt.geom.Ellipse2D;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.swing.JPanel;
 
 /**
@@ -38,11 +37,11 @@ import javax.swing.JPanel;
 public class SaveSymbol extends JPanel{
     private static int magnification = 4; // Magnification doesn't change depending on symbol size
     private static int borderSize = 5; // Add whitespace when saving to file
-    Polygon polygon;    
+    Polygon polygon;
 
     @Override
     public Dimension getPreferredSize() {
-        return new Dimension((OkapiUI.width * magnification) + (2 * borderSize), 
+        return new Dimension((OkapiUI.width * magnification) + (2 * borderSize),
                 (OkapiUI.height * magnification) + (2 * borderSize));
     }
 
@@ -57,7 +56,7 @@ public class SaveSymbol extends JPanel{
         Font f = new Font("Arial", Font.PLAIN, 10 * (int) (magnification * 0.9)).deriveFont(attributes);
 
         Graphics2D g2 = (Graphics2D) g;
-        
+
         for (i = 0; i != OkapiUI.bcs.size(); i++) {
             x = (OkapiUI.bcs.get(i).x * magnification) + borderSize;
             y = (OkapiUI.bcs.get(i).y * magnification) + borderSize;
@@ -66,7 +65,7 @@ public class SaveSymbol extends JPanel{
             g2.setColor(OkapiUI.inkColour);
             g2.fill(new Rectangle((int) x, (int) y, (int) w, (int) h));
         }
-        
+
         for (i = 0; i < OkapiUI.txt.size(); i++) {
             g2.setFont(f);
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -74,7 +73,7 @@ public class SaveSymbol extends JPanel{
                     (float) (OkapiUI.txt.get(i).xPos * magnification) + borderSize,
                     (float) (OkapiUI.txt.get(i).yPos * magnification) + borderSize);
         }
-        
+
         for (i = 0; i < OkapiUI.hex.size(); i++) {
             polygon = new Polygon();
             for (j = 0; j < 6; j++) {
@@ -84,8 +83,8 @@ public class SaveSymbol extends JPanel{
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g2.setColor(OkapiUI.inkColour);
             g2.fill(polygon);
-        }        
-        
+        }
+
         for (i = 0; i < OkapiUI.target.size(); i++) {
             x = (OkapiUI.target.get(i).x * magnification) + borderSize;
             y = (OkapiUI.target.get(i).y * magnification) + borderSize;
@@ -98,6 +97,6 @@ public class SaveSymbol extends JPanel{
             }
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g2.fill(new Ellipse2D.Double(x, y, w, h));
-        }        
+        }
     }
 }

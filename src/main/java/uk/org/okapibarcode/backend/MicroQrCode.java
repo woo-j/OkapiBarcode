@@ -42,17 +42,17 @@ public class MicroQrCode extends Symbol {
     private int[] eval;
 
     private final char[] rhodium = {
-        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 
-        'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 
-        'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', ' ', '$', '%', '*', '\'', '+', 
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D',
+        'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R',
+        'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', ' ', '$', '%', '*', '\'', '+',
         '-', '.', '/', ':'
     };
 
     private final int[] qr_annex_c1 = {
         /* Micro QR Code format information */
-        0x4445, 0x4172, 0x4e2b, 0x4b1c, 0x55ae, 0x5099, 0x5fc0, 0x5af7, 0x6793, 
-        0x62a4, 0x6dfd, 0x68ca, 0x7678, 0x734f, 0x7c16, 0x7921, 0x06de, 0x03e9, 
-        0x0cb0, 0x0987, 0x1735, 0x1202, 0x1d5b, 0x186c, 0x2508, 0x203f, 0x2f66, 
+        0x4445, 0x4172, 0x4e2b, 0x4b1c, 0x55ae, 0x5099, 0x5fc0, 0x5af7, 0x6793,
+        0x62a4, 0x6dfd, 0x68ca, 0x7678, 0x734f, 0x7c16, 0x7921, 0x06de, 0x03e9,
+        0x0cb0, 0x0987, 0x1735, 0x1202, 0x1d5b, 0x186c, 0x2508, 0x203f, 0x2f66,
         0x2a51, 0x34e3, 0x31d4, 0x3e8d, 0x3bba
     };
 
@@ -147,7 +147,7 @@ public class MicroQrCode extends Symbol {
 
         /* Eliminate possible versions depending on error correction level specified */
         ecc_level = eccMode.L;
-        
+
         if((option1 >= 1) && (option2 <= 4)) {
             switch (option1) {
                 case 1: ecc_level = eccMode.L;
@@ -160,7 +160,7 @@ public class MicroQrCode extends Symbol {
                     break;
             }
         }
-        
+
         if (ecc_level == eccMode.H) {
             error_msg = "Error correction level H not available";
             return false;
@@ -247,12 +247,12 @@ public class MicroQrCode extends Symbol {
         case 2:
             generateM3Symbol(ecc_level);
             encodeInfo += "Version: M3\n";
-            encodeInfo += "ECC Level: " + levelToLetter(ecc_level) + "\n";            
+            encodeInfo += "ECC Level: " + levelToLetter(ecc_level) + "\n";
             break;
         case 3:
             generateM4Symbol(ecc_level);
             encodeInfo += "Version: M4\n";
-            encodeInfo += "ECC Level: " + levelToLetter(ecc_level) + "\n";            
+            encodeInfo += "ECC Level: " + levelToLetter(ecc_level) + "\n";
             break;
         }
 
@@ -269,7 +269,7 @@ public class MicroQrCode extends Symbol {
         setupBitGrid(size);
         populateBitGrid(size);
         bitmask = applyBitmask(size);
-        
+
         encodeInfo += "Mask Pattern: " + Integer.toBinaryString(bitmask) + "\n";
 
         /* Add format data */
@@ -378,7 +378,7 @@ public class MicroQrCode extends Symbol {
         plotSymbol();
         return true;
     }
-    
+
     private char levelToLetter(eccMode ecc_mode) {
         switch (ecc_mode) {
             case L:
@@ -416,10 +416,10 @@ public class MicroQrCode extends Symbol {
         /* If less than 6 numeric digits together then don't use numeric mode */
         for (i = 0; i < length; i++) {
             if (inputMode[i] == qrMode.NUMERIC) {
-                if (((i != 0) && (inputMode[i - 1] != qrMode.NUMERIC)) 
+                if (((i != 0) && (inputMode[i - 1] != qrMode.NUMERIC))
                         || (i == 0)) {
                     mlen = 0;
-                    while (((mlen + i) < length) 
+                    while (((mlen + i) < length)
                             && (inputMode[mlen + i] == qrMode.NUMERIC)) {
                         mlen++;
                     }
@@ -435,10 +435,10 @@ public class MicroQrCode extends Symbol {
         /* If less than 4 alphanumeric characters together then don't use alphanumeric mode */
         for (i = 0; i < length; i++) {
             if (inputMode[i] == qrMode.ALPHANUM) {
-                if (((i != 0) && (inputMode[i - 1] != qrMode.ALPHANUM)) 
+                if (((i != 0) && (inputMode[i - 1] != qrMode.ALPHANUM))
                         || (i == 0)) {
                     mlen = 0;
-                    while (((mlen + i) < length) 
+                    while (((mlen + i) < length)
                             && (inputMode[mlen + i] == qrMode.ALPHANUM)) {
                         mlen++;
                     }
@@ -524,7 +524,7 @@ public class MicroQrCode extends Symbol {
             short_data_block_length = 0;
             do {
                 short_data_block_length++;
-            } while (((short_data_block_length + position) < content.length()) 
+            } while (((short_data_block_length + position) < content.length())
                     && (inputMode[position + short_data_block_length] == data_block));
 
             switch (data_block) {
@@ -538,7 +538,7 @@ public class MicroQrCode extends Symbol {
                 binary += (char) short_data_block_length;
 
                 if (debug) {
-                    System.out.printf("Kanji block (length %d)\n", 
+                    System.out.printf("Kanji block (length %d)\n",
                             short_data_block_length);
                 }
 
@@ -592,7 +592,7 @@ public class MicroQrCode extends Symbol {
                 binary += (char) short_data_block_length;
 
                 if (debug) {
-                    System.out.printf("Byte block (length %d)\n\t", 
+                    System.out.printf("Byte block (length %d)\n\t",
                             short_data_block_length);
                 }
 
@@ -626,7 +626,7 @@ public class MicroQrCode extends Symbol {
                 binary += (char) short_data_block_length;
 
                 if (debug) {
-                    System.out.printf("Alpha block (length %d)\n\t", 
+                    System.out.printf("Alpha block (length %d)\n\t",
                             short_data_block_length);
                 }
 
@@ -670,7 +670,7 @@ public class MicroQrCode extends Symbol {
                 binary += (char) short_data_block_length;
 
                 if (debug) {
-                    System.out.printf("Number block (length %d)\n\t", 
+                    System.out.printf("Number block (length %d)\n\t",
                             short_data_block_length);
                 }
 
@@ -1373,12 +1373,12 @@ public class MicroQrCode extends Symbol {
         int xp, yp;
 
         int finder[] = {
-            1, 1, 1, 1, 1, 1, 1, 
-            1, 0, 0, 0, 0, 0, 1, 
-            1, 0, 1, 1, 1, 0, 1, 
-            1, 0, 1, 1, 1, 0, 1, 
-            1, 0, 1, 1, 1, 0, 1, 
-            1, 0, 0, 0, 0, 0, 1, 
+            1, 1, 1, 1, 1, 1, 1,
+            1, 0, 0, 0, 0, 0, 1,
+            1, 0, 1, 1, 1, 0, 1,
+            1, 0, 1, 1, 1, 0, 1,
+            1, 0, 1, 1, 1, 0, 1,
+            1, 0, 0, 0, 0, 0, 1,
             1, 1, 1, 1, 1, 1, 1
         };
 

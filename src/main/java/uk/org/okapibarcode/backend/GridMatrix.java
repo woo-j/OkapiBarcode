@@ -33,14 +33,14 @@ public class GridMatrix extends Symbol {
         ';', '<', '=', '>', '?', '@', '[', '\\', ']', '^', '_', '`', '{', '|', '}', '~'
     };
 
-    private final int[] gm_recommend_cw = { 
-        9, 30, 59, 114, 170, 237, 315, 405, 506, 618, 741, 875, 1021 
+    private final int[] gm_recommend_cw = {
+        9, 30, 59, 114, 170, 237, 315, 405, 506, 618, 741, 875, 1021
     };
-    private final int[] gm_max_cw = { 
-        11, 40, 79, 146, 218, 305, 405, 521, 650, 794, 953, 1125, 1313 
+    private final int[] gm_max_cw = {
+        11, 40, 79, 146, 218, 305, 405, 521, 650, 794, 953, 1125, 1313
     };
-    /*private final int[] gm_total_cw = { 
-        18, 50, 98, 162, 242, 338, 450, 578, 722, 882, 1058, 1250, 1458 
+    /*private final int[] gm_total_cw = {
+        18, 50, 98, 162, 242, 338, 450, 578, 722, 882, 1058, 1250, 1458
     };*/
 
     private final int[] gm_data_codewords = {
@@ -59,17 +59,17 @@ public class GridMatrix extends Symbol {
         1313, 1167, 1021, 875, 729
     };
 
-    private final int[] gm_n1 = { 
-        18, 50, 98, 81, 121, 113, 113, 116, 121, 126, 118, 125, 122 
+    private final int[] gm_n1 = {
+        18, 50, 98, 81, 121, 113, 113, 116, 121, 126, 118, 125, 122
     };
-    private final int[] gm_b1 = { 
-        1, 1, 1, 2, 2, 2, 2, 3, 2, 7, 5, 10, 6 
+    private final int[] gm_b1 = {
+        1, 1, 1, 2, 2, 2, 2, 3, 2, 7, 5, 10, 6
     };
-    private final int[] gm_b2 = { 
-        0, 0, 0, 0, 0, 1, 2, 2, 4, 0, 4, 0, 6 
+    private final int[] gm_b2 = {
+        0, 0, 0, 0, 0, 1, 2, 2, 4, 0, 4, 0, 6
     };
 
-    private final int[] gm_ebeb = { 
+    private final int[] gm_ebeb = {
         /* E1 B3 E2 B4 */
         0, 0, 0, 0, // version 1
         3, 1, 0, 0,
@@ -177,10 +177,10 @@ public class GridMatrix extends Symbol {
     private boolean[] grid;
 
     private final char[] europium = {
-        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 
-        'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'O', 'P', 'R', 'S', 'T', 
-        'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 
-        'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D',
+        'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'O', 'P', 'R', 'S', 'T',
+        'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
+        'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
         'w', 'x', 'y', 'z', ' '
     };
 
@@ -320,11 +320,11 @@ public class GridMatrix extends Symbol {
         addErrorCorrection(data_cw, layers, ecc_level);
         size = 6 + (layers * 12);
         modules = 1 + (layers * 2);
-        
+
         encodeInfo += "Layers: " + layers + "\n";
         encodeInfo += "ECC Level: " + ecc_level + "\n";
         encodeInfo += "Data Codewords: " + data_cw + "\n";
-        encodeInfo += "ECC Codewords: " + gm_data_codewords[((layers - 1) * 5) 
+        encodeInfo += "ECC Codewords: " + gm_data_codewords[((layers - 1) * 5)
                 + (ecc_level - 1)] + "\n";
         encodeInfo += "Grid Size: " + modules + " X " + modules + "\n";
 
@@ -1249,7 +1249,7 @@ public class GridMatrix extends Symbol {
         int[] ecc_block = new int[70];
         ReedSolomon rs = new ReedSolomon();
 
-        
+
         data_cw = gm_data_codewords[((layers - 1) * 5) + (ecc_level - 1)];
 
         for (i = 0; i < 1320; i++) {

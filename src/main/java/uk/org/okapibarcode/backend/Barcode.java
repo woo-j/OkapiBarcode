@@ -43,48 +43,48 @@ public class Barcode {
 
     private int option1;
     private int option2;
-    
+
     public ArrayList < Rectangle > rect = new ArrayList < > ();
     public ArrayList < TextBox > txt = new ArrayList < > ();
     public ArrayList < Hexagon > hex = new ArrayList < > ();
     public static ArrayList< Ellipse2D.Double > target = new ArrayList < > ();
-    
+
     public void setNormalMode() {
         gs1 = false;
         hibc = false;
         readerInit = false;
         isComposite = false;
     }
-    
+
     public void setGs1Mode() {
         gs1 = true;
         hibc = false;
         readerInit = false;
     }
-    
+
     public void setHibcMode() {
         gs1 = false;
         hibc = true;
         readerInit = false;
         isComposite = false;
     }
-    
+
     public void setInitMode() {
         gs1 = false;
         hibc = false;
         readerInit = true;
         isComposite = false;
     }
-    
+
     public void setPrimary(String input) {
         primaryData = input;
     }
-    
+
     public void setCompositeContent(String inputData) {
         compositeContent = inputData;
         isComposite = true;
     }
-    
+
     public void setCompositePreferredMode(int input) {
         compositeUserMode = input;
     }
@@ -96,7 +96,7 @@ public class Barcode {
     public void setOption2(int input) {
         option2 = input;
     }
-    
+
     public boolean encode(String inputSymbology, String inputData) {
         symbology = inputSymbology;
         content = inputData;
@@ -107,19 +107,19 @@ public class Barcode {
         content = inputData;
         return encode();
     }
-    
+
     public boolean encode() {
         rect.clear();
         txt.clear();
         hex.clear();
         target.clear();
-        
+
         // Perform some sanity checks on input
         if (content.isEmpty()) {
             error_msg = "No input data found";
             return false;
         }
-        
+
         if (gs1) {
             switch(symbology) {
 		case "BARCODE_CODE128":
@@ -139,7 +139,7 @@ public class Barcode {
                     return false;
             }
         }
-        
+
         switch (symbology) {
             case "BARCODE_HIBC_128":
             case "BARCODE_HIBC_39":
@@ -155,7 +155,7 @@ public class Barcode {
                 // do nothing
                 break;
         }
-        
+
         return encodeData();
     }
 
@@ -202,7 +202,7 @@ public class Barcode {
         MaxiCode maxiCode = new MaxiCode();
         CodablockF codablockF = new CodablockF();
         composite = new Composite();
-        
+
         if (!(compositeContent.isEmpty())) {
             // A composite component needs to be added
             isComposite = true;
@@ -215,9 +215,9 @@ public class Barcode {
                 return false;
             }
         }
-        
+
         encodeInfo = "Symbology: " + symbology + '\n';
-        
+
         output = false;
         switch (symbology) {
         case "BARCODE_UPCA":
@@ -262,7 +262,7 @@ public class Barcode {
             } else {
                 ean.setEan13Mode();
             }
-            
+
             if (isComposite) {
                 ean.setLinkageFlag();
             } else {
@@ -947,7 +947,7 @@ public class Barcode {
                 dataBar14.setLinkageFlag();
             } else {
                 dataBar14.unsetLinkageFlag();
-            }            
+            }
             dataBar14.setOmnidirectionalMode();
             if (dataBar14.setContent(this.content)) {
                 this.rect = dataBar14.rect;
@@ -965,7 +965,7 @@ public class Barcode {
                 dataBar14.setLinkageFlag();
             } else {
                 dataBar14.unsetLinkageFlag();
-            }            
+            }
             dataBar14.setStackedMode();
             if (dataBar14.setContent(this.content)) {
                 this.rect = dataBar14.rect;
@@ -983,7 +983,7 @@ public class Barcode {
                 dataBarLimited.setLinkageFlag();
             } else {
                 dataBarLimited.unsetLinkageFlag();
-            }            
+            }
             if (dataBarLimited.setContent(this.content)) {
                 this.rect = dataBarLimited.rect;
                 this.symbol_height = dataBarLimited.symbol_height;
@@ -1000,7 +1000,7 @@ public class Barcode {
                 dataBarExpanded.setLinkageFlag();
             } else {
                 dataBarExpanded.unsetLinkageFlag();
-            }            
+            }
             dataBarExpanded.gs1 = true;
             dataBarExpanded.setNotStacked();
             if (dataBarExpanded.setContent(this.content)) {
@@ -1019,7 +1019,7 @@ public class Barcode {
                 dataBarExpanded.setLinkageFlag();
             } else {
                 dataBarExpanded.unsetLinkageFlag();
-            }            
+            }
             dataBarExpanded.gs1 = true;
             dataBarExpanded.setStacked();
             if (dataBarExpanded.setContent(this.content)) {
@@ -1061,23 +1061,23 @@ public class Barcode {
             } else {
                 this.error_msg = codablockF.error_msg;
             };
-            break;            
+            break;
         default:
             this.error_msg = "Symbology not recognised";
             break;
 
         }
-        
+
         if (!(compositeContent.isEmpty())) {
             combineComposite();
         }
-        
+
         encodeInfo += "Symbol Width: " + this.symbol_width + '\n';
         encodeInfo += "Symbol Height: " + this.symbol_height + '\n';
-        
+
         return output;
     }
-    
+
     private void combineComposite() {
         // Put composite symbol and linear symbol together
         ArrayList < Rectangle > combine_rect = new ArrayList < > ();
@@ -1086,7 +1086,7 @@ public class Barcode {
         int top_shift = 0;
         int bottom_shift = 0;
         int max_x = 0;
-        
+
         /* Determine horizontal alignment
                 (according to section 12.3 of ISO/IEC 24723) */
         switch(symbology) {
@@ -1124,7 +1124,7 @@ public class Barcode {
                 top_shift = 2;
                 break;
         }
-        
+
         for (i = 0; i < composite.rect.size(); i++) {
             Rectangle comprect = new Rectangle(composite.rect.get(i).x + top_shift, composite.rect.get(i).y, composite.rect.get(i).width, composite.rect.get(i).height);
             if ((composite.rect.get(i).x + top_shift + composite.rect.get(i).width) > max_x) {
@@ -1132,7 +1132,7 @@ public class Barcode {
             }
             combine_rect.add(comprect);
         }
-        
+
         for (i = 0; i < this.rect.size(); i++) {
             Rectangle linrect = new Rectangle(this.rect.get(i).x + bottom_shift, this.rect.get(i).y, this.rect.get(i).width, this.rect.get(i).height);
             linrect.y += composite.symbol_height;
@@ -1141,7 +1141,7 @@ public class Barcode {
             }
             combine_rect.add(linrect);
         }
-        
+
         for (i = 0; i < this.txt.size(); i++) {
             TextBox lintxt = new TextBox();
             lintxt.xPos = this.txt.get(i).xPos + bottom_shift;
@@ -1150,23 +1150,23 @@ public class Barcode {
             lintxt.yPos += composite.symbol_height;
             combine_txt.add(lintxt);
         }
-        
+
         this.rect = combine_rect;
         this.txt = combine_txt;
         this.symbol_height += composite.symbol_height;
-        
+
         if (composite.symbol_width > this.symbol_width) {
             this.symbol_width = max_x;
         }
     }
-    
+
     private int eanCalculateVersion() {
         /* Determine if EAN-8 or EAN-13 is being used */
-        
+
         int length = 0;
         int i;
         boolean latch;
-        
+
         latch = true;
         for (i = 0; i < content.length(); i++) {
             if ((content.charAt(i) >= '0') && (content.charAt(i) <= '9')) {
@@ -1177,7 +1177,7 @@ public class Barcode {
                 latch = false;
             }
         }
-        
+
         if (length <= 7) {
             // EAN-8
             return 8;

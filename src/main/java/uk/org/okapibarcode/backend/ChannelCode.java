@@ -91,7 +91,7 @@ public class ChannelCode extends Symbol {
             error_msg = "Value out of range";
             return false;
         }
-        
+
         encodeInfo += "Channels Used: " + numberOfChannels + '\n';
 
         for (i = 0; i < 11; i++) {

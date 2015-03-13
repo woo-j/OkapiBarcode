@@ -15,8 +15,8 @@
  */
 package uk.org.okapibarcode.backend;
 
-import java.math.*;
 import java.awt.Rectangle;
+import java.math.BigInteger;
 /**
  * USPS OneCode (AKA Intelligent Mail)
  * According to USPS-B-3200F

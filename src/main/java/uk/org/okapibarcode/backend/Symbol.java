@@ -25,7 +25,7 @@ import java.util.ArrayList;
  * @version 0.1
  */
 abstract class Symbol {
-    public char[] technetium = { '0', '1', '2', '3', '4', '5', '6', '7', '8',
+    private static final char[] TECHNETIUM = { '0', '1', '2', '3', '4', '5', '6', '7', '8',
         '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
         'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '-',
         '.', ' ', '$', '/', '+', '%'
@@ -53,7 +53,7 @@ abstract class Symbol {
     public ArrayList < Rectangle > rect = new ArrayList < > ();
     public ArrayList < TextBox > txt = new ArrayList < > ();
     public ArrayList < Hexagon > hex = new ArrayList < > ();
-    public static ArrayList<Ellipse2D.Double> target = new ArrayList < > ();
+    public ArrayList<Ellipse2D.Double> target = new ArrayList < > ();
 
     public Symbol() {
         readable = "";
@@ -483,7 +483,7 @@ abstract class Symbol {
 
 	counter = 41;
 	for(i = 0; i < source.length(); i++) {
-            counter += positionOf(source.charAt(i), technetium);
+            counter += positionOf(source.charAt(i), TECHNETIUM);
 	}
 	counter = counter % 43;
 

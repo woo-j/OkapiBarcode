@@ -28,10 +28,10 @@ import java.util.ArrayList;
  * @author Robin Stuart <rstuart114@gmail.com>
  */
 public class ScalableVectorGraphics {
-    public static ArrayList<Rectangle> rectangle = new ArrayList<>();
-    public static ArrayList<uk.org.okapibarcode.backend.TextBox> textbox = new ArrayList<>();
-    public static ArrayList<uk.org.okapibarcode.backend.Hexagon> hexagon = new ArrayList<>();
-    public static ArrayList<Ellipse2D.Double> ellipse = new ArrayList<>();
+    public ArrayList<Rectangle> rectangle = new ArrayList<>();
+    public ArrayList<uk.org.okapibarcode.backend.TextBox> textbox = new ArrayList<>();
+    public ArrayList<uk.org.okapibarcode.backend.Hexagon> hexagon = new ArrayList<>();
+    public ArrayList<Ellipse2D.Double> ellipse = new ArrayList<>();
     private int symbol_width;
     private int symbol_height;
     private String symbol_text = "";

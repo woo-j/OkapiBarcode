@@ -24,10 +24,10 @@ import java.io.UnsupportedEncodingException;
  * @author Robin Stuart <rstuart114@gmail.com>
  */
 public class MicroQrCode extends Symbol {
-    private enum qrMode {
+    private static enum qrMode {
         NULL, KANJI, BINARY, ALPHANUM, NUMERIC
     }
-    private enum eccMode {
+    private static enum eccMode {
         L, M, Q, H
     }
 
@@ -41,14 +41,14 @@ public class MicroQrCode extends Symbol {
     private int[] grid;
     private int[] eval;
 
-    private final char[] rhodium = {
+    private static final char[] RHODIUM = {
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D',
         'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R',
         'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', ' ', '$', '%', '*', '\'', '+',
         '-', '.', '/', ':'
     };
 
-    private final int[] qr_annex_c1 = {
+    private static final int[] QR_ANNEX_C1 = {
         /* Micro QR Code format information */
         0x4445, 0x4172, 0x4e2b, 0x4b1c, 0x55ae, 0x5099, 0x5fc0, 0x5af7, 0x6793,
         0x62a4, 0x6dfd, 0x68ca, 0x7678, 0x734f, 0x7c16, 0x7921, 0x06de, 0x03e9,
@@ -56,7 +56,7 @@ public class MicroQrCode extends Symbol {
         0x2a51, 0x34e3, 0x31d4, 0x3e8d, 0x3bba
     };
 
-    static int micro_qr_sizes[] = {
+    private static final int MICRO_QR_SIZES[] = {
         11, 13, 15, 17
     };
 
@@ -256,7 +256,7 @@ public class MicroQrCode extends Symbol {
             break;
         }
 
-        size = micro_qr_sizes[version];
+        size = MICRO_QR_SIZES[version];
 
         grid = new int[size * size];
 
@@ -310,7 +310,7 @@ public class MicroQrCode extends Symbol {
             break;
         }
 
-        format_full = qr_annex_c1[(format << 2) + bitmask];
+        format_full = QR_ANNEX_C1[(format << 2) + bitmask];
 
         if ((format_full & 0x4000) != 0) {
             grid[(8 * size) + 1] += 0x01;
@@ -633,12 +633,12 @@ public class MicroQrCode extends Symbol {
                 /* Character representation */
                 i = 0;
                 while (i < short_data_block_length) {
-                    first = positionOf(content.charAt(position + i), rhodium);
+                    first = positionOf(content.charAt(position + i), RHODIUM);
                     count = 1;
                     prod = first;
 
                     if (inputMode[position + i + 1] == qrMode.ALPHANUM) {
-                        second = positionOf(content.charAt(position + i + 1), rhodium);
+                        second = positionOf(content.charAt(position + i + 1), RHODIUM);
                         count = 2;
                         prod = (first * 45) + second;
                     }

@@ -47,7 +47,7 @@ public class Barcode {
     public ArrayList < Rectangle > rect = new ArrayList < > ();
     public ArrayList < TextBox > txt = new ArrayList < > ();
     public ArrayList < Hexagon > hex = new ArrayList < > ();
-    public static ArrayList< Ellipse2D.Double > target = new ArrayList < > ();
+    public ArrayList< Ellipse2D.Double > target = new ArrayList < > ();
 
     public void setNormalMode() {
         gs1 = false;

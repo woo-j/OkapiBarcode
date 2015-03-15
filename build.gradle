@@ -13,6 +13,8 @@ repositories {
 
 dependencies {
     testCompile 'junit:junit:4.12'
+    testCompile 'org.reflections:reflections:0.9.9'
+    testCompile 'commons-configuration:commons-configuration:1.10'
 }
 
 sourceCompatibility = 7

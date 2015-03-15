@@ -1,0 +1,144 @@
+4		mode 4
+31		start numeric shift [NS]
+7		numeric compression codeword 1
+22		numeric compression codeword 2
+60		numeric compression codeword 3
+52		numeric compression codeword 4
+21		numeric compression codeword 5
+1		A
+1		A
+1		A
+40		start primary message error correction
+60
+12
+24
+63
+32
+21
+40
+5
+55		end primary message error correction
+1		A
+1		A
+31		start numeric shift [NS]
+58		numeric compression codeword 1
+55		numeric compression codeword 2
+38		numeric compression codeword 3
+34		numeric compression codeword 4
+49		numeric compression codeword 5
+33		start padding
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+47		start secondary message error correction
+46
+50
+54
+58
+45
+5
+4
+48
+55
+23
+48
+19
+32
+9
+28
+54
+12
+49
+18
+27
+62
+35
+59
+56
+59
+0
+38
+4
+50
+14
+21
+8
+19
+19
+16
+21
+26
+43
+47		end secondary message error correction

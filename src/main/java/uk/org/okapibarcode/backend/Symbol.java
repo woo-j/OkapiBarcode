@@ -24,7 +24,7 @@ import java.util.ArrayList;
  * @author Robin Stuart <rstuart114@gmail.com>
  * @version 0.1
  */
-abstract class Symbol {
+public abstract class Symbol {
     private static final char[] TECHNETIUM = { '0', '1', '2', '3', '4', '5', '6', '7', '8',
         '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
         'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '-',
@@ -510,5 +510,15 @@ abstract class Symbol {
 
 	to_process = "+" + source + check_digit;
         return to_process;
+    }
+
+    /**
+     * Returns the intermediate coding of this bar code. Symbol types that use the test infrastructure should override this
+     * method.
+     *
+     * @return the intermediate coding of this bar code
+     */
+    protected int[] getCodewords() {
+        throw new UnsupportedOperationException();
     }
 }

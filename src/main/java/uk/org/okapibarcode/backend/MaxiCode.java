@@ -155,6 +155,7 @@ public class MaxiCode extends Symbol {
 //            }
 //        }
 
+        // TODO: not necessary once validation happens at time of initialization?
         if ((mode < 2) || (mode > 6)) { /* Only codes 2 to 6 supported */
             error_msg = "Invalid Maxicode Mode";
             return false;
@@ -560,13 +561,12 @@ public class MaxiCode extends Symbol {
             character[i] = 33;
         }
 
-        /* Find candidates for number compression */
+        /* Find candidates for number compression (not allowed in primary message in modes 2 and 3). */
         if ((mode == 2) || (mode == 3)) {
-            j = 0;
-        } else {
             j = 9;
+        } else {
+            j = 0;
         }
-        /* Number compression not allowed in primary message */
         count = 0;
         for (i = j; i < 143; i++) {
             if ((set[i] == 1) && ((character[i] >= 48) && (character[i] <= 57))) {
@@ -675,7 +675,7 @@ public class MaxiCode extends Symbol {
             if (set[i] == 6) {
                 /* Number compression */
                 value = 0;
-                for (j = 0; j < 10; j++) {
+                for (j = 0; j < 9; j++) {
                     value *= 10;
                     value += (character[i + j] - '0');
                 }
@@ -871,5 +871,23 @@ public class MaxiCode extends Symbol {
             thisEllipse.setFrameFromCenter(35.76, 35.60, 35.76 + radii[i], 35.60 + radii[i]);
             target.add(thisEllipse);
         }
+    }
+
+    /**
+     * Sets the mode to use. Only modes 2 to 6 are supported.
+     *
+     * @param mode the mode to use
+     */
+    public void setMode(int mode) {
+        if (mode < 2 || mode > 6) {
+            throw new IllegalArgumentException("Invalid MaxiCode mode: " + mode);
+        }
+        // TODO: store a "mode" attribute instead of "option1"?
+        option1 = Math.max(0, mode - 3);
+    }
+
+    @Override
+    protected int[] getCodewords() {
+        return maxi_codeword;
     }
 }

@@ -1,0 +1,144 @@
+4		mode 4
+1		A
+59		[Shift B], since only next 1 char is in Code Set B
+2		b
+1		A
+1		A
+1		A
+63		[Latch B], since next 2 chars are in Code Set B
+2		b
+2		b
+11		start primary message error correction
+13
+16
+33
+48
+38
+48
+15
+56
+56		end primary message error correction
+59		[Shift A], since only next 1 char is in Code Set A
+1		A
+2		b
+2		b
+2		b
+63		[Latch A], since next 2 chars are in Code Set A
+1		A
+1		A
+33		start padding
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+7		start secondary message error correction
+3
+40
+3
+51
+20
+20
+19
+38
+48
+18
+21
+2
+54
+18
+61
+10
+24
+47
+49
+24
+60
+11
+47
+10
+30
+33
+28
+6
+56
+35
+62
+1
+57
+3
+37
+26
+10
+40
+17		end secondary message error correction

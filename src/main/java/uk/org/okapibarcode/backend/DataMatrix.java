@@ -874,6 +874,7 @@ public class DataMatrix extends Symbol {
                         target_length++;
                         target[target_length] = ((process_buffer[2] & 0x03) << 6) 
                                 + 31;
+                        target_length++;
                     }
                 }
 

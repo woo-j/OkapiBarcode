@@ -105,7 +105,11 @@ public class SymbolTest {
     @Test
     public void test() throws Exception {
 
-        PropertiesConfiguration properties = new PropertiesConfiguration(propertiesFile);
+        PropertiesConfiguration properties = new PropertiesConfiguration();
+        properties.setEncoding("UTF-8");
+        properties.setDelimiterParsingDisabled(true);
+        properties.load(propertiesFile);
+
         Symbol symbol = symbolType.newInstance();
         setProperties(symbol, properties);
 

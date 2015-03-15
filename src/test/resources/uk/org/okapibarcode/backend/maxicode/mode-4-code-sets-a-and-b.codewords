@@ -23,8 +23,26 @@
 2		b
 2		b
 2		b
-63		[Latch A], since next 2 chars are in Code Set A
+63		[Latch A], since next 4 chars are in Code Set A
 1		A
+1		A
+1		A
+1		A
+63		[Latch B], since next 2 chars are in Code Set B
+2		b
+2		b
+57		[3 Shift A], since next 3 chars are in Code Set A
+1		A
+1		A
+1		A
+2		b
+2		b
+56		[2 Shift A], since next 2 chars are in Code Set A
+1		A
+1		A
+2		b
+2		b
+63		[Latch A], since next 4 chars (including padding) are in Code Set A
 1		A
 33		start padding
 33
@@ -84,61 +102,43 @@
 33
 33
 33
-33
-33
-33
-33
-33
-33
-33
-33
-33
-33
-33
-33
-33
-33
-33
-33
-33
-33
-7		start secondary message error correction
-3
-40
-3
-51
+18		start secondary message error correction
+45
 20
-20
-19
-38
-48
-18
-21
-2
-54
-18
-61
-10
-24
-47
-49
-24
-60
+58
+41
 11
-47
-10
-30
-33
-28
-6
-56
-35
+12
+58
+20
+31
+11
+7
+63
 62
-1
-57
-3
-37
+33
+52
+46
+4
+50
+49
 26
-10
-40
-17		end secondary message error correction
+59
+25
+37
+25
+36
+15
+9
+22
+49
+13
+9
+53
+5
+47
+63
+52
+57
+59
+53		end secondary message error correction

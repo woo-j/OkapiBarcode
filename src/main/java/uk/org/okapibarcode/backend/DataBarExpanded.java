@@ -336,9 +336,7 @@ public class DataBarExpanded extends Symbol {
 
         } else {
             /* RSS Expanded Stacked */
-
-
-            codeblocks = (data_chars + 1) / 2;
+            codeblocks = (data_chars + 1) / 2 + ((data_chars + 1) % 2);
 
             blocksPerRow = -1; // FIXME: Get value from user
             if ((blocksPerRow < 1) || (blocksPerRow > 10)) {

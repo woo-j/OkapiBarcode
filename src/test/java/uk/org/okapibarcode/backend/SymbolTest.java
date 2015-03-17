@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -111,7 +112,12 @@ public class SymbolTest {
         properties.load(propertiesFile);
 
         Symbol symbol = symbolType.newInstance();
-        setProperties(symbol, properties);
+
+        try {
+            setProperties(symbol, properties);
+        } catch (InvocationTargetException e) {
+            symbol.error_msg = e.getCause().getMessage(); // TODO: migrate completely to exceptions?
+        }
 
         if (codewordsFile.exists() && pngFile.exists()) {
             verifySuccess(symbol);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Robin Stuart
+ * Copyright 2014-2015 Robin Stuart, Daniel Gredler
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,18 +15,21 @@
  */
 package uk.org.okapibarcode.backend;
 
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
+
 import java.awt.geom.Ellipse2D;
-import java.io.UnsupportedEncodingException;
 
 /**
- * Implements Maxicode According to ISO 16023:2000
+ * Implements MaxiCode according to ISO 16023:2000.
  *
  * @author Robin Stuart <rstuart114@gmail.com>
+ * @author Daniel Gredler <daniel.gredler@gmail.com>
  */
 public class MaxiCode extends Symbol {
 
-    private final int[] MaxiGrid = { /* ISO/IEC 16023 Figure 5 - MaxiCode Module Sequence */ /* 30 x 33 data grid */
-        122, 121, 128, 127, 134, 133, 140, 139, 146, 145, 152, 151, 158, 157, 164, 163, 170, 169, 176, 175, 182, 181, 188, 187, 194, 193, 200, 199, 0, 0,
+    /** MaxiCode module sequence, from ISO/IEC 16023 Figure 5 (30 x 33 data grid). */
+    private static final int[] MAXICODE_GRID = {
+        122, 121, 128, 127, 134, 133, 140, 139, 146, 145, 152, 151, 158, 157, 164, 163, 170, 169, 176, 175, 182, 181, 188, 187, 194, 193, 200, 199, 0,   0,
         124, 123, 130, 129, 136, 135, 142, 141, 148, 147, 154, 153, 160, 159, 166, 165, 172, 171, 178, 177, 184, 183, 190, 189, 196, 195, 202, 201, 817, 0,
         126, 125, 132, 131, 138, 137, 144, 143, 150, 149, 156, 155, 162, 161, 168, 167, 174, 173, 180, 179, 186, 185, 192, 191, 198, 197, 204, 203, 819, 818,
         284, 283, 278, 277, 272, 271, 266, 265, 260, 259, 254, 253, 248, 247, 242, 241, 236, 235, 230, 229, 224, 223, 218, 217, 212, 211, 206, 205, 820, 0,
@@ -35,21 +38,21 @@ public class MaxiCode extends Symbol {
         290, 289, 296, 295, 302, 301, 308, 307, 314, 313, 320, 319, 326, 325, 332, 331, 338, 337, 344, 343, 350, 349, 356, 355, 362, 361, 368, 367, 825, 824,
         292, 291, 298, 297, 304, 303, 310, 309, 316, 315, 322, 321, 328, 327, 334, 333, 340, 339, 346, 345, 352, 351, 358, 357, 364, 363, 370, 369, 826, 0,
         294, 293, 300, 299, 306, 305, 312, 311, 318, 317, 324, 323, 330, 329, 336, 335, 342, 341, 348, 347, 354, 353, 360, 359, 366, 365, 372, 371, 828, 827,
-        410, 409, 404, 403, 398, 397, 392, 391, 80, 79, 0, 0, 14, 13, 38, 37, 3, 0, 45, 44, 110, 109, 386, 385, 380, 379, 374, 373, 829, 0,
-        412, 411, 406, 405, 400, 399, 394, 393, 82, 81, 41, 0, 16, 15, 40, 39, 4, 0, 0, 46, 112, 111, 388, 387, 382, 381, 376, 375, 831, 830,
-        414, 413, 408, 407, 402, 401, 396, 395, 84, 83, 42, 0, 0, 0, 0, 0, 6, 5, 48, 47, 114, 113, 390, 389, 384, 383, 378, 377, 832, 0,
-        416, 415, 422, 421, 428, 427, 104, 103, 56, 55, 17, 0, 0, 0, 0, 0, 0, 0, 21, 20, 86, 85, 434, 433, 440, 439, 446, 445, 834, 833,
-        418, 417, 424, 423, 430, 429, 106, 105, 58, 57, 0, 0, 0, 0, 0, 0, 0, 0, 23, 22, 88, 87, 436, 435, 442, 441, 448, 447, 835, 0,
-        420, 419, 426, 425, 432, 431, 108, 107, 60, 59, 0, 0, 0, 0, 0, 0, 0, 0, 0, 24, 90, 89, 438, 437, 444, 443, 450, 449, 837, 836,
-        482, 481, 476, 475, 470, 469, 49, 0, 31, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 54, 53, 464, 463, 458, 457, 452, 451, 838, 0,
-        484, 483, 478, 477, 472, 471, 50, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 466, 465, 460, 459, 454, 453, 840, 839,
-        486, 485, 480, 479, 474, 473, 52, 51, 32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 43, 468, 467, 462, 461, 456, 455, 841, 0,
-        488, 487, 494, 493, 500, 499, 98, 97, 62, 61, 0, 0, 0, 0, 0, 0, 0, 0, 0, 27, 92, 91, 506, 505, 512, 511, 518, 517, 843, 842,
-        490, 489, 496, 495, 502, 501, 100, 99, 64, 63, 0, 0, 0, 0, 0, 0, 0, 0, 29, 28, 94, 93, 508, 507, 514, 513, 520, 519, 844, 0,
-        492, 491, 498, 497, 504, 503, 102, 101, 66, 65, 18, 0, 0, 0, 0, 0, 0, 0, 19, 30, 96, 95, 510, 509, 516, 515, 522, 521, 846, 845,
-        560, 559, 554, 553, 548, 547, 542, 541, 74, 73, 33, 0, 0, 0, 0, 0, 0, 11, 68, 67, 116, 115, 536, 535, 530, 529, 524, 523, 847, 0,
-        562, 561, 556, 555, 550, 549, 544, 543, 76, 75, 0, 0, 8, 7, 36, 35, 12, 0, 70, 69, 118, 117, 538, 537, 532, 531, 526, 525, 849, 848,
-        564, 563, 558, 557, 552, 551, 546, 545, 78, 77, 0, 34, 10, 9, 26, 25, 0, 0, 72, 71, 120, 119, 540, 539, 534, 533, 528, 527, 850, 0,
+        410, 409, 404, 403, 398, 397, 392, 391, 80,  79,  0,   0,   14,  13,  38,  37,  3,   0,   45,  44,  110, 109, 386, 385, 380, 379, 374, 373, 829, 0,
+        412, 411, 406, 405, 400, 399, 394, 393, 82,  81,  41,  0,   16,  15,  40,  39,  4,   0,   0,   46,  112, 111, 388, 387, 382, 381, 376, 375, 831, 830,
+        414, 413, 408, 407, 402, 401, 396, 395, 84,  83,  42,  0,   0,   0,   0,   0,   6,   5,   48,  47,  114, 113, 390, 389, 384, 383, 378, 377, 832, 0,
+        416, 415, 422, 421, 428, 427, 104, 103, 56,  55,  17,  0,   0,   0,   0,   0,   0,   0,   21,  20,  86,  85,  434, 433, 440, 439, 446, 445, 834, 833,
+        418, 417, 424, 423, 430, 429, 106, 105, 58,  57,  0,   0,   0,   0,   0,   0,   0,   0,   23,  22,  88,  87,  436, 435, 442, 441, 448, 447, 835, 0,
+        420, 419, 426, 425, 432, 431, 108, 107, 60,  59,  0,   0,   0,   0,   0,   0,   0,   0,   0,   24,  90,  89,  438, 437, 444, 443, 450, 449, 837, 836,
+        482, 481, 476, 475, 470, 469, 49,  0,   31,  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   1,   54,  53,  464, 463, 458, 457, 452, 451, 838, 0,
+        484, 483, 478, 477, 472, 471, 50,  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   466, 465, 460, 459, 454, 453, 840, 839,
+        486, 485, 480, 479, 474, 473, 52,  51,  32,  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   2,   0,   43,  468, 467, 462, 461, 456, 455, 841, 0,
+        488, 487, 494, 493, 500, 499, 98,  97,  62,  61,  0,   0,   0,   0,   0,   0,   0,   0,   0,   27,  92,  91,  506, 505, 512, 511, 518, 517, 843, 842,
+        490, 489, 496, 495, 502, 501, 100, 99,  64,  63,  0,   0,   0,   0,   0,   0,   0,   0,   29,  28,  94,  93,  508, 507, 514, 513, 520, 519, 844, 0,
+        492, 491, 498, 497, 504, 503, 102, 101, 66,  65,  18,  0,   0,   0,   0,   0,   0,   0,   19,  30,  96,  95,  510, 509, 516, 515, 522, 521, 846, 845,
+        560, 559, 554, 553, 548, 547, 542, 541, 74,  73,  33,  0,   0,   0,   0,   0,   0,   11,  68,  67,  116, 115, 536, 535, 530, 529, 524, 523, 847, 0,
+        562, 561, 556, 555, 550, 549, 544, 543, 76,  75,  0,   0,   8,   7,   36,  35,  12,  0,   70,  69,  118, 117, 538, 537, 532, 531, 526, 525, 849, 848,
+        564, 563, 558, 557, 552, 551, 546, 545, 78,  77,  0,   34,  10,  9,   26,  25,  0,   0,   72,  71,  120, 119, 540, 539, 534, 533, 528, 527, 850, 0,
         566, 565, 572, 571, 578, 577, 584, 583, 590, 589, 596, 595, 602, 601, 608, 607, 614, 613, 620, 619, 626, 625, 632, 631, 638, 637, 644, 643, 852, 851,
         568, 567, 574, 573, 580, 579, 586, 585, 592, 591, 598, 597, 604, 603, 610, 609, 616, 615, 622, 621, 628, 627, 634, 633, 640, 639, 646, 645, 853, 0,
         570, 569, 576, 575, 582, 581, 588, 587, 594, 593, 600, 599, 606, 605, 612, 611, 618, 617, 624, 623, 630, 629, 636, 635, 642, 641, 648, 647, 855, 854,
@@ -60,8 +63,13 @@ public class MaxiCode extends Symbol {
         736, 735, 742, 741, 748, 747, 754, 753, 760, 759, 766, 765, 772, 771, 778, 777, 784, 783, 790, 789, 796, 795, 802, 801, 808, 807, 814, 813, 862, 0,
         738, 737, 744, 743, 750, 749, 756, 755, 762, 761, 768, 767, 774, 773, 780, 779, 786, 785, 792, 791, 798, 797, 804, 803, 810, 809, 816, 815, 864, 863
     };
-    private final int[] maxiCodeSet = { /* from Appendix A - ASCII character to Code Set (e.g. 2 = Set B) */
-        /* set 0 refers to special characters that fit into more than one set (e.g. GS) */
+
+    /**
+     * ASCII character to Code Set mapping, from ISO/IEC 16023 Appendix A.
+     * 1 = Set A, 2 = Set B, 3 = Set C, 4 = Set D, 5 = Set E.
+     * 0 refers to special characters that fit into more than one set (e.g. GS).
+     */
+    private static final int[] MAXICODE_SET = {
         5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 0, 5, 5, 5, 5, 5, 5,
         5, 5, 5, 5, 5, 5, 5, 5, 0, 0, 0, 5, 0, 2, 1, 1, 1, 1, 1, 1,
         1, 1, 1, 1, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 2,
@@ -76,7 +84,9 @@ public class MaxiCode extends Symbol {
         3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
         4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4
     };
-    private final int[] maxiSymbolChar = { /* from Appendix A - ASCII character to symbol value */
+
+    /** ASCII character to symbol value, from ISO/IEC 16023 Appendix A. */
+    private static final int[] MAXICODE_SYMBOL_CHAR = {
         0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
         20, 21, 22, 23, 24, 25, 26, 30, 28, 29, 30, 35, 32, 53, 34, 35, 36, 37, 38, 39,
         40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 37,
@@ -91,6 +101,7 @@ public class MaxiCode extends Symbol {
         33, 34, 35, 36, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
         16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 32, 33, 34, 35, 36
     };
+
     private int[] maxi_codeword = new int[144];
     private int[] source;
     private int[] set = new int[144];
@@ -109,12 +120,7 @@ public class MaxiCode extends Symbol {
         int sourcelen = content.length();
         String bin;
 
-        try {
-            inputBytes = content.getBytes("ISO8859_1");
-        } catch (UnsupportedEncodingException e) {
-            error_msg = "Invalid character in input data";
-            return false;
-        }
+        inputBytes = content.getBytes(ISO_8859_1);
 
         source = new int[sourcelen];
         for (i = 0; i < sourcelen; i++) {
@@ -241,8 +247,8 @@ public class MaxiCode extends Symbol {
         /* Copy data into symbol grid */
         for (i = 0; i < 33; i++) {
             for (j = 0; j < 30; j++) {
-                block = (MaxiGrid[(i * 30) + j] + 5) / 6;
-                bit = (MaxiGrid[(i * 30) + j] + 5) % 6;
+                block = (MAXICODE_GRID[(i * 30) + j] + 5) / 6;
+                bit = (MAXICODE_GRID[(i * 30) + j] + 5) % 6;
 
                 if (block != 0) {
 
@@ -366,10 +372,6 @@ public class MaxiCode extends Symbol {
     private boolean maxi_text_process(int mode) {
         /* Format text according to Appendix A */
 
-        /* This code doesn't make use of [Lock in C], [Lock in D]
-         and [Lock in E] and so is not always the most efficient at
-         compressing data, but should suffice for most applications */
-
         int length = content.length();
         int i, j, count, current_set;
         int value;
@@ -387,8 +389,8 @@ public class MaxiCode extends Symbol {
         for (i = 0; i < length; i++) {
             /* Look up characters in table from Appendix A - this gives
              value and code set for most characters */
-            set[i] = maxiCodeSet[source[i]];
-            character[i] = maxiSymbolChar[source[i]];
+            set[i] = MAXICODE_SET[source[i]];
+            character[i] = MAXICODE_SYMBOL_CHAR[source[i]];
         }
 
         /* If a character can be represented in more than one code set,
@@ -594,7 +596,6 @@ public class MaxiCode extends Symbol {
         current_set = 1;
         i = 0;
         do {
-
             if (set[i] != current_set) {
                 switch (set[i]) {
                     case 1:
@@ -606,6 +607,7 @@ public class MaxiCode extends Symbol {
                                     character[i] = 63;
                                     current_set = 1;
                                     length++;
+                                    i += 3;
                                 } else {
                                     /* 3 Shift A */
                                     maxi_bump(i);
@@ -634,6 +636,7 @@ public class MaxiCode extends Symbol {
                             character[i] = 63;
                             current_set = 2;
                             length++;
+                            i++;
                         } else {
                             /* Shift B */
                             maxi_bump(i);
@@ -642,26 +645,58 @@ public class MaxiCode extends Symbol {
                         }
                         break;
                     case 3:
-                        /* Shift C */
-                        maxi_bump(i);
-                        character[i] = 60;
-                        length++;
+                        if (set[i + 1] == 3 && set[i + 2] == 3 && set[i + 3] == 3) {
+                            /* Lock In C */
+                            maxi_bump(i);
+                            maxi_bump(i);
+                            character[i] = 60;
+                            character[i + 1] = 60;
+                            current_set = 3;
+                            length++;
+                            i += 3;
+                        } else {
+                            /* Shift C */
+                            maxi_bump(i);
+                            character[i] = 60;
+                            length++;
+                        }
                         break;
                     case 4:
-                        /* Shift D */
-                        maxi_bump(i);
-                        character[i] = 61;
-                        length++;
+                        if (set[i + 1] == 4 && set[i + 2] == 4 && set[i + 3] == 4) {
+                            /* Lock In D */
+                            maxi_bump(i);
+                            maxi_bump(i);
+                            character[i] = 61;
+                            character[i + 1] = 61;
+                            current_set = 4;
+                            length++;
+                            i += 3;
+                        } else {
+                            /* Shift D */
+                            maxi_bump(i);
+                            character[i] = 61;
+                            length++;
+                        }
                         break;
                     case 5:
                         /* Shift E */
-                        maxi_bump(i);
-                        character[i] = 62;
-                        length++;
+                        if (set[i + 1] == 5 && set[i + 2] == 5 && set[i + 3] == 5) {
+                            /* Lock In E */
+                            maxi_bump(i);
+                            maxi_bump(i);
+                            character[i] = 62;
+                            character[i + 1] = 62;
+                            current_set = 5;
+                            length++;
+                            i += 3;
+                        } else {
+                            maxi_bump(i);
+                            character[i] = 62;
+                            length++;
+                        }
                         break;
                     case 6:
-                        /* Number Compressed */
-                        /* Do nothing */
+                        /* Number compressed, do nothing. */
                         break;
                 }
                 i++;
@@ -696,7 +731,7 @@ public class MaxiCode extends Symbol {
             } else {
                 i++;
             }
-        } while (i <= 143);
+        } while (i < 144);
 
         if (((mode == 2) || (mode == 3)) && (length > 84)) {
             return false;
@@ -740,9 +775,7 @@ public class MaxiCode extends Symbol {
 
     private void maxi_bump(int bump_posn) {
         /* Moves everything up so that a shift or latch can be inserted */
-        int i;
-
-        for (i = 143; i > bump_posn; i--) {
+        for (int i = 143; i > bump_posn; i--) {
             set[i] = set[i - 1];
             character[i] = character[i - 1];
         }

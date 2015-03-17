@@ -1,0 +1,144 @@
+4		mode 4
+60		[Shift C]
+7
+61		[Shift D]
+17
+62		[Shift E]
+39
+60		[Shift C]
+7
+60		[Shift C]
+34		start primary message error correction
+18
+16
+28
+24
+58
+1
+47
+51
+8		end primary message error correction
+7		start secondary message
+61		[Shift D]
+17
+61		[Shift D]
+17
+62		[Shift E]
+39
+62		[Shift E]
+39
+60		[Shift C]
+7
+60		[Shift C]
+7
+60		[Shift C]
+7
+61		[Shift D]
+17
+61		[Shift D]
+17
+61		[Shift D]
+17
+62		[Shift E]
+39
+62		[Shift E]
+39
+62		[Shift E]
+39
+60		[Shift C]
+60		[Lock In C]
+7
+7
+7
+7
+61		[Shift D]
+61		[Lock In D]
+17
+17
+17
+17
+62		[Shift E]
+62		[Lock In E]
+39
+39
+39
+39
+60		[Shift C]
+60		[Lock In C]
+7
+7
+7
+7
+7
+61		[Shift D]
+61		[Lock In D]
+17
+17
+17
+17
+17
+62		[Shift E]
+62		[Lock In E]
+39
+39
+39
+39
+39
+63		[Latch B]
+33		start padding
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+33
+5		start secondary message error correction
+43
+15
+62
+60
+32
+13
+5
+41
+10
+1
+22
+12
+60
+42
+63
+51
+22
+35
+25
+6
+58
+46
+47
+43
+33
+44
+26
+17
+46
+35
+62
+1
+39
+11
+54
+29
+16
+61
+5		end secondary message error correction

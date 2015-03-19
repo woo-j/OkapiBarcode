@@ -111,12 +111,9 @@ public class MaxiCode extends Symbol {
     @Override
     public boolean encode() {
         byte[] inputBytes;
-        int i, j, block, bit, mode, countrycode = 0, service = 0;
+        int i, j, block, bit, mode;
         int eclen;
         int[] bit_pattern = new int[7];
-        String postcode;
-        String countrystr;
-        String servicestr;
         int sourcelen = content.length();
         String bin;
 
@@ -141,10 +138,6 @@ public class MaxiCode extends Symbol {
                 }
             }
         }
-
-        postcode = "";
-        countrystr = "";
-        servicestr = "";
 
 //        if (mode == -1) { /* If mode is unspecified */
 //            lp = primaryData.length();
@@ -181,7 +174,7 @@ public class MaxiCode extends Symbol {
                 }
             }
 
-            postcode = primaryData.substring(0, 9);
+            String postcode = primaryData.substring(0, 9);
 
             if (mode == 2) {
                 for (i = 0; i < 9; i++) {
@@ -195,30 +188,21 @@ public class MaxiCode extends Symbol {
 
             }
 
-            countrystr = primaryData.substring(9, 12);
-            servicestr = primaryData.substring(12, 15);
-
-            for (i = 0; i < countrystr.length(); i++) {
-                countrycode *= 10;
-                countrycode += countrystr.charAt(i) - '0';
-            }
-            for (i = 0; i < servicestr.length(); i++) {
-                service *= 10;
-                service += servicestr.charAt(i) - '0';
-            }
+            int country = Integer.parseInt(primaryData.substring(9, 12));
+            int service = Integer.parseInt(primaryData.substring(12, 15));
 
             if (debug) {
                 System.out.println("Using mode " + mode);
                 System.out.println("     Postcode: " + postcode);
-                System.out.println("     Country Code: " + countrycode);
+                System.out.println("     Country Code: " + country);
                 System.out.println("     Service: " + service);
             }
 
             if (mode == 2) {
-                maxi_do_primary_2(postcode, countrycode, service);
+                maxi_do_primary_2(postcode, country, service);
             } else {
                 //if(mode == 3)
-                maxi_do_primary_3(postcode, countrycode, service);
+                maxi_do_primary_3(postcode, country, service);
             }
         } else {
             maxi_codeword[0] = mode;
@@ -283,7 +267,7 @@ public class MaxiCode extends Symbol {
         grid[22][17] = true; // Bottom right marker
         grid[23][17] = true;
 
-        // The following is provided for compatability, but the results are not useful
+        // The following is provided for compatibility, but the results are not useful
         row_count = 33;
         readable = "";
         pattern = new String[33];

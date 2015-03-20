@@ -102,12 +102,25 @@ public class MaxiCode extends Symbol {
         16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 32, 33, 34, 35, 36
     };
 
+    private int mode;
     private String primaryData = "";
     private int[] maxi_codeword = new int[144];
     private int[] source;
     private int[] set = new int[144];
     private int[] character = new int[144];
     private boolean[][] grid = new boolean[33][30];
+
+    /**
+     * Sets the mode to use. Only modes 2 to 6 are supported.
+     *
+     * @param mode the mode to use
+     */
+    public void setMode(int mode) {
+        if (mode < 2 || mode > 6) {
+            throw new IllegalArgumentException("Invalid MaxiCode mode: " + mode);
+        }
+        this.mode = mode;
+    }
 
     /**
      * Sets the primary data. Should only be used for modes 2 and 3. Must conform to the following structure:
@@ -130,7 +143,7 @@ public class MaxiCode extends Symbol {
     @Override
     public boolean encode() {
         byte[] inputBytes;
-        int i, j, block, bit, mode;
+        int i, j, block, bit;
         int eclen;
         int[] bit_pattern = new int[7];
         int sourcelen = content.length();
@@ -143,12 +156,6 @@ public class MaxiCode extends Symbol {
             source[i] = inputBytes[i] & 0xFF;
         }
 
-        mode = option1 + 2;
-
-        if (mode >= 3) {
-            mode++;
-        }
-
         if (mode == 2) {
             for (i = 0; i < 10 && i < primaryData.length(); i++) {
                 if ((primaryData.charAt(i) < '0') || (primaryData.charAt(i) > '9')) {
@@ -156,27 +163,6 @@ public class MaxiCode extends Symbol {
                     break;
                 }
             }
-        }
-
-//        if (mode == -1) { /* If mode is unspecified */
-//            lp = primaryData.length();
-//            if (lp == 0) {
-//                mode = 4;
-//            } else {
-//                mode = 2;
-//                for (i = 0; i < 10 && i < lp; i++) {
-//                    if ((primaryData.charAt(i) < '0') || (primaryData.charAt(i) > '9')) {
-//                        mode = 3;
-//                        break;
-//                    }
-//                }
-//            }
-//        }
-
-        // TODO: not necessary once validation happens at time of initialization?
-        if ((mode < 2) || (mode > 6)) { /* Only codes 2 to 6 supported */
-            error_msg = "Invalid Maxicode Mode";
-            return false;
         }
 
         if ((mode == 2) || (mode == 3)) { /* Modes 2 and 3 need data in symbol->primary */
@@ -897,19 +883,7 @@ public class MaxiCode extends Symbol {
         }
     }
 
-    /**
-     * Sets the mode to use. Only modes 2 to 6 are supported.
-     *
-     * @param mode the mode to use
-     */
-    public void setMode(int mode) {
-        if (mode < 2 || mode > 6) {
-            throw new IllegalArgumentException("Invalid MaxiCode mode: " + mode);
-        }
-        // TODO: store a "mode" attribute instead of "option1"?
-        option1 = Math.max(0, mode - 3);
-    }
-
+    /** {@inheritDoc} */
     @Override
     protected int[] getCodewords() {
         return maxi_codeword;

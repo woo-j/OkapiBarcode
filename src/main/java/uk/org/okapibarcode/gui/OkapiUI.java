@@ -902,8 +902,8 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         maxiPrimaryDataLabel.setText("Primary Data:");
         maxiPrimaryDataLabel.setEnabled(false);
 
-        maxiEncodingModeCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Structured Carrier Message (Mode 2 or 3)", "Standard Symbol, SEC (Mode 4)", "Full ECC Symbol (Mode 5)", "Reader Program, SEC (Mode 6)" }));
-        maxiEncodingModeCombo.setSelectedIndex(1);
+        maxiEncodingModeCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Structured Carrier Message (Mode 2)", "Structured Carrier Message (Mode 3)", "Standard Symbol, SEC (Mode 4)", "Full ECC Symbol (Mode 5)", "Reader Program, SEC (Mode 6)" }));
+        maxiEncodingModeCombo.setSelectedIndex(2);
         maxiEncodingModeCombo.addActionListener(new java.awt.event.ActionListener() {
             @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1745,7 +1745,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
     private void maxiEncodingModeComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_maxiEncodingModeComboActionPerformed
         // TODO add your handling code here:
-        if (maxiEncodingModeCombo.getSelectedIndex() == 0) {
+        if (maxiEncodingModeCombo.getSelectedIndex() == 0 || maxiEncodingModeCombo.getSelectedIndex() == 1) {
             maxiPrimaryData.setEnabled(true);
             maxiPrimaryDataLabel.setEnabled(true);
         } else {
@@ -2124,23 +2124,23 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 }
                 break;
             case "BARCODE_MAXICODE":
-                option1 = maxiEncodingModeCombo.getSelectedIndex();
-                if (option1 == 0) {
+                option1 = maxiEncodingModeCombo.getSelectedIndex() + 2;
+                if (option1 == 2 || option1 == 3) {
                     barcode.setPrimary(maxiPrimaryData.getText());
                 }
                 break;
             case "BARCODE_AZTEC":
             case "BARCODE_HIBC_AZTEC":
-            if (aztecUserSize.isSelected()) {
-                option2 = aztecUserSizeCombo.getSelectedIndex() + 1;
-            }
-            if (aztecUserEcc.isSelected()) {
-                option1 = aztecUserEccCombo.getSelectedIndex() + 1;
-            }
-            break;
+                if (aztecUserSize.isSelected()) {
+                    option2 = aztecUserSizeCombo.getSelectedIndex() + 1;
+                }
+                if (aztecUserEcc.isSelected()) {
+                    option1 = aztecUserEccCombo.getSelectedIndex() + 1;
+                }
+                break;
             case "BARCODE_CODEONE":
                 option2 = codeOneSizeCombo.getSelectedIndex();
-            break;
+                break;
             case "BARCODE_GRIDMATRIX":
                 if (gridmatrixUserSize.isSelected()) {
                     option2 = gridmatrixUserSizeCombo.getSelectedIndex();

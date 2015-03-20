@@ -1035,7 +1035,7 @@ public class Barcode {
             break;
         case "BARCODE_MAXICODE":
             maxiCode.setPrimary(this.primaryData);
-            maxiCode.option1 = this.option1;
+            maxiCode.setMode(this.option1);
             if (maxiCode.setContent(this.content)) {
                 this.hex = maxiCode.hex;
                 this.target = maxiCode.target;

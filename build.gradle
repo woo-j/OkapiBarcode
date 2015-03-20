@@ -35,8 +35,8 @@ task wrapper(type: Wrapper) {
 /*------------------------------------------------------------------------------------------------*/
 /*                         CONFIGURATION FOR UPLOAD TO MAVEN CENTRAL REPO                         */
 /*                                                                                                */
-/* The signing credentials and OSSRH credentials must be in gradle.properties file.               */
-/* Upload with the command "gradle uploadArchives".                                               */
+/* The signing credentials and Sonatype OSSRH credentials must be in the gradle.properties file.  */
+/* Upload to Maven Central with the command "gradle uploadArchives".                              */
 /* http://central.sonatype.org/pages/gradle.html                                                  */
 /* http://central.sonatype.org/pages/ossrh-guide.html                                             */
 /*                                                                                                */
@@ -73,6 +73,8 @@ uploadArchives {
         }
         pom.project {
             name 'Okapi Barcode'
+            description 'Okapi Barcode is an open-source barcode generator written entirely in Java, ' +
+                        'supporting over 50 encoding standards including all ISO standards.'
             packaging 'jar'
             url 'https://github.com/woo-j/OkapiBarcode'
             scm {

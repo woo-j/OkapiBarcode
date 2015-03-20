@@ -18,7 +18,7 @@ package uk.org.okapibarcode.gui;
 /**
  * Simple container for symbology information
  *
- * @author Robin Stuart <rstuart114@gmail.com>
+ * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class SymbolType {
     String guiLabel; // GUI interface name

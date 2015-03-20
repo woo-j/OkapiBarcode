@@ -20,7 +20,7 @@ import java.util.Locale;
 
 /**
  *
- * @author Robin Stuart <rstuart114@gmail.com>
+ * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class RoyalMail4State extends Symbol {
     /* Handles the 4 State barcodes used in the UK by Royal Mail */

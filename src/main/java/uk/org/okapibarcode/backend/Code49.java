@@ -21,7 +21,7 @@ import java.awt.Rectangle;
  * Implements Code 49
  * According to ANSI/AIM-BC6-2000
  *
- * @author Robin Stuart <rstuart114@gmail.com>
+ * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  * @version 0.1
  */
 public class Code49 extends Symbol {

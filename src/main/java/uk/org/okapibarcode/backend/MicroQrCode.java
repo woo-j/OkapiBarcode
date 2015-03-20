@@ -21,7 +21,7 @@ import java.io.UnsupportedEncodingException;
  * Implements Micro QR Code
  * According to ISO/IEC 18004:2006
  *
- * @author Robin Stuart <rstuart114@gmail.com>
+ * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class MicroQrCode extends Symbol {
     private static enum qrMode {

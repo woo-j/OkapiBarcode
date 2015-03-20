@@ -20,7 +20,7 @@ import java.awt.Rectangle;
  * Implements UPC bar code symbology
  * According to BS EN 797:1996
  *
- * @author Robert Elliott <jakel2006@me.com>
+ * @author <a href="mailto:jakel2006@me.com">Robert Elliott</a>
  * @version 0.2
  */
 public class Upc extends Symbol {

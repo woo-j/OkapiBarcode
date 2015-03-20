@@ -25,7 +25,7 @@ import java.util.ArrayList;
 /**
  * Output to EPS file
  *
- * @author Robin Stuart <rstuart114@gmail.com>
+ * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class PostScript {
     public ArrayList<Rectangle> rectangle = new ArrayList<>();

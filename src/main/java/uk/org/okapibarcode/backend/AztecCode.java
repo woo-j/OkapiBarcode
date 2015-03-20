@@ -19,7 +19,7 @@ package uk.org.okapibarcode.backend;
  * Implements Aztec Code bar code symbology
  * According to ISO/IEC 24778:2008
  *
- * @author Robin Stuart <rstuart114@gmail.com>
+ * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  * @version 0.2
  */
 public class AztecCode extends Symbol {

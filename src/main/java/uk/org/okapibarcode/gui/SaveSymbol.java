@@ -32,7 +32,7 @@ import javax.swing.JPanel;
 /**
  * Draw symbol in "invisible" panel for saving to file
  *
- * @author Robin Stuart <rstuart114@gmail.com>
+ * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class SaveSymbol extends JPanel{
     private static int magnification = 4; // Magnification doesn't change depending on symbol size

@@ -20,7 +20,7 @@ import java.math.BigInteger;
 /**
  * Implements Code 1
  *
- * @author Robin Stuart <rstuart114@gmail.com>
+ * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class CodeOne extends Symbol {
     private final int[] c40_shift = {

@@ -19,7 +19,7 @@ package uk.org.okapibarcode.backend;
  * Implements Channel Code
  * According to ANSI/AIM BC12-1998
  *
- * @author Robin Stuart <rstuart114@gmail.com>
+ * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  * @version 0.1
  */
 public class ChannelCode extends Symbol {

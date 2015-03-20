@@ -20,7 +20,7 @@ import java.awt.Rectangle;
  * Implements Australia Post 4-State Barcode
  * Specified at http://auspost.com.au/media/documents/a-guide-to-printing-the-4state-barcode-v31-mar2012.pdf
  *
- * @author Robin Stuart <rstuart114@gmail.com>
+ * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  * @version 0.1
  */
 public class AustraliaPost extends Symbol{

@@ -21,7 +21,7 @@ import java.util.ArrayList;
 /**
  * Generic barcode symbology class
  *
- * @author Robin Stuart <rstuart114@gmail.com>
+ * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  * @version 0.1
  */
 public abstract class Symbol {

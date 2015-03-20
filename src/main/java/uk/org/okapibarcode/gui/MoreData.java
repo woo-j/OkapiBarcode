@@ -22,7 +22,7 @@ import javax.swing.JFileChooser;
 /**
  * Allow user to enter larger data, or input from file
  *
- * @author Robin Stuart <rstuart114@gmail.com>
+ * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class MoreData extends javax.swing.JFrame {
 

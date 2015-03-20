@@ -27,7 +27,7 @@ import uk.org.okapibarcode.output.ScalableVectorGraphics;
 /**
  * Save bar code image to image file
  *
- * @author Robert Elliott <jakel2006@me.com>
+ * @author <a href="mailto:jakel2006@me.com">Robert Elliott</a>
  */
 public class SaveImage {
     ScalableVectorGraphics svg;

@@ -21,7 +21,7 @@ import java.math.BigInteger;
  * Implements GS-1 DataBar Limited (aka RSS Limited)
  * According to ISO/IEC 24724:2006
  *
- * @author Robin Stuart <rstuart114@gmail.com>
+ * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  * @version 0.1
  */
 public class DataBarLimited extends Symbol {

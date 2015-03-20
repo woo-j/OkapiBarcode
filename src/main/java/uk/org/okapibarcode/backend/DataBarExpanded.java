@@ -19,7 +19,7 @@ package uk.org.okapibarcode.backend;
  * Implements Data Bar Expanded (aka RSS Expanded)
  * According to ISO/IEC 24724:2006
  *
- * @author Robin Stuart <rstuart114@gmail.com>
+ * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class DataBarExpanded extends Symbol {
 

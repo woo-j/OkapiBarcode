@@ -25,7 +25,7 @@ import java.util.ArrayList;
 /**
  * Outputs barcode to .SVG files
  *
- * @author Robin Stuart <rstuart114@gmail.com>
+ * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class ScalableVectorGraphics {
     public ArrayList<Rectangle> rectangle = new ArrayList<>();

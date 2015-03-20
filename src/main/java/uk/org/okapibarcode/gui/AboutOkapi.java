@@ -18,7 +18,7 @@ package uk.org.okapibarcode.gui;
 /**
  * Show "About Okapi" information
  *
- * @author Robin Stuart <rstuart114@gmail.com>
+ * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class AboutOkapi extends javax.swing.JFrame {
 

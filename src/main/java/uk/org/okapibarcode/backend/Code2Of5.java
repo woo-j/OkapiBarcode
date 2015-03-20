@@ -19,7 +19,7 @@ import java.awt.Rectangle;
 
 /**
  *
- * @author Robert Elliott <jakel2006@me.com>
+ * @author <a href="mailto:jakel2006@me.com">Robert Elliott</a>
  */
 public class Code2Of5 extends Symbol {
 

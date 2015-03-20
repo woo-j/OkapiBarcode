@@ -22,7 +22,7 @@ import java.math.BigInteger;
  * According to USPS-B-3200F
  * Specification at https://ribbs.usps.gov/intelligentmail_mailpieces/documents/tech_guides/SPUSPSG.pdf
  *
- * @author Robin Stuart <rstuart114@gmail.com>
+ * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  * @version 0.1
  */
 public class UspsOneCode extends Symbol {

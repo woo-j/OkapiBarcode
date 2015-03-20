@@ -1,16 +1,34 @@
+/*
+ * Copyright 2014-2015 Robin Stuart, Robert Elliott
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package uk.org.okapibarcode;
 
 import uk.org.okapibarcode.gui.OkapiUI;
 
 /**
+ * Starts the Okapi Barcode UI.
  *
- * @author Robin Stuart <rstuart114@gmail.com>
- * @author Robert Elliott <jakel2006@me.com>
+ * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
+ * @author <a href="mailto:jakel2006@me.com">Robert Elliott</a>
  */
 public class OkapiBarcode {
 
     /**
+     * Starts the Okapi Barcode UI.
+     *
      * @param args the command line arguments
      */
     public static void main(String[] args) {

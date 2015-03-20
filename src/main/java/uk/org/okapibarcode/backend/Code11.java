@@ -18,7 +18,7 @@ package uk.org.okapibarcode.backend;
 /**
  * Implements Code 11 bar code symbology
  *
- * @author Robin Stuart <rstuart114@gmail.com>
+ * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  * @version 0.2
  */
 public class Code11 extends Symbol {

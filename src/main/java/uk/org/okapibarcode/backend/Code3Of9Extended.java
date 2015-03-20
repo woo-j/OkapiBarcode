@@ -17,7 +17,7 @@ package uk.org.okapibarcode.backend;
 
 /**
  *
- * @author Robin Stuart <rstuart114@gmail.com>
+ * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class Code3Of9Extended extends Symbol {
 

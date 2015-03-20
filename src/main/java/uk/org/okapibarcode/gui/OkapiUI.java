@@ -44,7 +44,7 @@ import uk.org.okapibarcode.backend.Barcode;
 
 /**
  *
- * @author Robin Stuart <rstuart114@gmail.com>
+ * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener{
 

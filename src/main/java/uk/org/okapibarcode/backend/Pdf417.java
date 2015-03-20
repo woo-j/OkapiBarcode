@@ -21,7 +21,7 @@ import java.math.BigInteger;
  * Implements PDF417 bar code symbology and MicroPDF417 bar code symbology
  * According to ISO/IEC 15438:2006 and ISO/IEC 24728:2006 respectively
  *
- * @author Robin Stuart <rstuart114@gmail.com>
+ * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class Pdf417 extends Symbol {
     private enum pdfEncodingMode {

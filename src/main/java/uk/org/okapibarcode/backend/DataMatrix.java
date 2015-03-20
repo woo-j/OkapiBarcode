@@ -21,7 +21,7 @@ import java.io.UnsupportedEncodingException;
  * Implements Data Matrix ECC 200 bar code symbology
  * According to ISO/IEC 16022:2006
  * 
- * @author Robin Stuart <rstuart114@gmail.com>
+ * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  * @version 0.2
  */
 public class DataMatrix extends Symbol {

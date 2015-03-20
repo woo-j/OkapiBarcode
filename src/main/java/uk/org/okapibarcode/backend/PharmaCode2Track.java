@@ -19,7 +19,7 @@ import java.awt.Rectangle;
 
 /**
  *
- * @author Robin Stuart <rstuart114@gmail.com>
+ * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class PharmaCode2Track extends Symbol {
 

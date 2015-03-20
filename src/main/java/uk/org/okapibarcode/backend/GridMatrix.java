@@ -21,7 +21,7 @@ import java.io.UnsupportedEncodingException;
  * Implements Grid Matrix bar code symbology
  * According to AIMD014
  *
- * @author Robin Stuart <rstuart114@gmail.com>
+ * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class GridMatrix extends Symbol {
 

@@ -21,7 +21,7 @@ import java.io.UnsupportedEncodingException;
  * Implements Code 128 bar code symbology
  * According to ISO/IEC 15417:2007
  *
- * @author Robin Stuart <rstuart114@gmail.com>
+ * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  * @version 0.3
  */
 

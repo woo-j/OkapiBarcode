@@ -22,7 +22,7 @@ import java.util.ArrayList;
 /**
  * Main calling class for all barcode symbologies
  *
- * @author Robin Stuart <rstuart114@gmail.com>
+ * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  * @version 0.5
  */
 public class Barcode {

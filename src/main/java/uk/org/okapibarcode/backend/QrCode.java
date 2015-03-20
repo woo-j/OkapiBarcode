@@ -21,7 +21,7 @@ import java.io.UnsupportedEncodingException;
  * Implements QR Code 2005 bar code symbology
  * According to ISO/IEC 18004:2006
  *
- * @author Robin Stuart <rstuart114@gmail.com>
+ * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class QrCode extends Symbol {
     private enum qrMode {

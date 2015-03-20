@@ -21,7 +21,7 @@ import java.io.UnsupportedEncodingException;
 /**
  * Implements Codablock-F
  *
- * @author Robin Stuart <rstuart114@gmail.com>
+ * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class CodablockF extends Symbol {
 

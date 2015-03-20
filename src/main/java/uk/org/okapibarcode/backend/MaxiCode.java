@@ -22,8 +22,8 @@ import java.awt.geom.Ellipse2D;
 /**
  * Implements MaxiCode according to ISO 16023:2000.
  *
- * @author Robin Stuart <rstuart114@gmail.com>
- * @author Daniel Gredler <daniel.gredler@gmail.com>
+ * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
+ * @author Daniel Gredler
  */
 public class MaxiCode extends Symbol {
 

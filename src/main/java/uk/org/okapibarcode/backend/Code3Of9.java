@@ -19,7 +19,7 @@ package uk.org.okapibarcode.backend;
  * Implements Code 39 bar code symbology
  * According to ISO/IEC 16388:2007
  *
- * @author Robin Stuart <rstuart114@gmail.com>
+ * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class Code3Of9 extends Symbol {
 

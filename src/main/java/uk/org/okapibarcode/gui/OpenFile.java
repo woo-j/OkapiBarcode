@@ -22,7 +22,7 @@ import java.io.IOException;
 /**
  * Open a file and read contents
  *
- * @author Robin Stuart <rstuart114@gmail.com>
+ * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class OpenFile {
     public static String ReadFile (File file, boolean isBatch) throws IOException {

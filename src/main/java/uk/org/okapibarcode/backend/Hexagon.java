@@ -18,7 +18,7 @@ package uk.org.okapibarcode.backend;
 /**
  * Calculate a set of points to make a hexagon
  *
- * @author Robin Stuart <rstuart114@gmail.com>
+ * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class Hexagon {
     public double centreX;

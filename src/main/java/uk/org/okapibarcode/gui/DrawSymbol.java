@@ -32,8 +32,8 @@ import javax.swing.JPanel;
 /**
  * Draw barcode symbol in top panel
  *
- * @author Robert Elliott <jakel2006@me.com>
- * @author Robin Stuart <rstuart114@gmail.com>
+ * @author <a href="mailto:jakel2006@me.com">Robert Elliott</a>
+ * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class DrawSymbol extends JPanel{
 

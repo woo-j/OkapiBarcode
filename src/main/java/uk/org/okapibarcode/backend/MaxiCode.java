@@ -87,26 +87,45 @@ public class MaxiCode extends Symbol {
 
     /** ASCII character to symbol value, from ISO/IEC 16023 Appendix A. */
     private static final int[] MAXICODE_SYMBOL_CHAR = {
-        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+        0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
         20, 21, 22, 23, 24, 25, 26, 30, 28, 29, 30, 35, 32, 53, 34, 35, 36, 37, 38, 39,
         40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 37,
-        38, 39, 40, 41, 52, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
-        16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 42, 43, 44, 45, 46, 0, 1, 2, 3,
-        4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
+        38, 39, 40, 41, 52, 1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12, 13, 14, 15,
+        16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 42, 43, 44, 45, 46, 0,  1,  2,  3,
+        4,  5,  6,  7,  8,  9,  10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
         24, 25, 26, 32, 54, 34, 35, 36, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 47, 48,
         49, 50, 51, 52, 53, 54, 55, 56, 57, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 36,
         37, 37, 38, 39, 40, 41, 42, 43, 38, 44, 37, 39, 38, 45, 46, 40, 41, 39, 40, 41,
-        42, 42, 47, 43, 44, 43, 44, 45, 45, 46, 47, 46, 0, 1, 2, 3, 4, 5, 6, 7,
-        8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 32,
-        33, 34, 35, 36, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+        42, 42, 47, 43, 44, 43, 44, 45, 45, 46, 47, 46, 0,  1,  2,  3,  4,  5,  6,  7,
+        8,  9,  10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 32,
+        33, 34, 35, 36, 0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12, 13, 14, 15,
         16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 32, 33, 34, 35, 36
     };
 
+    private String primaryData = "";
     private int[] maxi_codeword = new int[144];
     private int[] source;
     private int[] set = new int[144];
     private int[] character = new int[144];
     private boolean[][] grid = new boolean[33][30];
+
+    /**
+     * Sets the primary data. Should only be used for modes 2 and 3. Must conform to the following structure:
+     *
+     * <table>
+     *   <tr><th>Characters</th><th>Meaning</th></tr>
+     *   <tr><td>1-9</td><td>Postal code data which can consist of up to 9 digits (for mode 2) or up to 6
+     *                       alphanumeric characters (for mode 3). Remaining unused characters should be
+     *                       filled with the SPACE character (ASCII 32).</td></tr>
+     *   <tr><td>10-12</td><td>Three-digit country code according to ISO-3166.</td></tr>
+     *   <tr><td>13-15</td><td>Three digit service code. This depends on your parcel courier.</td></tr>
+     * </table>
+     *
+     * @param primary the primary data
+     */
+    public void setPrimary(String primary) {
+        primaryData = primary;
+    }
 
     @Override
     public boolean encode() {
@@ -174,18 +193,16 @@ public class MaxiCode extends Symbol {
                 }
             }
 
-            String postcode = primaryData.substring(0, 9);
-
+            String postcode;
             if (mode == 2) {
-                for (i = 0; i < 9; i++) {
-                    if (postcode.charAt(i) == ' ') {
-                        postcode = postcode.substring(0, i);
-                    }
+                postcode = primaryData.substring(0, 9);
+                int index = postcode.indexOf(' ');
+                if (index != -1) {
+                    postcode = postcode.substring(0, index);
                 }
             } else {
                 // if (mode == 3)
-                postcode = postcode.substring(0, 6);
-
+                postcode = primaryData.substring(0, 6);
             }
 
             int country = Integer.parseInt(primaryData.substring(9, 12));

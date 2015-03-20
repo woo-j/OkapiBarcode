@@ -45,7 +45,6 @@ public abstract class Symbol {
     public boolean hibc;
     public boolean readerInit;
     public String encodeInfo = "";
-    public String primaryData = "";
 
     public int option1;
     public int option2;
@@ -139,11 +138,6 @@ public abstract class Symbol {
         } else {
             return false;
         }
-    }
-
-    public void setPrimary(String input) {
-        // Only used for Maxicode
-        primaryData = input;
     }
 
     abstract boolean encode();

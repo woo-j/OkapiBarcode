@@ -1,7 +1,5 @@
 apply plugin: 'java'
 apply plugin: 'eclipse'
-apply plugin: 'maven'
-apply plugin: 'signing'
 apply plugin: 'jacoco'
 
 group = 'uk.org.okapibarcode'
@@ -22,6 +20,81 @@ targetCompatibility = 7
 compileJava.options.encoding = 'UTF-8'
 javadoc.options.encoding = 'UTF-8'
 
+jar {
+    manifest.attributes(
+        'Main-Class': 'uk.org.okapibarcode.OkapiBarcode',
+        'Implementation-Title': 'Okapi Barcode',
+        'Implementation-Version': version
+    )
+}
+
 task wrapper(type: Wrapper) {
     gradleVersion = '2.3'
+}
+
+/*------------------------------------------------------------------------------------------------*/
+/*                         CONFIGURATION FOR UPLOAD TO MAVEN CENTRAL REPO                         */
+/*                                                                                                */
+/* The signing credentials and OSSRH credentials must be in gradle.properties file.               */
+/* Upload with the command "gradle uploadArchives".                                               */
+/* http://central.sonatype.org/pages/gradle.html                                                  */
+/* http://central.sonatype.org/pages/ossrh-guide.html                                             */
+/*                                                                                                */
+/*------------------------------------------------------------------------------------------------*/
+
+apply plugin: 'maven'
+apply plugin: 'signing'
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from 'build/docs/javadoc'
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allSource
+    classifier = 'sources'
+}
+
+artifacts {
+    archives javadocJar, sourcesJar
+}
+
+signing {
+    sign configurations.archives
+}
+
+uploadArchives {
+    repositories.mavenDeployer {
+        beforeDeployment {
+            MavenDeployment deployment -> signing.signPom(deployment)
+        }
+        repository(url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2/') {
+            authentication(userName: sonatypeUsername, password: sonatypePassword)
+        }
+        pom.project {
+            name 'Okapi Barcode'
+            packaging 'jar'
+            url 'https://github.com/woo-j/OkapiBarcode'
+            scm {
+                connection 'scm:git:git://github.com/woo-j/OkapiBarcode.git'
+                url 'https://github.com/woo-j/OkapiBarcode'
+            }
+            licenses {
+                license {
+                    name 'The Apache License, Version 2.0'
+                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                }
+            }
+            developers {
+                developer {
+                    id 'woo-j'
+                    name 'Robin Stuart'
+                }
+                developer {
+                    id 'gredler'
+                    name 'Daniel Gredler'
+                }
+            }
+        }
+    }
 }

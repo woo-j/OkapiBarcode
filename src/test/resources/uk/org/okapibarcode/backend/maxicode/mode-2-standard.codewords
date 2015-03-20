@@ -1,23 +1,23 @@
-2		mode 2 + part of the postal code
-6
+34		mode 2 + part of the postal code
 20
-48
-1
-16
-34
-31
-9
-50		end primary message
-9		start primary message error correction
+45
+20
+17
 18
-37
-30
-48
-29
+2
+18
 7
-26
-58
-36		end primary message error correction
+0		end primary message
+61		start primary message error correction
+53
+12
+1
+38
+55
+55
+6
+31
+40		end primary message error correction
 59		[Shift B]
 42		[
 41		)

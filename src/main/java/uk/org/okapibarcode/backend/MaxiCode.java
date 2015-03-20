@@ -853,40 +853,30 @@ public class MaxiCode extends Symbol {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public void plotSymbol() {
-        int row, col;
-        Hexagon thisHex;
-        Ellipse2D.Double thisEllipse;
-        double x, y;
-        int i;
-        double[] radii = {
-            10.85, 8.97, 7.10, 5.22, 3.31, 1.43
-        };
 
         // Hexagons
-        for (row = 0; row < 33; row++) {
-            for (col = 0; col < 30; col++) {
+        for (int row = 0; row < 33; row++) {
+            for (int col = 0; col < 30; col++) {
                 if (grid[row][col]) {
-                    thisHex = new Hexagon();
-
-                    x = (2.46 * col) + 1.23;
+                    double x = (2.46 * col) + 1.23;
                     if ((row & 1) != 0) {
                         x += 1.23;
                     }
-                    y = (2.135 * row) + 1.43;
-
-                    thisHex.setCentre(x, y);
-                    hex.add(thisHex);
+                    double y = (2.135 * row) + 1.43;
+                    hex.add(new Hexagon(x, y));
                 }
             }
         }
 
         // Circles
-        for (i = 0; i < 6; i++) {
-            thisEllipse = new Ellipse2D.Double();
-            thisEllipse.setFrameFromCenter(35.76, 35.60, 35.76 + radii[i], 35.60 + radii[i]);
-            target.add(thisEllipse);
+        double[] radii = { 10.85, 8.97, 7.10, 5.22, 3.31, 1.43 };
+        for (int i = 0; i < radii.length; i++) {
+            Ellipse2D.Double circle = new Ellipse2D.Double();
+            circle.setFrameFromCenter(35.76, 35.60, 35.76 + radii[i], 35.60 + radii[i]);
+            target.add(circle);
         }
     }
 

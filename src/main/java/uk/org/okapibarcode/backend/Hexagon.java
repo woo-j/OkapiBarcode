@@ -21,28 +21,23 @@ package uk.org.okapibarcode.backend;
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class Hexagon {
-    public double centreX;
-    public double centreY;
-    public double[] pointX = new double [6];
-    public double[] pointY = new double [6];
-    private double inkSpread = 1.25;
 
-    private double[] yOffset = {
-        1.0, 0.5, -0.5, -1.0, -0.5, 0.5
-    };
+    private static final double INK_SPREAD = 1.25;
 
-    private double[] xOffset = {
-        0.0, 0.86, 0.86, 0.0, -0.86, -0.86
-    };
+    private static final double[] OFFSET_X = { 0.0, 0.86, 0.86, 0.0, -0.86, -0.86 };
+    private static final double[] OFFSET_Y = { 1.0, 0.5, -0.5, -1.0, -0.5,   0.5 };
 
-    public void setCentre(double x, double y) {
-        int i;
+    public final double centreX;
+    public final double centreY;
+    public final double[] pointX = new double[6];
+    public final double[] pointY = new double[6];
 
-        centreX = x;
-        centreY = y;
-        for (i = 0; i < 6; i++) {
-            pointX[i] = centreX + (xOffset[i] * inkSpread);
-            pointY[i] = centreY + (yOffset[i] * inkSpread);
+    public Hexagon(double centreX, double centreY) {
+        this.centreX = centreX;
+        this.centreY = centreY;
+        for (int i = 0; i < 6; i++) {
+            pointX[i] = centreX + (OFFSET_X[i] * INK_SPREAD);
+            pointY[i] = centreY + (OFFSET_Y[i] * INK_SPREAD);
         }
     }
 }

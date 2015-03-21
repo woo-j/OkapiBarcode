@@ -13,38 +13,47 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package uk.org.okapibarcode.backend;
 
 import java.awt.Rectangle;
+
 /**
- * Implements Australia Post 4-State Barcode
- * Specified at http://auspost.com.au/media/documents/a-guide-to-printing-the-4state-barcode-v31-mar2012.pdf
+ * Implements the <a href="http://auspost.com.au/media/documents/a-guide-to-printing-the-4state-barcode-v31-mar2012.pdf">Australia Post 4-State barcode</a>.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  * @version 0.1
  */
 public class AustraliaPost extends Symbol{
 
-    private char[] characterSet = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D',
+    private static final char[] CHARACTER_SET = {
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D',
         'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V',
         'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
-        'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', ' ', '#'};
+        'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', ' ', '#'
+    };
 
-    private String[] nEncodingTable = {"00", "01", "02", "10", "11", "12", "20", "21", "22", "30"};
+    private static final String[] N_ENCODING_TABLE = {
+        "00", "01", "02", "10", "11", "12", "20", "21", "22", "30"
+    };
 
-    private String[] cEncodingTable = {"222", "300", "301", "302", "310", "311", "312", "320", "321", "322",
-            "000", "001", "002", "010", "011", "012", "020", "021", "022", "100", "101", "102", "110",
-            "111", "112", "120", "121", "122", "200", "201", "202", "210", "211", "212", "220", "221",
-            "023", "030", "031", "032", "033", "103", "113", "123", "130", "131", "132", "133", "203",
-            "213", "223", "230", "231", "232", "233", "303", "313", "323", "330", "331", "332", "333",
-            "003", "013"};
+    private static final String[] C_ENCODING_TABLE = {
+        "222", "300", "301", "302", "310", "311", "312", "320", "321", "322",
+        "000", "001", "002", "010", "011", "012", "020", "021", "022", "100", "101", "102", "110",
+        "111", "112", "120", "121", "122", "200", "201", "202", "210", "211", "212", "220", "221",
+        "023", "030", "031", "032", "033", "103", "113", "123", "130", "131", "132", "133", "203",
+        "213", "223", "230", "231", "232", "233", "303", "313", "323", "330", "331", "332", "333",
+        "003", "013"
+    };
 
-    private String[] barValueTable = {"000", "001", "002", "003", "010", "011", "012", "013", "020", "021",
-            "022", "023", "030", "031", "032", "033", "100", "101", "102", "103", "110", "111", "112",
-            "113", "120", "121", "122", "123", "130", "131", "132", "133", "200", "201", "202", "203",
-            "210", "211", "212", "213", "220", "221", "222", "223", "230", "231", "232", "233", "300",
-            "301", "302", "303", "310", "311", "312", "313", "320", "321", "322", "323", "330", "331",
-            "332", "333"};
+    private static final String[] BAR_VALUE_TABLE = {
+        "000", "001", "002", "003", "010", "011", "012", "013", "020", "021",
+        "022", "023", "030", "031", "032", "033", "100", "101", "102", "103", "110", "111", "112",
+        "113", "120", "121", "122", "123", "130", "131", "132", "133", "200", "201", "202", "203",
+        "210", "211", "212", "213", "220", "221", "222", "223", "230", "231", "232", "233", "300",
+        "301", "302", "303", "310", "311", "312", "313", "320", "321", "322", "323", "330", "331",
+        "332", "333"
+    };
 
     private enum ausMode {AUSPOST, AUSREPLY, AUSROUTE, AUSREDIRECT};
 
@@ -70,6 +79,7 @@ public class AustraliaPost extends Symbol{
         mode = ausMode.AUSREDIRECT;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean encode() {
         String formatControlCode = "00";
@@ -158,12 +168,12 @@ public class AustraliaPost extends Symbol{
 
         /* Encode the FCC */
         for(i = 0; i < 2; i++) {
-            barStateValues += nEncodingTable[formatControlCode.charAt(i) - '0'];
+            barStateValues += N_ENCODING_TABLE[formatControlCode.charAt(i) - '0'];
         }
 
         /* Delivery Point Identifier (DPID) */
         for(i = 0; i < 8; i++) {
-            barStateValues += nEncodingTable[deliveryPointId.charAt(i) - '0'];
+            barStateValues += N_ENCODING_TABLE[deliveryPointId.charAt(i) - '0'];
         }
 
         /* Customer Information */
@@ -171,13 +181,13 @@ public class AustraliaPost extends Symbol{
             case 13:
             case 18:
                 for(i = 8; i < zeroPaddedInput.length(); i++) {
-                    barStateValues += cEncodingTable[positionOf(zeroPaddedInput.charAt(i), characterSet)];
+                    barStateValues += C_ENCODING_TABLE[positionOf(zeroPaddedInput.charAt(i), CHARACTER_SET)];
                 }
                 break;
             case 16:
             case 23:
                 for(i = 8; i < zeroPaddedInput.length(); i++) {
-                    barStateValues += nEncodingTable[positionOf(zeroPaddedInput.charAt(i), characterSet)];
+                    barStateValues += N_ENCODING_TABLE[positionOf(zeroPaddedInput.charAt(i), CHARACTER_SET)];
                 }
                 break;
         }
@@ -230,7 +240,7 @@ public class AustraliaPost extends Symbol{
         rs.encode(tripleValueCount, tripleValue);
 
         for(barStateCount = 4; barStateCount > 0; barStateCount--) {
-            newBarStateValues += barValueTable[rs.getResult(barStateCount - 1)];
+            newBarStateValues += BAR_VALUE_TABLE[rs.getResult(barStateCount - 1)];
         }
 
         return newBarStateValues;
@@ -240,6 +250,7 @@ public class AustraliaPost extends Symbol{
         return (oldBarStateValues - '0') << shift;
     }
 
+    /** {@inheritDoc} */
     @Override
     public void plotSymbol() {
         int xBlock;

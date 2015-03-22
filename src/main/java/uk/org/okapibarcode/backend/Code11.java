@@ -13,24 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package uk.org.okapibarcode.backend;
 
 /**
- * Implements Code 11 bar code symbology
+ * Implements Code 11 bar code symbology.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  * @version 0.2
  */
 public class Code11 extends Symbol {
-    private String[] code11Table = {
-        "111121", "211121", "121121", "221111", "112121", "212111", "122111",
-            "111221", "211211", "211111", "112111"
+
+    private static final String[] CODE_11_TABLE = {
+        "111121", "211121", "121121", "221111", "112121", "212111",
+        "122111", "111221", "211211", "211111", "112111"
     };
 
-    private char characterSet[] = {
+    private static final char[] CHARACTER_SET = {
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-'
     };
 
+    /** {@inheritDoc} */
     @Override
     public boolean encode() {
         if (!(content.matches("[0-9-]+?"))) {
@@ -48,8 +51,8 @@ public class Code11 extends Symbol {
         horizontalSpacing = "112211";
         for (i = 0; i < length; i++) {
             thisCharacter = content.charAt(i);
-            weight[i] = positionOf(thisCharacter, characterSet);
-            horizontalSpacing += code11Table[weight[i]];
+            weight[i] = positionOf(thisCharacter, CHARACTER_SET);
+            horizontalSpacing += CODE_11_TABLE[weight[i]];
         }
 
         /* Calculate C checksum */
@@ -80,12 +83,11 @@ public class Code11 extends Symbol {
 
         encodeInfo += "Check Digit K: " + checkDigitK + "\n";
 
-        horizontalSpacing += code11Table[checkDigitC];
-        horizontalSpacing += code11Table[checkDigitK];
-        horizontalSpacing += "11221";
+        horizontalSpacing += CODE_11_TABLE[checkDigitC];
+        horizontalSpacing += CODE_11_TABLE[checkDigitK];
+        horizontalSpacing += "112211";
 
-
-        readable = content + (char)(checkDigitC + '0') + (char)(checkDigitK + '0');
+        readable = content + (char) (checkDigitC + '0') + (char) (checkDigitK + '0');
         pattern = new String[1];
         pattern[0] = horizontalSpacing;
         row_count = 1;
@@ -93,5 +95,11 @@ public class Code11 extends Symbol {
         row_height[0] = -1;
         plotSymbol();
         return true;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected int[] getCodewords() {
+        return getPatternAsCodewords(6);
     }
 }

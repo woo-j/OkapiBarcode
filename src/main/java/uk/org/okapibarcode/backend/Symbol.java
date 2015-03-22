@@ -507,12 +507,35 @@ public abstract class Symbol {
     }
 
     /**
-     * Returns the intermediate coding of this bar code. Symbol types that use the test infrastructure should override this
-     * method.
+     * Returns the intermediate coding of this bar code. Symbol types that use the test
+     * infrastructure should override this method.
      *
      * @return the intermediate coding of this bar code
      */
     protected int[] getCodewords() {
         throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Returns this bar code's pattern, converted into a set of corresponding codewords.
+     * Useful for bar codes that encode their content as a pattern.
+     *
+     * @param size the number of digits in each codeword
+     * @return this bar code's pattern, converted into a set of corresponding codewords
+     */
+    protected int[] getPatternAsCodewords(int size) {
+        if (pattern == null || pattern.length == 0) {
+            return new int[0];
+        } else {
+            int count = pattern[0].length() / size;
+            int[] codewords = new int[pattern.length * count];
+            for (int i = 0; i < pattern.length; i++) {
+                String row = pattern[i];
+                for (int j = 0; j < count; j++) {
+                    codewords[(i * count) + j] = Integer.parseInt(row.substring(j * size, (j + 1) * size));
+                }
+            }
+            return codewords;
+        }
     }
 }

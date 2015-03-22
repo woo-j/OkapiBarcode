@@ -1143,11 +1143,10 @@ public class Barcode {
         }
 
         for (i = 0; i < this.txt.size(); i++) {
-            TextBox lintxt = new TextBox();
-            lintxt.xPos = this.txt.get(i).xPos + bottom_shift;
-            lintxt.yPos = this.txt.get(i).yPos;
-            lintxt.arg = this.txt.get(i).arg;
-            lintxt.yPos += composite.symbol_height;
+            double x = this.txt.get(i).x + bottom_shift;
+            double y = this.txt.get(i).y + composite.symbol_height;
+            String text = this.txt.get(i).text;
+            TextBox lintxt = new TextBox(x, y, text);
             combine_txt.add(lintxt);
         }
 

@@ -335,11 +335,6 @@ public class Upc extends Symbol {
         int xBlock;
         int x, y, w, h;
         boolean black;
-        TextBox t1 = new TextBox();
-        TextBox t2 = new TextBox();
-        TextBox t3 = new TextBox();
-        TextBox t4 = new TextBox();
-        TextBox t5 = new TextBox();
         int compositeOffset = 0;
 
         rect.clear();
@@ -420,37 +415,37 @@ public class Upc extends Symbol {
 
         /* Now add the text */
         if (mode == upc_mode.UPCA) {
-            t1.setvalues(0.0, symbol_height + 3.0 + compositeOffset, readable.substring(0, 1));
+            TextBox t1 = new TextBox(0.0, symbol_height + 3.0 + compositeOffset, readable.substring(0, 1));
             txt.add(t1);
-            t2.setvalues(23.0, symbol_height + 3.0 + compositeOffset, readable.substring(1, 6));
+            TextBox t2 = new TextBox(23.0, symbol_height + 3.0 + compositeOffset, readable.substring(1, 6));
             txt.add(t2);
-            t3.setvalues(60.0, symbol_height + 3.0 + compositeOffset, readable.substring(6, 11));
+            TextBox t3 = new TextBox(60.0, symbol_height + 3.0 + compositeOffset, readable.substring(6, 11));
             txt.add(t3);
-            t4.setvalues(103.0, symbol_height + 3.0 + compositeOffset, readable.substring(11, 12));
+            TextBox t4 = new TextBox(103.0, symbol_height + 3.0 + compositeOffset, readable.substring(11, 12));
             txt.add(t4);
             if (useAddOn) {
                 if(addOnContent.length() == 2) {
-                    t5.setvalues(114.0, 6.0 + compositeOffset, addOnContent);
+                    TextBox t5 = new TextBox(114.0, 6.0 + compositeOffset, addOnContent);
                     txt.add(t5);
                 } else {
-                    t5.setvalues(124.0, 6.0 + compositeOffset, addOnContent);
+                    TextBox t5 = new TextBox(124.0, 6.0 + compositeOffset, addOnContent);
                     txt.add(t5);
                 }
             }
         }
         if (mode == upc_mode.UPCE) {
-            t1.setvalues(0.0, symbol_height + 3.0 + compositeOffset, readable.substring(0, 1));
+            TextBox t1 = new TextBox(0.0, symbol_height + 3.0 + compositeOffset, readable.substring(0, 1));
             txt.add(t1);
-            t2.setvalues(18.0, symbol_height + 3.0 + compositeOffset, readable.substring(1, 7));
+            TextBox t2 = new TextBox(18.0, symbol_height + 3.0 + compositeOffset, readable.substring(1, 7));
             txt.add(t2);
-            t3.setvalues(59.0, symbol_height + 3.0 + compositeOffset, readable.substring(7, 8));
+            TextBox t3 = new TextBox(59.0, symbol_height + 3.0 + compositeOffset, readable.substring(7, 8));
             txt.add(t3);
             if (useAddOn) {
                 if(addOnContent.length() == 2) {
-                    t4.setvalues(70.0, 6.0 + compositeOffset, addOnContent);
+                    TextBox t4 = new TextBox(70.0, 6.0 + compositeOffset, addOnContent);
                     txt.add(t4);
                 } else {
-                    t4.setvalues(80.0, 6.0 + compositeOffset, addOnContent);
+                    TextBox t4 = new TextBox(80.0, 6.0 + compositeOffset, addOnContent);
                     txt.add(t4);
                 }
             }

@@ -260,10 +260,6 @@ public class Ean extends Symbol {
         int xBlock;
         int x, y, w, h;
         boolean black;
-        TextBox t1 = new TextBox();
-        TextBox t2 = new TextBox();
-        TextBox t3 = new TextBox();
-        TextBox t4 = new TextBox();
         int compositeOffset = 0;
 
         rect.clear();
@@ -346,33 +342,33 @@ public class Ean extends Symbol {
         symbol_height = default_height + 5;
         /* Now add the text */
         if (mode == ean_mode.EAN13) {
-            t1.setvalues(0.0, symbol_height + 3.0 + compositeOffset, readable.substring(0, 1));
+            TextBox t1 = new TextBox(0.0, symbol_height + 3.0 + compositeOffset, readable.substring(0, 1));
             txt.add(t1);
-            t2.setvalues(17.0, symbol_height + 3.0 + compositeOffset, readable.substring(1, 7));
+            TextBox t2 = new TextBox(17.0, symbol_height + 3.0 + compositeOffset, readable.substring(1, 7));
             txt.add(t2);
-            t3.setvalues(63.0, symbol_height + 3.0 + compositeOffset, readable.substring(7, 13));
+            TextBox t3 = new TextBox(63.0, symbol_height + 3.0 + compositeOffset, readable.substring(7, 13));
             txt.add(t3);
             if (useAddOn) {
                 if(addOnContent.length() == 2) {
-                    t4.setvalues(114.0, 6.0 + compositeOffset, addOnContent);
+                    TextBox t4 = new TextBox(114.0, 6.0 + compositeOffset, addOnContent);
                     txt.add(t4);
                 } else {
-                    t4.setvalues(124.0, 6.0 + compositeOffset, addOnContent);
+                    TextBox t4 = new TextBox(124.0, 6.0 + compositeOffset, addOnContent);
                     txt.add(t4);
                 }
             }
         }
         if (mode == ean_mode.EAN8) {
-            t1.setvalues(15.0, symbol_height + 3.0 + compositeOffset, readable.substring(0, 4));
+            TextBox t1 = new TextBox(15.0, symbol_height + 3.0 + compositeOffset, readable.substring(0, 4));
             txt.add(t1);
-            t2.setvalues(46.0, symbol_height + 3.0 + compositeOffset, readable.substring(4, 8));
+            TextBox t2 = new TextBox(46.0, symbol_height + 3.0 + compositeOffset, readable.substring(4, 8));
             txt.add(t2);
             if (useAddOn) {
                 if(addOnContent.length() == 2) {
-                    t4.setvalues(86.0, 6.0 + compositeOffset, addOnContent);
+                    TextBox t4 = new TextBox(86.0, 6.0 + compositeOffset, addOnContent);
                     txt.add(t4);
                 } else {
-                    t4.setvalues(96.0, 6.0 + compositeOffset, addOnContent);
+                    TextBox t4 = new TextBox(96.0, 6.0 + compositeOffset, addOnContent);
                     txt.add(t4);
                 }
             }

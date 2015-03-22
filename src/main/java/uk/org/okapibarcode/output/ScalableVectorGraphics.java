@@ -86,11 +86,11 @@ public class ScalableVectorGraphics {
 
             // Text
             for(i = 0; i < textbox.size(); i++) {
-                outStream += "      <text x=\"" + textbox.get(i).xPos + "\" y=\""
-                        + textbox.get(i).yPos + "\" text-anchor=\"middle\"\n";
+                outStream += "      <text x=\"" + textbox.get(i).x + "\" y=\""
+                        + textbox.get(i).y + "\" text-anchor=\"middle\"\n";
                 outStream += "         font-family=\"Helvetica\" font-size=\"8\" fill=\""
                         + fgColour + "\" >\n";
-                outStream += "         " + textbox.get(i).arg + "\n";
+                outStream += "         " + textbox.get(i).text + "\n";
                 outStream += "      </text>\n";
             }
 

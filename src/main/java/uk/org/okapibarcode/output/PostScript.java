@@ -129,13 +129,13 @@ public class PostScript {
                 outStream += "/Helvetica findfont\n";
                 outStream += "8.00 scalefont setfont\n";
                 outStream += " 0 0 moveto "
-                        + String.format("%.2f", textbox.get(i).xPos)
-                        + " " + String.format("%.2f", symbol_height - textbox.get(i).yPos)
+                        + String.format("%.2f", textbox.get(i).x)
+                        + " " + String.format("%.2f", symbol_height - textbox.get(i).y)
                         + " translate 0.00 rotate 0 0 moveto\n";
-                outStream += " (" + textbox.get(i).arg + ") stringwidth\n";
+                outStream += " (" + textbox.get(i).text + ") stringwidth\n";
                 outStream += "pop\n";
                 outStream += "-2 div 0 rmoveto\n";
-                outStream += " (" + textbox.get(i).arg + ") show\n";
+                outStream += " (" + textbox.get(i).text + ") show\n";
                 outStream += "setmatrix\n";
             }
 

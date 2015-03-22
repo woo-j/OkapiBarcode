@@ -68,9 +68,9 @@ public class DrawSymbol extends JPanel{
         for (i = 0; i < OkapiUI.txt.size(); i++) {
             g2.setFont(f);
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2.drawString(OkapiUI.txt.get(i).arg,
-                    (float) OkapiUI.txt.get(i).xPos * OkapiUI.factor,
-                    (float) OkapiUI.txt.get(i).yPos * OkapiUI.factor);
+            g2.drawString(OkapiUI.txt.get(i).text,
+                    (float) OkapiUI.txt.get(i).x * OkapiUI.factor,
+                    (float) OkapiUI.txt.get(i).y * OkapiUI.factor);
         }
 
         for (i = 0; i < OkapiUI.hex.size(); i++) {

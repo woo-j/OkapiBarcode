@@ -88,7 +88,7 @@ public class Java2DRenderer implements SymbolRenderer {
         }
 
         for (TextBox text : symbol.txt) {
-            g2d.drawString(text.arg, (float) (text.xPos * magnification), (float) (text.yPos * magnification));
+            g2d.drawString(text.text, (float) (text.x * magnification), (float) (text.y * magnification));
         }
 
         for (Hexagon hexagon : symbol.hex) {

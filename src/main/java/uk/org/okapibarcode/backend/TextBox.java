@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Robin Stuart
+ * Copyright 2014-2015 Robin Stuart, Daniel Gredler
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,31 +13,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package uk.org.okapibarcode.backend;
 
 /**
- * A simple text item class
+ * A simple text item class.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
+ * @author Daniel Gredler
  */
 public class TextBox {
-    public double xPos;
-    public double yPos;
-    public String arg;
 
-    public void TextBox() {
-        xPos = 0.0;
-        yPos = 0.0;
-        arg = "";
+    /** X position. */
+    public final double x;
+
+    /** Y position. */
+    public final double y;
+
+    /** Text value. */
+    public final String text;
+
+    /**
+     * Creates a new instance.
+     *
+     * @param x the X position
+     * @param y the Y position
+     * @param text the text value
+     */
+    public TextBox(double x, double y, String text) {
+        this.x = x;
+        this.y = y;
+        this.text = text;
     }
 
-    public void setvalues(double x, double y, String a) {
-        xPos = x;
-        yPos = y;
-        arg = a;
-    }
-
-    public void printvalues() {
-        System.out.println("Text  X:" + xPos + " Y:" + yPos + " A:" + arg);
+    /** {@inheritDoc} */
+    @Override
+    public String toString() {
+        return "TextBox[x=" + x + ", y=" + y + ", text=" + text + "]";
     }
 }

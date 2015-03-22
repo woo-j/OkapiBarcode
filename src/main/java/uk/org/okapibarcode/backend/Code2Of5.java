@@ -454,11 +454,9 @@ public class Code2Of5 extends Symbol {
             rect.add(rightBar);
         }
         if (!(readable.isEmpty())) {
-            TextBox thistext = new TextBox();
             // Calculated position is approximately central
-            thistext.setvalues(((symbol_width - (5.0 * readable.length())) / 2),
-                    symbol_height + 8.0, readable);
-            txt.add(thistext);
+            TextBox text = new TextBox(((symbol_width - (5.0 * readable.length())) / 2), symbol_height + 8.0, readable);
+            txt.add(text);
         }
     }
 }

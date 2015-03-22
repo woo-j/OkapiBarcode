@@ -69,9 +69,9 @@ public class SaveSymbol extends JPanel{
         for (i = 0; i < OkapiUI.txt.size(); i++) {
             g2.setFont(f);
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2.drawString(OkapiUI.txt.get(i).arg,
-                    (float) (OkapiUI.txt.get(i).xPos * magnification) + borderSize,
-                    (float) (OkapiUI.txt.get(i).yPos * magnification) + borderSize);
+            g2.drawString(OkapiUI.txt.get(i).text,
+                    (float) (OkapiUI.txt.get(i).x * magnification) + borderSize,
+                    (float) (OkapiUI.txt.get(i).y * magnification) + borderSize);
         }
 
         for (i = 0; i < OkapiUI.hex.size(); i++) {

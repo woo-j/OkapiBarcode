@@ -21,7 +21,6 @@ package uk.org.okapibarcode.backend;
  * According to BS EN 798:1996
  *
  * @author <a href="mailto:jakel2006@me.com">Robert Elliott</a>
- * @version 0.2
  */
 public class Codabar extends Symbol {
 

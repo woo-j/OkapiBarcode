@@ -20,7 +20,6 @@ package uk.org.okapibarcode.backend;
  * According to ANSI/AIM BC12-1998
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
- * @version 0.1
  */
 public class ChannelCode extends Symbol {
     private int[] space = new int[11];

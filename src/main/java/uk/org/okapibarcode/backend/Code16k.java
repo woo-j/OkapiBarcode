@@ -23,7 +23,6 @@ import java.io.UnsupportedEncodingException;
  * According to BS EN 12323:2005
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
- * @version 0.1
  */
 public class Code16k extends Symbol {
 

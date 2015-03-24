@@ -22,7 +22,6 @@ import java.util.ArrayList;
  * Generic barcode symbology class
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
- * @version 0.1
  */
 public abstract class Symbol {
     private static final char[] TECHNETIUM = { '0', '1', '2', '3', '4', '5', '6', '7', '8',

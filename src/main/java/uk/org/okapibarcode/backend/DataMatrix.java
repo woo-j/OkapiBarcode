@@ -20,87 +20,86 @@ import java.io.UnsupportedEncodingException;
 /**
  * Implements Data Matrix ECC 200 bar code symbology
  * According to ISO/IEC 16022:2006
- * 
+ *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
- * @version 0.2
  */
 public class DataMatrix extends Symbol {
 
     static int[] c40_shift = {
-        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 
-        3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2,
+        3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
         3, 3, 3, 3, 3, 3, 3, 3
     };
 
     static int[] c40_value = {
-        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 
-        20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 3, 0, 1, 2, 3, 4, 5, 6, 
-        7, 8, 9, 10, 11, 12, 13, 14, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16, 
-        17, 18, 19, 20, 21, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 
-        27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 22, 23, 24, 25, 26, 
-        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 
+        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+        20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 3, 0, 1, 2, 3, 4, 5, 6,
+        7, 8, 9, 10, 11, 12, 13, 14, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16,
+        17, 18, 19, 20, 21, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26,
+        27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 22, 23, 24, 25, 26,
+        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
         20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31
     };
 
     static int[] text_shift = {
-        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
-        1, 1, 1, 1, 1, 1, 1, 1, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 
-        3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 
-        3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3,
+        3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 2, 2, 2, 2,
+        3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 3, 3, 3, 3, 3
     };
 
     static int[] text_value = {
-        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 
-        20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 3, 0, 1, 2, 3, 4, 5, 6, 
-        7, 8, 9, 10, 11, 12, 13, 14, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16, 
-        17, 18, 19, 20, 21, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 
-        16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 22, 23, 24, 25, 26, 0, 14, 
-        15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 
+        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+        20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 3, 0, 1, 2, 3, 4, 5, 6,
+        7, 8, 9, 10, 11, 12, 13, 14, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16,
+        17, 18, 19, 20, 21, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+        16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 22, 23, 24, 25, 26, 0, 14,
+        15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
         33, 34, 35, 36, 37, 38, 39, 27, 28, 29, 30, 31
     };
 
     static int[] intsymbol = {
-        0, 1, 3, 5, 7, 8, 10, 12, 13, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 
+        0, 1, 3, 5, 7, 8, 10, 12, 13, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
         25, 26, 27, 28, 29, 2, 4, 6, 9, 11, 14
     };
 
     static int[] matrixH = {
-        10, 12, 8, 14, 8, 16, 12, 18, 20, 12, 22, 16, 24, 26, 16, 32, 36, 40, 
+        10, 12, 8, 14, 8, 16, 12, 18, 20, 12, 22, 16, 24, 26, 16, 32, 36, 40,
         44, 48, 52, 64, 72, 80, 88, 96, 104, 120, 132, 144
     };
 
     static int[] matrixW = {
-        10, 12, 18, 14, 32, 16, 26, 18, 20, 36, 22, 36, 24, 26, 48, 32, 36, 40, 
+        10, 12, 18, 14, 32, 16, 26, 18, 20, 36, 22, 36, 24, 26, 48, 32, 36, 40,
         44, 48, 52, 64, 72, 80, 88, 96, 104, 120, 132, 144
     };
 
     static int[] matrixFH = {
-        10, 12, 8, 14, 8, 16, 12, 18, 20, 12, 22, 16, 24, 26, 16, 16, 18, 20, 
+        10, 12, 8, 14, 8, 16, 12, 18, 20, 12, 22, 16, 24, 26, 16, 16, 18, 20,
         22, 24, 26, 16, 18, 20, 22, 24, 26, 20, 22, 24
     };
 
     static int[] matrixFW = {
-        10, 12, 18, 14, 16, 16, 26, 18, 20, 18, 22, 18, 24, 26, 24, 16, 18, 20, 
+        10, 12, 18, 14, 16, 16, 26, 18, 20, 18, 22, 18, 24, 26, 24, 16, 18, 20,
         22, 24, 26, 16, 18, 20, 22, 24, 26, 20, 22, 24
     };
 
     static int[] matrixbytes = {
-        3, 5, 5, 8, 10, 12, 16, 18, 22, 22, 30, 32, 36, 44, 49, 62, 86, 114, 
+        3, 5, 5, 8, 10, 12, 16, 18, 22, 22, 30, 32, 36, 44, 49, 62, 86, 114,
         144, 174, 204, 280, 368, 456, 576, 696, 816, 1050, 1304, 1558
     };
 
     static int[] matrixdatablock = {
-        3, 5, 5, 8, 10, 12, 16, 18, 22, 22, 30, 32, 36, 44, 49, 62, 86, 114, 
+        3, 5, 5, 8, 10, 12, 16, 18, 22, 22, 30, 32, 36, 44, 49, 62, 86, 114,
         144, 174, 102, 140, 92, 114, 144, 174, 136, 175, 163, 156
     };
 
     static int[] matrixrsblock = {
-        5, 7, 7, 10, 11, 12, 14, 14, 18, 18, 20, 24, 24, 28, 28, 36, 42, 48, 56, 
+        5, 7, 7, 10, 11, 12, 14, 14, 18, 18, 20, 24, 24, 28, 28, 36, 42, 48, 56,
         68, 42, 56, 36, 48, 56, 68, 56, 68, 62, 62
     };
 
@@ -114,7 +113,7 @@ public class DataMatrix extends Symbol {
     private int[] places;
     private boolean isSquare;
     int[] inputData;
-    
+
     int process_p;
     int[] process_buffer = new int[8];
 
@@ -155,13 +154,13 @@ public class DataMatrix extends Symbol {
             error_msg = "Data too long to fit in symbol";
             return false;
         }
-        
+
         if ((option2 >= 1) && (option2 <= 30)) {
             optionsize = intsymbol[option2 - 1];
         } else {
             optionsize = -1;
         }
-        
+
         calcsize = 29;
         for (i = 29; i > -1; i--) {
             if (matrixbytes[i] >= binlen) {
@@ -194,7 +193,7 @@ public class DataMatrix extends Symbol {
                 return false;
             }
         }
-        
+
         // Now we know the symbol size we can handle the remaining data in the process buffer.
         binlen = encodeRemainder(matrixbytes[symbolsize] - binlen, binlen);
 
@@ -266,7 +265,7 @@ public class DataMatrix extends Symbol {
             pattern[(H - y) - 1] = bin2pat(bin);
             row_height[(H - y) - 1] = 1;
         }
-        
+
         encodeInfo += "Grid Size: " + W + " X " + H + "\n";
         encodeInfo += "Data Codewords: " + datablock + "\n";
         encodeInfo += "ECC Codewords: " + rsblock + "\n";
@@ -314,11 +313,11 @@ public class DataMatrix extends Symbol {
                 if(debug) System.out.printf("RP ");
             }
         }
-        
+
         /* Check for Macro05/Macro06 */
         /* "[)>[RS]05[GS]...[RS][EOT]" -> CW 236 */
         /* "[)>[RS]06[GS]...[RS][EOT]" -> CW 237 */
-        
+
         if (tp == 0 & sp == 0 && inputlen >= 9) {
             if (inputData[0] == '[' && inputData[1] == ')' && inputData[2] == '>'
                     && inputData[3] == '\u001e' && inputData[4] == '0'
@@ -342,7 +341,7 @@ public class DataMatrix extends Symbol {
 		inputlen -= 2;
             }
         }
-        
+
         while (sp < inputlen) {
 
             current_mode = next_mode;
@@ -354,9 +353,9 @@ public class DataMatrix extends Symbol {
                 for (i = 0; i < 8; i++) {
                     process_buffer[i] = 0;
                 }
-                
+
                 if (isTwoDigits(sp)) {
-                    target[tp] = (10 * Character.getNumericValue(inputData[sp])) 
+                    target[tp] = (10 * Character.getNumericValue(inputData[sp]))
                             + Character.getNumericValue(inputData[sp + 1]) + 130;
                     if (debug) System.out.printf("N%d ", target[tp] - 130);
                     tp++;
@@ -478,7 +477,7 @@ public class DataMatrix extends Symbol {
                     if (process_p >= 3) {
                         int iv;
 
-                        iv = (1600 * process_buffer[0]) + (40 * process_buffer[1]) + 
+                        iv = (1600 * process_buffer[0]) + (40 * process_buffer[1]) +
                                 (process_buffer[2]) + 1;
                         target[tp] = iv / 256;
                         tp++;
@@ -488,7 +487,7 @@ public class DataMatrix extends Symbol {
                         binary_length++;
                         binary[binary_length] = ' ';
                         binary_length++;
-                        if (debug) System.out.printf("[%d %d %d] ", process_buffer[0], 
+                        if (debug) System.out.printf("[%d %d %d] ", process_buffer[0],
                                 process_buffer[1], process_buffer[2]);
 
                         process_buffer[0] = process_buffer[3];
@@ -547,7 +546,7 @@ public class DataMatrix extends Symbol {
                     if (process_p >= 3) {
                         int iv;
 
-                        iv = (1600 * process_buffer[0]) + (40 * process_buffer[1]) + 
+                        iv = (1600 * process_buffer[0]) + (40 * process_buffer[1]) +
                                 (process_buffer[2]) + 1;
                         target[tp] = iv / 256;
                         tp++;
@@ -557,7 +556,7 @@ public class DataMatrix extends Symbol {
                         binary_length++;
                         binary[binary_length] = ' ';
                         binary_length++;
-                        if (debug) System.out.printf("[%d %d %d] ", 
+                        if (debug) System.out.printf("[%d %d %d] ",
                                 process_buffer[0], process_buffer[1], process_buffer[2]);
 
                         process_buffer[0] = process_buffer[3];
@@ -614,7 +613,7 @@ public class DataMatrix extends Symbol {
                     if (process_p >= 3) {
                         int iv;
 
-                        iv = (1600 * process_buffer[0]) + (40 * process_buffer[1]) 
+                        iv = (1600 * process_buffer[0]) + (40 * process_buffer[1])
                                 + (process_buffer[2]) + 1;
                         target[tp] = iv / 256;
                         tp++;
@@ -624,7 +623,7 @@ public class DataMatrix extends Symbol {
                         binary_length++;
                         binary[binary_length] = ' ';
                         binary_length++;
-                        if (debug) System.out.printf("[%d %d %d] ", 
+                        if (debug) System.out.printf("[%d %d %d] ",
                                 process_buffer[0], process_buffer[1], process_buffer[2]);
 
                         process_buffer[0] = process_buffer[3];
@@ -666,13 +665,13 @@ public class DataMatrix extends Symbol {
                 }
 
                 if (process_p >= 4) {
-                    target[tp] = (process_buffer[0] << 2) 
+                    target[tp] = (process_buffer[0] << 2)
                             + ((process_buffer[1] & 0x30) >> 4);
                     tp++;
-                    target[tp] = ((process_buffer[1] & 0x0f) << 4) 
+                    target[tp] = ((process_buffer[1] & 0x0f) << 4)
                             + ((process_buffer[2] & 0x3c) >> 2);
                     tp++;
-                    target[tp] = ((process_buffer[2] & 0x03) << 6) 
+                    target[tp] = ((process_buffer[2] & 0x03) << 6)
                             + process_buffer[3];
                     tp++;
                     binary[binary_length] = ' ';
@@ -681,8 +680,8 @@ public class DataMatrix extends Symbol {
                     binary_length++;
                     binary[binary_length] = ' ';
                     binary_length++;
-                    if (debug) System.out.printf("[%d %d %d %d] ", 
-                            process_buffer[0], process_buffer[1], 
+                    if (debug) System.out.printf("[%d %d %d %d] ",
+                            process_buffer[0], process_buffer[1],
                             process_buffer[2], process_buffer[3]);
 
                     process_buffer[0] = process_buffer[4];
@@ -728,7 +727,7 @@ public class DataMatrix extends Symbol {
                     /* start of binary data */
                     int binary_count; /* length of b256 data */
 
-                    for (binary_count = 0; binary[binary_count + i] == 'b'; 
+                    for (binary_count = 0; binary[binary_count + i] == 'b';
                             binary_count++);
 
                     if (binary_count <= 249) {
@@ -773,28 +772,28 @@ public class DataMatrix extends Symbol {
         last_mode = current_mode;
         return tp;
     }
-    
+
     private int encodeRemainder(int symbols_left, int target_length) {
-        
+
         int inputlen = content.length();
 
 	switch (last_mode) {
             case DM_C40:
             case DM_TEXT:
                 if (symbols_left == process_p) { // No unlatch required!
-                
+
                     if (process_p == 1) {   // 1 data character left to encode.
                         target[target_length] = inputData[inputlen - 1] + 1;
                         target_length++;
                     }
 
                     if (process_p == 2) {   // 2 data characters left to encode.
-                    
+
                         // Pad with shift 1 value (0) and encode as double.
                         int intValue = (1600 * process_buffer[0]) + (40 * process_buffer[1]) + 1;	// ie (0 + 1).
-                        target[target_length] = intValue / 256; 
+                        target[target_length] = intValue / 256;
                         target_length++;
-                        target[target_length] = intValue % 256; 
+                        target[target_length] = intValue % 256;
                         target_length++;
                     }
                 }
@@ -802,13 +801,13 @@ public class DataMatrix extends Symbol {
                 if (symbols_left > process_p) {
                     target[target_length] = (254); target_length++;    // Unlatch and encode remaining data in ascii.
                     if (process_p == 1 || (process_p == 2 && process_buffer[0] < 3)) {	// Check for a shift value.
-                    
-                        target[target_length] = inputData[inputlen - 1] + 1; 
+
+                        target[target_length] = inputData[inputlen - 1] + 1;
                         target_length++;
                     } else if (process_p == 2) {
-                        target[target_length] = inputData[inputlen - 2] + 1; 
+                        target[target_length] = inputData[inputlen - 2] + 1;
                         target_length++;
-                        target[target_length] = inputData[inputlen - 1] + 1; 
+                        target[target_length] = inputData[inputlen - 1] + 1;
                         target_length++;
                     }
                 }
@@ -818,33 +817,33 @@ public class DataMatrix extends Symbol {
                 if (symbols_left == process_p) {	// Unlatch not required!
 
                     if (process_p == 1) {   // 1 data character left to encode.
-                        target[target_length] = inputData[inputlen - 1] + 1; 
+                        target[target_length] = inputData[inputlen - 1] + 1;
                         target_length++;
                     }
 
                     if (process_p == 2) {
                         // Encode last 2 bytes as ascii.
-                        target[target_length] = inputData[inputlen - 2] + 1; 
+                        target[target_length] = inputData[inputlen - 2] + 1;
                         target_length++;
-                        target[target_length] = inputData[inputlen - 1] + 1; 
+                        target[target_length] = inputData[inputlen - 1] + 1;
                         target_length++;
                     }
                 }
 
                     if (symbols_left > process_p) {	// Unlatch and encode remaining data in ascii.
 
-                        target[target_length] = (254); 
+                        target[target_length] = (254);
                         target_length++;   // Unlatch.
-                        
+
                         if (process_p == 1){
-                            target[target_length] = inputData[inputlen - 1] + 1; 
+                            target[target_length] = inputData[inputlen - 1] + 1;
                             target_length++;
                         }
 
                         if (process_p == 2) {
-                            target[target_length] = inputData[inputlen - 2] + 1; 
+                            target[target_length] = inputData[inputlen - 2] + 1;
                             target_length++;
-                            target[target_length] = inputData[inputlen - 1] + 1; 
+                            target[target_length] = inputData[inputlen - 1] + 1;
                             target_length++;
                         }
                     }
@@ -854,25 +853,25 @@ public class DataMatrix extends Symbol {
                 if (symbols_left == process_p)	// Unlatch not required!
                 {
                     if (process_p == 1) {
-                        target[target_length] = inputData[inputlen - 1] + 1; 
+                        target[target_length] = inputData[inputlen - 1] + 1;
                         target_length++;
                     }
 
                     if (process_p == 2) {
-                        target[target_length] = inputData[inputlen - 2] + 1; 
+                        target[target_length] = inputData[inputlen - 2] + 1;
                         target_length++;
-                        target[target_length] = inputData[inputlen - 1] + 1; 
+                        target[target_length] = inputData[inputlen - 1] + 1;
                         target_length++;
                     }
 
                     if (process_p == 3) { // Append edifact unlatch value (31) and encode as triple.
-                        target[target_length] = (process_buffer[0] << 2) + 
-                                ((process_buffer[1] & 0x30) >> 4); 
+                        target[target_length] = (process_buffer[0] << 2) +
+                                ((process_buffer[1] & 0x30) >> 4);
                         target_length++;
-                        target[target_length] = ((process_buffer[1] & 0x0f) << 4) 
-                                + ((process_buffer[2] & 0x3c) >> 2); 
+                        target[target_length] = ((process_buffer[1] & 0x0f) << 4)
+                                + ((process_buffer[2] & 0x3c) >> 2);
                         target_length++;
-                        target[target_length] = ((process_buffer[2] & 0x03) << 6) 
+                        target[target_length] = ((process_buffer[2] & 0x03) << 6)
                                 + 31;
                         target_length++;
                     }
@@ -882,44 +881,44 @@ public class DataMatrix extends Symbol {
                 {
                     // Edifact unlatch.
                     if (symbols_left < 3) {
-                        target[target_length] = 31; 
+                        target[target_length] = 31;
                         target_length++;
                     } else {
-                        target[target_length] = (31 << 2); 
+                        target[target_length] = (31 << 2);
                         target_length++;
                     }
 
                     if (process_p == 1) {
-                        target[target_length] = inputData[inputlen - 1] + 1; 
+                        target[target_length] = inputData[inputlen - 1] + 1;
                         target_length++;
                     }
 
                     if (process_p == 2) {
-                        target[target_length] = inputData[inputlen - 2] + 1; 
+                        target[target_length] = inputData[inputlen - 2] + 1;
                         target_length++;
-                        target[target_length] = inputData[inputlen - 1] + 1; 
+                        target[target_length] = inputData[inputlen - 1] + 1;
                         target_length++;
                     }
 
                     if (process_p == 3) {
-                        target[target_length] = inputData[inputlen - 3] + 1; 
+                        target[target_length] = inputData[inputlen - 3] + 1;
                         target_length++;
-                        target[target_length] = inputData[inputlen - 2] + 1; 
+                        target[target_length] = inputData[inputlen - 2] + 1;
                         target_length++;
-                        target[target_length] = inputData[inputlen - 1] + 1; 
+                        target[target_length] = inputData[inputlen - 1] + 1;
                         target_length++;
                     }
                 }
                 break;
         }
-        
+
         if(debug) {
             System.out.printf("\n\n");
-            
+
             for(int i = 0; i < target_length; i++) {
                 System.out.printf("%03d ", target[i]);
             }
-            
+
             System.out.printf("\n");
         }
 
@@ -1069,7 +1068,7 @@ public class DataMatrix extends Symbol {
             if (inputData[sp] > 128) {
                 edf_count += (4.0 / 3.0);
             }
-            
+
             /* if (sp >= (sourcelen - 5)) {
                 edf_count += 6.0;
             } */ /* MMmmm fudge! */
@@ -1238,7 +1237,7 @@ public class DataMatrix extends Symbol {
         c = 0;
         do {
             // check corner
-            if (r == NR && (c == 0)) { 
+            if (r == NR && (c == 0)) {
                 placeCornerA(NR, NC, p++);
             }
             if (r == NR - 2 && (c == 0) && ((NC % 4) != 0)) {

@@ -20,7 +20,6 @@ package uk.org.okapibarcode.backend;
  * According to ISO/IEC 24778:2008 Annex A
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
- * @version 0.1
  */
 public class AztecRune extends Symbol {
 

@@ -22,7 +22,6 @@ import java.io.UnsupportedEncodingException;
  * According to ISO/IEC 15417:2007
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
- * @version 0.3
  */
 
 public class Code128 extends Symbol {

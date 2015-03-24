@@ -22,7 +22,6 @@ import java.awt.Rectangle;
  * According to ANSI/AIM-BC6-2000
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
- * @version 0.1
  */
 public class Code49 extends Symbol {
 

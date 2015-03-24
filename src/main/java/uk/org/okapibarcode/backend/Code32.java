@@ -19,7 +19,6 @@ package uk.org.okapibarcode.backend;
  * Implements Code 32 (AKA Italian Pharmacode)
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
- * @version 0.1
  */
 public class Code32 extends Symbol {
     private char[] tabella = {

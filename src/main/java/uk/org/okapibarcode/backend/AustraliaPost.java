@@ -22,7 +22,6 @@ import java.awt.Rectangle;
  * Implements the <a href="http://auspost.com.au/media/documents/a-guide-to-printing-the-4state-barcode-v31-mar2012.pdf">Australia Post 4-State barcode</a>.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
- * @version 0.1
  */
 public class AustraliaPost extends Symbol{
 

@@ -23,7 +23,6 @@ import java.math.BigInteger;
  * Specification at https://ribbs.usps.gov/intelligentmail_mailpieces/documents/tech_guides/SPUSPSG.pdf
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
- * @version 0.1
  */
 public class UspsOneCode extends Symbol {
 

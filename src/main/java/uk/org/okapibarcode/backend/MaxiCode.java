@@ -125,7 +125,7 @@ public class MaxiCode extends Symbol {
     /**
      * Sets the primary data. Should only be used for modes 2 and 3. Must conform to the following structure:
      *
-     * <table>
+     * <table summary="Expected primary data structure.">
      *   <tr><th>Characters</th><th>Meaning</th></tr>
      *   <tr><td>1-9</td><td>Postal code data which can consist of up to 9 digits (for mode 2) or up to 6
      *                       alphanumeric characters (for mode 3). Remaining unused characters should be

@@ -3,6 +3,7 @@ apply plugin: 'eclipse'
 apply plugin: 'jacoco'
 
 group = 'uk.org.okapibarcode'
+archivesBaseName = 'okapibarcode'
 version = '0.1'
 
 repositories {
@@ -21,6 +22,7 @@ compileJava.options.encoding = 'UTF-8'
 javadoc.options.encoding = 'UTF-8'
 
 jar {
+    dependsOn 'check'
     manifest.attributes(
         'Main-Class': 'uk.org.okapibarcode.OkapiBarcode',
         'Implementation-Title': 'Okapi Barcode',

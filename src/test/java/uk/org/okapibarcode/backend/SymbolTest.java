@@ -136,13 +136,15 @@ public class SymbolTest {
      */
     private void verifySuccess(Symbol symbol) throws IOException {
 
+        assertEquals("error message", "", symbol.error_msg);
+
         List< String > expectedCodewords = Files.readLines(codewordsFile, UTF_8);
         int[] actualCodewords = symbol.getCodewords();
         assertEquals(expectedCodewords.size(), actualCodewords.length);
         for (int i = 0; i < actualCodewords.length; i++) {
             int expected = getInt(expectedCodewords.get(i));
             int actual = actualCodewords[i];
-            assertEquals("at index " + i, expected, actual);
+            assertEquals("at codeword index " + i, expected, actual);
         }
 
         BufferedImage expected = ImageIO.read(pngFile);

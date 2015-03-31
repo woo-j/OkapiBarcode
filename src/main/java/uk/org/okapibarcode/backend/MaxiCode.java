@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package uk.org.okapibarcode.backend;
 
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 
 import java.awt.geom.Ellipse2D;
+import java.util.Arrays;
 
 /**
  * Implements MaxiCode according to ISO 16023:2000.
@@ -103,8 +105,10 @@ public class MaxiCode extends Symbol {
     };
 
     private int mode;
+    private int structuredAppendPosition = 1;
+    private int structuredAppendTotal = 1;
     private String primaryData = "";
-    private int[] maxi_codeword = new int[144];
+    private int[] codewords;
     private int[] source;
     private int[] set = new int[144];
     private int[] character = new int[144];
@@ -120,6 +124,33 @@ public class MaxiCode extends Symbol {
             throw new IllegalArgumentException("Invalid MaxiCode mode: " + mode);
         }
         this.mode = mode;
+    }
+
+    /**
+     * If this MaxiCode symbol is part of a series of MaxiCode symbols appended in a structured format, this method sets the
+     * position of this symbol in the series. Valid values are 1 through 8 inclusive.
+     *
+     * @param position the position of this MaxiCode symbol in the structured append series
+     */
+    public void setStructuredAppendPosition(int position) {
+        if (position < 1 || position > 8) {
+            throw new IllegalArgumentException("Invalid MaxiCode structured append position: " + position);
+        }
+        this.structuredAppendPosition = position;
+    }
+
+    /**
+     * If this MaxiCode symbol is part of a series of MaxiCode symbols appended in a structured format, this method sets the total
+     * number of symbols in the series. Valid values are 1 through 8 inclusive. A value of 1 indicates that this symbol is not
+     * part of a structured append series.
+     *
+     * @param total the total number of MaxiCode symbols in the structured append series
+     */
+    public void setStructuredAppendTotal(int total) {
+        if (total < 1 || total > 8) {
+            throw new IllegalArgumentException("Invalid MaxiCode structured append total: " + total);
+        }
+        this.structuredAppendTotal = total;
     }
 
     /**
@@ -140,24 +171,21 @@ public class MaxiCode extends Symbol {
         primaryData = primary;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean encode() {
-        byte[] inputBytes;
-        int i, j, block, bit;
-        int eclen;
-        int[] bit_pattern = new int[7];
+
+        // copy input data over into source
         int sourcelen = content.length();
-        String bin;
-
-        inputBytes = content.getBytes(ISO_8859_1);
-
         source = new int[sourcelen];
-        for (i = 0; i < sourcelen; i++) {
+        byte[] inputBytes = content.getBytes(ISO_8859_1);
+        for (int i = 0; i < sourcelen; i++) {
             source[i] = inputBytes[i] & 0xFF;
         }
 
+        // mode 2 -> mode 3 if postal code isn't strictly numeric
         if (mode == 2) {
-            for (i = 0; i < 10 && i < primaryData.length(); i++) {
+            for (int i = 0; i < 10 && i < primaryData.length(); i++) {
                 if ((primaryData.charAt(i) < '0') || (primaryData.charAt(i) > '9')) {
                     mode = 3;
                     break;
@@ -165,86 +193,103 @@ public class MaxiCode extends Symbol {
             }
         }
 
-        if ((mode == 2) || (mode == 3)) { /* Modes 2 and 3 need data in symbol->primary */
-
-            if (primaryData.length() != 15) {
-                error_msg = "Invalid Primary String";
-                return false;
-            }
-
-            for (i = 9; i < 15; i++) { /* check that country code and service are numeric */
-                if ((primaryData.charAt(i) < '0') || (primaryData.charAt(i) > '9')) {
-                    error_msg = "Invalid Primary String";
-                    return false;
-                }
-            }
-
-            String postcode;
-            if (mode == 2) {
-                postcode = primaryData.substring(0, 9);
-                int index = postcode.indexOf(' ');
-                if (index != -1) {
-                    postcode = postcode.substring(0, index);
-                }
-            } else {
-                // if (mode == 3)
-                postcode = primaryData.substring(0, 6);
-            }
-
-            int country = Integer.parseInt(primaryData.substring(9, 12));
-            int service = Integer.parseInt(primaryData.substring(12, 15));
-
-            if (debug) {
-                System.out.println("Using mode " + mode);
-                System.out.println("     Postcode: " + postcode);
-                System.out.println("     Country Code: " + country);
-                System.out.println("     Service: " + service);
-            }
-
-            if (mode == 2) {
-                maxi_do_primary_2(postcode, country, service);
-            } else {
-                //if(mode == 3)
-                maxi_do_primary_3(postcode, country, service);
-            }
-        } else {
-            maxi_codeword[0] = mode;
-        }
-
-        if (!(maxi_text_process(mode))) {
+        // initialize the set and character arrays
+        if (!(processText())) {
             error_msg = "Input data too long";
             return false;
         }
 
-        /* All the data is sorted - now do error correction */
-        maxi_do_primary_check();  /* always EEC */
-
-        if (mode == 5) {
-            eclen = 56;   // 68 data codewords , 56 error corrections
+        // start building the codeword array, starting with a copy of the character data
+        // insert primary message if this is a structured carrier message; insert mode otherwise
+        codewords = Arrays.copyOf(character, character.length);
+        if (mode == 2 || mode == 3) {
+            int[] primary = getPrimaryCodewords();
+            codewords = insert(codewords, 0, primary);
         } else {
-            eclen = 40;  // 84 data codewords,  40 error corrections
+            codewords = insert(codewords, 0, new int[] { mode });
+        }
+
+        // insert structured append flag if necessary
+        if (structuredAppendTotal > 1) {
+
+            int[] flag = new int[2];
+            flag[0] = 33; // padding
+            flag[1] = ((structuredAppendPosition - 1) << 3) | (structuredAppendTotal - 1); // position + total
+
+            int index;
+            if (mode == 2 || mode == 3) {
+                index = 10; // first two data symbols in the secondary message
+            } else {
+                index = 1; // first two data symbols in the primary message (first symbol at index 0 isn't a data symbol)
+            }
+
+            codewords = insert(codewords, index, flag);
+        }
+
+        int secondaryMax, secondaryECMax;
+        if (mode == 5) {
+            // 68 data codewords, 56 error corrections in secondary message
+            secondaryMax = 68;
+            secondaryECMax = 56;
+        } else {
+            // 84 data codewords, 40 error corrections in secondary message
+            secondaryMax = 84;
+            secondaryECMax = 40;
+        }
+
+        // truncate data codewords to maximum data space available
+        int totalMax = secondaryMax + 10;
+        if (codewords.length > totalMax) {
+            codewords = Arrays.copyOfRange(codewords, 0, totalMax);
+        }
+
+        // insert primary error correction between primary message and secondary message (always EEC)
+        int[] primary = Arrays.copyOfRange(codewords, 0, 10);
+        int[] primaryCheck = getErrorCorrection(primary, 10);
+        codewords = insert(codewords, 10, primaryCheck);
+
+        // calculate secondary error correction
+        int[] secondary = Arrays.copyOfRange(codewords, 20, codewords.length);
+        int[] secondaryOdd = new int[secondary.length / 2];
+        int[] secondaryEven = new int[secondary.length / 2];
+        for (int i = 0; i < secondary.length; i++) {
+            if ((i & 1) != 0) { // odd
+                secondaryOdd[(i - 1) / 2] = secondary[i];
+            } else { // even
+                secondaryEven[i / 2] = secondary[i];
+            }
+        }
+        int[] secondaryECOdd = getErrorCorrection(secondaryOdd, secondaryECMax / 2);
+        int[] secondaryECEven = getErrorCorrection(secondaryEven, secondaryECMax / 2);
+
+        // add secondary error correction after secondary message
+        codewords = Arrays.copyOf(codewords, codewords.length + secondaryECOdd.length + secondaryECEven.length);
+        for (int i = 0; i < secondaryECOdd.length; i++) {
+            codewords[20 + secondaryMax + (2 * i) + 1] = secondaryECOdd[i];
+        }
+        for (int i = 0; i < secondaryECEven.length; i++) {
+            codewords[20 + secondaryMax + (2 * i)] = secondaryECEven[i];
         }
 
         encodeInfo += "Mode: " + mode + "\n";
-        encodeInfo += "ECC Codewords: " + eclen + "\n";
+        encodeInfo += "ECC Codewords: " + secondaryECMax + "\n";
 
-        maxi_do_secondary_chk_even(eclen / 2);  // do error correction of even
-        maxi_do_secondary_chk_odd(eclen / 2);   // do error correction of odd
+        // copy data into symbol grid
+        int[] bit_pattern = new int[7];
+        for (int i = 0; i < 33; i++) {
+            for (int j = 0; j < 30; j++) {
 
-        /* Copy data into symbol grid */
-        for (i = 0; i < 33; i++) {
-            for (j = 0; j < 30; j++) {
-                block = (MAXICODE_GRID[(i * 30) + j] + 5) / 6;
-                bit = (MAXICODE_GRID[(i * 30) + j] + 5) % 6;
+                int block = (MAXICODE_GRID[(i * 30) + j] + 5) / 6;
+                int bit = (MAXICODE_GRID[(i * 30) + j] + 5) % 6;
 
                 if (block != 0) {
 
-                    bit_pattern[0] = (maxi_codeword[block - 1] & 0x20) >> 5;
-                    bit_pattern[1] = (maxi_codeword[block - 1] & 0x10) >> 4;
-                    bit_pattern[2] = (maxi_codeword[block - 1] & 0x8) >> 3;
-                    bit_pattern[3] = (maxi_codeword[block - 1] & 0x4) >> 2;
-                    bit_pattern[4] = (maxi_codeword[block - 1] & 0x2) >> 1;
-                    bit_pattern[5] = (maxi_codeword[block - 1] & 0x1);
+                    bit_pattern[0] = (codewords[block - 1] & 0x20) >> 5;
+                    bit_pattern[1] = (codewords[block - 1] & 0x10) >> 4;
+                    bit_pattern[2] = (codewords[block - 1] & 0x8) >> 3;
+                    bit_pattern[3] = (codewords[block - 1] & 0x4) >> 2;
+                    bit_pattern[4] = (codewords[block - 1] & 0x2) >> 1;
+                    bit_pattern[5] = (codewords[block - 1] & 0x1);
 
                     if (bit_pattern[bit] != 0) {
                         grid[i][j] = true;
@@ -255,109 +300,179 @@ public class MaxiCode extends Symbol {
             }
         }
 
-        /* Add orientation markings */
-        grid[0][28] = true; // Top right filler
+        // add orientation markings
+        grid[0][28] = true;  // top right filler
         grid[0][29] = true;
-        grid[9][10] = true; // Top left marker
+        grid[9][10] = true;  // top left marker
         grid[9][11] = true;
         grid[10][11] = true;
-        grid[15][7] = true; // Left hand marker
+        grid[15][7] = true;  // left hand marker
         grid[16][8] = true;
-        grid[16][20] = true; // Right hand marker
+        grid[16][20] = true; // right hand marker
         grid[17][20] = true;
-        grid[22][10] = true; // Bottom left marker
+        grid[22][10] = true; // bottom left marker
         grid[23][10] = true;
-        grid[22][17] = true; // Bottom right marker
+        grid[22][17] = true; // bottom right marker
         grid[23][17] = true;
 
-        // The following is provided for compatibility, but the results are not useful
+        // the following is provided for compatibility, but the results are not useful
         row_count = 33;
         readable = "";
         pattern = new String[33];
         row_height = new int[33];
-
-        for (i = 0; i < 33; i++) {
-            bin = "";
-            for (j = 0; j < 30; j++) {
+        for (int i = 0; i < 33; i++) {
+            StringBuilder bin = new StringBuilder(30);
+            for (int j = 0; j < 30; j++) {
                 if (grid[i][j]) {
-                    bin += "1";
+                    bin.append("1");
                 } else {
-                    bin += "0";
+                    bin.append("0");
                 }
             }
-            pattern[i] = bin2pat(bin);
+            pattern[i] = bin2pat(bin.toString());
             row_height[i] = 1;
         }
         symbol_height = 72;
         symbol_width = 74;
 
         plotSymbol();
+
         return true;
     }
 
-    private void maxi_do_primary_2(String postcode, int country, int service) {
-        /* Format structured primary for Mode 2 */
-        int postcode_length, postcode_num = 0, i;
+    /**
+     * Extracts the postal code, country code and service code from the primary data and returns the corresponding primary message
+     * codewords.
+     *
+     * @return the primary message codewords
+     */
+    private int[] getPrimaryCodewords() {
 
-        for (i = 0; i < 9; i++) {
-            if ((postcode.charAt(i) < '0') || (postcode.charAt(i) > '9')) {
+        assert mode == 2 || mode == 3;
+
+        if (primaryData.length() != 15) {
+            error_msg = "Invalid Primary String";
+            return null;
+        }
+
+        for (int i = 9; i < 15; i++) { /* check that country code and service are numeric */
+            if ((primaryData.charAt(i) < '0') || (primaryData.charAt(i) > '9')) {
+                error_msg = "Invalid Primary String";
+                return null;
+            }
+        }
+
+        String postcode;
+        if (mode == 2) {
+            postcode = primaryData.substring(0, 9);
+            int index = postcode.indexOf(' ');
+            if (index != -1) {
+                postcode = postcode.substring(0, index);
+            }
+        } else {
+            // if (mode == 3)
+            postcode = primaryData.substring(0, 6);
+        }
+
+        int country = Integer.parseInt(primaryData.substring(9, 12));
+        int service = Integer.parseInt(primaryData.substring(12, 15));
+
+        if (debug) {
+            System.out.println("Using mode " + mode);
+            System.out.println("     Postcode: " + postcode);
+            System.out.println("     Country Code: " + country);
+            System.out.println("     Service: " + service);
+        }
+
+        if (mode == 2) {
+            return getMode2PrimaryCodewords(postcode, country, service);
+        } else { // mode == 3
+            return getMode3PrimaryCodewords(postcode, country, service);
+        }
+    }
+
+    /**
+     * Returns the primary message codewords for mode 2.
+     *
+     * @param postcode the postal code
+     * @param country the country code
+     * @param service the service code
+     * @return the primary message, as codewords
+     */
+    private static int[] getMode2PrimaryCodewords(String postcode, int country, int service) {
+
+        for (int i = 0; i < postcode.length(); i++) {
+            if (postcode.charAt(i) < '0' || postcode.charAt(i) > '9') {
                 postcode = postcode.substring(0, i);
+                break;
             }
         }
 
-        postcode_length = postcode.length();
-        for (i = 0; i < postcode_length; i++) {
-            postcode_num *= 10;
-            postcode_num += postcode.charAt(i) - '0';
-        }
+        int postcodeNum = Integer.parseInt(postcode);
 
-        maxi_codeword[0] = ((postcode_num & 0x03) << 4) | 2;
-        maxi_codeword[1] = ((postcode_num & 0xfc) >> 2);
-        maxi_codeword[2] = ((postcode_num & 0x3f00) >> 8);
-        maxi_codeword[3] = ((postcode_num & 0xfc000) >> 14);
-        maxi_codeword[4] = ((postcode_num & 0x3f00000) >> 20);
-        maxi_codeword[5] = ((postcode_num & 0x3c000000) >> 26) | ((postcode_length & 0x3) << 4);
-        maxi_codeword[6] = ((postcode_length & 0x3c) >> 2) | ((country & 0x3) << 4);
-        maxi_codeword[7] = (country & 0xfc) >> 2;
-        maxi_codeword[8] = ((country & 0x300) >> 8) | ((service & 0xf) << 2);
-        maxi_codeword[9] = ((service & 0x3f0) >> 4);
+        int[] primary = new int[10];
+        primary[0] = ((postcodeNum & 0x03) << 4) | 2;
+        primary[1] = ((postcodeNum & 0xfc) >> 2);
+        primary[2] = ((postcodeNum & 0x3f00) >> 8);
+        primary[3] = ((postcodeNum & 0xfc000) >> 14);
+        primary[4] = ((postcodeNum & 0x3f00000) >> 20);
+        primary[5] = ((postcodeNum & 0x3c000000) >> 26) | ((postcode.length() & 0x3) << 4);
+        primary[6] = ((postcode.length() & 0x3c) >> 2) | ((country & 0x3) << 4);
+        primary[7] = (country & 0xfc) >> 2;
+        primary[8] = ((country & 0x300) >> 8) | ((service & 0xf) << 2);
+        primary[9] = ((service & 0x3f0) >> 4);
+
+        return primary;
     }
 
-    private void maxi_do_primary_3(String postcodestr, int country, int service) {
-        /* Format structured primary for Mode 3 */
-        int i, h;
-        int[] postcode = new int[postcodestr.length()];
+    /**
+     * Returns the primary message codewords for mode 3.
+     *
+     * @param postcode the postal code
+     * @param country the country code
+     * @param service the service code
+     * @return the primary message, as codewords
+     */
+    private static int[] getMode3PrimaryCodewords(String postcode, int country, int service) {
 
-        h = postcodestr.length();
-        postcodestr = postcodestr.toUpperCase();
-        for (i = 0; i < h; i++) {
-            postcode[i] = postcodestr.charAt(i);
-            if ((postcodestr.charAt(i) >= 'A') && (postcodestr.charAt(i) <= 'Z')) {
-                /* (Capital) letters shifted to Code Set A values */
-                postcode[i] -= 64;
+        int[] postcodeNums = new int[postcode.length()];
+
+        postcode = postcode.toUpperCase();
+        for (int i = 0; i < postcodeNums.length; i++) {
+            postcodeNums[i] = postcode.charAt(i);
+            if (postcode.charAt(i) >= 'A' && postcode.charAt(i) <= 'Z') {
+                // (Capital) letters shifted to Code Set A values
+                postcodeNums[i] -= 64;
             }
-            if (((postcode[i] == 27) || (postcode[i] == 31)) || ((postcode[i] == 33) || (postcode[i] >= 59))) {
-                /* Not a valid postcode character */
-                postcode[i] = 32; // Space character
+            if (postcodeNums[i] == 27 || postcodeNums[i] == 31 || postcodeNums[i] == 33 || postcodeNums[i] >= 59) {
+                // Not a valid postal code character, use space instead
+                postcodeNums[i] = 32;
             }
-            /* Input characters lower than 27 (NUL - SUB) in postcode are
-             interpreted as capital letters in Code Set A (e.g. LF becomes 'J') */
+            // Input characters lower than 27 (NUL - SUB) in postal code are interpreted as capital
+            // letters in Code Set A (e.g. LF becomes 'J')
         }
 
-        maxi_codeword[0] = ((postcode[5] & 0x03) << 4) | 3;
-        maxi_codeword[1] = ((postcode[4] & 0x03) << 4) | ((postcode[5] & 0x3c) >> 2);
-        maxi_codeword[2] = ((postcode[3] & 0x03) << 4) | ((postcode[4] & 0x3c) >> 2);
-        maxi_codeword[3] = ((postcode[2] & 0x03) << 4) | ((postcode[3] & 0x3c) >> 2);
-        maxi_codeword[4] = ((postcode[1] & 0x03) << 4) | ((postcode[2] & 0x3c) >> 2);
-        maxi_codeword[5] = ((postcode[0] & 0x03) << 4) | ((postcode[1] & 0x3c) >> 2);
-        maxi_codeword[6] = ((postcode[0] & 0x3c) >> 2) | ((country & 0x3) << 4);
-        maxi_codeword[7] = (country & 0xfc) >> 2;
-        maxi_codeword[8] = ((country & 0x300) >> 8) | ((service & 0xf) << 2);
-        maxi_codeword[9] = ((service & 0x3f0) >> 4);
+        int[] primary = new int[10];
+        primary[0] = ((postcodeNums[5] & 0x03) << 4) | 3;
+        primary[1] = ((postcodeNums[4] & 0x03) << 4) | ((postcodeNums[5] & 0x3c) >> 2);
+        primary[2] = ((postcodeNums[3] & 0x03) << 4) | ((postcodeNums[4] & 0x3c) >> 2);
+        primary[3] = ((postcodeNums[2] & 0x03) << 4) | ((postcodeNums[3] & 0x3c) >> 2);
+        primary[4] = ((postcodeNums[1] & 0x03) << 4) | ((postcodeNums[2] & 0x3c) >> 2);
+        primary[5] = ((postcodeNums[0] & 0x03) << 4) | ((postcodeNums[1] & 0x3c) >> 2);
+        primary[6] = ((postcodeNums[0] & 0x3c) >> 2) | ((country & 0x3) << 4);
+        primary[7] = (country & 0xfc) >> 2;
+        primary[8] = ((country & 0x300) >> 8) | ((service & 0xf) << 2);
+        primary[9] = ((service & 0x3f0) >> 4);
+
+        return primary;
     }
 
-    private boolean maxi_text_process(int mode) {
-        /* Format text according to Appendix A */
+    /**
+     * Formats text according to Appendix A, populating the {@link #set} and {@link #character} arrays.
+     *
+     * @return true if the content fits in this symbol and was formatted; false otherwise
+     */
+    private boolean processText() {
 
         int length = content.length();
         int i, j, count, current_set;
@@ -590,28 +705,28 @@ public class MaxiCode extends Symbol {
                             if (set[i + 2] == 1) {
                                 if (set[i + 3] == 1) {
                                     /* Latch A */
-                                    maxi_bump(i);
+                                    bump(i);
                                     character[i] = 63;
                                     current_set = 1;
                                     length++;
                                     i += 3;
                                 } else {
                                     /* 3 Shift A */
-                                    maxi_bump(i);
+                                    bump(i);
                                     character[i] = 57;
                                     length++;
                                     i += 2;
                                 }
                             } else {
                                 /* 2 Shift A */
-                                maxi_bump(i);
+                                bump(i);
                                 character[i] = 56;
                                 length++;
                                 i++;
                             }
                         } else {
                             /* Shift A */
-                            maxi_bump(i);
+                            bump(i);
                             character[i] = 59;
                             length++;
                         }
@@ -619,14 +734,14 @@ public class MaxiCode extends Symbol {
                     case 2:
                         if (set[i + 1] == 2) {
                             /* Latch B */
-                            maxi_bump(i);
+                            bump(i);
                             character[i] = 63;
                             current_set = 2;
                             length++;
                             i++;
                         } else {
                             /* Shift B */
-                            maxi_bump(i);
+                            bump(i);
                             character[i] = 59;
                             length++;
                         }
@@ -634,8 +749,8 @@ public class MaxiCode extends Symbol {
                     case 3:
                         if (set[i + 1] == 3 && set[i + 2] == 3 && set[i + 3] == 3) {
                             /* Lock In C */
-                            maxi_bump(i);
-                            maxi_bump(i);
+                            bump(i);
+                            bump(i);
                             character[i] = 60;
                             character[i + 1] = 60;
                             current_set = 3;
@@ -643,7 +758,7 @@ public class MaxiCode extends Symbol {
                             i += 3;
                         } else {
                             /* Shift C */
-                            maxi_bump(i);
+                            bump(i);
                             character[i] = 60;
                             length++;
                         }
@@ -651,8 +766,8 @@ public class MaxiCode extends Symbol {
                     case 4:
                         if (set[i + 1] == 4 && set[i + 2] == 4 && set[i + 3] == 4) {
                             /* Lock In D */
-                            maxi_bump(i);
-                            maxi_bump(i);
+                            bump(i);
+                            bump(i);
                             character[i] = 61;
                             character[i + 1] = 61;
                             current_set = 4;
@@ -660,7 +775,7 @@ public class MaxiCode extends Symbol {
                             i += 3;
                         } else {
                             /* Shift D */
-                            maxi_bump(i);
+                            bump(i);
                             character[i] = 61;
                             length++;
                         }
@@ -669,15 +784,15 @@ public class MaxiCode extends Symbol {
                         /* Shift E */
                         if (set[i + 1] == 5 && set[i + 2] == 5 && set[i + 3] == 5) {
                             /* Lock In E */
-                            maxi_bump(i);
-                            maxi_bump(i);
+                            bump(i);
+                            bump(i);
                             character[i] = 62;
                             character[i + 1] = 62;
                             current_set = 5;
                             length++;
                             i += 3;
                         } else {
-                            maxi_bump(i);
+                            bump(i);
                             character[i] = 62;
                             length++;
                         }
@@ -720,147 +835,60 @@ public class MaxiCode extends Symbol {
             }
         } while (i < 144);
 
-        if (((mode == 2) || (mode == 3)) && (length > 84)) {
+        if ((mode == 2 || mode == 3) && length > 84) {
             return false;
         }
 
-        if (((mode == 4) || (mode == 6)) && (length > 93)) {
+        if ((mode == 4 || mode == 6) && length > 93) {
             return false;
         }
 
-        if ((mode == 5) && (length > 77)) {
+        if (mode == 5 && length > 77) {
             return false;
-        }
-
-        /* Copy the encoded text into the codeword array */
-        if ((mode == 2) || (mode == 3)) {
-            for (i = 0; i < 84; i++) { /* secondary only */
-                maxi_codeword[i + 20] = character[i];
-            }
-        }
-
-        if ((mode == 4) || (mode == 6)) {
-            for (i = 0; i < 9; i++) { /* primary */
-                maxi_codeword[i + 1] = character[i];
-            }
-            for (i = 0; i < 84; i++) { /* secondary */
-                maxi_codeword[i + 20] = character[i + 9];
-            }
-        }
-
-        if (mode == 5) {
-            for (i = 0; i < 9; i++) { /* primary */
-                maxi_codeword[i + 1] = character[i];
-            }
-            for (i = 0; i < 68; i++) { /* secondary */
-                maxi_codeword[i + 20] = character[i + 9];
-            }
         }
 
         return true;
     }
 
-    private void maxi_bump(int bump_posn) {
-        /* Moves everything up so that a shift or latch can be inserted */
-        for (int i = 143; i > bump_posn; i--) {
+    /**
+     * Moves everything up so that shift or latch characters can be inserted.
+     *
+     * @param position the position beyond which everything needs to be shifted
+     */
+    private void bump(int position) {
+        for (int i = 143; i > position; i--) {
             set[i] = set[i - 1];
             character[i] = character[i - 1];
         }
     }
 
-    private void maxi_do_primary_check() {
-        /* Handles error correction of primary message */
-        int[] data = new int[15];
-        int[] results = new int[15];
-        int j;
-        int datalen = 10;
-        int ecclen = 10;
-        ReedSolomon rs = new ReedSolomon();
+    /**
+     * Returns the error correction codewords for the specified data codewords.
+     *
+     * @param codewords the codewords that we need error correction codewords for
+     * @param ecclen the number of error correction codewords needed
+     * @return the error correction codewords for the specified data codewords
+     */
+    private static int[] getErrorCorrection(int[] codewords, int ecclen) {
 
+        ReedSolomon rs = new ReedSolomon();
         rs.init_gf(0x43);
         rs.init_code(ecclen, 1);
+        rs.encode(codewords.length, codewords);
 
-        for (j = 0; j < datalen; j += 1) {
-            data[j] = maxi_codeword[j];
+        int[] results = new int[ecclen];
+        for (int i = 0; i < ecclen; i++) {
+            results[i] = rs.getResult(results.length - 1 - i);
         }
 
-        rs.encode(datalen, data);
-        for (j = 0; j < ecclen; j++) {
-            results[j] = rs.getResult(j);
-        }
-
-        for (j = 0; j < ecclen; j += 1) {
-            maxi_codeword[ datalen + j] = results[ecclen - 1 - j];
-        }
-    }
-
-    private void maxi_do_secondary_chk_odd(int ecclen) {
-        /* Handles error correction of odd characters in secondary */
-        int[] data = new int[100];
-        int[] results = new int[30];
-        int j;
-        int datalen = 68;
-        ReedSolomon rs = new ReedSolomon();
-
-        rs.init_gf(0x43);
-        rs.init_code(ecclen, 1);
-
-        if (ecclen == 20) {
-            datalen = 84;
-        }
-
-        for (j = 0; j < datalen; j += 1) {
-            if ((j & 1) != 0) {  // odd
-                data[(j - 1) / 2] = maxi_codeword[j + 20];
-            }
-        }
-
-        rs.encode(datalen / 2, data);
-        for (j = 0; j < ecclen; j++) {
-            results[j] = rs.getResult(j);
-        }
-
-        for (j = 0; j < (ecclen); j += 1) {
-            maxi_codeword[ datalen + (2 * j) + 1 + 20] = results[ecclen - 1 - j];
-        }
-    }
-
-    private void maxi_do_secondary_chk_even(int ecclen) {
-        /* Handles error correction of even characters in secondary */
-        int[] data = new int[100];
-        int[] results = new int[30];
-        int j;
-        int datalen = 68;
-        ReedSolomon rs = new ReedSolomon();
-
-        if (ecclen == 20) {
-            datalen = 84;
-        }
-
-        rs.init_gf(0x43);
-        rs.init_code(ecclen, 1);
-
-        for (j = 0; j < datalen + 1; j += 1) {
-            if ((j & 1) == 0) { // even
-                data[j / 2] = maxi_codeword[j + 20];
-            }
-        }
-
-        rs.encode(datalen / 2, data);
-        for (j = 0; j < ecclen; j++) {
-            results[j] = rs.getResult(j);
-        }
-
-        for (j = 0; j < (ecclen); j += 1) {
-            maxi_codeword[ datalen + (2 * j) + 20] = results[ecclen - 1 - j];
-        }
+        return results;
     }
 
     /** {@inheritDoc} */
     @Override
     public void plotSymbol() {
 
-        // Hexagons
+        // hexagons
         for (int row = 0; row < 33; row++) {
             for (int col = 0; col < 30; col++) {
                 if (grid[row][col]) {
@@ -874,7 +902,7 @@ public class MaxiCode extends Symbol {
             }
         }
 
-        // Circles
+        // circles
         double[] radii = { 10.85, 8.97, 7.10, 5.22, 3.31, 1.43 };
         for (int i = 0; i < radii.length; i++) {
             Ellipse2D.Double circle = new Ellipse2D.Double();
@@ -886,6 +914,6 @@ public class MaxiCode extends Symbol {
     /** {@inheritDoc} */
     @Override
     protected int[] getCodewords() {
-        return maxi_codeword;
+        return codewords;
     }
 }

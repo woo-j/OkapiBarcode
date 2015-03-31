@@ -535,4 +535,20 @@ public abstract class Symbol {
             return codewords;
         }
     }
+
+    /**
+     * Inserts the specified array into the specified original array at the specified index.
+     *
+     * @param original the original array into which we want to insert another array
+     * @param index the index at which we want to insert the array
+     * @param inserted the array that we want to insert
+     * @return the combined array
+     */
+    protected static int[] insert(int[] original, int index, int[] inserted) {
+        int[] modified = new int[original.length + inserted.length];
+        System.arraycopy(original, 0, modified, 0, index);
+        System.arraycopy(inserted, 0, modified, index, inserted.length);
+        System.arraycopy(original, index, modified, index + inserted.length, modified.length - index - inserted.length);
+        return modified;
+    }
 }

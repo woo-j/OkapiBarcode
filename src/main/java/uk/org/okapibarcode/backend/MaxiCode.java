@@ -115,15 +115,24 @@ public class MaxiCode extends Symbol {
     private boolean[][] grid = new boolean[33][30];
 
     /**
-     * Sets the mode to use. Only modes 2 to 6 are supported.
+     * Sets the MaxiCode mode to use. Only modes 2 to 6 are supported.
      *
-     * @param mode the mode to use
+     * @param mode the MaxiCode mode to use
      */
     public void setMode(int mode) {
         if (mode < 2 || mode > 6) {
             throw new IllegalArgumentException("Invalid MaxiCode mode: " + mode);
         }
         this.mode = mode;
+    }
+
+    /**
+     * Returns the MaxiCode mode being used. Only modes 2 to 6 are supported.
+     *
+     * @return the MaxiCode mode being used
+     */
+    public int getMode() {
+        return mode;
     }
 
     /**
@@ -140,6 +149,16 @@ public class MaxiCode extends Symbol {
     }
 
     /**
+     * Returns the position of this MaxiCode symbol in a series of symbols using structured append. If this symbol is not part of
+     * such a series, this method will return <code>1</code>.
+     *
+     * @return the position of this MaxiCode symbol in a series of symbols using structured append
+     */
+    public int getStructuredAppendPosition() {
+        return structuredAppendPosition;
+    }
+
+    /**
      * If this MaxiCode symbol is part of a series of MaxiCode symbols appended in a structured format, this method sets the total
      * number of symbols in the series. Valid values are 1 through 8 inclusive. A value of 1 indicates that this symbol is not
      * part of a structured append series.
@@ -151,6 +170,16 @@ public class MaxiCode extends Symbol {
             throw new IllegalArgumentException("Invalid MaxiCode structured append total: " + total);
         }
         this.structuredAppendTotal = total;
+    }
+
+    /**
+     * Returns the size of the series of MaxiCode symbols using structured append that this symbol is part of. If this symbol is
+     * not part of a structured append series, this method will return <code>1</code>.
+     *
+     * @return
+     */
+    public int getStructuredAppendTotal() {
+        return structuredAppendTotal;
     }
 
     /**
@@ -169,6 +198,15 @@ public class MaxiCode extends Symbol {
      */
     public void setPrimary(String primary) {
         primaryData = primary;
+    }
+
+    /**
+     * Returns the primary data for this MaxiCode symbol. Should only be used for modes 2 and 3.
+     *
+     * @return the primary data for this MaxiCode symbol
+     */
+    public String getPrimary() {
+        return primaryData;
     }
 
     /** {@inheritDoc} */

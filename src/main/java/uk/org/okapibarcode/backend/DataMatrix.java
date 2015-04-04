@@ -135,6 +135,7 @@ public class DataMatrix extends Symbol {
         int[] grid;
         String bin;
         byte[] inputBytes;
+        
 
         try {
             inputBytes = content.getBytes("ISO8859_1");
@@ -163,7 +164,7 @@ public class DataMatrix extends Symbol {
 
         calcsize = 29;
         for (i = 29; i > -1; i--) {
-            if (matrixbytes[i] >= binlen) {
+            if (matrixbytes[i] >= (binlen + process_p)) {
                 calcsize = i;
             }
         }
@@ -195,7 +196,9 @@ public class DataMatrix extends Symbol {
         }
 
         // Now we know the symbol size we can handle the remaining data in the process buffer.
-        binlen = encodeRemainder(matrixbytes[symbolsize] - binlen, binlen);
+        if (process_p != 0) {
+            binlen = encodeRemainder(matrixbytes[symbolsize] - binlen, binlen);
+        }
 
         H = matrixH[symbolsize];
         W = matrixW[symbolsize];
@@ -294,12 +297,12 @@ public class DataMatrix extends Symbol {
         /* step (a) */
         current_mode = dm_mode.DM_ASCII;
         next_mode = dm_mode.DM_ASCII;
-
+        
         if(gs1) {
             target[tp] = 232; tp++;
             binary[binary_length] = ' ';
             binary_length++;
-            if(debug) System.out.printf("FN1 ");
+            if (debug) System.out.printf("FN1 ");
         } /* FNC1 */
 
         if(readerInit) {
@@ -310,7 +313,7 @@ public class DataMatrix extends Symbol {
                 target[tp] = 234; tp++; /* Reader Programming */
                 binary[binary_length] = ' ';
                 binary_length++;
-                if(debug) System.out.printf("RP ");
+                if (debug) System.out.printf("RP ");
             }
         }
 
@@ -762,7 +765,7 @@ public class DataMatrix extends Symbol {
         }
 
         if (debug) {
-            System.out.printf("\n\n");
+            System.out.printf("\nHex Data: ");
             for (i = 0; i < tp; i++) {
                 System.out.printf("%02X ", target[i]);
             }
@@ -772,11 +775,11 @@ public class DataMatrix extends Symbol {
         last_mode = current_mode;
         return tp;
     }
-
+    
     private int encodeRemainder(int symbols_left, int target_length) {
 
         int inputlen = content.length();
-
+        
 	switch (last_mode) {
             case DM_C40:
             case DM_TEXT:
@@ -913,13 +916,12 @@ public class DataMatrix extends Symbol {
         }
 
         if(debug) {
-            System.out.printf("\n\n");
-
+            System.out.printf("+Buffer=: ");
             for(int i = 0; i < target_length; i++) {
-                System.out.printf("%03d ", target[i]);
+                System.out.printf("%02X ", target[i]);
             }
 
-            System.out.printf("\n");
+            System.out.printf("\n\n");
         }
 
         return target_length;

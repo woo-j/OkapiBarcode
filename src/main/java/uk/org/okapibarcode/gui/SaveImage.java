@@ -52,7 +52,7 @@ public class SaveImage {
                         break;
                     case "svg":
                         svg = new ScalableVectorGraphics();
-                        svg.setShapes(OkapiUI.bcs, OkapiUI.txt, OkapiUI.hex, OkapiUI.target);
+                        svg.setShapes(OkapiUI.rect, OkapiUI.txt, OkapiUI.hex, OkapiUI.target);
                         svg.setValues(OkapiUI.dataInput, OkapiUI.width, OkapiUI.height);
                         if (!(svg.write(file))) {
                             OkapiUI.errorOutput = "Error writing to file";
@@ -60,7 +60,7 @@ public class SaveImage {
                         break;
                     case "eps":
                         eps = new PostScript();
-                        eps.setShapes(OkapiUI.bcs, OkapiUI.txt, OkapiUI.hex, OkapiUI.target);
+                        eps.setShapes(OkapiUI.rect, OkapiUI.txt, OkapiUI.hex, OkapiUI.target);
                         eps.setValues(OkapiUI.dataInput, OkapiUI.width, OkapiUI.height);
                         if (!(eps.write(file))) {
                             OkapiUI.errorOutput = "Error writing to file";

@@ -57,11 +57,11 @@ public class SaveSymbol extends JPanel{
 
         Graphics2D g2 = (Graphics2D) g;
 
-        for (i = 0; i != OkapiUI.bcs.size(); i++) {
-            x = (OkapiUI.bcs.get(i).x * magnification) + borderSize;
-            y = (OkapiUI.bcs.get(i).y * magnification) + borderSize;
-            w = OkapiUI.bcs.get(i).width * magnification;
-            h = OkapiUI.bcs.get(i).height * magnification;
+        for (i = 0; i != OkapiUI.rect.size(); i++) {
+            x = (OkapiUI.rect.get(i).x * magnification) + borderSize;
+            y = (OkapiUI.rect.get(i).y * magnification) + borderSize;
+            w = OkapiUI.rect.get(i).width * magnification;
+            h = OkapiUI.rect.get(i).height * magnification;
             g2.setColor(OkapiUI.inkColour);
             g2.fill(new Rectangle((int) x, (int) y, (int) w, (int) h));
         }

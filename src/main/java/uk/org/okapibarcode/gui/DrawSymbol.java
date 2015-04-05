@@ -56,11 +56,11 @@ public class DrawSymbol extends JPanel{
 
         Graphics2D g2 = (Graphics2D) g;
 
-        for (i = 0; i != OkapiUI.bcs.size(); i++) {
-            x = OkapiUI.bcs.get(i).x * OkapiUI.factor;
-            y = OkapiUI.bcs.get(i).y * OkapiUI.factor;
-            w = OkapiUI.bcs.get(i).width * OkapiUI.factor;
-            h = OkapiUI.bcs.get(i).height * OkapiUI.factor;
+        for (i = 0; i != OkapiUI.rect.size(); i++) {
+            x = OkapiUI.rect.get(i).x * OkapiUI.factor;
+            y = OkapiUI.rect.get(i).y * OkapiUI.factor;
+            w = OkapiUI.rect.get(i).width * OkapiUI.factor;
+            h = OkapiUI.rect.get(i).height * OkapiUI.factor;
             g2.setColor(OkapiUI.inkColour);
             g2.fill(new Rectangle((int) x, (int) y, (int) w, (int) h));
         }

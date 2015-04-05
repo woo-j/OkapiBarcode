@@ -1347,7 +1347,6 @@
                                 <StringItem index="1" value="Structured Carrier Message (Mode 3)"/>
                                 <StringItem index="2" value="Standard Symbol, SEC (Mode 4)"/>
                                 <StringItem index="3" value="Full ECC Symbol (Mode 5)"/>
-                                <StringItem index="4" value="Reader Program, SEC (Mode 6)"/>
                               </StringArray>
                             </Property>
                             <Property name="selectedIndex" type="int" value="2"/>

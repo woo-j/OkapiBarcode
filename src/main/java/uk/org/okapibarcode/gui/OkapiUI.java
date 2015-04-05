@@ -40,7 +40,7 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeSelectionModel;
 
-import uk.org.okapibarcode.backend.Barcode;
+import uk.org.okapibarcode.backend.*;
 
 /**
  *
@@ -61,7 +61,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
     public static int barHeight = 0;
     public static boolean debug = true;
     public static Object[] bc;
-    public static ArrayList<Rectangle> bcs = new ArrayList<>();
+    public static ArrayList<Rectangle> rect = new ArrayList<>();
     public static ArrayList<uk.org.okapibarcode.backend.TextBox> txt = new ArrayList<>();
     public static ArrayList<uk.org.okapibarcode.backend.Hexagon> hex = new ArrayList<>();
     public static ArrayList<Ellipse2D.Double> target = new ArrayList<>();
@@ -2073,8 +2073,55 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
     public boolean encodeMe() {
         Barcode barcode = new Barcode();
-        int option1 = 0; // For most symbologies this is user selected ECC
-        int option2 = 0; // For most symbologies this is user selected size
+        boolean output = false;
+        // TODO: Reader Init not supported yet
+        boolean readerInit = false;
+        
+        rect.clear();
+        txt.clear();
+        hex.clear();
+        target.clear();
+        
+        Upc upc = new Upc();
+        Ean ean = new Ean();
+        Code128 code128 = new Code128();
+        Codabar codabar = new Codabar();
+        Code2Of5 code2of5 = new Code2Of5();
+        MsiPlessey msiPlessey = new MsiPlessey();
+        Code3Of9 code3of9 = new Code3Of9();
+        Logmars logmars = new Logmars();
+        Code11 code11 = new Code11();
+        Code93 code93 = new Code93();
+        Pharmazentralnummer pzn = new Pharmazentralnummer();
+        Code3Of9Extended code3of9ext = new Code3Of9Extended();
+        Telepen telepen = new Telepen();
+        Code49 code49 = new Code49();
+        KoreaPost koreaPost = new KoreaPost();
+        Code16k code16k = new Code16k();
+        Postnet postnet = new Postnet();
+        RoyalMail4State royalMail = new RoyalMail4State();
+        KixCode kixCode = new KixCode();
+        JapanPost japanPost = new JapanPost();
+        AustraliaPost australiaPost = new AustraliaPost();
+        ChannelCode channelCode = new ChannelCode();
+        PharmaCode pharmaCode = new PharmaCode();
+        PharmaCode2Track pharmaCode2t = new PharmaCode2Track();
+        Code32 code32 = new Code32();
+        Pdf417 pdf417 = new Pdf417();
+        AztecCode aztecCode = new AztecCode();
+        AztecRune aztecRune = new AztecRune();
+        DataMatrix dataMatrix = new DataMatrix();
+        UspsOneCode uspsOneCode = new UspsOneCode();
+        QrCode qrCode = new QrCode();
+        MicroQrCode microQrCode = new MicroQrCode();
+        CodeOne codeOne = new CodeOne();
+        GridMatrix gridMatrix = new GridMatrix();
+        DataBar14 dataBar14 = new DataBar14();
+        DataBarLimited dataBarLimited = new DataBarLimited();
+        DataBarExpanded dataBarExpanded = new DataBarExpanded();
+        MaxiCode maxiCode = new MaxiCode();
+        CodablockF codablockF = new CodablockF();
+//        Composite composite = new Composite();
 
         errorOutput = "";
         encodeInfo = "";
@@ -2086,106 +2133,942 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         }
 
         switch (symbology) {
-            case "BARCODE_PDF417":
-            case "BARCODE_PDF417TRUNC":
-            case "BARCODE_HIBC_PDF":
-                option2 = pdfColumnsCombo.getSelectedIndex();
-                option1 = pdfEccCombo.getSelectedIndex() - 1;
-                break;
-            case "BARCODE_MICROPDF417":
-            case "BARCODE_HIBC_MICPDF":
-                option2 = microPdfColumnsCombo.getSelectedIndex();
-                break;
-            case "BARCODE_RSS_EXPSTACK":
-                option2 = databarColumnsCombo.getSelectedIndex();
-                break;
-            case "BARCODE_DATAMATRIX":
-            case "BARCODE_HIBC_DM":
-                if (dataMatrixSquareOnlyCheck.isSelected()) {
-                    option1 = 1;
-                }
-                option2 = dataMatrixSizeCombo.getSelectedIndex();
-                break;
-            case "BARCODE_QRCODE":
-            case "BARCODE_HIBC_QR":
-                if (qrUserSize.isSelected()) {
-                    option2 = qrUserSizeCombo.getSelectedIndex() + 1;
-                }
-                if (qrUserEcc.isSelected()) {
-                    option1 = qrUserEccCombo.getSelectedIndex() + 1;
-                }
-                break;
-            case "BARCODE_MICROQR":
-                if (microQrUserSize.isSelected()) {
-                    option2 = microQrUserSizeCombo.getSelectedIndex() + 1;
-                }
-                if (microQrUserEcc.isSelected()) {
-                    option1 = microQrUserEccCombo.getSelectedIndex() + 1;
-                }
-                break;
-            case "BARCODE_MAXICODE":
-                option1 = maxiEncodingModeCombo.getSelectedIndex() + 2;
-                if (option1 == 2 || option1 == 3) {
-                    barcode.setPrimary(maxiPrimaryData.getText());
-                }
-                break;
-            case "BARCODE_AZTEC":
-            case "BARCODE_HIBC_AZTEC":
-                if (aztecUserSize.isSelected()) {
-                    option2 = aztecUserSizeCombo.getSelectedIndex() + 1;
-                }
-                if (aztecUserEcc.isSelected()) {
-                    option1 = aztecUserEccCombo.getSelectedIndex() + 1;
-                }
-                break;
-            case "BARCODE_CODEONE":
-                option2 = codeOneSizeCombo.getSelectedIndex();
-                break;
-            case "BARCODE_GRIDMATRIX":
-                if (gridmatrixUserSize.isSelected()) {
-                    option2 = gridmatrixUserSizeCombo.getSelectedIndex();
-                }
-                if (gridmatrixUserEcc.isSelected()) {
-                    option1 = gridmatrixUserEccCombo.getSelectedIndex();
-                }
-                break;
-            case "BARCODE_CODE39":
-            case "BARCODE_EXCODE39":
-                option2 = code39CheckCombo.getSelectedIndex();
-                break;
-            case "BARCODE_CHANNEL":
-                option2 = channelChannelsCombo.getSelectedIndex();
-                break;
-            case "BARCODE_MSI_PLESSEY":
-                option2 = msiCheckDigitCombo.getSelectedIndex();
-                break;
-        }
+        case "BARCODE_UPCA":
+            upc.setUpcaMode();
+//            if (isComposite) {
+//                upc.setLinkageFlag();
+//            } else {
+                upc.unsetLinkageFlag();
+//            }
+            if (upc.setContent(dataInput)) {
+                rect = upc.rect;
+                height = upc.symbol_height;
+                width = upc.symbol_width;
+                txt = upc.txt;
+                encodeInfo += upc.encodeInfo;
+                output = true;
+            } else {
+                errorOutput = upc.error_msg;
+            };
+            break;
+        case "BARCODE_UPCE":
+            upc.setUpceMode();
+//            if (isComposite) {
+//                upc.setLinkageFlag();
+//            } else {
+                upc.unsetLinkageFlag();
+//            }
+            if (upc.setContent(dataInput)) {
+                rect = upc.rect;
+                height = upc.symbol_height;
+                width = upc.symbol_width;
+                txt = upc.txt;
+                encodeInfo += upc.encodeInfo;
+                output = true;
+            } else {
+                errorOutput = upc.error_msg;
+            };
+            break;
+        case "BARCODE_EANX":
+            if (eanCalculateVersion() == 8) {
+                ean.setEan8Mode();
+            } else {
+                ean.setEan13Mode();
+            }
 
-        barcode.setOption1(option1);
-        barcode.setOption2(option2);
+//            if (isComposite) {
+//                ean.setLinkageFlag();
+//            } else {
+                ean.unsetLinkageFlag();
+//            }
+            if (ean.setContent(dataInput)) {
+                rect = ean.rect;
+                height = ean.symbol_height;
+                width = ean.symbol_width;
+                txt = ean.txt;
+                encodeInfo += ean.encodeInfo;
+                output = true;
+            } else {
+                errorOutput = ean.error_msg;
+            };
+            break;
+        case "BARCODE_ITF14":
+            code2of5.setITF14Mode();
+            if (code2of5.setContent(dataInput)) {
+                rect = code2of5.rect;
+                height = code2of5.symbol_height;
+                width = code2of5.symbol_width;
+                txt = code2of5.txt;
+                encodeInfo += code2of5.encodeInfo;
+                output = true;
+            } else {
+                errorOutput = code2of5.error_msg;
+            };
+            break;
+        case "BARCODE_CODE128":
+        case "BARCODE_HIBC_128":
+//            if (isComposite) {
+//                switch (composite.getCcMode()) {
+//                    case 1:
+//                        code128.setCca();
+//                        break;
+//                    case 2:
+//                        code128.setCcb();
+//                        break;
+//                    case 3:
+//                        code128.setCcc();
+//                        break;
+//                }
+//            } else {
+                code128.unsetCc();
+//            }
+            code128.setNormalMode();
+            if (useGS1Check.isSelected()) {
+                code128.setGs1Mode();
+            }
+            if (symbology.equals("BARCODE_HIBC_128")) {
+                code128.setHibcMode();
+            }
+            if (readerInit) {
+                code128.setInitMode();
+            }
+            if (code128.setContent(dataInput)) {
+                rect = code128.rect;
+                height = code128.symbol_height;
+                width = code128.symbol_width;
+                txt = code128.txt;
+                encodeInfo += code128.encodeInfo;
+                output = true;
+            } else {
+                errorOutput = code128.error_msg;
+            };
+            break;
+        case "BARCODE_CODABAR":
+            if (codabar.setContent(dataInput)) {
+                rect = codabar.rect;
+                height = codabar.symbol_height;
+                width = codabar.symbol_width;
+                txt = codabar.txt;
+                encodeInfo += codabar.encodeInfo;
+                output = true;
+            } else {
+                errorOutput = codabar.error_msg;
+            };
+            break;
+        case "BARCODE_C25MATRIX":
+            code2of5.setMatrixMode();
+            if (code2of5.setContent(dataInput)) {
+                rect = code2of5.rect;
+                height = code2of5.symbol_height;
+                width = code2of5.symbol_width;
+                txt = code2of5.txt;
+                encodeInfo += code2of5.encodeInfo;
+                output = true;
+            } else {
+                errorOutput = code2of5.error_msg;
+            };
+            break;
+        case "BARCODE_C25IND":
+            code2of5.setIndustrialMode();
+            if (code2of5.setContent(dataInput)) {
+                rect = code2of5.rect;
+                height = code2of5.symbol_height;
+                width = code2of5.symbol_width;
+                txt = code2of5.txt;
+                encodeInfo += code2of5.encodeInfo;
+                output = true;
+            } else {
+                errorOutput = code2of5.error_msg;
+            };
+            break;
+        case "BARCODE_C25INTER":
+            code2of5.setInterleavedMode();
+            if (code2of5.setContent(dataInput)) {
+                rect = code2of5.rect;
+                height = code2of5.symbol_height;
+                width = code2of5.symbol_width;
+                txt = code2of5.txt;
+                encodeInfo += code2of5.encodeInfo;
+                output = true;
+            } else {
+                errorOutput = code2of5.error_msg;
+            };
+            break;
+        case "BARCODE_MSI_PLESSEY":
+            msiPlessey.option2 = msiCheckDigitCombo.getSelectedIndex();
+            if (msiPlessey.setContent(dataInput)) {
+                rect = msiPlessey.rect;
+                height = msiPlessey.symbol_height;
+                width = msiPlessey.symbol_width;
+                txt = msiPlessey.txt;
+                encodeInfo += msiPlessey.encodeInfo;
+                output = true;
+            } else {
+                errorOutput = msiPlessey.error_msg;
+            };
+            break;
+        case "BARCODE_CODE39":
+        case "BARCODE_HIBC_39":
+            code3of9.setNormalMode();
+            if (symbology.equals("BARCODE_HIBC_39")) {
+                code3of9.setHibcMode();
+            }
+            code3of9.option2 = code39CheckCombo.getSelectedIndex();
+            if (code3of9.setContent(dataInput)) {
+                rect = code3of9.rect;
+                height = code3of9.symbol_height;
+                width = code3of9.symbol_width;
+                txt = code3of9.txt;
+                encodeInfo += code3of9.encodeInfo;
+                output = true;
+            } else {
+                errorOutput = code3of9.error_msg;
+            };
+            break;
+        case "BARCODE_LOGMARS":
+            if (logmars.setContent(dataInput)) {
+                rect = logmars.rect;
+                height = logmars.symbol_height;
+                width = logmars.symbol_width;
+                txt = logmars.txt;
+                encodeInfo += logmars.encodeInfo;
+                output = true;
+            } else {
+                errorOutput = logmars.error_msg;
+            };
+            break;
+        case "BARCODE_CODE11":
+            if (code11.setContent(dataInput)) {
+                rect = code11.rect;
+                height = code11.symbol_height;
+                width = code11.symbol_width;
+                txt = code11.txt;
+                encodeInfo += code11.encodeInfo;
+                output = true;
+            } else {
+                errorOutput = code11.error_msg;
+            };
+            break;
+        case "BARCODE_CODE93":
+            if (code93.setContent(dataInput)) {
+                rect = code93.rect;
+                height = code93.symbol_height;
+                width = code93.symbol_width;
+                txt = code93.txt;
+                encodeInfo += code93.encodeInfo;
+                output = true;
+            } else {
+                errorOutput = code93.error_msg;
+            };
+            break;
+        case "BARCODE_PZN":
+            if (pzn.setContent(dataInput)) {
+                rect = pzn.rect;
+                height = pzn.symbol_height;
+                width = pzn.symbol_width;
+                txt = pzn.txt;
+                encodeInfo += pzn.encodeInfo;
+                output = true;
+            } else {
+                errorOutput = pzn.error_msg;
+            };
+            break;
+        case "BARCODE_EXCODE39":
+            code3of9ext.option2 = code39CheckCombo.getSelectedIndex();
+            if (code3of9ext.setContent(dataInput)) {
+                rect = code3of9ext.rect;
+                height = code3of9ext.symbol_height;
+                width = code3of9ext.symbol_width;
+                txt = code3of9ext.txt;
+                encodeInfo += code3of9ext.encodeInfo;
+                output = true;
+            } else {
+                errorOutput = code3of9ext.error_msg;
+            };
+            break;
+        case "BARCODE_TELEPEN":
+            telepen.setNormalMode();
+            if (telepen.setContent(dataInput)) {
+                rect = telepen.rect;
+                height = telepen.symbol_height;
+                width = telepen.symbol_width;
+                txt = telepen.txt;
+                encodeInfo += telepen.encodeInfo;
+                output = true;
+            } else {
+                errorOutput = telepen.error_msg;
+            };
+            break;
+        case "BARCODE_TELEPEN_NUM":
+            telepen.setNumericMode();
+            if (telepen.setContent(dataInput)) {
+                rect = telepen.rect;
+                height = telepen.symbol_height;
+                width = telepen.symbol_width;
+                txt = telepen.txt;
+                encodeInfo += telepen.encodeInfo;
+                output = true;
+            } else {
+                errorOutput = telepen.error_msg;
+            };
+            break;
+        case "BARCODE_CODE49":
+            if (code49.setContent(dataInput)) {
+                rect = code49.rect;
+                height = code49.symbol_height;
+                width = code49.symbol_width;
+                txt = code49.txt;
+                encodeInfo += code49.encodeInfo;
+                output = true;
+            } else {
+                errorOutput = code49.error_msg;
+            };
+            break;
+        case "BARCODE_KOREAPOST":
+            if (koreaPost.setContent(dataInput)) {
+                rect = koreaPost.rect;
+                height = koreaPost.symbol_height;
+                width = koreaPost.symbol_width;
+                txt = koreaPost.txt;
+                encodeInfo += koreaPost.encodeInfo;
+                output = true;
+            } else {
+                errorOutput = koreaPost.error_msg;
+            };
+            break;
+        case "BARCODE_CODE16K":
+            code16k.setNormalMode();
+            if (useGS1Check.isSelected()) {
+                code16k.setGs1Mode();
+            }
+            if (readerInit) {
+                code16k.setInitMode();
+            }
+            if (code16k.setContent(dataInput)) {
+                rect = code16k.rect;
+                height = code16k.symbol_height;
+                width = code16k.symbol_width;
+                txt = code16k.txt;
+                encodeInfo += code16k.encodeInfo;
+                output = true;
+            } else {
+                errorOutput = code16k.error_msg;
+            };
+            break;
+        case "BARCODE_C25IATA":
+            code2of5.setIATAMode();
+            if (code2of5.setContent(dataInput)) {
+                rect = code2of5.rect;
+                height = code2of5.symbol_height;
+                width = code2of5.symbol_width;
+                txt = code2of5.txt;
+                encodeInfo = code2of5.encodeInfo;
+                output = true;
+            } else {
+                errorOutput = code2of5.error_msg;
+            };
+            break;
+        case "BARCODE_C25LOGIC":
+            code2of5.setDataLogicMode();
+            if (code2of5.setContent(dataInput)) {
+                rect = code2of5.rect;
+                height = code2of5.symbol_height;
+                width = code2of5.symbol_width;
+                txt = code2of5.txt;
+                encodeInfo += code2of5.encodeInfo;
+                output = true;
+            } else {
+                errorOutput = code2of5.error_msg;
+            };
+            break;
+        case "BARCODE_DPLEIT":
+            code2of5.setDPLeitMode();
+            if (code2of5.setContent(dataInput)) {
+                rect = code2of5.rect;
+                height = code2of5.symbol_height;
+                width = code2of5.symbol_width;
+                txt = code2of5.txt;
+                encodeInfo += code2of5.encodeInfo;
+                output = true;
+            } else {
+                errorOutput = code2of5.error_msg;
+            };
+            break;
+        case "BARCODE_DPIDENT":
+            code2of5.setDPIdentMode();
+            if (code2of5.setContent(dataInput)) {
+                rect = code2of5.rect;
+                height = code2of5.symbol_height;
+                width = code2of5.symbol_width;
+                txt = code2of5.txt;
+                encodeInfo += code2of5.encodeInfo;
+                output = true;
+            } else {
+                errorOutput = code2of5.error_msg;
+            };
+            break;
+        case "BARCODE_POSTNET":
+            postnet.setPostnet();
+            if (postnet.setContent(dataInput)) {
+                rect = postnet.rect;
+                height = postnet.symbol_height;
+                width = postnet.symbol_width;
+                txt = postnet.txt;
+                encodeInfo += postnet.encodeInfo;
+                output = true;
+            } else {
+                errorOutput = postnet.error_msg;
+            };
+            break;
+        case "BARCODE_PLANET":
+            postnet.setPlanet();
+            if (postnet.setContent(dataInput)) {
+                rect = postnet.rect;
+                height = postnet.symbol_height;
+                width = postnet.symbol_width;
+                txt = postnet.txt;
+                output = true;
+            } else {
+                errorOutput = postnet.error_msg;
+            };
+            break;
+        case "BARCODE_RM4SCC":
+            if (royalMail.setContent(dataInput)) {
+                rect = royalMail.rect;
+                height = royalMail.symbol_height;
+                width = royalMail.symbol_width;
+                txt = royalMail.txt;
+                encodeInfo += royalMail.encodeInfo;
+                output = true;
+            } else {
+                errorOutput = royalMail.error_msg;
+            }
+            break;
+        case "BARCODE_KIX":
+            if (kixCode.setContent(dataInput)) {
+                rect = kixCode.rect;
+                height = kixCode.symbol_height;
+                width = kixCode.symbol_width;
+                txt = kixCode.txt;
+                encodeInfo += kixCode.encodeInfo;
+                output = true;
+            } else {
+                errorOutput = kixCode.error_msg;
+            }
+            break;
+        case "BARCODE_JAPANPOST":
+            if (japanPost.setContent(dataInput)) {
+                rect = japanPost.rect;
+                height = japanPost.symbol_height;
+                width = japanPost.symbol_width;
+                txt = japanPost.txt;
+                encodeInfo += japanPost.encodeInfo;
+                output = true;
+            } else {
+                errorOutput = japanPost.error_msg;
+            }
+            break;
+        case "BARCODE_AUSPOST":
+            australiaPost.setPostMode();
+            if (australiaPost.setContent(dataInput)) {
+                rect = australiaPost.rect;
+                height = australiaPost.symbol_height;
+                width = australiaPost.symbol_width;
+                txt = australiaPost.txt;
+                encodeInfo += australiaPost.encodeInfo;
+                output = true;
+            } else {
+                errorOutput = australiaPost.error_msg;
+            }
+            break;
+        case "BARCODE_AUSREPLY":
+            australiaPost.setReplyMode();
+            if (australiaPost.setContent(dataInput)) {
+                rect = australiaPost.rect;
+                height = australiaPost.symbol_height;
+                width = australiaPost.symbol_width;
+                txt = australiaPost.txt;
+                encodeInfo += australiaPost.encodeInfo;
+                output = true;
+            } else {
+                errorOutput = australiaPost.error_msg;
+            }
+            break;
+        case "BARCODE_AUSROUTE":
+            australiaPost.setRouteMode();
+            if (australiaPost.setContent(dataInput)) {
+                rect = australiaPost.rect;
+                height = australiaPost.symbol_height;
+                width = australiaPost.symbol_width;
+                txt = australiaPost.txt;
+                encodeInfo += australiaPost.encodeInfo;
+                output = true;
+            } else {
+                errorOutput = australiaPost.error_msg;
+            }
+            break;
+        case "BARCODE_AUSREDIRECT":
+            australiaPost.setRedirectMode();
+            if (australiaPost.setContent(dataInput)) {
+                rect = australiaPost.rect;
+                height = australiaPost.symbol_height;
+                width = australiaPost.symbol_width;
+                txt = australiaPost.txt;
+                encodeInfo += australiaPost.encodeInfo;
+                output = true;
+            } else {
+                errorOutput = australiaPost.error_msg;
+            }
+            break;
+        case "BARCODE_CHANNEL":
+            channelCode.option2 = channelChannelsCombo.getSelectedIndex();
+            if (channelCode.setContent(dataInput)) {
+                rect = channelCode.rect;
+                height = channelCode.symbol_height;
+                width = channelCode.symbol_width;
+                txt = channelCode.txt;
+                encodeInfo += channelCode.encodeInfo;
+                output = true;
+            } else {
+                errorOutput = channelCode.error_msg;
+            }
+            break;
+        case "BARCODE_PHARMA":
+            if (pharmaCode.setContent(dataInput)) {
+                rect = pharmaCode.rect;
+                height = pharmaCode.symbol_height;
+                width = pharmaCode.symbol_width;
+                txt = pharmaCode.txt;
+                encodeInfo += pharmaCode.encodeInfo;
+                output = true;
+            } else {
+                errorOutput = pharmaCode.error_msg;
+            }
+            break;
+        case "BARCODE_PHARMA_TWO":
+            if (pharmaCode2t.setContent(dataInput)) {
+                rect = pharmaCode2t.rect;
+                height = pharmaCode2t.symbol_height;
+                width = pharmaCode2t.symbol_width;
+                txt = pharmaCode2t.txt;
+                encodeInfo += pharmaCode2t.encodeInfo;
+                output = true;
+            } else {
+                errorOutput = pharmaCode2t.error_msg;
+            }
+            break;
+        case "BARCODE_CODE32":
+            if (code32.setContent(dataInput)) {
+                rect = code32.rect;
+                height = code32.symbol_height;
+                width = code32.symbol_width;
+                txt = code32.txt;
+                encodeInfo += code32.encodeInfo;
+                output = true;
+            } else {
+                errorOutput = code32.error_msg;
+            }
+            break;
+        case "BARCODE_PDF417":
+        case "BARCODE_HIBC_PDF":
+            pdf417.setNormalMode();
+            if (useGS1Check.isSelected()) {
+                pdf417.setGs1Mode();
+            }
+            if (symbology.equals("BARCODE_HIBC_PDF")) {
+                pdf417.setHibcMode();
+            }
+            pdf417.option1 = pdfEccCombo.getSelectedIndex() - 1;
+            pdf417.option2 = pdfColumnsCombo.getSelectedIndex();
+            if (readerInit) {
+                pdf417.setInitMode();
+            }
+            pdf417.setNormalMode();
+            if (pdf417.setContent(dataInput)) {
+                rect = pdf417.rect;
+                height = pdf417.symbol_height;
+                width = pdf417.symbol_width;
+                txt = pdf417.txt;
+                encodeInfo += pdf417.encodeInfo;
+                output = true;
+            } else {
+                errorOutput = pdf417.error_msg;
+            }
+            break;
+        case "BARCODE_PDF417TRUNC":
+            pdf417.setNormalMode();
+            if (useGS1Check.isSelected()) {
+                pdf417.setGs1Mode();
+            }
+            pdf417.option1 = pdfEccCombo.getSelectedIndex() - 1;
+            pdf417.option2 = pdfColumnsCombo.getSelectedIndex();
+            if (readerInit) {
+                pdf417.setInitMode();
+            }
+            pdf417.setTruncMode();
+            if (pdf417.setContent(dataInput)) {
+                rect = pdf417.rect;
+                height = pdf417.symbol_height;
+                width = pdf417.symbol_width;
+                txt = pdf417.txt;
+                encodeInfo += pdf417.encodeInfo;
+                output = true;
+            } else {
+                errorOutput = pdf417.error_msg;
+            }
+            break;
+        case "BARCODE_MICROPDF417":
+        case "BARCODE_HIBC_MICPDF":
+            pdf417.setNormalMode();
+            if (useGS1Check.isSelected()) {
+                pdf417.setGs1Mode();
+            }
+            if (symbology.equals("BARCODE_HIBC_MICPDF")) {
+                pdf417.setHibcMode();
+            }
+            if (readerInit) {
+                pdf417.setInitMode();
+            }
+            pdf417.option2 = microPdfColumnsCombo.getSelectedIndex();
+            pdf417.setMicroMode();
+            if (pdf417.setContent(dataInput)) {
+                rect = pdf417.rect;
+                height = pdf417.symbol_height;
+                width = pdf417.symbol_width;
+                txt = pdf417.txt;
+                encodeInfo += pdf417.encodeInfo;
+                output = true;
+            } else {
+                errorOutput = pdf417.error_msg;
+            }
+            break;
+        case "BARCODE_AZTEC":
+        case "BARCODE_HIBC_AZTEC":
+            aztecCode.setNormalMode();
+            if (useGS1Check.isSelected()) {
+                aztecCode.setGs1Mode();
+            }
+            if (symbology.equals("BARCODE_HIBC_AZTEC")) {
+                aztecCode.setHibcMode();
+            }
+            if (readerInit) {
+                aztecCode.setInitMode();
+            }
+            if (aztecUserEcc.isSelected()) {
+                aztecCode.option1 = aztecUserEccCombo.getSelectedIndex() + 1;
+            }
+            if (aztecUserSize.isSelected()) {
+                aztecCode.option2 = aztecUserSizeCombo.getSelectedIndex() + 1;
+            }
+            if (aztecCode.setContent(dataInput)) {
+                rect = aztecCode.rect;
+                height = aztecCode.symbol_height;
+                width = aztecCode.symbol_width;
+                txt = aztecCode.txt;
+                encodeInfo += aztecCode.encodeInfo;
+                output = true;
+            } else {
+                errorOutput = aztecCode.error_msg;
+            }
+            break;
+        case "BARCODE_AZRUNE":
+            if (aztecRune.setContent(dataInput)) {
+                rect = aztecRune.rect;
+                height = aztecRune.symbol_height;
+                width = aztecRune.symbol_width;
+                txt = aztecRune.txt;
+                encodeInfo += aztecRune.encodeInfo;
+                output = true;
+            } else {
+                errorOutput = aztecRune.error_msg;
+            }
+            break;
+        case "BARCODE_DATAMATRIX":
+        case "BARCODE_HIBC_DM":
+            dataMatrix.setNormalMode();
+            if (useGS1Check.isSelected()) {
+                dataMatrix.setGs1Mode();
+            }
+            if (symbology.equals("BARCODE_HIBC_DM")) {
+                dataMatrix.setHibcMode();
+            }
+            if (readerInit) {
+                dataMatrix.setInitMode();
+            }
+            dataMatrix.option2 = dataMatrixSizeCombo.getSelectedIndex();
+            if (dataMatrixSquareOnlyCheck.isSelected()) {
+                dataMatrix.forceSquare(true);
+            } else {
+                dataMatrix.forceSquare(false);
+            }
+            if (dataMatrix.setContent(dataInput)) {
+                rect = dataMatrix.rect;
+                height = dataMatrix.symbol_height;
+                width = dataMatrix.symbol_width;
+                txt = dataMatrix.txt;
+                encodeInfo += dataMatrix.encodeInfo;
+                output = true;
+            } else {
+                errorOutput = dataMatrix.error_msg;
+            }
+            break;
+        case "BARCODE_ONECODE":
+            if (uspsOneCode.setContent(dataInput)) {
+                rect = uspsOneCode.rect;
+                height = uspsOneCode.symbol_height;
+                width = uspsOneCode.symbol_width;
+                txt = uspsOneCode.txt;
+                encodeInfo += uspsOneCode.encodeInfo;
+                output = true;
+            } else {
+                errorOutput = uspsOneCode.error_msg;
+            }
+            break;
+        case "BARCODE_QRCODE":
+        case "BARCODE_HIBC_QR":
+            qrCode.setNormalMode();
+            if (useGS1Check.isSelected()) {
+                qrCode.setGs1Mode();
+            }
+            if (symbology.equals("BARCODE_HIBC_QR")) {
+                qrCode.setHibcMode();
+            }
+            if (qrUserEcc.isSelected()) {
+                qrCode.option1 = qrUserEccCombo.getSelectedIndex() + 1;
+            }
+            if (qrUserSize.isSelected()) {
+                qrCode.option2 = qrUserSizeCombo.getSelectedIndex() + 1;
+            }
+            if (readerInit) {
+                qrCode.setInitMode();
+            }
+            if (qrCode.setContent(dataInput)) {
+                rect = qrCode.rect;
+                height = qrCode.symbol_height;
+                width = qrCode.symbol_width;
+                txt = qrCode.txt;
+                encodeInfo += qrCode.encodeInfo;
+                output = true;
+            } else {
+                errorOutput = qrCode.error_msg;
+            }
+            break;
+        case "BARCODE_MICROQR":
+            if (microQrUserEcc.isSelected()) {
+                microQrCode.option1 = microQrUserEccCombo.getSelectedIndex() + 1;
+            }
+            if (microQrUserSize.isSelected()) {
+                microQrCode.option2 = microQrUserSizeCombo.getSelectedIndex() + 1;
+            }
+            if (microQrCode.setContent(dataInput)) {
+                rect = microQrCode.rect;
+                height = microQrCode.symbol_height;
+                width = microQrCode.symbol_width;
+                txt = microQrCode.txt;
+                encodeInfo += microQrCode.encodeInfo;
+                output = true;
+            } else {
+                errorOutput = microQrCode.error_msg;
+            }
+            break;
+        case "BARCODE_CODEONE":
+            codeOne.setNormalMode();
+            if (useGS1Check.isSelected()) {
+                codeOne.setGs1Mode();
+            }
+            if (readerInit) {
+                codeOne.setInitMode();
+            }
+            codeOne.option2 = codeOneSizeCombo.getSelectedIndex();
+            if (codeOne.setContent(dataInput)) {
+                rect = codeOne.rect;
+                height = codeOne.symbol_height;
+                width = codeOne.symbol_width;
+                txt = codeOne.txt;
+                encodeInfo += codeOne.encodeInfo;
+                output = true;
+            } else {
+                errorOutput = codeOne.error_msg;
+            }
+            break;
+        case "BARCODE_GRIDMATRIX":
+            gridMatrix.setNormalMode();
+            if (useGS1Check.isSelected()) {
+                gridMatrix.setGs1Mode();
+            }
+            if (readerInit) {
+                gridMatrix.setInitMode();
+            }
+            if (gridmatrixUserEcc.isSelected()) {
+                gridMatrix.option1 = gridmatrixUserEccCombo.getSelectedIndex();
+            }
+            if (gridmatrixUserSize.isSelected()) {
+                gridMatrix.option2 = gridmatrixUserSizeCombo.getSelectedIndex();
+            }
+            if (gridMatrix.setContent(dataInput)) {
+                rect = gridMatrix.rect;
+                height = gridMatrix.symbol_height;
+                width = gridMatrix.symbol_width;
+                txt = gridMatrix.txt;
+                encodeInfo += gridMatrix.encodeInfo;
+                output = true;
+            } else {
+                errorOutput = gridMatrix.error_msg;
+            }
+            break;
+        case "BARCODE_RSS14":
+//            if (isComposite) {
+//                dataBar14.setLinkageFlag();
+//            } else {
+                dataBar14.unsetLinkageFlag();
+//            }
+            dataBar14.setLinearMode();
+            if (dataBar14.setContent(dataInput)) {
+                rect = dataBar14.rect;
+                height = dataBar14.symbol_height;
+                width = dataBar14.symbol_width;
+                txt = dataBar14.txt;
+                encodeInfo += dataBar14.encodeInfo;
+                output = true;
+            } else {
+                errorOutput = dataBar14.error_msg;
+            }
+            break;
+        case "BARCODE_RSS14STACK_OMNI":
+//            if (isComposite) {
+//                dataBar14.setLinkageFlag();
+//            } else {
+                dataBar14.unsetLinkageFlag();
+//            }
+            dataBar14.setOmnidirectionalMode();
+            if (dataBar14.setContent(dataInput)) {
+                rect = dataBar14.rect;
+                height = dataBar14.symbol_height;
+                width = dataBar14.symbol_width;
+                txt = dataBar14.txt;
+                encodeInfo += dataBar14.encodeInfo;
+                output = true;
+            } else {
+                errorOutput = dataBar14.error_msg;
+            }
+            break;
+        case "BARCODE_RSS14STACK":
+//            if (isComposite) {
+//                dataBar14.setLinkageFlag();
+//            } else {
+                dataBar14.unsetLinkageFlag();
+//            }
+            dataBar14.setStackedMode();
+            if (dataBar14.setContent(dataInput)) {
+                rect = dataBar14.rect;
+                height = dataBar14.symbol_height;
+                width = dataBar14.symbol_width;
+                txt = dataBar14.txt;
+                encodeInfo += dataBar14.encodeInfo;
+                output = true;
+            } else {
+                errorOutput = dataBar14.error_msg;
+            }
+            break;
+        case "BARCODE_RSS_LTD":
+//            if (isComposite) {
+//                dataBarLimited.setLinkageFlag();
+//            } else {
+                dataBarLimited.unsetLinkageFlag();
+//            }
+            if (dataBarLimited.setContent(dataInput)) {
+                rect = dataBarLimited.rect;
+                height = dataBarLimited.symbol_height;
+                width = dataBarLimited.symbol_width;
+                txt = dataBarLimited.txt;
+                encodeInfo += dataBarLimited.encodeInfo;
+                output = true;
+            } else {
+                errorOutput = dataBarLimited.error_msg;
+            }
+            break;
+        case "BARCODE_RSS_EXP":
+//            if (isComposite) {
+//                dataBarExpanded.setLinkageFlag();
+//            } else {
+                dataBarExpanded.unsetLinkageFlag();
+//            }
+            dataBarExpanded.setGs1Mode();
+            dataBarExpanded.setNotStacked();
+            if (dataBarExpanded.setContent(dataInput)) {
+                rect = dataBarExpanded.rect;
+                height = dataBarExpanded.symbol_height;
+                width = dataBarExpanded.symbol_width;
+                txt = dataBarExpanded.txt;
+                encodeInfo += dataBarExpanded.encodeInfo;
+                output = true;
+            } else {
+                errorOutput = dataBarExpanded.error_msg;
+            }
+            break;
+        case "BARCODE_RSS_EXPSTACK":
+//            if (isComposite) {
+//                dataBarExpanded.setLinkageFlag();
+//            } else {
+                dataBarExpanded.unsetLinkageFlag();
+//            }
+            dataBarExpanded.option2 = databarColumnsCombo.getSelectedIndex();
+            dataBarExpanded.setGs1Mode();
+            dataBarExpanded.setStacked();
+            if (dataBarExpanded.setContent(dataInput)) {
+                rect = dataBarExpanded.rect;
+                height = dataBarExpanded.symbol_height;
+                width = dataBarExpanded.symbol_width;
+                txt = dataBarExpanded.txt;
+                encodeInfo += dataBarExpanded.encodeInfo;
+                output = true;
+            } else {
+                errorOutput = dataBarExpanded.error_msg;
+            }
+            break;
+        case "BARCODE_MAXICODE":
+            maxiCode.setPrimary(maxiPrimaryData.getText());
+            maxiCode.setMode(maxiEncodingModeCombo.getSelectedIndex() + 2);
+            if (maxiCode.setContent(dataInput)) {
+                hex = maxiCode.hex;
+                target = maxiCode.target;
+                height = maxiCode.symbol_height;
+                width = maxiCode.symbol_width;
+                encodeInfo += maxiCode.encodeInfo;
+                output = true;
+            } else {
+                errorOutput = maxiCode.error_msg;
+            }
+            break;
+        case "BARCODE_CODABLOCKF":
+        case "BARCODE_HIBC_BLOCKF":
+            codablockF.setNormalMode();
+            if (useGS1Check.isSelected()) {
+                codablockF.setGs1Mode();
+            }
+            if (symbology.equals("BARCODE_HIBC_BLOCKF")) {
+                codablockF.setHibcMode();
+            }
+            if (codablockF.setContent(dataInput)) {
+                rect = codablockF.rect;
+                height = codablockF.symbol_height;
+                width = codablockF.symbol_width;
+                txt = codablockF.txt;
+                encodeInfo += codablockF.encodeInfo;
+                output = true;
+            } else {
+                errorOutput = codablockF.error_msg;
+            };
+            break;
+        default:
+            errorOutput = "Symbology not recognised";
+            break;
 
-        if (useGS1Check.isSelected()) {
-            barcode.setGs1Mode();
-        } else {
-            barcode.setNormalMode();
         }
 
         if (useCompositeCheck.isEnabled() && useCompositeCheck.isSelected()) {
             barcode.setCompositeContent(compositeInput);
             barcode.setCompositePreferredMode(compositeUserMode.getSelectedIndex());
-        }
-
-        if (barcode.encode(symbology, dataInput)) {
-            bcs = barcode.rect;
-            height = barcode.symbol_height;
-            width = barcode.symbol_width;
-            txt = barcode.txt;
-            hex = barcode.hex;
-            target = barcode.target;
-            encodeInfo = barcode.encodeInfo;
-        } else {
-            errorOutput = barcode.error_msg;
-            encodeInfo = barcode.error_msg;
         }
 
         if (!(txt.isEmpty())) {
@@ -2194,6 +3077,33 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         }
 
         return (errorOutput.isEmpty());
+    }
+    
+    private int eanCalculateVersion() {
+        /* Determine if EAN-8 or EAN-13 is being used */
+
+        int length = 0;
+        int i;
+        boolean latch;
+
+        latch = true;
+        for (i = 0; i < dataInput.length(); i++) {
+            if ((dataInput.charAt(i) >= '0') && (dataInput.charAt(i) <= '9')) {
+                if (latch) {
+                    length++;
+                }
+            } else {
+                latch = false;
+            }
+        }
+
+        if (length <= 7) {
+            // EAN-8
+            return 8;
+        } else {
+            // EAN-13
+            return 13;
+        }
     }
 
     private static void createNodes(DefaultMutableTreeNode top) {

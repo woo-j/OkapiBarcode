@@ -35,19 +35,21 @@ public abstract class Symbol {
     public String[] pattern;
     public int row_count;
     public int[] row_height;
-    public boolean debug = false;
+    protected boolean debug = false;
     public String error_msg;
     public int symbol_height;
     public int symbol_width;
     public int default_height;
-    public boolean gs1;
-    public boolean hibc;
-    public boolean readerInit;
+    protected boolean gs1;
+    protected boolean hibc;
+    protected boolean readerInit;
     public String encodeInfo = "";
 
+    // TODO: These values to be replaced with suitable parameters for each symbology
     public int option1;
     public int option2;
 
+    // TODO: These values to become accessible only to renderer
     public ArrayList < Rectangle > rect = new ArrayList < > ();
     public ArrayList < TextBox > txt = new ArrayList < > ();
     public ArrayList < Hexagon > hex = new ArrayList < > ();
@@ -63,6 +65,30 @@ public abstract class Symbol {
         gs1 = false;
     }
 
+    public void setNormalMode() {
+        gs1 = false;
+        hibc = false;
+        readerInit = false;
+    }
+
+    public void setGs1Mode() {
+        gs1 = true;
+        hibc = false;
+        readerInit = false;
+    }
+
+    public void setHibcMode() {
+        gs1 = false;
+        hibc = true;
+        readerInit = false;
+    }
+
+    public void setInitMode() {
+        gs1 = false;
+        hibc = false;
+        readerInit = true;
+    }
+    
     public int positionOf(char thischar, char[] LookUp) {
         int i, outval = 0;
 

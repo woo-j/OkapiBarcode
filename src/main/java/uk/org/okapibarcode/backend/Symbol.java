@@ -463,7 +463,6 @@ public abstract class Symbol {
                 }
                 last_ai = (10 * Character.getNumericValue(source.charAt(i + 1)))
                         + Character.getNumericValue(source.charAt(i + 2));
-                System.out.println("last AI " + last_ai);
                 if ( ((last_ai >= 0) && (last_ai <= 4))
                         || ((last_ai >= 11) && (last_ai <= 20))
                         || (last_ai == 23) /* legacy support - see 5.3.8.2.2 */

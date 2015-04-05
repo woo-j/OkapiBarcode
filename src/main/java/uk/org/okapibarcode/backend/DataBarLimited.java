@@ -140,8 +140,19 @@ public class DataBarLimited extends Symbol {
 
     public DataBarLimited() {
         linkageFlag = false;
+        setGs1Mode();
     }
 
+    @Override
+    public void setNormalMode() {
+        // Does not apply
+    }
+    
+    @Override
+    public void setHibcMode() {
+        // Does not apply
+    }
+    
     public void setLinkageFlag() {
         linkageFlag = true;
     }

@@ -425,12 +425,18 @@ public class Composite extends Symbol {
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 7, 15, 25, 37, 17, 9, 29, 31, 25, 19, 1, 7, 15, 25, 37, 17, 9, 29, 31, 25,
         9, 8, 36, 19, 17, 33, 1, 9, 8, 36, 19, 17, 35, 1, 7, 15, 25, 37, 33, 17, 37, 47, 49, 43, 1, 7, 15, 25, 37, 33, 17, 37, 47, 49,
         0, 3, 6, 0, 6, 0, 0, 0, 3, 6, 0, 6, 6, 0, 0, 6, 0, 0, 0, 0, 6, 6, 0, 3, 0, 0, 6, 0, 0, 0, 0, 6, 6, 0};
-    private String symbology;
+    
     private String binary_string;
     private int ecc;
 
+    public static enum LinearEncoding {
+        UPCA, UPCE, EAN, CODE_128, DATABAR_14, DATABAR_14_STACK, 
+        DATABAR_14_STACK_OMNI, DATABAR_LIMITED, DATABAR_EXPANDED,
+        DATABAR_EXPANDED_STACK
+    }
+    private LinearEncoding symbology = LinearEncoding.CODE_128;
+    
     private enum gfMode {
-
         NUMERIC, ALPHA, ISOIEC, INVALID_CHAR, ANY_ENC, ALPHA_OR_ISO
     };
     private String general_field;
@@ -445,12 +451,22 @@ public class Composite extends Symbol {
     private String linearContent;
     private int userPreferredMode;
 
-    public void setSymbology(String input) {
-        symbology = input;
+    public Composite() {
+        setGs1Mode();
     }
-
-    public int getCcMode() {
-        return cc_mode;
+    
+    @Override
+    public void setNormalMode() {
+        // Does not apply
+    }
+    
+    @Override
+    public void setHibcMode() {
+        // Does not apply
+    }
+    
+    public void setSymbology(LinearEncoding linearSymbology) {
+        symbology = linearSymbology;
     }
 
     public void setLinear(String input) {
@@ -482,11 +498,6 @@ public class Composite extends Symbol {
         int max_x = 0;
         int i;
         
-        if (symbology.isEmpty()) {
-            error_msg = "No linear symbology set";
-            return false;
-        }
-        
         if (linearContent.isEmpty()) {
             error_msg = "No linear data set";
             return false;
@@ -499,7 +510,7 @@ public class Composite extends Symbol {
 
         // Then encode linear component
         switch (symbology) {
-            case "BARCODE_UPCA":
+            case UPCA:
                 upc.setUpcaMode();
                 upc.setLinkageFlag();
                 if (upc.setContent(linearContent)) {
@@ -512,7 +523,7 @@ public class Composite extends Symbol {
                 }
                 top_shift = 3;
                 break;
-            case "BARCODE_UPCE":
+            case UPCE:
                 upc.setUpceMode();
                 upc.setLinkageFlag();
                 if (upc.setContent(linearContent)) {
@@ -525,7 +536,7 @@ public class Composite extends Symbol {
                 }
                 top_shift = 3;
                 break;
-            case "BARCODE_EANX":
+            case EAN:
                 if (eanCalculateVersion() == 8) {
                     ean.setEan8Mode();
                     bottom_shift = 8;
@@ -543,7 +554,7 @@ public class Composite extends Symbol {
                     linear_error_msg = ean.error_msg;
                 }
                 break;
-            case "BARCODE_CODE128":
+            case CODE_128:
                 switch (cc_mode) {
                     case 1:
                         code128.setCca();
@@ -566,7 +577,7 @@ public class Composite extends Symbol {
                     linear_error_msg = code128.error_msg;
                 }                    
                 break;
-            case "BARCODE_RSS14":
+            case DATABAR_14:
                 dataBar14.setLinkageFlag();
                 dataBar14.setLinearMode();
                 if (dataBar14.setContent(linearContent)) {
@@ -579,7 +590,7 @@ public class Composite extends Symbol {
                 }
                 bottom_shift = 4;
                 break;
-            case "BARCODE_RSS14STACK_OMNI":
+            case DATABAR_14_STACK_OMNI:
                 dataBar14.setLinkageFlag();
                 dataBar14.setOmnidirectionalMode();
                 if (dataBar14.setContent(linearContent)) {
@@ -592,7 +603,7 @@ public class Composite extends Symbol {
                 }
                 top_shift = 1;
                 break;
-            case "BARCODE_RSS14STACK":
+            case DATABAR_14_STACK:
                 dataBar14.setLinkageFlag();
                 dataBar14.setStackedMode();
                 if (dataBar14.setContent(linearContent)) {
@@ -605,7 +616,7 @@ public class Composite extends Symbol {
                 }
                 top_shift = 1;
                 break;
-            case "BARCODE_RSS_LTD":
+            case DATABAR_LIMITED:
                 dataBarLimited.setLinkageFlag();
                 if (dataBarLimited.setContent(linearContent)) {
                     linear_rect = dataBarLimited.rect;
@@ -617,7 +628,7 @@ public class Composite extends Symbol {
                 }
                 top_shift = 1;
                 break;
-            case "BARCODE_RSS_EXP":
+            case DATABAR_EXPANDED:
                 dataBarExpanded.setLinkageFlag();
                 dataBarExpanded.setNotStacked();
                 if (dataBarExpanded.setContent(linearContent)) {
@@ -630,7 +641,7 @@ public class Composite extends Symbol {
                 }
                 top_shift = 2;
                 break;   
-            case "BARCODE_RSS_EXPSTACK":
+            case DATABAR_EXPANDED_STACK:
                 dataBarExpanded.setLinkageFlag();
                 dataBarExpanded.setStacked();
                 if (dataBarExpanded.setContent(linearContent)) {
@@ -706,26 +717,26 @@ public class Composite extends Symbol {
 
         switch (symbology) {
             /* Determine width of 2D component according to ISO/IEC 24723 Table 1 */
-            case "BARCODE_EANX":
+            case EAN:
                 if (eanCalculateVersion() == 8) {
                     cc_width = 3;
                 } else {
                     cc_width = 4;
                 }
                 break;
-            case "BARCODE_UPCE":
-            case "BARCODE_RSS14STACK_OMNI":
-            case "BARCODE_RSS14STACK":
+            case UPCE:
+            case DATABAR_14_STACK_OMNI:
+            case DATABAR_14_STACK:
                 cc_width = 2;
                 break;
-            case "BARCODE_RSS_LTD":
+            case DATABAR_LIMITED:
                 cc_width = 3;
                 break;
-            case "BARCODE_CODE128":
-            case "BARCODE_RSS14":
-            case "BARCODE_RSS_EXP":
-            case "BARCODE_UPCA":
-            case "BARCODE_RSS_EXPSTACK":
+            case CODE_128:
+            case DATABAR_14:
+            case DATABAR_EXPANDED:
+            case UPCA:
+            case DATABAR_EXPANDED_STACK:
                 cc_width = 4;
                 break;
         }

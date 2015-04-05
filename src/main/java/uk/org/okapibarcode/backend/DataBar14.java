@@ -64,6 +64,17 @@ public class DataBar14 extends Symbol {
     public DataBar14() {
         linkageFlag = false;
         symbolType = gb14Mode.RSS14;
+        setGs1Mode();
+    }
+    
+    @Override
+    public void setNormalMode() {
+        // Does not apply
+    }
+    
+    @Override
+    public void setHibcMode() {
+        // Does not apply
     }
 
     public void setLinkageFlag() {

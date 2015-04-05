@@ -2084,7 +2084,38 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         if ((useCompositeCheck.isEnabled() && useCompositeCheck.isSelected()) &&
                 (!(compositeInput.isEmpty()))) {
             // Create a composite symbol
-            composite.setSymbology(symbology);
+            switch (symbology) {
+                case "BARCODE_UPCA":
+                    composite.setSymbology(Composite.LinearEncoding.UPCA);
+                    break;
+                case "BARCODE_UPCE":
+                    composite.setSymbology(Composite.LinearEncoding.UPCE);
+                    break;
+                case "BARCODE_EANX":
+                    composite.setSymbology(Composite.LinearEncoding.EAN);
+                    break;
+                case "BARCODE_CODE128":
+                    composite.setSymbology(Composite.LinearEncoding.CODE_128);
+                    break;
+                case "BARCODE_RSS14":
+                    composite.setSymbology(Composite.LinearEncoding.DATABAR_14);
+                    break;
+                case "BARCODE_RSS14STACK_OMNI":
+                    composite.setSymbology(Composite.LinearEncoding.DATABAR_14_STACK_OMNI);
+                    break;
+                case "BARCODE_RSS14STACK":
+                    composite.setSymbology(Composite.LinearEncoding.DATABAR_14_STACK);
+                    break;
+                case "BARCODE_RSS_LTD":
+                    composite.setSymbology(Composite.LinearEncoding.DATABAR_LIMITED);
+                    break;
+                case "BARCODE_RSS_EXP":
+                    composite.setSymbology(Composite.LinearEncoding.DATABAR_EXPANDED);
+                    break;
+                case "BARCODE_RSS_EXPSTACK":
+                    composite.setSymbology(Composite.LinearEncoding.DATABAR_EXPANDED_STACK);
+                    break;
+            }
             composite.setLinear(dataInput);
             composite.setPreferred(compositeUserMode.getSelectedIndex());
             if (composite.setContent(compositeInput)) {

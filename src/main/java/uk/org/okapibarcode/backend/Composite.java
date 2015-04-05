@@ -15,7 +15,9 @@
  */
 package uk.org.okapibarcode.backend;
 
+import java.awt.Rectangle;
 import java.math.BigInteger;
+import java.util.ArrayList;
 
 /**
  * Implements composite symbology According to ISO/IEC 24723:2006
@@ -461,6 +463,233 @@ public class Composite extends Symbol {
 
     @Override
     public boolean encode() {
+        Upc upc = new Upc();
+        Ean ean = new Ean();
+        Code128 code128 = new Code128();
+        DataBar14 dataBar14 = new DataBar14();
+        DataBarLimited dataBarLimited = new DataBarLimited();
+        DataBarExpanded dataBarExpanded = new DataBarExpanded();
+        
+        ArrayList < Rectangle > linear_rect = new ArrayList < > ();
+        ArrayList < TextBox > linear_txt = new ArrayList < > ();
+        ArrayList < Rectangle > combine_rect = new ArrayList < > ();
+        ArrayList < TextBox > combine_txt = new ArrayList < > ();        
+        String linear_encodeInfo = null;
+        String linear_error_msg = "";
+        int linear_height = 0;
+        int top_shift = 0;
+        int bottom_shift = 0;
+        int max_x = 0;
+        int i;
+        
+        if (symbology.isEmpty()) {
+            error_msg = "No linear symbology set";
+            return false;
+        }
+        
+        if (linearContent.isEmpty()) {
+            error_msg = "No linear data set";
+            return false;
+        }        
+        
+        // Manage composite component encoding first
+        if (!(encodeComposite())) {
+            return false;
+        }
+
+        // Then encode linear component
+        switch (symbology) {
+            case "BARCODE_UPCA":
+                upc.setUpcaMode();
+                upc.setLinkageFlag();
+                if (upc.setContent(linearContent)) {
+                    linear_rect = upc.rect;
+                    linear_txt = upc.txt;
+                    linear_height = upc.symbol_height;
+                    linear_encodeInfo = upc.encodeInfo;
+                } else {
+                    linear_error_msg = upc.error_msg;
+                }
+                top_shift = 3;
+                break;
+            case "BARCODE_UPCE":
+                upc.setUpceMode();
+                upc.setLinkageFlag();
+                if (upc.setContent(linearContent)) {
+                    linear_rect = upc.rect;
+                    linear_txt = upc.txt;
+                    linear_height = upc.symbol_height;                    
+                    linear_encodeInfo = upc.encodeInfo;
+                } else {
+                    linear_error_msg = upc.error_msg;
+                }
+                top_shift = 3;
+                break;
+            case "BARCODE_EANX":
+                if (eanCalculateVersion() == 8) {
+                    ean.setEan8Mode();
+                    bottom_shift = 8;
+                } else {
+                    ean.setEan13Mode();
+                    top_shift = 3;
+                }
+                ean.setLinkageFlag();
+                if (ean.setContent(linearContent)) {
+                    linear_rect = ean.rect;
+                    linear_txt = ean.txt;
+                    linear_height = ean.symbol_height;                    
+                    linear_encodeInfo = ean.encodeInfo;
+                } else {
+                    linear_error_msg = ean.error_msg;
+                }
+                break;
+            case "BARCODE_CODE128":
+                switch (cc_mode) {
+                    case 1:
+                        code128.setCca();
+                        break;
+                    case 2:
+                        code128.setCcb();
+                        break;
+                    case 3:
+                        code128.setCcc();
+                        bottom_shift = 7;
+                        break;
+                }
+                code128.setGs1Mode();
+                if (code128.setContent(linearContent)) {
+                    linear_rect = code128.rect;
+                    linear_txt = code128.txt;
+                    linear_height = code128.symbol_height;                    
+                    linear_encodeInfo = code128.encodeInfo;
+                } else {
+                    linear_error_msg = code128.error_msg;
+                }                    
+                break;
+            case "BARCODE_RSS14":
+                dataBar14.setLinkageFlag();
+                dataBar14.setLinearMode();
+                if (dataBar14.setContent(linearContent)) {
+                    linear_rect = dataBar14.rect;
+                    linear_txt = dataBar14.txt;
+                    linear_height = dataBar14.symbol_height;                    
+                    linear_encodeInfo = dataBar14.encodeInfo;
+                } else {
+                    linear_error_msg = dataBar14.error_msg;
+                }
+                bottom_shift = 4;
+                break;
+            case "BARCODE_RSS14STACK_OMNI":
+                dataBar14.setLinkageFlag();
+                dataBar14.setOmnidirectionalMode();
+                if (dataBar14.setContent(linearContent)) {
+                    linear_rect = dataBar14.rect;
+                    linear_txt = dataBar14.txt;
+                    linear_height = dataBar14.symbol_height;                    
+                    linear_encodeInfo = dataBar14.encodeInfo;
+                } else {
+                    linear_error_msg = dataBar14.error_msg;
+                }
+                top_shift = 1;
+                break;
+            case "BARCODE_RSS14STACK":
+                dataBar14.setLinkageFlag();
+                dataBar14.setStackedMode();
+                if (dataBar14.setContent(linearContent)) {
+                    linear_rect = dataBar14.rect;
+                    linear_txt = dataBar14.txt;
+                    linear_height = dataBar14.symbol_height;                    
+                    linear_encodeInfo = dataBar14.encodeInfo;
+                } else {
+                    linear_error_msg = dataBar14.error_msg;
+                }
+                top_shift = 1;
+                break;
+            case "BARCODE_RSS_LTD":
+                dataBarLimited.setLinkageFlag();
+                if (dataBarLimited.setContent(linearContent)) {
+                    linear_rect = dataBarLimited.rect;
+                    linear_txt = dataBarLimited.txt;
+                    linear_height = dataBarLimited.symbol_height;                    
+                    linear_encodeInfo = dataBarLimited.encodeInfo;
+                } else {
+                    linear_error_msg = dataBarLimited.error_msg;
+                }
+                top_shift = 1;
+                break;
+            case "BARCODE_RSS_EXP":
+                dataBarExpanded.setLinkageFlag();
+                dataBarExpanded.setNotStacked();
+                if (dataBarExpanded.setContent(linearContent)) {
+                    linear_rect = dataBarExpanded.rect;
+                    linear_txt = dataBarExpanded.txt;
+                    linear_height = dataBarExpanded.symbol_height;                    
+                    linear_encodeInfo = dataBarExpanded.encodeInfo;
+                } else {
+                    linear_error_msg = dataBarExpanded.error_msg;
+                }
+                top_shift = 2;
+                break;   
+            case "BARCODE_RSS_EXPSTACK":
+                dataBarExpanded.setLinkageFlag();
+                dataBarExpanded.setStacked();
+                if (dataBarExpanded.setContent(linearContent)) {
+                    linear_rect = dataBarExpanded.rect;
+                    linear_txt = dataBarExpanded.txt;
+                    linear_height = dataBarExpanded.symbol_height;                    
+                    linear_encodeInfo = dataBarExpanded.encodeInfo;
+                } else {
+                    linear_error_msg = dataBarExpanded.error_msg;
+                }
+                top_shift = 2;
+                break;
+            default:
+                linear_error_msg = "Linear symbol not recognised";
+                break;
+        }
+        
+        if (!(linear_error_msg.isEmpty())) {
+            error_msg = linear_error_msg;
+            return false;
+        }
+        
+        for (i = 0; i < rect.size(); i++) {
+            Rectangle comprect = new Rectangle(rect.get(i).x + top_shift, rect.get(i).y, rect.get(i).width, rect.get(i).height);
+            if ((rect.get(i).x + top_shift + rect.get(i).width) > max_x) {
+                max_x = rect.get(i).x + top_shift + rect.get(i).width;
+            }
+            combine_rect.add(comprect);
+        }
+
+        for (i = 0; i < linear_rect.size(); i++) {
+            Rectangle linrect = new Rectangle(linear_rect.get(i).x + bottom_shift, linear_rect.get(i).y, linear_rect.get(i).width, linear_rect.get(i).height);
+            linrect.y += symbol_height;
+            if ((linear_rect.get(i).x + bottom_shift + linear_rect.get(i).width) > max_x) {
+                max_x = linear_rect.get(i).x + bottom_shift + linear_rect.get(i).width;
+            }
+            combine_rect.add(linrect);
+        }
+
+        for (i = 0; i < linear_txt.size(); i++) {
+            double x = linear_txt.get(i).x + bottom_shift;
+            double y = linear_txt.get(i).y + symbol_height;
+            String text = linear_txt.get(i).text;
+            TextBox lintxt = new TextBox(x, y, text);
+            combine_txt.add(lintxt);
+        }
+
+        rect = combine_rect;
+        txt = combine_txt;
+        symbol_height += linear_height;
+        symbol_width = max_x;
+        
+        encodeInfo += linear_encodeInfo;
+        
+        return true;
+    }
+    
+    
+    private boolean encodeComposite() {
 
         if (content.length() > 2990) {
             error_msg = "2D component input data too long";
@@ -1181,8 +1410,12 @@ public class Composite extends Symbol {
                             d1 = 10;
                         }
 
-                        if (general_field.charAt(i + 1) != '[') {
-                            d2 = general_field.charAt(i + 1) - '0';
+                        if (i < general_field.length() - 1) {
+                            if (general_field.charAt(i + 1) != '[') {
+                                d2 = general_field.charAt(i + 1) - '0';
+                            } else {
+                                d2 = 10;
+                            }
                         } else {
                             d2 = 10;
                         }

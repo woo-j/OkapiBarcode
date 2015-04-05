@@ -267,7 +267,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         loadDataButton.setText("...");
         loadDataButton.addActionListener(new java.awt.event.ActionListener() {
-            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 loadDataButtonActionPerformed(evt);
             }
@@ -300,7 +299,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         addCompositeButton.setText("...");
         addCompositeButton.setEnabled(false);
         addCompositeButton.addActionListener(new java.awt.event.ActionListener() {
-            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 addCompositeButtonActionPerformed(evt);
             }
@@ -308,7 +306,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         useGS1Check.setText("Use GS1 Data Encodation");
         useGS1Check.addActionListener(new java.awt.event.ActionListener() {
-            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 useGS1CheckActionPerformed(evt);
             }
@@ -316,7 +313,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         useCompositeCheck.setText("Add Composite Component");
         useCompositeCheck.addActionListener(new java.awt.event.ActionListener() {
-            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 useCompositeCheckActionPerformed(evt);
             }
@@ -389,7 +385,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         batchFileButton.setText("Import");
         batchFileButton.addActionListener(new java.awt.event.ActionListener() {
-            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 batchFileButtonActionPerformed(evt);
             }
@@ -397,7 +392,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         createButton.setText("Create");
         createButton.addActionListener(new java.awt.event.ActionListener() {
-            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 createButtonActionPerformed(evt);
             }
@@ -420,7 +414,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         runBatchButton.setText("Run Batch");
         runBatchButton.setEnabled(false);
         runBatchButton.addActionListener(new java.awt.event.ActionListener() {
-            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 runBatchButtonActionPerformed(evt);
             }
@@ -430,7 +423,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         directoryButton.setText("Select Directory");
         directoryButton.addActionListener(new java.awt.event.ActionListener() {
-            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 directoryButtonActionPerformed(evt);
             }
@@ -438,7 +430,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         resetButton.setText("Reset");
         resetButton.addActionListener(new java.awt.event.ActionListener() {
-            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 resetButtonActionPerformed(evt);
             }
@@ -547,7 +538,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         inkButton.setText("Select Ink Colour");
         inkButton.addActionListener(new java.awt.event.ActionListener() {
-            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 inkButtonActionPerformed(evt);
             }
@@ -555,7 +545,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         paperButton.setText("Select Paper Colour");
         paperButton.addActionListener(new java.awt.event.ActionListener() {
-            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 paperButtonActionPerformed(evt);
             }
@@ -563,7 +552,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         resetColourButton.setText("Reset Colours");
         resetColourButton.addActionListener(new java.awt.event.ActionListener() {
-            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 resetColourButtonActionPerformed(evt);
             }
@@ -577,7 +565,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         aztecAutoSize.setSelected(true);
         aztecAutoSize.setText("Automatic Resizing");
         aztecAutoSize.addActionListener(new java.awt.event.ActionListener() {
-            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 aztecAutoSizeActionPerformed(evt);
             }
@@ -586,7 +573,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         aztecButtonGroup.add(aztecUserSize);
         aztecUserSize.setText("Adjust Size To:");
         aztecUserSize.addActionListener(new java.awt.event.ActionListener() {
-            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 aztecUserSizeActionPerformed(evt);
             }
@@ -595,7 +581,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         aztecButtonGroup.add(aztecUserEcc);
         aztecUserEcc.setText("Add Minimum Error Correction:");
         aztecUserEcc.addActionListener(new java.awt.event.ActionListener() {
-            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 aztecUserEccActionPerformed(evt);
             }
@@ -604,7 +589,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         aztecUserSizeCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "15 X 15 Compact", "19 X 19 Compact", "23 X 23 Compact", "27 X 27 Compact", "19 X 19", "23 X 23", "27 X 27", "31 X 31", "37 X 37", "41 X 41", "45 X 45", "49 X 49", "53 X 53", "57 X 57", "61 X 61", "67 X 67", "71 X 71", "75 X 75", "79 X 79", "83 X 83", "87 X 87", "91 X 91", "95 X 95", "101 X 101", "105 X 105", "109 X 109", "113 X 113", "117 X 117", "121 X 121", "125 X 125", "131 X 131", "135 X 135", "139 X 139", "143 X 143", "147 X 147", "151 X 151" }));
         aztecUserSizeCombo.setEnabled(false);
         aztecUserSizeCombo.addActionListener(new java.awt.event.ActionListener() {
-            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 aztecUserSizeComboActionPerformed(evt);
             }
@@ -613,7 +597,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         aztecUserEccCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "10% + 3 words", "23% + 3 words", "36% + 3 words", "50% + 3 words" }));
         aztecUserEccCombo.setEnabled(false);
         aztecUserEccCombo.addActionListener(new java.awt.event.ActionListener() {
-            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 aztecUserEccComboActionPerformed(evt);
             }
@@ -656,7 +639,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         channelChannelsCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Automatic", "3", "4", "5", "6", "7", "8" }));
         channelChannelsCombo.addActionListener(new java.awt.event.ActionListener() {
-            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 channelChannelsComboActionPerformed(evt);
             }
@@ -686,7 +668,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         code39CheckCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "No Check Digit", "Mod-43 Check Digit" }));
         code39CheckCombo.addActionListener(new java.awt.event.ActionListener() {
-            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 code39CheckComboActionPerformed(evt);
             }
@@ -716,7 +697,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         codeOneSizeCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Automatic", "16 X 18 (Version A)", "22 X 22 (Version B)", "28 X 32 (Version C)", "40 X 42 (Version D)", "52 X 54 (Version E)", "70 X 76 (Version F)", "104 X 98 (Version G)", "148 X 134 (Version H)", "8X Height (Version S)", "16X Height (Version T)" }));
         codeOneSizeCombo.addActionListener(new java.awt.event.ActionListener() {
-            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 codeOneSizeComboActionPerformed(evt);
             }
@@ -746,7 +726,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         databarColumnsCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Automatic", "1", "2", "3", "4", "5", "6", "7", "8", "9" }));
         databarColumnsCombo.addActionListener(new java.awt.event.ActionListener() {
-            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 databarColumnsComboActionPerformed(evt);
             }
@@ -776,7 +755,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         dataMatrixSizeCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Automatic", "10 X 10", "12 X 12", "14 X 14", "16 X 16", "18 X 18", "20 X 20", "22 X 22", "24 X 24", "26 X 26", "32 X 32", "36 X 36", "40 X 40", "44 X 44", "48 X 48", "52 X 52", "64 X 64", "72 X 72", "80 X 80", "88 X 88", "96 X 96", "104 X 104", "120 X 120", "132 X 132", "144 X 144", "8 X 18", "8 X 32", "12 X 26", "12 X 36", "16 X 36", "16 X 48" }));
         dataMatrixSizeCombo.addActionListener(new java.awt.event.ActionListener() {
-            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 dataMatrixSizeComboActionPerformed(evt);
             }
@@ -785,7 +763,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         dataMatrixSquareOnlyCheck.setSelected(true);
         dataMatrixSquareOnlyCheck.setText("Supress Rectangular Symbols in Automatic Mode");
         dataMatrixSquareOnlyCheck.addActionListener(new java.awt.event.ActionListener() {
-            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 dataMatrixSquareOnlyCheckActionPerformed(evt);
             }
@@ -823,7 +800,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         gridmatrixAutoSize.setSelected(true);
         gridmatrixAutoSize.setText("Automatic Resizing");
         gridmatrixAutoSize.addActionListener(new java.awt.event.ActionListener() {
-            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 gridmatrixAutoSizeActionPerformed(evt);
             }
@@ -832,7 +808,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         gridmatrixButtonGroup.add(gridmatrixUserSize);
         gridmatrixUserSize.setText("Adjust Size To:");
         gridmatrixUserSize.addActionListener(new java.awt.event.ActionListener() {
-            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 gridmatrixUserSizeActionPerformed(evt);
             }
@@ -841,7 +816,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         gridmatrixButtonGroup.add(gridmatrixUserEcc);
         gridmatrixUserEcc.setText("Add Minimum Error Correction:");
         gridmatrixUserEcc.addActionListener(new java.awt.event.ActionListener() {
-            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 gridmatrixUserEccActionPerformed(evt);
             }
@@ -850,7 +824,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         gridmatrixUserSizeCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "18 X 18 (Version 1)", "30 X 30 (Version 2)", "42 X 42 (Version 3)", "54 X 54 (Version 4)", "66 X 66 (Version 5)", "78 X 78 (Version 6)", "90 X 90 (Version 7)", "102 X 102 (Version 8)", "114 X 114 (Version 9)", "126 X 126 (Version 10)", "138 X 138 (Version 11)", "150 X 150 (Version 12)", "162 X 162 (Version 13)" }));
         gridmatrixUserSizeCombo.setEnabled(false);
         gridmatrixUserSizeCombo.addActionListener(new java.awt.event.ActionListener() {
-            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 gridmatrixUserSizeComboActionPerformed(evt);
             }
@@ -859,7 +832,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         gridmatrixUserEccCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Approx 10%", "Approx 20%", "Approx 30%", "Approx 40%", "Approx 50%" }));
         gridmatrixUserEccCombo.setEnabled(false);
         gridmatrixUserEccCombo.addActionListener(new java.awt.event.ActionListener() {
-            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 gridmatrixUserEccComboActionPerformed(evt);
             }
@@ -903,9 +875,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         maxiPrimaryDataLabel.setEnabled(false);
 
         maxiEncodingModeCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Structured Carrier Message (Mode 2)", "Structured Carrier Message (Mode 3)", "Standard Symbol, SEC (Mode 4)", "Full ECC Symbol (Mode 5)", "Reader Program, SEC (Mode 6)" }));
-        maxiEncodingModeCombo.setSelectedIndex(2);
         maxiEncodingModeCombo.addActionListener(new java.awt.event.ActionListener() {
-            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 maxiEncodingModeComboActionPerformed(evt);
             }
@@ -914,7 +884,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         maxiPrimaryData.setText("Primary Data Here!");
         maxiPrimaryData.setEnabled(false);
         maxiPrimaryData.addActionListener(new java.awt.event.ActionListener() {
-            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 maxiPrimaryDataActionPerformed(evt);
             }
@@ -954,7 +923,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         microPdfColumnsCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Automatic", "1", "2", "3", "4" }));
         microPdfColumnsCombo.addActionListener(new java.awt.event.ActionListener() {
-            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 microPdfColumnsComboActionPerformed(evt);
             }
@@ -983,7 +951,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         microQrAutoSize.setSelected(true);
         microQrAutoSize.setText("Automatic Resizing");
         microQrAutoSize.addActionListener(new java.awt.event.ActionListener() {
-            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 microQrAutoSizeActionPerformed(evt);
             }
@@ -992,7 +959,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         microQrButtonGroup.add(microQrUserSize);
         microQrUserSize.setText("Adjust Size To:");
         microQrUserSize.addActionListener(new java.awt.event.ActionListener() {
-            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 microQrUserSizeActionPerformed(evt);
             }
@@ -1001,7 +967,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         microQrButtonGroup.add(microQrUserEcc);
         microQrUserEcc.setText("Add Minimum Error Correction:");
         microQrUserEcc.addActionListener(new java.awt.event.ActionListener() {
-            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 microQrUserEccActionPerformed(evt);
             }
@@ -1010,7 +975,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         microQrUserSizeCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "11 X 11 (Version M1)", "13 X 13 (Version M2)", "15 X 15 (Version M3)", "17 X 17 (Version M4)" }));
         microQrUserSizeCombo.setEnabled(false);
         microQrUserSizeCombo.addActionListener(new java.awt.event.ActionListener() {
-            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 microQrUserSizeComboActionPerformed(evt);
             }
@@ -1019,7 +983,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         microQrUserEccCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Approx 20% (Level L)", "Approx 37% (Level M)", "Approx 55% (Level Q)" }));
         microQrUserEccCombo.setEnabled(false);
         microQrUserEccCombo.addActionListener(new java.awt.event.ActionListener() {
-            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 microQrUserEccComboActionPerformed(evt);
             }
@@ -1061,7 +1024,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         msiCheckDigitCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "None", "Mod-10", "Mod-10 & Mod-10", "Mod-11", "Mod-11 & Mod-10" }));
         msiCheckDigitCombo.addActionListener(new java.awt.event.ActionListener() {
-            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 msiCheckDigitComboActionPerformed(evt);
             }
@@ -1093,7 +1055,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         pdfColumnsCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Automatic", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20" }));
         pdfColumnsCombo.addActionListener(new java.awt.event.ActionListener() {
-            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 pdfColumnsComboActionPerformed(evt);
             }
@@ -1101,7 +1062,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         pdfEccCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Automatic", "2 words", "4 words", "8 words", "16 words", "32 words", "64 words", "128 words", "256 words", "512 words" }));
         pdfEccCombo.addActionListener(new java.awt.event.ActionListener() {
-            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 pdfEccComboActionPerformed(evt);
             }
@@ -1140,7 +1100,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         qrAutoSize.setSelected(true);
         qrAutoSize.setText("Automatic Resizing");
         qrAutoSize.addActionListener(new java.awt.event.ActionListener() {
-            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 qrAutoSizeActionPerformed(evt);
             }
@@ -1149,7 +1108,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         qrButtonGroup.add(qrUserSize);
         qrUserSize.setText("Adjust Size To:");
         qrUserSize.addActionListener(new java.awt.event.ActionListener() {
-            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 qrUserSizeActionPerformed(evt);
             }
@@ -1158,7 +1116,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         qrButtonGroup.add(qrUserEcc);
         qrUserEcc.setText("Add Minimum Error Correction:");
         qrUserEcc.addActionListener(new java.awt.event.ActionListener() {
-            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 qrUserEccActionPerformed(evt);
             }
@@ -1167,7 +1124,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         qrUserSizeCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "21 X 21 (Version 1)", "25 X 25 (Version 2)", "29 X 29 (Version 3)", "33 X 33 (Version 4)", "37 X 37 (Version 5)", "41 X 41 (Version 6)", "45 X 45 (Version 7)", "49 X 49 (Version 8)", "53 X 53 (Version 9)", "57 X 57 (Version 10)", "61 X 61 (Version 11)", "65 X 65 (Version 12)", "69 X 69 (Version 13)", "73 X 73 (Version 14)", "77 X 77 (Version 15)", "81 X 81 (Version 16)", "85 X 85 (Version 17)", "89 X 89 (Version 18)", "93 X 93 (Version 19)", "97 X 97 (Version 20)", "101 X 101 (Version 21)", "105 X 105 (Version 22)", "109 X 109 (Version 23)", "113 X 113 (Version 24)", "117 X 117 (Version 25)", "121 X 121 (Version 26)", "125 X 125 (Version 27)", "129 X 129 (Version 28)", "133 X 133 (Version 29)", "137 X 137 (Version 30)", "141 X 141 (Version 31)", "145 X 145 (Version 32)", "149 X 149 (Version 33)", "153 X 153 (Version 34)", "157 X 157 (Version 35)", "161 X 161 (Version 36)", "165 X 165 (Version 37)", "169 X 169 (Version 38)", "173 X 173 (Version 39)", "177 X 177 (Version 40)" }));
         qrUserSizeCombo.setEnabled(false);
         qrUserSizeCombo.addActionListener(new java.awt.event.ActionListener() {
-            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 qrUserSizeComboActionPerformed(evt);
             }
@@ -1176,7 +1132,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         qrUserEccCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Approx 20% (Level L)", "Approx 37% (Level M)", "Approx 55% (Level Q)", "Approx 65% (Level H)" }));
         qrUserEccCombo.setEnabled(false);
         qrUserEccCombo.addActionListener(new java.awt.event.ActionListener() {
-            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 qrUserEccComboActionPerformed(evt);
             }
@@ -1219,7 +1174,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         compositeUserMode.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Automatic", "CC-A", "CC-B", "CC-C" }));
         compositeUserMode.addActionListener(new java.awt.event.ActionListener() {
-            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 compositeUserModeActionPerformed(evt);
             }
@@ -1335,7 +1289,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         exitButton.setText("Exit");
         exitButton.addActionListener(new java.awt.event.ActionListener() {
-            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 exitButtonActionPerformed(evt);
             }
@@ -1343,7 +1296,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         saveButton.setText("Save");
         saveButton.addActionListener(new java.awt.event.ActionListener() {
-            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 saveButtonActionPerformed(evt);
             }
@@ -1351,7 +1303,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         aboutButton.setText("About");
         aboutButton.addActionListener(new java.awt.event.ActionListener() {
-            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 aboutButtonActionPerformed(evt);
             }
@@ -2072,8 +2023,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
     }
 
     public boolean encodeMe() {
-        Barcode barcode = new Barcode();
-        boolean output = false;
         // TODO: Reader Init not supported yet
         boolean readerInit = false;
         
@@ -2121,7 +2070,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         DataBarExpanded dataBarExpanded = new DataBarExpanded();
         MaxiCode maxiCode = new MaxiCode();
         CodablockF codablockF = new CodablockF();
-//        Composite composite = new Composite();
+        Composite composite = new Composite();
 
         errorOutput = "";
         encodeInfo = "";
@@ -2132,943 +2081,849 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
             return false;
         }
 
-        switch (symbology) {
-        case "BARCODE_UPCA":
-            upc.setUpcaMode();
-//            if (isComposite) {
-//                upc.setLinkageFlag();
-//            } else {
-                upc.unsetLinkageFlag();
-//            }
-            if (upc.setContent(dataInput)) {
-                rect = upc.rect;
-                height = upc.symbol_height;
-                width = upc.symbol_width;
-                txt = upc.txt;
-                encodeInfo += upc.encodeInfo;
-                output = true;
+        if ((useCompositeCheck.isEnabled() && useCompositeCheck.isSelected()) &&
+                (!(compositeInput.isEmpty()))) {
+            // Create a composite symbol
+            composite.setSymbology(symbology);
+            composite.setLinear(dataInput);
+            composite.setPreferred(compositeUserMode.getSelectedIndex());
+            if (composite.setContent(compositeInput)) {
+                rect = composite.rect;
+                height = composite.symbol_height;
+                width = composite.symbol_width;
+                txt = composite.txt;
+                encodeInfo = composite.encodeInfo;
             } else {
-                errorOutput = upc.error_msg;
-            };
-            break;
-        case "BARCODE_UPCE":
-            upc.setUpceMode();
-//            if (isComposite) {
-//                upc.setLinkageFlag();
-//            } else {
-                upc.unsetLinkageFlag();
-//            }
-            if (upc.setContent(dataInput)) {
-                rect = upc.rect;
-                height = upc.symbol_height;
-                width = upc.symbol_width;
-                txt = upc.txt;
-                encodeInfo += upc.encodeInfo;
-                output = true;
-            } else {
-                errorOutput = upc.error_msg;
-            };
-            break;
-        case "BARCODE_EANX":
-            if (eanCalculateVersion() == 8) {
-                ean.setEan8Mode();
-            } else {
-                ean.setEan13Mode();
+                errorOutput = composite.error_msg;
             }
+        } else {
+            // Symbol is not composite
+            switch (symbology) {
+            case "BARCODE_UPCA":
+                upc.setUpcaMode();
+                upc.unsetLinkageFlag();
+                if (upc.setContent(dataInput)) {
+                    rect = upc.rect;
+                    height = upc.symbol_height;
+                    width = upc.symbol_width;
+                    txt = upc.txt;
+                    encodeInfo += upc.encodeInfo;
+                } else {
+                    errorOutput = upc.error_msg;
+                };
+                break;
+            case "BARCODE_UPCE":
+                upc.setUpceMode();
+                upc.unsetLinkageFlag();
+                if (upc.setContent(dataInput)) {
+                    rect = upc.rect;
+                    height = upc.symbol_height;
+                    width = upc.symbol_width;
+                    txt = upc.txt;
+                    encodeInfo += upc.encodeInfo;
+                } else {
+                    errorOutput = upc.error_msg;
+                };
+                break;
+            case "BARCODE_EANX":
+                if (eanCalculateVersion() == 8) {
+                    ean.setEan8Mode();
+                } else {
+                    ean.setEan13Mode();
+                }
 
-//            if (isComposite) {
-//                ean.setLinkageFlag();
-//            } else {
                 ean.unsetLinkageFlag();
-//            }
-            if (ean.setContent(dataInput)) {
-                rect = ean.rect;
-                height = ean.symbol_height;
-                width = ean.symbol_width;
-                txt = ean.txt;
-                encodeInfo += ean.encodeInfo;
-                output = true;
-            } else {
-                errorOutput = ean.error_msg;
-            };
-            break;
-        case "BARCODE_ITF14":
-            code2of5.setITF14Mode();
-            if (code2of5.setContent(dataInput)) {
-                rect = code2of5.rect;
-                height = code2of5.symbol_height;
-                width = code2of5.symbol_width;
-                txt = code2of5.txt;
-                encodeInfo += code2of5.encodeInfo;
-                output = true;
-            } else {
-                errorOutput = code2of5.error_msg;
-            };
-            break;
-        case "BARCODE_CODE128":
-        case "BARCODE_HIBC_128":
-//            if (isComposite) {
-//                switch (composite.getCcMode()) {
-//                    case 1:
-//                        code128.setCca();
-//                        break;
-//                    case 2:
-//                        code128.setCcb();
-//                        break;
-//                    case 3:
-//                        code128.setCcc();
-//                        break;
-//                }
-//            } else {
+                if (ean.setContent(dataInput)) {
+                    rect = ean.rect;
+                    height = ean.symbol_height;
+                    width = ean.symbol_width;
+                    txt = ean.txt;
+                    encodeInfo += ean.encodeInfo;
+                } else {
+                    errorOutput = ean.error_msg;
+                };
+                break;
+            case "BARCODE_ITF14":
+                code2of5.setITF14Mode();
+                if (code2of5.setContent(dataInput)) {
+                    rect = code2of5.rect;
+                    height = code2of5.symbol_height;
+                    width = code2of5.symbol_width;
+                    txt = code2of5.txt;
+                    encodeInfo += code2of5.encodeInfo;
+                } else {
+                    errorOutput = code2of5.error_msg;
+                };
+                break;
+            case "BARCODE_CODE128":
+            case "BARCODE_HIBC_128":
                 code128.unsetCc();
-//            }
-            code128.setNormalMode();
-            if (useGS1Check.isSelected()) {
-                code128.setGs1Mode();
-            }
-            if (symbology.equals("BARCODE_HIBC_128")) {
-                code128.setHibcMode();
-            }
-            if (readerInit) {
-                code128.setInitMode();
-            }
-            if (code128.setContent(dataInput)) {
-                rect = code128.rect;
-                height = code128.symbol_height;
-                width = code128.symbol_width;
-                txt = code128.txt;
-                encodeInfo += code128.encodeInfo;
-                output = true;
-            } else {
-                errorOutput = code128.error_msg;
-            };
-            break;
-        case "BARCODE_CODABAR":
-            if (codabar.setContent(dataInput)) {
-                rect = codabar.rect;
-                height = codabar.symbol_height;
-                width = codabar.symbol_width;
-                txt = codabar.txt;
-                encodeInfo += codabar.encodeInfo;
-                output = true;
-            } else {
-                errorOutput = codabar.error_msg;
-            };
-            break;
-        case "BARCODE_C25MATRIX":
-            code2of5.setMatrixMode();
-            if (code2of5.setContent(dataInput)) {
-                rect = code2of5.rect;
-                height = code2of5.symbol_height;
-                width = code2of5.symbol_width;
-                txt = code2of5.txt;
-                encodeInfo += code2of5.encodeInfo;
-                output = true;
-            } else {
-                errorOutput = code2of5.error_msg;
-            };
-            break;
-        case "BARCODE_C25IND":
-            code2of5.setIndustrialMode();
-            if (code2of5.setContent(dataInput)) {
-                rect = code2of5.rect;
-                height = code2of5.symbol_height;
-                width = code2of5.symbol_width;
-                txt = code2of5.txt;
-                encodeInfo += code2of5.encodeInfo;
-                output = true;
-            } else {
-                errorOutput = code2of5.error_msg;
-            };
-            break;
-        case "BARCODE_C25INTER":
-            code2of5.setInterleavedMode();
-            if (code2of5.setContent(dataInput)) {
-                rect = code2of5.rect;
-                height = code2of5.symbol_height;
-                width = code2of5.symbol_width;
-                txt = code2of5.txt;
-                encodeInfo += code2of5.encodeInfo;
-                output = true;
-            } else {
-                errorOutput = code2of5.error_msg;
-            };
-            break;
-        case "BARCODE_MSI_PLESSEY":
-            msiPlessey.option2 = msiCheckDigitCombo.getSelectedIndex();
-            if (msiPlessey.setContent(dataInput)) {
-                rect = msiPlessey.rect;
-                height = msiPlessey.symbol_height;
-                width = msiPlessey.symbol_width;
-                txt = msiPlessey.txt;
-                encodeInfo += msiPlessey.encodeInfo;
-                output = true;
-            } else {
-                errorOutput = msiPlessey.error_msg;
-            };
-            break;
-        case "BARCODE_CODE39":
-        case "BARCODE_HIBC_39":
-            code3of9.setNormalMode();
-            if (symbology.equals("BARCODE_HIBC_39")) {
-                code3of9.setHibcMode();
-            }
-            code3of9.option2 = code39CheckCombo.getSelectedIndex();
-            if (code3of9.setContent(dataInput)) {
-                rect = code3of9.rect;
-                height = code3of9.symbol_height;
-                width = code3of9.symbol_width;
-                txt = code3of9.txt;
-                encodeInfo += code3of9.encodeInfo;
-                output = true;
-            } else {
-                errorOutput = code3of9.error_msg;
-            };
-            break;
-        case "BARCODE_LOGMARS":
-            if (logmars.setContent(dataInput)) {
-                rect = logmars.rect;
-                height = logmars.symbol_height;
-                width = logmars.symbol_width;
-                txt = logmars.txt;
-                encodeInfo += logmars.encodeInfo;
-                output = true;
-            } else {
-                errorOutput = logmars.error_msg;
-            };
-            break;
-        case "BARCODE_CODE11":
-            if (code11.setContent(dataInput)) {
-                rect = code11.rect;
-                height = code11.symbol_height;
-                width = code11.symbol_width;
-                txt = code11.txt;
-                encodeInfo += code11.encodeInfo;
-                output = true;
-            } else {
-                errorOutput = code11.error_msg;
-            };
-            break;
-        case "BARCODE_CODE93":
-            if (code93.setContent(dataInput)) {
-                rect = code93.rect;
-                height = code93.symbol_height;
-                width = code93.symbol_width;
-                txt = code93.txt;
-                encodeInfo += code93.encodeInfo;
-                output = true;
-            } else {
-                errorOutput = code93.error_msg;
-            };
-            break;
-        case "BARCODE_PZN":
-            if (pzn.setContent(dataInput)) {
-                rect = pzn.rect;
-                height = pzn.symbol_height;
-                width = pzn.symbol_width;
-                txt = pzn.txt;
-                encodeInfo += pzn.encodeInfo;
-                output = true;
-            } else {
-                errorOutput = pzn.error_msg;
-            };
-            break;
-        case "BARCODE_EXCODE39":
-            code3of9ext.option2 = code39CheckCombo.getSelectedIndex();
-            if (code3of9ext.setContent(dataInput)) {
-                rect = code3of9ext.rect;
-                height = code3of9ext.symbol_height;
-                width = code3of9ext.symbol_width;
-                txt = code3of9ext.txt;
-                encodeInfo += code3of9ext.encodeInfo;
-                output = true;
-            } else {
-                errorOutput = code3of9ext.error_msg;
-            };
-            break;
-        case "BARCODE_TELEPEN":
-            telepen.setNormalMode();
-            if (telepen.setContent(dataInput)) {
-                rect = telepen.rect;
-                height = telepen.symbol_height;
-                width = telepen.symbol_width;
-                txt = telepen.txt;
-                encodeInfo += telepen.encodeInfo;
-                output = true;
-            } else {
-                errorOutput = telepen.error_msg;
-            };
-            break;
-        case "BARCODE_TELEPEN_NUM":
-            telepen.setNumericMode();
-            if (telepen.setContent(dataInput)) {
-                rect = telepen.rect;
-                height = telepen.symbol_height;
-                width = telepen.symbol_width;
-                txt = telepen.txt;
-                encodeInfo += telepen.encodeInfo;
-                output = true;
-            } else {
-                errorOutput = telepen.error_msg;
-            };
-            break;
-        case "BARCODE_CODE49":
-            if (code49.setContent(dataInput)) {
-                rect = code49.rect;
-                height = code49.symbol_height;
-                width = code49.symbol_width;
-                txt = code49.txt;
-                encodeInfo += code49.encodeInfo;
-                output = true;
-            } else {
-                errorOutput = code49.error_msg;
-            };
-            break;
-        case "BARCODE_KOREAPOST":
-            if (koreaPost.setContent(dataInput)) {
-                rect = koreaPost.rect;
-                height = koreaPost.symbol_height;
-                width = koreaPost.symbol_width;
-                txt = koreaPost.txt;
-                encodeInfo += koreaPost.encodeInfo;
-                output = true;
-            } else {
-                errorOutput = koreaPost.error_msg;
-            };
-            break;
-        case "BARCODE_CODE16K":
-            code16k.setNormalMode();
-            if (useGS1Check.isSelected()) {
-                code16k.setGs1Mode();
-            }
-            if (readerInit) {
-                code16k.setInitMode();
-            }
-            if (code16k.setContent(dataInput)) {
-                rect = code16k.rect;
-                height = code16k.symbol_height;
-                width = code16k.symbol_width;
-                txt = code16k.txt;
-                encodeInfo += code16k.encodeInfo;
-                output = true;
-            } else {
-                errorOutput = code16k.error_msg;
-            };
-            break;
-        case "BARCODE_C25IATA":
-            code2of5.setIATAMode();
-            if (code2of5.setContent(dataInput)) {
-                rect = code2of5.rect;
-                height = code2of5.symbol_height;
-                width = code2of5.symbol_width;
-                txt = code2of5.txt;
-                encodeInfo = code2of5.encodeInfo;
-                output = true;
-            } else {
-                errorOutput = code2of5.error_msg;
-            };
-            break;
-        case "BARCODE_C25LOGIC":
-            code2of5.setDataLogicMode();
-            if (code2of5.setContent(dataInput)) {
-                rect = code2of5.rect;
-                height = code2of5.symbol_height;
-                width = code2of5.symbol_width;
-                txt = code2of5.txt;
-                encodeInfo += code2of5.encodeInfo;
-                output = true;
-            } else {
-                errorOutput = code2of5.error_msg;
-            };
-            break;
-        case "BARCODE_DPLEIT":
-            code2of5.setDPLeitMode();
-            if (code2of5.setContent(dataInput)) {
-                rect = code2of5.rect;
-                height = code2of5.symbol_height;
-                width = code2of5.symbol_width;
-                txt = code2of5.txt;
-                encodeInfo += code2of5.encodeInfo;
-                output = true;
-            } else {
-                errorOutput = code2of5.error_msg;
-            };
-            break;
-        case "BARCODE_DPIDENT":
-            code2of5.setDPIdentMode();
-            if (code2of5.setContent(dataInput)) {
-                rect = code2of5.rect;
-                height = code2of5.symbol_height;
-                width = code2of5.symbol_width;
-                txt = code2of5.txt;
-                encodeInfo += code2of5.encodeInfo;
-                output = true;
-            } else {
-                errorOutput = code2of5.error_msg;
-            };
-            break;
-        case "BARCODE_POSTNET":
-            postnet.setPostnet();
-            if (postnet.setContent(dataInput)) {
-                rect = postnet.rect;
-                height = postnet.symbol_height;
-                width = postnet.symbol_width;
-                txt = postnet.txt;
-                encodeInfo += postnet.encodeInfo;
-                output = true;
-            } else {
-                errorOutput = postnet.error_msg;
-            };
-            break;
-        case "BARCODE_PLANET":
-            postnet.setPlanet();
-            if (postnet.setContent(dataInput)) {
-                rect = postnet.rect;
-                height = postnet.symbol_height;
-                width = postnet.symbol_width;
-                txt = postnet.txt;
-                output = true;
-            } else {
-                errorOutput = postnet.error_msg;
-            };
-            break;
-        case "BARCODE_RM4SCC":
-            if (royalMail.setContent(dataInput)) {
-                rect = royalMail.rect;
-                height = royalMail.symbol_height;
-                width = royalMail.symbol_width;
-                txt = royalMail.txt;
-                encodeInfo += royalMail.encodeInfo;
-                output = true;
-            } else {
-                errorOutput = royalMail.error_msg;
-            }
-            break;
-        case "BARCODE_KIX":
-            if (kixCode.setContent(dataInput)) {
-                rect = kixCode.rect;
-                height = kixCode.symbol_height;
-                width = kixCode.symbol_width;
-                txt = kixCode.txt;
-                encodeInfo += kixCode.encodeInfo;
-                output = true;
-            } else {
-                errorOutput = kixCode.error_msg;
-            }
-            break;
-        case "BARCODE_JAPANPOST":
-            if (japanPost.setContent(dataInput)) {
-                rect = japanPost.rect;
-                height = japanPost.symbol_height;
-                width = japanPost.symbol_width;
-                txt = japanPost.txt;
-                encodeInfo += japanPost.encodeInfo;
-                output = true;
-            } else {
-                errorOutput = japanPost.error_msg;
-            }
-            break;
-        case "BARCODE_AUSPOST":
-            australiaPost.setPostMode();
-            if (australiaPost.setContent(dataInput)) {
-                rect = australiaPost.rect;
-                height = australiaPost.symbol_height;
-                width = australiaPost.symbol_width;
-                txt = australiaPost.txt;
-                encodeInfo += australiaPost.encodeInfo;
-                output = true;
-            } else {
-                errorOutput = australiaPost.error_msg;
-            }
-            break;
-        case "BARCODE_AUSREPLY":
-            australiaPost.setReplyMode();
-            if (australiaPost.setContent(dataInput)) {
-                rect = australiaPost.rect;
-                height = australiaPost.symbol_height;
-                width = australiaPost.symbol_width;
-                txt = australiaPost.txt;
-                encodeInfo += australiaPost.encodeInfo;
-                output = true;
-            } else {
-                errorOutput = australiaPost.error_msg;
-            }
-            break;
-        case "BARCODE_AUSROUTE":
-            australiaPost.setRouteMode();
-            if (australiaPost.setContent(dataInput)) {
-                rect = australiaPost.rect;
-                height = australiaPost.symbol_height;
-                width = australiaPost.symbol_width;
-                txt = australiaPost.txt;
-                encodeInfo += australiaPost.encodeInfo;
-                output = true;
-            } else {
-                errorOutput = australiaPost.error_msg;
-            }
-            break;
-        case "BARCODE_AUSREDIRECT":
-            australiaPost.setRedirectMode();
-            if (australiaPost.setContent(dataInput)) {
-                rect = australiaPost.rect;
-                height = australiaPost.symbol_height;
-                width = australiaPost.symbol_width;
-                txt = australiaPost.txt;
-                encodeInfo += australiaPost.encodeInfo;
-                output = true;
-            } else {
-                errorOutput = australiaPost.error_msg;
-            }
-            break;
-        case "BARCODE_CHANNEL":
-            channelCode.option2 = channelChannelsCombo.getSelectedIndex();
-            if (channelCode.setContent(dataInput)) {
-                rect = channelCode.rect;
-                height = channelCode.symbol_height;
-                width = channelCode.symbol_width;
-                txt = channelCode.txt;
-                encodeInfo += channelCode.encodeInfo;
-                output = true;
-            } else {
-                errorOutput = channelCode.error_msg;
-            }
-            break;
-        case "BARCODE_PHARMA":
-            if (pharmaCode.setContent(dataInput)) {
-                rect = pharmaCode.rect;
-                height = pharmaCode.symbol_height;
-                width = pharmaCode.symbol_width;
-                txt = pharmaCode.txt;
-                encodeInfo += pharmaCode.encodeInfo;
-                output = true;
-            } else {
-                errorOutput = pharmaCode.error_msg;
-            }
-            break;
-        case "BARCODE_PHARMA_TWO":
-            if (pharmaCode2t.setContent(dataInput)) {
-                rect = pharmaCode2t.rect;
-                height = pharmaCode2t.symbol_height;
-                width = pharmaCode2t.symbol_width;
-                txt = pharmaCode2t.txt;
-                encodeInfo += pharmaCode2t.encodeInfo;
-                output = true;
-            } else {
-                errorOutput = pharmaCode2t.error_msg;
-            }
-            break;
-        case "BARCODE_CODE32":
-            if (code32.setContent(dataInput)) {
-                rect = code32.rect;
-                height = code32.symbol_height;
-                width = code32.symbol_width;
-                txt = code32.txt;
-                encodeInfo += code32.encodeInfo;
-                output = true;
-            } else {
-                errorOutput = code32.error_msg;
-            }
-            break;
-        case "BARCODE_PDF417":
-        case "BARCODE_HIBC_PDF":
-            pdf417.setNormalMode();
-            if (useGS1Check.isSelected()) {
-                pdf417.setGs1Mode();
-            }
-            if (symbology.equals("BARCODE_HIBC_PDF")) {
-                pdf417.setHibcMode();
-            }
-            pdf417.option1 = pdfEccCombo.getSelectedIndex() - 1;
-            pdf417.option2 = pdfColumnsCombo.getSelectedIndex();
-            if (readerInit) {
-                pdf417.setInitMode();
-            }
-            pdf417.setNormalMode();
-            if (pdf417.setContent(dataInput)) {
-                rect = pdf417.rect;
-                height = pdf417.symbol_height;
-                width = pdf417.symbol_width;
-                txt = pdf417.txt;
-                encodeInfo += pdf417.encodeInfo;
-                output = true;
-            } else {
-                errorOutput = pdf417.error_msg;
-            }
-            break;
-        case "BARCODE_PDF417TRUNC":
-            pdf417.setNormalMode();
-            if (useGS1Check.isSelected()) {
-                pdf417.setGs1Mode();
-            }
-            pdf417.option1 = pdfEccCombo.getSelectedIndex() - 1;
-            pdf417.option2 = pdfColumnsCombo.getSelectedIndex();
-            if (readerInit) {
-                pdf417.setInitMode();
-            }
-            pdf417.setTruncMode();
-            if (pdf417.setContent(dataInput)) {
-                rect = pdf417.rect;
-                height = pdf417.symbol_height;
-                width = pdf417.symbol_width;
-                txt = pdf417.txt;
-                encodeInfo += pdf417.encodeInfo;
-                output = true;
-            } else {
-                errorOutput = pdf417.error_msg;
-            }
-            break;
-        case "BARCODE_MICROPDF417":
-        case "BARCODE_HIBC_MICPDF":
-            pdf417.setNormalMode();
-            if (useGS1Check.isSelected()) {
-                pdf417.setGs1Mode();
-            }
-            if (symbology.equals("BARCODE_HIBC_MICPDF")) {
-                pdf417.setHibcMode();
-            }
-            if (readerInit) {
-                pdf417.setInitMode();
-            }
-            pdf417.option2 = microPdfColumnsCombo.getSelectedIndex();
-            pdf417.setMicroMode();
-            if (pdf417.setContent(dataInput)) {
-                rect = pdf417.rect;
-                height = pdf417.symbol_height;
-                width = pdf417.symbol_width;
-                txt = pdf417.txt;
-                encodeInfo += pdf417.encodeInfo;
-                output = true;
-            } else {
-                errorOutput = pdf417.error_msg;
-            }
-            break;
-        case "BARCODE_AZTEC":
-        case "BARCODE_HIBC_AZTEC":
-            aztecCode.setNormalMode();
-            if (useGS1Check.isSelected()) {
-                aztecCode.setGs1Mode();
-            }
-            if (symbology.equals("BARCODE_HIBC_AZTEC")) {
-                aztecCode.setHibcMode();
-            }
-            if (readerInit) {
-                aztecCode.setInitMode();
-            }
-            if (aztecUserEcc.isSelected()) {
-                aztecCode.option1 = aztecUserEccCombo.getSelectedIndex() + 1;
-            }
-            if (aztecUserSize.isSelected()) {
-                aztecCode.option2 = aztecUserSizeCombo.getSelectedIndex() + 1;
-            }
-            if (aztecCode.setContent(dataInput)) {
-                rect = aztecCode.rect;
-                height = aztecCode.symbol_height;
-                width = aztecCode.symbol_width;
-                txt = aztecCode.txt;
-                encodeInfo += aztecCode.encodeInfo;
-                output = true;
-            } else {
-                errorOutput = aztecCode.error_msg;
-            }
-            break;
-        case "BARCODE_AZRUNE":
-            if (aztecRune.setContent(dataInput)) {
-                rect = aztecRune.rect;
-                height = aztecRune.symbol_height;
-                width = aztecRune.symbol_width;
-                txt = aztecRune.txt;
-                encodeInfo += aztecRune.encodeInfo;
-                output = true;
-            } else {
-                errorOutput = aztecRune.error_msg;
-            }
-            break;
-        case "BARCODE_DATAMATRIX":
-        case "BARCODE_HIBC_DM":
-            dataMatrix.setNormalMode();
-            if (useGS1Check.isSelected()) {
-                dataMatrix.setGs1Mode();
-            }
-            if (symbology.equals("BARCODE_HIBC_DM")) {
-                dataMatrix.setHibcMode();
-            }
-            if (readerInit) {
-                dataMatrix.setInitMode();
-            }
-            dataMatrix.option2 = dataMatrixSizeCombo.getSelectedIndex();
-            if (dataMatrixSquareOnlyCheck.isSelected()) {
-                dataMatrix.forceSquare(true);
-            } else {
-                dataMatrix.forceSquare(false);
-            }
-            if (dataMatrix.setContent(dataInput)) {
-                rect = dataMatrix.rect;
-                height = dataMatrix.symbol_height;
-                width = dataMatrix.symbol_width;
-                txt = dataMatrix.txt;
-                encodeInfo += dataMatrix.encodeInfo;
-                output = true;
-            } else {
-                errorOutput = dataMatrix.error_msg;
-            }
-            break;
-        case "BARCODE_ONECODE":
-            if (uspsOneCode.setContent(dataInput)) {
-                rect = uspsOneCode.rect;
-                height = uspsOneCode.symbol_height;
-                width = uspsOneCode.symbol_width;
-                txt = uspsOneCode.txt;
-                encodeInfo += uspsOneCode.encodeInfo;
-                output = true;
-            } else {
-                errorOutput = uspsOneCode.error_msg;
-            }
-            break;
-        case "BARCODE_QRCODE":
-        case "BARCODE_HIBC_QR":
-            qrCode.setNormalMode();
-            if (useGS1Check.isSelected()) {
-                qrCode.setGs1Mode();
-            }
-            if (symbology.equals("BARCODE_HIBC_QR")) {
-                qrCode.setHibcMode();
-            }
-            if (qrUserEcc.isSelected()) {
-                qrCode.option1 = qrUserEccCombo.getSelectedIndex() + 1;
-            }
-            if (qrUserSize.isSelected()) {
-                qrCode.option2 = qrUserSizeCombo.getSelectedIndex() + 1;
-            }
-            if (readerInit) {
-                qrCode.setInitMode();
-            }
-            if (qrCode.setContent(dataInput)) {
-                rect = qrCode.rect;
-                height = qrCode.symbol_height;
-                width = qrCode.symbol_width;
-                txt = qrCode.txt;
-                encodeInfo += qrCode.encodeInfo;
-                output = true;
-            } else {
-                errorOutput = qrCode.error_msg;
-            }
-            break;
-        case "BARCODE_MICROQR":
-            if (microQrUserEcc.isSelected()) {
-                microQrCode.option1 = microQrUserEccCombo.getSelectedIndex() + 1;
-            }
-            if (microQrUserSize.isSelected()) {
-                microQrCode.option2 = microQrUserSizeCombo.getSelectedIndex() + 1;
-            }
-            if (microQrCode.setContent(dataInput)) {
-                rect = microQrCode.rect;
-                height = microQrCode.symbol_height;
-                width = microQrCode.symbol_width;
-                txt = microQrCode.txt;
-                encodeInfo += microQrCode.encodeInfo;
-                output = true;
-            } else {
-                errorOutput = microQrCode.error_msg;
-            }
-            break;
-        case "BARCODE_CODEONE":
-            codeOne.setNormalMode();
-            if (useGS1Check.isSelected()) {
-                codeOne.setGs1Mode();
-            }
-            if (readerInit) {
-                codeOne.setInitMode();
-            }
-            codeOne.option2 = codeOneSizeCombo.getSelectedIndex();
-            if (codeOne.setContent(dataInput)) {
-                rect = codeOne.rect;
-                height = codeOne.symbol_height;
-                width = codeOne.symbol_width;
-                txt = codeOne.txt;
-                encodeInfo += codeOne.encodeInfo;
-                output = true;
-            } else {
-                errorOutput = codeOne.error_msg;
-            }
-            break;
-        case "BARCODE_GRIDMATRIX":
-            gridMatrix.setNormalMode();
-            if (useGS1Check.isSelected()) {
-                gridMatrix.setGs1Mode();
-            }
-            if (readerInit) {
-                gridMatrix.setInitMode();
-            }
-            if (gridmatrixUserEcc.isSelected()) {
-                gridMatrix.option1 = gridmatrixUserEccCombo.getSelectedIndex();
-            }
-            if (gridmatrixUserSize.isSelected()) {
-                gridMatrix.option2 = gridmatrixUserSizeCombo.getSelectedIndex();
-            }
-            if (gridMatrix.setContent(dataInput)) {
-                rect = gridMatrix.rect;
-                height = gridMatrix.symbol_height;
-                width = gridMatrix.symbol_width;
-                txt = gridMatrix.txt;
-                encodeInfo += gridMatrix.encodeInfo;
-                output = true;
-            } else {
-                errorOutput = gridMatrix.error_msg;
-            }
-            break;
-        case "BARCODE_RSS14":
-//            if (isComposite) {
-//                dataBar14.setLinkageFlag();
-//            } else {
+                code128.setNormalMode();
+                if (useGS1Check.isSelected()) {
+                    code128.setGs1Mode();
+                }
+                if (symbology.equals("BARCODE_HIBC_128")) {
+                    code128.setHibcMode();
+                }
+                if (readerInit) {
+                    code128.setInitMode();
+                }
+                if (code128.setContent(dataInput)) {
+                    rect = code128.rect;
+                    height = code128.symbol_height;
+                    width = code128.symbol_width;
+                    txt = code128.txt;
+                    encodeInfo += code128.encodeInfo;
+                } else {
+                    errorOutput = code128.error_msg;
+                };
+                break;
+            case "BARCODE_CODABAR":
+                if (codabar.setContent(dataInput)) {
+                    rect = codabar.rect;
+                    height = codabar.symbol_height;
+                    width = codabar.symbol_width;
+                    txt = codabar.txt;
+                    encodeInfo += codabar.encodeInfo;
+                } else {
+                    errorOutput = codabar.error_msg;
+                };
+                break;
+            case "BARCODE_C25MATRIX":
+                code2of5.setMatrixMode();
+                if (code2of5.setContent(dataInput)) {
+                    rect = code2of5.rect;
+                    height = code2of5.symbol_height;
+                    width = code2of5.symbol_width;
+                    txt = code2of5.txt;
+                    encodeInfo += code2of5.encodeInfo;
+                } else {
+                    errorOutput = code2of5.error_msg;
+                };
+                break;
+            case "BARCODE_C25IND":
+                code2of5.setIndustrialMode();
+                if (code2of5.setContent(dataInput)) {
+                    rect = code2of5.rect;
+                    height = code2of5.symbol_height;
+                    width = code2of5.symbol_width;
+                    txt = code2of5.txt;
+                    encodeInfo += code2of5.encodeInfo;
+                } else {
+                    errorOutput = code2of5.error_msg;
+                };
+                break;
+            case "BARCODE_C25INTER":
+                code2of5.setInterleavedMode();
+                if (code2of5.setContent(dataInput)) {
+                    rect = code2of5.rect;
+                    height = code2of5.symbol_height;
+                    width = code2of5.symbol_width;
+                    txt = code2of5.txt;
+                    encodeInfo += code2of5.encodeInfo;
+                } else {
+                    errorOutput = code2of5.error_msg;
+                };
+                break;
+            case "BARCODE_MSI_PLESSEY":
+                msiPlessey.option2 = msiCheckDigitCombo.getSelectedIndex();
+                if (msiPlessey.setContent(dataInput)) {
+                    rect = msiPlessey.rect;
+                    height = msiPlessey.symbol_height;
+                    width = msiPlessey.symbol_width;
+                    txt = msiPlessey.txt;
+                    encodeInfo += msiPlessey.encodeInfo;
+                } else {
+                    errorOutput = msiPlessey.error_msg;
+                };
+                break;
+            case "BARCODE_CODE39":
+            case "BARCODE_HIBC_39":
+                code3of9.setNormalMode();
+                if (symbology.equals("BARCODE_HIBC_39")) {
+                    code3of9.setHibcMode();
+                }
+                code3of9.option2 = code39CheckCombo.getSelectedIndex();
+                if (code3of9.setContent(dataInput)) {
+                    rect = code3of9.rect;
+                    height = code3of9.symbol_height;
+                    width = code3of9.symbol_width;
+                    txt = code3of9.txt;
+                    encodeInfo += code3of9.encodeInfo;
+                } else {
+                    errorOutput = code3of9.error_msg;
+                };
+                break;
+            case "BARCODE_LOGMARS":
+                if (logmars.setContent(dataInput)) {
+                    rect = logmars.rect;
+                    height = logmars.symbol_height;
+                    width = logmars.symbol_width;
+                    txt = logmars.txt;
+                    encodeInfo += logmars.encodeInfo;
+                } else {
+                    errorOutput = logmars.error_msg;
+                };
+                break;
+            case "BARCODE_CODE11":
+                if (code11.setContent(dataInput)) {
+                    rect = code11.rect;
+                    height = code11.symbol_height;
+                    width = code11.symbol_width;
+                    txt = code11.txt;
+                    encodeInfo += code11.encodeInfo;
+                } else {
+                    errorOutput = code11.error_msg;
+                };
+                break;
+            case "BARCODE_CODE93":
+                if (code93.setContent(dataInput)) {
+                    rect = code93.rect;
+                    height = code93.symbol_height;
+                    width = code93.symbol_width;
+                    txt = code93.txt;
+                    encodeInfo += code93.encodeInfo;
+                } else {
+                    errorOutput = code93.error_msg;
+                };
+                break;
+            case "BARCODE_PZN":
+                if (pzn.setContent(dataInput)) {
+                    rect = pzn.rect;
+                    height = pzn.symbol_height;
+                    width = pzn.symbol_width;
+                    txt = pzn.txt;
+                    encodeInfo += pzn.encodeInfo;
+                } else {
+                    errorOutput = pzn.error_msg;
+                };
+                break;
+            case "BARCODE_EXCODE39":
+                code3of9ext.option2 = code39CheckCombo.getSelectedIndex();
+                if (code3of9ext.setContent(dataInput)) {
+                    rect = code3of9ext.rect;
+                    height = code3of9ext.symbol_height;
+                    width = code3of9ext.symbol_width;
+                    txt = code3of9ext.txt;
+                    encodeInfo += code3of9ext.encodeInfo;
+                } else {
+                    errorOutput = code3of9ext.error_msg;
+                };
+                break;
+            case "BARCODE_TELEPEN":
+                telepen.setNormalMode();
+                if (telepen.setContent(dataInput)) {
+                    rect = telepen.rect;
+                    height = telepen.symbol_height;
+                    width = telepen.symbol_width;
+                    txt = telepen.txt;
+                    encodeInfo += telepen.encodeInfo;
+                } else {
+                    errorOutput = telepen.error_msg;
+                };
+                break;
+            case "BARCODE_TELEPEN_NUM":
+                telepen.setNumericMode();
+                if (telepen.setContent(dataInput)) {
+                    rect = telepen.rect;
+                    height = telepen.symbol_height;
+                    width = telepen.symbol_width;
+                    txt = telepen.txt;
+                    encodeInfo += telepen.encodeInfo;
+                } else {
+                    errorOutput = telepen.error_msg;
+                };
+                break;
+            case "BARCODE_CODE49":
+                if (code49.setContent(dataInput)) {
+                    rect = code49.rect;
+                    height = code49.symbol_height;
+                    width = code49.symbol_width;
+                    txt = code49.txt;
+                    encodeInfo += code49.encodeInfo;
+                } else {
+                    errorOutput = code49.error_msg;
+                };
+                break;
+            case "BARCODE_KOREAPOST":
+                if (koreaPost.setContent(dataInput)) {
+                    rect = koreaPost.rect;
+                    height = koreaPost.symbol_height;
+                    width = koreaPost.symbol_width;
+                    txt = koreaPost.txt;
+                    encodeInfo += koreaPost.encodeInfo;
+                } else {
+                    errorOutput = koreaPost.error_msg;
+                };
+                break;
+            case "BARCODE_CODE16K":
+                code16k.setNormalMode();
+                if (useGS1Check.isSelected()) {
+                    code16k.setGs1Mode();
+                }
+                if (readerInit) {
+                    code16k.setInitMode();
+                }
+                if (code16k.setContent(dataInput)) {
+                    rect = code16k.rect;
+                    height = code16k.symbol_height;
+                    width = code16k.symbol_width;
+                    txt = code16k.txt;
+                    encodeInfo += code16k.encodeInfo;
+                } else {
+                    errorOutput = code16k.error_msg;
+                };
+                break;
+            case "BARCODE_C25IATA":
+                code2of5.setIATAMode();
+                if (code2of5.setContent(dataInput)) {
+                    rect = code2of5.rect;
+                    height = code2of5.symbol_height;
+                    width = code2of5.symbol_width;
+                    txt = code2of5.txt;
+                    encodeInfo = code2of5.encodeInfo;
+                } else {
+                    errorOutput = code2of5.error_msg;
+                };
+                break;
+            case "BARCODE_C25LOGIC":
+                code2of5.setDataLogicMode();
+                if (code2of5.setContent(dataInput)) {
+                    rect = code2of5.rect;
+                    height = code2of5.symbol_height;
+                    width = code2of5.symbol_width;
+                    txt = code2of5.txt;
+                    encodeInfo += code2of5.encodeInfo;
+                } else {
+                    errorOutput = code2of5.error_msg;
+                };
+                break;
+            case "BARCODE_DPLEIT":
+                code2of5.setDPLeitMode();
+                if (code2of5.setContent(dataInput)) {
+                    rect = code2of5.rect;
+                    height = code2of5.symbol_height;
+                    width = code2of5.symbol_width;
+                    txt = code2of5.txt;
+                    encodeInfo += code2of5.encodeInfo;
+                } else {
+                    errorOutput = code2of5.error_msg;
+                };
+                break;
+            case "BARCODE_DPIDENT":
+                code2of5.setDPIdentMode();
+                if (code2of5.setContent(dataInput)) {
+                    rect = code2of5.rect;
+                    height = code2of5.symbol_height;
+                    width = code2of5.symbol_width;
+                    txt = code2of5.txt;
+                    encodeInfo += code2of5.encodeInfo;
+                } else {
+                    errorOutput = code2of5.error_msg;
+                };
+                break;
+            case "BARCODE_POSTNET":
+                postnet.setPostnet();
+                if (postnet.setContent(dataInput)) {
+                    rect = postnet.rect;
+                    height = postnet.symbol_height;
+                    width = postnet.symbol_width;
+                    txt = postnet.txt;
+                    encodeInfo += postnet.encodeInfo;
+                } else {
+                    errorOutput = postnet.error_msg;
+                };
+                break;
+            case "BARCODE_PLANET":
+                postnet.setPlanet();
+                if (postnet.setContent(dataInput)) {
+                    rect = postnet.rect;
+                    height = postnet.symbol_height;
+                    width = postnet.symbol_width;
+                    txt = postnet.txt;
+                } else {
+                    errorOutput = postnet.error_msg;
+                };
+                break;
+            case "BARCODE_RM4SCC":
+                if (royalMail.setContent(dataInput)) {
+                    rect = royalMail.rect;
+                    height = royalMail.symbol_height;
+                    width = royalMail.symbol_width;
+                    txt = royalMail.txt;
+                    encodeInfo += royalMail.encodeInfo;
+                } else {
+                    errorOutput = royalMail.error_msg;
+                }
+                break;
+            case "BARCODE_KIX":
+                if (kixCode.setContent(dataInput)) {
+                    rect = kixCode.rect;
+                    height = kixCode.symbol_height;
+                    width = kixCode.symbol_width;
+                    txt = kixCode.txt;
+                    encodeInfo += kixCode.encodeInfo;
+                } else {
+                    errorOutput = kixCode.error_msg;
+                }
+                break;
+            case "BARCODE_JAPANPOST":
+                if (japanPost.setContent(dataInput)) {
+                    rect = japanPost.rect;
+                    height = japanPost.symbol_height;
+                    width = japanPost.symbol_width;
+                    txt = japanPost.txt;
+                    encodeInfo += japanPost.encodeInfo;
+                } else {
+                    errorOutput = japanPost.error_msg;
+                }
+                break;
+            case "BARCODE_AUSPOST":
+                australiaPost.setPostMode();
+                if (australiaPost.setContent(dataInput)) {
+                    rect = australiaPost.rect;
+                    height = australiaPost.symbol_height;
+                    width = australiaPost.symbol_width;
+                    txt = australiaPost.txt;
+                    encodeInfo += australiaPost.encodeInfo;
+                } else {
+                    errorOutput = australiaPost.error_msg;
+                }
+                break;
+            case "BARCODE_AUSREPLY":
+                australiaPost.setReplyMode();
+                if (australiaPost.setContent(dataInput)) {
+                    rect = australiaPost.rect;
+                    height = australiaPost.symbol_height;
+                    width = australiaPost.symbol_width;
+                    txt = australiaPost.txt;
+                    encodeInfo += australiaPost.encodeInfo;
+                } else {
+                    errorOutput = australiaPost.error_msg;
+                }
+                break;
+            case "BARCODE_AUSROUTE":
+                australiaPost.setRouteMode();
+                if (australiaPost.setContent(dataInput)) {
+                    rect = australiaPost.rect;
+                    height = australiaPost.symbol_height;
+                    width = australiaPost.symbol_width;
+                    txt = australiaPost.txt;
+                    encodeInfo += australiaPost.encodeInfo;
+                } else {
+                    errorOutput = australiaPost.error_msg;
+                }
+                break;
+            case "BARCODE_AUSREDIRECT":
+                australiaPost.setRedirectMode();
+                if (australiaPost.setContent(dataInput)) {
+                    rect = australiaPost.rect;
+                    height = australiaPost.symbol_height;
+                    width = australiaPost.symbol_width;
+                    txt = australiaPost.txt;
+                    encodeInfo += australiaPost.encodeInfo;
+                } else {
+                    errorOutput = australiaPost.error_msg;
+                }
+                break;
+            case "BARCODE_CHANNEL":
+                channelCode.option2 = channelChannelsCombo.getSelectedIndex();
+                if (channelCode.setContent(dataInput)) {
+                    rect = channelCode.rect;
+                    height = channelCode.symbol_height;
+                    width = channelCode.symbol_width;
+                    txt = channelCode.txt;
+                    encodeInfo += channelCode.encodeInfo;
+                } else {
+                    errorOutput = channelCode.error_msg;
+                }
+                break;
+            case "BARCODE_PHARMA":
+                if (pharmaCode.setContent(dataInput)) {
+                    rect = pharmaCode.rect;
+                    height = pharmaCode.symbol_height;
+                    width = pharmaCode.symbol_width;
+                    txt = pharmaCode.txt;
+                    encodeInfo += pharmaCode.encodeInfo;
+                } else {
+                    errorOutput = pharmaCode.error_msg;
+                }
+                break;
+            case "BARCODE_PHARMA_TWO":
+                if (pharmaCode2t.setContent(dataInput)) {
+                    rect = pharmaCode2t.rect;
+                    height = pharmaCode2t.symbol_height;
+                    width = pharmaCode2t.symbol_width;
+                    txt = pharmaCode2t.txt;
+                    encodeInfo += pharmaCode2t.encodeInfo;
+                } else {
+                    errorOutput = pharmaCode2t.error_msg;
+                }
+                break;
+            case "BARCODE_CODE32":
+                if (code32.setContent(dataInput)) {
+                    rect = code32.rect;
+                    height = code32.symbol_height;
+                    width = code32.symbol_width;
+                    txt = code32.txt;
+                    encodeInfo += code32.encodeInfo;
+                } else {
+                    errorOutput = code32.error_msg;
+                }
+                break;
+            case "BARCODE_PDF417":
+            case "BARCODE_HIBC_PDF":
+                pdf417.setNormalMode();
+                if (useGS1Check.isSelected()) {
+                    pdf417.setGs1Mode();
+                }
+                if (symbology.equals("BARCODE_HIBC_PDF")) {
+                    pdf417.setHibcMode();
+                }
+                pdf417.option1 = pdfEccCombo.getSelectedIndex() - 1;
+                pdf417.option2 = pdfColumnsCombo.getSelectedIndex();
+                if (readerInit) {
+                    pdf417.setInitMode();
+                }
+                pdf417.setNormalMode();
+                if (pdf417.setContent(dataInput)) {
+                    rect = pdf417.rect;
+                    height = pdf417.symbol_height;
+                    width = pdf417.symbol_width;
+                    txt = pdf417.txt;
+                    encodeInfo += pdf417.encodeInfo;
+                } else {
+                    errorOutput = pdf417.error_msg;
+                }
+                break;
+            case "BARCODE_PDF417TRUNC":
+                pdf417.setNormalMode();
+                if (useGS1Check.isSelected()) {
+                    pdf417.setGs1Mode();
+                }
+                pdf417.option1 = pdfEccCombo.getSelectedIndex() - 1;
+                pdf417.option2 = pdfColumnsCombo.getSelectedIndex();
+                if (readerInit) {
+                    pdf417.setInitMode();
+                }
+                pdf417.setTruncMode();
+                if (pdf417.setContent(dataInput)) {
+                    rect = pdf417.rect;
+                    height = pdf417.symbol_height;
+                    width = pdf417.symbol_width;
+                    txt = pdf417.txt;
+                    encodeInfo += pdf417.encodeInfo;
+                } else {
+                    errorOutput = pdf417.error_msg;
+                }
+                break;
+            case "BARCODE_MICROPDF417":
+            case "BARCODE_HIBC_MICPDF":
+                pdf417.setNormalMode();
+                if (useGS1Check.isSelected()) {
+                    pdf417.setGs1Mode();
+                }
+                if (symbology.equals("BARCODE_HIBC_MICPDF")) {
+                    pdf417.setHibcMode();
+                }
+                if (readerInit) {
+                    pdf417.setInitMode();
+                }
+                pdf417.option2 = microPdfColumnsCombo.getSelectedIndex();
+                pdf417.setMicroMode();
+                if (pdf417.setContent(dataInput)) {
+                    rect = pdf417.rect;
+                    height = pdf417.symbol_height;
+                    width = pdf417.symbol_width;
+                    txt = pdf417.txt;
+                    encodeInfo += pdf417.encodeInfo;
+                } else {
+                    errorOutput = pdf417.error_msg;
+                }
+                break;
+            case "BARCODE_AZTEC":
+            case "BARCODE_HIBC_AZTEC":
+                aztecCode.setNormalMode();
+                if (useGS1Check.isSelected()) {
+                    aztecCode.setGs1Mode();
+                }
+                if (symbology.equals("BARCODE_HIBC_AZTEC")) {
+                    aztecCode.setHibcMode();
+                }
+                if (readerInit) {
+                    aztecCode.setInitMode();
+                }
+                if (aztecUserEcc.isSelected()) {
+                    aztecCode.option1 = aztecUserEccCombo.getSelectedIndex() + 1;
+                }
+                if (aztecUserSize.isSelected()) {
+                    aztecCode.option2 = aztecUserSizeCombo.getSelectedIndex() + 1;
+                }
+                if (aztecCode.setContent(dataInput)) {
+                    rect = aztecCode.rect;
+                    height = aztecCode.symbol_height;
+                    width = aztecCode.symbol_width;
+                    txt = aztecCode.txt;
+                    encodeInfo += aztecCode.encodeInfo;
+                } else {
+                    errorOutput = aztecCode.error_msg;
+                }
+                break;
+            case "BARCODE_AZRUNE":
+                if (aztecRune.setContent(dataInput)) {
+                    rect = aztecRune.rect;
+                    height = aztecRune.symbol_height;
+                    width = aztecRune.symbol_width;
+                    txt = aztecRune.txt;
+                    encodeInfo += aztecRune.encodeInfo;
+                } else {
+                    errorOutput = aztecRune.error_msg;
+                }
+                break;
+            case "BARCODE_DATAMATRIX":
+            case "BARCODE_HIBC_DM":
+                dataMatrix.setNormalMode();
+                if (useGS1Check.isSelected()) {
+                    dataMatrix.setGs1Mode();
+                }
+                if (symbology.equals("BARCODE_HIBC_DM")) {
+                    dataMatrix.setHibcMode();
+                }
+                if (readerInit) {
+                    dataMatrix.setInitMode();
+                }
+                dataMatrix.option2 = dataMatrixSizeCombo.getSelectedIndex();
+                if (dataMatrixSquareOnlyCheck.isSelected()) {
+                    dataMatrix.forceSquare(true);
+                } else {
+                    dataMatrix.forceSquare(false);
+                }
+                if (dataMatrix.setContent(dataInput)) {
+                    rect = dataMatrix.rect;
+                    height = dataMatrix.symbol_height;
+                    width = dataMatrix.symbol_width;
+                    txt = dataMatrix.txt;
+                    encodeInfo += dataMatrix.encodeInfo;
+                } else {
+                    errorOutput = dataMatrix.error_msg;
+                }
+                break;
+            case "BARCODE_ONECODE":
+                if (uspsOneCode.setContent(dataInput)) {
+                    rect = uspsOneCode.rect;
+                    height = uspsOneCode.symbol_height;
+                    width = uspsOneCode.symbol_width;
+                    txt = uspsOneCode.txt;
+                    encodeInfo += uspsOneCode.encodeInfo;
+                } else {
+                    errorOutput = uspsOneCode.error_msg;
+                }
+                break;
+            case "BARCODE_QRCODE":
+            case "BARCODE_HIBC_QR":
+                qrCode.setNormalMode();
+                if (useGS1Check.isSelected()) {
+                    qrCode.setGs1Mode();
+                }
+                if (symbology.equals("BARCODE_HIBC_QR")) {
+                    qrCode.setHibcMode();
+                }
+                if (qrUserEcc.isSelected()) {
+                    qrCode.option1 = qrUserEccCombo.getSelectedIndex() + 1;
+                }
+                if (qrUserSize.isSelected()) {
+                    qrCode.option2 = qrUserSizeCombo.getSelectedIndex() + 1;
+                }
+                if (readerInit) {
+                    qrCode.setInitMode();
+                }
+                if (qrCode.setContent(dataInput)) {
+                    rect = qrCode.rect;
+                    height = qrCode.symbol_height;
+                    width = qrCode.symbol_width;
+                    txt = qrCode.txt;
+                    encodeInfo += qrCode.encodeInfo;
+                } else {
+                    errorOutput = qrCode.error_msg;
+                }
+                break;
+            case "BARCODE_MICROQR":
+                if (microQrUserEcc.isSelected()) {
+                    microQrCode.option1 = microQrUserEccCombo.getSelectedIndex() + 1;
+                }
+                if (microQrUserSize.isSelected()) {
+                    microQrCode.option2 = microQrUserSizeCombo.getSelectedIndex() + 1;
+                }
+                if (microQrCode.setContent(dataInput)) {
+                    rect = microQrCode.rect;
+                    height = microQrCode.symbol_height;
+                    width = microQrCode.symbol_width;
+                    txt = microQrCode.txt;
+                    encodeInfo += microQrCode.encodeInfo;
+                } else {
+                    errorOutput = microQrCode.error_msg;
+                }
+                break;
+            case "BARCODE_CODEONE":
+                codeOne.setNormalMode();
+                if (useGS1Check.isSelected()) {
+                    codeOne.setGs1Mode();
+                }
+                if (readerInit) {
+                    codeOne.setInitMode();
+                }
+                codeOne.option2 = codeOneSizeCombo.getSelectedIndex();
+                if (codeOne.setContent(dataInput)) {
+                    rect = codeOne.rect;
+                    height = codeOne.symbol_height;
+                    width = codeOne.symbol_width;
+                    txt = codeOne.txt;
+                    encodeInfo += codeOne.encodeInfo;
+                } else {
+                    errorOutput = codeOne.error_msg;
+                }
+                break;
+            case "BARCODE_GRIDMATRIX":
+                gridMatrix.setNormalMode();
+                if (useGS1Check.isSelected()) {
+                    gridMatrix.setGs1Mode();
+                }
+                if (readerInit) {
+                    gridMatrix.setInitMode();
+                }
+                if (gridmatrixUserEcc.isSelected()) {
+                    gridMatrix.option1 = gridmatrixUserEccCombo.getSelectedIndex();
+                }
+                if (gridmatrixUserSize.isSelected()) {
+                    gridMatrix.option2 = gridmatrixUserSizeCombo.getSelectedIndex();
+                }
+                if (gridMatrix.setContent(dataInput)) {
+                    rect = gridMatrix.rect;
+                    height = gridMatrix.symbol_height;
+                    width = gridMatrix.symbol_width;
+                    txt = gridMatrix.txt;
+                    encodeInfo += gridMatrix.encodeInfo;
+                } else {
+                    errorOutput = gridMatrix.error_msg;
+                }
+                break;
+            case "BARCODE_RSS14":
                 dataBar14.unsetLinkageFlag();
-//            }
-            dataBar14.setLinearMode();
-            if (dataBar14.setContent(dataInput)) {
-                rect = dataBar14.rect;
-                height = dataBar14.symbol_height;
-                width = dataBar14.symbol_width;
-                txt = dataBar14.txt;
-                encodeInfo += dataBar14.encodeInfo;
-                output = true;
-            } else {
-                errorOutput = dataBar14.error_msg;
-            }
-            break;
-        case "BARCODE_RSS14STACK_OMNI":
-//            if (isComposite) {
-//                dataBar14.setLinkageFlag();
-//            } else {
+                dataBar14.setLinearMode();
+                if (dataBar14.setContent(dataInput)) {
+                    rect = dataBar14.rect;
+                    height = dataBar14.symbol_height;
+                    width = dataBar14.symbol_width;
+                    txt = dataBar14.txt;
+                    encodeInfo += dataBar14.encodeInfo;
+                } else {
+                    errorOutput = dataBar14.error_msg;
+                }
+                break;
+            case "BARCODE_RSS14STACK_OMNI":
                 dataBar14.unsetLinkageFlag();
-//            }
-            dataBar14.setOmnidirectionalMode();
-            if (dataBar14.setContent(dataInput)) {
-                rect = dataBar14.rect;
-                height = dataBar14.symbol_height;
-                width = dataBar14.symbol_width;
-                txt = dataBar14.txt;
-                encodeInfo += dataBar14.encodeInfo;
-                output = true;
-            } else {
-                errorOutput = dataBar14.error_msg;
-            }
-            break;
-        case "BARCODE_RSS14STACK":
-//            if (isComposite) {
-//                dataBar14.setLinkageFlag();
-//            } else {
+                dataBar14.setOmnidirectionalMode();
+                if (dataBar14.setContent(dataInput)) {
+                    rect = dataBar14.rect;
+                    height = dataBar14.symbol_height;
+                    width = dataBar14.symbol_width;
+                    txt = dataBar14.txt;
+                    encodeInfo += dataBar14.encodeInfo;
+                } else {
+                    errorOutput = dataBar14.error_msg;
+                }
+                break;
+            case "BARCODE_RSS14STACK":
                 dataBar14.unsetLinkageFlag();
-//            }
-            dataBar14.setStackedMode();
-            if (dataBar14.setContent(dataInput)) {
-                rect = dataBar14.rect;
-                height = dataBar14.symbol_height;
-                width = dataBar14.symbol_width;
-                txt = dataBar14.txt;
-                encodeInfo += dataBar14.encodeInfo;
-                output = true;
-            } else {
-                errorOutput = dataBar14.error_msg;
-            }
-            break;
-        case "BARCODE_RSS_LTD":
-//            if (isComposite) {
-//                dataBarLimited.setLinkageFlag();
-//            } else {
+                dataBar14.setStackedMode();
+                if (dataBar14.setContent(dataInput)) {
+                    rect = dataBar14.rect;
+                    height = dataBar14.symbol_height;
+                    width = dataBar14.symbol_width;
+                    txt = dataBar14.txt;
+                    encodeInfo += dataBar14.encodeInfo;
+                } else {
+                    errorOutput = dataBar14.error_msg;
+                }
+                break;
+            case "BARCODE_RSS_LTD":
                 dataBarLimited.unsetLinkageFlag();
-//            }
-            if (dataBarLimited.setContent(dataInput)) {
-                rect = dataBarLimited.rect;
-                height = dataBarLimited.symbol_height;
-                width = dataBarLimited.symbol_width;
-                txt = dataBarLimited.txt;
-                encodeInfo += dataBarLimited.encodeInfo;
-                output = true;
-            } else {
-                errorOutput = dataBarLimited.error_msg;
-            }
-            break;
-        case "BARCODE_RSS_EXP":
-//            if (isComposite) {
-//                dataBarExpanded.setLinkageFlag();
-//            } else {
+                if (dataBarLimited.setContent(dataInput)) {
+                    rect = dataBarLimited.rect;
+                    height = dataBarLimited.symbol_height;
+                    width = dataBarLimited.symbol_width;
+                    txt = dataBarLimited.txt;
+                    encodeInfo += dataBarLimited.encodeInfo;
+                } else {
+                    errorOutput = dataBarLimited.error_msg;
+                }
+                break;
+            case "BARCODE_RSS_EXP":
                 dataBarExpanded.unsetLinkageFlag();
-//            }
-            dataBarExpanded.setGs1Mode();
-            dataBarExpanded.setNotStacked();
-            if (dataBarExpanded.setContent(dataInput)) {
-                rect = dataBarExpanded.rect;
-                height = dataBarExpanded.symbol_height;
-                width = dataBarExpanded.symbol_width;
-                txt = dataBarExpanded.txt;
-                encodeInfo += dataBarExpanded.encodeInfo;
-                output = true;
-            } else {
-                errorOutput = dataBarExpanded.error_msg;
-            }
-            break;
-        case "BARCODE_RSS_EXPSTACK":
-//            if (isComposite) {
-//                dataBarExpanded.setLinkageFlag();
-//            } else {
+                dataBarExpanded.setGs1Mode();
+                dataBarExpanded.setNotStacked();
+                if (dataBarExpanded.setContent(dataInput)) {
+                    rect = dataBarExpanded.rect;
+                    height = dataBarExpanded.symbol_height;
+                    width = dataBarExpanded.symbol_width;
+                    txt = dataBarExpanded.txt;
+                    encodeInfo += dataBarExpanded.encodeInfo;
+                } else {
+                    errorOutput = dataBarExpanded.error_msg;
+                }
+                break;
+            case "BARCODE_RSS_EXPSTACK":
                 dataBarExpanded.unsetLinkageFlag();
-//            }
-            dataBarExpanded.option2 = databarColumnsCombo.getSelectedIndex();
-            dataBarExpanded.setGs1Mode();
-            dataBarExpanded.setStacked();
-            if (dataBarExpanded.setContent(dataInput)) {
-                rect = dataBarExpanded.rect;
-                height = dataBarExpanded.symbol_height;
-                width = dataBarExpanded.symbol_width;
-                txt = dataBarExpanded.txt;
-                encodeInfo += dataBarExpanded.encodeInfo;
-                output = true;
-            } else {
-                errorOutput = dataBarExpanded.error_msg;
-            }
-            break;
-        case "BARCODE_MAXICODE":
-            maxiCode.setPrimary(maxiPrimaryData.getText());
-            maxiCode.setMode(maxiEncodingModeCombo.getSelectedIndex() + 2);
-            if (maxiCode.setContent(dataInput)) {
-                hex = maxiCode.hex;
-                target = maxiCode.target;
-                height = maxiCode.symbol_height;
-                width = maxiCode.symbol_width;
-                encodeInfo += maxiCode.encodeInfo;
-                output = true;
-            } else {
-                errorOutput = maxiCode.error_msg;
-            }
-            break;
-        case "BARCODE_CODABLOCKF":
-        case "BARCODE_HIBC_BLOCKF":
-            codablockF.setNormalMode();
-            if (useGS1Check.isSelected()) {
-                codablockF.setGs1Mode();
-            }
-            if (symbology.equals("BARCODE_HIBC_BLOCKF")) {
-                codablockF.setHibcMode();
-            }
-            if (codablockF.setContent(dataInput)) {
-                rect = codablockF.rect;
-                height = codablockF.symbol_height;
-                width = codablockF.symbol_width;
-                txt = codablockF.txt;
-                encodeInfo += codablockF.encodeInfo;
-                output = true;
-            } else {
-                errorOutput = codablockF.error_msg;
-            };
-            break;
-        default:
-            errorOutput = "Symbology not recognised";
-            break;
+                dataBarExpanded.option2 = databarColumnsCombo.getSelectedIndex();
+                dataBarExpanded.setGs1Mode();
+                dataBarExpanded.setStacked();
+                if (dataBarExpanded.setContent(dataInput)) {
+                    rect = dataBarExpanded.rect;
+                    height = dataBarExpanded.symbol_height;
+                    width = dataBarExpanded.symbol_width;
+                    txt = dataBarExpanded.txt;
+                    encodeInfo += dataBarExpanded.encodeInfo;
+                } else {
+                    errorOutput = dataBarExpanded.error_msg;
+                }
+                break;
+            case "BARCODE_MAXICODE":
+                maxiCode.setPrimary(maxiPrimaryData.getText());
+                maxiCode.setMode(maxiEncodingModeCombo.getSelectedIndex() + 2);
+                if (maxiCode.setContent(dataInput)) {
+                    hex = maxiCode.hex;
+                    target = maxiCode.target;
+                    height = maxiCode.symbol_height;
+                    width = maxiCode.symbol_width;
+                    encodeInfo += maxiCode.encodeInfo;
+                } else {
+                    errorOutput = maxiCode.error_msg;
+                }
+                break;
+            case "BARCODE_CODABLOCKF":
+            case "BARCODE_HIBC_BLOCKF":
+                codablockF.setNormalMode();
+                if (useGS1Check.isSelected()) {
+                    codablockF.setGs1Mode();
+                }
+                if (symbology.equals("BARCODE_HIBC_BLOCKF")) {
+                    codablockF.setHibcMode();
+                }
+                if (codablockF.setContent(dataInput)) {
+                    rect = codablockF.rect;
+                    height = codablockF.symbol_height;
+                    width = codablockF.symbol_width;
+                    txt = codablockF.txt;
+                    encodeInfo += codablockF.encodeInfo;
+                } else {
+                    errorOutput = codablockF.error_msg;
+                };
+                break;
+            default:
+                errorOutput = "Symbology not recognised";
+                break;
 
-        }
-
-        if (useCompositeCheck.isEnabled() && useCompositeCheck.isSelected()) {
-            barcode.setCompositeContent(compositeInput);
-            barcode.setCompositePreferredMode(compositeUserMode.getSelectedIndex());
+            }
         }
 
         if (!(txt.isEmpty())) {

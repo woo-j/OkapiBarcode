@@ -242,6 +242,9 @@ public class MaxiCode extends Symbol {
         codewords = Arrays.copyOf(character, character.length);
         if (mode == 2 || mode == 3) {
             int[] primary = getPrimaryCodewords();
+            if (primary == null) {
+                return false;
+            }
             codewords = insert(codewords, 0, primary);
         } else {
             codewords = insert(codewords, 0, new int[] { mode });

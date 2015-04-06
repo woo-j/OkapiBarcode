@@ -82,7 +82,8 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         symbolTree.addTreeSelectionListener(this);
         symbolTree.expandRow(0);
         symbolTree.expandRow(1);
-        symbolTree.setSelectionRow(7); // Selects Code 128 as default
+        symbolTree.expandRow(7);
+        symbolTree.setSelectionRow(8); // Selects Code 128 as default
 
         add(savePanel);
         savePanel.setVisible(false);
@@ -2070,6 +2071,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         DataBarExpanded dataBarExpanded = new DataBarExpanded();
         MaxiCode maxiCode = new MaxiCode();
         CodablockF codablockF = new CodablockF();
+        Nve18 nve18 = new Nve18();
         Composite composite = new Composite();
 
         errorOutput = "";
@@ -2207,6 +2209,17 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                     encodeInfo += code128.encodeInfo;
                 } else {
                     errorOutput = code128.error_msg;
+                };
+                break;
+            case "BARCODE_NVE18":
+                if (nve18.setContent(dataInput)) {
+                    rect = nve18.rect;
+                    height = nve18.symbol_height;
+                    width = nve18.symbol_width;
+                    txt = nve18.txt;
+                    encodeInfo += nve18.encodeInfo;
+                } else {
+                    errorOutput = nve18.error_msg;
                 };
                 break;
             case "BARCODE_CODABAR":
@@ -2889,7 +2902,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                     errorOutput = dataBarLimited.error_msg;
                 }
                 break;
-            case "BARCODE_RSS_EXP":
+            case "BARCODE_RSS_EXP": 
                 dataBarExpanded.unsetLinkageFlag();
                 dataBarExpanded.setGs1Mode();
                 dataBarExpanded.setNotStacked();
@@ -3046,9 +3059,15 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         symbolName = new DefaultMutableTreeNode(new SymbolType("LOGMARS", "BARCODE_LOGMARS", 50));
         symbolSubType.add(symbolName);
+        
+        symbolSubType = new DefaultMutableTreeNode("Code 128");
+        symbolType.add(symbolSubType);        
 
         symbolName = new DefaultMutableTreeNode(new SymbolType("Code 128", "BARCODE_CODE128", 20));
-        symbolType.add(symbolName);
+        symbolSubType.add(symbolName);
+        
+        symbolName = new DefaultMutableTreeNode(new SymbolType("NVE-18", "BARCODE_NVE18", 75));
+        symbolSubType.add(symbolName);
 
         symbolName = new DefaultMutableTreeNode(new SymbolType("European Article Number", "BARCODE_EANX", 13));
         symbolType.add(symbolName);

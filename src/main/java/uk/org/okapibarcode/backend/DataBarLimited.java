@@ -19,7 +19,7 @@ import java.math.BigInteger;
 
 /**
  * Implements GS-1 DataBar Limited (aka RSS Limited)
- * According to ISO/IEC 24724:2006
+ * According to ISO/IEC 24724:2007
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */

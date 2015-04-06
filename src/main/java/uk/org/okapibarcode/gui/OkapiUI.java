@@ -2467,6 +2467,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 };
                 break;
             case "BARCODE_POSTNET":
+            case "BARCODE_CEPNET":
                 postnet.setPostnet();
                 if (postnet.setContent(dataInput)) {
                     rect = postnet.rect;
@@ -3179,6 +3180,9 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         symbolName = new DefaultMutableTreeNode(new SymbolType("Redirect", "BARCODE_AUSREDIRECT", 68));
         symbolSubType.add(symbolName);
+        
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Brazilian CEPNet", "BARCODE_CEPNET", 54));
+        symbolType.add(symbolName);
 
         symbolSubType = new DefaultMutableTreeNode("Deutsche Post");
         symbolType.add(symbolSubType);

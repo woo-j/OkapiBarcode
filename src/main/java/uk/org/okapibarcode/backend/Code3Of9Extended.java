@@ -21,7 +21,7 @@ package uk.org.okapibarcode.backend;
  */
 public class Code3Of9Extended extends Symbol {
 
-    String ECode39[] = {
+    private final String ECode39[] = {
         "%U", "$A", "$B", "$C", "$D", "$E", "$F", "$G", "$H", "$I", "$J", "$K",
         "$L", "$M", "$N", "$O", "$P", "$Q", "$R", "$S", "$T", "$U", "$V", "$W",
         "$X", "$Y", "$Z", "%A", "%B", "%C", "%D", "%E", " ", "/A", "/B", "/C",
@@ -35,12 +35,30 @@ public class Code3Of9Extended extends Symbol {
         "%Q", "%R", "%S", "%T"
     };
 
+    public enum CheckDigit {
+        NONE, MOD43
+    }
+    
+    private CheckDigit checkOption;
+    
+    public Code3Of9Extended() {
+        checkOption = CheckDigit.NONE;
+    }
+    
+    public void setCheckDigit(CheckDigit checkMode) {
+        checkOption = checkMode;
+    }
+    
     @Override
     public boolean encode() {
         String buffer = "";
         int l = content.length();
         int asciicode;
         Code3Of9 c = new Code3Of9();
+        
+        if (checkOption == CheckDigit.MOD43) {
+            c.setCheckDigit(Code3Of9.CheckDigit.MOD43);
+        }
 
         //FIXME: Filter out extended ASCII and Unicode
         if (!(content.matches("[\\x00-\\x7F]+"))) {

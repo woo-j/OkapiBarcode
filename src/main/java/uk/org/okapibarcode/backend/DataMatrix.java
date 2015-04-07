@@ -112,10 +112,11 @@ public class DataMatrix extends Symbol {
     private dm_mode last_mode;
     private int[] places;
     private boolean isSquare;
-    int[] inputData;
+    private int[] inputData;
+    private int preferredSize = 0;
 
-    int process_p;
-    int[] process_buffer = new int[8];
+    private int process_p;
+    private int[] process_buffer = new int[8];
 
     public DataMatrix() {
         isSquare = true;
@@ -123,6 +124,10 @@ public class DataMatrix extends Symbol {
 
     public void forceSquare(boolean input) {
         isSquare = input;
+    }
+    
+    public void setPreferredSize(int size) {
+        preferredSize = size;
     }
 
     @Override
@@ -156,8 +161,8 @@ public class DataMatrix extends Symbol {
             return false;
         }
 
-        if ((option2 >= 1) && (option2 <= 30)) {
-            optionsize = intsymbol[option2 - 1];
+        if ((preferredSize >= 1) && (preferredSize <= 30)) {
+            optionsize = intsymbol[preferredSize - 1];
         } else {
             optionsize = -1;
         }

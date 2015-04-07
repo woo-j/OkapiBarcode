@@ -23,6 +23,20 @@ package uk.org.okapibarcode.backend;
  */
 public class Code3Of9 extends Symbol {
 
+    public enum CheckDigit {
+        NONE, MOD43
+    }
+    
+    private CheckDigit checkOption;
+    
+    public Code3Of9() {
+        checkOption = CheckDigit.NONE;
+    }
+    
+    public void setCheckDigit(CheckDigit checkMode) {
+        checkOption = checkMode;
+    }
+    
     private final String Code39[] = {
         "1112212111", "2112111121", "1122111121", "2122111111", "1112211121",
         "2112211111", "1122211111", "1112112121", "2112112111", "1122112111",
@@ -67,7 +81,7 @@ public class Code3Of9 extends Symbol {
         }
         dest += p;
 
-        if (option2 == 1) {
+        if (checkOption == CheckDigit.MOD43) {
             //User has requested Mod-43 check digit
 
             counter = counter % 43;
@@ -100,7 +114,7 @@ public class Code3Of9 extends Symbol {
 
         dest += "121121211"; // Stop
 
-        if (option2 == 1) {
+        if (checkOption == CheckDigit.MOD43) {
             readable = "*" + content + check_digit + "*";
         } else {
             readable = "*" + content + "*";

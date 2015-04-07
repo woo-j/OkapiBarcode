@@ -38,6 +38,11 @@ public class Pdf417 extends Symbol {
     private int codeWordCount;
     private pdfMode symbolMode;
     private int[] inputData;
+    private int selectedSymbolWidth;
+    
+    public void setNumberOfColumns(int columns) {
+        selectedSymbolWidth = columns;
+    }
 
     private final int[] coefrs = {
         /* k = 2 */
@@ -528,7 +533,7 @@ private final int[] Microcoeffs = {
         String codebarre;
         int length = content.length();
         pdfEncodingMode currentEncodingMode;
-        int selectedECCLevel, selectedSymbolWidth;
+        int selectedECCLevel;
         String bin;
 
         blockIndex = 0;
@@ -649,7 +654,6 @@ private final int[] Microcoeffs = {
         }
         longueur = codeWordCount;
 
-        selectedSymbolWidth = option2;
         if (selectedSymbolWidth > 30) {
             selectedSymbolWidth = 30;
         }
@@ -838,7 +842,6 @@ private final int[] Microcoeffs = {
         int[] mccorrection = new int[50];
         int length = content.length();
         pdfEncodingMode currentEncodingMode;
-        int selectedSymbolWidth;
         String bin;
 
 	/* Encoding starts out the same as PDF417, so use the same code */
@@ -924,8 +927,8 @@ private final int[] Microcoeffs = {
             error_msg = "Input data too long";
             return false;
 	}
-        selectedSymbolWidth = option2;
-	if(selectedSymbolWidth > 4) {
+
+	if((selectedSymbolWidth > 4) || (selectedSymbolWidth < 0)) {
 		selectedSymbolWidth = 0;
 	}
 

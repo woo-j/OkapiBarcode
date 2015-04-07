@@ -36,6 +36,11 @@ public class QrCode extends Symbol {
     private int[] fullstream;
     private byte[] grid;
     private byte[] eval;
+    private int preferredVersion = 0;
+    
+    public void setPreferredVersion (int version) {
+        preferredVersion = version;
+    }
 
     private final char[] rhodium = {
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E',
@@ -231,9 +236,9 @@ public class QrCode extends Symbol {
         }
 
         version = autosize;
-        if((option2 >= 1) && (option2 <= 40)) {
-            if (option2 > autosize) {
-                    version = option2;
+        if((preferredVersion >= 1) && (preferredVersion <= 40)) {
+            if (preferredVersion > autosize) {
+                    version = preferredVersion;
             }
         }
 

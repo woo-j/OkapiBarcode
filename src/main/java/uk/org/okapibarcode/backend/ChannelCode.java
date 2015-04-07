@@ -27,13 +27,19 @@ public class ChannelCode extends Symbol {
     private double currentValue;
     private double targetValue;
     private String horizontalSpacing;
-
+    private int requestedNumberOfChannels = 0;
+    
+    public void setNumberOfChannels(int channels) {
+        if ((channels >= 3) && (channels <= 7)) {
+            requestedNumberOfChannels = channels;
+        }
+    }
+    
     @Override
     public boolean encode() {
         int numberOfChannels;
         int i;
         int leadingZeroCount;
-        int requestedNumberOfChannels = option2 + 2;
 
         targetValue = 0;
         horizontalSpacing = "";

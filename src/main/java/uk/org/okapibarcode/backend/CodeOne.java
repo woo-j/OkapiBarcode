@@ -96,7 +96,17 @@ public class CodeOne extends Symbol {
     private byte[] source;
     private int[][] datagrid = new int[136][120];
     private boolean[][] outputGrid = new boolean[148][134];
-
+    
+    public enum Version {
+        NONE, A, B, C, D, E, F, G, H, S, T
+    }
+    
+    private Version preferredVersion = Version.NONE;
+    
+    public void setPreferredVersion (Version version) {
+        preferredVersion = version;
+    }
+    
     @Override
     public boolean encode() {
         int size = 1, i, j, data_blocks;
@@ -115,7 +125,7 @@ public class CodeOne extends Symbol {
         int[] sub_data = new int[190];
         String bin;
 
-        if (option2 == 9) {
+        if (preferredVersion == Version.S) {
             /* Version S */
 
             encodeInfo += "Version: S";
@@ -209,7 +219,7 @@ public class CodeOne extends Symbol {
             symbol_width = 10 * sub_version + 1;
         }
 
-        if (option2 == 10) {
+        if (preferredVersion == Version.T) {
             /* Version T */
 
             encodeInfo += "Version: T\n";
@@ -305,7 +315,7 @@ public class CodeOne extends Symbol {
             symbol_width = (sub_version * 16) + 1;
         }
 
-        if ((option2 != 9) && (option2 != 10)) {
+        if ((preferredVersion != Version.S) && (preferredVersion != Version.T)) {
             /* Version A to H */
             for (i = 0; i < 1500; i++) {
                 data[i] = 0;
@@ -323,8 +333,8 @@ public class CodeOne extends Symbol {
                 }
             }
 
-            if (option2 > size) {
-                size = option2;
+            if (getSize(preferredVersion) > size) {
+                size = getSize(preferredVersion);
             }
 
             encodeInfo += "Version:  " + (char)((size - 1) + 'A') + "\n";
@@ -1913,5 +1923,38 @@ public class CodeOne extends Symbol {
 
     private void resetGridModule(int row, int column) {
         outputGrid[row][column] = false;
+    }
+    
+    private int getSize(Version version) {
+        int size = 0;
+        
+        switch(version) {
+            case A:
+                size = 1;
+                break;
+            case B:
+                size = 2;
+                break;
+            case C:
+                size = 3;
+                break;
+            case D:
+                size = 4;
+                break;
+            case E:
+                size = 5;
+                break;
+            case F:
+                size = 6;
+                break;
+            case G:
+                size = 7;
+                break;
+            case H:
+                size = 8;
+                break;                
+        }
+        
+        return size;
     }
 }

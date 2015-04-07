@@ -21,6 +21,20 @@ package uk.org.okapibarcode.backend;
  */
 public class MsiPlessey extends Symbol {
 
+    public enum CheckDigit {
+        NONE, MOD10, MOD10_MOD10, MOD11, MOD11_MOD10
+    }
+    
+    private CheckDigit checkOption;
+    
+    public MsiPlessey() {
+        checkOption = CheckDigit.NONE;
+    }
+    
+    public void setCheckDigit(CheckDigit checkMode) {
+        checkOption = checkMode;
+    }
+    
     private final String MSI_PlessTable[] = {
         "12121212", "12121221", "12122112", "12122121", "12211212", "12211221",
         "12212112", "12212121", "21121212", "21121221"
@@ -52,7 +66,7 @@ public class MsiPlessey extends Symbol {
 
         readable = content;
 
-        if ((option2 == 1) || (option2 == 2)) {
+        if ((checkOption == CheckDigit.MOD10) || (checkOption == CheckDigit.MOD10_MOD10)) {
             /* Add Modulo-10 check digit */
             evenString = "";
             oddString = "";
@@ -97,7 +111,7 @@ public class MsiPlessey extends Symbol {
             readable += checkDigit1;
         }
 
-        if ((option2 == 3) || (option2 == 4)) {
+        if ((checkOption == CheckDigit.MOD11) || (checkOption == CheckDigit.MOD11_MOD10)) {
             /* Add a Modulo-11 check digit */
             weight = 2;
             addup = 0;
@@ -125,7 +139,7 @@ public class MsiPlessey extends Symbol {
             }
         }
 
-        if ((option2 == 2) || (option2 == 4)) {
+        if ((checkOption == CheckDigit.MOD10_MOD10) || (checkOption == CheckDigit.MOD11_MOD10)) {
             /* Add a second Modulo-10 check digit */
             evenString = "";
             oddString = "";

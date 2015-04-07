@@ -44,7 +44,6 @@ public abstract class Symbol {
 
     // TODO: These values to be replaced with suitable parameters for each symbology
     public int option1;
-    public int option2;
 
     // TODO: These values to become accessible only to renderer
     public ArrayList< Rectangle > rect = new ArrayList<>();

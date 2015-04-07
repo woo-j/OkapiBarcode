@@ -23,6 +23,12 @@ package uk.org.okapibarcode.backend;
  */
 public class AztecCode extends Symbol {
 
+    private int preferredSize = 0;
+    
+    public void setPreferredSize(int size) {
+        preferredSize = size;
+    }
+    
     private final int[] CompactAztecMap = { //27 x 27 data grid
         609, 608, 411, 413, 415, 417, 419, 421, 423, 425, 427, 429, 431, 433, 435, 437, 439, 441, 443, 445, 447, 449, 451, 453, 455, 457, 459,
         607, 606, 410, 412, 414, 416, 418, 420, 422, 424, 426, 428, 430, 432, 434, 436, 438, 440, 442, 444, 446, 448, 450, 452, 454, 456, 458,
@@ -364,7 +370,7 @@ public class AztecCode extends Symbol {
         data_maxsize = 0; /* Keep compiler happy! */
         adjustment_size = 0;
 
-        if(option2 == 0) { /* The size of the symbol can be determined by Zint */
+        if(preferredSize == 0) { /* The size of the symbol can be determined by Okapi */
             do {
                 /* Decide what size symbol to use - the smallest that fits the data */
                 compact = false; /* 1 = Aztec Compact, 0 = Normal Aztec */
@@ -542,17 +548,17 @@ public class AztecCode extends Symbol {
         } else {
             /* The size of the symbol has been specified by the user */
             compact = false;
-            if((readerInit) && ((option2 >= 2) && (option2 <= 4))) {
-                option2 = 5;
+            if((readerInit) && ((preferredSize >= 2) && (preferredSize <= 4))) {
+                preferredSize = 5;
             }
-            if((option2 >= 1) && (option2 <= 4)) {
+            if((preferredSize >= 1) && (preferredSize <= 4)) {
                 compact = true;
-                layers = option2;
+                layers = preferredSize;
             }
-            if((option2 >= 5) && (option2 <= 36)) {
-                layers = option2 - 4;
+            if((preferredSize >= 5) && (preferredSize <= 36)) {
+                layers = preferredSize - 4;
             }
-            if((option2 < 0) || (option2 > 36)) {
+            if((preferredSize < 0) || (preferredSize > 36)) {
                 error_msg = "Invalid Aztec Code size";
                 return false;
             }

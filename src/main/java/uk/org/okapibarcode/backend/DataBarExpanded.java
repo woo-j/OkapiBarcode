@@ -86,6 +86,13 @@ public class DataBarExpanded extends Symbol {
     private encodeMode[] general_field_type;
     private int[] widths = new int[8];
     private boolean linkageFlag;
+    
+    private int preferredNoOfColumns = 0;
+    
+    public void setNoOfColumns(int columns) {
+        // TODO: Value currently ignored!
+        preferredNoOfColumns = columns;
+    }
 
     private enum dbeMode {
         UNSTACKED, STACKED

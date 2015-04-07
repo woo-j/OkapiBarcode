@@ -175,6 +175,12 @@ public class GridMatrix extends Symbol {
     private String binary;
     private int[] word = new int[1460];
     private boolean[] grid;
+    
+    private int preferredVersion = 0;
+    
+    public void setPreferredVersion(int version) {
+        preferredVersion = version;
+    }
 
     private final char[] europium = {
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D',
@@ -258,10 +264,10 @@ public class GridMatrix extends Symbol {
         }
         ecc_level = auto_ecc_level;
 
-        if ((option2 >= 1) && (option2 <= 13)) {
+        if ((preferredVersion >= 1) && (preferredVersion <= 13)) {
             input_latch = 1;
-            if (option2 > min_layers) {
-                layers = option2;
+            if (preferredVersion > min_layers) {
+                layers = preferredVersion;
             } else {
                 layers = min_layers;
             }

@@ -88,7 +88,7 @@ public abstract class Symbol {
         hibc = false;
         readerInit = true;
     }
-    
+
     public int positionOf(char thischar, char[] LookUp) {
         int i, outval = 0;
 
@@ -549,12 +549,14 @@ public abstract class Symbol {
         if (pattern == null || pattern.length == 0) {
             return new int[0];
         } else {
-            int count = pattern[0].length() / size;
+            int count = (int) Math.ceil(pattern[0].length() / (double) size);
             int[] codewords = new int[pattern.length * count];
             for (int i = 0; i < pattern.length; i++) {
                 String row = pattern[i];
                 for (int j = 0; j < count; j++) {
-                    codewords[(i * count) + j] = Integer.parseInt(row.substring(j * size, (j + 1) * size));
+                    int substringStart = j * size;
+                    int substringEnd = Math.min((j + 1) * size, row.length());
+                    codewords[(i * count) + j] = Integer.parseInt(row.substring(substringStart, substringEnd));
                 }
             }
             return codewords;

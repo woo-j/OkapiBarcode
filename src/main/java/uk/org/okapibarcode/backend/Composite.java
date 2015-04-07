@@ -479,13 +479,6 @@ public class Composite extends Symbol {
 
     @Override
     public boolean encode() {
-        Upc upc = new Upc();
-        Ean ean = new Ean();
-        Code128 code128 = new Code128();
-        DataBar14 dataBar14 = new DataBar14();
-        DataBarLimited dataBarLimited = new DataBarLimited();
-        DataBarExpanded dataBarExpanded = new DataBarExpanded();
-        
         ArrayList < Rectangle > linear_rect = new ArrayList < > ();
         ArrayList < TextBox > linear_txt = new ArrayList < > ();
         ArrayList < Rectangle > combine_rect = new ArrayList < > ();
@@ -511,32 +504,35 @@ public class Composite extends Symbol {
         // Then encode linear component
         switch (symbology) {
             case UPCA:
-                upc.setUpcaMode();
-                upc.setLinkageFlag();
-                if (upc.setContent(linearContent)) {
-                    linear_rect = upc.rect;
-                    linear_txt = upc.txt;
-                    linear_height = upc.symbol_height;
-                    linear_encodeInfo = upc.encodeInfo;
+                Upc upca = new Upc();
+                upca.setUpcaMode();
+                upca.setLinkageFlag();
+                if (upca.setContent(linearContent)) {
+                    linear_rect = upca.rect;
+                    linear_txt = upca.txt;
+                    linear_height = upca.symbol_height;
+                    linear_encodeInfo = upca.encodeInfo;
                 } else {
-                    linear_error_msg = upc.error_msg;
+                    linear_error_msg = upca.error_msg;
                 }
                 top_shift = 3;
                 break;
             case UPCE:
-                upc.setUpceMode();
-                upc.setLinkageFlag();
-                if (upc.setContent(linearContent)) {
-                    linear_rect = upc.rect;
-                    linear_txt = upc.txt;
-                    linear_height = upc.symbol_height;                    
-                    linear_encodeInfo = upc.encodeInfo;
+                Upc upce = new Upc();
+                upce.setUpceMode();
+                upce.setLinkageFlag();
+                if (upce.setContent(linearContent)) {
+                    linear_rect = upce.rect;
+                    linear_txt = upce.txt;
+                    linear_height = upce.symbol_height;                    
+                    linear_encodeInfo = upce.encodeInfo;
                 } else {
-                    linear_error_msg = upc.error_msg;
+                    linear_error_msg = upce.error_msg;
                 }
                 top_shift = 3;
                 break;
             case EAN:
+                Ean ean = new Ean();
                 if (eanCalculateVersion() == 8) {
                     ean.setEan8Mode();
                     bottom_shift = 8;
@@ -555,6 +551,7 @@ public class Composite extends Symbol {
                 }
                 break;
             case CODE_128:
+                Code128 code128 = new Code128();
                 switch (cc_mode) {
                     case 1:
                         code128.setCca();
@@ -578,6 +575,7 @@ public class Composite extends Symbol {
                 }                    
                 break;
             case DATABAR_14:
+                DataBar14 dataBar14 = new DataBar14();
                 dataBar14.setLinkageFlag();
                 dataBar14.setLinearMode();
                 if (dataBar14.setContent(linearContent)) {
@@ -591,32 +589,35 @@ public class Composite extends Symbol {
                 bottom_shift = 4;
                 break;
             case DATABAR_14_STACK_OMNI:
-                dataBar14.setLinkageFlag();
-                dataBar14.setOmnidirectionalMode();
-                if (dataBar14.setContent(linearContent)) {
-                    linear_rect = dataBar14.rect;
-                    linear_txt = dataBar14.txt;
-                    linear_height = dataBar14.symbol_height;                    
-                    linear_encodeInfo = dataBar14.encodeInfo;
+                DataBar14 dataBar14SO = new DataBar14();
+                dataBar14SO.setLinkageFlag();
+                dataBar14SO.setOmnidirectionalMode();
+                if (dataBar14SO.setContent(linearContent)) {
+                    linear_rect = dataBar14SO.rect;
+                    linear_txt = dataBar14SO.txt;
+                    linear_height = dataBar14SO.symbol_height;                    
+                    linear_encodeInfo = dataBar14SO.encodeInfo;
                 } else {
-                    linear_error_msg = dataBar14.error_msg;
+                    linear_error_msg = dataBar14SO.error_msg;
                 }
                 top_shift = 1;
                 break;
             case DATABAR_14_STACK:
-                dataBar14.setLinkageFlag();
-                dataBar14.setStackedMode();
-                if (dataBar14.setContent(linearContent)) {
-                    linear_rect = dataBar14.rect;
-                    linear_txt = dataBar14.txt;
-                    linear_height = dataBar14.symbol_height;                    
-                    linear_encodeInfo = dataBar14.encodeInfo;
+                DataBar14 dataBar14S = new DataBar14();
+                dataBar14S.setLinkageFlag();
+                dataBar14S.setStackedMode();
+                if (dataBar14S.setContent(linearContent)) {
+                    linear_rect = dataBar14S.rect;
+                    linear_txt = dataBar14S.txt;
+                    linear_height = dataBar14S.symbol_height;                    
+                    linear_encodeInfo = dataBar14S.encodeInfo;
                 } else {
-                    linear_error_msg = dataBar14.error_msg;
+                    linear_error_msg = dataBar14S.error_msg;
                 }
                 top_shift = 1;
                 break;
             case DATABAR_LIMITED:
+                DataBarLimited dataBarLimited = new DataBarLimited();
                 dataBarLimited.setLinkageFlag();
                 if (dataBarLimited.setContent(linearContent)) {
                     linear_rect = dataBarLimited.rect;
@@ -629,6 +630,7 @@ public class Composite extends Symbol {
                 top_shift = 1;
                 break;
             case DATABAR_EXPANDED:
+                DataBarExpanded dataBarExpanded = new DataBarExpanded();
                 dataBarExpanded.setLinkageFlag();
                 dataBarExpanded.setNotStacked();
                 if (dataBarExpanded.setContent(linearContent)) {
@@ -642,15 +644,16 @@ public class Composite extends Symbol {
                 top_shift = 2;
                 break;   
             case DATABAR_EXPANDED_STACK:
-                dataBarExpanded.setLinkageFlag();
-                dataBarExpanded.setStacked();
-                if (dataBarExpanded.setContent(linearContent)) {
-                    linear_rect = dataBarExpanded.rect;
-                    linear_txt = dataBarExpanded.txt;
-                    linear_height = dataBarExpanded.symbol_height;                    
-                    linear_encodeInfo = dataBarExpanded.encodeInfo;
+                DataBarExpanded dataBarExpandedS = new DataBarExpanded();
+                dataBarExpandedS.setLinkageFlag();
+                dataBarExpandedS.setStacked();
+                if (dataBarExpandedS.setContent(linearContent)) {
+                    linear_rect = dataBarExpandedS.rect;
+                    linear_txt = dataBarExpandedS.txt;
+                    linear_height = dataBarExpandedS.symbol_height;                    
+                    linear_encodeInfo = dataBarExpandedS.encodeInfo;
                 } else {
-                    linear_error_msg = dataBarExpanded.error_msg;
+                    linear_error_msg = dataBarExpandedS.error_msg;
                 }
                 top_shift = 2;
                 break;

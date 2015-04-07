@@ -2476,7 +2476,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                         case 2:
                             qrCode.setEccMode(QrCode.EccMode.Q);
                             break;
-                        case 4:
+                        case 3:
                             qrCode.setEccMode(QrCode.EccMode.H);
                             break;
                     }
@@ -2502,7 +2502,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                         case 2:
                             microQrCode.setEccMode(MicroQrCode.EccMode.Q);
                             break;
-                        case 4:
+                        case 3:
                             microQrCode.setEccMode(MicroQrCode.EccMode.H);
                             break;
                     }

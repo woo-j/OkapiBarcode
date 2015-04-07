@@ -29,6 +29,12 @@ public class AztecCode extends Symbol {
         preferredSize = size;
     }
     
+    private int preferredEccLevel = -1;
+    
+    public void setPreferredEccLevel (int eccLevel) {
+        preferredEccLevel = eccLevel;
+    }
+    
     private final int[] CompactAztecMap = { //27 x 27 data grid
         609, 608, 411, 413, 415, 417, 419, 421, 423, 425, 427, 429, 431, 433, 435, 437, 439, 441, 443, 445, 447, 449, 451, 453, 455, 457, 459,
         607, 606, 410, 412, 414, 416, 418, 420, 422, 424, 426, 428, 430, 432, 434, 436, 438, 440, 442, 444, 446, 448, 450, 452, 454, 456, 458,
@@ -358,10 +364,10 @@ public class AztecCode extends Symbol {
         }
 
         // Set the error correction level
-        if ((option1 <= 0) || (option1 > 4)) {
+        if ((preferredEccLevel <= 0) || (preferredEccLevel > 4)) {
             ecc_level = 2;
         } else {
-            ecc_level = option1;
+            ecc_level = preferredEccLevel;
         }
 
         data_length = binary_string.length();

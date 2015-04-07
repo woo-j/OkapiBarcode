@@ -45,6 +45,12 @@ public class MicroQrCode extends Symbol {
     public void setPreferredVersion(int version) {
         preferredVersion = version;
     }
+    
+    private int preferredEccLevel = -1;
+    
+    public void setPreferredEccLevel (int eccLevel) {
+        preferredEccLevel = eccLevel;
+    }    
 
     private static final char[] RHODIUM = {
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D',
@@ -153,8 +159,8 @@ public class MicroQrCode extends Symbol {
         /* Eliminate possible versions depending on error correction level specified */
         ecc_level = eccMode.L;
 
-        if((option1 >= 1) && (preferredVersion <= 4)) {
-            switch (option1) {
+        if((preferredEccLevel >= 1) && (preferredVersion <= 4)) {
+            switch (preferredEccLevel) {
                 case 1: ecc_level = eccMode.L;
                     break;
                 case 2: ecc_level = eccMode.M;

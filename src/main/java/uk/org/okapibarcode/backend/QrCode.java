@@ -41,6 +41,12 @@ public class QrCode extends Symbol {
     public void setPreferredVersion (int version) {
         preferredVersion = version;
     }
+    
+    private int preferredEccLevel = -1;
+    
+    public void setPreferredEccLevel (int eccLevel) {
+        preferredEccLevel = eccLevel;
+    }    
 
     private final char[] rhodium = {
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E',
@@ -181,7 +187,7 @@ public class QrCode extends Symbol {
         define_mode();
         est_binlen = estimate_binary_length();
 
-        switch (option1) {
+        switch (preferredEccLevel) {
         case 1:
             ecc_level = eccMode.L;
             max_cw = 2956;

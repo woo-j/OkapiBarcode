@@ -2388,7 +2388,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 } else if (selectedSymbol.symbology == SymbolType.Encoding.PDF417_TRUNCATED) {
                     pdf417.setTruncMode();
                 }
-                pdf417.option1 = pdfEccCombo.getSelectedIndex() - 1;
+                pdf417.setPreferredEccLevel(pdfEccCombo.getSelectedIndex() - 1);
                 pdf417.setNumberOfColumns(pdfColumnsCombo.getSelectedIndex());
                 if (readerInit) {
                     pdf417.setReaderInit();
@@ -2425,7 +2425,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                     aztecCode.setReaderInit();
                 }
                 if (aztecUserEcc.isSelected()) {
-                    aztecCode.option1 = aztecUserEccCombo.getSelectedIndex() + 1;
+                    aztecCode.setPreferredEccLevel(aztecUserEccCombo.getSelectedIndex() + 1);
                 }
                 if (aztecUserSize.isSelected()) {
                     aztecCode.setPreferredSize(aztecUserSizeCombo.getSelectedIndex() + 1);
@@ -2466,7 +2466,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                     qrCode.setDataType(Symbol.DataType.HIBC);
                 }
                 if (qrUserEcc.isSelected()) {
-                    qrCode.option1 = qrUserEccCombo.getSelectedIndex() + 1;
+                    qrCode.setPreferredEccLevel(qrUserEccCombo.getSelectedIndex() + 1);
                 }
                 if (qrUserSize.isSelected()) {
                     qrCode.setPreferredVersion(qrUserSizeCombo.getSelectedIndex() + 1);
@@ -2479,7 +2479,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
             case QR_MICRO:
                 MicroQrCode microQrCode = new MicroQrCode();
                 if (microQrUserEcc.isSelected()) {
-                    microQrCode.option1 = microQrUserEccCombo.getSelectedIndex() + 1;
+                    microQrCode.setPreferredEccLevel(microQrUserEccCombo.getSelectedIndex() + 1);
                 }
                 if (microQrUserSize.isSelected()) {
                     microQrCode.setPreferredVersion(microQrUserSizeCombo.getSelectedIndex() + 1);
@@ -2540,7 +2540,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                     gridMatrix.setReaderInit();
                 }
                 if (gridmatrixUserEcc.isSelected()) {
-                    gridMatrix.option1 = gridmatrixUserEccCombo.getSelectedIndex();
+                    gridMatrix.setPreferredEccLevel(gridmatrixUserEccCombo.getSelectedIndex());
                 }
                 if (gridmatrixUserSize.isSelected()) {
                     gridMatrix.setPreferredVersion(gridmatrixUserSizeCombo.getSelectedIndex());

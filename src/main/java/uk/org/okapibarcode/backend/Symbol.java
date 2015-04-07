@@ -42,9 +42,6 @@ public abstract class Symbol {
     }
     protected DataType inputDataType;
 
-    // TODO: These values to be replaced with suitable parameters for each symbology
-    public int option1;
-
     // TODO: These values to become accessible only to renderer
     public ArrayList< Rectangle > rect = new ArrayList<>();
     public ArrayList< TextBox > txt = new ArrayList<>();

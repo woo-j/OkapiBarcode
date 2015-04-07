@@ -182,6 +182,12 @@ public class GridMatrix extends Symbol {
         preferredVersion = version;
     }
 
+    private int preferredEccLevel = -1;
+    
+    public void setPreferredEccLevel (int eccLevel) {
+        preferredEccLevel = eccLevel;
+    }    
+    
     private final char[] europium = {
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D',
         'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'O', 'P', 'R', 'S', 'T',
@@ -288,9 +294,9 @@ public class GridMatrix extends Symbol {
         }
 
         if (input_latch == 0) {
-            if ((option1 >= 1) && (option1 <= 5)) {
-                if (option1 > min_ecc_level) {
-                    ecc_level = option1;
+            if ((preferredEccLevel >= 1) && (preferredEccLevel <= 5)) {
+                if (preferredEccLevel > min_ecc_level) {
+                    ecc_level = preferredEccLevel;
                 } else {
                     ecc_level = min_ecc_level;
                 }

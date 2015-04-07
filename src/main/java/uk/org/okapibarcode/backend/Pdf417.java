@@ -43,6 +43,12 @@ public class Pdf417 extends Symbol {
     public void setNumberOfColumns(int columns) {
         selectedSymbolWidth = columns;
     }
+    
+    private int preferredEccLevel = -1;
+    
+    public void setPreferredEccLevel (int eccLevel) {
+        preferredEccLevel = eccLevel;
+    }    
 
     private final int[] coefrs = {
         /* k = 2 */
@@ -631,7 +637,7 @@ private final int[] Microcoeffs = {
 
         /* Now take care of the number of CWs per row */
 
-        selectedECCLevel = option1;
+        selectedECCLevel = preferredEccLevel;
         if (selectedECCLevel < 0) {
             selectedECCLevel = 6;
             if (codeWordCount <= 863) {

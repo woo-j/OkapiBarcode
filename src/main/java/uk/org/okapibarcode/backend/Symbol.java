@@ -24,12 +24,6 @@ import java.util.ArrayList;
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public abstract class Symbol {
-    private static final char[] TECHNETIUM = { '0', '1', '2', '3', '4', '5', '6', '7', '8',
-        '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
-        'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '-',
-        '.', ' ', '$', '/', '+', '%'
-    };
-
     protected String content;
     protected String readable;
     protected String[] pattern;
@@ -497,6 +491,13 @@ public abstract class Symbol {
     }
 
     public String hibcProcess(String source) {
+        char[] hibcCharTable = {
+            '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+            'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
+            'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
+            'U', 'V', 'W', 'X', 'Y', 'Z', '-', '.', ' ', '$',
+            '/', '+', '%' };
+        
 	int counter, i;
         String to_process;
         char check_digit;
@@ -513,7 +514,7 @@ public abstract class Symbol {
 
 	counter = 41;
 	for(i = 0; i < source.length(); i++) {
-            counter += positionOf(source.charAt(i), TECHNETIUM);
+            counter += positionOf(source.charAt(i), hibcCharTable);
 	}
 	counter = counter % 43;
 

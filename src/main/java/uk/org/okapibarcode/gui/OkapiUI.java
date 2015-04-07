@@ -2627,151 +2627,151 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         symbolType = new DefaultMutableTreeNode("One-Dimensional");
         top.add(symbolType);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Channel Code", "BARCODE_CHANNEL", 140));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Channel Code", "BARCODE_CHANNEL"));
         symbolType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Codabar", "BARCODE_CODABAR", 18));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Codabar", "BARCODE_CODABAR"));
         symbolType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Code 11", "BARCODE_CODE11", 1));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Code 11", "BARCODE_CODE11"));
         symbolType.add(symbolName);
 
         symbolSubType = new DefaultMutableTreeNode("Code 2 of 5");
         symbolType.add(symbolSubType);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Standard", "BARCODE_C25MATRIX", 2));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Standard", "BARCODE_C25MATRIX"));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("IATA", "BARCODE_C25IATA", 4));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("IATA", "BARCODE_C25IATA"));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Industrial", "BARCODE_C25IND", 7));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Industrial", "BARCODE_C25IND"));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Interleaved", "BARCODE_C25INTER", 3));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Interleaved", "BARCODE_C25INTER"));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Data Logic", "BARCODE_C25LOGIC", 6));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Data Logic", "BARCODE_C25LOGIC"));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("ITF-14", "BARCODE_ITF14", 89));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("ITF-14", "BARCODE_ITF14"));
         symbolSubType.add(symbolName);
 
         symbolSubType = new DefaultMutableTreeNode("Code 39");
         symbolType.add(symbolSubType);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Standard", "BARCODE_CODE39", 8));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Standard", "BARCODE_CODE39"));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Extended", "BARCODE_EXCODE39", 9));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Extended", "BARCODE_EXCODE39"));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Code 93", "BARCODE_CODE93", 25));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Code 93", "BARCODE_CODE93"));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("LOGMARS", "BARCODE_LOGMARS", 50));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("LOGMARS", "BARCODE_LOGMARS"));
         symbolSubType.add(symbolName);
 
         symbolSubType = new DefaultMutableTreeNode("Code 128");
         symbolType.add(symbolSubType);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Code 128", "BARCODE_CODE128", 20));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Code 128", "BARCODE_CODE128"));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("NVE-18", "BARCODE_NVE18", 75));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("NVE-18", "BARCODE_NVE18"));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("European Article Number", "BARCODE_EANX", 13));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("European Article Number", "BARCODE_EANX"));
         symbolType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("MSI Plessey", "BARCODE_MSI_PLESSEY", 47));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("MSI Plessey", "BARCODE_MSI_PLESSEY"));
         symbolType.add(symbolName);
 
         symbolSubType = new DefaultMutableTreeNode("Telepen");
         symbolType.add(symbolSubType);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Alpha", "BARCODE_TELEPEN", 32));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Alpha", "BARCODE_TELEPEN"));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Numeric", "BARCODE_TELEPEN_NUM", 87));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Numeric", "BARCODE_TELEPEN_NUM"));
         symbolSubType.add(symbolName);
 
         symbolSubType = new DefaultMutableTreeNode("Universal Product Code");
         symbolType.add(symbolSubType);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Version A", "BARCODE_UPCA", 34));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Version A", "BARCODE_UPCA"));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Version E", "BARCODE_UPCE", 37));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Version E", "BARCODE_UPCE"));
         symbolSubType.add(symbolName);
 
         symbolType = new DefaultMutableTreeNode("Stacked");
         top.add(symbolType);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Codablock-F", "BARCODE_CODABLOCKF", 74));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Codablock-F", "BARCODE_CODABLOCKF"));
         symbolType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Code 16K", "BARCODE_CODE16K", 23));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Code 16K", "BARCODE_CODE16K"));
         symbolType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Code 49", "BARCODE_CODE49", 24));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Code 49", "BARCODE_CODE49"));
         symbolType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("PDF417", "BARCODE_PDF417", 55));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("PDF417", "BARCODE_PDF417"));
         symbolType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("PDF417 Truncated", "BARCODE_PDF417TRUNC", 56));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("PDF417 Truncated", "BARCODE_PDF417TRUNC"));
         symbolType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Micro PDF417", "BARCODE_MICROPDF417", 84));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Micro PDF417", "BARCODE_MICROPDF417"));
         symbolType.add(symbolName);
 
         symbolType = new DefaultMutableTreeNode("Two-Dimensional");
         top.add(symbolType);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Aztec Code", "BARCODE_AZTEC", 92));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Aztec Code", "BARCODE_AZTEC"));
         symbolType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Aztec Runes", "BARCODE_AZRUNE", 128));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Aztec Runes", "BARCODE_AZRUNE"));
         symbolType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Data Matrix", "BARCODE_DATAMATRIX", 71));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Data Matrix", "BARCODE_DATAMATRIX"));
         symbolType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Code One", "BARCODE_CODEONE", 141));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Code One", "BARCODE_CODEONE"));
         symbolType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Grid Matrix", "BARCODE_GRIDMATRIX", 142));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Grid Matrix", "BARCODE_GRIDMATRIX"));
         symbolType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Maxicode", "BARCODE_MAXICODE", 57));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Maxicode", "BARCODE_MAXICODE"));
         symbolType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("QR Code", "BARCODE_QRCODE", 58));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("QR Code", "BARCODE_QRCODE"));
         symbolType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Micro QR Code", "BARCODE_MICROQR", 97));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Micro QR Code", "BARCODE_MICROQR"));
         symbolType.add(symbolName);
 
         symbolType = new DefaultMutableTreeNode("GS1 DataBar");
         top.add(symbolType);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("DB-14", "BARCODE_RSS14", 29));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("DB-14", "BARCODE_RSS14"));
         symbolType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("DB-14 Stacked", "BARCODE_RSS14STACK", 79));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("DB-14 Stacked", "BARCODE_RSS14STACK"));
         symbolType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("DB-14 Stacked Omni", "BARCODE_RSS14STACK_OMNI", 80));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("DB-14 Stacked Omni", "BARCODE_RSS14STACK_OMNI"));
         symbolType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Limited", "BARCODE_RSS_LTD", 30));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Limited", "BARCODE_RSS_LTD"));
         symbolType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Expanded", "BARCODE_RSS_EXP", 31));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Expanded", "BARCODE_RSS_EXP"));
         symbolType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Expanded Stacked", "BARCODE_RSS_EXPSTACK", 81));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Expanded Stacked", "BARCODE_RSS_EXPSTACK"));
         symbolType.add(symbolName);
 
         symbolType = new DefaultMutableTreeNode("Postal");
@@ -2780,97 +2780,97 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         symbolSubType = new DefaultMutableTreeNode("Australia Post");
         symbolType.add(symbolSubType);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Customer", "BARCODE_AUSPOST", 63));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Customer", "BARCODE_AUSPOST"));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Reply Paid", "BARCODE_AUSREPLY", 66));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Reply Paid", "BARCODE_AUSREPLY"));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Routing", "BARCODE_AUSROUTE", 67));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Routing", "BARCODE_AUSROUTE"));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Redirect", "BARCODE_AUSREDIRECT", 68));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Redirect", "BARCODE_AUSREDIRECT"));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Brazilian CEPNet", "BARCODE_CEPNET", 54));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Brazilian CEPNet", "BARCODE_CEPNET"));
         symbolType.add(symbolName);
 
         symbolSubType = new DefaultMutableTreeNode("Deutsche Post");
         symbolType.add(symbolSubType);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Leitcode", "BARCODE_DPLEIT", 21));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Leitcode", "BARCODE_DPLEIT"));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Identcode", "BARCODE_DPIDENT", 22));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Identcode", "BARCODE_DPIDENT"));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Dutch Post KIX", "BARCODE_KIX", 90));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Dutch Post KIX", "BARCODE_KIX"));
         symbolType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Japan Post", "BARCODE_JAPANPOST", 76));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Japan Post", "BARCODE_JAPANPOST"));
         symbolType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Korea Post", "BARCODE_KOREAPOST", 77));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Korea Post", "BARCODE_KOREAPOST"));
         symbolType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Royal Mail", "BARCODE_RM4SCC", 70));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Royal Mail", "BARCODE_RM4SCC"));
         symbolType.add(symbolName);
 
         symbolSubType = new DefaultMutableTreeNode("USPS");
         symbolType.add(symbolSubType);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("OneCode", "BARCODE_ONECODE", 85));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("OneCode", "BARCODE_ONECODE"));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("PostNet", "BARCODE_POSTNET", 40));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("PostNet", "BARCODE_POSTNET"));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("PLANET", "BARCODE_PLANET", 82));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("PLANET", "BARCODE_PLANET"));
         symbolSubType.add(symbolName);
 
         symbolType = new DefaultMutableTreeNode("Medical");
         top.add(symbolType);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Code 32", "BARCODE_CODE32", 129));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Code 32", "BARCODE_CODE32"));
         symbolType.add(symbolName);
 
         symbolSubType = new DefaultMutableTreeNode("HIBC");
         symbolType.add(symbolSubType);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Aztec Code", "BARCODE_HIBC_AZTEC", 112));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Aztec Code", "BARCODE_HIBC_AZTEC"));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Codablock-F", "BARCODE_HIBC_BLOCKF", 111));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Codablock-F", "BARCODE_HIBC_BLOCKF"));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Code 39", "BARCODE_HIBC_39", 99));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Code 39", "BARCODE_HIBC_39"));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Code 128", "BARCODE_HIBC_128", 98));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Code 128", "BARCODE_HIBC_128"));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Data Matrix", "BARCODE_HIBC_DM", 102));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Data Matrix", "BARCODE_HIBC_DM"));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("PDF417", "BARCODE_HIBC_PDF", 106));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("PDF417", "BARCODE_HIBC_PDF"));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Micro PDF417", "BARCODE_HIBC_MICPDF", 108));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Micro PDF417", "BARCODE_HIBC_MICPDF"));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("QR Code", "BARCODE_HIBC_QR", 104));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("QR Code", "BARCODE_HIBC_QR"));
         symbolSubType.add(symbolName);
 
         symbolSubType = new DefaultMutableTreeNode("Pharmacode");
         symbolType.add(symbolSubType);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("One Track", "BARCODE_PHARMA", 51));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("One Track", "BARCODE_PHARMA"));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Two Track", "BARCODE_PHARMA_TWO", 53));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Two Track", "BARCODE_PHARMA_TWO"));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("PZN", "BARCODE_PZN", 52));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("PZN", "BARCODE_PZN"));
         symbolType.add(symbolName);
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables

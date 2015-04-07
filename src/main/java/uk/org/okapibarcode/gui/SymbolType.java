@@ -23,12 +23,10 @@ package uk.org.okapibarcode.gui;
 public class SymbolType {
     String guiLabel; // GUI interface name
     String mnemonic; // Zint API name
-    int tbarEquiv; // tbarcode compatible option number
 
-    public SymbolType(String label, String name, int number) {
+    public SymbolType(String label, String name) {
         guiLabel = label;
         mnemonic = name;
-        tbarEquiv = number;
     }
 
     @Override

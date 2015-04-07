@@ -39,8 +39,8 @@ public class DrawSymbol extends JPanel{
 
     @Override
     public Dimension getPreferredSize() {
-        return new Dimension(OkapiUI.width * OkapiUI.factor,
-                OkapiUI.height * OkapiUI.factor);
+        return new Dimension(OkapiUI.symbol.getWidth() * OkapiUI.factor,
+                OkapiUI.symbol.getHeight() * OkapiUI.factor);
     }
 
     @Override
@@ -56,39 +56,39 @@ public class DrawSymbol extends JPanel{
 
         Graphics2D g2 = (Graphics2D) g;
 
-        for (i = 0; i != OkapiUI.rect.size(); i++) {
-            x = OkapiUI.rect.get(i).x * OkapiUI.factor;
-            y = OkapiUI.rect.get(i).y * OkapiUI.factor;
-            w = OkapiUI.rect.get(i).width * OkapiUI.factor;
-            h = OkapiUI.rect.get(i).height * OkapiUI.factor;
+        for (i = 0; i != OkapiUI.symbol.rect.size(); i++) {
+            x = OkapiUI.symbol.rect.get(i).x * OkapiUI.factor;
+            y = OkapiUI.symbol.rect.get(i).y * OkapiUI.factor;
+            w = OkapiUI.symbol.rect.get(i).width * OkapiUI.factor;
+            h = OkapiUI.symbol.rect.get(i).height * OkapiUI.factor;
             g2.setColor(OkapiUI.inkColour);
             g2.fill(new Rectangle((int) x, (int) y, (int) w, (int) h));
         }
 
-        for (i = 0; i < OkapiUI.txt.size(); i++) {
+        for (i = 0; i < OkapiUI.symbol.txt.size(); i++) {
             g2.setFont(f);
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2.drawString(OkapiUI.txt.get(i).text,
-                    (float) OkapiUI.txt.get(i).x * OkapiUI.factor,
-                    (float) OkapiUI.txt.get(i).y * OkapiUI.factor);
+            g2.drawString(OkapiUI.symbol.txt.get(i).text,
+                    (float) OkapiUI.symbol.txt.get(i).x * OkapiUI.factor,
+                    (float) OkapiUI.symbol.txt.get(i).y * OkapiUI.factor);
         }
 
-        for (i = 0; i < OkapiUI.hex.size(); i++) {
+        for (i = 0; i < OkapiUI.symbol.hex.size(); i++) {
             polygon = new Polygon();
             for (j = 0; j < 6; j++) {
-                polygon.addPoint((int) (OkapiUI.hex.get(i).pointX[j] * OkapiUI.factor),
-                        (int) (OkapiUI.hex.get(i).pointY[j] * OkapiUI.factor));
+                polygon.addPoint((int) (OkapiUI.symbol.hex.get(i).pointX[j] * OkapiUI.factor),
+                        (int) (OkapiUI.symbol.hex.get(i).pointY[j] * OkapiUI.factor));
             }
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g2.setColor(OkapiUI.inkColour);
             g2.fill(polygon);
         }
 
-        for (i = 0; i < OkapiUI.target.size(); i++) {
-            x = OkapiUI.target.get(i).x * OkapiUI.factor;
-            y = OkapiUI.target.get(i).y * OkapiUI.factor;
-            w = OkapiUI.target.get(i).width * OkapiUI.factor;
-            h = OkapiUI.target.get(i).height * OkapiUI.factor;
+        for (i = 0; i < OkapiUI.symbol.target.size(); i++) {
+            x = OkapiUI.symbol.target.get(i).x * OkapiUI.factor;
+            y = OkapiUI.symbol.target.get(i).y * OkapiUI.factor;
+            w = OkapiUI.symbol.target.get(i).width * OkapiUI.factor;
+            h = OkapiUI.symbol.target.get(i).height * OkapiUI.factor;
             if ((i & 1) == 0) {
                 g2.setColor(OkapiUI.inkColour);
             } else {

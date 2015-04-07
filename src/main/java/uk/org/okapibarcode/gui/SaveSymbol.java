@@ -41,8 +41,8 @@ public class SaveSymbol extends JPanel{
 
     @Override
     public Dimension getPreferredSize() {
-        return new Dimension((OkapiUI.width * magnification) + (2 * borderSize),
-                (OkapiUI.height * magnification) + (2 * borderSize));
+        return new Dimension((OkapiUI.symbol.getWidth() * magnification) + (2 * borderSize),
+                (OkapiUI.symbol.getHeight() * magnification) + (2 * borderSize));
     }
 
     @Override
@@ -57,39 +57,39 @@ public class SaveSymbol extends JPanel{
 
         Graphics2D g2 = (Graphics2D) g;
 
-        for (i = 0; i != OkapiUI.rect.size(); i++) {
-            x = (OkapiUI.rect.get(i).x * magnification) + borderSize;
-            y = (OkapiUI.rect.get(i).y * magnification) + borderSize;
-            w = OkapiUI.rect.get(i).width * magnification;
-            h = OkapiUI.rect.get(i).height * magnification;
+        for (i = 0; i != OkapiUI.symbol.rect.size(); i++) {
+            x = (OkapiUI.symbol.rect.get(i).x * magnification) + borderSize;
+            y = (OkapiUI.symbol.rect.get(i).y * magnification) + borderSize;
+            w = OkapiUI.symbol.rect.get(i).width * magnification;
+            h = OkapiUI.symbol.rect.get(i).height * magnification;
             g2.setColor(OkapiUI.inkColour);
             g2.fill(new Rectangle((int) x, (int) y, (int) w, (int) h));
         }
 
-        for (i = 0; i < OkapiUI.txt.size(); i++) {
+        for (i = 0; i < OkapiUI.symbol.txt.size(); i++) {
             g2.setFont(f);
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2.drawString(OkapiUI.txt.get(i).text,
-                    (float) (OkapiUI.txt.get(i).x * magnification) + borderSize,
-                    (float) (OkapiUI.txt.get(i).y * magnification) + borderSize);
+            g2.drawString(OkapiUI.symbol.txt.get(i).text,
+                    (float) (OkapiUI.symbol.txt.get(i).x * magnification) + borderSize,
+                    (float) (OkapiUI.symbol.txt.get(i).y * magnification) + borderSize);
         }
 
-        for (i = 0; i < OkapiUI.hex.size(); i++) {
+        for (i = 0; i < OkapiUI.symbol.hex.size(); i++) {
             polygon = new Polygon();
             for (j = 0; j < 6; j++) {
-                polygon.addPoint((int) (OkapiUI.hex.get(i).pointX[j] * magnification) + borderSize,
-                        (int) (OkapiUI.hex.get(i).pointY[j] * magnification) + borderSize);
+                polygon.addPoint((int) (OkapiUI.symbol.hex.get(i).pointX[j] * magnification) + borderSize,
+                        (int) (OkapiUI.symbol.hex.get(i).pointY[j] * magnification) + borderSize);
             }
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g2.setColor(OkapiUI.inkColour);
             g2.fill(polygon);
         }
 
-        for (i = 0; i < OkapiUI.target.size(); i++) {
-            x = (OkapiUI.target.get(i).x * magnification) + borderSize;
-            y = (OkapiUI.target.get(i).y * magnification) + borderSize;
-            w = OkapiUI.target.get(i).width * magnification;
-            h = OkapiUI.target.get(i).height * magnification;
+        for (i = 0; i < OkapiUI.symbol.target.size(); i++) {
+            x = (OkapiUI.symbol.target.get(i).x * magnification) + borderSize;
+            y = (OkapiUI.symbol.target.get(i).y * magnification) + borderSize;
+            w = OkapiUI.symbol.target.get(i).width * magnification;
+            h = OkapiUI.symbol.target.get(i).height * magnification;
             if ((i & 1) == 0) {
                 g2.setColor(OkapiUI.inkColour);
             } else {

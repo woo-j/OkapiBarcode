@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Robin Stuart
+ * Copyright 2014-2015 Robin Stuart, Daniel Gredler
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,19 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package uk.org.okapibarcode.gui;
 
 import java.awt.Color;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.TextEvent;
 import java.awt.event.TextListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.geom.Ellipse2D;
 import java.io.File;
-import java.util.ArrayList;
+import java.io.IOException;
 
 import javax.swing.BorderFactory;
 import javax.swing.JColorChooser;
@@ -40,35 +39,75 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeSelectionModel;
 
-import uk.org.okapibarcode.backend.*;
+import uk.org.okapibarcode.backend.AustraliaPost;
+import uk.org.okapibarcode.backend.AztecCode;
+import uk.org.okapibarcode.backend.AztecRune;
+import uk.org.okapibarcode.backend.ChannelCode;
+import uk.org.okapibarcode.backend.Codabar;
+import uk.org.okapibarcode.backend.CodablockF;
+import uk.org.okapibarcode.backend.Code11;
+import uk.org.okapibarcode.backend.Code128;
+import uk.org.okapibarcode.backend.Code16k;
+import uk.org.okapibarcode.backend.Code2Of5;
+import uk.org.okapibarcode.backend.Code32;
+import uk.org.okapibarcode.backend.Code3Of9;
+import uk.org.okapibarcode.backend.Code3Of9Extended;
+import uk.org.okapibarcode.backend.Code49;
+import uk.org.okapibarcode.backend.Code93;
+import uk.org.okapibarcode.backend.CodeOne;
+import uk.org.okapibarcode.backend.Composite;
+import uk.org.okapibarcode.backend.DataBar14;
+import uk.org.okapibarcode.backend.DataBarExpanded;
+import uk.org.okapibarcode.backend.DataBarLimited;
+import uk.org.okapibarcode.backend.DataMatrix;
+import uk.org.okapibarcode.backend.Ean;
+import uk.org.okapibarcode.backend.GridMatrix;
+import uk.org.okapibarcode.backend.JapanPost;
+import uk.org.okapibarcode.backend.KixCode;
+import uk.org.okapibarcode.backend.KoreaPost;
+import uk.org.okapibarcode.backend.Logmars;
+import uk.org.okapibarcode.backend.MaxiCode;
+import uk.org.okapibarcode.backend.MicroQrCode;
+import uk.org.okapibarcode.backend.MsiPlessey;
+import uk.org.okapibarcode.backend.Nve18;
+import uk.org.okapibarcode.backend.OkapiException;
+import uk.org.okapibarcode.backend.Pdf417;
+import uk.org.okapibarcode.backend.PharmaCode;
+import uk.org.okapibarcode.backend.PharmaCode2Track;
+import uk.org.okapibarcode.backend.Pharmazentralnummer;
+import uk.org.okapibarcode.backend.Postnet;
+import uk.org.okapibarcode.backend.QrCode;
+import uk.org.okapibarcode.backend.RoyalMail4State;
+import uk.org.okapibarcode.backend.Symbol;
+import uk.org.okapibarcode.backend.Telepen;
+import uk.org.okapibarcode.backend.Upc;
+import uk.org.okapibarcode.backend.UspsOneCode;
 
 /**
+ * The main Okapi Barcode UI.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
+ * @author Daniel Gredler
  */
 public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener{
+
+    /** Serial version UID. */
+    private static final long serialVersionUID = -681156299104876221L;
 
     static JPanel savePanel = new JPanel();
     static JPanel displayPanel = new JPanel();
     public static String dataInput = null; //Original User Input
     public static String compositeInput = null; // User input for composite symbol
-    public static String symbology = null; //Chosen Symbology
+    public static String symbologyName = null; //Chosen Symbology
     public static String outputf = null; //file to output to
-    public static String errorOutput = null; //Error string
-    public static int width = 0;
-    public static int height = 61;
     public static int factor = 0;
     public static int barHeight = 0;
     public static boolean debug = true;
     public static Object[] bc;
-    public static ArrayList<Rectangle> rect = new ArrayList<>();
-    public static ArrayList<uk.org.okapibarcode.backend.TextBox> txt = new ArrayList<>();
-    public static ArrayList<uk.org.okapibarcode.backend.Hexagon> hex = new ArrayList<>();
-    public static ArrayList<Ellipse2D.Double> target = new ArrayList<>();
+    public static Symbol symbol;
     DefaultMutableTreeNode treeTop = new DefaultMutableTreeNode("Symbologies");
     public static Color inkColour = new Color(0, 0, 0);
     public static Color paperColour = new Color(255, 255, 255);
-    public static String encodeInfo = "";
 
     /**
      * Creates new form OkapiUI: the main interface
@@ -268,6 +307,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         loadDataButton.setText("...");
         loadDataButton.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 loadDataButtonActionPerformed(evt);
             }
@@ -300,6 +340,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         addCompositeButton.setText("...");
         addCompositeButton.setEnabled(false);
         addCompositeButton.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 addCompositeButtonActionPerformed(evt);
             }
@@ -307,6 +348,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         useGS1Check.setText("Use GS1 Data Encodation");
         useGS1Check.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 useGS1CheckActionPerformed(evt);
             }
@@ -314,6 +356,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         useCompositeCheck.setText("Add Composite Component");
         useCompositeCheck.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 useCompositeCheckActionPerformed(evt);
             }
@@ -386,6 +429,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         batchFileButton.setText("Import");
         batchFileButton.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 batchFileButtonActionPerformed(evt);
             }
@@ -393,6 +437,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         createButton.setText("Create");
         createButton.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 createButtonActionPerformed(evt);
             }
@@ -415,6 +460,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         runBatchButton.setText("Run Batch");
         runBatchButton.setEnabled(false);
         runBatchButton.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 runBatchButtonActionPerformed(evt);
             }
@@ -424,6 +470,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         directoryButton.setText("Select Directory");
         directoryButton.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 directoryButtonActionPerformed(evt);
             }
@@ -431,6 +478,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         resetButton.setText("Reset");
         resetButton.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 resetButtonActionPerformed(evt);
             }
@@ -539,6 +587,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         inkButton.setText("Select Ink Colour");
         inkButton.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 inkButtonActionPerformed(evt);
             }
@@ -546,6 +595,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         paperButton.setText("Select Paper Colour");
         paperButton.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 paperButtonActionPerformed(evt);
             }
@@ -553,6 +603,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         resetColourButton.setText("Reset Colours");
         resetColourButton.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 resetColourButtonActionPerformed(evt);
             }
@@ -566,6 +617,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         aztecAutoSize.setSelected(true);
         aztecAutoSize.setText("Automatic Resizing");
         aztecAutoSize.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 aztecAutoSizeActionPerformed(evt);
             }
@@ -574,6 +626,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         aztecButtonGroup.add(aztecUserSize);
         aztecUserSize.setText("Adjust Size To:");
         aztecUserSize.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 aztecUserSizeActionPerformed(evt);
             }
@@ -582,6 +635,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         aztecButtonGroup.add(aztecUserEcc);
         aztecUserEcc.setText("Add Minimum Error Correction:");
         aztecUserEcc.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 aztecUserEccActionPerformed(evt);
             }
@@ -590,6 +644,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         aztecUserSizeCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "15 X 15 Compact", "19 X 19 Compact", "23 X 23 Compact", "27 X 27 Compact", "19 X 19", "23 X 23", "27 X 27", "31 X 31", "37 X 37", "41 X 41", "45 X 45", "49 X 49", "53 X 53", "57 X 57", "61 X 61", "67 X 67", "71 X 71", "75 X 75", "79 X 79", "83 X 83", "87 X 87", "91 X 91", "95 X 95", "101 X 101", "105 X 105", "109 X 109", "113 X 113", "117 X 117", "121 X 121", "125 X 125", "131 X 131", "135 X 135", "139 X 139", "143 X 143", "147 X 147", "151 X 151" }));
         aztecUserSizeCombo.setEnabled(false);
         aztecUserSizeCombo.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 aztecUserSizeComboActionPerformed(evt);
             }
@@ -598,6 +653,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         aztecUserEccCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "10% + 3 words", "23% + 3 words", "36% + 3 words", "50% + 3 words" }));
         aztecUserEccCombo.setEnabled(false);
         aztecUserEccCombo.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 aztecUserEccComboActionPerformed(evt);
             }
@@ -640,6 +696,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         channelChannelsCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Automatic", "3", "4", "5", "6", "7", "8" }));
         channelChannelsCombo.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 channelChannelsComboActionPerformed(evt);
             }
@@ -669,6 +726,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         code39CheckCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "No Check Digit", "Mod-43 Check Digit" }));
         code39CheckCombo.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 code39CheckComboActionPerformed(evt);
             }
@@ -698,6 +756,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         codeOneSizeCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Automatic", "16 X 18 (Version A)", "22 X 22 (Version B)", "28 X 32 (Version C)", "40 X 42 (Version D)", "52 X 54 (Version E)", "70 X 76 (Version F)", "104 X 98 (Version G)", "148 X 134 (Version H)", "8X Height (Version S)", "16X Height (Version T)" }));
         codeOneSizeCombo.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 codeOneSizeComboActionPerformed(evt);
             }
@@ -727,6 +786,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         databarColumnsCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Automatic", "1", "2", "3", "4", "5", "6", "7", "8", "9" }));
         databarColumnsCombo.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 databarColumnsComboActionPerformed(evt);
             }
@@ -756,6 +816,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         dataMatrixSizeCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Automatic", "10 X 10", "12 X 12", "14 X 14", "16 X 16", "18 X 18", "20 X 20", "22 X 22", "24 X 24", "26 X 26", "32 X 32", "36 X 36", "40 X 40", "44 X 44", "48 X 48", "52 X 52", "64 X 64", "72 X 72", "80 X 80", "88 X 88", "96 X 96", "104 X 104", "120 X 120", "132 X 132", "144 X 144", "8 X 18", "8 X 32", "12 X 26", "12 X 36", "16 X 36", "16 X 48" }));
         dataMatrixSizeCombo.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 dataMatrixSizeComboActionPerformed(evt);
             }
@@ -764,6 +825,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         dataMatrixSquareOnlyCheck.setSelected(true);
         dataMatrixSquareOnlyCheck.setText("Supress Rectangular Symbols in Automatic Mode");
         dataMatrixSquareOnlyCheck.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 dataMatrixSquareOnlyCheckActionPerformed(evt);
             }
@@ -801,6 +863,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         gridmatrixAutoSize.setSelected(true);
         gridmatrixAutoSize.setText("Automatic Resizing");
         gridmatrixAutoSize.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 gridmatrixAutoSizeActionPerformed(evt);
             }
@@ -809,6 +872,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         gridmatrixButtonGroup.add(gridmatrixUserSize);
         gridmatrixUserSize.setText("Adjust Size To:");
         gridmatrixUserSize.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 gridmatrixUserSizeActionPerformed(evt);
             }
@@ -817,6 +881,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         gridmatrixButtonGroup.add(gridmatrixUserEcc);
         gridmatrixUserEcc.setText("Add Minimum Error Correction:");
         gridmatrixUserEcc.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 gridmatrixUserEccActionPerformed(evt);
             }
@@ -825,6 +890,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         gridmatrixUserSizeCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "18 X 18 (Version 1)", "30 X 30 (Version 2)", "42 X 42 (Version 3)", "54 X 54 (Version 4)", "66 X 66 (Version 5)", "78 X 78 (Version 6)", "90 X 90 (Version 7)", "102 X 102 (Version 8)", "114 X 114 (Version 9)", "126 X 126 (Version 10)", "138 X 138 (Version 11)", "150 X 150 (Version 12)", "162 X 162 (Version 13)" }));
         gridmatrixUserSizeCombo.setEnabled(false);
         gridmatrixUserSizeCombo.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 gridmatrixUserSizeComboActionPerformed(evt);
             }
@@ -833,6 +899,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         gridmatrixUserEccCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Approx 10%", "Approx 20%", "Approx 30%", "Approx 40%", "Approx 50%" }));
         gridmatrixUserEccCombo.setEnabled(false);
         gridmatrixUserEccCombo.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 gridmatrixUserEccComboActionPerformed(evt);
             }
@@ -877,6 +944,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         maxiEncodingModeCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Structured Carrier Message (Mode 2)", "Structured Carrier Message (Mode 3)", "Standard Symbol, SEC (Mode 4)", "Full ECC Symbol (Mode 5)", "Reader Program, SEC (Mode 6)" }));
         maxiEncodingModeCombo.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 maxiEncodingModeComboActionPerformed(evt);
             }
@@ -885,6 +953,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         maxiPrimaryData.setText("Primary Data Here!");
         maxiPrimaryData.setEnabled(false);
         maxiPrimaryData.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 maxiPrimaryDataActionPerformed(evt);
             }
@@ -924,6 +993,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         microPdfColumnsCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Automatic", "1", "2", "3", "4" }));
         microPdfColumnsCombo.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 microPdfColumnsComboActionPerformed(evt);
             }
@@ -952,6 +1022,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         microQrAutoSize.setSelected(true);
         microQrAutoSize.setText("Automatic Resizing");
         microQrAutoSize.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 microQrAutoSizeActionPerformed(evt);
             }
@@ -960,6 +1031,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         microQrButtonGroup.add(microQrUserSize);
         microQrUserSize.setText("Adjust Size To:");
         microQrUserSize.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 microQrUserSizeActionPerformed(evt);
             }
@@ -968,6 +1040,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         microQrButtonGroup.add(microQrUserEcc);
         microQrUserEcc.setText("Add Minimum Error Correction:");
         microQrUserEcc.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 microQrUserEccActionPerformed(evt);
             }
@@ -976,6 +1049,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         microQrUserSizeCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "11 X 11 (Version M1)", "13 X 13 (Version M2)", "15 X 15 (Version M3)", "17 X 17 (Version M4)" }));
         microQrUserSizeCombo.setEnabled(false);
         microQrUserSizeCombo.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 microQrUserSizeComboActionPerformed(evt);
             }
@@ -984,6 +1058,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         microQrUserEccCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Approx 20% (Level L)", "Approx 37% (Level M)", "Approx 55% (Level Q)" }));
         microQrUserEccCombo.setEnabled(false);
         microQrUserEccCombo.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 microQrUserEccComboActionPerformed(evt);
             }
@@ -1025,6 +1100,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         msiCheckDigitCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "None", "Mod-10", "Mod-10 & Mod-10", "Mod-11", "Mod-11 & Mod-10" }));
         msiCheckDigitCombo.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 msiCheckDigitComboActionPerformed(evt);
             }
@@ -1056,6 +1132,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         pdfColumnsCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Automatic", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20" }));
         pdfColumnsCombo.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 pdfColumnsComboActionPerformed(evt);
             }
@@ -1063,6 +1140,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         pdfEccCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Automatic", "2 words", "4 words", "8 words", "16 words", "32 words", "64 words", "128 words", "256 words", "512 words" }));
         pdfEccCombo.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 pdfEccComboActionPerformed(evt);
             }
@@ -1101,6 +1179,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         qrAutoSize.setSelected(true);
         qrAutoSize.setText("Automatic Resizing");
         qrAutoSize.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 qrAutoSizeActionPerformed(evt);
             }
@@ -1109,6 +1188,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         qrButtonGroup.add(qrUserSize);
         qrUserSize.setText("Adjust Size To:");
         qrUserSize.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 qrUserSizeActionPerformed(evt);
             }
@@ -1117,6 +1197,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         qrButtonGroup.add(qrUserEcc);
         qrUserEcc.setText("Add Minimum Error Correction:");
         qrUserEcc.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 qrUserEccActionPerformed(evt);
             }
@@ -1125,6 +1206,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         qrUserSizeCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "21 X 21 (Version 1)", "25 X 25 (Version 2)", "29 X 29 (Version 3)", "33 X 33 (Version 4)", "37 X 37 (Version 5)", "41 X 41 (Version 6)", "45 X 45 (Version 7)", "49 X 49 (Version 8)", "53 X 53 (Version 9)", "57 X 57 (Version 10)", "61 X 61 (Version 11)", "65 X 65 (Version 12)", "69 X 69 (Version 13)", "73 X 73 (Version 14)", "77 X 77 (Version 15)", "81 X 81 (Version 16)", "85 X 85 (Version 17)", "89 X 89 (Version 18)", "93 X 93 (Version 19)", "97 X 97 (Version 20)", "101 X 101 (Version 21)", "105 X 105 (Version 22)", "109 X 109 (Version 23)", "113 X 113 (Version 24)", "117 X 117 (Version 25)", "121 X 121 (Version 26)", "125 X 125 (Version 27)", "129 X 129 (Version 28)", "133 X 133 (Version 29)", "137 X 137 (Version 30)", "141 X 141 (Version 31)", "145 X 145 (Version 32)", "149 X 149 (Version 33)", "153 X 153 (Version 34)", "157 X 157 (Version 35)", "161 X 161 (Version 36)", "165 X 165 (Version 37)", "169 X 169 (Version 38)", "173 X 173 (Version 39)", "177 X 177 (Version 40)" }));
         qrUserSizeCombo.setEnabled(false);
         qrUserSizeCombo.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 qrUserSizeComboActionPerformed(evt);
             }
@@ -1133,6 +1215,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         qrUserEccCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Approx 20% (Level L)", "Approx 37% (Level M)", "Approx 55% (Level Q)", "Approx 65% (Level H)" }));
         qrUserEccCombo.setEnabled(false);
         qrUserEccCombo.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 qrUserEccComboActionPerformed(evt);
             }
@@ -1175,6 +1258,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         compositeUserMode.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Automatic", "CC-A", "CC-B", "CC-C" }));
         compositeUserMode.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 compositeUserModeActionPerformed(evt);
             }
@@ -1290,6 +1374,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         exitButton.setText("Exit");
         exitButton.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 exitButtonActionPerformed(evt);
             }
@@ -1297,6 +1382,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         saveButton.setText("Save");
         saveButton.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 saveButtonActionPerformed(evt);
             }
@@ -1304,6 +1390,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         aboutButton.setText("About");
         aboutButton.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 aboutButtonActionPerformed(evt);
             }
@@ -1376,9 +1463,9 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 dataInput = dataInputField.getText();
                 compositeInput = compositeInputField.getText();
                 encodeData();
-                saveImage.SaveImage(file, savePanel);
-            } catch (Exception e) {
-                System.out.println("Cannot wright to file" + fileChooser.getSelectedFile().toString());
+                saveImage.saveImage(file, savePanel);
+            } catch (IOException e) {
+                System.out.println("Cannot write to file " + fileChooser.getSelectedFile().toString() + ": " + e.getMessage());
             }
         }
     }//GEN-LAST:event_saveButtonActionPerformed
@@ -1509,14 +1596,14 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                         dataInput = thisData;
                         compositeInput = "";
                         encodeData();
-                        if (errorOutput.isEmpty()) {
-                            saveImage.SaveImage(file, savePanel);
+                        if (errorLabel.getText().isEmpty()) {
+                            saveImage.saveImage(file, savePanel);
                         } else {
-                            errorLog += errorOutput + " at line " + (lineCount + 1) + '\n';
+                            errorLog += errorLabel.getText() + " at line " + (lineCount + 1) + '\n';
                         }
-                    } catch (Exception e) {
-                        errorLog += "I/O Exception writing to " + fullFileName
-                                + " at line " + (lineCount + 1) + '\n';
+                    } catch (IOException e) {
+                        errorLog += "I/O exception writing to " + fullFileName
+                                + " at line " + (lineCount + 1) + ": " + e.getMessage() + '\n';
                     }
                     thisData = "";
                 }
@@ -1870,11 +1957,11 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
             nodeInfo = node.getUserObject();
             if (node.isLeaf()) {
                 selectedSymbol = (SymbolType)nodeInfo;
-                symbology = selectedSymbol.mnemonic;
+                symbologyName = selectedSymbol.mnemonic;
                 dataInput = dataInputField.getText();
                 compositeInput = compositeInputField.getText();
 
-                switch(symbology) {
+                switch(symbologyName) {
                     case "BARCODE_AZTEC":
                     case "BARCODE_CODE128":
                     case "BARCODE_CODE16K":
@@ -1888,7 +1975,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                         useGS1Check.setEnabled(false);
                 }
 
-                switch(symbology) {
+                switch(symbologyName) {
                     case "BARCODE_EANX":
                     case "BARCODE_CODE128":
                     case "BARCODE_UPCE":
@@ -1939,16 +2026,18 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
             return;
         }
 
-        if (!(encodeMe())) {
-            errorLabel.setText(errorOutput);
+        try {
+            encodeMe();
+        } catch (OkapiException e) {
+            errorLabel.setText(e.getMessage());
             topPanel.add(errorLabel);
             topPanel.updateUI();
             return;
         }
 
-        bWidth = pWidth / width;
+        bWidth = pWidth / symbol.getWidth();
 
-        bHeight = pHeight / height;
+        bHeight = pHeight / symbol.getHeight();
 
         if (bWidth < bHeight) {
             factor = (int) bWidth;
@@ -1965,7 +2054,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         displayPanel.setBackground(paperColour);
         displayPanel.add(drawSymbol);
         topPanel.add(displayPanel);
-        encodeInfoArea.setText(encodeInfo);
+        encodeInfoArea.setText(symbol.encodeInfo);
         topPanel.updateUI();
         pack();
     }
@@ -2023,70 +2112,30 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         return reversed;
     }
 
-    public boolean encodeMe() {
+    public void encodeMe() throws OkapiException {
+
+        symbol = getNewSymbol();
+
+        // TODO: do this immediately in the barcode classes instead of using error_msg?
+        if (!symbol.error_msg.isEmpty()) {
+            throw new OkapiException(symbol.error_msg);
+        }
+    }
+
+    private Symbol getNewSymbol() throws OkapiException {
+
         // TODO: Reader Init not supported yet
         boolean readerInit = false;
-        
-        rect.clear();
-        txt.clear();
-        hex.clear();
-        target.clear();
-        
-        Upc upc = new Upc();
-        Ean ean = new Ean();
-        Code128 code128 = new Code128();
-        Codabar codabar = new Codabar();
-        Code2Of5 code2of5 = new Code2Of5();
-        MsiPlessey msiPlessey = new MsiPlessey();
-        Code3Of9 code3of9 = new Code3Of9();
-        Logmars logmars = new Logmars();
-        Code11 code11 = new Code11();
-        Code93 code93 = new Code93();
-        Pharmazentralnummer pzn = new Pharmazentralnummer();
-        Code3Of9Extended code3of9ext = new Code3Of9Extended();
-        Telepen telepen = new Telepen();
-        Code49 code49 = new Code49();
-        KoreaPost koreaPost = new KoreaPost();
-        Code16k code16k = new Code16k();
-        Postnet postnet = new Postnet();
-        RoyalMail4State royalMail = new RoyalMail4State();
-        KixCode kixCode = new KixCode();
-        JapanPost japanPost = new JapanPost();
-        AustraliaPost australiaPost = new AustraliaPost();
-        ChannelCode channelCode = new ChannelCode();
-        PharmaCode pharmaCode = new PharmaCode();
-        PharmaCode2Track pharmaCode2t = new PharmaCode2Track();
-        Code32 code32 = new Code32();
-        Pdf417 pdf417 = new Pdf417();
-        AztecCode aztecCode = new AztecCode();
-        AztecRune aztecRune = new AztecRune();
-        DataMatrix dataMatrix = new DataMatrix();
-        UspsOneCode uspsOneCode = new UspsOneCode();
-        QrCode qrCode = new QrCode();
-        MicroQrCode microQrCode = new MicroQrCode();
-        CodeOne codeOne = new CodeOne();
-        GridMatrix gridMatrix = new GridMatrix();
-        DataBar14 dataBar14 = new DataBar14();
-        DataBarLimited dataBarLimited = new DataBarLimited();
-        DataBarExpanded dataBarExpanded = new DataBarExpanded();
-        MaxiCode maxiCode = new MaxiCode();
-        CodablockF codablockF = new CodablockF();
-        Nve18 nve18 = new Nve18();
-        Composite composite = new Composite();
 
-        errorOutput = "";
-        encodeInfo = "";
-
-        if (symbology == null) {
-            errorOutput = "No symbology selected";
-            encodeInfo = "Error: No symbology selected";
-            return false;
+        if (symbologyName == null) {
+            throw new OkapiException("No symbology selected");
         }
 
         if ((useCompositeCheck.isEnabled() && useCompositeCheck.isSelected()) &&
                 (!(compositeInput.isEmpty()))) {
             // Create a composite symbol
-            switch (symbology) {
+            Composite composite = new Composite();
+            switch (symbologyName) {
                 case "BARCODE_UPCA":
                     composite.setSymbology(Composite.LinearEncoding.UPCA);
                     break;
@@ -2120,287 +2169,133 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
             }
             composite.setLinear(dataInput);
             composite.setPreferred(compositeUserMode.getSelectedIndex());
-            if (composite.setContent(compositeInput)) {
-                rect = composite.rect;
-                height = composite.symbol_height;
-                width = composite.symbol_width;
-                txt = composite.txt;
-                encodeInfo = composite.encodeInfo;
-            } else {
-                errorOutput = composite.error_msg;
-            }
+            composite.setContent(compositeInput);
+            return composite;
         } else {
             // Symbol is not composite
-            switch (symbology) {
+            switch (symbologyName) {
             case "BARCODE_UPCA":
-                upc.setUpcaMode();
-                upc.unsetLinkageFlag();
-                if (upc.setContent(dataInput)) {
-                    rect = upc.rect;
-                    height = upc.symbol_height;
-                    width = upc.symbol_width;
-                    txt = upc.txt;
-                    encodeInfo += upc.encodeInfo;
-                } else {
-                    errorOutput = upc.error_msg;
-                };
-                break;
+                Upc upca = new Upc();
+                upca.setUpcaMode();
+                upca.unsetLinkageFlag();
+                upca.setContent(dataInput);
+                return upca;
             case "BARCODE_UPCE":
-                upc.setUpceMode();
-                upc.unsetLinkageFlag();
-                if (upc.setContent(dataInput)) {
-                    rect = upc.rect;
-                    height = upc.symbol_height;
-                    width = upc.symbol_width;
-                    txt = upc.txt;
-                    encodeInfo += upc.encodeInfo;
-                } else {
-                    errorOutput = upc.error_msg;
-                };
-                break;
+                Upc upce = new Upc();
+                upce.setUpceMode();
+                upce.unsetLinkageFlag();
+                upce.setContent(dataInput);
+                return upce;
             case "BARCODE_EANX":
+                Ean ean = new Ean();
                 if (eanCalculateVersion() == 8) {
                     ean.setEan8Mode();
                 } else {
                     ean.setEan13Mode();
                 }
-
                 ean.unsetLinkageFlag();
-                if (ean.setContent(dataInput)) {
-                    rect = ean.rect;
-                    height = ean.symbol_height;
-                    width = ean.symbol_width;
-                    txt = ean.txt;
-                    encodeInfo += ean.encodeInfo;
-                } else {
-                    errorOutput = ean.error_msg;
-                };
-                break;
+                ean.setContent(dataInput);
+                return ean;
             case "BARCODE_ITF14":
-                code2of5.setITF14Mode();
-                if (code2of5.setContent(dataInput)) {
-                    rect = code2of5.rect;
-                    height = code2of5.symbol_height;
-                    width = code2of5.symbol_width;
-                    txt = code2of5.txt;
-                    encodeInfo += code2of5.encodeInfo;
-                } else {
-                    errorOutput = code2of5.error_msg;
-                };
-                break;
+                Code2Of5 itf14 = new Code2Of5();
+                itf14.setITF14Mode();
+                itf14.setContent(dataInput);
+                return itf14;
             case "BARCODE_CODE128":
             case "BARCODE_HIBC_128":
+                Code128 code128 = new Code128();
                 code128.unsetCc();
                 code128.setNormalMode();
                 if (useGS1Check.isSelected()) {
                     code128.setGs1Mode();
                 }
-                if (symbology.equals("BARCODE_HIBC_128")) {
+                if (symbologyName.equals("BARCODE_HIBC_128")) {
                     code128.setHibcMode();
                 }
                 if (readerInit) {
                     code128.setInitMode();
                 }
-                if (code128.setContent(dataInput)) {
-                    rect = code128.rect;
-                    height = code128.symbol_height;
-                    width = code128.symbol_width;
-                    txt = code128.txt;
-                    encodeInfo += code128.encodeInfo;
-                } else {
-                    errorOutput = code128.error_msg;
-                };
-                break;
+                code128.setContent(dataInput);
+                return code128;
             case "BARCODE_NVE18":
-                if (nve18.setContent(dataInput)) {
-                    rect = nve18.rect;
-                    height = nve18.symbol_height;
-                    width = nve18.symbol_width;
-                    txt = nve18.txt;
-                    encodeInfo += nve18.encodeInfo;
-                } else {
-                    errorOutput = nve18.error_msg;
-                };
-                break;
+                Nve18 nve18 = new Nve18();
+                nve18.setContent(dataInput);
+                return nve18;
             case "BARCODE_CODABAR":
-                if (codabar.setContent(dataInput)) {
-                    rect = codabar.rect;
-                    height = codabar.symbol_height;
-                    width = codabar.symbol_width;
-                    txt = codabar.txt;
-                    encodeInfo += codabar.encodeInfo;
-                } else {
-                    errorOutput = codabar.error_msg;
-                };
-                break;
+                Codabar codabar = new Codabar();
+                codabar.setContent(dataInput);
+                return codabar;
             case "BARCODE_C25MATRIX":
-                code2of5.setMatrixMode();
-                if (code2of5.setContent(dataInput)) {
-                    rect = code2of5.rect;
-                    height = code2of5.symbol_height;
-                    width = code2of5.symbol_width;
-                    txt = code2of5.txt;
-                    encodeInfo += code2of5.encodeInfo;
-                } else {
-                    errorOutput = code2of5.error_msg;
-                };
-                break;
+                Code2Of5 c25matrix = new Code2Of5();
+                c25matrix.setMatrixMode();
+                c25matrix.setContent(dataInput);
+                return c25matrix;
             case "BARCODE_C25IND":
-                code2of5.setIndustrialMode();
-                if (code2of5.setContent(dataInput)) {
-                    rect = code2of5.rect;
-                    height = code2of5.symbol_height;
-                    width = code2of5.symbol_width;
-                    txt = code2of5.txt;
-                    encodeInfo += code2of5.encodeInfo;
-                } else {
-                    errorOutput = code2of5.error_msg;
-                };
-                break;
+                Code2Of5 c25ind = new Code2Of5();
+                c25ind.setIndustrialMode();
+                c25ind.setContent(dataInput);
+                return c25ind;
             case "BARCODE_C25INTER":
-                code2of5.setInterleavedMode();
-                if (code2of5.setContent(dataInput)) {
-                    rect = code2of5.rect;
-                    height = code2of5.symbol_height;
-                    width = code2of5.symbol_width;
-                    txt = code2of5.txt;
-                    encodeInfo += code2of5.encodeInfo;
-                } else {
-                    errorOutput = code2of5.error_msg;
-                };
-                break;
+                Code2Of5 c25inter = new Code2Of5();
+                c25inter.setInterleavedMode();
+                c25inter.setContent(dataInput);
+                return c25inter;
             case "BARCODE_MSI_PLESSEY":
+                MsiPlessey msiPlessey = new MsiPlessey();
                 msiPlessey.option2 = msiCheckDigitCombo.getSelectedIndex();
-                if (msiPlessey.setContent(dataInput)) {
-                    rect = msiPlessey.rect;
-                    height = msiPlessey.symbol_height;
-                    width = msiPlessey.symbol_width;
-                    txt = msiPlessey.txt;
-                    encodeInfo += msiPlessey.encodeInfo;
-                } else {
-                    errorOutput = msiPlessey.error_msg;
-                };
-                break;
+                msiPlessey.setContent(dataInput);
+                return msiPlessey;
             case "BARCODE_CODE39":
             case "BARCODE_HIBC_39":
+                Code3Of9 code3of9 = new Code3Of9();
                 code3of9.setNormalMode();
-                if (symbology.equals("BARCODE_HIBC_39")) {
+                if (symbologyName.equals("BARCODE_HIBC_39")) {
                     code3of9.setHibcMode();
                 }
                 code3of9.option2 = code39CheckCombo.getSelectedIndex();
-                if (code3of9.setContent(dataInput)) {
-                    rect = code3of9.rect;
-                    height = code3of9.symbol_height;
-                    width = code3of9.symbol_width;
-                    txt = code3of9.txt;
-                    encodeInfo += code3of9.encodeInfo;
-                } else {
-                    errorOutput = code3of9.error_msg;
-                };
-                break;
+                code3of9.setContent(dataInput);
+                return code3of9;
             case "BARCODE_LOGMARS":
-                if (logmars.setContent(dataInput)) {
-                    rect = logmars.rect;
-                    height = logmars.symbol_height;
-                    width = logmars.symbol_width;
-                    txt = logmars.txt;
-                    encodeInfo += logmars.encodeInfo;
-                } else {
-                    errorOutput = logmars.error_msg;
-                };
-                break;
+                Logmars logmars = new Logmars();
+                logmars.setContent(dataInput);
+                return logmars;
             case "BARCODE_CODE11":
-                if (code11.setContent(dataInput)) {
-                    rect = code11.rect;
-                    height = code11.symbol_height;
-                    width = code11.symbol_width;
-                    txt = code11.txt;
-                    encodeInfo += code11.encodeInfo;
-                } else {
-                    errorOutput = code11.error_msg;
-                };
-                break;
+                Code11 code11 = new Code11();
+                code11.setContent(dataInput);
+                return code11;
             case "BARCODE_CODE93":
-                if (code93.setContent(dataInput)) {
-                    rect = code93.rect;
-                    height = code93.symbol_height;
-                    width = code93.symbol_width;
-                    txt = code93.txt;
-                    encodeInfo += code93.encodeInfo;
-                } else {
-                    errorOutput = code93.error_msg;
-                };
-                break;
+                Code93 code93 = new Code93();
+                code93.setContent(dataInput);
+                return code93;
             case "BARCODE_PZN":
-                if (pzn.setContent(dataInput)) {
-                    rect = pzn.rect;
-                    height = pzn.symbol_height;
-                    width = pzn.symbol_width;
-                    txt = pzn.txt;
-                    encodeInfo += pzn.encodeInfo;
-                } else {
-                    errorOutput = pzn.error_msg;
-                };
-                break;
+                Pharmazentralnummer pzn = new Pharmazentralnummer();
+                pzn.setContent(dataInput);
+                return pzn;
             case "BARCODE_EXCODE39":
+                Code3Of9Extended code3of9ext = new Code3Of9Extended();
                 code3of9ext.option2 = code39CheckCombo.getSelectedIndex();
-                if (code3of9ext.setContent(dataInput)) {
-                    rect = code3of9ext.rect;
-                    height = code3of9ext.symbol_height;
-                    width = code3of9ext.symbol_width;
-                    txt = code3of9ext.txt;
-                    encodeInfo += code3of9ext.encodeInfo;
-                } else {
-                    errorOutput = code3of9ext.error_msg;
-                };
-                break;
+                code3of9ext.setContent(dataInput);
+                return code3of9ext;
             case "BARCODE_TELEPEN":
+                Telepen telepen = new Telepen();
                 telepen.setNormalMode();
-                if (telepen.setContent(dataInput)) {
-                    rect = telepen.rect;
-                    height = telepen.symbol_height;
-                    width = telepen.symbol_width;
-                    txt = telepen.txt;
-                    encodeInfo += telepen.encodeInfo;
-                } else {
-                    errorOutput = telepen.error_msg;
-                };
-                break;
+                telepen.setContent(dataInput);
+                return telepen;
             case "BARCODE_TELEPEN_NUM":
-                telepen.setNumericMode();
-                if (telepen.setContent(dataInput)) {
-                    rect = telepen.rect;
-                    height = telepen.symbol_height;
-                    width = telepen.symbol_width;
-                    txt = telepen.txt;
-                    encodeInfo += telepen.encodeInfo;
-                } else {
-                    errorOutput = telepen.error_msg;
-                };
-                break;
+                Telepen telepenNum = new Telepen();
+                telepenNum.setNumericMode();
+                telepenNum.setContent(dataInput);
+                return telepenNum;
             case "BARCODE_CODE49":
-                if (code49.setContent(dataInput)) {
-                    rect = code49.rect;
-                    height = code49.symbol_height;
-                    width = code49.symbol_width;
-                    txt = code49.txt;
-                    encodeInfo += code49.encodeInfo;
-                } else {
-                    errorOutput = code49.error_msg;
-                };
-                break;
+                Code49 code49 = new Code49();
+                code49.setContent(dataInput);
+                return code49;
             case "BARCODE_KOREAPOST":
-                if (koreaPost.setContent(dataInput)) {
-                    rect = koreaPost.rect;
-                    height = koreaPost.symbol_height;
-                    width = koreaPost.symbol_width;
-                    txt = koreaPost.txt;
-                    encodeInfo += koreaPost.encodeInfo;
-                } else {
-                    errorOutput = koreaPost.error_msg;
-                };
-                break;
+                KoreaPost koreaPost = new KoreaPost();
+                koreaPost.setContent(dataInput);
+                return koreaPost;
             case "BARCODE_CODE16K":
+                Code16k code16k = new Code16k();
                 code16k.setNormalMode();
                 if (useGS1Check.isSelected()) {
                     code16k.setGs1Mode();
@@ -2408,291 +2303,133 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 if (readerInit) {
                     code16k.setInitMode();
                 }
-                if (code16k.setContent(dataInput)) {
-                    rect = code16k.rect;
-                    height = code16k.symbol_height;
-                    width = code16k.symbol_width;
-                    txt = code16k.txt;
-                    encodeInfo += code16k.encodeInfo;
-                } else {
-                    errorOutput = code16k.error_msg;
-                };
-                break;
+                code16k.setContent(dataInput);
+                return code16k;
             case "BARCODE_C25IATA":
-                code2of5.setIATAMode();
-                if (code2of5.setContent(dataInput)) {
-                    rect = code2of5.rect;
-                    height = code2of5.symbol_height;
-                    width = code2of5.symbol_width;
-                    txt = code2of5.txt;
-                    encodeInfo = code2of5.encodeInfo;
-                } else {
-                    errorOutput = code2of5.error_msg;
-                };
-                break;
+                Code2Of5 c25iata = new Code2Of5();
+                c25iata.setIATAMode();
+                c25iata.setContent(dataInput);
+                return c25iata;
             case "BARCODE_C25LOGIC":
-                code2of5.setDataLogicMode();
-                if (code2of5.setContent(dataInput)) {
-                    rect = code2of5.rect;
-                    height = code2of5.symbol_height;
-                    width = code2of5.symbol_width;
-                    txt = code2of5.txt;
-                    encodeInfo += code2of5.encodeInfo;
-                } else {
-                    errorOutput = code2of5.error_msg;
-                };
-                break;
+                Code2Of5 c25logic = new Code2Of5();
+                c25logic.setDataLogicMode();
+                c25logic.setContent(dataInput);
+                return c25logic;
             case "BARCODE_DPLEIT":
-                code2of5.setDPLeitMode();
-                if (code2of5.setContent(dataInput)) {
-                    rect = code2of5.rect;
-                    height = code2of5.symbol_height;
-                    width = code2of5.symbol_width;
-                    txt = code2of5.txt;
-                    encodeInfo += code2of5.encodeInfo;
-                } else {
-                    errorOutput = code2of5.error_msg;
-                };
-                break;
+                Code2Of5 dpLeit = new Code2Of5();
+                dpLeit.setDPLeitMode();
+                dpLeit.setContent(dataInput);
+                return dpLeit;
             case "BARCODE_DPIDENT":
-                code2of5.setDPIdentMode();
-                if (code2of5.setContent(dataInput)) {
-                    rect = code2of5.rect;
-                    height = code2of5.symbol_height;
-                    width = code2of5.symbol_width;
-                    txt = code2of5.txt;
-                    encodeInfo += code2of5.encodeInfo;
-                } else {
-                    errorOutput = code2of5.error_msg;
-                };
-                break;
+                Code2Of5 dpIdent = new Code2Of5();
+                dpIdent.setDPIdentMode();
+                dpIdent.setContent(dataInput);
+                return dpIdent;
             case "BARCODE_POSTNET":
             case "BARCODE_CEPNET":
+                Postnet postnet = new Postnet();
                 postnet.setPostnet();
-                if (postnet.setContent(dataInput)) {
-                    rect = postnet.rect;
-                    height = postnet.symbol_height;
-                    width = postnet.symbol_width;
-                    txt = postnet.txt;
-                    encodeInfo += postnet.encodeInfo;
-                } else {
-                    errorOutput = postnet.error_msg;
-                };
-                break;
+                postnet.setContent(dataInput);
+                return postnet;
             case "BARCODE_PLANET":
-                postnet.setPlanet();
-                if (postnet.setContent(dataInput)) {
-                    rect = postnet.rect;
-                    height = postnet.symbol_height;
-                    width = postnet.symbol_width;
-                    txt = postnet.txt;
-                } else {
-                    errorOutput = postnet.error_msg;
-                };
-                break;
+                Postnet planet = new Postnet();
+                planet.setPlanet();
+                planet.setContent(dataInput);
+                return planet;
             case "BARCODE_RM4SCC":
-                if (royalMail.setContent(dataInput)) {
-                    rect = royalMail.rect;
-                    height = royalMail.symbol_height;
-                    width = royalMail.symbol_width;
-                    txt = royalMail.txt;
-                    encodeInfo += royalMail.encodeInfo;
-                } else {
-                    errorOutput = royalMail.error_msg;
-                }
-                break;
+                RoyalMail4State royalMail = new RoyalMail4State();
+                royalMail.setContent(dataInput);
+                return royalMail;
             case "BARCODE_KIX":
-                if (kixCode.setContent(dataInput)) {
-                    rect = kixCode.rect;
-                    height = kixCode.symbol_height;
-                    width = kixCode.symbol_width;
-                    txt = kixCode.txt;
-                    encodeInfo += kixCode.encodeInfo;
-                } else {
-                    errorOutput = kixCode.error_msg;
-                }
-                break;
+                KixCode kixCode = new KixCode();
+                kixCode.setContent(dataInput);
+                return kixCode;
             case "BARCODE_JAPANPOST":
-                if (japanPost.setContent(dataInput)) {
-                    rect = japanPost.rect;
-                    height = japanPost.symbol_height;
-                    width = japanPost.symbol_width;
-                    txt = japanPost.txt;
-                    encodeInfo += japanPost.encodeInfo;
-                } else {
-                    errorOutput = japanPost.error_msg;
-                }
-                break;
+                JapanPost japanPost = new JapanPost();
+                japanPost.setContent(dataInput);
+                return japanPost;
             case "BARCODE_AUSPOST":
-                australiaPost.setPostMode();
-                if (australiaPost.setContent(dataInput)) {
-                    rect = australiaPost.rect;
-                    height = australiaPost.symbol_height;
-                    width = australiaPost.symbol_width;
-                    txt = australiaPost.txt;
-                    encodeInfo += australiaPost.encodeInfo;
-                } else {
-                    errorOutput = australiaPost.error_msg;
-                }
-                break;
+                AustraliaPost auPost = new AustraliaPost();
+                auPost.setPostMode();
+                auPost.setContent(dataInput);
+                return auPost;
             case "BARCODE_AUSREPLY":
-                australiaPost.setReplyMode();
-                if (australiaPost.setContent(dataInput)) {
-                    rect = australiaPost.rect;
-                    height = australiaPost.symbol_height;
-                    width = australiaPost.symbol_width;
-                    txt = australiaPost.txt;
-                    encodeInfo += australiaPost.encodeInfo;
-                } else {
-                    errorOutput = australiaPost.error_msg;
-                }
-                break;
+                AustraliaPost auReply = new AustraliaPost();
+                auReply.setReplyMode();
+                auReply.setContent(dataInput);
+                return auReply;
             case "BARCODE_AUSROUTE":
-                australiaPost.setRouteMode();
-                if (australiaPost.setContent(dataInput)) {
-                    rect = australiaPost.rect;
-                    height = australiaPost.symbol_height;
-                    width = australiaPost.symbol_width;
-                    txt = australiaPost.txt;
-                    encodeInfo += australiaPost.encodeInfo;
-                } else {
-                    errorOutput = australiaPost.error_msg;
-                }
-                break;
+                AustraliaPost auRoute = new AustraliaPost();
+                auRoute.setRouteMode();
+                auRoute.setContent(dataInput);
+                return auRoute;
             case "BARCODE_AUSREDIRECT":
-                australiaPost.setRedirectMode();
-                if (australiaPost.setContent(dataInput)) {
-                    rect = australiaPost.rect;
-                    height = australiaPost.symbol_height;
-                    width = australiaPost.symbol_width;
-                    txt = australiaPost.txt;
-                    encodeInfo += australiaPost.encodeInfo;
-                } else {
-                    errorOutput = australiaPost.error_msg;
-                }
-                break;
+                AustraliaPost auRedirect = new AustraliaPost();
+                auRedirect.setRedirectMode();
+                auRedirect.setContent(dataInput);
+                return auRedirect;
             case "BARCODE_CHANNEL":
+                ChannelCode channelCode = new ChannelCode();
                 channelCode.option2 = channelChannelsCombo.getSelectedIndex();
-                if (channelCode.setContent(dataInput)) {
-                    rect = channelCode.rect;
-                    height = channelCode.symbol_height;
-                    width = channelCode.symbol_width;
-                    txt = channelCode.txt;
-                    encodeInfo += channelCode.encodeInfo;
-                } else {
-                    errorOutput = channelCode.error_msg;
-                }
-                break;
+                channelCode.setContent(dataInput);
+                return channelCode;
             case "BARCODE_PHARMA":
-                if (pharmaCode.setContent(dataInput)) {
-                    rect = pharmaCode.rect;
-                    height = pharmaCode.symbol_height;
-                    width = pharmaCode.symbol_width;
-                    txt = pharmaCode.txt;
-                    encodeInfo += pharmaCode.encodeInfo;
-                } else {
-                    errorOutput = pharmaCode.error_msg;
-                }
-                break;
+                PharmaCode pharmaCode = new PharmaCode();
+                pharmaCode.setContent(dataInput);
+                return pharmaCode;
             case "BARCODE_PHARMA_TWO":
-                if (pharmaCode2t.setContent(dataInput)) {
-                    rect = pharmaCode2t.rect;
-                    height = pharmaCode2t.symbol_height;
-                    width = pharmaCode2t.symbol_width;
-                    txt = pharmaCode2t.txt;
-                    encodeInfo += pharmaCode2t.encodeInfo;
-                } else {
-                    errorOutput = pharmaCode2t.error_msg;
-                }
-                break;
+                PharmaCode2Track pharmaCode2t = new PharmaCode2Track();
+                pharmaCode2t.setContent(dataInput);
+                return pharmaCode2t;
             case "BARCODE_CODE32":
-                if (code32.setContent(dataInput)) {
-                    rect = code32.rect;
-                    height = code32.symbol_height;
-                    width = code32.symbol_width;
-                    txt = code32.txt;
-                    encodeInfo += code32.encodeInfo;
-                } else {
-                    errorOutput = code32.error_msg;
-                }
-                break;
+                Code32 code32 = new Code32();
+                code32.setContent(dataInput);
+                return code32;
             case "BARCODE_PDF417":
             case "BARCODE_HIBC_PDF":
-                pdf417.setNormalMode();
-                if (useGS1Check.isSelected()) {
-                    pdf417.setGs1Mode();
-                }
-                if (symbology.equals("BARCODE_HIBC_PDF")) {
-                    pdf417.setHibcMode();
-                }
-                pdf417.option1 = pdfEccCombo.getSelectedIndex() - 1;
-                pdf417.option2 = pdfColumnsCombo.getSelectedIndex();
-                if (readerInit) {
-                    pdf417.setInitMode();
-                }
-                pdf417.setNormalMode();
-                if (pdf417.setContent(dataInput)) {
-                    rect = pdf417.rect;
-                    height = pdf417.symbol_height;
-                    width = pdf417.symbol_width;
-                    txt = pdf417.txt;
-                    encodeInfo += pdf417.encodeInfo;
-                } else {
-                    errorOutput = pdf417.error_msg;
-                }
-                break;
             case "BARCODE_PDF417TRUNC":
+                Pdf417 pdf417 = new Pdf417();
                 pdf417.setNormalMode();
                 if (useGS1Check.isSelected()) {
                     pdf417.setGs1Mode();
+                }
+                if (symbologyName.equals("BARCODE_HIBC_PDF")) {
+                    pdf417.setHibcMode();
+                } else if (symbologyName.equals("BARCODE_PDF417TRUNC")) {
+                    pdf417.setTruncMode();
                 }
                 pdf417.option1 = pdfEccCombo.getSelectedIndex() - 1;
                 pdf417.option2 = pdfColumnsCombo.getSelectedIndex();
                 if (readerInit) {
                     pdf417.setInitMode();
                 }
-                pdf417.setTruncMode();
-                if (pdf417.setContent(dataInput)) {
-                    rect = pdf417.rect;
-                    height = pdf417.symbol_height;
-                    width = pdf417.symbol_width;
-                    txt = pdf417.txt;
-                    encodeInfo += pdf417.encodeInfo;
-                } else {
-                    errorOutput = pdf417.error_msg;
-                }
-                break;
+                pdf417.setContent(dataInput);
+                return pdf417;
             case "BARCODE_MICROPDF417":
             case "BARCODE_HIBC_MICPDF":
-                pdf417.setNormalMode();
+                Pdf417 microPdf417 = new Pdf417();
+                microPdf417.setNormalMode();
                 if (useGS1Check.isSelected()) {
-                    pdf417.setGs1Mode();
+                    microPdf417.setGs1Mode();
                 }
-                if (symbology.equals("BARCODE_HIBC_MICPDF")) {
-                    pdf417.setHibcMode();
+                if (symbologyName.equals("BARCODE_HIBC_MICPDF")) {
+                    microPdf417.setHibcMode();
                 }
                 if (readerInit) {
-                    pdf417.setInitMode();
+                    microPdf417.setInitMode();
                 }
-                pdf417.option2 = microPdfColumnsCombo.getSelectedIndex();
-                pdf417.setMicroMode();
-                if (pdf417.setContent(dataInput)) {
-                    rect = pdf417.rect;
-                    height = pdf417.symbol_height;
-                    width = pdf417.symbol_width;
-                    txt = pdf417.txt;
-                    encodeInfo += pdf417.encodeInfo;
-                } else {
-                    errorOutput = pdf417.error_msg;
-                }
-                break;
+                microPdf417.option2 = microPdfColumnsCombo.getSelectedIndex();
+                microPdf417.setMicroMode();
+                microPdf417.setContent(dataInput);
+                return microPdf417;
             case "BARCODE_AZTEC":
             case "BARCODE_HIBC_AZTEC":
+                AztecCode aztecCode = new AztecCode();
                 aztecCode.setNormalMode();
                 if (useGS1Check.isSelected()) {
                     aztecCode.setGs1Mode();
                 }
-                if (symbology.equals("BARCODE_HIBC_AZTEC")) {
+                if (symbologyName.equals("BARCODE_HIBC_AZTEC")) {
                     aztecCode.setHibcMode();
                 }
                 if (readerInit) {
@@ -2704,73 +2441,41 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 if (aztecUserSize.isSelected()) {
                     aztecCode.option2 = aztecUserSizeCombo.getSelectedIndex() + 1;
                 }
-                if (aztecCode.setContent(dataInput)) {
-                    rect = aztecCode.rect;
-                    height = aztecCode.symbol_height;
-                    width = aztecCode.symbol_width;
-                    txt = aztecCode.txt;
-                    encodeInfo += aztecCode.encodeInfo;
-                } else {
-                    errorOutput = aztecCode.error_msg;
-                }
-                break;
+                aztecCode.setContent(dataInput);
+                return aztecCode;
             case "BARCODE_AZRUNE":
-                if (aztecRune.setContent(dataInput)) {
-                    rect = aztecRune.rect;
-                    height = aztecRune.symbol_height;
-                    width = aztecRune.symbol_width;
-                    txt = aztecRune.txt;
-                    encodeInfo += aztecRune.encodeInfo;
-                } else {
-                    errorOutput = aztecRune.error_msg;
-                }
-                break;
+                AztecRune aztecRune = new AztecRune();
+                aztecRune.setContent(dataInput);
+                return aztecRune;
             case "BARCODE_DATAMATRIX":
             case "BARCODE_HIBC_DM":
+                DataMatrix dataMatrix = new DataMatrix();
                 dataMatrix.setNormalMode();
                 if (useGS1Check.isSelected()) {
                     dataMatrix.setGs1Mode();
                 }
-                if (symbology.equals("BARCODE_HIBC_DM")) {
+                if (symbologyName.equals("BARCODE_HIBC_DM")) {
                     dataMatrix.setHibcMode();
                 }
                 if (readerInit) {
                     dataMatrix.setInitMode();
                 }
                 dataMatrix.option2 = dataMatrixSizeCombo.getSelectedIndex();
-                if (dataMatrixSquareOnlyCheck.isSelected()) {
-                    dataMatrix.forceSquare(true);
-                } else {
-                    dataMatrix.forceSquare(false);
-                }
-                if (dataMatrix.setContent(dataInput)) {
-                    rect = dataMatrix.rect;
-                    height = dataMatrix.symbol_height;
-                    width = dataMatrix.symbol_width;
-                    txt = dataMatrix.txt;
-                    encodeInfo += dataMatrix.encodeInfo;
-                } else {
-                    errorOutput = dataMatrix.error_msg;
-                }
-                break;
+                dataMatrix.forceSquare(dataMatrixSquareOnlyCheck.isSelected());
+                dataMatrix.setContent(dataInput);
+                return dataMatrix;
             case "BARCODE_ONECODE":
-                if (uspsOneCode.setContent(dataInput)) {
-                    rect = uspsOneCode.rect;
-                    height = uspsOneCode.symbol_height;
-                    width = uspsOneCode.symbol_width;
-                    txt = uspsOneCode.txt;
-                    encodeInfo += uspsOneCode.encodeInfo;
-                } else {
-                    errorOutput = uspsOneCode.error_msg;
-                }
-                break;
+                UspsOneCode uspsOneCode = new UspsOneCode();
+                uspsOneCode.setContent(dataInput);
+                return uspsOneCode;
             case "BARCODE_QRCODE":
             case "BARCODE_HIBC_QR":
+                QrCode qrCode = new QrCode();
                 qrCode.setNormalMode();
                 if (useGS1Check.isSelected()) {
                     qrCode.setGs1Mode();
                 }
-                if (symbology.equals("BARCODE_HIBC_QR")) {
+                if (symbologyName.equals("BARCODE_HIBC_QR")) {
                     qrCode.setHibcMode();
                 }
                 if (qrUserEcc.isSelected()) {
@@ -2782,34 +2487,20 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 if (readerInit) {
                     qrCode.setInitMode();
                 }
-                if (qrCode.setContent(dataInput)) {
-                    rect = qrCode.rect;
-                    height = qrCode.symbol_height;
-                    width = qrCode.symbol_width;
-                    txt = qrCode.txt;
-                    encodeInfo += qrCode.encodeInfo;
-                } else {
-                    errorOutput = qrCode.error_msg;
-                }
-                break;
+                qrCode.setContent(dataInput);
+                return qrCode;
             case "BARCODE_MICROQR":
+                MicroQrCode microQrCode = new MicroQrCode();
                 if (microQrUserEcc.isSelected()) {
                     microQrCode.option1 = microQrUserEccCombo.getSelectedIndex() + 1;
                 }
                 if (microQrUserSize.isSelected()) {
                     microQrCode.option2 = microQrUserSizeCombo.getSelectedIndex() + 1;
                 }
-                if (microQrCode.setContent(dataInput)) {
-                    rect = microQrCode.rect;
-                    height = microQrCode.symbol_height;
-                    width = microQrCode.symbol_width;
-                    txt = microQrCode.txt;
-                    encodeInfo += microQrCode.encodeInfo;
-                } else {
-                    errorOutput = microQrCode.error_msg;
-                }
-                break;
+                microQrCode.setContent(dataInput);
+                return microQrCode;
             case "BARCODE_CODEONE":
+                CodeOne codeOne = new CodeOne();
                 codeOne.setNormalMode();
                 if (useGS1Check.isSelected()) {
                     codeOne.setGs1Mode();
@@ -2818,17 +2509,10 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                     codeOne.setInitMode();
                 }
                 codeOne.option2 = codeOneSizeCombo.getSelectedIndex();
-                if (codeOne.setContent(dataInput)) {
-                    rect = codeOne.rect;
-                    height = codeOne.symbol_height;
-                    width = codeOne.symbol_width;
-                    txt = codeOne.txt;
-                    encodeInfo += codeOne.encodeInfo;
-                } else {
-                    errorOutput = codeOne.error_msg;
-                }
-                break;
+                codeOne.setContent(dataInput);
+                return codeOne;
             case "BARCODE_GRIDMATRIX":
+                GridMatrix gridMatrix = new GridMatrix();
                 gridMatrix.setNormalMode();
                 if (useGS1Check.isSelected()) {
                     gridMatrix.setGs1Mode();
@@ -2842,143 +2526,70 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 if (gridmatrixUserSize.isSelected()) {
                     gridMatrix.option2 = gridmatrixUserSizeCombo.getSelectedIndex();
                 }
-                if (gridMatrix.setContent(dataInput)) {
-                    rect = gridMatrix.rect;
-                    height = gridMatrix.symbol_height;
-                    width = gridMatrix.symbol_width;
-                    txt = gridMatrix.txt;
-                    encodeInfo += gridMatrix.encodeInfo;
-                } else {
-                    errorOutput = gridMatrix.error_msg;
-                }
-                break;
+                gridMatrix.setContent(dataInput);
+                return gridMatrix;
             case "BARCODE_RSS14":
+                DataBar14 dataBar14 = new DataBar14();
                 dataBar14.unsetLinkageFlag();
                 dataBar14.setLinearMode();
-                if (dataBar14.setContent(dataInput)) {
-                    rect = dataBar14.rect;
-                    height = dataBar14.symbol_height;
-                    width = dataBar14.symbol_width;
-                    txt = dataBar14.txt;
-                    encodeInfo += dataBar14.encodeInfo;
-                } else {
-                    errorOutput = dataBar14.error_msg;
-                }
-                break;
+                dataBar14.setContent(dataInput);
+                return dataBar14;
             case "BARCODE_RSS14STACK_OMNI":
-                dataBar14.unsetLinkageFlag();
-                dataBar14.setOmnidirectionalMode();
-                if (dataBar14.setContent(dataInput)) {
-                    rect = dataBar14.rect;
-                    height = dataBar14.symbol_height;
-                    width = dataBar14.symbol_width;
-                    txt = dataBar14.txt;
-                    encodeInfo += dataBar14.encodeInfo;
-                } else {
-                    errorOutput = dataBar14.error_msg;
-                }
-                break;
+                DataBar14 dataBar14so = new DataBar14();
+                dataBar14so.unsetLinkageFlag();
+                dataBar14so.setOmnidirectionalMode();
+                dataBar14so.setContent(dataInput);
+                return dataBar14so;
             case "BARCODE_RSS14STACK":
-                dataBar14.unsetLinkageFlag();
-                dataBar14.setStackedMode();
-                if (dataBar14.setContent(dataInput)) {
-                    rect = dataBar14.rect;
-                    height = dataBar14.symbol_height;
-                    width = dataBar14.symbol_width;
-                    txt = dataBar14.txt;
-                    encodeInfo += dataBar14.encodeInfo;
-                } else {
-                    errorOutput = dataBar14.error_msg;
-                }
-                break;
+                DataBar14 dataBar14s = new DataBar14();
+                dataBar14s.unsetLinkageFlag();
+                dataBar14s.setStackedMode();
+                dataBar14s.setContent(dataInput);
+                return dataBar14s;
             case "BARCODE_RSS_LTD":
+                DataBarLimited dataBarLimited = new DataBarLimited();
                 dataBarLimited.unsetLinkageFlag();
-                if (dataBarLimited.setContent(dataInput)) {
-                    rect = dataBarLimited.rect;
-                    height = dataBarLimited.symbol_height;
-                    width = dataBarLimited.symbol_width;
-                    txt = dataBarLimited.txt;
-                    encodeInfo += dataBarLimited.encodeInfo;
-                } else {
-                    errorOutput = dataBarLimited.error_msg;
-                }
-                break;
-            case "BARCODE_RSS_EXP": 
-                dataBarExpanded.unsetLinkageFlag();
-                dataBarExpanded.setGs1Mode();
-                dataBarExpanded.setNotStacked();
-                if (dataBarExpanded.setContent(dataInput)) {
-                    rect = dataBarExpanded.rect;
-                    height = dataBarExpanded.symbol_height;
-                    width = dataBarExpanded.symbol_width;
-                    txt = dataBarExpanded.txt;
-                    encodeInfo += dataBarExpanded.encodeInfo;
-                } else {
-                    errorOutput = dataBarExpanded.error_msg;
-                }
-                break;
+                dataBarLimited.setContent(dataInput);
+                return dataBarLimited;
+            case "BARCODE_RSS_EXP":
+                DataBarExpanded dataBarE = new DataBarExpanded();
+                dataBarE.unsetLinkageFlag();
+                dataBarE.setGs1Mode();
+                dataBarE.setNotStacked();
+                dataBarE.setContent(dataInput);
+                return dataBarE;
             case "BARCODE_RSS_EXPSTACK":
-                dataBarExpanded.unsetLinkageFlag();
-                dataBarExpanded.option2 = databarColumnsCombo.getSelectedIndex();
-                dataBarExpanded.setGs1Mode();
-                dataBarExpanded.setStacked();
-                if (dataBarExpanded.setContent(dataInput)) {
-                    rect = dataBarExpanded.rect;
-                    height = dataBarExpanded.symbol_height;
-                    width = dataBarExpanded.symbol_width;
-                    txt = dataBarExpanded.txt;
-                    encodeInfo += dataBarExpanded.encodeInfo;
-                } else {
-                    errorOutput = dataBarExpanded.error_msg;
-                }
-                break;
+                DataBarExpanded dataBarES = new DataBarExpanded();
+                dataBarES.unsetLinkageFlag();
+                dataBarES.option2 = databarColumnsCombo.getSelectedIndex();
+                dataBarES.setGs1Mode();
+                dataBarES.setStacked();
+                dataBarES.setContent(dataInput);
+                return dataBarES;
             case "BARCODE_MAXICODE":
+                MaxiCode maxiCode = new MaxiCode();
                 maxiCode.setPrimary(maxiPrimaryData.getText());
                 maxiCode.setMode(maxiEncodingModeCombo.getSelectedIndex() + 2);
-                if (maxiCode.setContent(dataInput)) {
-                    hex = maxiCode.hex;
-                    target = maxiCode.target;
-                    height = maxiCode.symbol_height;
-                    width = maxiCode.symbol_width;
-                    encodeInfo += maxiCode.encodeInfo;
-                } else {
-                    errorOutput = maxiCode.error_msg;
-                }
-                break;
+                maxiCode.setContent(dataInput);
+                return maxiCode;
             case "BARCODE_CODABLOCKF":
             case "BARCODE_HIBC_BLOCKF":
+                CodablockF codablockF = new CodablockF();
                 codablockF.setNormalMode();
                 if (useGS1Check.isSelected()) {
                     codablockF.setGs1Mode();
                 }
-                if (symbology.equals("BARCODE_HIBC_BLOCKF")) {
+                if (symbologyName.equals("BARCODE_HIBC_BLOCKF")) {
                     codablockF.setHibcMode();
                 }
-                if (codablockF.setContent(dataInput)) {
-                    rect = codablockF.rect;
-                    height = codablockF.symbol_height;
-                    width = codablockF.symbol_width;
-                    txt = codablockF.txt;
-                    encodeInfo += codablockF.encodeInfo;
-                } else {
-                    errorOutput = codablockF.error_msg;
-                };
-                break;
+                codablockF.setContent(dataInput);
+                return codablockF;
             default:
-                errorOutput = "Symbology not recognised";
-                break;
-
+                throw new OkapiException("Symbology not recognised: " + symbologyName);
             }
         }
-
-        if (!(txt.isEmpty())) {
-            // Add some space for text
-            height += 10;
-        }
-
-        return (errorOutput.isEmpty());
     }
-    
+
     private int eanCalculateVersion() {
         /* Determine if EAN-8 or EAN-13 is being used */
 
@@ -3060,13 +2671,13 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         symbolName = new DefaultMutableTreeNode(new SymbolType("LOGMARS", "BARCODE_LOGMARS", 50));
         symbolSubType.add(symbolName);
-        
+
         symbolSubType = new DefaultMutableTreeNode("Code 128");
-        symbolType.add(symbolSubType);        
+        symbolType.add(symbolSubType);
 
         symbolName = new DefaultMutableTreeNode(new SymbolType("Code 128", "BARCODE_CODE128", 20));
         symbolSubType.add(symbolName);
-        
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("NVE-18", "BARCODE_NVE18", 75));
         symbolSubType.add(symbolName);
 
@@ -3180,7 +2791,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         symbolName = new DefaultMutableTreeNode(new SymbolType("Redirect", "BARCODE_AUSREDIRECT", 68));
         symbolSubType.add(symbolName);
-        
+
         symbolName = new DefaultMutableTreeNode(new SymbolType("Brazilian CEPNet", "BARCODE_CEPNET", 54));
         symbolType.add(symbolName);
 

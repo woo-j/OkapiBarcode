@@ -30,16 +30,16 @@ public abstract class Symbol {
         '.', ' ', '$', '/', '+', '%'
     };
 
-    public String content;
-    public String readable;
-    public String[] pattern;
-    public int row_count;
-    public int[] row_height;
+    protected String content;
+    protected String readable;
+    protected String[] pattern;
+    protected int row_count;
+    protected int[] row_height;
     protected boolean debug = false;
     public String error_msg;
-    public int symbol_height;
-    public int symbol_width;
-    public int default_height;
+    protected int symbol_height;
+    protected int symbol_width;
+    protected int default_height;
     protected boolean gs1;
     protected boolean hibc;
     protected boolean readerInit;
@@ -50,10 +50,10 @@ public abstract class Symbol {
     public int option2;
 
     // TODO: These values to become accessible only to renderer
-    public ArrayList < Rectangle > rect = new ArrayList < > ();
-    public ArrayList < TextBox > txt = new ArrayList < > ();
-    public ArrayList < Hexagon > hex = new ArrayList < > ();
-    public ArrayList<Ellipse2D.Double> target = new ArrayList < > ();
+    public ArrayList< Rectangle > rect = new ArrayList<>();
+    public ArrayList< TextBox > txt = new ArrayList<>();
+    public ArrayList< Hexagon > hex = new ArrayList<>();
+    public ArrayList< Ellipse2D.Double > target = new ArrayList<>();
 
     public Symbol() {
         readable = "";
@@ -87,6 +87,20 @@ public abstract class Symbol {
         gs1 = false;
         hibc = false;
         readerInit = true;
+    }
+
+    public int getWidth() {
+        return symbol_width;
+    }
+
+    // TODO: surely we'll need something better than this to account for the height
+    // of the human readable aspect of different bar codes
+    public int getHeight() {
+        if (txt.isEmpty()) {
+            return symbol_height;
+        } else {
+            return symbol_height + 10;
+        }
     }
 
     public int positionOf(char thischar, char[] LookUp) {

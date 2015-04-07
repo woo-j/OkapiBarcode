@@ -17,6 +17,7 @@ package uk.org.okapibarcode.gui;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
@@ -30,49 +31,40 @@ import uk.org.okapibarcode.output.ScalableVectorGraphics;
  * @author <a href="mailto:jakel2006@me.com">Robert Elliott</a>
  */
 public class SaveImage {
-    ScalableVectorGraphics svg;
-    PostScript eps;
 
-    public void SaveImage(File file, JPanel panel) {
-        try {
-            String extension = "";
-            int i = file.getName().lastIndexOf('.');
-            if (i > 0) {
-                extension = file.getName().substring(i+1);
-            }
-            BufferedImage img = new BufferedImage(panel.getWidth(), panel.getHeight(), BufferedImage.TYPE_INT_RGB);
-            panel.paint(img.getGraphics());
-            try {
-                switch (extension) {
-                    case "png":
-                    case "gif":
-                    case "jpg":
-                    case "bmp":
-                        ImageIO.write(img, extension, file);
-                        break;
-                    case "svg":
-                        svg = new ScalableVectorGraphics();
-                        svg.setShapes(OkapiUI.rect, OkapiUI.txt, OkapiUI.hex, OkapiUI.target);
-                        svg.setValues(OkapiUI.dataInput, OkapiUI.width, OkapiUI.height);
-                        if (!(svg.write(file))) {
-                            OkapiUI.errorOutput = "Error writing to file";
-                        };
-                        break;
-                    case "eps":
-                        eps = new PostScript();
-                        eps.setShapes(OkapiUI.rect, OkapiUI.txt, OkapiUI.hex, OkapiUI.target);
-                        eps.setValues(OkapiUI.dataInput, OkapiUI.width, OkapiUI.height);
-                        if (!(eps.write(file))) {
-                            OkapiUI.errorOutput = "Error writing to file";
-                        }
-                        break;
-                    default:
-                        System.out.println("Unsupported output format");
-                        break;
-                }
-            } catch (Exception e) {
-            }
-        } catch (Exception e) {
+    public void saveImage(File file, JPanel panel) throws IOException {
+
+        String extension = "";
+        int i = file.getName().lastIndexOf('.');
+        if (i > 0) {
+            extension = file.getName().substring(i + 1);
+        }
+        BufferedImage img = new BufferedImage(panel.getWidth(), panel.getHeight(), BufferedImage.TYPE_INT_RGB);
+        panel.paint(img.getGraphics());
+
+        switch (extension) {
+            case "png":
+            case "gif":
+            case "jpg":
+            case "bmp":
+                ImageIO.write(img, extension, file);
+                break;
+            case "svg":
+                ScalableVectorGraphics svg = new ScalableVectorGraphics();
+                svg.setShapes(OkapiUI.symbol.rect, OkapiUI.symbol.txt, OkapiUI.symbol.hex, OkapiUI.symbol.target);
+                svg.setValues(OkapiUI.dataInput, OkapiUI.symbol.getWidth(), OkapiUI.symbol.getHeight());
+                svg.write(file);
+                break;
+            case "eps":
+                PostScript eps = new PostScript();
+                eps.setShapes(OkapiUI.symbol.rect, OkapiUI.symbol.txt, OkapiUI.symbol.hex, OkapiUI.symbol.target);
+                eps.setValues(OkapiUI.dataInput, OkapiUI.symbol.getWidth(), OkapiUI.symbol.getHeight());
+                eps.write(file);
+                break;
+            default:
+                System.out.println("Unsupported output format");
+                break;
         }
     }
+
 }

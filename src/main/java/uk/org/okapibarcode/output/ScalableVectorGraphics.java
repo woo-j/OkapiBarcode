@@ -52,7 +52,7 @@ public class ScalableVectorGraphics {
         symbol_text = readable;
     }
 
-    public boolean write(File file) {
+    public void write(File file) throws IOException {
         String outStream;
         int i, j;
         String nowColour;
@@ -133,10 +133,5 @@ public class ScalableVectorGraphics {
                 fos.write(outStream.charAt(i));
             }
         }
-
-        catch (IOException ioe) {
-            System.err.println("I/O error: " + ioe.getMessage());
-        }
-        return false;
     }
 }

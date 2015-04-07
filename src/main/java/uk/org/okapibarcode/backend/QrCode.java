@@ -27,7 +27,7 @@ public class QrCode extends Symbol {
     private enum qrMode {
         NULL, KANJI, BINARY, ALPHANUM, NUMERIC
     }
-    private enum eccMode {
+    public enum EccMode {
         L, M, Q, H
     }
     private qrMode[] inputMode;
@@ -42,10 +42,10 @@ public class QrCode extends Symbol {
         preferredVersion = version;
     }
     
-    private int preferredEccLevel = -1;
+    private EccMode preferredEccLevel = EccMode.L;
     
-    public void setPreferredEccLevel (int eccLevel) {
-        preferredEccLevel = eccLevel;
+    public void setEccMode (EccMode eccMode) {
+        preferredEccLevel = eccMode;
     }    
 
     private final char[] rhodium = {
@@ -175,7 +175,7 @@ public class QrCode extends Symbol {
     public boolean encode() {
         int i, j;
         int est_binlen;
-        eccMode ecc_level;
+        EccMode ecc_level;
         int max_cw;
         int autosize;
         int target_binlen, version, blocks;
@@ -187,25 +187,21 @@ public class QrCode extends Symbol {
         define_mode();
         est_binlen = estimate_binary_length();
 
+        ecc_level = preferredEccLevel;
         switch (preferredEccLevel) {
-        case 1:
-            ecc_level = eccMode.L;
+        case L:
             max_cw = 2956;
             break;
-        case 2:
-            ecc_level = eccMode.M;
+        case M:
             max_cw = 2334;
             break;
-        case 3:
-            ecc_level = eccMode.Q;
+        case Q:
             max_cw = 1666;
             break;
-        case 4:
-            ecc_level = eccMode.H;
+        case H:
             max_cw = 1276;
             break;
         default:
-            ecc_level = eccMode.L;
             max_cw = 2956;
             break;
         }
@@ -250,13 +246,13 @@ public class QrCode extends Symbol {
 
         /* Ensure maxium error correction capacity */
         if (est_binlen <= qr_data_codewords_M[version - 1]) {
-            ecc_level = eccMode.M;
+            ecc_level = EccMode.M;
         }
         if (est_binlen <= qr_data_codewords_Q[version - 1]) {
-            ecc_level = eccMode.Q;
+            ecc_level = EccMode.Q;
         }
         if (est_binlen <= qr_data_codewords_H[version - 1]) {
-            ecc_level = eccMode.H;
+            ecc_level = EccMode.H;
         }
 
         target_binlen = qr_data_codewords_L[version - 1];
@@ -1309,7 +1305,7 @@ public class QrCode extends Symbol {
         return result;
     }
 
-    private void add_format_info(int size, eccMode ecc_level, int pattern) {
+    private void add_format_info(int size, EccMode ecc_level, int pattern) {
         /* Add format information to grid */
 
         int format = pattern;

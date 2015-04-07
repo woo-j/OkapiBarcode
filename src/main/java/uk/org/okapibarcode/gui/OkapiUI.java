@@ -2466,7 +2466,20 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                     qrCode.setDataType(Symbol.DataType.HIBC);
                 }
                 if (qrUserEcc.isSelected()) {
-                    qrCode.setPreferredEccLevel(qrUserEccCombo.getSelectedIndex() + 1);
+                    switch(qrUserEccCombo.getSelectedIndex()) {
+                        case 0:
+                            qrCode.setEccMode(QrCode.EccMode.L);
+                            break;
+                        case 1:
+                            qrCode.setEccMode(QrCode.EccMode.M);
+                            break;
+                        case 2:
+                            qrCode.setEccMode(QrCode.EccMode.Q);
+                            break;
+                        case 4:
+                            qrCode.setEccMode(QrCode.EccMode.H);
+                            break;
+                    }
                 }
                 if (qrUserSize.isSelected()) {
                     qrCode.setPreferredVersion(qrUserSizeCombo.getSelectedIndex() + 1);
@@ -2479,7 +2492,20 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
             case QR_MICRO:
                 MicroQrCode microQrCode = new MicroQrCode();
                 if (microQrUserEcc.isSelected()) {
-                    microQrCode.setPreferredEccLevel(microQrUserEccCombo.getSelectedIndex() + 1);
+                    switch(microQrUserEccCombo.getSelectedIndex()) {
+                        case 0:
+                            microQrCode.setEccMode(MicroQrCode.EccMode.L);
+                            break;
+                        case 1:
+                            microQrCode.setEccMode(MicroQrCode.EccMode.M);
+                            break;
+                        case 2:
+                            microQrCode.setEccMode(MicroQrCode.EccMode.Q);
+                            break;
+                        case 4:
+                            microQrCode.setEccMode(MicroQrCode.EccMode.H);
+                            break;
+                    }
                 }
                 if (microQrUserSize.isSelected()) {
                     microQrCode.setPreferredVersion(microQrUserSizeCombo.getSelectedIndex() + 1);

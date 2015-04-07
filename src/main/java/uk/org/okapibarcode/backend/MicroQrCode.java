@@ -27,7 +27,7 @@ public class MicroQrCode extends Symbol {
     private static enum qrMode {
         NULL, KANJI, BINARY, ALPHANUM, NUMERIC
     }
-    private static enum eccMode {
+    public enum EccMode {
         L, M, Q, H
     }
 
@@ -46,11 +46,11 @@ public class MicroQrCode extends Symbol {
         preferredVersion = version;
     }
     
-    private int preferredEccLevel = -1;
+    private EccMode preferredEccLevel = EccMode.L;
     
-    public void setPreferredEccLevel (int eccLevel) {
-        preferredEccLevel = eccLevel;
-    }    
+    public void setEccMode (EccMode eccMode) {
+        preferredEccLevel = eccMode;
+    }
 
     private static final char[] RHODIUM = {
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D',
@@ -76,7 +76,7 @@ public class MicroQrCode extends Symbol {
         int i, j, size;
         boolean[] version_valid = new boolean[4];
         int n_count, a_count;
-        eccMode ecc_level;
+        EccMode ecc_level;
         int version, autoversion;
         int bitmask;
         int format, format_full;
@@ -157,27 +157,14 @@ public class MicroQrCode extends Symbol {
         }
 
         /* Eliminate possible versions depending on error correction level specified */
-        ecc_level = eccMode.L;
+        ecc_level = preferredEccLevel;
 
-        if((preferredEccLevel >= 1) && (preferredVersion <= 4)) {
-            switch (preferredEccLevel) {
-                case 1: ecc_level = eccMode.L;
-                    break;
-                case 2: ecc_level = eccMode.M;
-                    break;
-                case 3: ecc_level = eccMode.Q;
-                    break;
-                default: ecc_level = eccMode.H;
-                    break;
-            }
-        }
-
-        if (ecc_level == eccMode.H) {
+        if (ecc_level == EccMode.H) {
             error_msg = "Error correction level H not available";
             return false;
         }
 
-        if (ecc_level == eccMode.Q) {
+        if (ecc_level == EccMode.Q) {
             version_valid[0] = false;
             version_valid[1] = false;
             version_valid[2] = false;
@@ -187,7 +174,7 @@ public class MicroQrCode extends Symbol {
             }
         }
 
-        if (ecc_level == eccMode.M) {
+        if (ecc_level == EccMode.M) {
             version_valid[0] = false;
             if (binary_count[1] > 32) {
                 version_valid[1] = false;
@@ -223,22 +210,22 @@ public class MicroQrCode extends Symbol {
         /* If there is enough unused space then increase the error correction level */
         if (version == 3) {
             if (binary_count[3] <= 112) {
-                ecc_level = eccMode.M;
+                ecc_level = EccMode.M;
             }
             if (binary_count[3] <= 80) {
-                ecc_level = eccMode.Q;
+                ecc_level = EccMode.Q;
             }
         }
 
         if (version == 2) {
             if (binary_count[2] <= 68) {
-                ecc_level = eccMode.M;
+                ecc_level = EccMode.M;
             }
         }
 
         if (version == 1) {
             if (binary_count[1] <= 32) {
-                ecc_level = eccMode.M;
+                ecc_level = EccMode.M;
             }
         }
 
@@ -390,7 +377,7 @@ public class MicroQrCode extends Symbol {
         return true;
     }
 
-    private char levelToLetter(eccMode ecc_mode) {
+    private char levelToLetter(EccMode ecc_mode) {
         switch (ecc_mode) {
             case L:
                 return 'L';
@@ -998,7 +985,7 @@ public class MicroQrCode extends Symbol {
         }
     }
 
-    private void generateM2Symbol(eccMode ecc_mode) {
+    private void generateM2Symbol(EccMode ecc_mode) {
         int i, latch;
         int bits_total, bits_left, remainder;
         int data_codewords, ecc_codewords;
@@ -1008,8 +995,8 @@ public class MicroQrCode extends Symbol {
 
         latch = 0;
 
-        bits_total = 40; // ecc_mode == eccMode.L
-        if (ecc_mode == eccMode.M) {
+        bits_total = 40; // ecc_mode == EccMode.L
+        if (ecc_mode == EccMode.M) {
             bits_total = 32;
         }
 
@@ -1047,8 +1034,8 @@ public class MicroQrCode extends Symbol {
         }
 
         data_codewords = 5;
-        ecc_codewords = 5; // ecc_mode == eccMode.L
-        if (ecc_mode == eccMode.M) {
+        ecc_codewords = 5; // ecc_mode == EccMode.L
+        if (ecc_mode == EccMode.M) {
             data_codewords = 4;
             ecc_codewords = 6;
         }
@@ -1096,7 +1083,7 @@ public class MicroQrCode extends Symbol {
         }
     }
 
-    private void generateM3Symbol(eccMode ecc_mode) {
+    private void generateM3Symbol(EccMode ecc_mode) {
         int i, latch;
         int bits_total, bits_left, remainder;
         int data_codewords, ecc_codewords;
@@ -1106,8 +1093,8 @@ public class MicroQrCode extends Symbol {
 
         latch = 0;
 
-        bits_total = 84; // ecc_mode == eccMode.L
-        if (ecc_mode == eccMode.M) {
+        bits_total = 84; // ecc_mode == EccMode.L
+        if (ecc_mode == EccMode.M) {
             bits_total = 68;
         }
 
@@ -1159,8 +1146,8 @@ public class MicroQrCode extends Symbol {
         }
 
         data_codewords = 11;
-        ecc_codewords = 6; // ecc_mode == eccMode.L
-        if (ecc_mode == eccMode.M) {
+        ecc_codewords = 6; // ecc_mode == EccMode.L
+        if (ecc_mode == EccMode.M) {
             data_codewords = 9;
             ecc_codewords = 8;
         }
@@ -1194,7 +1181,7 @@ public class MicroQrCode extends Symbol {
             }
         }
 
-        if (ecc_mode == eccMode.L) {
+        if (ecc_mode == EccMode.L) {
             data_blocks[11] = 0;
             if (full_stream.charAt(80) == '1') {
                 data_blocks[2] += 0x08;
@@ -1210,7 +1197,7 @@ public class MicroQrCode extends Symbol {
             }
         }
 
-        if (ecc_mode == eccMode.M) {
+        if (ecc_mode == EccMode.M) {
             data_blocks[9] = 0;
             if (full_stream.charAt(64) == '1') {
                 data_blocks[2] += 0x08;
@@ -1240,7 +1227,7 @@ public class MicroQrCode extends Symbol {
         }
     }
 
-    private void generateM4Symbol(eccMode ecc_mode) {
+    private void generateM4Symbol(EccMode ecc_mode) {
         int i, latch;
         int bits_total, bits_left, remainder;
         int data_codewords, ecc_codewords;
@@ -1250,11 +1237,11 @@ public class MicroQrCode extends Symbol {
 
         latch = 0;
 
-        bits_total = 128; // ecc_mode == eccMode.L
-        if (ecc_mode == eccMode.M) {
+        bits_total = 128; // ecc_mode == EccMode.L
+        if (ecc_mode == EccMode.M) {
             bits_total = 112;
         }
-        if (ecc_mode == eccMode.Q) {
+        if (ecc_mode == EccMode.Q) {
             bits_total = 80;
         }
 
@@ -1292,12 +1279,12 @@ public class MicroQrCode extends Symbol {
         }
 
         data_codewords = 16;
-        ecc_codewords = 8; // ecc_mode == eccMode.L
-        if (ecc_mode == eccMode.M) {
+        ecc_codewords = 8; // ecc_mode == EccMode.L
+        if (ecc_mode == EccMode.M) {
             data_codewords = 14;
             ecc_codewords = 10;
         }
-        if (ecc_mode == eccMode.Q) {
+        if (ecc_mode == EccMode.Q) {
             data_codewords = 10;
             ecc_codewords = 14;
         }

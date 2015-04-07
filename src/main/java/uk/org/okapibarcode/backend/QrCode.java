@@ -345,7 +345,7 @@ public class QrCode extends Symbol {
                 if (in_alpha(content.charAt(i))) {
                     inputMode[i] = qrMode.ALPHANUM;
                 }
-                if (gs1 && (content.charAt(i) == '[')) {
+                if ((inputDataType == DataType.GS1) && (content.charAt(i) == '[')) {
                     inputMode[i] = qrMode.ALPHANUM;
                 }
                 if ((content.charAt(i) >= '0') && (content.charAt(i) <= '9')) {
@@ -423,7 +423,7 @@ public class QrCode extends Symbol {
         int a_count = 0;
         int n_count = 0;
 
-        if (gs1) {
+        if (inputDataType == DataType.GS1) {
             count += 4;
         }
 
@@ -499,7 +499,7 @@ public class QrCode extends Symbol {
 
         binary = "";
 
-        if (gs1) {
+        if (inputDataType == DataType.GS1) {
             binary += "0101"; /* FNC1 */
         }
 
@@ -606,7 +606,7 @@ public class QrCode extends Symbol {
                 for (i = 0; i < short_data_block_length; i++) {
                     int lbyte = content.charAt(position + i);
 
-                    if (gs1 && (lbyte == '[')) {
+                    if ((inputDataType == DataType.GS1) && (lbyte == '[')) {
                         lbyte = 0x1d; /* FNC1 */
                     }
 
@@ -639,14 +639,14 @@ public class QrCode extends Symbol {
                 while (i < short_data_block_length) {
 
                     if (percent == 0) {
-                        if (gs1 && (content.charAt(position + i) == '%')) {
+                        if ((inputDataType == DataType.GS1) && (content.charAt(position + i) == '%')) {
                             first = positionOf('%', rhodium);
                             second = positionOf('%', rhodium);
                             count = 2;
                             prod = (first * 45) + second;
                             i++;
                         } else {
-                            if (gs1 && (content.charAt(position + i) == '[')) {
+                            if ((inputDataType == DataType.GS1) && (content.charAt(position + i) == '[')) {
                                 first = positionOf('%', rhodium); /* FNC1 */
                             } else {
                                 first = positionOf(content.charAt(position + i), rhodium);
@@ -656,13 +656,13 @@ public class QrCode extends Symbol {
                             prod = first;
 
                             if (inputMode[position + i] == qrMode.ALPHANUM) {
-                                if (gs1 && (content.charAt(position + i) == '%')) {
+                                if ((inputDataType == DataType.GS1) && (content.charAt(position + i) == '%')) {
                                     second = positionOf('%', rhodium);
                                     count = 2;
                                     prod = (first * 45) + second;
                                     percent = 1;
                                 } else {
-                                    if (gs1 && (content.charAt(position + i) == '[')) {
+                                    if ((inputDataType == DataType.GS1) && (content.charAt(position + i) == '[')) {
                                         second = positionOf('%', rhodium); /* FNC1 */
                                     } else {
                                         second = positionOf(content.charAt(position + i), rhodium);
@@ -681,13 +681,13 @@ public class QrCode extends Symbol {
                         percent = 0;
 
                         if (inputMode[position + i] == qrMode.ALPHANUM) {
-                            if (gs1 && (content.charAt(position + i) == '%')) {
+                            if ((inputDataType == DataType.GS1) && (content.charAt(position + i) == '%')) {
                                 second = positionOf('%', rhodium);
                                 count = 2;
                                 prod = (first * 45) + second;
                                 percent = 1;
                             } else {
-                                if (gs1 && (content.charAt(position + i) == '[')) {
+                                if ((inputDataType == DataType.GS1) && (content.charAt(position + i) == '[')) {
                                     second = positionOf('%', rhodium); /* FNC1 */
                                 } else {
                                     second = positionOf(content.charAt(position + i), rhodium);

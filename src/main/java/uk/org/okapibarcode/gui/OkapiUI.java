@@ -2554,7 +2554,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
             case "BARCODE_RSS_EXP":
                 DataBarExpanded dataBarE = new DataBarExpanded();
                 dataBarE.unsetLinkageFlag();
-                dataBarE.setGs1Mode();
                 dataBarE.setNotStacked();
                 dataBarE.setContent(dataInput);
                 return dataBarE;
@@ -2562,7 +2561,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 DataBarExpanded dataBarES = new DataBarExpanded();
                 dataBarES.unsetLinkageFlag();
                 dataBarES.option2 = databarColumnsCombo.getSelectedIndex();
-                dataBarES.setGs1Mode();
                 dataBarES.setStacked();
                 dataBarES.setContent(dataInput);
                 return dataBarES;

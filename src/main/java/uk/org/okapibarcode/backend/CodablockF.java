@@ -134,7 +134,7 @@ public class CodablockF extends Symbol {
 	k1_sum = 0;
 	k2_sum = 0;
 	for(i = 0; i < input_length; i++) {
-		if(gs1 && source[i] == '[') {
+		if((inputDataType == DataType.GS1) && source[i] == '[') {
 			k1_sum += (i + 1) * 29; /* GS */
 			k2_sum += i * 29;
 		} else {
@@ -307,7 +307,7 @@ public class CodablockF extends Symbol {
                 c = columns_needed;
                 current_mode = character_subset_select(input_position);
                 subset_selector[current_row] = current_mode;
-                if ((current_row == 0) && gs1) {
+                if ((current_row == 0) && (inputDataType == DataType.GS1)) {
                     /* Section 4.4.7.1 */
                     blockmatrix[current_row][column_position] = 102; /* FNC1 */
                     column_position++;
@@ -315,7 +315,7 @@ public class CodablockF extends Symbol {
                 }
             }
 
-            if (gs1 && (source[input_position] == '[')) {
+            if ((inputDataType == DataType.GS1) && (source[input_position] == '[')) {
                 blockmatrix[current_row][column_position] = 102; /* FNC1 */
                 column_position++;
                 c--;
@@ -505,7 +505,7 @@ public class CodablockF extends Symbol {
             if (!done) {
                 if (((current_mode == cfMode.MODEA) || (current_mode == cfMode.MODEB))
                         && ((findSubset(source[input_position]) == Mode.ABORC)
-                        || (gs1 && (source[input_position] == '[')))) {
+                        || ((inputDataType == DataType.GS1) && (source[input_position] == '[')))) {
                     /* Count the number of numeric digits */
                     /*  If 4 or more numeric data characters occur together when in subsets A or B:
                      a.      If there is an even number of numeric data characters, insert a Code C character before the
@@ -516,12 +516,12 @@ public class CodablockF extends Symbol {
                     j = 0;
                     do {
                         i++;
-                        if (gs1 && (source[input_position + j] == '[')) {
+                        if ((inputDataType == DataType.GS1) && (source[input_position + j] == '[')) {
                             i++;
                         }
                         j++;
                     } while ((findSubset(source[input_position + j]) == Mode.ABORC)
-                            || (gs1 && (source[input_position + j] == '[')));
+                            || ((inputDataType == DataType.GS1) && (source[input_position + j] == '[')));
                     i--;
 
                     if (i >= 4) {

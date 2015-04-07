@@ -156,7 +156,7 @@ public class Code16k extends Symbol {
         indexchaine = 0;
 
         mode = findSubset(inputData[indexchaine]);
-        if ((gs1) && (inputData[indexchaine] == '[')) {
+        if ((inputDataType == DataType.GS1) && (inputData[indexchaine] == '[')) {
             mode = Mode.ABORC;
         } /* FNC1 */
 
@@ -171,7 +171,7 @@ public class Code16k extends Symbol {
                 indexchaine++;
                 if (indexchaine < input_length) {
                     mode = findSubset(inputData[indexchaine]);
-                    if ((gs1) && (inputData[indexchaine] == '[')) {
+                    if ((inputDataType == DataType.GS1) && (inputData[indexchaine] == '[')) {
                         mode = Mode.ABORC;
                     } /* FNC1 */
                 }
@@ -305,14 +305,14 @@ public class Code16k extends Symbol {
                 }
             }
 
-            if ((set[i] == 'C') && (!((gs1) && (content.charAt(i) == '[')))) {
+            if ((set[i] == 'C') && (!((inputDataType == DataType.GS1) && (content.charAt(i) == '[')))) {
                 glyph_count = glyph_count + 0.5;
             } else {
                 glyph_count = glyph_count + 1.0;
             }
         }
 
-        if ((gs1) && (set[0] != 'A')) {
+        if ((inputDataType == DataType.GS1) && (set[0] != 'A')) {
             /* FNC1 can be integrated with mode character */
             glyph_count--;
         }
@@ -350,7 +350,7 @@ public class Code16k extends Symbol {
 
         if(readerInit) {
         	if(m == 2) { m = 5; }
-        	if(gs1) {
+        	if (inputDataType == DataType.GS1) {
         		error_msg = "Cannot use both GS1 mode and Reader Initialisation";
         		return false;
         	} else {
@@ -360,7 +360,7 @@ public class Code16k extends Symbol {
         	values[bar_characters + 1] = 96; /* FNC3 */
         	bar_characters += 2;
         } else {
-            if (gs1) {
+            if (inputDataType == DataType.GS1) {
                 /* Integrate FNC1 */
                 switch (set[0]) {
                 case 'B':
@@ -482,7 +482,7 @@ public class Code16k extends Symbol {
                 bar_characters++;
             }
 
-            if (!((gs1) && (inputData[read] == '['))) {
+            if (!((inputDataType == DataType.GS1) && (inputData[read] == '['))) {
                 switch (set[read]) { /* Encode data characters */
                 case 'A':
                 case 'a':

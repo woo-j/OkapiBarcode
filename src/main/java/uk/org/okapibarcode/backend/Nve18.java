@@ -69,7 +69,7 @@ public class Nve18 extends Symbol {
         content = "[00]" + gs1Equivalent + cdigit;
         
         // Defer to Code 128
-        code128.setGs1Mode();
+        code128.setDataType(DataType.GS1);
         
         if (!(code128.setContent(content))) {
             error_msg = code128.error_msg;

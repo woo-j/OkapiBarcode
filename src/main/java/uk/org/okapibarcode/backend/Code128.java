@@ -86,7 +86,7 @@ public class Code128 extends Symbol {
     public void unsetCc() {
         compositeMode = Composite.OFF;
     }
-
+    
     @Override
     public boolean encode() {
         int sourcelen = content.length();
@@ -104,7 +104,7 @@ public class Code128 extends Symbol {
         int[] inputData;
         int c_count;
         int linkage_flag = 0;
-
+        
         try {
             inputBytes = content.getBytes("ISO8859_1");
         } catch (UnsupportedEncodingException e) {
@@ -176,7 +176,7 @@ public class Code128 extends Symbol {
         mode_type[0] = mode;
         mode_length[0] = 1;
 
-        if(gs1) {
+        if(inputDataType == DataType.GS1) {
             mode = Mode.ABORC;
         }
 
@@ -187,7 +187,7 @@ public class Code128 extends Symbol {
         for (i = 1; i < sourcelen; i++) {
             last_mode = mode;
             mode = findSubset(inputData[i]);
-            if(gs1 && inputData[i] == '[') {
+            if((inputDataType == DataType.GS1) && inputData[i] == '[') {
                 mode = Mode.ABORC;
             }
             if((modeCSupression) && (mode == Mode.ABORC)) {
@@ -206,7 +206,7 @@ public class Code128 extends Symbol {
         reduceSubsetChanges();
 
 
-        if (gs1) {
+        if (inputDataType == DataType.GS1) {
             /* Put set data into set[] */
             read = 0;
             for(i = 0; i < index_point; i++) {
@@ -336,7 +336,7 @@ public class Code128 extends Symbol {
             }
 
             if (set[i] == Mode.LATCHC) {
-                if (gs1 && (inputData[i] == '[')) {
+                if ((inputDataType == DataType.GS1) && (inputData[i] == '[')) {
                     glyph_count += 1.0;
                 } else {
                     glyph_count += 0.5;
@@ -425,7 +425,7 @@ public class Code128 extends Symbol {
         }
         bar_characters++;
 
-        if (gs1) {
+        if (inputDataType == DataType.GS1) {
             dest += code128Table[102];
             values[1] = 102;
             bar_characters++;
@@ -579,7 +579,7 @@ public class Code128 extends Symbol {
                 bar_characters++;
             }
 
-            if (!(gs1 && (inputData[read] == '['))) {
+            if (!((inputDataType == DataType.GS1) && (inputData[read] == '['))) {
                 /* Encode data characters */
                 c = inputData[read];
                 switch (set[read]) {
@@ -720,11 +720,11 @@ public class Code128 extends Symbol {
             System.out.println("\tStop");
         }
 
-        if (!(gs1)) {
+        if (!(inputDataType == DataType.GS1)) {
             readable = content;
         }
 
-        if (hibc) {
+        if (inputDataType == DataType.HIBC) {
             readable = "*" + content + "*";
         }
 

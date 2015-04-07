@@ -98,17 +98,12 @@ public class DataBarExpanded extends Symbol {
 
     public DataBarExpanded() {
         linkageFlag = false;
-        setGs1Mode();
+        inputDataType = DataType.GS1;
     }
 
     @Override
-    public void setNormalMode() {
-        // Does not apply
-    }
-    
-    @Override
-    public void setHibcMode() {
-        // Does not apply
+    public void setDataType(DataType dummy) {
+        // Do nothing!
     }
     
     public void setStacked() {

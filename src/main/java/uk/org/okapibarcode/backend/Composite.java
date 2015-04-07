@@ -452,17 +452,12 @@ public class Composite extends Symbol {
     private int userPreferredMode;
 
     public Composite() {
-        setGs1Mode();
+        inputDataType = Symbol.DataType.GS1;
     }
     
     @Override
-    public void setNormalMode() {
-        // Does not apply
-    }
-    
-    @Override
-    public void setHibcMode() {
-        // Does not apply
+    public void setDataType(DataType dummy) {
+        // Do nothing!
     }
     
     public void setSymbology(LinearEncoding linearSymbology) {
@@ -564,7 +559,6 @@ public class Composite extends Symbol {
                         bottom_shift = 7;
                         break;
                 }
-                code128.setGs1Mode();
                 if (code128.setContent(linearContent)) {
                     linear_rect = code128.rect;
                     linear_txt = code128.txt;

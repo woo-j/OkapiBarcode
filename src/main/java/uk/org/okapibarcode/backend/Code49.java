@@ -999,7 +999,7 @@ public class Code49 extends Symbol {
         int c_grid[][] = new int[8][8];
         int w_grid[][] = new int[8][4];
 
-        if (gs1) {
+        if (inputDataType == DataType.GS1) {
             intermediate += "*"; // FNC1
         }
         for (i = 0; i < length; i++) {
@@ -1007,7 +1007,7 @@ public class Code49 extends Symbol {
                 error_msg = "Invalid characters in input";
                 return false;
             }
-            if (gs1 && (content.charAt(i) == '[')) {
+            if ((inputDataType == DataType.GS1) && (content.charAt(i) == '[')) {
                 intermediate += "*"; // FNC1
             } else {
                 intermediate += c49_table7[content.charAt(i)];

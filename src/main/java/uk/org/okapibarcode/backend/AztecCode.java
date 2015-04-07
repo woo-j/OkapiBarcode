@@ -331,7 +331,7 @@ public class AztecCode extends Symbol {
             comp_loop = 1;
         }
 
-        if((gs1) && (readerInit)) {
+        if((inputDataType == DataType.GS1) && (readerInit)) {
 		error_msg = "Cannot encode in GS1 and Reader Initialisation mode at the same time";
 		return false;
 	}
@@ -1001,14 +1001,14 @@ public class AztecCode extends Symbol {
         maplength = 0;
 
         for (i = 0; i < local_source.length(); i++) {
-            if(gs1 && (i == 0)) {
+            if((inputDataType == DataType.GS1) && (i == 0)) {
                 /* Add FNC1 to beginning of GS1 messages */
                 charmap[maplength] = 0;
                 typemap[maplength++] = 8; // PUNC
                 charmap[maplength] = 400;
                 typemap[maplength++] = 8; // PUNC
             }
-            if((gs1) && (local_source.charAt(i) == '[')) {
+            if((inputDataType == DataType.GS1) && (local_source.charAt(i) == '[')) {
                 /* FNC1 represented by FLG(0) */
                 charmap[maplength] = 0;
                 typemap[maplength++] = 8; // PUNC

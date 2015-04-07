@@ -34,10 +34,13 @@ public abstract class Symbol {
     protected int symbol_height;
     protected int symbol_width;
     protected int default_height;
-    protected boolean gs1;
-    protected boolean hibc;
     protected boolean readerInit;
     public String encodeInfo = "";
+    
+    public enum DataType {
+        UTF8, LATIN1, BINARY, GS1, HIBC
+    }
+    protected DataType inputDataType;
 
     // TODO: These values to be replaced with suitable parameters for each symbology
     public int option1;
@@ -56,31 +59,20 @@ public abstract class Symbol {
         default_height = 40;
         symbol_height = 0;
         symbol_width = 0;
-        gs1 = false;
+        inputDataType = DataType.UTF8;
+        unsetReaderInit();
     }
 
-    public void setNormalMode() {
-        gs1 = false;
-        hibc = false;
-        readerInit = false;
+    public void setDataType(DataType dataType) {
+        inputDataType = dataType;
     }
 
-    public void setGs1Mode() {
-        gs1 = true;
-        hibc = false;
-        readerInit = false;
-    }
-
-    public void setHibcMode() {
-        gs1 = false;
-        hibc = true;
-        readerInit = false;
-    }
-
-    public void setInitMode() {
-        gs1 = false;
-        hibc = false;
+    public final void setReaderInit() {
         readerInit = true;
+    }
+    
+    public final void unsetReaderInit() {
+        readerInit = false;
     }
 
     public int getWidth() {
@@ -144,11 +136,11 @@ public abstract class Symbol {
 
         content = input_data; // default action
 
-        if (gs1) {
+        if (inputDataType == DataType.GS1) {
             content = gs1SanityCheck(input_data);
         }
 
-        if (gs1) {
+        if (inputDataType == DataType.GS1) {
             readable = "";
             for (i = 0; i < input_data.length(); i++) {
                 switch(input_data.charAt(i)) {
@@ -162,7 +154,7 @@ public abstract class Symbol {
             }
         }
 
-        if (hibc) {
+        if (inputDataType == DataType.HIBC) {
             content = hibcProcess(input_data);
         }
 

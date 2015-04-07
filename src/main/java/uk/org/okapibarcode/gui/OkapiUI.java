@@ -2204,15 +2204,14 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
             case CODE_128_HIBC:
                 Code128 code128 = new Code128();
                 code128.unsetCc();
-                code128.setNormalMode();
                 if (useGS1Check.isSelected()) {
-                    code128.setGs1Mode();
+                    code128.setDataType(Symbol.DataType.GS1);
                 }
                 if (selectedSymbol.symbology == SymbolType.Encoding.CODE_128_HIBC) {
-                    code128.setHibcMode();
+                    code128.setDataType(Symbol.DataType.HIBC);
                 }
                 if (readerInit) {
-                    code128.setInitMode();
+                    code128.setReaderInit();
                 }
                 code128.setContent(dataInput);
                 return code128;
@@ -2247,9 +2246,8 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
             case CODE39:
             case CODE39_HIBC:
                 Code3Of9 code3of9 = new Code3Of9();
-                code3of9.setNormalMode();
                 if (selectedSymbol.symbology == SymbolType.Encoding.CODE39_HIBC) {
-                    code3of9.setHibcMode();
+                    code3of9.setDataType(Symbol.DataType.HIBC);
                 }
                 code3of9.option2 = code39CheckCombo.getSelectedIndex();
                 code3of9.setContent(dataInput);
@@ -2295,12 +2293,11 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 return koreaPost;
             case CODE16K:
                 Code16k code16k = new Code16k();
-                code16k.setNormalMode();
                 if (useGS1Check.isSelected()) {
-                    code16k.setGs1Mode();
+                    code16k.setDataType(Symbol.DataType.GS1);
                 }
                 if (readerInit) {
-                    code16k.setInitMode();
+                    code16k.setReaderInit();
                 }
                 code16k.setContent(dataInput);
                 return code16k;
@@ -2390,17 +2387,17 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 Pdf417 pdf417 = new Pdf417();
                 pdf417.setNormalMode();
                 if (useGS1Check.isSelected()) {
-                    pdf417.setGs1Mode();
+                    pdf417.setDataType(Symbol.DataType.GS1);
                 }
                 if (selectedSymbol.symbology == SymbolType.Encoding.PDF417_HIBC) {
-                    pdf417.setHibcMode();
+                    pdf417.setDataType(Symbol.DataType.HIBC);
                 } else if (selectedSymbol.symbology == SymbolType.Encoding.PDF417_TRUNCATED) {
                     pdf417.setTruncMode();
                 }
                 pdf417.option1 = pdfEccCombo.getSelectedIndex() - 1;
                 pdf417.option2 = pdfColumnsCombo.getSelectedIndex();
                 if (readerInit) {
-                    pdf417.setInitMode();
+                    pdf417.setReaderInit();
                 }
                 pdf417.setContent(dataInput);
                 return pdf417;
@@ -2409,13 +2406,13 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 Pdf417 microPdf417 = new Pdf417();
                 microPdf417.setNormalMode();
                 if (useGS1Check.isSelected()) {
-                    microPdf417.setGs1Mode();
+                    microPdf417.setDataType(Symbol.DataType.GS1);
                 }
                 if (selectedSymbol.symbology == SymbolType.Encoding.PDF417_MICRO_HIBC) {
-                    microPdf417.setHibcMode();
+                    microPdf417.setDataType(Symbol.DataType.HIBC);
                 }
                 if (readerInit) {
-                    microPdf417.setInitMode();
+                    microPdf417.setReaderInit();
                 }
                 microPdf417.option2 = microPdfColumnsCombo.getSelectedIndex();
                 microPdf417.setMicroMode();
@@ -2424,15 +2421,14 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
             case AZTEC:
             case AZTEC_HIBC:
                 AztecCode aztecCode = new AztecCode();
-                aztecCode.setNormalMode();
                 if (useGS1Check.isSelected()) {
-                    aztecCode.setGs1Mode();
+                    aztecCode.setDataType(Symbol.DataType.GS1);
                 }
                 if (selectedSymbol.symbology == SymbolType.Encoding.AZTEC_HIBC) {
-                    aztecCode.setHibcMode();
+                    aztecCode.setDataType(Symbol.DataType.HIBC);
                 }
                 if (readerInit) {
-                    aztecCode.setInitMode();
+                    aztecCode.setReaderInit();
                 }
                 if (aztecUserEcc.isSelected()) {
                     aztecCode.option1 = aztecUserEccCombo.getSelectedIndex() + 1;
@@ -2449,15 +2445,14 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
             case DATAMATRIX:
             case DATAMATRIX_HIBC:
                 DataMatrix dataMatrix = new DataMatrix();
-                dataMatrix.setNormalMode();
                 if (useGS1Check.isSelected()) {
-                    dataMatrix.setGs1Mode();
+                    dataMatrix.setDataType(Symbol.DataType.GS1);
                 }
                 if (selectedSymbol.symbology == SymbolType.Encoding.DATAMATRIX_HIBC) {
-                    dataMatrix.setHibcMode();
+                    dataMatrix.setDataType(Symbol.DataType.HIBC);
                 }
                 if (readerInit) {
-                    dataMatrix.setInitMode();
+                    dataMatrix.setReaderInit();
                 }
                 dataMatrix.option2 = dataMatrixSizeCombo.getSelectedIndex();
                 dataMatrix.forceSquare(dataMatrixSquareOnlyCheck.isSelected());
@@ -2470,12 +2465,11 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
             case QR:
             case QR_HIBC:
                 QrCode qrCode = new QrCode();
-                qrCode.setNormalMode();
                 if (useGS1Check.isSelected()) {
-                    qrCode.setGs1Mode();
+                    qrCode.setDataType(Symbol.DataType.GS1);
                 }
                 if (selectedSymbol.symbology == SymbolType.Encoding.QR_HIBC) {
-                    qrCode.setHibcMode();
+                    qrCode.setDataType(Symbol.DataType.HIBC);
                 }
                 if (qrUserEcc.isSelected()) {
                     qrCode.option1 = qrUserEccCombo.getSelectedIndex() + 1;
@@ -2484,7 +2478,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                     qrCode.option2 = qrUserSizeCombo.getSelectedIndex() + 1;
                 }
                 if (readerInit) {
-                    qrCode.setInitMode();
+                    qrCode.setReaderInit();
                 }
                 qrCode.setContent(dataInput);
                 return qrCode;
@@ -2500,24 +2494,22 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 return microQrCode;
             case CODE_ONE:
                 CodeOne codeOne = new CodeOne();
-                codeOne.setNormalMode();
                 if (useGS1Check.isSelected()) {
-                    codeOne.setGs1Mode();
+                    codeOne.setDataType(Symbol.DataType.GS1);
                 }
                 if (readerInit) {
-                    codeOne.setInitMode();
+                    codeOne.setReaderInit();
                 }
                 codeOne.option2 = codeOneSizeCombo.getSelectedIndex();
                 codeOne.setContent(dataInput);
                 return codeOne;
             case GRIDMATRIX:
                 GridMatrix gridMatrix = new GridMatrix();
-                gridMatrix.setNormalMode();
                 if (useGS1Check.isSelected()) {
-                    gridMatrix.setGs1Mode();
+                    gridMatrix.setDataType(Symbol.DataType.GS1);
                 }
                 if (readerInit) {
-                    gridMatrix.setInitMode();
+                    gridMatrix.setReaderInit();
                 }
                 if (gridmatrixUserEcc.isSelected()) {
                     gridMatrix.option1 = gridmatrixUserEccCombo.getSelectedIndex();
@@ -2572,12 +2564,11 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
             case CODABLOCK_F:
             case CODABLOCK_HIBC:
                 CodablockF codablockF = new CodablockF();
-                codablockF.setNormalMode();
                 if (useGS1Check.isSelected()) {
-                    codablockF.setGs1Mode();
+                    codablockF.setDataType(Symbol.DataType.GS1);
                 }
                 if (selectedSymbol.symbology == SymbolType.Encoding.CODABLOCK_HIBC) {
-                    codablockF.setHibcMode();
+                    codablockF.setDataType(Symbol.DataType.HIBC);
                 }
                 codablockF.setContent(dataInput);
                 return codablockF;

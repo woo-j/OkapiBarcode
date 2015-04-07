@@ -298,7 +298,7 @@ public class DataMatrix extends Symbol {
         current_mode = dm_mode.DM_ASCII;
         next_mode = dm_mode.DM_ASCII;
         
-        if(gs1) {
+        if (inputDataType == DataType.GS1) {
             target[tp] = 232; tp++;
             binary[binary_length] = ' ';
             binary_length++;
@@ -306,7 +306,7 @@ public class DataMatrix extends Symbol {
         } /* FNC1 */
 
         if(readerInit) {
-            if(gs1) {
+            if (inputDataType == DataType.GS1) {
                 error_msg = "Cannot encode in GS1 mode and Reader Initialisation at the same time";
                 return 0;
             } else {
@@ -419,7 +419,7 @@ public class DataMatrix extends Symbol {
                             binary[binary_length] = ' ';
                             binary_length++;
                         } else {
-                            if (gs1 && (inputData[sp] == '[')) {
+                            if ((inputDataType == DataType.GS1) && (inputData[sp] == '[')) {
                                 target[tp] = 232; /* FNC1 */
                                 if (debug) System.out.printf("FN1 ");
                             } else {
@@ -465,7 +465,7 @@ public class DataMatrix extends Symbol {
                         value = c40_value[inputData[sp]];
                     }
 
-                    if (gs1 && (inputData[sp] == '[')) {
+                    if ((inputDataType == DataType.GS1) && (inputData[sp] == '[')) {
                         shift_set = 2;
                         value = 27; /* FNC1 */
                     }
@@ -534,7 +534,7 @@ public class DataMatrix extends Symbol {
                         value = text_value[inputData[sp]];
                     }
 
-                    if (gs1 && (inputData[sp] == '[')) {
+                    if ((inputDataType == DataType.GS1) && (inputData[sp] == '[')) {
                         shift_set = 2;
                         value = 27; /* FNC1 */
                     }
@@ -1064,7 +1064,7 @@ public class DataMatrix extends Symbol {
             } else {
                 edf_count += (13.0 / 4.0);
             }
-            if (gs1 && (inputData[sp] == '[')) {
+            if ((inputDataType == DataType.GS1) && (inputData[sp] == '[')) {
                 edf_count += 6.0;
             }
             if (inputData[sp] > 128) {
@@ -1077,7 +1077,7 @@ public class DataMatrix extends Symbol {
 
             /* base 256 */
             /* step (q) */
-            if (gs1 && (inputData[sp] == '[')) {
+            if ((inputDataType == DataType.GS1) && (inputData[sp] == '[')) {
                 b256_count += 4.0;
             } else {
                 b256_count += 1.0;

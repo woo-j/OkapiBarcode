@@ -745,7 +745,7 @@ public class CodeOne extends Symbol {
         text_p = 0;
         edi_p = 0;
 
-        if (gs1) {
+        if (inputDataType == DataType.GS1) {
             data[targetPoint] = 232;
             targetPoint++;
         } /* FNC1 */
@@ -841,7 +841,7 @@ public class CodeOne extends Symbol {
                     }
 
                     if (!(isTwoDigits)) {
-                        if ((gs1) && (source[sourcePoint] == '[')) {
+                        if ((inputDataType == DataType.GS1) && (source[sourcePoint] == '[')) {
                             if ((length - sourcePoint) >= 15) { /* Step B4 */
                                 j = 0;
 
@@ -904,7 +904,7 @@ public class CodeOne extends Symbol {
                                     sourcePoint++;
                                 } else {
                                     /* Step B8 */
-                                    if ((gs1) && (source[sourcePoint] == '[')) {
+                                    if ((inputDataType == DataType.GS1) && (source[sourcePoint] == '[')) {
                                         data[targetPoint] = 232;
                                         targetPoint++;
                                         sourcePoint++; /* FNC1 */
@@ -988,7 +988,7 @@ public class CodeOne extends Symbol {
                         value = c40_value[source[sourcePoint]];
                     }
 
-                    if (gs1 && (source[sourcePoint] == '[')) {
+                    if ((inputDataType == DataType.GS1) && (source[sourcePoint] == '[')) {
                         shift_set = 2;
                         value = 27; /* FNC1 */
                     }
@@ -1090,7 +1090,7 @@ public class CodeOne extends Symbol {
                         value = text_value[source[sourcePoint]];
                     }
 
-                    if (gs1 && (source[sourcePoint] == '[')) {
+                    if ((inputDataType == DataType.GS1) && (source[sourcePoint] == '[')) {
                         shift_set = 2;
                         value = 27; /* FNC1 */
                     }
@@ -1365,7 +1365,7 @@ public class CodeOne extends Symbol {
             if (current_mode == c1Mode.C1_BYTE) {
                 next_mode = c1Mode.C1_BYTE;
 
-                if (gs1 && (source[sourcePoint] == '[')) {
+                if ((inputDataType == DataType.GS1) && (source[sourcePoint] == '[')) {
                     next_mode = c1Mode.C1_ASCII;
                 } else {
                     if (source[sourcePoint] <= 127) {
@@ -1686,7 +1686,7 @@ public class CodeOne extends Symbol {
             }
 
             /* Step P */
-            if (gs1 && (source[sp] == '[')) {
+            if ((inputDataType == DataType.GS1) && (source[sp] == '[')) {
                 byte_count += 3.0;
             } else {
                 byte_count += 1.0;

@@ -98,7 +98,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
     static JPanel displayPanel = new JPanel();
     public static String dataInput = null; //Original User Input
     public static String compositeInput = null; // User input for composite symbol
-    public static String symbologyName = null; //Chosen Symbology
     public static String outputf = null; //file to output to
     public static int factor = 0;
     public static int barHeight = 0;
@@ -108,6 +107,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
     DefaultMutableTreeNode treeTop = new DefaultMutableTreeNode("Symbologies");
     public static Color inkColour = new Color(0, 0, 0);
     public static Color paperColour = new Color(255, 255, 255);
+    private SymbolType selectedSymbol;
 
     /**
      * Creates new form OkapiUI: the main interface
@@ -1950,42 +1950,40 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
     public void valueChanged(TreeSelectionEvent e) {
         DefaultMutableTreeNode node = (DefaultMutableTreeNode)
                 symbolTree.getLastSelectedPathComponent();
-        SymbolType selectedSymbol;
         Object nodeInfo;
 
         if (node != null) {
             nodeInfo = node.getUserObject();
             if (node.isLeaf()) {
                 selectedSymbol = (SymbolType)nodeInfo;
-                symbologyName = selectedSymbol.mnemonic;
                 dataInput = dataInputField.getText();
                 compositeInput = compositeInputField.getText();
 
-                switch(symbologyName) {
-                    case "BARCODE_AZTEC":
-                    case "BARCODE_CODE128":
-                    case "BARCODE_CODE16K":
-                    case "BARCODE_CODE49":
-                    case "BARCODE_CODEONE":
-                    case "BARCODE_DATAMATRIX":
-                    case "BARCODE_QRCODE":
+                switch(selectedSymbol.symbology) {
+                    case AZTEC:
+                    case CODE_128:
+                    case CODE16K:
+                    case CODE49:
+                    case CODE_ONE:
+                    case DATAMATRIX:
+                    case QR:
                         useGS1Check.setEnabled(true);
                         break;
                     default:
                         useGS1Check.setEnabled(false);
                 }
 
-                switch(symbologyName) {
-                    case "BARCODE_EANX":
-                    case "BARCODE_CODE128":
-                    case "BARCODE_UPCE":
-                    case "BARCODE_RSS14STACK_OMNI":
-                    case "BARCODE_RSS14STACK":
-                    case "BARCODE_RSS_LTD":
-                    case "BARCODE_RSS14":
-                    case "BARCODE_RSS_EXP":
-                    case "BARCODE_UPCA":
-                    case "BARCODE_RSS_EXPSTACK":
+                switch(selectedSymbol.symbology) {
+                    case EAN:
+                    case CODE_128:
+                    case UPC_E:
+                    case DB14_STACKED_OMNIDIRECT:
+                    case DB14_STACKED:
+                    case DB_LIMITED:
+                    case DB14:
+                    case DB_EXPANDED:
+                    case UPC_A:
+                    case DB_EXPANDED_STACKED:
                         useCompositeCheck.setEnabled(true);
                         if (useCompositeCheck.isSelected()) {
                             compositeLabel.setEnabled(true);
@@ -2117,6 +2115,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         symbol = getNewSymbol();
 
         // TODO: do this immediately in the barcode classes instead of using error_msg?
+        // Agreed, then can dispose of encodeMe() method (RS)
         if (!symbol.error_msg.isEmpty()) {
             throw new OkapiException(symbol.error_msg);
         }
@@ -2127,7 +2126,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         // TODO: Reader Init not supported yet
         boolean readerInit = false;
 
-        if (symbologyName == null) {
+        if (selectedSymbol == null) {
             throw new OkapiException("No symbology selected");
         }
 
@@ -2135,35 +2134,35 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 (!(compositeInput.isEmpty()))) {
             // Create a composite symbol
             Composite composite = new Composite();
-            switch (symbologyName) {
-                case "BARCODE_UPCA":
+            switch (selectedSymbol.symbology) {
+                case UPC_A:
                     composite.setSymbology(Composite.LinearEncoding.UPCA);
                     break;
-                case "BARCODE_UPCE":
+                case UPC_E:
                     composite.setSymbology(Composite.LinearEncoding.UPCE);
                     break;
-                case "BARCODE_EANX":
+                case EAN:
                     composite.setSymbology(Composite.LinearEncoding.EAN);
                     break;
-                case "BARCODE_CODE128":
+                case CODE_128:
                     composite.setSymbology(Composite.LinearEncoding.CODE_128);
                     break;
-                case "BARCODE_RSS14":
+                case DB14:
                     composite.setSymbology(Composite.LinearEncoding.DATABAR_14);
                     break;
-                case "BARCODE_RSS14STACK_OMNI":
+                case DB14_STACKED_OMNIDIRECT:
                     composite.setSymbology(Composite.LinearEncoding.DATABAR_14_STACK_OMNI);
                     break;
-                case "BARCODE_RSS14STACK":
+                case DB14_STACKED:
                     composite.setSymbology(Composite.LinearEncoding.DATABAR_14_STACK);
                     break;
-                case "BARCODE_RSS_LTD":
+                case DB_LIMITED:
                     composite.setSymbology(Composite.LinearEncoding.DATABAR_LIMITED);
                     break;
-                case "BARCODE_RSS_EXP":
+                case DB_EXPANDED:
                     composite.setSymbology(Composite.LinearEncoding.DATABAR_EXPANDED);
                     break;
-                case "BARCODE_RSS_EXPSTACK":
+                case DB_EXPANDED_STACKED:
                     composite.setSymbology(Composite.LinearEncoding.DATABAR_EXPANDED_STACK);
                     break;
             }
@@ -2173,20 +2172,20 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
             return composite;
         } else {
             // Symbol is not composite
-            switch (symbologyName) {
-            case "BARCODE_UPCA":
+            switch (selectedSymbol.symbology) {
+            case UPC_A:
                 Upc upca = new Upc();
                 upca.setUpcaMode();
                 upca.unsetLinkageFlag();
                 upca.setContent(dataInput);
                 return upca;
-            case "BARCODE_UPCE":
+            case UPC_E:
                 Upc upce = new Upc();
                 upce.setUpceMode();
                 upce.unsetLinkageFlag();
                 upce.setContent(dataInput);
                 return upce;
-            case "BARCODE_EANX":
+            case EAN:
                 Ean ean = new Ean();
                 if (eanCalculateVersion() == 8) {
                     ean.setEan8Mode();
@@ -2196,20 +2195,20 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 ean.unsetLinkageFlag();
                 ean.setContent(dataInput);
                 return ean;
-            case "BARCODE_ITF14":
+            case ITF14:
                 Code2Of5 itf14 = new Code2Of5();
                 itf14.setITF14Mode();
                 itf14.setContent(dataInput);
                 return itf14;
-            case "BARCODE_CODE128":
-            case "BARCODE_HIBC_128":
+            case CODE_128:
+            case CODE_128_HIBC:
                 Code128 code128 = new Code128();
                 code128.unsetCc();
                 code128.setNormalMode();
                 if (useGS1Check.isSelected()) {
                     code128.setGs1Mode();
                 }
-                if (symbologyName.equals("BARCODE_HIBC_128")) {
+                if (selectedSymbol.symbology == SymbolType.Encoding.CODE_128_HIBC) {
                     code128.setHibcMode();
                 }
                 if (readerInit) {
@@ -2217,84 +2216,84 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 }
                 code128.setContent(dataInput);
                 return code128;
-            case "BARCODE_NVE18":
+            case NVE18:
                 Nve18 nve18 = new Nve18();
                 nve18.setContent(dataInput);
                 return nve18;
-            case "BARCODE_CODABAR":
+            case CODABAR:
                 Codabar codabar = new Codabar();
                 codabar.setContent(dataInput);
                 return codabar;
-            case "BARCODE_C25MATRIX":
+            case CODE25_MATRIX:
                 Code2Of5 c25matrix = new Code2Of5();
                 c25matrix.setMatrixMode();
                 c25matrix.setContent(dataInput);
                 return c25matrix;
-            case "BARCODE_C25IND":
+            case CODE25_INDUSTRY:
                 Code2Of5 c25ind = new Code2Of5();
                 c25ind.setIndustrialMode();
                 c25ind.setContent(dataInput);
                 return c25ind;
-            case "BARCODE_C25INTER":
+            case CODE25_INTERLEAVED:
                 Code2Of5 c25inter = new Code2Of5();
                 c25inter.setInterleavedMode();
                 c25inter.setContent(dataInput);
                 return c25inter;
-            case "BARCODE_MSI_PLESSEY":
+            case MSI_PLESSEY:
                 MsiPlessey msiPlessey = new MsiPlessey();
                 msiPlessey.option2 = msiCheckDigitCombo.getSelectedIndex();
                 msiPlessey.setContent(dataInput);
                 return msiPlessey;
-            case "BARCODE_CODE39":
-            case "BARCODE_HIBC_39":
+            case CODE39:
+            case CODE39_HIBC:
                 Code3Of9 code3of9 = new Code3Of9();
                 code3of9.setNormalMode();
-                if (symbologyName.equals("BARCODE_HIBC_39")) {
+                if (selectedSymbol.symbology == SymbolType.Encoding.CODE39_HIBC) {
                     code3of9.setHibcMode();
                 }
                 code3of9.option2 = code39CheckCombo.getSelectedIndex();
                 code3of9.setContent(dataInput);
                 return code3of9;
-            case "BARCODE_LOGMARS":
+            case DOD_LOGMARS:
                 Logmars logmars = new Logmars();
                 logmars.setContent(dataInput);
                 return logmars;
-            case "BARCODE_CODE11":
+            case CODE_11:
                 Code11 code11 = new Code11();
                 code11.setContent(dataInput);
                 return code11;
-            case "BARCODE_CODE93":
+            case CODE93:
                 Code93 code93 = new Code93();
                 code93.setContent(dataInput);
                 return code93;
-            case "BARCODE_PZN":
+            case PZN:
                 Pharmazentralnummer pzn = new Pharmazentralnummer();
                 pzn.setContent(dataInput);
                 return pzn;
-            case "BARCODE_EXCODE39":
+            case CODE39_EXTENDED:
                 Code3Of9Extended code3of9ext = new Code3Of9Extended();
                 code3of9ext.option2 = code39CheckCombo.getSelectedIndex();
                 code3of9ext.setContent(dataInput);
                 return code3of9ext;
-            case "BARCODE_TELEPEN":
+            case TELEPEN:
                 Telepen telepen = new Telepen();
                 telepen.setNormalMode();
                 telepen.setContent(dataInput);
                 return telepen;
-            case "BARCODE_TELEPEN_NUM":
+            case TELEPEN_NUMERIC:
                 Telepen telepenNum = new Telepen();
                 telepenNum.setNumericMode();
                 telepenNum.setContent(dataInput);
                 return telepenNum;
-            case "BARCODE_CODE49":
+            case CODE49:
                 Code49 code49 = new Code49();
                 code49.setContent(dataInput);
                 return code49;
-            case "BARCODE_KOREAPOST":
+            case KOREA_POST:
                 KoreaPost koreaPost = new KoreaPost();
                 koreaPost.setContent(dataInput);
                 return koreaPost;
-            case "BARCODE_CODE16K":
+            case CODE16K:
                 Code16k code16k = new Code16k();
                 code16k.setNormalMode();
                 if (useGS1Check.isSelected()) {
@@ -2305,97 +2304,97 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 }
                 code16k.setContent(dataInput);
                 return code16k;
-            case "BARCODE_C25IATA":
+            case CODE25_IATA:
                 Code2Of5 c25iata = new Code2Of5();
                 c25iata.setIATAMode();
                 c25iata.setContent(dataInput);
                 return c25iata;
-            case "BARCODE_C25LOGIC":
+            case CODE25_DATALOGIC:
                 Code2Of5 c25logic = new Code2Of5();
                 c25logic.setDataLogicMode();
                 c25logic.setContent(dataInput);
                 return c25logic;
-            case "BARCODE_DPLEIT":
+            case DP_LEITCODE:
                 Code2Of5 dpLeit = new Code2Of5();
                 dpLeit.setDPLeitMode();
                 dpLeit.setContent(dataInput);
                 return dpLeit;
-            case "BARCODE_DPIDENT":
+            case DP_IDENTCODE:
                 Code2Of5 dpIdent = new Code2Of5();
                 dpIdent.setDPIdentMode();
                 dpIdent.setContent(dataInput);
                 return dpIdent;
-            case "BARCODE_POSTNET":
-            case "BARCODE_CEPNET":
+            case USPS_POSTNET:
+            case BRAZIL_CEPNET:
                 Postnet postnet = new Postnet();
                 postnet.setPostnet();
                 postnet.setContent(dataInput);
                 return postnet;
-            case "BARCODE_PLANET":
+            case USPS_PLANET:
                 Postnet planet = new Postnet();
                 planet.setPlanet();
                 planet.setContent(dataInput);
                 return planet;
-            case "BARCODE_RM4SCC":
+            case RM4SCC:
                 RoyalMail4State royalMail = new RoyalMail4State();
                 royalMail.setContent(dataInput);
                 return royalMail;
-            case "BARCODE_KIX":
+            case KIX_CODE:
                 KixCode kixCode = new KixCode();
                 kixCode.setContent(dataInput);
                 return kixCode;
-            case "BARCODE_JAPANPOST":
+            case JAPAN_POST:
                 JapanPost japanPost = new JapanPost();
                 japanPost.setContent(dataInput);
                 return japanPost;
-            case "BARCODE_AUSPOST":
+            case AUSPOST:
                 AustraliaPost auPost = new AustraliaPost();
                 auPost.setPostMode();
                 auPost.setContent(dataInput);
                 return auPost;
-            case "BARCODE_AUSREPLY":
+            case AUSPOST_REPLY:
                 AustraliaPost auReply = new AustraliaPost();
                 auReply.setReplyMode();
                 auReply.setContent(dataInput);
                 return auReply;
-            case "BARCODE_AUSROUTE":
+            case AUSPOST_REROUTE:
                 AustraliaPost auRoute = new AustraliaPost();
                 auRoute.setRouteMode();
                 auRoute.setContent(dataInput);
                 return auRoute;
-            case "BARCODE_AUSREDIRECT":
+            case AUSPOST_REDIRECT:
                 AustraliaPost auRedirect = new AustraliaPost();
                 auRedirect.setRedirectMode();
                 auRedirect.setContent(dataInput);
                 return auRedirect;
-            case "BARCODE_CHANNEL":
+            case CHANNEL_CODE:
                 ChannelCode channelCode = new ChannelCode();
                 channelCode.option2 = channelChannelsCombo.getSelectedIndex();
                 channelCode.setContent(dataInput);
                 return channelCode;
-            case "BARCODE_PHARMA":
+            case PHARMA:
                 PharmaCode pharmaCode = new PharmaCode();
                 pharmaCode.setContent(dataInput);
                 return pharmaCode;
-            case "BARCODE_PHARMA_TWO":
+            case PHARMA_TWOTRACK:
                 PharmaCode2Track pharmaCode2t = new PharmaCode2Track();
                 pharmaCode2t.setContent(dataInput);
                 return pharmaCode2t;
-            case "BARCODE_CODE32":
+            case CODE_32:
                 Code32 code32 = new Code32();
                 code32.setContent(dataInput);
                 return code32;
-            case "BARCODE_PDF417":
-            case "BARCODE_HIBC_PDF":
-            case "BARCODE_PDF417TRUNC":
+            case PDF417:
+            case PDF417_HIBC:
+            case PDF417_TRUNCATED:
                 Pdf417 pdf417 = new Pdf417();
                 pdf417.setNormalMode();
                 if (useGS1Check.isSelected()) {
                     pdf417.setGs1Mode();
                 }
-                if (symbologyName.equals("BARCODE_HIBC_PDF")) {
+                if (selectedSymbol.symbology == SymbolType.Encoding.PDF417_HIBC) {
                     pdf417.setHibcMode();
-                } else if (symbologyName.equals("BARCODE_PDF417TRUNC")) {
+                } else if (selectedSymbol.symbology == SymbolType.Encoding.PDF417_TRUNCATED) {
                     pdf417.setTruncMode();
                 }
                 pdf417.option1 = pdfEccCombo.getSelectedIndex() - 1;
@@ -2405,14 +2404,14 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 }
                 pdf417.setContent(dataInput);
                 return pdf417;
-            case "BARCODE_MICROPDF417":
-            case "BARCODE_HIBC_MICPDF":
+            case PDF417_MICRO:
+            case PDF417_MICRO_HIBC:
                 Pdf417 microPdf417 = new Pdf417();
                 microPdf417.setNormalMode();
                 if (useGS1Check.isSelected()) {
                     microPdf417.setGs1Mode();
                 }
-                if (symbologyName.equals("BARCODE_HIBC_MICPDF")) {
+                if (selectedSymbol.symbology == SymbolType.Encoding.PDF417_MICRO_HIBC) {
                     microPdf417.setHibcMode();
                 }
                 if (readerInit) {
@@ -2422,14 +2421,14 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 microPdf417.setMicroMode();
                 microPdf417.setContent(dataInput);
                 return microPdf417;
-            case "BARCODE_AZTEC":
-            case "BARCODE_HIBC_AZTEC":
+            case AZTEC:
+            case AZTEC_HIBC:
                 AztecCode aztecCode = new AztecCode();
                 aztecCode.setNormalMode();
                 if (useGS1Check.isSelected()) {
                     aztecCode.setGs1Mode();
                 }
-                if (symbologyName.equals("BARCODE_HIBC_AZTEC")) {
+                if (selectedSymbol.symbology == SymbolType.Encoding.AZTEC_HIBC) {
                     aztecCode.setHibcMode();
                 }
                 if (readerInit) {
@@ -2443,18 +2442,18 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 }
                 aztecCode.setContent(dataInput);
                 return aztecCode;
-            case "BARCODE_AZRUNE":
+            case AZTEC_RUNE:
                 AztecRune aztecRune = new AztecRune();
                 aztecRune.setContent(dataInput);
                 return aztecRune;
-            case "BARCODE_DATAMATRIX":
-            case "BARCODE_HIBC_DM":
+            case DATAMATRIX:
+            case DATAMATRIX_HIBC:
                 DataMatrix dataMatrix = new DataMatrix();
                 dataMatrix.setNormalMode();
                 if (useGS1Check.isSelected()) {
                     dataMatrix.setGs1Mode();
                 }
-                if (symbologyName.equals("BARCODE_HIBC_DM")) {
+                if (selectedSymbol.symbology == SymbolType.Encoding.DATAMATRIX_HIBC) {
                     dataMatrix.setHibcMode();
                 }
                 if (readerInit) {
@@ -2464,18 +2463,18 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 dataMatrix.forceSquare(dataMatrixSquareOnlyCheck.isSelected());
                 dataMatrix.setContent(dataInput);
                 return dataMatrix;
-            case "BARCODE_ONECODE":
+            case USPS_IMAIL:
                 UspsOneCode uspsOneCode = new UspsOneCode();
                 uspsOneCode.setContent(dataInput);
                 return uspsOneCode;
-            case "BARCODE_QRCODE":
-            case "BARCODE_HIBC_QR":
+            case QR:
+            case QR_HIBC:
                 QrCode qrCode = new QrCode();
                 qrCode.setNormalMode();
                 if (useGS1Check.isSelected()) {
                     qrCode.setGs1Mode();
                 }
-                if (symbologyName.equals("BARCODE_HIBC_QR")) {
+                if (selectedSymbol.symbology == SymbolType.Encoding.QR_HIBC) {
                     qrCode.setHibcMode();
                 }
                 if (qrUserEcc.isSelected()) {
@@ -2489,7 +2488,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 }
                 qrCode.setContent(dataInput);
                 return qrCode;
-            case "BARCODE_MICROQR":
+            case QR_MICRO:
                 MicroQrCode microQrCode = new MicroQrCode();
                 if (microQrUserEcc.isSelected()) {
                     microQrCode.option1 = microQrUserEccCombo.getSelectedIndex() + 1;
@@ -2499,7 +2498,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 }
                 microQrCode.setContent(dataInput);
                 return microQrCode;
-            case "BARCODE_CODEONE":
+            case CODE_ONE:
                 CodeOne codeOne = new CodeOne();
                 codeOne.setNormalMode();
                 if (useGS1Check.isSelected()) {
@@ -2511,7 +2510,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 codeOne.option2 = codeOneSizeCombo.getSelectedIndex();
                 codeOne.setContent(dataInput);
                 return codeOne;
-            case "BARCODE_GRIDMATRIX":
+            case GRIDMATRIX:
                 GridMatrix gridMatrix = new GridMatrix();
                 gridMatrix.setNormalMode();
                 if (useGS1Check.isSelected()) {
@@ -2528,62 +2527,63 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 }
                 gridMatrix.setContent(dataInput);
                 return gridMatrix;
-            case "BARCODE_RSS14":
+            case DB14:
                 DataBar14 dataBar14 = new DataBar14();
                 dataBar14.unsetLinkageFlag();
                 dataBar14.setLinearMode();
                 dataBar14.setContent(dataInput);
                 return dataBar14;
-            case "BARCODE_RSS14STACK_OMNI":
+            case DB14_STACKED_OMNIDIRECT:
                 DataBar14 dataBar14so = new DataBar14();
                 dataBar14so.unsetLinkageFlag();
                 dataBar14so.setOmnidirectionalMode();
                 dataBar14so.setContent(dataInput);
                 return dataBar14so;
-            case "BARCODE_RSS14STACK":
+            case DB14_STACKED:
                 DataBar14 dataBar14s = new DataBar14();
                 dataBar14s.unsetLinkageFlag();
                 dataBar14s.setStackedMode();
                 dataBar14s.setContent(dataInput);
                 return dataBar14s;
-            case "BARCODE_RSS_LTD":
+            case DB_LIMITED:
                 DataBarLimited dataBarLimited = new DataBarLimited();
                 dataBarLimited.unsetLinkageFlag();
                 dataBarLimited.setContent(dataInput);
                 return dataBarLimited;
-            case "BARCODE_RSS_EXP":
+            case DB_EXPANDED:
                 DataBarExpanded dataBarE = new DataBarExpanded();
                 dataBarE.unsetLinkageFlag();
                 dataBarE.setNotStacked();
                 dataBarE.setContent(dataInput);
                 return dataBarE;
-            case "BARCODE_RSS_EXPSTACK":
+            case DB_EXPANDED_STACKED:
                 DataBarExpanded dataBarES = new DataBarExpanded();
                 dataBarES.unsetLinkageFlag();
                 dataBarES.option2 = databarColumnsCombo.getSelectedIndex();
                 dataBarES.setStacked();
                 dataBarES.setContent(dataInput);
                 return dataBarES;
-            case "BARCODE_MAXICODE":
+            case MAXICODE:
                 MaxiCode maxiCode = new MaxiCode();
                 maxiCode.setPrimary(maxiPrimaryData.getText());
                 maxiCode.setMode(maxiEncodingModeCombo.getSelectedIndex() + 2);
                 maxiCode.setContent(dataInput);
                 return maxiCode;
-            case "BARCODE_CODABLOCKF":
-            case "BARCODE_HIBC_BLOCKF":
+            case CODABLOCK_F:
+            case CODABLOCK_HIBC:
                 CodablockF codablockF = new CodablockF();
                 codablockF.setNormalMode();
                 if (useGS1Check.isSelected()) {
                     codablockF.setGs1Mode();
                 }
-                if (symbologyName.equals("BARCODE_HIBC_BLOCKF")) {
+                if (selectedSymbol.symbology == SymbolType.Encoding.CODABLOCK_HIBC) {
                     codablockF.setHibcMode();
                 }
                 codablockF.setContent(dataInput);
                 return codablockF;
             default:
-                throw new OkapiException("Symbology not recognised: " + symbologyName);
+                // Should never happen
+                throw new OkapiException("Symbology not recognised: " + selectedSymbol.guiLabel);
             }
         }
     }
@@ -2625,151 +2625,151 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         symbolType = new DefaultMutableTreeNode("One-Dimensional");
         top.add(symbolType);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Channel Code", "BARCODE_CHANNEL"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Channel Code", SymbolType.Encoding.CHANNEL_CODE));
         symbolType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Codabar", "BARCODE_CODABAR"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Codabar", SymbolType.Encoding.CODABAR));
         symbolType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Code 11", "BARCODE_CODE11"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Code 11", SymbolType.Encoding.CODE_11));
         symbolType.add(symbolName);
 
         symbolSubType = new DefaultMutableTreeNode("Code 2 of 5");
         symbolType.add(symbolSubType);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Standard", "BARCODE_C25MATRIX"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Standard", SymbolType.Encoding.CODE25_MATRIX));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("IATA", "BARCODE_C25IATA"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("IATA", SymbolType.Encoding.CODE25_IATA));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Industrial", "BARCODE_C25IND"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Industrial", SymbolType.Encoding.CODE25_INDUSTRY));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Interleaved", "BARCODE_C25INTER"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Interleaved", SymbolType.Encoding.CODE25_INTERLEAVED));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Data Logic", "BARCODE_C25LOGIC"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Data Logic", SymbolType.Encoding.CODE25_DATALOGIC));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("ITF-14", "BARCODE_ITF14"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("ITF-14", SymbolType.Encoding.ITF14));
         symbolSubType.add(symbolName);
 
         symbolSubType = new DefaultMutableTreeNode("Code 39");
         symbolType.add(symbolSubType);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Standard", "BARCODE_CODE39"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Standard", SymbolType.Encoding.CODE39));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Extended", "BARCODE_EXCODE39"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Extended", SymbolType.Encoding.CODE39_EXTENDED));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Code 93", "BARCODE_CODE93"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Code 93", SymbolType.Encoding.CODE93));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("LOGMARS", "BARCODE_LOGMARS"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("LOGMARS", SymbolType.Encoding.DOD_LOGMARS));
         symbolSubType.add(symbolName);
 
         symbolSubType = new DefaultMutableTreeNode("Code 128");
         symbolType.add(symbolSubType);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Code 128", "BARCODE_CODE128"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Code 128", SymbolType.Encoding.CODE_128));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("NVE-18", "BARCODE_NVE18"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("NVE-18", SymbolType.Encoding.NVE18));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("European Article Number", "BARCODE_EANX"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("European Article Number", SymbolType.Encoding.EAN));
         symbolType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("MSI Plessey", "BARCODE_MSI_PLESSEY"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("MSI Plessey", SymbolType.Encoding.MSI_PLESSEY));
         symbolType.add(symbolName);
 
         symbolSubType = new DefaultMutableTreeNode("Telepen");
         symbolType.add(symbolSubType);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Alpha", "BARCODE_TELEPEN"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Alpha", SymbolType.Encoding.TELEPEN));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Numeric", "BARCODE_TELEPEN_NUM"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Numeric", SymbolType.Encoding.TELEPEN_NUMERIC));
         symbolSubType.add(symbolName);
 
         symbolSubType = new DefaultMutableTreeNode("Universal Product Code");
         symbolType.add(symbolSubType);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Version A", "BARCODE_UPCA"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Version A", SymbolType.Encoding.UPC_A));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Version E", "BARCODE_UPCE"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Version E", SymbolType.Encoding.UPC_E));
         symbolSubType.add(symbolName);
 
         symbolType = new DefaultMutableTreeNode("Stacked");
         top.add(symbolType);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Codablock-F", "BARCODE_CODABLOCKF"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Codablock-F", SymbolType.Encoding.CODABLOCK_F));
         symbolType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Code 16K", "BARCODE_CODE16K"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Code 16K", SymbolType.Encoding.CODE16K));
         symbolType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Code 49", "BARCODE_CODE49"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Code 49", SymbolType.Encoding.CODE49));
         symbolType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("PDF417", "BARCODE_PDF417"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("PDF417", SymbolType.Encoding.PDF417));
         symbolType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("PDF417 Truncated", "BARCODE_PDF417TRUNC"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("PDF417 Truncated", SymbolType.Encoding.PDF417_TRUNCATED));
         symbolType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Micro PDF417", "BARCODE_MICROPDF417"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Micro PDF417", SymbolType.Encoding.PDF417_MICRO));
         symbolType.add(symbolName);
 
         symbolType = new DefaultMutableTreeNode("Two-Dimensional");
         top.add(symbolType);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Aztec Code", "BARCODE_AZTEC"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Aztec Code", SymbolType.Encoding.AZTEC));
         symbolType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Aztec Runes", "BARCODE_AZRUNE"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Aztec Runes", SymbolType.Encoding.AZTEC_RUNE));
         symbolType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Data Matrix", "BARCODE_DATAMATRIX"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Data Matrix", SymbolType.Encoding.DATAMATRIX));
         symbolType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Code One", "BARCODE_CODEONE"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Code One", SymbolType.Encoding.CODE_ONE));
         symbolType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Grid Matrix", "BARCODE_GRIDMATRIX"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Grid Matrix", SymbolType.Encoding.GRIDMATRIX));
         symbolType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Maxicode", "BARCODE_MAXICODE"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Maxicode", SymbolType.Encoding.MAXICODE));
         symbolType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("QR Code", "BARCODE_QRCODE"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("QR Code", SymbolType.Encoding.QR));
         symbolType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Micro QR Code", "BARCODE_MICROQR"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Micro QR Code", SymbolType.Encoding.QR_MICRO));
         symbolType.add(symbolName);
 
         symbolType = new DefaultMutableTreeNode("GS1 DataBar");
         top.add(symbolType);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("DB-14", "BARCODE_RSS14"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("DB-14", SymbolType.Encoding.DB14));
         symbolType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("DB-14 Stacked", "BARCODE_RSS14STACK"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("DB-14 Stacked", SymbolType.Encoding.DB14_STACKED));
         symbolType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("DB-14 Stacked Omni", "BARCODE_RSS14STACK_OMNI"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("DB-14 Stacked Omni", SymbolType.Encoding.DB14_STACKED_OMNIDIRECT));
         symbolType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Limited", "BARCODE_RSS_LTD"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Limited", SymbolType.Encoding.DB_LIMITED));
         symbolType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Expanded", "BARCODE_RSS_EXP"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Expanded", SymbolType.Encoding.DB_EXPANDED));
         symbolType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Expanded Stacked", "BARCODE_RSS_EXPSTACK"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Expanded Stacked", SymbolType.Encoding.DB_EXPANDED_STACKED));
         symbolType.add(symbolName);
 
         symbolType = new DefaultMutableTreeNode("Postal");
@@ -2778,97 +2778,97 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         symbolSubType = new DefaultMutableTreeNode("Australia Post");
         symbolType.add(symbolSubType);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Customer", "BARCODE_AUSPOST"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Customer", SymbolType.Encoding.AUSPOST));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Reply Paid", "BARCODE_AUSREPLY"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Reply Paid", SymbolType.Encoding.AUSPOST_REPLY));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Routing", "BARCODE_AUSROUTE"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Routing", SymbolType.Encoding.AUSPOST_REROUTE));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Redirect", "BARCODE_AUSREDIRECT"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Redirect", SymbolType.Encoding.AUSPOST_REDIRECT));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Brazilian CEPNet", "BARCODE_CEPNET"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Brazilian CEPNet", SymbolType.Encoding.BRAZIL_CEPNET));
         symbolType.add(symbolName);
 
         symbolSubType = new DefaultMutableTreeNode("Deutsche Post");
         symbolType.add(symbolSubType);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Leitcode", "BARCODE_DPLEIT"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Leitcode", SymbolType.Encoding.DP_LEITCODE));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Identcode", "BARCODE_DPIDENT"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Identcode", SymbolType.Encoding.DP_IDENTCODE));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Dutch Post KIX", "BARCODE_KIX"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Dutch Post KIX", SymbolType.Encoding.KIX_CODE));
         symbolType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Japan Post", "BARCODE_JAPANPOST"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Japan Post", SymbolType.Encoding.JAPAN_POST));
         symbolType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Korea Post", "BARCODE_KOREAPOST"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Korea Post", SymbolType.Encoding.KOREA_POST));
         symbolType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Royal Mail", "BARCODE_RM4SCC"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Royal Mail", SymbolType.Encoding.RM4SCC));
         symbolType.add(symbolName);
 
         symbolSubType = new DefaultMutableTreeNode("USPS");
         symbolType.add(symbolSubType);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("OneCode", "BARCODE_ONECODE"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("OneCode", SymbolType.Encoding.USPS_IMAIL));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("PostNet", "BARCODE_POSTNET"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("PostNet", SymbolType.Encoding.USPS_POSTNET));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("PLANET", "BARCODE_PLANET"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("PLANET", SymbolType.Encoding.USPS_PLANET));
         symbolSubType.add(symbolName);
 
         symbolType = new DefaultMutableTreeNode("Medical");
         top.add(symbolType);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Code 32", "BARCODE_CODE32"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Code 32", SymbolType.Encoding.CODE_32));
         symbolType.add(symbolName);
 
         symbolSubType = new DefaultMutableTreeNode("HIBC");
         symbolType.add(symbolSubType);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Aztec Code", "BARCODE_HIBC_AZTEC"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Aztec Code", SymbolType.Encoding.AZTEC_HIBC));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Codablock-F", "BARCODE_HIBC_BLOCKF"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Codablock-F", SymbolType.Encoding.CODABLOCK_HIBC));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Code 39", "BARCODE_HIBC_39"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Code 39", SymbolType.Encoding.CODE39_HIBC));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Code 128", "BARCODE_HIBC_128"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Code 128", SymbolType.Encoding.CODE_128_HIBC));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Data Matrix", "BARCODE_HIBC_DM"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Data Matrix", SymbolType.Encoding.DATAMATRIX_HIBC));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("PDF417", "BARCODE_HIBC_PDF"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("PDF417", SymbolType.Encoding.PDF417_HIBC));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Micro PDF417", "BARCODE_HIBC_MICPDF"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Micro PDF417", SymbolType.Encoding.PDF417_MICRO_HIBC));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("QR Code", "BARCODE_HIBC_QR"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("QR Code", SymbolType.Encoding.QR_HIBC));
         symbolSubType.add(symbolName);
 
         symbolSubType = new DefaultMutableTreeNode("Pharmacode");
         symbolType.add(symbolSubType);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("One Track", "BARCODE_PHARMA"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("One Track", SymbolType.Encoding.PHARMA));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Two Track", "BARCODE_PHARMA_TWO"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Two Track", SymbolType.Encoding.PHARMA_TWOTRACK));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("PZN", "BARCODE_PZN"));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("PZN", SymbolType.Encoding.PZN));
         symbolType.add(symbolName);
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables

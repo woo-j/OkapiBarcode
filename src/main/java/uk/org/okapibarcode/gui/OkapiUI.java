@@ -2121,7 +2121,17 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                     break;
             }
             composite.setLinear(dataInput);
-            composite.setPreferred(compositeUserMode.getSelectedIndex());
+            switch(compositeUserMode.getSelectedIndex()) {
+                case 1:
+                    composite.setPreferredMode(Composite.CompositeMode.CC_A);
+                    break;
+                case 2:
+                    composite.setPreferredMode(Composite.CompositeMode.CC_B);
+                    break;
+                case 3:
+                    composite.setPreferredMode(Composite.CompositeMode.CC_C);
+                    break;
+            }
             composite.setContent(compositeInput);
             return composite;
         } else {

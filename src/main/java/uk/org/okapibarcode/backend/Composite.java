@@ -439,6 +439,11 @@ public class Composite extends Symbol {
     private enum gfMode {
         NUMERIC, ALPHA, ISOIEC, INVALID_CHAR, ANY_ENC, ALPHA_OR_ISO
     };
+    
+    public enum CompositeMode {
+        CC_A, CC_B, CC_C
+    }
+    
     private String general_field;
     private gfMode[] general_field_type;
     private int cc_width;
@@ -447,9 +452,9 @@ public class Composite extends Symbol {
     private int codeWordCount;
     private int[] bitStr = new int[13];
     private int[] inputData;
-    private int cc_mode;
+    private CompositeMode cc_mode;
     private String linearContent;
-    private int userPreferredMode;
+    private CompositeMode userPreferredMode = CompositeMode.CC_A;
 
     public Composite() {
         inputDataType = Symbol.DataType.GS1;
@@ -468,7 +473,7 @@ public class Composite extends Symbol {
         linearContent = input;
     }
 
-    public void setPreferred(int userMode) {
+    public void setPreferredMode(CompositeMode userMode) {
         userPreferredMode = userMode;
     }
 
@@ -548,13 +553,13 @@ public class Composite extends Symbol {
             case CODE_128:
                 Code128 code128 = new Code128();
                 switch (cc_mode) {
-                    case 1:
+                    case CC_A:
                         code128.setCca();
                         break;
-                    case 2:
+                    case CC_B:
                         code128.setCcb();
                         break;
-                    case 3:
+                    case CC_C:
                         code128.setCcc();
                         bottom_shift = 7;
                         break;
@@ -706,7 +711,7 @@ public class Composite extends Symbol {
 
         cc_mode = userPreferredMode;
 
-        if ((cc_mode == 3) && (!(symbology.equals("BARCODE_CODE128")))) {
+        if ((cc_mode == CompositeMode.CC_C) && (symbology != LinearEncoding.CODE_128)) {
             /* CC-C can only be used with a GS1-128 linear part */
             error_msg = "Invalid mode (CC-C only valid with GS1-128 linear component)";
             return false;
@@ -743,28 +748,24 @@ public class Composite extends Symbol {
             System.out.println("Width: " + cc_width + " modules");
         }
 
-        if (cc_mode < 1 || cc_mode > 3) {
-            cc_mode = 1;
-        }
-
-        if (cc_mode == 1) {
+        if (cc_mode == CompositeMode.CC_A) {
             if (!(cc_binary_string(cc_mode))) {
-                cc_mode = 2;
+                cc_mode = CompositeMode.CC_B;
             }
         }
 
-        if (cc_mode == 2) { /* If the data didn't fit into CC-A it is recalculated for CC-B */
+        if (cc_mode == CompositeMode.CC_B) { /* If the data didn't fit into CC-A it is recalculated for CC-B */
             if (!(cc_binary_string(cc_mode))) {
                 if (!(symbology.equals("CODE 128"))) {
                     error_msg = "Input too long";
                     return false;
                 } else {
-                    cc_mode = 3;
+                    cc_mode = CompositeMode.CC_C;
                 }
             }
         }
 
-        if (cc_mode == 3) {
+        if (cc_mode == CompositeMode.CC_C) {
             /* If the data didn't fit in CC-B (and linear
              * part is GS1-128) it is recalculated for CC-C */
             if (!(cc_binary_string(cc_mode))) {
@@ -775,39 +776,39 @@ public class Composite extends Symbol {
 
         if (debug) {
             switch (cc_mode) {
-                case 1:
+                case CC_A:
                     System.out.println("Encoding using CC-A");
                     break;
-                case 2:
+                case CC_B:
                     System.out.println("Encoding using CC-B");
                     break;
-                case 3:
+                case CC_C:
                     System.out.println("Encoding using CC-C");
                     break;
             }
         }
 
         switch (cc_mode) {
-            case 1:
+            case CC_A:
                 encodeInfo += "Composite type: CC-A\n";
                 break;
-            case 2:
+            case CC_B:
                 encodeInfo += "Composite type: CC-B\n";
                 break;
-            case 3:
+            case CC_C:
                 encodeInfo += "Composite type: CC-C\n";
                 break;
         }
         encodeInfo += "Composite width: " + cc_width + " modules\n";
 
         switch (cc_mode) { /* Note that ecc_level is only relevant to CC-C */
-            case 1:
+            case CC_A:
                 cc_a();
                 break;
-            case 2:
+            case CC_B:
                 cc_b();
                 break;
-            case 3:
+            case CC_C:
                 cc_c();
                 break;
         }
@@ -843,7 +844,7 @@ public class Composite extends Symbol {
         }
     }
 
-    private boolean cc_binary_string(int cc_mode) {
+    private boolean cc_binary_string(CompositeMode cc_mode) {
         /* Handles all data encodation from section 5 of ISO/IEC 24723 */
         int encoding_method, read_posn, d1, d2, value, alpha_pad;
         int i, j, ai_crop, fnc1_latch;
@@ -869,13 +870,13 @@ public class Composite extends Symbol {
 
         if (debug) {
             switch (cc_mode) {
-                case 1:
+                case CC_A:
                     System.out.println("Generating CC-A binary");
                     break;
-                case 2:
+                case CC_B:
                     System.out.println("Generatinc CC-B binary");
                     break;
-                case 3:
+                case CC_C:
                     System.out.println("Generating CC-C binary");
                     break;
             }
@@ -1633,7 +1634,7 @@ public class Composite extends Symbol {
         }
 
         binary_length = binary_string.length();
-        if (cc_mode == 1) {
+        if (cc_mode == CompositeMode.CC_A) {
             /* CC-A 2D component - calculate remaining space */
             switch (cc_width) {
                 case 2:
@@ -1705,7 +1706,7 @@ public class Composite extends Symbol {
             }
         }
 
-        if (cc_mode == 2) {
+        if (cc_mode == CompositeMode.CC_B) {
             /* CC-B 2D component - calculated from ISO/IEC 24728 Table 1  */
             switch (cc_width) {
                 case 2:
@@ -1810,7 +1811,7 @@ public class Composite extends Symbol {
             }
         }
 
-        if (cc_mode == 3) {
+        if (cc_mode == CompositeMode.CC_C) {
             /* CC-C 2D Component is a bit more complex! */
             int byte_length, codewords_used, ecc_level, ecc_codewords, rows;
             int codewords_total, target_codewords, target_bytesize;
@@ -1922,7 +1923,7 @@ public class Composite extends Symbol {
          size of the symbol may have changed when adding data in the above sequence */
 
         binary_length = binary_string.length();
-        if (cc_mode == 1) {
+        if (cc_mode == CompositeMode.CC_A) {
             /* CC-A 2D component - calculate padding required */
             switch (cc_width) {
                 case 2:
@@ -1994,7 +1995,7 @@ public class Composite extends Symbol {
             }
         }
 
-        if (cc_mode == 2) {
+        if (cc_mode == CompositeMode.CC_B) {
             /* CC-B 2D component */
             switch (cc_width) {
                 case 2:
@@ -2099,7 +2100,7 @@ public class Composite extends Symbol {
             }
         }
 
-        if (cc_mode == 3) {
+        if (cc_mode == CompositeMode.CC_C) {
             /* CC-C 2D Component is a bit more complex! */
             int byte_length, codewords_used, ecc_level, ecc_codewords, rows;
             int codewords_total, target_codewords, target_bytesize;

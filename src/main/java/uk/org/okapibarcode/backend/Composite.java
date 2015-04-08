@@ -502,166 +502,140 @@ public class Composite extends Symbol {
         }
 
         // Then encode linear component
-        switch (symbology) {
-            case UPCA:
-                Upc upca = new Upc();
-                upca.setUpcaMode();
-                upca.setLinkageFlag();
-                if (upca.setContent(linearContent)) {
+        try {
+            switch (symbology) {
+                case UPCA:
+                    Upc upca = new Upc();
+                    upca.setUpcaMode();
+                    upca.setLinkageFlag();
+                    upca.setContent(linearContent);
                     linear_rect = upca.rect;
                     linear_txt = upca.txt;
                     linear_height = upca.symbol_height;
                     linear_encodeInfo = upca.encodeInfo;
-                } else {
-                    linear_error_msg = upca.error_msg;
-                }
-                top_shift = 3;
-                break;
-            case UPCE:
-                Upc upce = new Upc();
-                upce.setUpceMode();
-                upce.setLinkageFlag();
-                if (upce.setContent(linearContent)) {
+                    top_shift = 3;
+                    break;
+                case UPCE:
+                    Upc upce = new Upc();
+                    upce.setUpceMode();
+                    upce.setLinkageFlag();
+                    upce.setContent(linearContent);
                     linear_rect = upce.rect;
                     linear_txt = upce.txt;
                     linear_height = upce.symbol_height;                    
                     linear_encodeInfo = upce.encodeInfo;
-                } else {
-                    linear_error_msg = upce.error_msg;
-                }
-                top_shift = 3;
-                break;
-            case EAN:
-                Ean ean = new Ean();
-                if (eanCalculateVersion() == 8) {
-                    ean.setEan8Mode();
-                    bottom_shift = 8;
-                } else {
-                    ean.setEan13Mode();
                     top_shift = 3;
-                }
-                ean.setLinkageFlag();
-                if (ean.setContent(linearContent)) {
+                    break;
+                case EAN:
+                    Ean ean = new Ean();
+                    if (eanCalculateVersion() == 8) {
+                        ean.setEan8Mode();
+                        bottom_shift = 8;
+                    } else {
+                        ean.setEan13Mode();
+                        top_shift = 3;
+                    }
+                    ean.setLinkageFlag();
+                    ean.setContent(linearContent);
                     linear_rect = ean.rect;
                     linear_txt = ean.txt;
                     linear_height = ean.symbol_height;                    
                     linear_encodeInfo = ean.encodeInfo;
-                } else {
-                    linear_error_msg = ean.error_msg;
-                }
-                break;
-            case CODE_128:
-                Code128 code128 = new Code128();
-                switch (cc_mode) {
-                    case CC_A:
-                        code128.setCca();
-                        break;
-                    case CC_B:
-                        code128.setCcb();
-                        break;
-                    case CC_C:
-                        code128.setCcc();
-                        bottom_shift = 7;
-                        break;
-                }
-                if (code128.setContent(linearContent)) {
+                    break;
+                case CODE_128:
+                    Code128 code128 = new Code128();
+                    switch (cc_mode) {
+                        case CC_A:
+                            code128.setCca();
+                            break;
+                        case CC_B:
+                            code128.setCcb();
+                            break;
+                        case CC_C:
+                            code128.setCcc();
+                            bottom_shift = 7;
+                            break;
+                    }
+                    code128.setContent(linearContent);
                     linear_rect = code128.rect;
                     linear_txt = code128.txt;
                     linear_height = code128.symbol_height;                    
-                    linear_encodeInfo = code128.encodeInfo;
-                } else {
-                    linear_error_msg = code128.error_msg;
-                }                    
-                break;
-            case DATABAR_14:
-                DataBar14 dataBar14 = new DataBar14();
-                dataBar14.setLinkageFlag();
-                dataBar14.setLinearMode();
-                if (dataBar14.setContent(linearContent)) {
+                    linear_encodeInfo = code128.encodeInfo;            
+                    break;
+                case DATABAR_14:
+                    DataBar14 dataBar14 = new DataBar14();
+                    dataBar14.setLinkageFlag();
+                    dataBar14.setLinearMode();
+                    dataBar14.setContent(linearContent);
                     linear_rect = dataBar14.rect;
                     linear_txt = dataBar14.txt;
                     linear_height = dataBar14.symbol_height;                    
                     linear_encodeInfo = dataBar14.encodeInfo;
-                } else {
-                    linear_error_msg = dataBar14.error_msg;
-                }
-                bottom_shift = 4;
-                break;
-            case DATABAR_14_STACK_OMNI:
-                DataBar14 dataBar14SO = new DataBar14();
-                dataBar14SO.setLinkageFlag();
-                dataBar14SO.setOmnidirectionalMode();
-                if (dataBar14SO.setContent(linearContent)) {
+                    bottom_shift = 4;
+                    break;
+                case DATABAR_14_STACK_OMNI:
+                    DataBar14 dataBar14SO = new DataBar14();
+                    dataBar14SO.setLinkageFlag();
+                    dataBar14SO.setOmnidirectionalMode();
+                    dataBar14SO.setContent(linearContent);
                     linear_rect = dataBar14SO.rect;
                     linear_txt = dataBar14SO.txt;
                     linear_height = dataBar14SO.symbol_height;                    
                     linear_encodeInfo = dataBar14SO.encodeInfo;
-                } else {
-                    linear_error_msg = dataBar14SO.error_msg;
-                }
-                top_shift = 1;
-                break;
-            case DATABAR_14_STACK:
-                DataBar14 dataBar14S = new DataBar14();
-                dataBar14S.setLinkageFlag();
-                dataBar14S.setStackedMode();
-                if (dataBar14S.setContent(linearContent)) {
+                    top_shift = 1;
+                    break;
+                case DATABAR_14_STACK:
+                    DataBar14 dataBar14S = new DataBar14();
+                    dataBar14S.setLinkageFlag();
+                    dataBar14S.setStackedMode();
+                    dataBar14S.setContent(linearContent);
                     linear_rect = dataBar14S.rect;
                     linear_txt = dataBar14S.txt;
                     linear_height = dataBar14S.symbol_height;                    
                     linear_encodeInfo = dataBar14S.encodeInfo;
-                } else {
-                    linear_error_msg = dataBar14S.error_msg;
-                }
-                top_shift = 1;
-                break;
-            case DATABAR_LIMITED:
-                DataBarLimited dataBarLimited = new DataBarLimited();
-                dataBarLimited.setLinkageFlag();
-                if (dataBarLimited.setContent(linearContent)) {
+                    top_shift = 1;
+                    break;
+                case DATABAR_LIMITED:
+                    DataBarLimited dataBarLimited = new DataBarLimited();
+                    dataBarLimited.setLinkageFlag();
+                    dataBarLimited.setContent(linearContent);
                     linear_rect = dataBarLimited.rect;
                     linear_txt = dataBarLimited.txt;
                     linear_height = dataBarLimited.symbol_height;                    
                     linear_encodeInfo = dataBarLimited.encodeInfo;
-                } else {
-                    linear_error_msg = dataBarLimited.error_msg;
-                }
-                top_shift = 1;
-                break;
-            case DATABAR_EXPANDED:
-                DataBarExpanded dataBarExpanded = new DataBarExpanded();
-                dataBarExpanded.setLinkageFlag();
-                dataBarExpanded.setNotStacked();
-                if (dataBarExpanded.setContent(linearContent)) {
+                    top_shift = 1;
+                    break;
+                case DATABAR_EXPANDED:
+                    DataBarExpanded dataBarExpanded = new DataBarExpanded();
+                    dataBarExpanded.setLinkageFlag();
+                    dataBarExpanded.setNotStacked();
+                    dataBarExpanded.setContent(linearContent);
                     linear_rect = dataBarExpanded.rect;
                     linear_txt = dataBarExpanded.txt;
                     linear_height = dataBarExpanded.symbol_height;                    
                     linear_encodeInfo = dataBarExpanded.encodeInfo;
-                } else {
-                    linear_error_msg = dataBarExpanded.error_msg;
-                }
-                top_shift = 2;
-                break;   
-            case DATABAR_EXPANDED_STACK:
-                DataBarExpanded dataBarExpandedS = new DataBarExpanded();
-                dataBarExpandedS.setLinkageFlag();
-                dataBarExpandedS.setStacked();
-                if (dataBarExpandedS.setContent(linearContent)) {
+                    top_shift = 2;
+                    break;   
+                case DATABAR_EXPANDED_STACK:
+                    DataBarExpanded dataBarExpandedS = new DataBarExpanded();
+                    dataBarExpandedS.setLinkageFlag();
+                    dataBarExpandedS.setStacked();
+                    dataBarExpandedS.setContent(linearContent);
                     linear_rect = dataBarExpandedS.rect;
                     linear_txt = dataBarExpandedS.txt;
                     linear_height = dataBarExpandedS.symbol_height;                    
                     linear_encodeInfo = dataBarExpandedS.encodeInfo;
-                } else {
-                    linear_error_msg = dataBarExpandedS.error_msg;
-                }
-                top_shift = 2;
-                break;
-            default:
-                linear_error_msg = "Linear symbol not recognised";
-                break;
+                    top_shift = 2;
+                    break;
+                default:
+                    linear_error_msg = "Linear symbol not recognised";
+                    break;
+            }
+        } catch (OkapiException e) {
+            linear_error_msg = e.getMessage();
         }
         
-        if (!(linear_error_msg.isEmpty())) {
+        if (!linear_error_msg.isEmpty()) {
             error_msg = linear_error_msg;
             return false;
         }

@@ -105,12 +105,15 @@ public class Code32 extends Symbol {
             System.out.println("Encoded: " + risultante);
         }
         encodeInfo += "Code 39 Equivalent: " + risultante + '\n';
-        if (c39.setContent(risultante)) {
-            this.pattern[0] = c39.pattern[0];
-            this.plotSymbol();
-        } else {
-            error_msg = c39.error_msg;
+        try {
+            c39.setContent(risultante);
+        } catch (OkapiException e) {
+            error_msg = e.getMessage();
+            return false;
         }
+        
+        this.pattern[0] = c39.pattern[0];
+        this.plotSymbol();
         return true;
     }
 }

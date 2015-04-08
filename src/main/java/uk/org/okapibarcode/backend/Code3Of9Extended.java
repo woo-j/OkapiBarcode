@@ -71,8 +71,10 @@ public class Code3Of9Extended extends Symbol {
             buffer += ECode39[asciicode];
         }
 
-        if (!(c.setContent(buffer))) {
-            error_msg = c.error_msg;
+        try {
+            c.setContent(buffer);
+        } catch (OkapiException e) {
+            error_msg = e.getMessage();
             return false;
         }
         readable = content;

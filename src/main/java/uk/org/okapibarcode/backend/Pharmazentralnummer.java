@@ -45,7 +45,7 @@ public class Pharmazentralnummer extends Symbol {
         localstr = "-";
         zeroes = 6 - l + 1;
         for (int i = 1; i < zeroes; i++)
-        localstr += '0';
+            localstr += '0' + content;
 
         localstr += content;
 
@@ -66,8 +66,10 @@ public class Pharmazentralnummer extends Symbol {
 
         localstr += (char)(check_digit + '0');
 
-        if (!(c.setContent(localstr))) {
-            error_msg = c.error_msg;
+        try {
+            c.setContent(localstr);
+        } catch (OkapiException e) {
+            error_msg = e.getMessage();
             return false;
         }
 

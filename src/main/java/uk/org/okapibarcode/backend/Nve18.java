@@ -71,16 +71,18 @@ public class Nve18 extends Symbol {
         // Defer to Code 128
         code128.setDataType(DataType.GS1);
         
-        if (!(code128.setContent(content))) {
-            error_msg = code128.error_msg;
+        try {
+            code128.setContent(content);
+        } catch (OkapiException e) {
+            error_msg = e.getMessage();
             return false;
-        } else {
-            rect = code128.rect;
-            txt = code128.txt;
-            symbol_height = code128.symbol_height;
-            symbol_width = code128.symbol_width;
-            encodeInfo += code128.encodeInfo;
         }
+
+        rect = code128.rect;
+        txt = code128.txt;
+        symbol_height = code128.symbol_height;
+        symbol_width = code128.symbol_width;
+        encodeInfo += code128.encodeInfo;
         
         return true;
     }

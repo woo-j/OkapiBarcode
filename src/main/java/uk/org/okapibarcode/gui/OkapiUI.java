@@ -1979,7 +1979,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         }
 
         try {
-            encodeMe();
+            symbol = getNewSymbol();
         } catch (OkapiException e) {
             errorLabel.setText(e.getMessage());
             topPanel.add(errorLabel);
@@ -2062,17 +2062,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 	}
 
         return reversed;
-    }
-
-    public void encodeMe() throws OkapiException {
-
-        symbol = getNewSymbol();
-
-        // TODO: do this immediately in the barcode classes instead of using error_msg?
-        // Agreed, then can dispose of encodeMe() method (RS)
-        if (!symbol.error_msg.isEmpty()) {
-            throw new OkapiException(symbol.error_msg);
-        }
     }
 
     private Symbol getNewSymbol() throws OkapiException {

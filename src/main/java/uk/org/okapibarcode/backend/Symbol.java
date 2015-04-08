@@ -30,7 +30,7 @@ public abstract class Symbol {
     protected int row_count;
     protected int[] row_height;
     protected boolean debug = false;
-    public String error_msg;
+    protected String error_msg;
     protected int symbol_height;
     protected int symbol_width;
     protected int default_height;
@@ -127,7 +127,7 @@ public abstract class Symbol {
         return pat;
     }
 
-    public boolean setContent(String input_data) {
+    public void setContent(String input_data) {
         int i;
 
         content = input_data; // default action
@@ -154,10 +154,12 @@ public abstract class Symbol {
             content = hibcProcess(input_data);
         }
 
-        if (content.length() != 0) {
-            return encode();
+        if (!content.isEmpty()) {
+            if (!encode()) {
+                throw new OkapiException(error_msg);
+            }
         } else {
-            return false;
+            throw new OkapiException("No input data");
         }
     }
 

@@ -375,6 +375,10 @@ public class AztecCode extends Symbol {
         layers = 0; /* Keep compiler happy! */
         data_maxsize = 0; /* Keep compiler happy! */
         adjustment_size = 0;
+        
+        if((preferredSize < 0) || (preferredSize > 36)) {
+            preferredSize = 0;
+        }
 
         if(preferredSize == 0) { /* The size of the symbol can be determined by Okapi */
             do {
@@ -564,10 +568,7 @@ public class AztecCode extends Symbol {
             if((preferredSize >= 5) && (preferredSize <= 36)) {
                 layers = preferredSize - 4;
             }
-            if((preferredSize < 0) || (preferredSize > 36)) {
-                error_msg = "Invalid Aztec Code size";
-                return false;
-            }
+
             /* Determine codeword bitlength - Table 3 */
             codeword_size = 6;
             if((layers >= 3) && (layers <= 8)) {

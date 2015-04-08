@@ -2006,7 +2006,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         displayPanel.setBackground(paperColour);
         displayPanel.add(drawSymbol);
         topPanel.add(displayPanel);
-        encodeInfoArea.setText(symbol.encodeInfo);
+        encodeInfoArea.setText(symbol.getEncodeInfo());
         topPanel.updateUI();
         pack();
     }

@@ -35,7 +35,7 @@ public abstract class Symbol {
     protected int symbol_width;
     protected int default_height;
     protected boolean readerInit;
-    public String encodeInfo = "";
+    protected String encodeInfo = "";
     
     public enum DataType {
         UTF8, LATIN1, BINARY, GS1, HIBC
@@ -73,6 +73,10 @@ public abstract class Symbol {
 
     public int getWidth() {
         return symbol_width;
+    }
+    
+    public String getEncodeInfo() {
+        return encodeInfo;
     }
 
     // TODO: surely we'll need something better than this to account for the height

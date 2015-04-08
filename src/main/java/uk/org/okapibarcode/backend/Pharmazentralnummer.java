@@ -45,7 +45,7 @@ public class Pharmazentralnummer extends Symbol {
         localstr = "-";
         zeroes = 6 - l + 1;
         for (int i = 1; i < zeroes; i++)
-            localstr += '0' + content;
+            localstr += '0';
 
         localstr += content;
 

@@ -1399,7 +1399,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
     }//GEN-LAST:event_directoryButtonActionPerformed
 
     private void aboutButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutButtonActionPerformed
-        // Show information about Zint
+        // Show information about Okapi
         AboutOkapi az = new AboutOkapi();
         az.setLocationRelativeTo(this);
         az.setVisible(true);

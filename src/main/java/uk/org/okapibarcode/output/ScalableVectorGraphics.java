@@ -66,7 +66,7 @@ public class ScalableVectorGraphics {
                     + symbol_height + "\" version=\"1.1\"\n";
             outStream += "   xmlns=\"http://www.w3.org/2000/svg\">\n";
             if (symbol_text.length() == 0) {
-                outStream += "   <desc>Zint Generated Symbol\n";
+                outStream += "   <desc>OkapiBarcode Generated Symbol\n";
             } else {
                 outStream += "   <desc>" + symbol_text + "\n";
             }

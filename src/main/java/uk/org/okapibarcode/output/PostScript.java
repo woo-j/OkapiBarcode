@@ -63,9 +63,9 @@ public class PostScript {
         try (FileOutputStream fos = new FileOutputStream(file)) {
             // Header
             outStream = "%!PS-Adobe-3.0 EPSF-3.0\n";
-            outStream += "%%Creator: Zint 3.0\n";
+            outStream += "%%Creator: OkapiBarcode\n";
             if (symbol_text.length() == 0) {
-                outStream += "%%Title: Zint Generated Symbol\n";
+                outStream += "%%Title: OkapiBarcode Generated Symbol\n";
             } else {
                 outStream += "%%Title: " + symbol_text + "\n";
             }

@@ -1016,7 +1016,7 @@ private final int[] Microcoeffs = {
 	}
 
 	if(variant == 0) {
-		/* Zint can choose automatically from all available variations */
+		/* Okapi can choose automatically from all available variations */
 		for(i = 27; i >= 0; i--) {
 
 			if(MicroAutosize[i] >= codeWordCount) {

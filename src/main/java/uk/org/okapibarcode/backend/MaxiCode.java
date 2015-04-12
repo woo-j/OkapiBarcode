@@ -176,7 +176,7 @@ public class MaxiCode extends Symbol {
      * Returns the size of the series of MaxiCode symbols using structured append that this symbol is part of. If this symbol is
      * not part of a structured append series, this method will return <code>1</code>.
      *
-     * @return
+     * @return size of series
      */
     public int getStructuredAppendTotal() {
         return structuredAppendTotal;

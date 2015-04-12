@@ -114,7 +114,7 @@ public class CodeOne extends Symbol {
      * Set symbol size by "version". Versions A to H are square symbols.
      * This value may be ignored if the input data does not fit in the
      * specified version. Version S and T are fixed height symbols.
-     * @param version 
+     * @param version Symbol version
      */
     public void setPreferredVersion (Version version) {
         preferredVersion = version;

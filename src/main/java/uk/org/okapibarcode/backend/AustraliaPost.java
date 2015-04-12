@@ -71,14 +71,14 @@ public class AustraliaPost extends Symbol{
      * <p>
      * Input data should include a 8-digit Deliver Point ID
      * (DPID) optionally followed by customer information as shown below.
-     * <table cellspacing="0" cellpadding="5">
+     * <table cellspacing="0" cellpadding="5" summary="Permitted Australia Post input data">
         <tbody>
           <tr>
-            <th colspan="1" rowspan="1" bgcolor="#999999"><p>Input Length</p></th>
-            <th colspan="1" rowspan="1" bgcolor="#999999"><p>Required Input Format</p></th>
-            <th colspan="1" rowspan="1" bgcolor="#999999"><p>Symbol Length</p></th>
-            <th colspan="1" rowspan="1" bgcolor="#999999"><p>FCC</p></th>
-            <th colspan="1" rowspan="1" bgcolor="#999999"><p>Encoding Table</p></th>
+            <th colspan="1" rowspan="1"><p>Input Length</p></th>
+            <th colspan="1" rowspan="1"><p>Required Input Format</p></th>
+            <th colspan="1" rowspan="1"><p>Symbol Length</p></th>
+            <th colspan="1" rowspan="1"><p>FCC</p></th>
+            <th colspan="1" rowspan="1"><p>Encoding Table</p></th>
           </tr>
           <tr>
             <td rowspan="1" colspan="1"><p>8</p></td>

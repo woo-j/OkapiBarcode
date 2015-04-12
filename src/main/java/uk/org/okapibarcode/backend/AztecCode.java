@@ -35,13 +35,13 @@ public class AztecCode extends Symbol {
      * data string is too large to fit in the specified symbol size.
      * Values correspond to symbol sizes as shown in the following
      * table:
-     * <table cellspacing="0" cellpadding="5">
+     * <table cellspacing="0" cellpadding="5" summary="Available Aztec Code symbol sizes">
         <tbody>
           <tr>
-            <th colspan="1" rowspan="1" bgcolor="#999999"><p>Input</p></th>
-            <th colspan="1" rowspan="1" bgcolor="#999999"><p>Symbol Size</p></th>
-            <th colspan="1" rowspan="1" bgcolor="#999999"><p>Input</p></th>
-            <th colspan="1" rowspan="1" bgcolor="#999999"><p>Symbol Size</p></th>
+            <th colspan="1" rowspan="1"><p>Input</p></th>
+            <th colspan="1" rowspan="1"><p>Symbol Size</p></th>
+            <th colspan="1" rowspan="1"><p>Input</p></th>
+            <th colspan="1" rowspan="1"><p>Symbol Size</p></th>
           </tr>
           <tr>
             <td rowspan="1" colspan="1"><p>1</p></td>
@@ -166,11 +166,11 @@ public class AztecCode extends Symbol {
      * error correction. This value will be ignored if a symbol size has been
      * set by <code>setPreferredSize</code> Valid options
      * are:
-     * <table cellspacing="0" cellpadding="5">
+     * <table cellspacing="0" cellpadding="5" summary="Error correction options">
         <tbody>
           <tr>
-            <th colspan="1" rowspan="1" bgcolor="#999999"><p>Mode</p></th>
-            <th colspan="1" rowspan="1" bgcolor="#999999"><p>Error Correction Capacity</p></th>
+            <th colspan="1" rowspan="1"><p>Mode</p></th>
+            <th colspan="1" rowspan="1"><p>Error Correction Capacity</p></th>
           </tr>
           <tr>
             <td rowspan="1" colspan="1"><p>1</p></td>

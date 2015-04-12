@@ -18,19 +18,180 @@ package uk.org.okapibarcode.backend;
 /**
  * Implements Aztec Code bar code symbology
  * According to ISO/IEC 24778:2008
- *
+ * <p>
+ * Aztec Code can encode 8-bit ISO 8859-1 (Latin-1) data (except 0x00 Null
+ * characters) up to a maximum length of approximately 3800 numeric characters,
+ * 3000 alphabetic characters or 1900 bytes of data in a two-dimensional
+ * matrix symbol.
+ * 
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class AztecCode extends Symbol {
 
     private int preferredSize = 0;
     
+    /**
+     * Sets a preferred symbol size. This value may be ignored if
+     * data string is too large to fit in the specified symbol size.
+     * Values correspond to symbol sizes as shown in the following
+     * table:
+     * <table cellspacing="0" cellpadding="5">
+        <tbody>
+          <tr>
+            <th colspan="1" rowspan="1" bgcolor="#999999"><p>Input</p></th>
+            <th colspan="1" rowspan="1" bgcolor="#999999"><p>Symbol Size</p></th>
+            <th colspan="1" rowspan="1" bgcolor="#999999"><p>Input</p></th>
+            <th colspan="1" rowspan="1" bgcolor="#999999"><p>Symbol Size</p></th>
+          </tr>
+          <tr>
+            <td rowspan="1" colspan="1"><p>1</p></td>
+            <td rowspan="1" colspan="1"><p>15 x 15*</p></td>
+            <td rowspan="1" colspan="1"><p>19</p></td>
+            <td rowspan="1" colspan="1"><p>79 x 79</p></td>
+          </tr>
+          <tr>
+            <td rowspan="1" colspan="1"><p>2</p></td>
+            <td rowspan="1" colspan="1"><p>19 x 19*</p></td>
+            <td rowspan="1" colspan="1"><p>20</p></td>
+            <td rowspan="1" colspan="1"><p>83 x 83</p></td>
+          </tr>
+          <tr>
+            <td rowspan="1" colspan="1"><p>3</p></td>
+            <td rowspan="1" colspan="1"><p>23 x 23*</p></td>
+            <td rowspan="1" colspan="1"><p>21</p></td>
+            <td rowspan="1" colspan="1"><p>87 x 87</p></td>
+          </tr>
+          <tr>
+            <td rowspan="1" colspan="1"><p>4</p></td>
+            <td rowspan="1" colspan="1"><p>27 x 27*</p></td>
+            <td rowspan="1" colspan="1"><p>22</p></td>
+            <td rowspan="1" colspan="1"><p>91 x 91</p></td>
+          </tr>
+          <tr>
+            <td rowspan="1" colspan="1"><p>5</p></td>
+            <td rowspan="1" colspan="1"><p>19 x 19</p></td>
+            <td rowspan="1" colspan="1"><p>23</p></td>
+            <td rowspan="1" colspan="1"><p>95 x 95</p></td>
+          </tr>
+          <tr>
+            <td rowspan="1" colspan="1"><p>6</p></td>
+            <td rowspan="1" colspan="1"><p>23 x 23</p></td>
+            <td rowspan="1" colspan="1"><p>24</p></td>
+            <td rowspan="1" colspan="1"><p>101 x 101</p></td>
+          </tr>
+          <tr>
+            <td rowspan="1" colspan="1"><p>7</p></td>
+            <td rowspan="1" colspan="1"><p>27 x 27</p></td>
+            <td rowspan="1" colspan="1"><p>25</p></td>
+            <td rowspan="1" colspan="1"><p>105 x 105</p></td>
+          </tr>
+          <tr>
+            <td rowspan="1" colspan="1"><p>8</p></td>
+            <td rowspan="1" colspan="1"><p>31 x 31</p></td>
+            <td rowspan="1" colspan="1"><p>26</p></td>
+            <td rowspan="1" colspan="1"><p>109 x 109</p></td>
+          </tr>
+          <tr>
+            <td rowspan="1" colspan="1"><p>9</p></td>
+            <td rowspan="1" colspan="1"><p>37 x 37</p></td>
+            <td rowspan="1" colspan="1"><p>27</p></td>
+            <td rowspan="1" colspan="1"><p>113 x 113</p></td>
+          </tr>
+          <tr>
+            <td rowspan="1" colspan="1"><p>10</p></td>
+            <td rowspan="1" colspan="1"><p>41 x 41</p></td>
+            <td rowspan="1" colspan="1"><p>28</p></td>
+            <td rowspan="1" colspan="1"><p>117 x 117</p></td>
+          </tr>
+          <tr>
+            <td rowspan="1" colspan="1"><p>11</p></td>
+            <td rowspan="1" colspan="1"><p>45 x 45</p></td>
+            <td rowspan="1" colspan="1"><p>29</p></td>
+            <td rowspan="1" colspan="1"><p>121 x 121</p></td>
+          </tr>
+          <tr>
+            <td rowspan="1" colspan="1"><p>12</p></td>
+            <td rowspan="1" colspan="1"><p>49 x 49</p></td>
+            <td rowspan="1" colspan="1"><p>30</p></td>
+            <td rowspan="1" colspan="1"><p>125 x 125</p></td>
+          </tr>
+          <tr>
+            <td rowspan="1" colspan="1"><p>13</p></td>
+            <td rowspan="1" colspan="1"><p>53 x 53</p></td>
+            <td rowspan="1" colspan="1"><p>31</p></td>
+            <td rowspan="1" colspan="1"><p>131 x 131</p></td>
+          </tr>
+          <tr>
+            <td rowspan="1" colspan="1"><p>14</p></td>
+            <td rowspan="1" colspan="1"><p>57 x 57</p></td>
+            <td rowspan="1" colspan="1"><p>32</p></td>
+            <td rowspan="1" colspan="1"><p>135 x 135</p></td>
+          </tr>
+          <tr>
+            <td rowspan="1" colspan="1"><p>15</p></td>
+            <td rowspan="1" colspan="1"><p>61 x 61</p></td>
+            <td rowspan="1" colspan="1"><p>33</p></td>
+            <td rowspan="1" colspan="1"><p>139 x 139</p></td>
+          </tr>
+          <tr>
+            <td rowspan="1" colspan="1"><p>16</p></td>
+            <td rowspan="1" colspan="1"><p>67 x 67</p></td>
+            <td rowspan="1" colspan="1"><p>34</p></td>
+            <td rowspan="1" colspan="1"><p>143 x 143</p></td>
+          </tr>
+          <tr>
+            <td rowspan="1" colspan="1"><p>17</p></td>
+            <td rowspan="1" colspan="1"><p>71 x 71</p></td>
+            <td rowspan="1" colspan="1"><p>35</p></td>
+            <td rowspan="1" colspan="1"><p>147 x 147</p></td>
+          </tr>
+          <tr>
+            <td rowspan="1" colspan="1"><p>18</p></td>
+            <td rowspan="1" colspan="1"><p>75 x 75</p></td>
+            <td rowspan="1" colspan="1"><p>36</p></td>
+            <td rowspan="1" colspan="1"><p>151 x 151</p></td>
+          </tr>
+        </tbody>
+      </table>
+     * @param size An <em>integer</em> in the range 1 - 36
+     */
     public void setPreferredSize(int size) {
         preferredSize = size;
     }
     
     private int preferredEccLevel = -1;
     
+    /**
+     * Sets the preferred minimum amount of symbol space dedicated to
+     * error correction. This value will be ignored if a symbol size has been
+     * set by <code>setPreferredSize</code> Valid options
+     * are:
+     * <table cellspacing="0" cellpadding="5">
+        <tbody>
+          <tr>
+            <th colspan="1" rowspan="1" bgcolor="#999999"><p>Mode</p></th>
+            <th colspan="1" rowspan="1" bgcolor="#999999"><p>Error Correction Capacity</p></th>
+          </tr>
+          <tr>
+            <td rowspan="1" colspan="1"><p>1</p></td>
+            <td rowspan="1" colspan="1"><p>&gt;10% + 3 codewords</p></td>
+          </tr>
+          <tr>
+            <td rowspan="1" colspan="1"><p>2</p></td>
+            <td rowspan="1" colspan="1"><p>&gt;23% + 3 codewords</p></td>
+          </tr>
+          <tr>
+            <td rowspan="1" colspan="1"><p>3</p></td>
+            <td rowspan="1" colspan="1"><p>&gt;36% + 3 codewords</p></td>
+          </tr>
+          <tr>
+            <td rowspan="1" colspan="1"><p>4</p></td>
+            <td rowspan="1" colspan="1"><p>&gt;50% + 3 codewords</p></td>
+          </tr>
+        </tbody>
+      </table>
+     * @param eccLevel An <em>integer</em> in the range 1 - 4
+     */
     public void setPreferredEccLevel (int eccLevel) {
         preferredEccLevel = eccLevel;
     }

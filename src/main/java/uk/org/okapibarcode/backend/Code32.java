@@ -16,7 +16,11 @@
 package uk.org.okapibarcode.backend;
 
 /**
- * Implements Code 32 (AKA Italian Pharmacode)
+ * Implements Code 32, also known as Italian Pharmacode, A variation of Code 
+ * 39 used by the Italian Ministry of Health ("Ministero della Sanità")
+ * <p>
+ * Requires a numeric input up to 8 digits in length. Check digit is
+ * calculated.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */

@@ -18,6 +18,9 @@ package uk.org.okapibarcode.backend;
 /**
  * Implements Aztec Runes bar code symbology
  * According to ISO/IEC 24778:2008 Annex A
+ * <p>
+ * Aztec Runes is a fixed-size matrix symbology which can encode whole
+ * integer values between 0 and 255.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */

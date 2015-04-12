@@ -16,6 +16,10 @@
 package uk.org.okapibarcode.backend;
 
 /**
+ * Implements Code 3 of 9 Extended, also known as Code 39e and Code39+
+ * <p>
+ * Supports encoding of all characters in the 7-bit ASCII table. A
+ * modulo-43 check digit can be added if required.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
@@ -45,6 +49,11 @@ public class Code3Of9Extended extends Symbol {
         checkOption = CheckDigit.NONE;
     }
     
+    /**
+     * Select addition of optional Modulo-43 check digit or encoding without
+     * check digit.
+     * @param checkMode Check digit option
+     */
     public void setCheckDigit(CheckDigit checkMode) {
         checkOption = checkMode;
     }

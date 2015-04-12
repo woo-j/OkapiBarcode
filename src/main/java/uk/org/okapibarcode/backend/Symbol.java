@@ -59,28 +59,66 @@ public abstract class Symbol {
         unsetReaderInit();
     }
 
+    /**
+     * Sets the type of input data. This setting influences what
+     * pre-processing is done on data before encoding in the symbol.
+     * For example: for <code>GS1</code> mode the AI data will be used to
+     * calculate the position of 'FNC1' characters.
+     * Valid values are:
+     * <ul>
+     * <li><code>UTF8</code> (default) Unicode encoding
+     * <li><code>LATIN1</code> ISO 8859-1 (Latin-1) encoding
+     * <li><code>BINARY</code> Byte encoding mode
+     * <li><code>GS1</code> Application Identifier and data pairs in "[AI]DATA" format
+     * <li><code>HIBC</code> Health Industry Bar Code number (without check digit)
+     * </ul>
+     * @param dataType A <code>DataType</code> value which specifies the type of data
+     */
     public void setDataType(DataType dataType) {
         inputDataType = dataType;
     }
 
+    /**
+     * Prefixes symbol data with a "Reader Initialisation" or "Reader
+     * Programming" instruction.
+     */
     public final void setReaderInit() {
         readerInit = true;
     }
     
+    /**
+     * Removes "Reader Initialisation" or "Reader Programming" instruction
+     * from symbol data.
+     */
     public final void unsetReaderInit() {
         readerInit = false;
     }
 
+    /**
+     * Gets the width of the encoded symbol as a multiple of the
+     * x-dimension.
+     * @return an <code>integer</code> specifying the width of the symbol
+     */
     public int getWidth() {
         return symbol_width;
     }
     
+    /**
+     * Gets a human readable summary of the decisions made by the encoder
+     * when creating a symbol.
+     * @return a <code>String</code> containing encoding information
+     */
     public String getEncodeInfo() {
         return encodeInfo;
     }
 
     // TODO: surely we'll need something better than this to account for the height
     // of the human readable aspect of different bar codes
+    /**
+     * Gets the height of the encoded symbol as a multiple of the
+     * x-dimension.
+     * @return an <code>integer</code> specifying the height of the symbol
+     */
     public int getHeight() {
         if (txt.isEmpty()) {
             return symbol_height;
@@ -89,7 +127,7 @@ public abstract class Symbol {
         }
     }
 
-    public int positionOf(char thischar, char[] LookUp) {
+    protected int positionOf(char thischar, char[] LookUp) {
         int i, outval = 0;
 
         for (i = 0; i < LookUp.length; i++) {
@@ -100,7 +138,7 @@ public abstract class Symbol {
         return outval;
     }
 
-    public String bin2pat(String bin) {
+    protected String bin2pat(String bin) {
         boolean black;
         int i, l;
         String pat = "";
@@ -131,6 +169,12 @@ public abstract class Symbol {
         return pat;
     }
 
+    /**
+     * Set the data to be encoded. Input data will be assumed to be of
+     * the type set by <code>setDataType</code>.
+     * @param input_data A <code>String</code> containing the data to encode
+     * @throws OkapiException If no data or data is invalid
+     */
     public void setContent(String input_data) {
         int i;
 
@@ -169,7 +213,7 @@ public abstract class Symbol {
 
     abstract boolean encode();
 
-    public void plotSymbol() {
+    protected void plotSymbol() {
         int xBlock, yBlock;
         int x, y, w, h;
         boolean black;
@@ -215,7 +259,7 @@ public abstract class Symbol {
         }
     }
 
-    public String gs1SanityCheck(String source) {
+    protected String gs1SanityCheck(String source) {
         // Enforce compliance with GS1 General Specification
         // http://www.gs1.org/docs/gsmp/barcodes/GS1_General_Specifications.pdf
 
@@ -484,7 +528,7 @@ public abstract class Symbol {
         return reduced;
     }
 
-    public String hibcProcess(String source) {
+    protected String hibcProcess(String source) {
         char[] hibcCharTable = {
             '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
             'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',

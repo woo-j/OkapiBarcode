@@ -18,7 +18,8 @@ package uk.org.okapibarcode.backend;
 import java.awt.Rectangle;
 
 /**
- *
+ * Implements the Code 2 of 5 family of barcode standards.
+ * 
  * @author <a href="mailto:jakel2006@me.com">Robert Elliott</a>
  */
 public class Code2Of5 extends Symbol {
@@ -42,34 +43,69 @@ public class Code2Of5 extends Symbol {
         mode = tof_mode.MATRIX;
     }
 
+    /**
+     * Select Standard Code 2 of 5 mode, also known as Code 2 of 5 Matrix. (default)
+     * Encodes any length numeric input (digits 0-9).
+     */
     public void setMatrixMode() {
         mode = tof_mode.MATRIX;
     }
 
+    /**
+     * Select Industrial Code 2 of 5 which can encode any length numeric input
+     * (digits 0-9) and does not include a check digit.
+     */
     public void setIndustrialMode() {
         mode = tof_mode.INDUSTRIAL;
     }
 
+    /**
+     * Select International Air Transport Agency variation of Code 2 of 5.
+     * Encodes any length numeric input (digits 0-9) and does not include
+     * a check digit.
+     */
     public void setIATAMode() {
         mode = tof_mode.IATA;
     }
 
+    /**
+     * Select Code 2 of 5 Data Logic. Encodes any length numeric input 
+     * (digits 0-9) and does not include a check digit.
+     */
     public void setDataLogicMode() {
         mode = tof_mode.DATA_LOGIC;
     }
 
+    /**
+     * Select Interleaved Code 2 of 5. encodes pairs of numbers, and so can 
+     * only encode an even number of digits (0-9). If an odd number of digits 
+     * is entered a leading zero is added. No check digit is calculated.
+     */
     public void setInterleavedMode() {
         mode = tof_mode.INTERLEAVED;
     }
 
+    /**
+     * Select ITF-14, also known as UPC Shipping Container Symbol or Case Code.
+     * Requires a 13 digit numeric input (digits 0-9). One modulo-10 check
+     * digit is calculated.
+     */
     public void setITF14Mode() {
         mode = tof_mode.ITF14;
     }
 
+    /**
+     * Select Deutsche Post Leitcode. Requires a 13-digit numerical input.
+     * Check digit is calculated.
+     */
     public void setDPLeitMode() {
         mode = tof_mode.DPLEIT;
     }
 
+    /**
+     * Select Deutsche Post Identcode. Requires an 11-digit numerical input.
+     * Check digit is calculated.
+     */
     public void setDPIdentMode() {
         mode = tof_mode.DPIDENT;
     }

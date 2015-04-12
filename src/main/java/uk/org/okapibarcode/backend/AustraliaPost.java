@@ -20,7 +20,7 @@ import java.awt.Rectangle;
 
 /**
  * Implements the <a href="http://auspost.com.au/media/documents/a-guide-to-printing-the-4state-barcode-v31-mar2012.pdf">Australia Post 4-State barcode</a>.
- *
+ * 
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class AustraliaPost extends Symbol{
@@ -62,18 +62,86 @@ public class AustraliaPost extends Symbol{
         mode = ausMode.AUSPOST;
     }
 
+    /**
+     * Specify encoding of Australia Post Standard Customer Barcode, 
+     * Customer Barcode 2 or Customer Barcode 3 (37-bar, 52-bar and 67-bar
+     * symbols) depending on input data length. Valid data characters are 0-9, 
+     * A-Z, a-z, space and hash (#). A Format Control Code (FCC) is added and
+     * should not be included in the input data.
+     * <p>
+     * Input data should include a 8-digit Deliver Point ID
+     * (DPID) optionally followed by customer information as shown below.
+     * <table cellspacing="0" cellpadding="5">
+        <tbody>
+          <tr>
+            <th colspan="1" rowspan="1" bgcolor="#999999"><p>Input Length</p></th>
+            <th colspan="1" rowspan="1" bgcolor="#999999"><p>Required Input Format</p></th>
+            <th colspan="1" rowspan="1" bgcolor="#999999"><p>Symbol Length</p></th>
+            <th colspan="1" rowspan="1" bgcolor="#999999"><p>FCC</p></th>
+            <th colspan="1" rowspan="1" bgcolor="#999999"><p>Encoding Table</p></th>
+          </tr>
+          <tr>
+            <td rowspan="1" colspan="1"><p>8</p></td>
+            <td rowspan="1" colspan="1"><p>99999999</p></td>
+            <td rowspan="1" colspan="1"><p>37-bar</p></td>
+            <td rowspan="1" colspan="1"><p>11</p></td>
+            <td rowspan="1" colspan="1"><p>None</p></td>
+          </tr>
+          <tr>
+            <td rowspan="1" colspan="1"><p>13</p></td>
+            <td rowspan="1" colspan="1"><p>99999999AAAAA</p></td>
+            <td rowspan="1" colspan="1"><p>52-bar</p></td>
+            <td rowspan="1" colspan="1"><p>59</p></td>
+            <td rowspan="1" colspan="1"><p>C</p></td>
+          </tr>
+          <tr>
+            <td rowspan="1" colspan="1"><p>16</p></td>
+            <td rowspan="1" colspan="1"><p>9999999999999999</p></td>
+            <td rowspan="1" colspan="1"><p>52-bar</p></td>
+            <td rowspan="1" colspan="1"><p>59</p></td>
+            <td rowspan="1" colspan="1"><p>N</p></td>
+          </tr>
+          <tr>
+            <td rowspan="1" colspan="1"><p>18</p></td>
+            <td rowspan="1" colspan="1"><p>99999999AAAAAAAAAA</p></td>
+            <td rowspan="1" colspan="1"><p>67-bar</p></td>
+            <td rowspan="1" colspan="1"><p>62</p></td>
+            <td rowspan="1" colspan="1"><p>C</p></td>
+          </tr>
+          <tr>
+            <td rowspan="1" colspan="1"><p>23</p></td>
+            <td rowspan="1" colspan="1"><p>99999999999999999999999</p></td>
+            <td rowspan="1" colspan="1"><p>67-bar</p></td>
+            <td rowspan="1" colspan="1"><p>62</p></td>
+            <td rowspan="1" colspan="1"><p>N</p></td>
+          </tr>
+        </tbody>
+      </table>
+     */
     public void setPostMode() {
         mode = ausMode.AUSPOST;
     }
 
+    /**
+     * Specify encoding of a Reply Paid version of the Australia Post 
+     * 4-State Barcode (FCC 45) which requires an 8-digit DPID input.
+     */
     public void setReplyMode() {
         mode = ausMode.AUSREPLY;
     }
 
+    /**
+     * Specify encoding of a Routing version of the Australia Post 4-State 
+     * Barcode (FCC 87) which requires an 8-digit DPID input.
+     */
     public void setRouteMode() {
         mode = ausMode.AUSROUTE;
     }
 
+    /**
+     * Specify encoding of a Redirection version of the Australia Post 4-State 
+     * Barcode (FCC 92) which requires an 8-digit DPID input.
+     */
     public void setRedirectMode() {
         mode = ausMode.AUSREDIRECT;
     }

@@ -18,6 +18,8 @@ package uk.org.okapibarcode.backend;
 /**
  * Implements Channel Code
  * According to ANSI/AIM BC12-1998
+ * <p>
+ * Channel code encodes whole integer values between 0 and 7,742,862.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
@@ -29,6 +31,11 @@ public class ChannelCode extends Symbol {
     private String horizontalSpacing;
     private int requestedNumberOfChannels = 0;
     
+    /**
+     * Set the number of channels used to encode data. This setting will be
+     * ignored if the value to be encoded requires more channels.
+     * @param channels Number of channels in range 3 - 8
+     */
     public void setNumberOfChannels(int channels) {
         if ((channels >= 3) && (channels <= 7)) {
             requestedNumberOfChannels = channels;

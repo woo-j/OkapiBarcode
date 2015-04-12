@@ -18,6 +18,11 @@ package uk.org.okapibarcode.backend;
 /**
  * Implements Code 39 bar code symbology
  * According to ISO/IEC 16388:2007
+ * <p>
+ * Input data can be of any length and supports the characters 0-9, AZ, dash 
+ * (-), full stop (.), space, asterisk (*), dollar ($), slash (/), plus (+) 
+ * and percent (%). The standard does not require a check digit but a 
+ * modulo-43 check digit can be added if required.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
@@ -33,6 +38,11 @@ public class Code3Of9 extends Symbol {
         checkOption = CheckDigit.NONE;
     }
     
+    /**
+     * Select addition of optional Modulo-43 check digit or encoding without
+     * check digit.
+     * @param checkMode Check digit option.
+     */
     public void setCheckDigit(CheckDigit checkMode) {
         checkOption = checkMode;
     }

@@ -20,6 +20,9 @@ import java.awt.Rectangle;
 /**
  * Implements Code 49
  * According to ANSI/AIM-BC6-2000
+ * <p>
+ * Encoding supports full 7-bit ASCII input up to a maximum of 49 characters 
+ * or 81 numeric digits. GS1 data encoding is also supported.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */

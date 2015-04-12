@@ -20,6 +20,9 @@ import java.io.UnsupportedEncodingException;
 /**
  * Implements Code 128 bar code symbology
  * According to ISO/IEC 15417:2007
+ * <p>
+ * Code 128 supports encoding of 8-bit ISO 8859-1 (Latin-1) characters.
+ * Setting GS1 mode allows encoding in GS1-128 (also known as UPC/EAN-128).
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
@@ -63,23 +66,30 @@ public class Code128 extends Symbol {
         compositeMode = Composite.OFF;
     }
 
+    /**
+     * Allow the use of subset C (numeric compression) in encoding (default).
+     */
     public void useModeC() {
         modeCSupression = false;
     }
 
+    /**
+     * Disallow the use of subset C (numeric compression) in encoding.
+     * Numeric values will be encoded using subset B.
+     */
     public void stopModeC() {
         modeCSupression = true;
     }
 
-    public void setCca() {
+    protected void setCca() {
         compositeMode = Composite.CCA;
     }
 
-    public void setCcb() {
+    protected void setCcb() {
         compositeMode = Composite.CCB;
     }
 
-    public void setCcc() {
+    protected void setCcc() {
         compositeMode = Composite.CCC;
     }
 

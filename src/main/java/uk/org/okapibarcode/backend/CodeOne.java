@@ -18,7 +18,14 @@ package uk.org.okapibarcode.backend;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 /**
- * Implements Code 1
+ * Implements Code One
+ * <p>
+ * Code One is able to encode the ISO 8859-1 (Latin-1) character set or GS1
+ * data. There are two types of Code One symbol - variable height symbols
+ * which are roughly square (versions A thought to H) and fixed-height
+ * versions (version S and T). Version S symbols can only encode numeric data. 
+ * The width of version S and version T symbols is determined by the length 
+ * of the input data.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
@@ -103,6 +110,12 @@ public class CodeOne extends Symbol {
     
     private Version preferredVersion = Version.NONE;
     
+    /**
+     * Set symbol size by "version". Versions A to H are square symbols.
+     * This value may be ignored if the input data does not fit in the
+     * specified version. Version S and T are fixed height symbols.
+     * @param version 
+     */
     public void setPreferredVersion (Version version) {
         preferredVersion = version;
     }

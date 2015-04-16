@@ -251,11 +251,39 @@ public abstract class Symbol {
             }
             y += h;
         }
+        
+        mergeVerticalBlocks();
 
         if (!(readable.isEmpty())) {
             // Calculated position is approximately central
             TextBox text = new TextBox(((symbol_width - (5.0 * readable.length())) / 2), symbol_height + 8.0, readable);
             txt.add(text);
+        }
+    }
+    
+    /**
+     * Search for rectangles which have the same width and x position, and
+     * which join together vertically and merge them together to reduce the
+     * number of rectangles needed to describe a symbol.
+     */
+    protected void mergeVerticalBlocks() {
+        int i, j;
+        Rectangle firstRect;
+        Rectangle secondRect;
+        
+        for(i = 0; i < rect.size() - 1; i++) {
+            for(j = i + 1; j < rect.size(); j++) {
+                firstRect = rect.get(i);
+                secondRect = rect.get(j);
+                
+                if ((firstRect.x == secondRect.x) && (firstRect.width == secondRect.width)) {
+                    if ((firstRect.y + firstRect.height) == secondRect.y) {
+                        firstRect.height += secondRect.height;
+                        rect.set(i, firstRect);
+                        rect.remove(j);
+                    }
+                }
+            }
         }
     }
 

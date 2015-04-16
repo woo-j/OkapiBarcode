@@ -1377,5 +1377,7 @@ public class Code49 extends Symbol {
         rect.add(botrect);
         symbol_width += 30.0;
         symbol_height += 2.0;
+        
+        mergeVerticalBlocks();
     }
 }

@@ -859,5 +859,7 @@ public class CodablockF extends Symbol {
         Rectangle botrect = new Rectangle(0, y - 1, symbol_width, 2);
         rect.add(botrect);
         symbol_height += 2.0;
+        
+        mergeVerticalBlocks();
     }
 }

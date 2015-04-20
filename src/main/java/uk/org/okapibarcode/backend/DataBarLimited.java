@@ -20,6 +20,9 @@ import java.math.BigInteger;
 /**
  * Implements GS-1 DataBar Limited (aka RSS Limited)
  * According to ISO/IEC 24724:2007
+ * <p>
+ * Input data should be a 12 digit Global Trade Identification Number
+ * without check digit or Application Identifier [01].
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
@@ -147,11 +150,11 @@ public class DataBarLimited extends Symbol {
         // Do nothing!
     }
     
-    public void setLinkageFlag() {
+    protected void setLinkageFlag() {
         linkageFlag = true;
     }
 
-    public void unsetLinkageFlag() {
+    protected void unsetLinkageFlag() {
         linkageFlag = false;
     }
 

@@ -16,8 +16,11 @@
 package uk.org.okapibarcode.backend;
 
 /**
- * Implements Data Bar Expanded (aka RSS Expanded)
+ * Implements DataBar Expanded (aka RSS Expanded)
  * According to ISO/IEC 24724:2007
+ * <p>
+ * DataBar expanded encodes GS1 data in either a linear or stacked
+ * format.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
@@ -89,6 +92,11 @@ public class DataBarExpanded extends Symbol {
     
     private int preferredNoOfColumns = 0;
     
+    /**
+     * Set the width of a stacked symbol by selecting the number
+     * of "columns" or symbol segments in each row of data.
+     * @param columns Number of segments in each row
+     */
     public void setNoOfColumns(int columns) {
         // TODO: Value currently ignored!
         preferredNoOfColumns = columns;
@@ -113,19 +121,25 @@ public class DataBarExpanded extends Symbol {
         // Do nothing!
     }
     
+    /**
+     * Set symbology to DataBar Expanded Stacked
+     */
     public void setStacked() {
         symbolType = dbeMode.STACKED;
     }
 
+    /**
+     * Set symbology to DataBar Expanded
+     */
     public void setNotStacked() {
         symbolType = dbeMode.UNSTACKED;
     }
 
-    public void setLinkageFlag() {
+    protected void setLinkageFlag() {
         linkageFlag = true;
     }
 
-    public void unsetLinkageFlag() {
+    protected void unsetLinkageFlag() {
         linkageFlag = false;
     }
 

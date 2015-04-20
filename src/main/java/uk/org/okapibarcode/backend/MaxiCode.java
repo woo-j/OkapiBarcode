@@ -23,7 +23,11 @@ import java.util.Arrays;
 
 /**
  * Implements MaxiCode according to ISO 16023:2000.
- *
+ * <p>
+ * MaxiCode employs a pattern of hexagons around a central 'bulls-eye'
+ * finder pattern. Encoding in several modes is supported, but encoding in
+ * Mode 2 and 3 require primary messages to be set. Input characters can be
+ * any from the ISO 8859-1 (Latin-1) character set.
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  * @author Daniel Gredler
  */

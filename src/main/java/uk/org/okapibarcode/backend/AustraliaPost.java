@@ -71,49 +71,49 @@ public class AustraliaPost extends Symbol{
      * <p>
      * Input data should include a 8-digit Deliver Point ID
      * (DPID) optionally followed by customer information as shown below.
-     * <table cellspacing="0" cellpadding="5" summary="Permitted Australia Post input data">
+     * <table summary="Permitted Australia Post input data">
         <tbody>
           <tr>
-            <th colspan="1" rowspan="1"><p>Input Length</p></th>
-            <th colspan="1" rowspan="1"><p>Required Input Format</p></th>
-            <th colspan="1" rowspan="1"><p>Symbol Length</p></th>
-            <th colspan="1" rowspan="1"><p>FCC</p></th>
-            <th colspan="1" rowspan="1"><p>Encoding Table</p></th>
+            <th><p>Input Length</p></th>
+            <th><p>Required Input Format</p></th>
+            <th><p>Symbol Length</p></th>
+            <th><p>FCC</p></th>
+            <th><p>Encoding Table</p></th>
           </tr>
           <tr>
-            <td rowspan="1" colspan="1"><p>8</p></td>
-            <td rowspan="1" colspan="1"><p>99999999</p></td>
-            <td rowspan="1" colspan="1"><p>37-bar</p></td>
-            <td rowspan="1" colspan="1"><p>11</p></td>
-            <td rowspan="1" colspan="1"><p>None</p></td>
+            <td><p>8</p></td>
+            <td><p>99999999</p></td>
+            <td><p>37-bar</p></td>
+            <td><p>11</p></td>
+            <td><p>None</p></td>
           </tr>
           <tr>
-            <td rowspan="1" colspan="1"><p>13</p></td>
-            <td rowspan="1" colspan="1"><p>99999999AAAAA</p></td>
-            <td rowspan="1" colspan="1"><p>52-bar</p></td>
-            <td rowspan="1" colspan="1"><p>59</p></td>
-            <td rowspan="1" colspan="1"><p>C</p></td>
+            <td><p>13</p></td>
+            <td><p>99999999AAAAA</p></td>
+            <td><p>52-bar</p></td>
+            <td><p>59</p></td>
+            <td><p>C</p></td>
           </tr>
           <tr>
-            <td rowspan="1" colspan="1"><p>16</p></td>
-            <td rowspan="1" colspan="1"><p>9999999999999999</p></td>
-            <td rowspan="1" colspan="1"><p>52-bar</p></td>
-            <td rowspan="1" colspan="1"><p>59</p></td>
-            <td rowspan="1" colspan="1"><p>N</p></td>
+            <td><p>16</p></td>
+            <td><p>9999999999999999</p></td>
+            <td><p>52-bar</p></td>
+            <td><p>59</p></td>
+            <td><p>N</p></td>
           </tr>
           <tr>
-            <td rowspan="1" colspan="1"><p>18</p></td>
-            <td rowspan="1" colspan="1"><p>99999999AAAAAAAAAA</p></td>
-            <td rowspan="1" colspan="1"><p>67-bar</p></td>
-            <td rowspan="1" colspan="1"><p>62</p></td>
-            <td rowspan="1" colspan="1"><p>C</p></td>
+            <td><p>18</p></td>
+            <td><p>99999999AAAAAAAAAA</p></td>
+            <td><p>67-bar</p></td>
+            <td><p>62</p></td>
+            <td><p>C</p></td>
           </tr>
           <tr>
-            <td rowspan="1" colspan="1"><p>23</p></td>
-            <td rowspan="1" colspan="1"><p>99999999999999999999999</p></td>
-            <td rowspan="1" colspan="1"><p>67-bar</p></td>
-            <td rowspan="1" colspan="1"><p>62</p></td>
-            <td rowspan="1" colspan="1"><p>N</p></td>
+            <td><p>23</p></td>
+            <td><p>99999999999999999999999</p></td>
+            <td><p>67-bar</p></td>
+            <td><p>62</p></td>
+            <td><p>N</p></td>
           </tr>
         </tbody>
       </table>

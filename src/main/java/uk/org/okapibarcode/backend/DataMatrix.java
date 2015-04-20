@@ -20,6 +20,9 @@ import java.io.UnsupportedEncodingException;
 /**
  * Implements Data Matrix ECC 200 bar code symbology
  * According to ISO/IEC 16022:2006
+ * <p>
+ * Data Matrix is a 2D matrix symbology capable of encoding characters
+ * in the ISO/IEC 8859-1 (Latin-1) character set.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
@@ -122,10 +125,123 @@ public class DataMatrix extends Symbol {
         isSquare = true;
     }
 
+    /**
+     * Override selection of symbol size. When set as <code>false</code> the
+     * symbol will be the smallest available for the amount of data given.
+     * When set as <code>true</code> the encoding will not use rectangular
+     * symbols.
+     * @param input Forces a square symbol when set to <code>true</code>
+     */
     public void forceSquare(boolean input) {
         isSquare = input;
     }
     
+    /** Set the prefereed symbol size according to the values in the
+     * following table. Values may be ignored if the data is too big to fit
+     * in the specified symbol, or if <code>forceSquare</code> mode has
+     * been invoked.
+     * <table summary="Available Data Matrix symbol sizes">
+  <tbody>
+    <tr>
+      <th><p>Input</p></th>
+      <th><p>Symbol Size</p></th>
+      <th><p>Input</p></th>
+      <th><p>Symbol Size</p></th>
+    </tr>
+    <tr>
+      <td><p>1</p></td>
+      <td><p>10 x 10</p></td>
+      <td><p>16</p></td>
+      <td><p>64 x 64</p></td>
+    </tr>
+    <tr>
+      <td><p>2</p></td>
+      <td><p>12 x 12</p></td>
+      <td><p>17</p></td>
+      <td><p>72 x 72</p></td>
+    </tr>
+    <tr>
+      <td><p>3</p></td>
+      <td><p>14 x 14</p></td>
+      <td><p>18</p></td>
+      <td><p>80 x 80</p></td>
+    </tr>
+    <tr>
+      <td><p>4</p></td>
+      <td><p>16 x 16</p></td>
+      <td><p>19</p></td>
+      <td><p>88 x 88</p></td>
+    </tr>
+    <tr>
+      <td><p>5</p></td>
+      <td><p>18 x 18</p></td>
+      <td><p>20</p></td>
+      <td><p>96 x 96</p></td>
+    </tr>
+    <tr>
+      <td><p>6</p></td>
+      <td><p>20 x 20</p></td>
+      <td><p>21</p></td>
+      <td><p>104 x 104</p></td>
+    </tr>
+    <tr>
+      <td><p>7</p></td>
+      <td><p>22 x 22</p></td>
+      <td><p>22</p></td>
+      <td><p>120 x 120</p></td>
+    </tr>
+    <tr>
+      <td><p>8</p></td>
+      <td><p>24 x 24</p></td>
+      <td><p>23</p></td>
+      <td><p>132 x 132</p></td>
+    </tr>
+    <tr>
+      <td><p>9</p></td>
+      <td><p>26 x 26</p></td>
+      <td><p>24</p></td>
+      <td><p>144 x 144</p></td>
+    </tr>
+    <tr>
+      <td><p>10</p></td>
+      <td><p>32 x 32</p></td>
+      <td><p>25</p></td>
+      <td><p>8 x 18</p></td>
+    </tr>
+    <tr>
+      <td><p>11</p></td>
+      <td><p>36 x 36</p></td>
+      <td><p>26</p></td>
+      <td><p>8 x 32</p></td>
+    </tr>
+    <tr>
+      <td><p>12</p></td>
+      <td><p>40 x 40</p></td>
+      <td><p>27</p></td>
+      <td><p>12 x 26</p></td>
+    </tr>
+    <tr>
+      <td><p>13</p></td>
+      <td><p>44 x 44</p></td>
+      <td><p>28</p></td>
+      <td><p>12 x 36</p></td>
+    </tr>
+    <tr>
+      <td><p>14</p></td>
+      <td><p>48 x 48</p></td>
+      <td><p>29</p></td>
+      <td><p>16 x 36</p></td>
+    </tr>
+    <tr>
+      <td><p>15</p></td>
+      <td><p>52 x 52</p></td>
+      <td><p>30</p></td>
+      <td><p>16 x 48</p></td>
+    </tr>
+  </tbody>
+</table>
+     * @param size Symbol size
+     */
     public void setPreferredSize(int size) {
         preferredSize = size;
     }

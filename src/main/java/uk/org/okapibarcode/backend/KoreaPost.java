@@ -16,7 +16,9 @@
 package uk.org.okapibarcode.backend;
 
 /**
- *
+ * Implements Korea Post Barcode. Input should consist of of a six-digit
+ * number. A Modulo-10 check digit is calculated and added, and should not form
+ * part of the input data.
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class KoreaPost extends Symbol {

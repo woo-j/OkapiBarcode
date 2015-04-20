@@ -19,7 +19,9 @@ import java.awt.Rectangle;
 import java.util.Locale;
 
 /**
- *
+ * Implements Dutch Post KIX Code as used by Royal Dutch TPG Post
+ * (Netherlands). Input data can consist of digits 0-9 and characters A-Z.
+ * Input should be 11 characters in length. No check digit is added.
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class KixCode extends Symbol {

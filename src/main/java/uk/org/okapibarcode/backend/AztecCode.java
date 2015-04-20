@@ -35,121 +35,121 @@ public class AztecCode extends Symbol {
      * data string is too large to fit in the specified symbol size.
      * Values correspond to symbol sizes as shown in the following
      * table:
-     * <table cellspacing="0" cellpadding="5" summary="Available Aztec Code symbol sizes">
+     * <table summary="Available Aztec Code symbol sizes">
         <tbody>
           <tr>
-            <th colspan="1" rowspan="1"><p>Input</p></th>
-            <th colspan="1" rowspan="1"><p>Symbol Size</p></th>
-            <th colspan="1" rowspan="1"><p>Input</p></th>
-            <th colspan="1" rowspan="1"><p>Symbol Size</p></th>
+            <th><p>Input</p></th>
+            <th><p>Symbol Size</p></th>
+            <th><p>Input</p></th>
+            <th><p>Symbol Size</p></th>
           </tr>
           <tr>
-            <td rowspan="1" colspan="1"><p>1</p></td>
-            <td rowspan="1" colspan="1"><p>15 x 15*</p></td>
-            <td rowspan="1" colspan="1"><p>19</p></td>
-            <td rowspan="1" colspan="1"><p>79 x 79</p></td>
+            <td><p>1</p></td>
+            <td><p>15 x 15*</p></td>
+            <td><p>19</p></td>
+            <td><p>79 x 79</p></td>
           </tr>
           <tr>
-            <td rowspan="1" colspan="1"><p>2</p></td>
-            <td rowspan="1" colspan="1"><p>19 x 19*</p></td>
-            <td rowspan="1" colspan="1"><p>20</p></td>
-            <td rowspan="1" colspan="1"><p>83 x 83</p></td>
+            <td><p>2</p></td>
+            <td><p>19 x 19*</p></td>
+            <td><p>20</p></td>
+            <td><p>83 x 83</p></td>
           </tr>
           <tr>
-            <td rowspan="1" colspan="1"><p>3</p></td>
-            <td rowspan="1" colspan="1"><p>23 x 23*</p></td>
-            <td rowspan="1" colspan="1"><p>21</p></td>
-            <td rowspan="1" colspan="1"><p>87 x 87</p></td>
+            <td><p>3</p></td>
+            <td><p>23 x 23*</p></td>
+            <td><p>21</p></td>
+            <td><p>87 x 87</p></td>
           </tr>
           <tr>
-            <td rowspan="1" colspan="1"><p>4</p></td>
-            <td rowspan="1" colspan="1"><p>27 x 27*</p></td>
-            <td rowspan="1" colspan="1"><p>22</p></td>
-            <td rowspan="1" colspan="1"><p>91 x 91</p></td>
+            <td><p>4</p></td>
+            <td><p>27 x 27*</p></td>
+            <td><p>22</p></td>
+            <td><p>91 x 91</p></td>
           </tr>
           <tr>
-            <td rowspan="1" colspan="1"><p>5</p></td>
-            <td rowspan="1" colspan="1"><p>19 x 19</p></td>
-            <td rowspan="1" colspan="1"><p>23</p></td>
-            <td rowspan="1" colspan="1"><p>95 x 95</p></td>
+            <td><p>5</p></td>
+            <td><p>19 x 19</p></td>
+            <td><p>23</p></td>
+            <td><p>95 x 95</p></td>
           </tr>
           <tr>
-            <td rowspan="1" colspan="1"><p>6</p></td>
-            <td rowspan="1" colspan="1"><p>23 x 23</p></td>
-            <td rowspan="1" colspan="1"><p>24</p></td>
-            <td rowspan="1" colspan="1"><p>101 x 101</p></td>
+            <td><p>6</p></td>
+            <td><p>23 x 23</p></td>
+            <td><p>24</p></td>
+            <td><p>101 x 101</p></td>
           </tr>
           <tr>
-            <td rowspan="1" colspan="1"><p>7</p></td>
-            <td rowspan="1" colspan="1"><p>27 x 27</p></td>
-            <td rowspan="1" colspan="1"><p>25</p></td>
-            <td rowspan="1" colspan="1"><p>105 x 105</p></td>
+            <td><p>7</p></td>
+            <td><p>27 x 27</p></td>
+            <td><p>25</p></td>
+            <td><p>105 x 105</p></td>
           </tr>
           <tr>
-            <td rowspan="1" colspan="1"><p>8</p></td>
-            <td rowspan="1" colspan="1"><p>31 x 31</p></td>
-            <td rowspan="1" colspan="1"><p>26</p></td>
-            <td rowspan="1" colspan="1"><p>109 x 109</p></td>
+            <td><p>8</p></td>
+            <td><p>31 x 31</p></td>
+            <td><p>26</p></td>
+            <td><p>109 x 109</p></td>
           </tr>
           <tr>
-            <td rowspan="1" colspan="1"><p>9</p></td>
-            <td rowspan="1" colspan="1"><p>37 x 37</p></td>
-            <td rowspan="1" colspan="1"><p>27</p></td>
-            <td rowspan="1" colspan="1"><p>113 x 113</p></td>
+            <td><p>9</p></td>
+            <td><p>37 x 37</p></td>
+            <td><p>27</p></td>
+            <td><p>113 x 113</p></td>
           </tr>
           <tr>
-            <td rowspan="1" colspan="1"><p>10</p></td>
-            <td rowspan="1" colspan="1"><p>41 x 41</p></td>
-            <td rowspan="1" colspan="1"><p>28</p></td>
-            <td rowspan="1" colspan="1"><p>117 x 117</p></td>
+            <td><p>10</p></td>
+            <td><p>41 x 41</p></td>
+            <td><p>28</p></td>
+            <td><p>117 x 117</p></td>
           </tr>
           <tr>
-            <td rowspan="1" colspan="1"><p>11</p></td>
-            <td rowspan="1" colspan="1"><p>45 x 45</p></td>
-            <td rowspan="1" colspan="1"><p>29</p></td>
-            <td rowspan="1" colspan="1"><p>121 x 121</p></td>
+            <td><p>11</p></td>
+            <td><p>45 x 45</p></td>
+            <td><p>29</p></td>
+            <td><p>121 x 121</p></td>
           </tr>
           <tr>
-            <td rowspan="1" colspan="1"><p>12</p></td>
-            <td rowspan="1" colspan="1"><p>49 x 49</p></td>
-            <td rowspan="1" colspan="1"><p>30</p></td>
-            <td rowspan="1" colspan="1"><p>125 x 125</p></td>
+            <td><p>12</p></td>
+            <td><p>49 x 49</p></td>
+            <td><p>30</p></td>
+            <td><p>125 x 125</p></td>
           </tr>
           <tr>
-            <td rowspan="1" colspan="1"><p>13</p></td>
-            <td rowspan="1" colspan="1"><p>53 x 53</p></td>
-            <td rowspan="1" colspan="1"><p>31</p></td>
-            <td rowspan="1" colspan="1"><p>131 x 131</p></td>
+            <td><p>13</p></td>
+            <td><p>53 x 53</p></td>
+            <td><p>31</p></td>
+            <td><p>131 x 131</p></td>
           </tr>
           <tr>
-            <td rowspan="1" colspan="1"><p>14</p></td>
-            <td rowspan="1" colspan="1"><p>57 x 57</p></td>
-            <td rowspan="1" colspan="1"><p>32</p></td>
-            <td rowspan="1" colspan="1"><p>135 x 135</p></td>
+            <td><p>14</p></td>
+            <td><p>57 x 57</p></td>
+            <td><p>32</p></td>
+            <td><p>135 x 135</p></td>
           </tr>
           <tr>
-            <td rowspan="1" colspan="1"><p>15</p></td>
-            <td rowspan="1" colspan="1"><p>61 x 61</p></td>
-            <td rowspan="1" colspan="1"><p>33</p></td>
-            <td rowspan="1" colspan="1"><p>139 x 139</p></td>
+            <td><p>15</p></td>
+            <td><p>61 x 61</p></td>
+            <td><p>33</p></td>
+            <td><p>139 x 139</p></td>
           </tr>
           <tr>
-            <td rowspan="1" colspan="1"><p>16</p></td>
-            <td rowspan="1" colspan="1"><p>67 x 67</p></td>
-            <td rowspan="1" colspan="1"><p>34</p></td>
-            <td rowspan="1" colspan="1"><p>143 x 143</p></td>
+            <td><p>16</p></td>
+            <td><p>67 x 67</p></td>
+            <td><p>34</p></td>
+            <td><p>143 x 143</p></td>
           </tr>
           <tr>
-            <td rowspan="1" colspan="1"><p>17</p></td>
-            <td rowspan="1" colspan="1"><p>71 x 71</p></td>
-            <td rowspan="1" colspan="1"><p>35</p></td>
-            <td rowspan="1" colspan="1"><p>147 x 147</p></td>
+            <td><p>17</p></td>
+            <td><p>71 x 71</p></td>
+            <td><p>35</p></td>
+            <td><p>147 x 147</p></td>
           </tr>
           <tr>
-            <td rowspan="1" colspan="1"><p>18</p></td>
-            <td rowspan="1" colspan="1"><p>75 x 75</p></td>
-            <td rowspan="1" colspan="1"><p>36</p></td>
-            <td rowspan="1" colspan="1"><p>151 x 151</p></td>
+            <td><p>18</p></td>
+            <td><p>75 x 75</p></td>
+            <td><p>36</p></td>
+            <td><p>151 x 151</p></td>
           </tr>
         </tbody>
       </table>
@@ -166,27 +166,27 @@ public class AztecCode extends Symbol {
      * error correction. This value will be ignored if a symbol size has been
      * set by <code>setPreferredSize</code> Valid options
      * are:
-     * <table cellspacing="0" cellpadding="5" summary="Error correction options">
+     * <table summary="Error correction options">
         <tbody>
           <tr>
-            <th colspan="1" rowspan="1"><p>Mode</p></th>
-            <th colspan="1" rowspan="1"><p>Error Correction Capacity</p></th>
+            <th><p>Mode</p></th>
+            <th><p>Error Correction Capacity</p></th>
           </tr>
           <tr>
-            <td rowspan="1" colspan="1"><p>1</p></td>
-            <td rowspan="1" colspan="1"><p>&gt;10% + 3 codewords</p></td>
+            <td><p>1</p></td>
+            <td><p>&gt;10% + 3 codewords</p></td>
           </tr>
           <tr>
-            <td rowspan="1" colspan="1"><p>2</p></td>
-            <td rowspan="1" colspan="1"><p>&gt;23% + 3 codewords</p></td>
+            <td><p>2</p></td>
+            <td><p>&gt;23% + 3 codewords</p></td>
           </tr>
           <tr>
-            <td rowspan="1" colspan="1"><p>3</p></td>
-            <td rowspan="1" colspan="1"><p>&gt;36% + 3 codewords</p></td>
+            <td><p>3</p></td>
+            <td><p>&gt;36% + 3 codewords</p></td>
           </tr>
           <tr>
-            <td rowspan="1" colspan="1"><p>4</p></td>
-            <td rowspan="1" colspan="1"><p>&gt;50% + 3 codewords</p></td>
+            <td><p>4</p></td>
+            <td><p>&gt;50% + 3 codewords</p></td>
           </tr>
         </tbody>
       </table>

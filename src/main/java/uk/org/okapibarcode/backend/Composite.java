@@ -21,6 +21,10 @@ import java.util.ArrayList;
 
 /**
  * Implements composite symbology According to ISO/IEC 24723:2006
+ * <p>
+ * Composite symbols comprise a 2D element which encodes GS1 data
+ * and a "linear" element which can be UPC, EAN, Code 128 or
+ * DataBar symbol.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
@@ -465,14 +469,31 @@ public class Composite extends Symbol {
         // Do nothing!
     }
     
+    /**
+     * Set the type of linear component included in the composite symbol,
+     * this will determine how the lower part of the symbol is encoded.
+     * @param linearSymbology The symbology of the linear component
+     */
     public void setSymbology(LinearEncoding linearSymbology) {
         symbology = linearSymbology;
     }
 
+    /**
+     * Set the data to be encoded in the linear component of the composite
+     * symbol.
+     * @param input The linear data in GS1 format
+     */
     public void setLinear(String input) {
         linearContent = input;
     }
 
+    /**
+     * Set the preferred encoding method for the 2D component of the
+     * composite symbol. This value may be ignored if the amount of data
+     * supplied is too big for the selected encoding. Mode CC-C can only be
+     * used with a Code 128 linear component.
+     * @param userMode Preferred mode
+     */
     public void setPreferredMode(CompositeMode userMode) {
         userPreferredMode = userMode;
     }

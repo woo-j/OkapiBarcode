@@ -18,7 +18,10 @@ package uk.org.okapibarcode.backend;
 import java.awt.Rectangle;
 import java.util.Locale;
 /**
- *
+ * Implements the Japanese Postal Code symbology as used to encode adress
+ * data for mail items in Japan. Valid input characters are digits 0-9,
+ * characters A-Z and the dash (-) character. A modulo-19 check digit is
+ * added and should not be included in the input data.
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class JapanPost extends Symbol {

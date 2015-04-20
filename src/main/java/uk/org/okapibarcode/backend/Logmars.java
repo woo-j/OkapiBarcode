@@ -16,7 +16,12 @@
 package uk.org.okapibarcode.backend;
 
 /**
- *
+ * Implements the LOGMARS (Logistics Applications of Automated Marking
+ * and Reading Symbols) standard used by the US Department of Defence.
+ * Input data can be of any length and supports the characters 0-9, AZ, dash 
+ * (-), full stop (.), space, asterisk (*), dollar ($), slash (/), plus (+) 
+ * and percent (%). A Modulo-43 check digit is calculated and added, and
+ * should not form part of the input data.
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class Logmars extends Symbol {

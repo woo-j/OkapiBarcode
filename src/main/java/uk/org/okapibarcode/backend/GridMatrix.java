@@ -20,6 +20,10 @@ import java.io.UnsupportedEncodingException;
 /**
  * Implements Grid Matrix bar code symbology
  * According to AIMD014
+ * <br>
+ * Grid Matrix is a matrix symbology which can encode characters in the
+ * ISO/IEC 8859-1 (Latin-1) character set as well as those in the GB-2312
+ * character set. Input is assumed to be formatted as a UTF string.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
@@ -178,12 +182,112 @@ public class GridMatrix extends Symbol {
     
     private int preferredVersion = 0;
     
+    /**
+     * Set preferred size, or "version" of the symbol according to the
+     * following table. This value may be ignored if the data to be encoded
+     * does not fit into a symbol of the selected size.
+     * <table summary="Available Grid Matrix symbol sizes">
+  <tbody>
+    <tr>
+      <th><p>Input</p></th>
+      <th><p>Size</p></th>
+    </tr>
+    <tr>
+      <td><p>1</p></td>
+      <td><p>18 x 18</p></td>
+    </tr>
+    <tr>
+      <td><p>2</p></td>
+      <td><p>30 x 30</p></td>
+    </tr>
+    <tr>
+      <td><p>3</p></td>
+      <td><p>42 x 42</p></td>
+    </tr>
+    <tr>
+      <td><p>4</p></td>
+      <td><p>54 x 54</p></td>
+    </tr>
+    <tr>
+      <td><p>5</p></td>
+      <td><p>66 x 66</p></td>
+    </tr>
+    <tr>
+      <td><p>6</p></td>
+      <td><p>78 x 78</p></td>
+    </tr>
+    <tr>
+      <td><p>7</p></td>
+      <td><p>90x 90</p></td>
+    </tr>
+    <tr>
+      <td><p>8</p></td>
+      <td><p>102 x 102</p></td>
+    </tr>
+    <tr>
+      <td><p>9</p></td>
+      <td><p>114 x 114</p></td>
+    </tr>
+    <tr>
+      <td><p>10</p></td>
+      <td><p>126 x 126</p></td>
+    </tr>
+    <tr>
+      <td><p>11</p></td>
+      <td><p>138 x 138</p></td>
+    </tr>
+    <tr>
+      <td><p>12</p></td>
+      <td><p>150 x 150</p></td>
+    </tr>
+    <tr>
+      <td><p>13</p></td>
+      <td><p>162 x 162</p></td>
+    </tr>
+  </tbody>
+</table>
+     * @param version Symbol version
+     */
     public void setPreferredVersion(int version) {
         preferredVersion = version;
     }
 
     private int preferredEccLevel = -1;
     
+    /**
+     * Set the preferred amount of the symbol which should be dedicated
+     * to error correction data. Values should be selected from the
+     * following tabe:
+     * <table summary="Available options for error correction capacity">
+  <tbody>
+    <tr>
+      <th><p>Mode</p></th>
+      <th><p>Error Correction Capacity</p></th>
+    </tr>
+    <tr>
+      <td><p>1</p></td>
+      <td><p>Approximately 10%</p></td>
+    </tr>
+    <tr>
+      <td><p>2</p></td>
+      <td><p>Approximately 20%</p></td>
+    </tr>
+    <tr>
+      <td><p>3</p></td>
+      <td><p>Approximately 30%</p></td>
+    </tr>
+    <tr>
+      <td><p>4</p></td>
+      <td><p>Approximately 40%</p></td>
+    </tr>
+    <tr>
+      <td><p>5</p></td>
+      <td><p>Approximately 50%</p></td>
+    </tr>
+  </tbody>
+</table>
+     * @param eccLevel Error correction mode
+     */
     public void setPreferredEccLevel (int eccLevel) {
         preferredEccLevel = eccLevel;
     }    

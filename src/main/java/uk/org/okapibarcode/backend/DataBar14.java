@@ -20,6 +20,9 @@ import java.math.BigInteger;
 /**
  * Implements GS1 DataBar-14
  * According to ISO/IEC 24724:2007
+ * <p>
+ * Input data should be a 13 digit Global Trade Identification Number
+ * without check digit or Application Identifier [01].
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
@@ -55,7 +58,7 @@ public class DataBar14 extends Symbol {
 
     private boolean linkageFlag;
     private enum gb14Mode {
-        RSS14, OMNI, STACKED
+        LINEAR, OMNI, STACKED
     };
     private gb14Mode symbolType;
     private boolean[][] grid = new boolean[5][100];
@@ -63,7 +66,7 @@ public class DataBar14 extends Symbol {
 
     public DataBar14() {
         linkageFlag = false;
-        symbolType = gb14Mode.RSS14;
+        symbolType = gb14Mode.LINEAR;
     }
     
     @Override
@@ -71,22 +74,31 @@ public class DataBar14 extends Symbol {
         // Do nothing!
     }
 
-    public void setLinkageFlag() {
+    protected void setLinkageFlag() {
         linkageFlag = true;
     }
 
-    public void unsetLinkageFlag() {
+    protected void unsetLinkageFlag() {
         linkageFlag = false;
     }
 
+    /**
+     * Set symbol type to DataBar-14
+     */
     public void setLinearMode() {
-        symbolType = gb14Mode.RSS14;
+        symbolType = gb14Mode.LINEAR;
     }
 
+    /**
+     * Set symbol type to DataBar-14 Omnidirectional 
+     */
     public void setOmnidirectionalMode() {
         symbolType = gb14Mode.OMNI;
     }
 
+    /**
+     * Set symbol type to DataBar-14 Omnidirectional Stacked
+     */
     public void setStackedMode() {
         symbolType = gb14Mode.STACKED;
     }
@@ -310,7 +322,7 @@ public class DataBar14 extends Symbol {
             seperator[i] = false;
         }
         /* Put this data into the symbol */
-        if (symbolType == gb14Mode.RSS14) {
+        if (symbolType == gb14Mode.LINEAR) {
             writer = 0;
             latch = '0';
             for (i = 0; i < 46; i++) {
@@ -624,7 +636,7 @@ public class DataBar14 extends Symbol {
             pattern[i + compositeOffset] = bin2pat(bin);
         }
 
-        if (symbolType == gb14Mode.RSS14) {
+        if (symbolType == gb14Mode.LINEAR) {
             row_height[0 + compositeOffset] = -1;
         }
         if (symbolType == gb14Mode.STACKED) {

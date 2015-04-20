@@ -2145,7 +2145,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 } else {
                     ean.setEan13Mode();
                 }
-                ean.unsetLinkageFlag();
                 ean.setContent(dataInput);
                 return ean;
             case ITF14:
@@ -2564,36 +2563,30 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 return gridMatrix;
             case DB14:
                 DataBar14 dataBar14 = new DataBar14();
-                dataBar14.unsetLinkageFlag();
                 dataBar14.setLinearMode();
                 dataBar14.setContent(dataInput);
                 return dataBar14;
             case DB14_STACKED_OMNIDIRECT:
                 DataBar14 dataBar14so = new DataBar14();
-                dataBar14so.unsetLinkageFlag();
                 dataBar14so.setOmnidirectionalMode();
                 dataBar14so.setContent(dataInput);
                 return dataBar14so;
             case DB14_STACKED:
                 DataBar14 dataBar14s = new DataBar14();
-                dataBar14s.unsetLinkageFlag();
                 dataBar14s.setStackedMode();
                 dataBar14s.setContent(dataInput);
                 return dataBar14s;
             case DB_LIMITED:
                 DataBarLimited dataBarLimited = new DataBarLimited();
-                dataBarLimited.unsetLinkageFlag();
                 dataBarLimited.setContent(dataInput);
                 return dataBarLimited;
             case DB_EXPANDED:
                 DataBarExpanded dataBarE = new DataBarExpanded();
-                dataBarE.unsetLinkageFlag();
                 dataBarE.setNotStacked();
                 dataBarE.setContent(dataInput);
                 return dataBarE;
             case DB_EXPANDED_STACKED:
                 DataBarExpanded dataBarES = new DataBarExpanded();
-                dataBarES.unsetLinkageFlag();
                 dataBarES.setNoOfColumns(databarColumnsCombo.getSelectedIndex());
                 dataBarES.setStacked();
                 dataBarES.setContent(dataInput);

@@ -19,6 +19,12 @@ import java.awt.Rectangle;
 /**
  * Implements EAN bar code symbology
  * According to BS EN 797:1996
+ * <br>
+ * European Article Number data can be encoded in EAN-8 or EAN-13 format
+ * requiring a 7-digit or 12-digit input respectively. EAN-13 numbers map to
+ * Global Trade Identification Numbers (GTIN) whereas EAN-8 symbols are
+ * generally for internal use only. Check digit is calculated and should not
+ * be in input data. Leading zeroes are added as required.
  *
  * @author <a href="mailto:jakel2006@me.com">Robert Elliott</a>
  */
@@ -54,19 +60,25 @@ public class Ean extends Symbol {
         linkageFlag = false;
     }
 
+    /**
+     * Encode input data in an EAN-8 symbol
+     */
     public void setEan8Mode() {
         mode = ean_mode.EAN8;
     }
 
+    /**
+     * Encode input data in an EAN-13 symbol
+     */
     public void setEan13Mode() {
         mode = ean_mode.EAN13;
     }
 
-    public void setLinkageFlag() {
+    protected void setLinkageFlag() {
         linkageFlag = true;
     }
 
-    public void unsetLinkageFlag() {
+    protected void unsetLinkageFlag() {
         linkageFlag = false;
     }
 

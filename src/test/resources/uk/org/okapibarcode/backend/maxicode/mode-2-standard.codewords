@@ -98,47 +98,47 @@
 29		GS
 16		P
 1		A
+30		RS
+62		[Shift E]
+4		EOT
 33		start padding
-33
-33
-33
-11		start secondary message error correction
-16
-50
-7
-19
-51
-55
-52
-10
-41
-21
-25
-26
-54
-27
-31
-17
+24		start secondary message error correction
+56
+8
+32
 30
-62
-33
-8
-33
-6
+3
+27
 35
-20
-11
-6
-61
-22
-61
-46
-35
-21
-62
-62
-62
-34
-8
+41
+33
 1
-62		end secondary message error correction
+21
+56
+27
+50
+29
+7
+61
+12
+13
+34
+45
+3
+37
+47
+17
+29
+1
+45
+17
+59
+11
+29
+9
+7
+24
+43
+7
+18
+30		end secondary message error correction

@@ -13,14 +13,15 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.imageio.ImageIO;
 
-import org.apache.commons.configuration.PropertiesConfiguration;
 import org.junit.Assert;
 import org.junit.ComparisonFailure;
 import org.junit.Test;
@@ -31,8 +32,6 @@ import org.reflections.Reflections;
 
 import uk.org.okapibarcode.output.Java2DRenderer;
 import uk.org.okapibarcode.output.SymbolRenderer;
-
-import com.google.common.io.Files;
 
 /**
  * <p>
@@ -106,10 +105,21 @@ public class SymbolTest {
     @Test
     public void test() throws Exception {
 
-        PropertiesConfiguration properties = new PropertiesConfiguration();
-        properties.setEncoding("UTF-8");
-        properties.setDelimiterParsingDisabled(true);
-        properties.load(propertiesFile);
+        byte[] bytes = Files.readAllBytes(propertiesFile.toPath());
+        String content = new String(bytes, UTF_8);
+        String[] lines = content.split("\r\n"); // useful because sometimes we want to use \n or \r in data, but usually not both together
+
+        Map< String, String > properties = new LinkedHashMap<>();
+        for (String line : lines) {
+            if (!line.startsWith("#") && !line.isEmpty()) {
+                int index = line.indexOf('=');
+                if (index != -1) {
+                    String name = line.substring(0, index);
+                    String value = line.substring(index + 1);
+                    properties.put(name, value);
+                }
+            }
+        }
 
         Symbol symbol = symbolType.newInstance();
 
@@ -138,7 +148,7 @@ public class SymbolTest {
 
         assertEquals("error message", "", symbol.error_msg);
 
-        List< String > expectedCodewords = Files.readLines(codewordsFile, UTF_8);
+        List< String > expectedCodewords = Files.readAllLines(codewordsFile.toPath(), UTF_8);
         int[] actualCodewords = symbol.getCodewords();
         assertEquals(expectedCodewords.size(), actualCodewords.length);
         for (int i = 0; i < actualCodewords.length; i++) {
@@ -159,7 +169,7 @@ public class SymbolTest {
      * @throws IOException if there is any I/O error
      */
     private void verifyError(Symbol symbol) throws IOException {
-        String expectedError = Files.readFirstLine(errorFile, UTF_8);
+        String expectedError = Files.readAllLines(errorFile.toPath(), UTF_8).get(0);
         assertEquals(expectedError, symbol.error_msg);
     }
 
@@ -264,10 +274,10 @@ public class SymbolTest {
      * @param properties the attribute names and values to set
      * @throws ReflectiveOperationException if there is any reflection error
      */
-    private static void setProperties(Symbol symbol, PropertiesConfiguration properties) throws ReflectiveOperationException {
-        for (Iterator< String > i = properties.getKeys(); i.hasNext();) {
-            String name = i.next();
-            Object value = properties.getProperty(name);
+    private static void setProperties(Symbol symbol, Map< String, String > properties) throws ReflectiveOperationException {
+        for (Map.Entry< String, String > entry : properties.entrySet()) {
+            String name = entry.getKey();
+            String value = entry.getValue();
             String setterName = "set" + name.substring(0, 1).toUpperCase() + name.substring(1);
             Method setter = getMethod(symbol.getClass(), setterName);
             invoke(symbol, setter, value);

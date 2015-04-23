@@ -36,7 +36,7 @@ public abstract class Symbol {
     protected int default_height;
     protected boolean readerInit;
     protected String encodeInfo = "";
-    
+
     public enum DataType {
         UTF8, LATIN1, BINARY, GS1, HIBC
     }
@@ -85,7 +85,7 @@ public abstract class Symbol {
     public final void setReaderInit() {
         readerInit = true;
     }
-    
+
     /**
      * Removes "Reader Initialisation" or "Reader Programming" instruction
      * from symbol data.
@@ -102,7 +102,7 @@ public abstract class Symbol {
     public int getWidth() {
         return symbol_width;
     }
-    
+
     /**
      * Gets a human readable summary of the decisions made by the encoder
      * when creating a symbol.
@@ -251,7 +251,7 @@ public abstract class Symbol {
             }
             y += h;
         }
-        
+
         mergeVerticalBlocks();
 
         if (!(readable.isEmpty())) {
@@ -260,7 +260,7 @@ public abstract class Symbol {
             txt.add(text);
         }
     }
-    
+
     /**
      * Search for rectangles which have the same width and x position, and
      * which join together vertically and merge them together to reduce the
@@ -270,12 +270,12 @@ public abstract class Symbol {
         int i, j;
         Rectangle firstRect;
         Rectangle secondRect;
-        
+
         for(i = 0; i < rect.size() - 1; i++) {
             for(j = i + 1; j < rect.size(); j++) {
                 firstRect = rect.get(i);
                 secondRect = rect.get(j);
-                
+
                 if ((firstRect.x == secondRect.x) && (firstRect.width == secondRect.width)) {
                     if ((firstRect.y + firstRect.height) == secondRect.y) {
                         firstRect.height += secondRect.height;
@@ -563,7 +563,7 @@ public abstract class Symbol {
             'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
             'U', 'V', 'W', 'X', 'Y', 'Z', '-', '.', ' ', '$',
             '/', '+', '%' };
-        
+
 	int counter, i;
         String to_process;
         char check_digit;
@@ -658,5 +658,21 @@ public abstract class Symbol {
         System.arraycopy(inserted, 0, modified, index, inserted.length);
         System.arraycopy(original, index, modified, index + inserted.length, modified.length - index - inserted.length);
         return modified;
+    }
+
+    /**
+     * Returns true if the specified array contains the specified value.
+     *
+     * @param values the array to check in
+     * @param value the value to check for
+     * @return true if the specified array contains the specified value
+     */
+    protected static boolean contains(int[] values, int value) {
+        for (int i = 0; i < values.length; i++) {
+            if (values[i] == value) {
+                return true;
+            }
+        }
+        return false;
     }
 }

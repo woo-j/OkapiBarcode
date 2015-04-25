@@ -77,4 +77,4 @@ of work that have been invested in that project.
 
 `gradlew check`: Compiles and runs all quality checks, including the unit tests.  
 `gradlew jar`: Builds the JAR file.  
-`gradle uploadArchives`: Deploys to Maven Central (requires a modified gradle.properties file).  
+`gradlew uploadArchives`: Deploys to Maven Central (requires a modified gradle.properties file).  

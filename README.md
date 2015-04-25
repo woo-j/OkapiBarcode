@@ -55,6 +55,10 @@ of work that have been invested in that project.
 * [Korea Post](src/main/java/uk/org/okapibarcode/backend/KoreaPost.java)
 * [LOGMARS](src/main/java/uk/org/okapibarcode/backend/Logmars.java)
 * [MaxiCode](src/main/java/uk/org/okapibarcode/backend/MaxiCode.java)
+* [PDF417](src/main/java/uk/org/okapibarcode/backend/Pdf417.java) variants:
+  * PDF417
+  * Truncated PDF417
+  * Micro PDF417
 * [Pharmacode](src/main/java/uk/org/okapibarcode/backend/Pharmacode.java)
 * [Pharmacode Two-Track](src/main/java/uk/org/okapibarcode/backend/Pharmacode2Track.java)
 * [POSTNET / PLANET](src/main/java/uk/org/okapibarcode/backend/Postnet.java)

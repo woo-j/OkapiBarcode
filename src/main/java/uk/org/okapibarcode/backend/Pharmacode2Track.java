@@ -13,15 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package uk.org.okapibarcode.backend;
 
 import java.awt.Rectangle;
 
 /**
+ * Implements the Two-Track Pharmacode bar code symbology.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
-public class PharmaCode2Track extends Symbol {
+public class Pharmacode2Track extends Symbol {
 
     @Override
     public boolean encode() {

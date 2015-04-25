@@ -72,8 +72,8 @@ import uk.org.okapibarcode.backend.MsiPlessey;
 import uk.org.okapibarcode.backend.Nve18;
 import uk.org.okapibarcode.backend.OkapiException;
 import uk.org.okapibarcode.backend.Pdf417;
-import uk.org.okapibarcode.backend.PharmaCode;
-import uk.org.okapibarcode.backend.PharmaCode2Track;
+import uk.org.okapibarcode.backend.Pharmacode;
+import uk.org.okapibarcode.backend.Pharmacode2Track;
 import uk.org.okapibarcode.backend.Pharmazentralnummer;
 import uk.org.okapibarcode.backend.Postnet;
 import uk.org.okapibarcode.backend.QrCode;
@@ -2352,13 +2352,13 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 channelCode.setContent(dataInput);
                 return channelCode;
             case PHARMA:
-                PharmaCode pharmaCode = new PharmaCode();
-                pharmaCode.setContent(dataInput);
-                return pharmaCode;
+                Pharmacode pharmacode = new Pharmacode();
+                pharmacode.setContent(dataInput);
+                return pharmacode;
             case PHARMA_TWOTRACK:
-                PharmaCode2Track pharmaCode2t = new PharmaCode2Track();
-                pharmaCode2t.setContent(dataInput);
-                return pharmaCode2t;
+                Pharmacode2Track pharmacode2t = new Pharmacode2Track();
+                pharmacode2t.setContent(dataInput);
+                return pharmacode2t;
             case CODE_32:
                 Code32 code32 = new Code32();
                 code32.setContent(dataInput);

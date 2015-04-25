@@ -55,6 +55,8 @@ of work that have been invested in that project.
 * [Korea Post](src/main/java/uk/org/okapibarcode/backend/KoreaPost.java)
 * [LOGMARS](src/main/java/uk/org/okapibarcode/backend/Logmars.java)
 * [MaxiCode](src/main/java/uk/org/okapibarcode/backend/MaxiCode.java)
+* [Pharmacode](src/main/java/uk/org/okapibarcode/backend/Pharmacode.java)
+* [Pharmacode Two-Track](src/main/java/uk/org/okapibarcode/backend/Pharmacode2Track.java)
 * [POSTNET / PLANET](src/main/java/uk/org/okapibarcode/backend/Postnet.java)
 * [QR Code](src/main/java/uk/org/okapibarcode/backend/QrCode.java)
 * [Royal Mail 4 State](src/main/java/uk/org/okapibarcode/backend/RoyalMail4State.java) (RM4SCC)

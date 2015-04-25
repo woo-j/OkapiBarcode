@@ -13,13 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package uk.org.okapibarcode.backend;
 
 /**
+ * Implements the <a href="http://en.wikipedia.org/wiki/Pharmacode">Pharmacode</a> bar code symbology.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
-public class PharmaCode extends Symbol {
+public class Pharmacode extends Symbol {
 
     @Override
     public boolean encode() {

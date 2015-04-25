@@ -13,46 +13,51 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package uk.org.okapibarcode.backend;
 
 import java.awt.Rectangle;
+
 /**
+ * Implements <a href="http://en.wikipedia.org/wiki/POSTNET">POSTNET</a> and
+ * <a href="http://en.wikipedia.org/wiki/Postal_Alpha_Numeric_Encoding_Technique">PLANET</a>
+ * bar code symbologies.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class Postnet extends Symbol {
-    private String[] PNTable = {
-        "LLSSS", "SSSLL", "SSLSL", "SSLLS", "SLSSL", "SLSLS", "SLLSS", "LSSSL",
-        "LSSLS", "LSLSS"
-    };
-    private String[] PLTable = {
-        "SSLLL", "LLLSS", "LLSLS", "LLSSL", "LSLLS", "LSLSL", "LSSLL", "SLLLS",
-        "SLLSL", "SLSLL"
+
+    private static final String[] PN_TABLE = {
+        "LLSSS", "SSSLL", "SSLSL", "SSLLS", "SLSSL", "SLSLS", "SLLSS", "LSSSL", "LSSLS", "LSLSS"
     };
 
-    private enum netMode {
+    private static final String[] PL_TABLE = {
+        "SSLLL", "LLLSS", "LLSLS", "LLSSL", "LSLLS", "LSLSL", "LSSLL", "SLLLS", "SLLSL", "SLSLL"
+    };
+
+    private enum Mode {
         PLANET, POSTNET
     };
 
-    private netMode mode;
+    private Mode mode;
 
     public Postnet() {
-        mode = netMode.POSTNET;
+        mode = Mode.POSTNET;
     }
 
     public void setPlanet() {
-        mode = netMode.PLANET;
+        mode = Mode.PLANET;
     }
 
     public void setPostnet() {
-        mode = netMode.POSTNET;
+        mode = Mode.POSTNET;
     }
 
     @Override
     public boolean encode() {
         boolean retval;
 
-        if (mode == netMode.POSTNET) {
+        if (mode == Mode.POSTNET) {
             retval = makePostnet();
         } else {
             retval = makePlanet();
@@ -83,14 +88,14 @@ public class Postnet extends Symbol {
         dest = "L";
 
         for (i = 0; i < content.length(); i++) {
-            dest += PNTable[content.charAt(i) - '0'];
+            dest += PN_TABLE[content.charAt(i) - '0'];
             sum += content.charAt(i) - '0';
         }
 
         check_digit = (10 - (sum % 10)) % 10;
         encodeInfo += "Check Digit: " + check_digit + "\n";
 
-        dest += PNTable[check_digit];
+        dest += PN_TABLE[check_digit];
 
         dest += "L";
         readable = "";
@@ -120,14 +125,14 @@ public class Postnet extends Symbol {
         dest = "L";
 
         for (i = 0; i < content.length(); i++) {
-            dest += PLTable[content.charAt(i) - '0'];
+            dest += PL_TABLE[content.charAt(i) - '0'];
             sum += content.charAt(i) - '0';
         }
 
         check_digit = (10 - (sum % 10)) % 10;
         encodeInfo += "Check Digit: " + check_digit + "\n";
 
-        dest += PLTable[check_digit];
+        dest += PL_TABLE[check_digit];
 
         dest += "L";
         readable = "";

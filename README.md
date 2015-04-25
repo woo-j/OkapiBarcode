@@ -72,3 +72,9 @@ of work that have been invested in that project.
   * UPC-A
   * UPC-E
 * [USPS OneCode](src/main/java/uk/org/okapibarcode/backend/UspsOneCode.java) (Intelligent Mail)
+
+###Building
+
+`gradlew check`: Compiles and runs all quality checks, including the unit tests.  
+`gradlew jar`: Builds the JAR file.  
+`gradle uploadArchives`: Deploys to Maven Central (requires a modified gradle.properties file).  

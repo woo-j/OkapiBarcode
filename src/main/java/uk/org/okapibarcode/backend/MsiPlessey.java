@@ -13,9 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package uk.org.okapibarcode.backend;
 
 /**
+ * Implements the MSI (Modified Plessey) bar code symbology.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
@@ -24,17 +26,17 @@ public class MsiPlessey extends Symbol {
     public enum CheckDigit {
         NONE, MOD10, MOD10_MOD10, MOD11, MOD11_MOD10
     }
-    
+
     private CheckDigit checkOption;
-    
+
     public MsiPlessey() {
         checkOption = CheckDigit.NONE;
     }
-    
+
     public void setCheckDigit(CheckDigit checkMode) {
         checkOption = checkMode;
     }
-    
+
     private final String MSI_PlessTable[] = {
         "12121212", "12121221", "12122112", "12122121", "12211212", "12211221",
         "12212112", "12212121", "21121212", "21121221"

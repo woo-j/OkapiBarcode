@@ -55,6 +55,7 @@ of work that have been invested in that project.
 * [Korea Post](src/main/java/uk/org/okapibarcode/backend/KoreaPost.java)
 * [LOGMARS](src/main/java/uk/org/okapibarcode/backend/Logmars.java)
 * [MaxiCode](src/main/java/uk/org/okapibarcode/backend/MaxiCode.java)
+* [MSI](src/main/java/uk/org/okapibarcode/backend/MsiPlessey.java) (Modified Plessey)
 * [PDF417](src/main/java/uk/org/okapibarcode/backend/Pdf417.java) variants:
   * PDF417
   * Truncated PDF417

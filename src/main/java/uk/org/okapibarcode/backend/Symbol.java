@@ -36,6 +36,7 @@ public abstract class Symbol {
     protected int default_height;
     protected boolean readerInit;
     protected String encodeInfo = "";
+    private boolean generatesHRI;
 
     public enum DataType {
         UTF8, LATIN1, BINARY, GS1, HIBC
@@ -56,6 +57,7 @@ public abstract class Symbol {
         symbol_height = 0;
         symbol_width = 0;
         inputDataType = DataType.UTF8;
+        generatesHRI = true;
         unsetReaderInit();
     }
 
@@ -76,6 +78,14 @@ public abstract class Symbol {
      */
     public void setDataType(DataType dataType) {
         inputDataType = dataType;
+    }
+    
+    /**
+     * Flag to (not) include the Human Readable Information in the symbol
+     * @param generatesHRI whether to generate HRI or not
+     */
+    public final void setGeneratesHRI(boolean generatesHRI) {
+        this.generatesHRI = generatesHRI;
     }
 
     /**
@@ -254,7 +264,7 @@ public abstract class Symbol {
 
         mergeVerticalBlocks();
 
-        if (!(readable.isEmpty())) {
+        if (this.generatesHRI && !(readable.isEmpty())) {
             // Calculated position is approximately central
             TextBox text = new TextBox(((symbol_width - (5.0 * readable.length())) / 2), symbol_height + 8.0, readable);
             txt.add(text);

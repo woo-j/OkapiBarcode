@@ -1456,6 +1456,22 @@ public class AztecCode extends Symbol {
                     blockType[i] = 1;
                 }
             }
+            
+            /* if less than 4 characters are preceeded and followed by binary blocks
+               then it is more efficient to also encode these in binary
+            */
+            
+            for (i = 1; i < blocks - 1; i++) {
+                if ((blockType[i - 1] == 32) && (blockLength[i] < 4)) {
+                    int nonBinaryLength = blockLength[i];
+                    for (int l = i; ((l < blocks) && (blockType[l] != 32)); l++) {
+                        nonBinaryLength += blockLength[l];
+                    }
+                    if (nonBinaryLength < 4) {
+                        blockType[i] = 32;
+                    }
+                }
+            }
 
             /* Combine blocks of the same type */
             i = 0;
@@ -1551,7 +1567,7 @@ public class AztecCode extends Symbol {
             newtable = curtable;
             if ((typemap[i] != curtable) && (charmap[i] < 400)) {
                 /* Change table */
-                if (curtable == 3) {
+                if (curtable == 32) {
                     /* If ending binary mode the current table is the same as when entering binary mode */
                     curtable = lasttable;
                     newtable = lasttable;
@@ -2005,7 +2021,7 @@ public class AztecCode extends Symbol {
                                     if (debug) {
                                         System.out.printf("BS ");
                                     }
-                                    newtable = 3;
+                                    newtable = 32;
                                     break;
                                 case 2:
                                     /* BS */
@@ -2013,7 +2029,7 @@ public class AztecCode extends Symbol {
                                     if (debug) {
                                         System.out.printf("BS ");
                                     }
-                                    newtable = 3;
+                                    newtable = 32;
                                     break;
                                 case 4:
                                     /* BS */
@@ -2021,7 +2037,7 @@ public class AztecCode extends Symbol {
                                     if (debug) {
                                         System.out.printf("BS ");
                                     }
-                                    newtable = 3;
+                                    newtable = 32;
                                     break;
                                 case 8:
                                     /* UL BS */
@@ -2033,7 +2049,7 @@ public class AztecCode extends Symbol {
                                     if (debug) {
                                         System.out.printf("BS ");
                                     }
-                                    newtable = 3;
+                                    newtable = 32;
                                     break;
                                 case 16:
                                     /* UL BS */
@@ -2045,7 +2061,7 @@ public class AztecCode extends Symbol {
                                     if (debug) {
                                         System.out.printf("BS ");
                                     }
-                                    newtable = 3;
+                                    newtable = 32;
                                     break;
                             }
 

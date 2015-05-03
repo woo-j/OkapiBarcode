@@ -1461,17 +1461,17 @@ public class AztecCode extends Symbol {
                then it is more efficient to also encode these in binary
             */
             
-            for (i = 1; i < blocks - 1; i++) {
-                if ((blockType[i - 1] == 32) && (blockLength[i] < 4)) {
-                    int nonBinaryLength = blockLength[i];
-                    for (int l = i; ((l < blocks) && (blockType[l] != 32)); l++) {
-                        nonBinaryLength += blockLength[l];
-                    }
-                    if (nonBinaryLength < 4) {
-                        blockType[i] = 32;
-                    }
-                }
-            }
+//            for (i = 1; i < blocks - 1; i++) {
+//                if ((blockType[i - 1] == 32) && (blockLength[i] < 4)) {
+//                    int nonBinaryLength = blockLength[i];
+//                    for (int l = i; ((l < blocks) && (blockType[l] != 32)); l++) {
+//                        nonBinaryLength += blockLength[l];
+//                    }
+//                    if (nonBinaryLength < 4) {
+//                        blockType[i] = 32;
+//                    }
+//                }
+//            }
 
             /* Combine blocks of the same type */
             i = 0;

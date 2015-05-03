@@ -36,9 +36,10 @@ public abstract class Symbol {
     protected int default_height;
     protected boolean readerInit;
     protected String encodeInfo = "";
+    protected int eciMode = 3;
 
     public enum DataType {
-        UTF8, LATIN1, BINARY, GS1, HIBC
+        UTF8, LATIN1, BINARY, GS1, HIBC, ECI
     }
     protected DataType inputDataType;
 
@@ -55,7 +56,7 @@ public abstract class Symbol {
         default_height = 40;
         symbol_height = 0;
         symbol_width = 0;
-        inputDataType = DataType.UTF8;
+        inputDataType = DataType.ECI;
         unsetReaderInit();
     }
 
@@ -71,6 +72,7 @@ public abstract class Symbol {
      * <li><code>BINARY</code> Byte encoding mode
      * <li><code>GS1</code> Application Identifier and data pairs in "[AI]DATA" format
      * <li><code>HIBC</code> Health Industry Bar Code number (without check digit)
+     * <li><code>ECI</code> Extended Channel Interpretations
      * </ul>
      * @param dataType A <code>DataType</code> value which specifies the type of data
      */
@@ -195,6 +197,13 @@ public abstract class Symbol {
                     default: readable += input_data.charAt(i);
                         break;
                 }
+            }
+        }
+        
+        if (inputDataType == DataType.ECI) {
+            if ((eciMode < 0) || (eciMode > 999999)) {
+                // Should never happen
+                throw new OkapiException("Invalid ECI mode");
             }
         }
 

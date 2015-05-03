@@ -257,12 +257,17 @@ public class DataMatrix extends Symbol {
         String bin;
         byte[] inputBytes;
         
-
-        try {
-            inputBytes = content.getBytes("ISO8859_1");
-        } catch (UnsupportedEncodingException e) {
-            error_msg = "Invalid character in input data";
-            return false;
+        if (inputDataType == DataType.ECI) {
+            ExtendedChannel eci = new ExtendedChannel();
+            inputBytes = eci.getBytes(content);
+            eciMode = eci.getMode();
+        } else {
+            try {
+                inputBytes = content.getBytes("ISO8859_1");
+            } catch (UnsupportedEncodingException e) {
+                error_msg = "Invalid character in input data";
+                return false;
+            }
         }
 
         inputData = new int[content.length()];
@@ -401,6 +406,7 @@ public class DataMatrix extends Symbol {
     private int generateCodewords() {
         /* Encodes data using ASCII, C40, Text, X12, EDIFACT or Base 256 modes as appropriate */
         /* Supports encoding FNC1 in supporting systems */
+        /* Supports ECI encoding for whole message only, not inline switching */
 
         int sp, tp, i;
         dm_mode current_mode, next_mode;
@@ -425,6 +431,31 @@ public class DataMatrix extends Symbol {
             binary_length++;
             if (debug) System.out.printf("FN1 ");
         } /* FNC1 */
+        
+        if ((inputDataType == DataType.ECI) && (eciMode != 3)) {
+            /* Encoding ECI assignment numbers, from ISO/IEC 16022 Table 6 */
+            target[tp] = 241;
+            tp++;
+            if (eciMode <= 126) {
+                target[tp] = eciMode + 1;
+                tp++;
+            }
+            if ((eciMode >= 127) && (eciMode <= 16382)) {
+                target[tp] = ((eciMode - 127) / 254) + 128;
+                tp++;
+                target[tp] = ((eciMode - 127) % 254) + 1;
+                tp++;
+            }
+            if (eciMode >= 16383) {
+                target[tp] = ((eciMode - 16383) / 64516) + 192;
+                tp++;
+                target[tp] = (((eciMode - 16383) / 254) % 254) + 1;
+                tp++;
+                target[tp] = ((eciMode - 16383) % 254) + 1;
+                tp++;
+            }
+            if (debug) System.out.printf("ECI [%d] ", eciMode);
+        }
 
         if(readerInit) {
             if (inputDataType == DataType.GS1) {

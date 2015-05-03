@@ -16,186 +16,271 @@
 package uk.org.okapibarcode.backend;
 
 /**
- * Implements Aztec Code bar code symbology
- * According to ISO/IEC 24778:2008
+ * Implements Aztec Code bar code symbology According to ISO/IEC 24778:2008
  * <p>
  * Aztec Code can encode 8-bit ISO 8859-1 (Latin-1) data (except 0x00 Null
  * characters) up to a maximum length of approximately 3800 numeric characters,
- * 3000 alphabetic characters or 1900 bytes of data in a two-dimensional
- * matrix symbol.
- * 
+ * 3000 alphabetic characters or 1900 bytes of data in a two-dimensional matrix
+ * symbol.
+ *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class AztecCode extends Symbol {
 
     private int preferredSize = 0;
-    
+
     /**
-     * Sets a preferred symbol size. This value may be ignored if
-     * data string is too large to fit in the specified symbol size.
-     * Values correspond to symbol sizes as shown in the following
-     * table:
+     * Sets a preferred symbol size. This value may be ignored if data string is
+     * too large to fit in the specified symbol size. Values correspond to
+     * symbol sizes as shown in the following table:
      * <table summary="Available Aztec Code symbol sizes">
-        <tbody>
-          <tr>
-            <th><p>Input</p></th>
-            <th><p>Symbol Size</p></th>
-            <th><p>Input</p></th>
-            <th><p>Symbol Size</p></th>
-          </tr>
-          <tr>
-            <td><p>1</p></td>
-            <td><p>15 x 15*</p></td>
-            <td><p>19</p></td>
-            <td><p>79 x 79</p></td>
-          </tr>
-          <tr>
-            <td><p>2</p></td>
-            <td><p>19 x 19*</p></td>
-            <td><p>20</p></td>
-            <td><p>83 x 83</p></td>
-          </tr>
-          <tr>
-            <td><p>3</p></td>
-            <td><p>23 x 23*</p></td>
-            <td><p>21</p></td>
-            <td><p>87 x 87</p></td>
-          </tr>
-          <tr>
-            <td><p>4</p></td>
-            <td><p>27 x 27*</p></td>
-            <td><p>22</p></td>
-            <td><p>91 x 91</p></td>
-          </tr>
-          <tr>
-            <td><p>5</p></td>
-            <td><p>19 x 19</p></td>
-            <td><p>23</p></td>
-            <td><p>95 x 95</p></td>
-          </tr>
-          <tr>
-            <td><p>6</p></td>
-            <td><p>23 x 23</p></td>
-            <td><p>24</p></td>
-            <td><p>101 x 101</p></td>
-          </tr>
-          <tr>
-            <td><p>7</p></td>
-            <td><p>27 x 27</p></td>
-            <td><p>25</p></td>
-            <td><p>105 x 105</p></td>
-          </tr>
-          <tr>
-            <td><p>8</p></td>
-            <td><p>31 x 31</p></td>
-            <td><p>26</p></td>
-            <td><p>109 x 109</p></td>
-          </tr>
-          <tr>
-            <td><p>9</p></td>
-            <td><p>37 x 37</p></td>
-            <td><p>27</p></td>
-            <td><p>113 x 113</p></td>
-          </tr>
-          <tr>
-            <td><p>10</p></td>
-            <td><p>41 x 41</p></td>
-            <td><p>28</p></td>
-            <td><p>117 x 117</p></td>
-          </tr>
-          <tr>
-            <td><p>11</p></td>
-            <td><p>45 x 45</p></td>
-            <td><p>29</p></td>
-            <td><p>121 x 121</p></td>
-          </tr>
-          <tr>
-            <td><p>12</p></td>
-            <td><p>49 x 49</p></td>
-            <td><p>30</p></td>
-            <td><p>125 x 125</p></td>
-          </tr>
-          <tr>
-            <td><p>13</p></td>
-            <td><p>53 x 53</p></td>
-            <td><p>31</p></td>
-            <td><p>131 x 131</p></td>
-          </tr>
-          <tr>
-            <td><p>14</p></td>
-            <td><p>57 x 57</p></td>
-            <td><p>32</p></td>
-            <td><p>135 x 135</p></td>
-          </tr>
-          <tr>
-            <td><p>15</p></td>
-            <td><p>61 x 61</p></td>
-            <td><p>33</p></td>
-            <td><p>139 x 139</p></td>
-          </tr>
-          <tr>
-            <td><p>16</p></td>
-            <td><p>67 x 67</p></td>
-            <td><p>34</p></td>
-            <td><p>143 x 143</p></td>
-          </tr>
-          <tr>
-            <td><p>17</p></td>
-            <td><p>71 x 71</p></td>
-            <td><p>35</p></td>
-            <td><p>147 x 147</p></td>
-          </tr>
-          <tr>
-            <td><p>18</p></td>
-            <td><p>75 x 75</p></td>
-            <td><p>36</p></td>
-            <td><p>151 x 151</p></td>
-          </tr>
-        </tbody>
-      </table>
+     * <tbody>
+     * <tr>
+     * <th><p>
+     * Input</p></th>
+     * <th><p>
+     * Symbol Size</p></th>
+     * <th><p>
+     * Input</p></th>
+     * <th><p>
+     * Symbol Size</p></th>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 1</p></td>
+     * <td><p>
+     * 15 x 15*</p></td>
+     * <td><p>
+     * 19</p></td>
+     * <td><p>
+     * 79 x 79</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 2</p></td>
+     * <td><p>
+     * 19 x 19*</p></td>
+     * <td><p>
+     * 20</p></td>
+     * <td><p>
+     * 83 x 83</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 3</p></td>
+     * <td><p>
+     * 23 x 23*</p></td>
+     * <td><p>
+     * 21</p></td>
+     * <td><p>
+     * 87 x 87</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 4</p></td>
+     * <td><p>
+     * 27 x 27*</p></td>
+     * <td><p>
+     * 22</p></td>
+     * <td><p>
+     * 91 x 91</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 5</p></td>
+     * <td><p>
+     * 19 x 19</p></td>
+     * <td><p>
+     * 23</p></td>
+     * <td><p>
+     * 95 x 95</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 6</p></td>
+     * <td><p>
+     * 23 x 23</p></td>
+     * <td><p>
+     * 24</p></td>
+     * <td><p>
+     * 101 x 101</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 7</p></td>
+     * <td><p>
+     * 27 x 27</p></td>
+     * <td><p>
+     * 25</p></td>
+     * <td><p>
+     * 105 x 105</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 8</p></td>
+     * <td><p>
+     * 31 x 31</p></td>
+     * <td><p>
+     * 26</p></td>
+     * <td><p>
+     * 109 x 109</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 9</p></td>
+     * <td><p>
+     * 37 x 37</p></td>
+     * <td><p>
+     * 27</p></td>
+     * <td><p>
+     * 113 x 113</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 10</p></td>
+     * <td><p>
+     * 41 x 41</p></td>
+     * <td><p>
+     * 28</p></td>
+     * <td><p>
+     * 117 x 117</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 11</p></td>
+     * <td><p>
+     * 45 x 45</p></td>
+     * <td><p>
+     * 29</p></td>
+     * <td><p>
+     * 121 x 121</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 12</p></td>
+     * <td><p>
+     * 49 x 49</p></td>
+     * <td><p>
+     * 30</p></td>
+     * <td><p>
+     * 125 x 125</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 13</p></td>
+     * <td><p>
+     * 53 x 53</p></td>
+     * <td><p>
+     * 31</p></td>
+     * <td><p>
+     * 131 x 131</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 14</p></td>
+     * <td><p>
+     * 57 x 57</p></td>
+     * <td><p>
+     * 32</p></td>
+     * <td><p>
+     * 135 x 135</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 15</p></td>
+     * <td><p>
+     * 61 x 61</p></td>
+     * <td><p>
+     * 33</p></td>
+     * <td><p>
+     * 139 x 139</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 16</p></td>
+     * <td><p>
+     * 67 x 67</p></td>
+     * <td><p>
+     * 34</p></td>
+     * <td><p>
+     * 143 x 143</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 17</p></td>
+     * <td><p>
+     * 71 x 71</p></td>
+     * <td><p>
+     * 35</p></td>
+     * <td><p>
+     * 147 x 147</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 18</p></td>
+     * <td><p>
+     * 75 x 75</p></td>
+     * <td><p>
+     * 36</p></td>
+     * <td><p>
+     * 151 x 151</p></td>
+     * </tr>
+     * </tbody>
+     * </table>
+     *
      * @param size An <em>integer</em> in the range 1 - 36
      */
     public void setPreferredSize(int size) {
         preferredSize = size;
     }
-    
+
     private int preferredEccLevel = -1;
-    
+
     /**
-     * Sets the preferred minimum amount of symbol space dedicated to
-     * error correction. This value will be ignored if a symbol size has been
-     * set by <code>setPreferredSize</code> Valid options
-     * are:
+     * Sets the preferred minimum amount of symbol space dedicated to error
+     * correction. This value will be ignored if a symbol size has been set by
+     * <code>setPreferredSize</code> Valid options are:
      * <table summary="Error correction options">
-        <tbody>
-          <tr>
-            <th><p>Mode</p></th>
-            <th><p>Error Correction Capacity</p></th>
-          </tr>
-          <tr>
-            <td><p>1</p></td>
-            <td><p>&gt;10% + 3 codewords</p></td>
-          </tr>
-          <tr>
-            <td><p>2</p></td>
-            <td><p>&gt;23% + 3 codewords</p></td>
-          </tr>
-          <tr>
-            <td><p>3</p></td>
-            <td><p>&gt;36% + 3 codewords</p></td>
-          </tr>
-          <tr>
-            <td><p>4</p></td>
-            <td><p>&gt;50% + 3 codewords</p></td>
-          </tr>
-        </tbody>
-      </table>
+     * <tbody>
+     * <tr>
+     * <th><p>
+     * Mode</p></th>
+     * <th><p>
+     * Error Correction Capacity</p></th>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 1</p></td>
+     * <td><p>
+     * &gt;10% + 3 codewords</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 2</p></td>
+     * <td><p>
+     * &gt;23% + 3 codewords</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 3</p></td>
+     * <td><p>
+     * &gt;36% + 3 codewords</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 4</p></td>
+     * <td><p>
+     * &gt;50% + 3 codewords</p></td>
+     * </tr>
+     * </tbody>
+     * </table>
+     *
      * @param eccLevel An <em>integer</em> in the range 1 - 4
      */
-    public void setPreferredEccLevel (int eccLevel) {
+    public void setPreferredEccLevel(int eccLevel) {
         preferredEccLevel = eccLevel;
     }
-    
+
     private final int[] CompactAztecMap = { //27 x 27 data grid
         609, 608, 411, 413, 415, 417, 419, 421, 423, 425, 427, 429, 431, 433, 435, 437, 439, 441, 443, 445, 447, 449, 451, 453, 455, 457, 459,
         607, 606, 410, 412, 414, 416, 418, 420, 422, 424, 426, 428, 430, 432, 434, 436, 438, 440, 442, 444, 446, 448, 450, 452, 454, 456, 458,
@@ -249,20 +334,19 @@ public class AztecCode extends Symbol {
     };
 
     /* Problem characters are:
-	300: Carriage Return (ASCII 13)
-	301: Comma (ASCII 44)
-	302: Full Stop (ASCII 46)
-*/
-
-    private final String[] hexbit = {
+     300: Carriage Return (ASCII 13)
+     301: Comma (ASCII 44)
+     302: Full Stop (ASCII 46)
+     */
+    private final String[] pentbit = {
         "00000", "00001", "00010", "00011", "00100", "00101", "00110", "00111", "01000", "01001",
-            "01010", "01011", "01100", "01101", "01110", "01111", "10000", "10001", "10010", "10011", "10100", "10101",
-            "10110", "10111", "11000", "11001", "11010", "11011", "11100", "11101", "11110", "11111"
+        "01010", "01011", "01100", "01101", "01110", "01111", "10000", "10001", "10010", "10011", "10100", "10101",
+        "10110", "10111", "11000", "11001", "11010", "11011", "11100", "11101", "11110", "11111"
     };
 
-    private final String[] pentbit = {
+    private final String[] quadbit = {
         "0000", "0001", "0010", "0011", "0100", "0101", "0110", "0111", "1000", "1001",
-            "1010", "1011", "1100", "1101", "1110", "1111"
+        "1010", "1011", "1100", "1101", "1110", "1111"
     };
 
     private final String[] tribit = {
@@ -323,7 +407,6 @@ public class AztecCode extends Symbol {
     private final int[] AztecCompactOffset = {
         6, 4, 2, 0
     };
-
 
     public AztecCode() {
         int layer, start, length, n, i;
@@ -418,15 +501,19 @@ public class AztecCode extends Symbol {
 
         /* Descriptor */
         for (i = 0; i < 10; i++) { /* Top */
+
             AztecMap[avoidReferenceGrid(66 + i)][avoidReferenceGrid(64)] = 20000 + i;
         }
         for (i = 0; i < 10; i++) { /* Right */
+
             AztecMap[avoidReferenceGrid(77)][avoidReferenceGrid(66 + i)] = 20010 + i;
         }
         for (i = 0; i < 10; i++) { /* Bottom */
+
             AztecMap[avoidReferenceGrid(75 - i)][avoidReferenceGrid(77)] = 20020 + i;
         }
         for (i = 0; i < 10; i++) { /* Left */
+
             AztecMap[avoidReferenceGrid(64)][avoidReferenceGrid(75 - i)] = 20030 + i;
         }
 
@@ -475,10 +562,12 @@ public class AztecCode extends Symbol {
     }
 
     private enum az_type {
+
         UPPER, LOWER, MIXED, PUNC, DIGIT, BINARY
     };
 
-    String local_source;
+    byte[] inputBytes;
+    int inputByteLength;
     String binary_string;
 
     @Override
@@ -499,25 +588,27 @@ public class AztecCode extends Symbol {
         String bin;
         int t;
         boolean done;
+        ExtendedChannel eci = new ExtendedChannel();
+        
+        inputBytes = eci.getBytes(content);
+        eciMode = eci.getMode();
 
-        if(readerInit) {
+        if (readerInit) {
             comp_loop = 1;
         }
 
-        if((inputDataType == DataType.GS1) && (readerInit)) {
-		error_msg = "Cannot encode in GS1 and Reader Initialisation mode at the same time";
-		return false;
-	}
+        if ((inputDataType == DataType.GS1) && (readerInit)) {
+            error_msg = "Cannot encode in GS1 and Reader Initialisation mode at the same time";
+            return false;
+        }
 
         /* Aztec code can't handle NULL characters */
-        for (i = 0; i < content.length(); i++) {
-            if (content.charAt(i) == 0) {
+        for (i = 0; i < inputBytes.length; i++) {
+            if ((inputBytes[i] & 0xFF) == 0) {
                 error_msg = "Invalid character (NULL) in input data";
                 return false;
             }
         }
-
-        local_source = content;
 
         if (generateAztecBinary() == false) {
             error_msg = "Input too long or too many extended ASCII characters";
@@ -534,95 +625,101 @@ public class AztecCode extends Symbol {
         data_length = binary_string.length();
 
         layers = 0; /* Keep compiler happy! */
+
         data_maxsize = 0; /* Keep compiler happy! */
+
         adjustment_size = 0;
-        
-        if((preferredSize < 0) || (preferredSize > 36)) {
+
+        if ((preferredSize < 0) || (preferredSize > 36)) {
             preferredSize = 0;
         }
 
-        if(preferredSize == 0) { /* The size of the symbol can be determined by Okapi */
+        if (preferredSize == 0) { /* The size of the symbol can be determined by Okapi */
+
             do {
                 /* Decide what size symbol to use - the smallest that fits the data */
                 compact = false; /* 1 = Aztec Compact, 0 = Normal Aztec */
+
                 layers = 0;
 
                 switch (ecc_level) {
                     /* For each level of error correction work out the smallest symbol which
-                                    the data will fit in */
-                case 1:
-                    for (i = 32; i > 0; i--) {
-                        if ((data_length + adjustment_size) < Aztec10DataSizes[i - 1]) {
-                            layers = i;
-                            compact = false;
-                            data_maxsize = Aztec10DataSizes[i - 1];
+                     the data will fit in */
+                    case 1:
+                        for (i = 32; i > 0; i--) {
+                            if ((data_length + adjustment_size) < Aztec10DataSizes[i - 1]) {
+                                layers = i;
+                                compact = false;
+                                data_maxsize = Aztec10DataSizes[i - 1];
+                            }
                         }
-                    }
-                    for (i = comp_loop; i > 0; i--) {
-                        if ((data_length + adjustment_size) < AztecCompact10DataSizes[i - 1]) {
-                            layers = i;
-                            compact = true;
-                            data_maxsize = AztecCompact10DataSizes[i - 1];
+                        for (i = comp_loop; i > 0; i--) {
+                            if ((data_length + adjustment_size) < AztecCompact10DataSizes[i - 1]) {
+                                layers = i;
+                                compact = true;
+                                data_maxsize = AztecCompact10DataSizes[i - 1];
+                            }
                         }
-                    }
-                    break;
-                case 2:
-                    for (i = 32; i > 0; i--) {
-                        if ((data_length + adjustment_size) < Aztec23DataSizes[i - 1]) {
-                            layers = i;
-                            compact = false;
-                            data_maxsize = Aztec23DataSizes[i - 1];
+                        break;
+                    case 2:
+                        for (i = 32; i > 0; i--) {
+                            if ((data_length + adjustment_size) < Aztec23DataSizes[i - 1]) {
+                                layers = i;
+                                compact = false;
+                                data_maxsize = Aztec23DataSizes[i - 1];
+                            }
                         }
-                    }
-                    for (i = comp_loop; i > 0; i--) {
-                        if ((data_length + adjustment_size) < AztecCompact23DataSizes[i - 1]) {
-                            layers = i;
-                            compact = true;
-                            data_maxsize = AztecCompact23DataSizes[i - 1];
+                        for (i = comp_loop; i > 0; i--) {
+                            if ((data_length + adjustment_size) < AztecCompact23DataSizes[i - 1]) {
+                                layers = i;
+                                compact = true;
+                                data_maxsize = AztecCompact23DataSizes[i - 1];
+                            }
                         }
-                    }
-                    break;
-                case 3:
-                    for (i = 32; i > 0; i--) {
-                        if ((data_length + adjustment_size) < Aztec36DataSizes[i - 1]) {
-                            layers = i;
-                            compact = false;
-                            data_maxsize = Aztec36DataSizes[i - 1];
+                        break;
+                    case 3:
+                        for (i = 32; i > 0; i--) {
+                            if ((data_length + adjustment_size) < Aztec36DataSizes[i - 1]) {
+                                layers = i;
+                                compact = false;
+                                data_maxsize = Aztec36DataSizes[i - 1];
+                            }
                         }
-                    }
-                    for (i = comp_loop; i > 0; i--) {
-                        if ((data_length + adjustment_size) < AztecCompact36DataSizes[i - 1]) {
-                            layers = i;
-                            compact = true;
-                            data_maxsize = AztecCompact36DataSizes[i - 1];
+                        for (i = comp_loop; i > 0; i--) {
+                            if ((data_length + adjustment_size) < AztecCompact36DataSizes[i - 1]) {
+                                layers = i;
+                                compact = true;
+                                data_maxsize = AztecCompact36DataSizes[i - 1];
+                            }
                         }
-                    }
-                    break;
-                case 4:
-                    for (i = 32; i > 0; i--) {
-                        if ((data_length + adjustment_size) < Aztec50DataSizes[i - 1]) {
-                            layers = i;
-                            compact = false;
-                            data_maxsize = Aztec50DataSizes[i - 1];
+                        break;
+                    case 4:
+                        for (i = 32; i > 0; i--) {
+                            if ((data_length + adjustment_size) < Aztec50DataSizes[i - 1]) {
+                                layers = i;
+                                compact = false;
+                                data_maxsize = Aztec50DataSizes[i - 1];
+                            }
                         }
-                    }
-                    for (i = comp_loop; i > 0; i--) {
-                        if ((data_length + adjustment_size) < AztecCompact50DataSizes[i - 1]) {
-                            layers = i;
-                            compact = true;
-                            data_maxsize = AztecCompact50DataSizes[i - 1];
+                        for (i = comp_loop; i > 0; i--) {
+                            if ((data_length + adjustment_size) < AztecCompact50DataSizes[i - 1]) {
+                                layers = i;
+                                compact = true;
+                                data_maxsize = AztecCompact50DataSizes[i - 1];
+                            }
                         }
-                    }
-                    break;
+                        break;
                 }
 
                 if (layers == 0) { /* Couldn't find a symbol which fits the data */
+
                     error_msg = "Input too long (too many bits for selected ECC)";
                     return false;
                 }
 
                 /* Determine codeword bitlength - Table 3 */
                 codeword_size = 6; /* if (layers <= 2) */
+
                 if ((layers >= 3) && (layers <= 8)) {
                     codeword_size = 8;
                 }
@@ -644,7 +741,9 @@ public class AztecCode extends Symbol {
 
                         /* Discover how many '1's in current codeword */
                         for (t = 0; t < (codeword_size - 1); t++) {
-                            if (binary_string.charAt((i - (codeword_size - 1)) + t) == '1') count++;
+                            if (binary_string.charAt((i - (codeword_size - 1)) + t) == '1') {
+                                count++;
+                            }
                         }
 
                         if (count == (codeword_size - 1)) {
@@ -714,60 +813,61 @@ public class AztecCode extends Symbol {
 
             } while (adjusted_length > data_maxsize);
             /* This loop will only repeat on the rare occasions when the rule about not having all 1s or all 0s
-                    means that the binary string has had to be lengthened beyond the maximum number of bits that can
-                    be encoded in a symbol of the selected size */
+             means that the binary string has had to be lengthened beyond the maximum number of bits that can
+             be encoded in a symbol of the selected size */
         } else {
             /* The size of the symbol has been specified by the user */
             compact = false;
-            if((readerInit) && ((preferredSize >= 2) && (preferredSize <= 4))) {
+            if ((readerInit) && ((preferredSize >= 2) && (preferredSize <= 4))) {
                 preferredSize = 5;
             }
-            if((preferredSize >= 1) && (preferredSize <= 4)) {
+            if ((preferredSize >= 1) && (preferredSize <= 4)) {
                 compact = true;
                 layers = preferredSize;
             }
-            if((preferredSize >= 5) && (preferredSize <= 36)) {
+            if ((preferredSize >= 5) && (preferredSize <= 36)) {
                 layers = preferredSize - 4;
             }
 
             /* Determine codeword bitlength - Table 3 */
             codeword_size = 6;
-            if((layers >= 3) && (layers <= 8)) {
+            if ((layers >= 3) && (layers <= 8)) {
                 codeword_size = 8;
             }
-            if((layers >= 9) && (layers <= 22)) {
+            if ((layers >= 9) && (layers <= 22)) {
                 codeword_size = 10;
             }
-            if(layers >= 23) {
+            if (layers >= 23) {
                 codeword_size = 12;
             }
-            j = 0; i = 0;
+            j = 0;
+            i = 0;
             do {
-                if(((j + 1) % codeword_size) == 0) {
+                if (((j + 1) % codeword_size) == 0) {
                     /* Last bit of codeword */
                     done = false;
                     count = 0;
 
                     /* Discover how many '1's in current codeword */
-                    for(t = 0; t < (codeword_size - 1); t++) {
-                        if(binary_string.charAt((i - (codeword_size - 1)) + t) == '1') {
+                    for (t = 0; t < (codeword_size - 1); t++) {
+                        if (binary_string.charAt((i - (codeword_size - 1)) + t) == '1') {
                             count++;
                         }
                     }
 
-                    if(count == (codeword_size - 1)) {
+                    if (count == (codeword_size - 1)) {
                         adjusted_string += '0';
                         j++;
                         done = true;
                     }
 
-                    if(count == 0) {
+                    if (count == 0) {
                         adjusted_string += '1';
                         j++;
                         done = true;
                     }
 
-                    if(!done) {
+                    if (!done) {
                         adjusted_string += binary_string.charAt(i);
                         j++;
                         i++;
@@ -777,27 +877,29 @@ public class AztecCode extends Symbol {
                     j++;
                     i++;
                 }
-        } while (i < binary_string.length());
+            } while (i < binary_string.length());
 
-        adjusted_length = adjusted_string.length();
-        remainder = adjusted_length % codeword_size;
-        padbits = codeword_size - remainder;
+            adjusted_length = adjusted_string.length();
+            remainder = adjusted_length % codeword_size;
+            padbits = codeword_size - remainder;
 
-        if(padbits == codeword_size) { padbits = 0; }
-            for(i = 0; i < padbits; i++) {
+            if (padbits == codeword_size) {
+                padbits = 0;
+            }
+            for (i = 0; i < padbits; i++) {
                 adjusted_string += "1";
             }
 
             adjusted_length = adjusted_string.length();
             count = 0;
 
-            for(i = (adjusted_length - codeword_size); i < adjusted_length; i++) {
-                if(adjusted_string.charAt(i) == '1') {
+            for (i = (adjusted_length - codeword_size); i < adjusted_length; i++) {
+                if (adjusted_string.charAt(i) == '1') {
                     count++;
                 }
             }
 
-            if(count == codeword_size) {
+            if (count == codeword_size) {
                 adjusted_string = adjusted_string.substring(0, adjusted_length - 1) + '0';
             }
 
@@ -824,7 +926,7 @@ public class AztecCode extends Symbol {
             }
         }
 
-        if(readerInit && (layers > 22)) {
+        if (readerInit && (layers > 22)) {
             error_msg = "Data too long for reader initialisation symbol";
             return false;
         }
@@ -871,102 +973,102 @@ public class AztecCode extends Symbol {
 
         /* Split into codewords and calculate reed-colomon error correction codes */
         switch (codeword_size) {
-        case 6:
-            for (i = 0; i < data_blocks; i++) {
-                for (weight = 0; weight < 6; weight++) {
-                    if (adjusted_string.charAt((i * codeword_size) + weight) == '1') {
-                        data_part[i] += (32 >> weight);
+            case 6:
+                for (i = 0; i < data_blocks; i++) {
+                    for (weight = 0; weight < 6; weight++) {
+                        if (adjusted_string.charAt((i * codeword_size) + weight) == '1') {
+                            data_part[i] += (32 >> weight);
+                        }
                     }
                 }
-            }
-            rs.init_gf(0x43);
-            rs.init_code(ecc_blocks, 1);
-            rs.encode(data_blocks, data_part);
-            for (i = 0; i < ecc_blocks; i++) {
-                ecc_part[i] = rs.getResult(i);
-            }
-            for (i = (ecc_blocks - 1); i >= 0; i--) {
-                for(weight = 0x20; weight > 0; weight = weight >> 1) {
-                    if ((ecc_part[i] & weight) != 0) {
-                        adjusted_string += "1";
-                    } else {
-                        adjusted_string += "0";
+                rs.init_gf(0x43);
+                rs.init_code(ecc_blocks, 1);
+                rs.encode(data_blocks, data_part);
+                for (i = 0; i < ecc_blocks; i++) {
+                    ecc_part[i] = rs.getResult(i);
+                }
+                for (i = (ecc_blocks - 1); i >= 0; i--) {
+                    for (weight = 0x20; weight > 0; weight = weight >> 1) {
+                        if ((ecc_part[i] & weight) != 0) {
+                            adjusted_string += "1";
+                        } else {
+                            adjusted_string += "0";
+                        }
                     }
                 }
-            }
-            break;
-        case 8:
-            for (i = 0; i < data_blocks; i++) {
-                for (weight = 0; weight < 8; weight++) {
-                    if (adjusted_string.charAt((i * codeword_size) + weight) == '1') {
-                        data_part[i] += (128 >> weight);
+                break;
+            case 8:
+                for (i = 0; i < data_blocks; i++) {
+                    for (weight = 0; weight < 8; weight++) {
+                        if (adjusted_string.charAt((i * codeword_size) + weight) == '1') {
+                            data_part[i] += (128 >> weight);
+                        }
                     }
                 }
-            }
-            rs.init_gf(0x12d);
-            rs.init_code(ecc_blocks, 1);
-            rs.encode(data_blocks, data_part);
-            for (i = 0; i < ecc_blocks; i++) {
-                ecc_part[i] = rs.getResult(i);
-            }
-            for (i = (ecc_blocks - 1); i >= 0; i--) {
-                for(weight = 0x80; weight > 0; weight = weight >> 1) {
-                    if ((ecc_part[i] & weight) != 0) {
-                        adjusted_string += "1";
-                    } else {
-                        adjusted_string += "0";
+                rs.init_gf(0x12d);
+                rs.init_code(ecc_blocks, 1);
+                rs.encode(data_blocks, data_part);
+                for (i = 0; i < ecc_blocks; i++) {
+                    ecc_part[i] = rs.getResult(i);
+                }
+                for (i = (ecc_blocks - 1); i >= 0; i--) {
+                    for (weight = 0x80; weight > 0; weight = weight >> 1) {
+                        if ((ecc_part[i] & weight) != 0) {
+                            adjusted_string += "1";
+                        } else {
+                            adjusted_string += "0";
+                        }
                     }
                 }
-            }
-            break;
-        case 10:
-            for (i = 0; i < data_blocks; i++) {
-                for (weight = 0; weight < 10; weight++) {
-                    if (adjusted_string.charAt((i * codeword_size) + weight) == '1') {
-                        data_part[i] += (512 >> weight);
+                break;
+            case 10:
+                for (i = 0; i < data_blocks; i++) {
+                    for (weight = 0; weight < 10; weight++) {
+                        if (adjusted_string.charAt((i * codeword_size) + weight) == '1') {
+                            data_part[i] += (512 >> weight);
+                        }
                     }
                 }
-            }
-            rs.init_gf(0x409);
-            rs.init_code(ecc_blocks, 1);
-            rs.encode(data_blocks, data_part);
-            for (i = 0; i < ecc_blocks; i++) {
-                ecc_part[i] = rs.getResult(i);
-            }
-            for (i = (ecc_blocks - 1); i >= 0; i--) {
-                for(weight = 0x200; weight > 0; weight = weight >> 1) {
-                    if ((ecc_part[i] & weight) != 0) {
-                        adjusted_string += "1";
-                    } else {
-                        adjusted_string += "0";
+                rs.init_gf(0x409);
+                rs.init_code(ecc_blocks, 1);
+                rs.encode(data_blocks, data_part);
+                for (i = 0; i < ecc_blocks; i++) {
+                    ecc_part[i] = rs.getResult(i);
+                }
+                for (i = (ecc_blocks - 1); i >= 0; i--) {
+                    for (weight = 0x200; weight > 0; weight = weight >> 1) {
+                        if ((ecc_part[i] & weight) != 0) {
+                            adjusted_string += "1";
+                        } else {
+                            adjusted_string += "0";
+                        }
                     }
                 }
-            }
-            break;
-        case 12:
-            for (i = 0; i < data_blocks; i++) {
-                for (weight = 0; weight < 12; weight++) {
-                    if (adjusted_string.charAt((i * codeword_size) + weight) == '1') {
-                        data_part[i] += (2048 >> weight);
+                break;
+            case 12:
+                for (i = 0; i < data_blocks; i++) {
+                    for (weight = 0; weight < 12; weight++) {
+                        if (adjusted_string.charAt((i * codeword_size) + weight) == '1') {
+                            data_part[i] += (2048 >> weight);
+                        }
                     }
                 }
-            }
-            rs.init_gf(0x1069);
-            rs.init_code(ecc_blocks, 1);
-            rs.encode(data_blocks, data_part);
-            for (i = 0; i < ecc_blocks; i++) {
-                ecc_part[i] = rs.getResult(i);
-            }
-            for (i = (ecc_blocks - 1); i >= 0; i--) {
-                for(weight = 0x800; weight > 0; weight = weight >> 1) {
-                    if ((ecc_part[i] & weight) != 0) {
-                        adjusted_string += "1";
-                    } else {
-                        adjusted_string += "0";
+                rs.init_gf(0x1069);
+                rs.init_code(ecc_blocks, 1);
+                rs.encode(data_blocks, data_part);
+                for (i = 0; i < ecc_blocks; i++) {
+                    ecc_part[i] = rs.getResult(i);
+                }
+                for (i = (ecc_blocks - 1); i >= 0; i--) {
+                    for (weight = 0x800; weight > 0; weight = weight >> 1) {
+                        if ((ecc_part[i] & weight) != 0) {
+                            adjusted_string += "1";
+                        } else {
+                            adjusted_string += "0";
+                        }
                     }
                 }
-            }
-            break;
+                break;
         }
 
         /* Invert the data so that actual data is on the outside and reed-solomon on the inside */
@@ -988,7 +1090,7 @@ public class AztecCode extends Symbol {
                 descriptor += '0';
             }
             /* The next 6 bits represent the number of data blocks minus 1 */
-            if(readerInit) {
+            if (readerInit) {
                 descriptor += '1';
             } else {
                 if (((data_blocks - 1) & 0x20) != 0) {
@@ -997,18 +1099,20 @@ public class AztecCode extends Symbol {
                     descriptor += '0';
                 }
             }
-            for(i = 0x10; i > 0; i = i >> 1) {
+            for (i = 0x10; i > 0; i = i >> 1) {
                 if (((data_blocks - 1) & i) != 0) {
                     descriptor += '1';
                 } else {
                     descriptor += '0';
                 }
             }
-            if (debug) System.out.printf("Mode Message = %s\n", descriptor);
+            if (debug) {
+                System.out.printf("Mode Message = %s\n", descriptor);
+            }
             j = 2;
         } else {
             /* The first 5 bits represent the number of layers minus 1 */
-            for(i = 0x10; i > 0; i = i >> 1) {
+            for (i = 0x10; i > 0; i = i >> 1) {
                 if (((layers - 1) & i) != 0) {
                     descriptor += '1';
                 } else {
@@ -1017,7 +1121,7 @@ public class AztecCode extends Symbol {
             }
 
             /* The next 11 bits represent the number of data blocks minus 1 */
-            if(readerInit) {
+            if (readerInit) {
                 descriptor += '1';
             } else {
                 if (((data_blocks - 1) & 0x400) != 0) {
@@ -1026,7 +1130,7 @@ public class AztecCode extends Symbol {
                     descriptor += '0';
                 }
             }
-            for(i = 0x200; i > 0; i = i >> 1) {
+            for (i = 0x200; i > 0; i = i >> 1) {
                 if (((data_blocks - 1) & i) != 0) {
                     descriptor += '1';
                 } else {
@@ -1034,13 +1138,15 @@ public class AztecCode extends Symbol {
                 }
             }
 
-            if (debug) System.out.printf("Mode Message = %s\n", descriptor);
+            if (debug) {
+                System.out.printf("Mode Message = %s\n", descriptor);
+            }
             j = 4;
         }
 
         /* Split into 4-bit codewords */
         for (i = 0; i < j; i++) {
-            for(weight = 0; weight < 4; weight++) {
+            for (weight = 0; weight < 4; weight++) {
                 if (descriptor.charAt((i * 4) + weight) == '1') {
                     desc_data[i] += (8 >> weight);
                 }
@@ -1048,8 +1154,7 @@ public class AztecCode extends Symbol {
         }
 
         /* Add reed-solomon error correction with Galois field GF(16) and prime modulus
-	x^4 + x + 1 (section 7.2.3)*/
-
+         x^4 + x + 1 (section 7.2.3)*/
         rs2.init_gf(0x13);
         if (compact) {
             rs2.init_code(5, 1);
@@ -1083,7 +1188,9 @@ public class AztecCode extends Symbol {
             }
         }
 
-        if (debug) System.out.printf("Full Mode Message = %s\n", descriptor);
+        if (debug) {
+            System.out.printf("Full Mode Message = %s\n", descriptor);
+        }
 
         readable = "";
 
@@ -1156,7 +1263,6 @@ public class AztecCode extends Symbol {
             }
         }
 
-
         plotSymbol();
         return true;
     }
@@ -1165,36 +1271,66 @@ public class AztecCode extends Symbol {
         /* Encode input data into a binary string */
         int i, j, k, bytes;
         int curtable, newtable, lasttable, chartype, maplength, blocks;
-        int[] charmap = new int[2 * local_source.length()];
-        int[] typemap = new int[2 * local_source.length()];
-        int[] blockmap0 = new int[local_source.length()];
-        int[] blockmap1 = new int[local_source.length()];
+        int[] charmap = new int[2 * inputBytes.length];
+        int[] typemap = new int[2 * inputBytes.length];
+        int[] blockType = new int[inputBytes.length + 1];
+        int[] blockLength = new int[inputBytes.length + 1];
         int weight;
 
         /* Lookup input string in encoding table */
         maplength = 0;
 
-        for (i = 0; i < local_source.length(); i++) {
-            if((inputDataType == DataType.GS1) && (i == 0)) {
-                /* Add FNC1 to beginning of GS1 messages */
-                charmap[maplength] = 0;
-                typemap[maplength++] = 8; // PUNC
-                charmap[maplength] = 400;
-                typemap[maplength++] = 8; // PUNC
+        if (inputDataType == DataType.GS1) {
+            /* Add FNC1 to beginning of GS1 messages */
+            charmap[maplength] = 0; // FLG
+            typemap[maplength++] = 8; // PUNC
+            charmap[maplength] = 400; // (0)
+            typemap[maplength++] = 8; // PUNC
+        }
+
+        if ((inputDataType == DataType.ECI) && (eciMode != 3)) {
+            int flagNumber = 6;
+
+            if (eciMode < 100000) {
+                flagNumber = 5;
             }
-            if((inputDataType == DataType.GS1) && (local_source.charAt(i) == '[')) {
+
+            if (eciMode < 10000) {
+                flagNumber = 4;
+            }
+
+            if (eciMode < 1000) {
+                flagNumber = 3;
+            }
+
+            if (eciMode < 100) {
+                flagNumber = 2;
+            }
+
+            if (eciMode < 10) {
+                flagNumber = 1;
+            }
+
+            charmap[maplength] = 0; // FLG
+            typemap[maplength++] = 8; // PUNC
+            charmap[maplength] = 400 + flagNumber;
+            typemap[maplength++] = 8; // PUNC
+        }
+
+        for (i = 0; i < inputBytes.length; i++) {
+            if ((inputDataType == DataType.GS1) && ((inputBytes[i] & 0xFF) == '[')) {
                 /* FNC1 represented by FLG(0) */
-                charmap[maplength] = 0;
+                charmap[maplength] = 0; // FLG
                 typemap[maplength++] = 8; // PUNC
-                charmap[maplength] = 400;
+                charmap[maplength] = 400; // (0)
                 typemap[maplength++] = 8; // PUNC
             } else {
-                if (local_source.charAt(i) > 127) {
-                    charmap[maplength] = local_source.charAt(i);
-                    typemap[maplength++] = 3; //BINARY
+                if ((inputBytes[i] & 0xFF) > 0x7F) {
+                    charmap[maplength] = (inputBytes[i] & 0xFF);
+                    typemap[maplength++] = 32; //BINARY
                 } else {
-                    charmap[maplength] = AztecSymbolChar[local_source.charAt(i)];
-                    typemap[maplength++] = AztecCodeSet[local_source.charAt(i)];
+                    charmap[maplength] = AztecSymbolChar[(inputBytes[i] & 0xFF)];
+                    typemap[maplength++] = AztecCodeSet[(inputBytes[i] & 0xFF)];
                 }
             }
         }
@@ -1202,7 +1338,7 @@ public class AztecCode extends Symbol {
         /* Look for double character encoding possibilities */
         i = 0;
         do {
-            if (((charmap[i] == 300) && (charmap[i + 1] == 11)) && ((typemap[i] == 8 /*PUNC */ ) && (typemap[i + 1] == 8 /*PUNC*/ ))) {
+            if (((charmap[i] == 300) && (charmap[i + 1] == 11)) && ((typemap[i] == 8 /*PUNC */) && (typemap[i + 1] == 8 /*PUNC*/))) {
                 /* CR LF combination */
                 charmap[i] = 2;
                 typemap[i] = 8; // PUNC
@@ -1251,84 +1387,84 @@ public class AztecCode extends Symbol {
 
         /* look for blocks of characters which use the same table */
         blocks = 1;
-        blockmap0[0] = typemap[0];
-        blockmap1[0] = 1;
+        blockType[0] = typemap[0];
+        blockLength[0] = 1;
         for (i = 1; i < maplength; i++) {
             if (typemap[i] == typemap[i - 1]) {
-                blockmap1[blocks - 1]++;
+                blockLength[blocks - 1]++;
             } else {
                 blocks++;
-                blockmap0[blocks - 1] = typemap[i];
-                blockmap1[blocks - 1] = 1;
+                blockType[blocks - 1] = typemap[i];
+                blockLength[blocks - 1] = 1;
             }
         }
 
-        if ((blockmap0[0] & 1) != 0) {
-            blockmap0[0] = 1;
+        if ((blockType[0] & 1) != 0) {
+            blockType[0] = 1;
         }
-        if ((blockmap0[0] & 2) != 0) {
-            blockmap0[0] = 2;
+        if ((blockType[0] & 2) != 0) {
+            blockType[0] = 2;
         }
-        if ((blockmap0[0] & 4) != 0) {
-            blockmap0[0] = 4;
+        if ((blockType[0] & 4) != 0) {
+            blockType[0] = 4;
         }
-        if ((blockmap0[0] & 8) != 0) {
-            blockmap0[0] = 8;
+        if ((blockType[0] & 8) != 0) {
+            blockType[0] = 8;
         }
 
         if (blocks > 1) {
 
             /* look for adjacent blocks which can use the same table (left to right search) */
             for (i = 1; i < blocks; i++) {
-                if ((blockmap0[i] & blockmap0[i - 1]) != 0) {
-                    blockmap0[i] = (blockmap0[i] & blockmap0[i - 1]);
+                if ((blockType[i] & blockType[i - 1]) != 0) {
+                    blockType[i] = (blockType[i] & blockType[i - 1]);
                 }
             }
 
-            if ((blockmap0[blocks - 1] & 1) != 0) {
-                blockmap0[blocks - 1] = 1;
+            if ((blockType[blocks - 1] & 1) != 0) {
+                blockType[blocks - 1] = 1;
             }
-            if ((blockmap0[blocks - 1] & 2) != 0) {
-                blockmap0[blocks - 1] = 2;
+            if ((blockType[blocks - 1] & 2) != 0) {
+                blockType[blocks - 1] = 2;
             }
-            if ((blockmap0[blocks - 1] & 4) != 0) {
-                blockmap0[blocks - 1] = 4;
+            if ((blockType[blocks - 1] & 4) != 0) {
+                blockType[blocks - 1] = 4;
             }
-            if ((blockmap0[blocks - 1] & 8) != 0) {
-                blockmap0[blocks - 1] = 8;
+            if ((blockType[blocks - 1] & 8) != 0) {
+                blockType[blocks - 1] = 8;
             }
 
             /* look for adjacent blocks which can use the same table (right to left search) */
             for (i = blocks - 2; i > 0; i--) {
-                if ((blockmap0[i] & blockmap0[i + 1]) != 0) {
-                    blockmap0[i] = (blockmap0[i] & blockmap0[i + 1]);
+                if ((blockType[i] & blockType[i + 1]) != 0) {
+                    blockType[i] = (blockType[i] & blockType[i + 1]);
                 }
             }
 
             /* determine the encoding table for characters which do not fit with adjacent blocks */
             for (i = 1; i < blocks; i++) {
-                if ((blockmap0[i] & 8) != 0) {
-                    blockmap0[i] = 8;
+                if ((blockType[i] & 8) != 0) {
+                    blockType[i] = 8;
                 }
-                if ((blockmap0[i] & 4) != 0) {
-                    blockmap0[i] = 4;
+                if ((blockType[i] & 4) != 0) {
+                    blockType[i] = 4;
                 }
-                if ((blockmap0[i] & 2) != 0) {
-                    blockmap0[i] = 2;
+                if ((blockType[i] & 2) != 0) {
+                    blockType[i] = 2;
                 }
-                if ((blockmap0[i] & 1) != 0) {
-                    blockmap0[i] = 1;
+                if ((blockType[i] & 1) != 0) {
+                    blockType[i] = 1;
                 }
             }
 
             /* Combine blocks of the same type */
             i = 0;
             do {
-                if (blockmap0[i] == blockmap0[i + 1]) {
-                    blockmap1[i] += blockmap1[i + 1];
-                    for (j = i + 1; j < blocks; j++) {
-                        blockmap0[j] = blockmap0[j + 1];
-                        blockmap1[j] = blockmap1[j + 1];
+                if (blockType[i] == blockType[i + 1]) {
+                    blockLength[i] += blockLength[i + 1];
+                    for (j = i + 1; j < blocks - 1; j++) {
+                        blockType[j] = blockType[j + 1];
+                        blockLength[j] = blockLength[j + 1];
                     }
                     blocks--;
                 } else {
@@ -1340,16 +1476,18 @@ public class AztecCode extends Symbol {
         /* Put the adjusted block data back into typemap */
         j = 0;
         for (i = 0; i < blocks; i++) {
-            if ((blockmap1[i] < 3) && (blockmap0[i] != 32)) { /* Shift character(s) needed */
-                for (k = 0; k < blockmap1[i]; k++) {
-                    typemap[j + k] = blockmap0[i] + 64;
+            if ((blockLength[i] < 3) && (blockType[i] != 32)) { /* Shift character(s) needed */
+
+                for (k = 0; k < blockLength[i]; k++) {
+                    typemap[j + k] = blockType[i] + 64;
                 }
             } else { /* Latch character (or byte mode) needed */
-                for (k = 0; k < blockmap1[i]; k++) {
-                    typemap[j + k] = blockmap0[i];
+
+                for (k = 0; k < blockLength[i]; k++) {
+                    typemap[j + k] = blockType[i];
                 }
             }
-            j += blockmap1[i];
+            j += blockLength[i];
         }
 
         /* Don't shift an initial capital letter */
@@ -1365,39 +1503,39 @@ public class AztecCode extends Symbol {
                     curtable -= 64;
                 }
                 switch (charmap[i]) {
-                case 300:
-                    /* Carriage Return */
+                    case 300:
+                        /* Carriage Return */
                         switch (curtable) {
-                        case 8:
-                            charmap[i] = 1;
-                            break; // PUNC
-                        case 4:
-                            charmap[i] = 14;
-                            break; // PUNC
-                    }
-                    break;
-                case 301:
-                    /* Comma */
+                            case 8:
+                                charmap[i] = 1;
+                                break; // PUNC
+                            case 4:
+                                charmap[i] = 14;
+                                break; // PUNC
+                        }
+                        break;
+                    case 301:
+                        /* Comma */
                         switch (curtable) {
-                        case 8:
-                            charmap[i] = 17;
-                            break; // PUNC
-                        case 16:
-                            charmap[i] = 12;
-                            break; // DIGIT
-                    }
-                    break;
-                case 302:
-                    /* Full Stop */
+                            case 8:
+                                charmap[i] = 17;
+                                break; // PUNC
+                            case 16:
+                                charmap[i] = 12;
+                                break; // DIGIT
+                        }
+                        break;
+                    case 302:
+                        /* Full Stop */
                         switch (curtable) {
-                        case 8:
-                            charmap[i] = 19;
-                            break; // PUNC
-                        case 16:
-                            charmap[i] = 13;
-                            break; // DIGIT
-                    }
-                    break;
+                            case 8:
+                                charmap[i] = 19;
+                                break; // PUNC
+                            case 16:
+                                charmap[i] = 13;
+                                break; // DIGIT
+                        }
+                        break;
                 }
             }
         }
@@ -1407,6 +1545,7 @@ public class AztecCode extends Symbol {
             System.out.print("Text string: ");
         }
         curtable = 1; /* start with 1 table */
+
         lasttable = 1;
         for (i = 0; i < maplength; i++) {
             newtable = curtable;
@@ -1420,400 +1559,532 @@ public class AztecCode extends Symbol {
                 if (typemap[i] > 64) {
                     /* Shift character */
                     switch (typemap[i]) {
-                    case (64 + 1):
-                        /* To UPPER */
+                        case (64 + 1):
+                            /* To UPPER */
                             switch (curtable) {
-                            case 2:
-                                /* US */
-                                    binary_string += hexbit[28];
-                                if (debug) System.out.printf("US ");
-                                break;
-                            case 4:
-                                /* UL */
-                                    binary_string += hexbit[29];
-                                if (debug) System.out.printf("UL ");
-                                newtable = 1;
-                                break;
-                            case 8:
-                                /* UL */
-                                    binary_string += hexbit[31];
-                                if (debug) System.out.printf("UL ");
-                                newtable = 1;
-                                break;
-                            case 16:
-                                /* US */
-                                    binary_string += pentbit[15];
-                                if (debug) System.out.printf("US ");
-                                break;
-                        }
-                        break;
-                    case (64 + 2):
-                        /* To LOWER */
+                                case 2:
+                                    /* US */
+                                    binary_string += pentbit[28];
+                                    if (debug) {
+                                        System.out.printf("US ");
+                                    }
+                                    break;
+                                case 4:
+                                    /* UL */
+                                    binary_string += pentbit[29];
+                                    if (debug) {
+                                        System.out.printf("UL ");
+                                    }
+                                    newtable = 1;
+                                    break;
+                                case 8:
+                                    /* UL */
+                                    binary_string += pentbit[31];
+                                    if (debug) {
+                                        System.out.printf("UL ");
+                                    }
+                                    newtable = 1;
+                                    break;
+                                case 16:
+                                    /* US */
+                                    binary_string += quadbit[15];
+                                    if (debug) {
+                                        System.out.printf("US ");
+                                    }
+                                    break;
+                            }
+                            break;
+                        case (64 + 2):
+                            /* To LOWER */
                             switch (curtable) {
-                            case 1:
-                                /* LL */
-                                    binary_string += hexbit[28];
-                                if (debug) System.out.printf("LL ");
-                                newtable = 2;
-                                break;
-                            case 4:
-                                /* LL */
-                                    binary_string += hexbit[28];
-                                if (debug) System.out.printf("LL ");
-                                newtable = 2;
-                                break;
-                            case 8:
-                                /* UL LL */
-                                    binary_string += hexbit[31];
-                                if (debug) System.out.printf("UL ");
-                                binary_string += hexbit[28];
-                                if (debug) System.out.printf("LL ");
-                                newtable = 2;
-                                break;
-                            case 16:
-                                /* UL LL */
-                                    binary_string += pentbit[14];
-                                if (debug) System.out.printf("UL ");
-                                binary_string += hexbit[28];
-                                if (debug) System.out.printf("LL ");
-                                newtable = 2;
-                                break;
-                        }
-                        break;
-                    case (64 + 4):
-                        /* To MIXED */
+                                case 1:
+                                    /* LL */
+                                    binary_string += pentbit[28];
+                                    if (debug) {
+                                        System.out.printf("LL ");
+                                    }
+                                    newtable = 2;
+                                    break;
+                                case 4:
+                                    /* LL */
+                                    binary_string += pentbit[28];
+                                    if (debug) {
+                                        System.out.printf("LL ");
+                                    }
+                                    newtable = 2;
+                                    break;
+                                case 8:
+                                    /* UL LL */
+                                    binary_string += pentbit[31];
+                                    if (debug) {
+                                        System.out.printf("UL ");
+                                    }
+                                    binary_string += pentbit[28];
+                                    if (debug) {
+                                        System.out.printf("LL ");
+                                    }
+                                    newtable = 2;
+                                    break;
+                                case 16:
+                                    /* UL LL */
+                                    binary_string += quadbit[14];
+                                    if (debug) {
+                                        System.out.printf("UL ");
+                                    }
+                                    binary_string += pentbit[28];
+                                    if (debug) {
+                                        System.out.printf("LL ");
+                                    }
+                                    newtable = 2;
+                                    break;
+                            }
+                            break;
+                        case (64 + 4):
+                            /* To MIXED */
                             switch (curtable) {
-                            case 1:
-                                /* ML */
-                                    binary_string += hexbit[29];
-                                if (debug) System.out.printf("ML ");
-                                newtable = 4;
-                                break;
-                            case 2:
-                                /* ML */
-                                    binary_string += hexbit[29];
-                                if (debug) System.out.printf("ML ");
-                                newtable = 4;
-                                break;
-                            case 8:
-                                /* UL ML */
-                                    binary_string += hexbit[31];
-                                if (debug) System.out.printf("UL ");
-                                binary_string += hexbit[29];
-                                if (debug) System.out.printf("ML ");
-                                newtable = 4;
-                                break;
-                            case 16:
-                                /* UL ML */
-                                    binary_string += pentbit[14];
-                                if (debug) System.out.printf("UL ");
-                                binary_string += hexbit[29];
-                                if (debug) System.out.printf("ML ");
-                                newtable = 4;
-                                break;
-                        }
-                        break;
-                    case (64 + 8):
-                        /* To PUNC */
+                                case 1:
+                                    /* ML */
+                                    binary_string += pentbit[29];
+                                    if (debug) {
+                                        System.out.printf("ML ");
+                                    }
+                                    newtable = 4;
+                                    break;
+                                case 2:
+                                    /* ML */
+                                    binary_string += pentbit[29];
+                                    if (debug) {
+                                        System.out.printf("ML ");
+                                    }
+                                    newtable = 4;
+                                    break;
+                                case 8:
+                                    /* UL ML */
+                                    binary_string += pentbit[31];
+                                    if (debug) {
+                                        System.out.printf("UL ");
+                                    }
+                                    binary_string += pentbit[29];
+                                    if (debug) {
+                                        System.out.printf("ML ");
+                                    }
+                                    newtable = 4;
+                                    break;
+                                case 16:
+                                    /* UL ML */
+                                    binary_string += quadbit[14];
+                                    if (debug) {
+                                        System.out.printf("UL ");
+                                    }
+                                    binary_string += pentbit[29];
+                                    if (debug) {
+                                        System.out.printf("ML ");
+                                    }
+                                    newtable = 4;
+                                    break;
+                            }
+                            break;
+                        case (64 + 8):
+                            /* To PUNC */
                             switch (curtable) {
-                            case 1:
-                                /* PS */
-                                    binary_string += hexbit[0];
-                                if (debug) System.out.printf("PS ");
-                                break;
-                            case 2:
-                                /* PS */
-                                    binary_string += hexbit[0];
-                                if (debug) System.out.printf("PS ");
-                                break;
-                            case 4:
-                                /* PS */
-                                    binary_string += hexbit[0];
-                                if (debug) System.out.printf("PS ");
-                                break;
-                            case 16:
-                                /* PS */
+                                case 1:
+                                    /* PS */
                                     binary_string += pentbit[0];
-                                if (debug) System.out.printf("PS ");
-                                break;
-                        }
-                        break;
-                    case (64 + 16):
-                        /* To DIGIT */
+                                    if (debug) {
+                                        System.out.printf("PS ");
+                                    }
+                                    break;
+                                case 2:
+                                    /* PS */
+                                    binary_string += pentbit[0];
+                                    if (debug) {
+                                        System.out.printf("PS ");
+                                    }
+                                    break;
+                                case 4:
+                                    /* PS */
+                                    binary_string += pentbit[0];
+                                    if (debug) {
+                                        System.out.printf("PS ");
+                                    }
+                                    break;
+                                case 16:
+                                    /* PS */
+                                    binary_string += quadbit[0];
+                                    if (debug) {
+                                        System.out.printf("PS ");
+                                    }
+                                    break;
+                            }
+                            break;
+                        case (64 + 16):
+                            /* To DIGIT */
                             switch (curtable) {
-                            case 1:
-                                /* DL */
-                                    binary_string += hexbit[30];
-                                if (debug) System.out.printf("DL ");
-                                newtable = 16;
-                                break;
-                            case 2:
-                                /* DL */
-                                    binary_string += hexbit[30];
-                                if (debug) System.out.printf("DL ");
-                                newtable = 16;
-                                break;
-                            case 4:
-                                /* UL DL */
-                                    binary_string += hexbit[29];
-                                if (debug) System.out.printf("UL ");
-                                binary_string += hexbit[30];
-                                if (debug) System.out.printf("DL ");
-                                newtable = 16;
-                                break;
-                            case 8:
-                                /* UL DL */
-                                    binary_string += hexbit[31];
-                                if (debug) System.out.printf("UL ");
-                                binary_string += hexbit[30];
-                                if (debug) System.out.printf("DL ");
-                                newtable = 16;
-                                break;
-                        }
-                        break;
+                                case 1:
+                                    /* DL */
+                                    binary_string += pentbit[30];
+                                    if (debug) {
+                                        System.out.printf("DL ");
+                                    }
+                                    newtable = 16;
+                                    break;
+                                case 2:
+                                    /* DL */
+                                    binary_string += pentbit[30];
+                                    if (debug) {
+                                        System.out.printf("DL ");
+                                    }
+                                    newtable = 16;
+                                    break;
+                                case 4:
+                                    /* UL DL */
+                                    binary_string += pentbit[29];
+                                    if (debug) {
+                                        System.out.printf("UL ");
+                                    }
+                                    binary_string += pentbit[30];
+                                    if (debug) {
+                                        System.out.printf("DL ");
+                                    }
+                                    newtable = 16;
+                                    break;
+                                case 8:
+                                    /* UL DL */
+                                    binary_string += pentbit[31];
+                                    if (debug) {
+                                        System.out.printf("UL ");
+                                    }
+                                    binary_string += pentbit[30];
+                                    if (debug) {
+                                        System.out.printf("DL ");
+                                    }
+                                    newtable = 16;
+                                    break;
+                            }
+                            break;
                     }
                 } else {
                     /* Latch character */
                     switch (typemap[i]) {
-                    case 1:
-                        /* To UPPER */
-                            switch (curtable) {
-                            case 2:
-                                /* ML UL */
-                                    binary_string += hexbit[29];
-                                if (debug) System.out.printf("ML ");
-                                binary_string += hexbit[29];
-                                if (debug) System.out.printf("UL ");
-                                newtable = 1;
-                                break;
-                            case 4:
-                                /* UL */
-                                    binary_string += hexbit[29];
-                                if (debug) System.out.printf("UL ");
-                                newtable = 1;
-                                break;
-                            case 8:
-                                /* UL */
-                                    binary_string += hexbit[31];
-                                if (debug) System.out.printf("UL ");
-                                newtable = 1;
-                                break;
-                            case 16:
-                                /* UL */
-                                    binary_string += pentbit[14];
-                                if (debug) System.out.printf("UL ");
-                                newtable = 1;
-                                break;
-                        }
-                        break;
-                    case 2:
-                        /* To LOWER */
-                            switch (curtable) {
-                            case 1:
-                                /* LL */
-                                    binary_string += hexbit[28];
-                                if (debug) System.out.printf("LL ");
-                                newtable = 2;
-                                break;
-                            case 4:
-                                /* LL */
-                                    binary_string += hexbit[28];
-                                if (debug) System.out.printf("LL ");
-                                newtable = 2;
-                                break;
-                            case 8:
-                                /* UL LL */
-                                    binary_string += hexbit[31];
-                                if (debug) System.out.printf("UL ");
-                                binary_string += hexbit[28];
-                                if (debug) System.out.printf("LL ");
-                                newtable = 2;
-                                break;
-                            case 16:
-                                /* UL LL */
-                                    binary_string += pentbit[14];
-                                if (debug) System.out.printf("UL ");
-                                binary_string += hexbit[28];
-                                if (debug) System.out.printf("LL ");
-                                newtable = 2;
-                                break;
-                        }
-                        break;
-                    case 4:
-                        /* To MIXED */
-                            switch (curtable) {
-                            case 1:
-                                /* ML */
-                                    binary_string += hexbit[29];
-                                if (debug) System.out.printf("ML ");
-                                newtable = 4;
-                                break;
-                            case 2:
-                                /* ML */
-                                    binary_string += hexbit[29];
-                                if (debug) System.out.printf("ML ");
-                                newtable = 4;
-                                break;
-                            case 8:
-                                /* UL ML */
-                                    binary_string += hexbit[31];
-                                if (debug) System.out.printf("UL ");
-                                binary_string += hexbit[29];
-                                if (debug) System.out.printf("ML ");
-                                newtable = 4;
-                                break;
-                            case 16:
-                                /* UL ML */
-                                    binary_string += pentbit[14];
-                                if (debug) System.out.printf("UL ");
-                                binary_string += hexbit[29];
-                                if (debug) System.out.printf("ML ");
-                                newtable = 4;
-                                break;
-                        }
-                        break;
-                    case 8:
-                        /* To PUNC */
-                            switch (curtable) {
-                            case 1:
-                                /* ML PL */
-                                    binary_string += hexbit[29];
-                                if (debug) System.out.printf("ML ");
-                                binary_string += hexbit[30];
-                                if (debug) System.out.printf("PL ");
-                                newtable = 8;
-                                break;
-                            case 2:
-                                /* ML PL */
-                                    binary_string += hexbit[29];
-                                if (debug) System.out.printf("ML ");
-                                binary_string += hexbit[30];
-                                if (debug) System.out.printf("PL ");
-                                newtable = 8;
-                                break;
-                            case 4:
-                                /* PL */
-                                    binary_string += hexbit[30];
-                                if (debug) System.out.printf("PL ");
-                                newtable = 8;
-                                break;
-                            case 16:
-                                /* UL ML PL */
-                                    binary_string += pentbit[14];
-                                if (debug) System.out.printf("UL ");
-                                binary_string += hexbit[29];
-                                if (debug) System.out.printf("ML ");
-                                binary_string += hexbit[30];
-                                if (debug) System.out.printf("PL ");
-                                newtable = 8;
-                                break;
-                        }
-                        break;
-                    case 16:
-                        /* To DIGIT */
-                            switch (curtable) {
-                            case 1:
-                                /* DL */
-                                    binary_string += hexbit[30];
-                                if (debug) System.out.printf("DL ");
-                                newtable = 16;
-                                break;
-                            case 2:
-                                /* DL */
-                                    binary_string += hexbit[30];
-                                if (debug) System.out.printf("DL ");
-                                newtable = 16;
-                                break;
-                            case 4:
-                                /* UL DL */
-                                    binary_string += hexbit[29];
-                                if (debug) System.out.printf("UL ");
-                                binary_string += hexbit[30];
-                                if (debug) System.out.printf("DL ");
-                                newtable = 16;
-                                break;
-                            case 8:
-                                /* UL DL */
-                                    binary_string += hexbit[31];
-                                if (debug) System.out.printf("UL ");
-                                binary_string += hexbit[30];
-                                if (debug) System.out.printf("DL ");
-                                newtable = 16;
-                                break;
-                        }
-                        break;
-                    case 3:
-                        /* To BINARY */
-                            lasttable = curtable;
-                        switch (curtable) {
                         case 1:
-                            /* BS */
-                                binary_string += hexbit[31];
-                            if (debug) System.out.printf("BS ");
-                            newtable = 3;
+                            /* To UPPER */
+                            switch (curtable) {
+                                case 2:
+                                    /* ML UL */
+                                    binary_string += pentbit[29];
+                                    if (debug) {
+                                        System.out.printf("ML ");
+                                    }
+                                    binary_string += pentbit[29];
+                                    if (debug) {
+                                        System.out.printf("UL ");
+                                    }
+                                    newtable = 1;
+                                    break;
+                                case 4:
+                                    /* UL */
+                                    binary_string += pentbit[29];
+                                    if (debug) {
+                                        System.out.printf("UL ");
+                                    }
+                                    newtable = 1;
+                                    break;
+                                case 8:
+                                    /* UL */
+                                    binary_string += pentbit[31];
+                                    if (debug) {
+                                        System.out.printf("UL ");
+                                    }
+                                    newtable = 1;
+                                    break;
+                                case 16:
+                                    /* UL */
+                                    binary_string += quadbit[14];
+                                    if (debug) {
+                                        System.out.printf("UL ");
+                                    }
+                                    newtable = 1;
+                                    break;
+                            }
                             break;
                         case 2:
-                            /* BS */
-                                binary_string += hexbit[31];
-                            if (debug) System.out.printf("BS ");
-                            newtable = 3;
+                            /* To LOWER */
+                            switch (curtable) {
+                                case 1:
+                                    /* LL */
+                                    binary_string += pentbit[28];
+                                    if (debug) {
+                                        System.out.printf("LL ");
+                                    }
+                                    newtable = 2;
+                                    break;
+                                case 4:
+                                    /* LL */
+                                    binary_string += pentbit[28];
+                                    if (debug) {
+                                        System.out.printf("LL ");
+                                    }
+                                    newtable = 2;
+                                    break;
+                                case 8:
+                                    /* UL LL */
+                                    binary_string += pentbit[31];
+                                    if (debug) {
+                                        System.out.printf("UL ");
+                                    }
+                                    binary_string += pentbit[28];
+                                    if (debug) {
+                                        System.out.printf("LL ");
+                                    }
+                                    newtable = 2;
+                                    break;
+                                case 16:
+                                    /* UL LL */
+                                    binary_string += quadbit[14];
+                                    if (debug) {
+                                        System.out.printf("UL ");
+                                    }
+                                    binary_string += pentbit[28];
+                                    if (debug) {
+                                        System.out.printf("LL ");
+                                    }
+                                    newtable = 2;
+                                    break;
+                            }
                             break;
                         case 4:
-                            /* BS */
-                                binary_string += hexbit[31];
-                            if (debug) System.out.printf("BS ");
-                            newtable = 3;
+                            /* To MIXED */
+                            switch (curtable) {
+                                case 1:
+                                    /* ML */
+                                    binary_string += pentbit[29];
+                                    if (debug) {
+                                        System.out.printf("ML ");
+                                    }
+                                    newtable = 4;
+                                    break;
+                                case 2:
+                                    /* ML */
+                                    binary_string += pentbit[29];
+                                    if (debug) {
+                                        System.out.printf("ML ");
+                                    }
+                                    newtable = 4;
+                                    break;
+                                case 8:
+                                    /* UL ML */
+                                    binary_string += pentbit[31];
+                                    if (debug) {
+                                        System.out.printf("UL ");
+                                    }
+                                    binary_string += pentbit[29];
+                                    if (debug) {
+                                        System.out.printf("ML ");
+                                    }
+                                    newtable = 4;
+                                    break;
+                                case 16:
+                                    /* UL ML */
+                                    binary_string += quadbit[14];
+                                    if (debug) {
+                                        System.out.printf("UL ");
+                                    }
+                                    binary_string += pentbit[29];
+                                    if (debug) {
+                                        System.out.printf("ML ");
+                                    }
+                                    newtable = 4;
+                                    break;
+                            }
                             break;
                         case 8:
-                            /* UL BS */
-                                binary_string += hexbit[31];
-                            if (debug) System.out.printf("UL ");
-                            binary_string += hexbit[31];
-                            if (debug) System.out.printf("BS ");
-                            newtable = 3;
+                            /* To PUNC */
+                            switch (curtable) {
+                                case 1:
+                                    /* ML PL */
+                                    binary_string += pentbit[29];
+                                    if (debug) {
+                                        System.out.printf("ML ");
+                                    }
+                                    binary_string += pentbit[30];
+                                    if (debug) {
+                                        System.out.printf("PL ");
+                                    }
+                                    newtable = 8;
+                                    break;
+                                case 2:
+                                    /* ML PL */
+                                    binary_string += pentbit[29];
+                                    if (debug) {
+                                        System.out.printf("ML ");
+                                    }
+                                    binary_string += pentbit[30];
+                                    if (debug) {
+                                        System.out.printf("PL ");
+                                    }
+                                    newtable = 8;
+                                    break;
+                                case 4:
+                                    /* PL */
+                                    binary_string += pentbit[30];
+                                    if (debug) {
+                                        System.out.printf("PL ");
+                                    }
+                                    newtable = 8;
+                                    break;
+                                case 16:
+                                    /* UL ML PL */
+                                    binary_string += quadbit[14];
+                                    if (debug) {
+                                        System.out.printf("UL ");
+                                    }
+                                    binary_string += pentbit[29];
+                                    if (debug) {
+                                        System.out.printf("ML ");
+                                    }
+                                    binary_string += pentbit[30];
+                                    if (debug) {
+                                        System.out.printf("PL ");
+                                    }
+                                    newtable = 8;
+                                    break;
+                            }
                             break;
                         case 16:
-                            /* UL BS */
-                                binary_string += pentbit[14];
-                            if (debug) System.out.printf("UL ");
-                            binary_string += hexbit[31];
-                            if (debug) System.out.printf("BS ");
-                            newtable = 3;
+                            /* To DIGIT */
+                            switch (curtable) {
+                                case 1:
+                                    /* DL */
+                                    binary_string += pentbit[30];
+                                    if (debug) {
+                                        System.out.printf("DL ");
+                                    }
+                                    newtable = 16;
+                                    break;
+                                case 2:
+                                    /* DL */
+                                    binary_string += pentbit[30];
+                                    if (debug) {
+                                        System.out.printf("DL ");
+                                    }
+                                    newtable = 16;
+                                    break;
+                                case 4:
+                                    /* UL DL */
+                                    binary_string += pentbit[29];
+                                    if (debug) {
+                                        System.out.printf("UL ");
+                                    }
+                                    binary_string += pentbit[30];
+                                    if (debug) {
+                                        System.out.printf("DL ");
+                                    }
+                                    newtable = 16;
+                                    break;
+                                case 8:
+                                    /* UL DL */
+                                    binary_string += pentbit[31];
+                                    if (debug) {
+                                        System.out.printf("UL ");
+                                    }
+                                    binary_string += pentbit[30];
+                                    if (debug) {
+                                        System.out.printf("DL ");
+                                    }
+                                    newtable = 16;
+                                    break;
+                            }
                             break;
-                        }
+                        case 32:
+                            /* To BINARY */
+                            lasttable = curtable;
+                            switch (curtable) {
+                                case 1:
+                                    /* BS */
+                                    binary_string += pentbit[31];
+                                    if (debug) {
+                                        System.out.printf("BS ");
+                                    }
+                                    newtable = 3;
+                                    break;
+                                case 2:
+                                    /* BS */
+                                    binary_string += pentbit[31];
+                                    if (debug) {
+                                        System.out.printf("BS ");
+                                    }
+                                    newtable = 3;
+                                    break;
+                                case 4:
+                                    /* BS */
+                                    binary_string += pentbit[31];
+                                    if (debug) {
+                                        System.out.printf("BS ");
+                                    }
+                                    newtable = 3;
+                                    break;
+                                case 8:
+                                    /* UL BS */
+                                    binary_string += pentbit[31];
+                                    if (debug) {
+                                        System.out.printf("UL ");
+                                    }
+                                    binary_string += pentbit[31];
+                                    if (debug) {
+                                        System.out.printf("BS ");
+                                    }
+                                    newtable = 3;
+                                    break;
+                                case 16:
+                                    /* UL BS */
+                                    binary_string += quadbit[14];
+                                    if (debug) {
+                                        System.out.printf("UL ");
+                                    }
+                                    binary_string += pentbit[31];
+                                    if (debug) {
+                                        System.out.printf("BS ");
+                                    }
+                                    newtable = 3;
+                                    break;
+                            }
 
-                        bytes = 0;
-                        do {
-                            bytes++;
-                        } while (typemap[i + (bytes - 1)] == 3);
-                        bytes--;
+                            bytes = 0;
+                            do {
+                                bytes++;
+                            } while (typemap[i + (bytes - 1)] == 32);
+                            bytes--;
 
-                        if (bytes > 2079) {
-                            error_msg = "Input too long";
-                            return false;
-                        }
+                            if (bytes > 2079) {
+                                error_msg = "Input too long";
+                                return false;
+                            }
 
-                        if (bytes > 31) { /* Put 00000 followed by 11-bit number of bytes less 31 */
-                            binary_string += "00000";
-                            for (weight = 0x400; weight > 0; weight = weight >> 1) {
-                                if (((bytes - 31) & weight) != 0) {
-                                    binary_string += "1";
-                                } else {
-                                    binary_string += "0";
+                            if (bytes > 31) { /* Put 00000 followed by 11-bit number of bytes less 31 */
+
+                                binary_string += "00000";
+                                for (weight = 0x400; weight > 0; weight = weight >> 1) {
+                                    if (((bytes - 31) & weight) != 0) {
+                                        binary_string += "1";
+                                    } else {
+                                        binary_string += "0";
+                                    }
+                                }
+                            } else { /* Put 5-bit number of bytes */
+
+                                for (weight = 0x10; weight > 0; weight = weight >> 1) {
+                                    if ((bytes & weight) != 0) {
+                                        binary_string += "1";
+                                    } else {
+                                        binary_string += "0";
+                                    }
                                 }
                             }
-                        } else { /* Put 5-bit number of bytes */
-                            for (weight = 0x10; weight > 0; weight = weight >> 1) {
-                                if ((bytes & weight) != 0) {
-                                    binary_string += "1";
-                                } else {
-                                    binary_string += "0";
-                                }
+                            if (debug) {
+                                System.out.printf("(%d bytes) ", bytes);
                             }
-                        }
-                        if (debug) System.out.printf("(%d bytes) ", bytes);
 
-                        break;
+                            break;
                     }
                 }
             }
@@ -1824,39 +2095,68 @@ public class AztecCode extends Symbol {
                 chartype -= 64;
             }
             switch (chartype) {
-            case 1:
-            case 2:
-            case 4:
-            case 8:
-                if (charmap[i] >= 400) {
-                    binary_string += tribit[charmap[i] - 400];
-                    if (debug) System.out.printf("FLG(%d) ", charmap[i] - 400);
-                } else {
-                    binary_string += hexbit[charmap[i]];
-                    if (!((chartype == 8) && (charmap[i] == 0)))
-                        if (debug) System.out.printf("%d ", charmap[i]);
-                }
-                break;
-            case 16:
-                binary_string += pentbit[charmap[i]];
-                if (debug) System.out.printf("%d ", charmap[i]);
-                break;
-            case 3:
-                for (weight = 0x80; weight > 0; weight = weight >> 1) {
-                    if ((charmap[i] & weight) != 0) {
-                        binary_string += "1";
+                case 1:
+                case 2:
+                case 4:
+                case 8:
+                    if (charmap[i] >= 400) {
+                        if (debug) {
+                            System.out.printf("FLG(%d) ", charmap[i] - 400);
+                        }
+                        binary_string += tribit[charmap[i] - 400];
+                        if (charmap[i] != 400) {
+                            binary_string += eciToBinary();
+                        }
                     } else {
-                        binary_string += "0";
+                        binary_string += pentbit[charmap[i]];
+                        if (!((chartype == 8) && (charmap[i] == 0))) {
+                            if (debug) {
+                                System.out.printf("%d ", charmap[i]);
+                            }
+                        }
                     }
-                }
-                if (debug) System.out.printf("%d ", charmap[i]);
-                break;
+                    break;
+                case 16:
+                    binary_string += quadbit[charmap[i]];
+                    if (debug) {
+                        System.out.printf("%d ", charmap[i]);
+                    }
+                    break;
+                case 32:
+                    for (weight = 0x80; weight > 0; weight = weight >> 1) {
+                        if ((charmap[i] & weight) != 0) {
+                            binary_string += "1";
+                        } else {
+                            binary_string += "0";
+                        }
+                    }
+                    if (debug) {
+                        System.out.printf("%d ", charmap[i]);
+                    }
+                    break;
             }
 
         }
 
-        if (debug) System.out.printf("\n");
+        if (debug) {
+            System.out.printf("\n");
+        }
 
         return true;
+    }
+
+    private String eciToBinary() {
+        String binary = "";
+        String eciNumber = Integer.toString(eciMode);
+        int i;
+
+        for (i = 0; i < eciNumber.length(); i++) {
+            binary += quadbit[(eciNumber.charAt(i) - '0') + 2];
+            if (debug) {
+                System.out.printf("%c ", eciNumber.charAt(i));
+            }
+        }
+
+        return binary;
     }
 }

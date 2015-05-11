@@ -18,9 +18,14 @@ package uk.org.okapibarcode.backend;
 import java.awt.Rectangle;
 import java.math.BigInteger;
 /**
- * USPS OneCode (AKA Intelligent Mail)
+ * USPS OneCode (also known as Intelligent Mail Barcode)
  * According to USPS-B-3200F
  * Specification at https://ribbs.usps.gov/intelligentmail_mailpieces/documents/tech_guides/SPUSPSG.pdf
+ * <br>
+ * OneCode is a fixed length (65-bar) symbol which combines routing and 
+ * customer information in a single symbol. Input data consists of a 20 digit 
+ * tracking code, followed by a dash (-), followed by a delivery point 
+ * zip-code which can be 0, 5, 9 or 11 digits in length.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */

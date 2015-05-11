@@ -17,7 +17,11 @@
 package uk.org.okapibarcode.backend;
 
 /**
- * Implements the <a href="http://en.wikipedia.org/wiki/Pharmacode">Pharmacode</a> bar code symbology.
+ * Implements the <a href="http://en.wikipedia.org/wiki/Pharmacode">Pharmacode</a> 
+ * bar code symbology.
+ * <br>
+ * Pharmacode is used for the identification of pharmaceuticals. The symbology 
+ * is able to encode whole numbers between 3 and 131070.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */

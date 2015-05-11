@@ -18,6 +18,8 @@ package uk.org.okapibarcode.backend;
 /**
  * Calculate NVE-18 (Nummer der Versandeinheit)
  * Also SSCC-18 (Serial Shipping Container Code)
+ * <br>
+ * Encodes a 17 digit number, adding a Modulo-10 check digit.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */

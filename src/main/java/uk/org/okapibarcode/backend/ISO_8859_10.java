@@ -18,7 +18,7 @@ package uk.org.okapibarcode.backend;
 /**
  * Convert a String to ISO 8859-10 (Latin-6) encoding
  *
- * @author Robin Stuart <rstuart114@gmail.com>
+ * @author Robin Stuart <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class ISO_8859_10 {
     

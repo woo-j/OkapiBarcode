@@ -20,6 +20,10 @@ import java.io.UnsupportedEncodingException;
 /**
  * Implements Micro QR Code
  * According to ISO/IEC 18004:2006
+ * <br>
+ * A miniature version of the QR Code symbol for short messages. 
+ * QR Code symbols can encode characters in the Latin-1 set and Kanji 
+ * characters which are members of the Shift-JIS encoding scheme.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
@@ -42,12 +46,82 @@ public class MicroQrCode extends Symbol {
     private int[] eval;
     private int preferredVersion;
     
+    /**
+     * Sets the preferred symbol size. This value may be ignored if the
+     * data string is too large to fit into the specified symbol. Input
+     * values correspond to symbol sizes as shown in the following table.
+     * <table summary="Range of Micro QR symbol sizes">
+     * <tbody>
+     * <tr>
+     * <th>Input</th>
+     * <th>Version</th>
+     * <th>Symbol Size</th>
+     * </tr>
+     * <tr>
+     * <td>1</td>
+     * <td>M1</td>
+     * <td>11 x 11</td>
+     * </tr>
+     * <tr>
+     * <td>2</td>
+     * <td>M2</td>
+     * <td>13 x 13</td>
+     * </tr>
+     * <tr>
+     * <td>3</td>
+     * <td>M3</td>
+     * <td>15 x 15</td>
+     * </tr>
+     * <tr>
+     * <td>4</td>
+     * <td>M4</td>
+     * <td>17 x 17</td>
+     * </tr>
+     * </tbody>
+     * </table>
+     * 
+     * @param version Symbol size
+     */
     public void setPreferredVersion(int version) {
         preferredVersion = version;
     }
     
     private EccMode preferredEccLevel = EccMode.L;
     
+    /**
+     * Set the amount of symbol space allocated to error correction.
+     * Levels are predefined according to the following table:
+     * <table summary="Micro QR Error correction levels">
+     * <tbody>
+     * <tr>
+     * <th>ECC Level</th>
+     * <th>Error Correction Capacity</th>
+     * <th>Recovery Capacity</th>
+     * </tr>
+     * <tr>
+     * <td>L (default)</td>
+     * <td>Approx 20% of symbol</td>
+     * <td>Approx 7%</td>
+     * </tr>
+     * <tr>
+     * <td>M</td>
+     * <td>Approx 37% of symbol</td>
+     * <td>Approx 15%</td>
+     * </tr>
+     * <tr>
+     * <td>Q</td>
+     * <td>Approx 55% of symbol</td>
+     * <td>Approx 25%</td>
+     * </tr>
+     * <tr>
+     * <td>H</td>
+     * <td>Approx 65% of symbol</td>
+     * <td>Approx 30%</td>
+     * </tr>
+     * </tbody>
+     * </table>
+     * @param eccMode Error correction level
+     */
     public void setEccMode (EccMode eccMode) {
         preferredEccLevel = eccMode;
     }

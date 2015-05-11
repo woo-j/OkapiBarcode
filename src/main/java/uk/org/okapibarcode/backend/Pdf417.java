@@ -22,6 +22,11 @@ import java.math.BigInteger;
 /**
  * Implements PDF417 bar code symbology and MicroPDF417 bar code symbology
  * according to ISO/IEC 15438:2006 and ISO/IEC 24728:2006 respectively.
+ * <br>
+ * PDF417 supports encoding up to the ISO standard maximum symbol size of 925 
+ * codewords which (at error correction level 0) allows a maximum data size 
+ * of 1850 text characters, or 2710 digits. The maximum size MicroPDF417 symbol
+ * can hold 250 alphanumeric characters or 366 digits.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
@@ -44,12 +49,24 @@ public class Pdf417 extends Symbol {
     private int[] inputData;
     private int selectedSymbolWidth;
 
+    /**
+     * Set the width of the symbol by specifying the number of columns
+     * of data codewords. Valid values are 1-30 for PDF417 and 1-4
+     * for MicroPDF417.
+     * @param columns Number of columns in symbol
+     */
     public void setNumberOfColumns(int columns) {
         selectedSymbolWidth = columns;
     }
 
     private int preferredEccLevel = -1;
 
+    /**
+     * Set the amount of the symbol which is dedicated to error correction
+     * codewords. The number of codewords of error correction data is
+     * determined by 2<sup>(eccLevel + 1)</sup>.
+     * @param eccLevel Level of error correction (0-8)
+     */
     public void setPreferredEccLevel(int eccLevel) {
         preferredEccLevel = eccLevel;
     }

@@ -16,6 +16,11 @@
 package uk.org.okapibarcode.backend;
 
 /**
+ * Telepen (also known as Telepen Alpha) can encode ASCII text input and
+ * includes a modulo-127 check digit. Telepen Numeric allows compression of 
+ * numeric data into a Telepen symbol. Data can consist of pairs of numbers 
+ * or pairs consisting of a numerical digit followed an X character.
+ * Telepen Numeric also includes a modulo-127 check digit.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */

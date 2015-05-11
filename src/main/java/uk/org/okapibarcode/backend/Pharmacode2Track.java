@@ -20,6 +20,10 @@ import java.awt.Rectangle;
 
 /**
  * Implements the Two-Track Pharmacode bar code symbology.
+ * <br>
+ * Pharmacode Two-Track is an alternative system to Pharmacode One-Track used 
+ * for the identification of pharmaceuticals. The symbology is able to encode 
+ * whole numbers between 4 and 64570080.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */

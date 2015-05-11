@@ -21,7 +21,7 @@ import java.io.UnsupportedEncodingException;
  * Scan and encode data using Extended Channel Interpretations according
  * to AIM ITS/04-023, 15th July 2004
  *
- * @author Robin Stuart <rstuart114@gmail.com>
+ * @author Robin Stuart <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class ExtendedChannel {
     

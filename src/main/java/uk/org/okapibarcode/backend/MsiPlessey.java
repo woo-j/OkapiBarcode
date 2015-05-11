@@ -18,6 +18,9 @@ package uk.org.okapibarcode.backend;
 
 /**
  * Implements the MSI (Modified Plessey) bar code symbology.
+ * <br>
+ * MSI Plessey can encode a string of numeric digits and has a range
+ * of check digit options.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
@@ -33,6 +36,11 @@ public class MsiPlessey extends Symbol {
         checkOption = CheckDigit.NONE;
     }
 
+    /**
+     * Set the check digit scheme to use. Options are: None, Modulo-10,
+     * 2 x Modulo-10, Modulo-11 and Modulo-11 &amp; 10.
+     * @param checkMode Type of check digit to add to symbol
+     */
     public void setCheckDigit(CheckDigit checkMode) {
         checkOption = checkMode;
     }

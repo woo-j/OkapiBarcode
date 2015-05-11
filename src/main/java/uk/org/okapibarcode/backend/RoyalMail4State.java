@@ -19,6 +19,11 @@ import java.awt.Rectangle;
 import java.util.Locale;
 
 /**
+ * Encodes data according to the Royal Mail 4-State Country Code
+ * <br>
+ * Data input can consist of numbers 0-9 and letters A-Z and usually includes 
+ * delivery postcode followed by house number. A check digit is calculated
+ * and added.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */

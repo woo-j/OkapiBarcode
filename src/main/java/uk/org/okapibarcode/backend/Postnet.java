@@ -22,6 +22,9 @@ import java.awt.Rectangle;
  * Implements <a href="http://en.wikipedia.org/wiki/POSTNET">POSTNET</a> and
  * <a href="http://en.wikipedia.org/wiki/Postal_Alpha_Numeric_Encoding_Technique">PLANET</a>
  * bar code symbologies.
+ * <br>
+ * PostNet and PLANET both use numerical input data and include a modulo-10 
+ * check digit. 
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */

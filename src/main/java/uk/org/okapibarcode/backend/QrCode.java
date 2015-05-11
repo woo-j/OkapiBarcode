@@ -18,16 +18,25 @@ package uk.org.okapibarcode.backend;
 import java.io.UnsupportedEncodingException;
 
 /**
- * Implements QR Code 2005 bar code symbology
- * According to ISO/IEC 18004:2006
+ * Implements QR Code 2005 bar code symbology According to ISO/IEC 18004:2006
+ * <br>
+ * The maximum capacity of a (version 40) QR Code symbol is 7089 numeric digits,
+ * 4296 alphanumeric characters or 2953 bytes of data. QR Code symbols can also
+ * be used to encode GS1 data. QR Code symbols can encode characters in the
+ * Latin-1 set and Kanji characters which are members of the Shift-JIS encoding
+ * scheme.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class QrCode extends Symbol {
+
     private enum qrMode {
+
         NULL, KANJI, BINARY, ALPHANUM, NUMERIC
     }
+
     public enum EccMode {
+
         L, M, Q, H
     }
     private qrMode[] inputMode;
@@ -37,22 +46,277 @@ public class QrCode extends Symbol {
     private byte[] grid;
     private byte[] eval;
     private int preferredVersion = 0;
-    
-    public void setPreferredVersion (int version) {
+
+    /**
+     * Sets the preferred symbol size. This value may be ignored if the data
+     * string is too large to fit into the specified symbol. Input values
+     * correspond to symbol sizes as shown in the following table.
+     * <table summary="Available QR Code sizes">
+     * <tbody>
+     * <tr>
+     * <th><p>
+     * Input</p></th>
+     * <th><p>
+     * Symbol Size</p></th>
+     * <th><p>
+     * Input</p></th>
+     * <th><p>
+     * Symbol Size</p></th>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 1</p></td>
+     * <td><p>
+     * 21 x 21</p></td>
+     * <td><p>
+     * 21</p></td>
+     * <td><p>
+     * 101 x 101</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 2</p></td>
+     * <td><p>
+     * 25 x 25</p></td>
+     * <td><p>
+     * 22</p></td>
+     * <td><p>
+     * 105 x 105</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 3</p></td>
+     * <td><p>
+     * 29 x 29</p></td>
+     * <td><p>
+     * 23</p></td>
+     * <td><p>
+     * 109 x 109</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 4</p></td>
+     * <td><p>
+     * 33 x 33</p></td>
+     * <td><p>
+     * 24</p></td>
+     * <td><p>
+     * 113 x 113</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 5</p></td>
+     * <td><p>
+     * 37 x 37</p></td>
+     * <td><p>
+     * 25</p></td>
+     * <td><p>
+     * 117 x 117</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 6</p></td>
+     * <td><p>
+     * 41 x 41</p></td>
+     * <td><p>
+     * 26</p></td>
+     * <td><p>
+     * 121 x 121</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 7</p></td>
+     * <td><p>
+     * 45 x 45</p></td>
+     * <td><p>
+     * 27</p></td>
+     * <td><p>
+     * 125 x 125</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 8</p></td>
+     * <td><p>
+     * 49 x 49</p></td>
+     * <td><p>
+     * 28</p></td>
+     * <td><p>
+     * 129 x 129</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 9</p></td>
+     * <td><p>
+     * 53 x 53</p></td>
+     * <td><p>
+     * 29</p></td>
+     * <td><p>
+     * 133 x 133</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 10</p></td>
+     * <td><p>
+     * 57 x 57</p></td>
+     * <td><p>
+     * 30</p></td>
+     * <td><p>
+     * 137 x 137</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 11</p></td>
+     * <td><p>
+     * 61 x 61</p></td>
+     * <td><p>
+     * 31</p></td>
+     * <td><p>
+     * 141 x 141</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 12</p></td>
+     * <td><p>
+     * 65 x 65</p></td>
+     * <td><p>
+     * 32</p></td>
+     * <td><p>
+     * 145 x 145</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 13</p></td>
+     * <td><p>
+     * 69 x 69</p></td>
+     * <td><p>
+     * 33</p></td>
+     * <td><p>
+     * 149 x 149</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 14</p></td>
+     * <td><p>
+     * 73 x 73</p></td>
+     * <td><p>
+     * 34</p></td>
+     * <td><p>
+     * 153 x 153</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 15</p></td>
+     * <td><p>
+     * 77 x 77</p></td>
+     * <td><p>
+     * 35</p></td>
+     * <td><p>
+     * 157 x 157</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 16</p></td>
+     * <td><p>
+     * 81 x 81</p></td>
+     * <td><p>
+     * 36</p></td>
+     * <td><p>
+     * 161 x 161</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 17</p></td>
+     * <td><p>
+     * 85 x 85</p></td>
+     * <td><p>
+     * 37</p></td>
+     * <td><p>
+     * 165 x 165</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 18</p></td>
+     * <td><p>
+     * 89 x 89</p></td>
+     * <td><p>
+     * 38</p></td>
+     * <td><p>
+     * 169 x 169</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 19</p></td>
+     * <td><p>
+     * 93 x 93</p></td>
+     * <td><p>
+     * 39</p></td>
+     * <td><p>
+     * 173 x 173</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 20</p></td>
+     * <td><p>
+     * 97 x 97</p></td>
+     * <td><p>
+     * 40</p></td>
+     * <td><p>
+     * 177 x 177</p></td>
+     * </tr>
+     * </tbody>
+     * </table>
+     *
+     * @param version Symbol version number required
+     */
+    public void setPreferredVersion(int version) {
         preferredVersion = version;
     }
-    
+
     private EccMode preferredEccLevel = EccMode.L;
-    
-    public void setEccMode (EccMode eccMode) {
+
+    /**
+     *  Set the amount of symbol space allocated to error correction.
+     * Levels are predefined according to the following table:
+     * <table summary="QR Code error correction levels">
+     * <tbody>
+     * <tr>
+     * <th>ECC Level</th>
+     * <th>Error Correction Capacity</th>
+     * <th>Recovery Capacity</th>
+     * </tr>
+     * <tr>
+     * <td>L (default)</td>
+     * <td>Approx 20% of symbol</td>
+     * <td>Approx 7%</td>
+     * </tr>
+     * <tr>
+     * <td>M</td>
+     * <td>Approx 37% of symbol</td>
+     * <td>Approx 15%</td>
+     * </tr>
+     * <tr>
+     * <td>Q</td>
+     * <td>Approx 55% of symbol</td>
+     * <td>Approx 25%</td>
+     * </tr>
+     * <tr>
+     * <td>H</td>
+     * <td>Approx 65% of symbol</td>
+     * <td>Approx 30%</td>
+     * </tr>
+     * </tbody>
+     * </table>
+     * @param eccMode Error correction level
+     */
+    public void setEccMode(EccMode eccMode) {
         preferredEccLevel = eccMode;
-    }    
+    }
 
     private final char[] rhodium = {
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E',
-            'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
-            'U', 'V', 'W', 'X', 'Y', 'Z', ' ', '$', '%', '*', '\'', '+', '-', '.',
-            '/', ':'
+        'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
+        'U', 'V', 'W', 'X', 'Y', 'Z', ' ', '$', '%', '*', '\'', '+', '-', '.',
+        '/', ':'
     };
 
     private final int[] qr_data_codewords_L = {
@@ -189,21 +453,21 @@ public class QrCode extends Symbol {
 
         ecc_level = preferredEccLevel;
         switch (preferredEccLevel) {
-        case L:
-            max_cw = 2956;
-            break;
-        case M:
-            max_cw = 2334;
-            break;
-        case Q:
-            max_cw = 1666;
-            break;
-        case H:
-            max_cw = 1276;
-            break;
-        default:
-            max_cw = 2956;
-            break;
+            case L:
+                max_cw = 2956;
+                break;
+            case M:
+                max_cw = 2334;
+                break;
+            case Q:
+                max_cw = 1666;
+                break;
+            case H:
+                max_cw = 1276;
+                break;
+            default:
+                max_cw = 2956;
+                break;
         }
 
         if (est_binlen > (8 * max_cw)) {
@@ -214,33 +478,33 @@ public class QrCode extends Symbol {
         autosize = 40;
         for (i = 39; i >= 0; i--) {
             switch (ecc_level) {
-            case L:
-                if ((8 * qr_data_codewords_L[i]) >= est_binlen) {
-                    autosize = i + 1;
-                }
-                break;
-            case M:
-                if ((8 * qr_data_codewords_M[i]) >= est_binlen) {
-                    autosize = i + 1;
-                }
-                break;
-            case Q:
-                if ((8 * qr_data_codewords_Q[i]) >= est_binlen) {
-                    autosize = i + 1;
-                }
-                break;
-            case H:
-                if ((8 * qr_data_codewords_H[i]) >= est_binlen) {
-                    autosize = i + 1;
-                }
-                break;
+                case L:
+                    if ((8 * qr_data_codewords_L[i]) >= est_binlen) {
+                        autosize = i + 1;
+                    }
+                    break;
+                case M:
+                    if ((8 * qr_data_codewords_M[i]) >= est_binlen) {
+                        autosize = i + 1;
+                    }
+                    break;
+                case Q:
+                    if ((8 * qr_data_codewords_Q[i]) >= est_binlen) {
+                        autosize = i + 1;
+                    }
+                    break;
+                case H:
+                    if ((8 * qr_data_codewords_H[i]) >= est_binlen) {
+                        autosize = i + 1;
+                    }
+                    break;
             }
         }
 
         version = autosize;
-        if((preferredVersion >= 1) && (preferredVersion <= 40)) {
+        if ((preferredVersion >= 1) && (preferredVersion <= 40)) {
             if (preferredVersion > autosize) {
-                    version = preferredVersion;
+                version = preferredVersion;
             }
         }
 
@@ -258,18 +522,18 @@ public class QrCode extends Symbol {
         target_binlen = qr_data_codewords_L[version - 1];
         blocks = qr_blocks_L[version - 1];
         switch (ecc_level) {
-        case M:
-            target_binlen = qr_data_codewords_M[version - 1];
-            blocks = qr_blocks_M[version - 1];
-            break;
-        case Q:
-            target_binlen = qr_data_codewords_Q[version - 1];
-            blocks = qr_blocks_Q[version - 1];
-            break;
-        case H:
-            target_binlen = qr_data_codewords_H[version - 1];
-            blocks = qr_blocks_H[version - 1];
-            break;
+            case M:
+                target_binlen = qr_data_codewords_M[version - 1];
+                blocks = qr_blocks_M[version - 1];
+                break;
+            case Q:
+                target_binlen = qr_data_codewords_Q[version - 1];
+                blocks = qr_blocks_Q[version - 1];
+                break;
+            case H:
+                target_binlen = qr_data_codewords_H[version - 1];
+                blocks = qr_blocks_H[version - 1];
+                break;
         }
 
         datastream = new int[target_binlen + 1];
@@ -407,17 +671,17 @@ public class QrCode extends Symbol {
             retval = true;
         }
         switch (cglyph) {
-        case ' ':
-        case '$':
-        case '%':
-        case '*':
-        case '+':
-        case '-':
-        case '.':
-        case '/':
-        case ':':
-            retval = true;
-            break;
+            case ' ':
+            case '$':
+            case '%':
+            case '*':
+            case '+':
+            case '-':
+            case '.':
+            case '/':
+            case ':':
+                retval = true;
+                break;
         }
 
         return retval;
@@ -437,52 +701,54 @@ public class QrCode extends Symbol {
         for (i = 0; i < content.length(); i++) {
             if (inputMode[i] != current) {
                 switch (inputMode[i]) {
-                case KANJI:
-                    count += 12 + 4;
-                    current = qrMode.KANJI;
-                    break;
-                case BINARY:
-                    count += 16 + 4;
-                    current = qrMode.BINARY;
-                    break;
-                case ALPHANUM:
-                    count += 13 + 4;
-                    current = qrMode.ALPHANUM;
-                    a_count = 0;
-                    break;
-                case NUMERIC:
-                    count += 14 + 4;
-                    current = qrMode.NUMERIC;
-                    n_count = 0;
-                    break;
+                    case KANJI:
+                        count += 12 + 4;
+                        current = qrMode.KANJI;
+                        break;
+                    case BINARY:
+                        count += 16 + 4;
+                        current = qrMode.BINARY;
+                        break;
+                    case ALPHANUM:
+                        count += 13 + 4;
+                        current = qrMode.ALPHANUM;
+                        a_count = 0;
+                        break;
+                    case NUMERIC:
+                        count += 14 + 4;
+                        current = qrMode.NUMERIC;
+                        n_count = 0;
+                        break;
                 }
             }
 
             switch (inputMode[i]) {
-            case KANJI:
-                count += 13;
-                break;
-            case BINARY:
-                count += 8;
-                break;
-            case ALPHANUM:
-                a_count++;
-                if ((a_count & 1) == 0) {
-                    count += 5; // 11 in total
-                    a_count = 0;
-                } else
-                    count += 6;
-                break;
-            case NUMERIC:
-                n_count++;
-                if ((n_count % 3) == 0) {
-                    count += 3; // 10 in total
-                    n_count = 0;
-                } else if ((n_count & 1) == 0)
-                    count += 3; // 7 in total
-                else
-                    count += 4;
-                break;
+                case KANJI:
+                    count += 13;
+                    break;
+                case BINARY:
+                    count += 8;
+                    break;
+                case ALPHANUM:
+                    a_count++;
+                    if ((a_count & 1) == 0) {
+                        count += 5; // 11 in total
+                        a_count = 0;
+                    } else {
+                        count += 6;
+                    }
+                    break;
+                case NUMERIC:
+                    n_count++;
+                    if ((n_count % 3) == 0) {
+                        count += 3; // 10 in total
+                        n_count = 0;
+                    } else if ((n_count & 1) == 0) {
+                        count += 3; // 7 in total
+                    } else {
+                        count += 4;
+                    }
+                    break;
             }
         }
 
@@ -508,6 +774,7 @@ public class QrCode extends Symbol {
 
         if (inputDataType == DataType.GS1) {
             binary += "0101"; /* FNC1 */
+
         }
 
         if (version <= 9) {
@@ -521,18 +788,18 @@ public class QrCode extends Symbol {
         if (debug) {
             for (i = 0; i < content.length(); i++) {
                 switch (inputMode[i]) {
-                case KANJI:
-                    System.out.print("K");
-                    break;
-                case BINARY:
-                    System.out.print("B");
-                    break;
-                case ALPHANUM:
-                    System.out.print("A");
-                    break;
-                case NUMERIC:
-                    System.out.print("N");
-                    break;
+                    case KANJI:
+                        System.out.print("K");
+                        break;
+                    case BINARY:
+                        System.out.print("B");
+                        break;
+                    case ALPHANUM:
+                        System.out.print("A");
+                        break;
+                    case NUMERIC:
+                        System.out.print("N");
+                        break;
                 }
             }
             System.out.printf("\n");
@@ -545,122 +812,150 @@ public class QrCode extends Symbol {
             short_data_block_length = 0;
             do {
                 short_data_block_length++;
-            } while (((short_data_block_length + position) < content.length()) &&
-                (inputMode[position + short_data_block_length] == data_block));
+            } while (((short_data_block_length + position) < content.length())
+                    && (inputMode[position + short_data_block_length] == data_block));
 
             switch (data_block) {
-            case KANJI:
-                /* Kanji mode */
-                /* Mode indicator */
-                binary += "1000";
+                case KANJI:
+                    /* Kanji mode */
+                    /* Mode indicator */
+                    binary += "1000";
 
-                /* Character count indicator */
-                qr_bscan(short_data_block_length, 0x20 << (scheme * 2)); /* scheme = 1..3 */
-
-                if (debug) {
-                    System.out.printf("Kanji block (length %d)\n", short_data_block_length);
-                }
-
-                /* Character representation */
-                for (i = 0; i < short_data_block_length; i++) {
-                    oneChar = "";
-                    oneChar += content.charAt(position + i);
-
-                    /* Convert Unicode input to Shift-JIS */
-                    try {
-                        jisBytes = oneChar.getBytes("SJIS");
-                    } catch (UnsupportedEncodingException e) {
-                        error_msg = "Invalid character(s) in input data";
-                        return false;
-                    }
-
-                    jis = ((jisBytes[0] & 0xFF) << 8) + (jisBytes[1] & 0xFF);
-
-                    if (jis > 0x9fff) {
-                        jis -= 0xc140;
-                    } else {
-                        jis -= 0x8140;
-                    }
-                    msb = (jis & 0xff00) >> 8;
-                    lsb = (jis & 0xff);
-                    prod = (msb * 0xc0) + lsb;
-
-                    qr_bscan(prod, 0x1000);
+                    /* Character count indicator */
+                    qr_bscan(short_data_block_length, 0x20 << (scheme * 2)); /* scheme = 1..3 */
 
                     if (debug) {
-                        System.out.printf("\t0x%4X\n", prod);
-                    }
-                }
-
-                if (debug) {
-                    System.out.printf("\n");
-                }
-
-                break;
-            case BINARY:
-                /* Byte mode */
-                /* Mode indicator */
-                binary += "0100";
-
-                /* Character count indicator */
-                qr_bscan(short_data_block_length, scheme > 1 ? 0x8000 : 0x80); /* scheme = 1..3 */
-
-                if (debug) {
-                    System.out.printf("Byte block (length %d)\n\t", short_data_block_length);
-                }
-
-                /* Character representation */
-                for (i = 0; i < short_data_block_length; i++) {
-                    int lbyte = content.charAt(position + i);
-
-                    if ((inputDataType == DataType.GS1) && (lbyte == '[')) {
-                        lbyte = 0x1d; /* FNC1 */
+                        System.out.printf("Kanji block (length %d)\n", short_data_block_length);
                     }
 
-                    qr_bscan(lbyte, 0x80);
+                    /* Character representation */
+                    for (i = 0; i < short_data_block_length; i++) {
+                        oneChar = "";
+                        oneChar += content.charAt(position + i);
 
-                    if (debug) {
-                        System.out.printf("0x%2X(%d) ", lbyte, lbyte);
-                    }
-                }
+                        /* Convert Unicode input to Shift-JIS */
+                        try {
+                            jisBytes = oneChar.getBytes("SJIS");
+                        } catch (UnsupportedEncodingException e) {
+                            error_msg = "Invalid character(s) in input data";
+                            return false;
+                        }
 
-                if (debug) {
-                    System.out.printf("\n");
-                }
+                        jis = ((jisBytes[0] & 0xFF) << 8) + (jisBytes[1] & 0xFF);
 
-                break;
-            case ALPHANUM:
-                /* Alphanumeric mode */
-                /* Mode indicator */
-                binary += "0010";
-
-                /* Character count indicator */
-                qr_bscan(short_data_block_length, 0x40 << (2 * scheme)); /* scheme = 1..3 */
-
-                if (debug) {
-                    System.out.printf("Alpha block (length %d)\n\t", short_data_block_length);
-                }
-
-                /* Character representation */
-                i = 0;
-                while (i < short_data_block_length) {
-
-                    if (percent == 0) {
-                        if ((inputDataType == DataType.GS1) && (content.charAt(position + i) == '%')) {
-                            first = positionOf('%', rhodium);
-                            second = positionOf('%', rhodium);
-                            count = 2;
-                            prod = (first * 45) + second;
-                            i++;
+                        if (jis > 0x9fff) {
+                            jis -= 0xc140;
                         } else {
-                            if ((inputDataType == DataType.GS1) && (content.charAt(position + i) == '[')) {
-                                first = positionOf('%', rhodium); /* FNC1 */
+                            jis -= 0x8140;
+                        }
+                        msb = (jis & 0xff00) >> 8;
+                        lsb = (jis & 0xff);
+                        prod = (msb * 0xc0) + lsb;
+
+                        qr_bscan(prod, 0x1000);
+
+                        if (debug) {
+                            System.out.printf("\t0x%4X\n", prod);
+                        }
+                    }
+
+                    if (debug) {
+                        System.out.printf("\n");
+                    }
+
+                    break;
+                case BINARY:
+                    /* Byte mode */
+                    /* Mode indicator */
+                    binary += "0100";
+
+                    /* Character count indicator */
+                    qr_bscan(short_data_block_length, scheme > 1 ? 0x8000 : 0x80); /* scheme = 1..3 */
+
+                    if (debug) {
+                        System.out.printf("Byte block (length %d)\n\t", short_data_block_length);
+                    }
+
+                    /* Character representation */
+                    for (i = 0; i < short_data_block_length; i++) {
+                        int lbyte = content.charAt(position + i);
+
+                        if ((inputDataType == DataType.GS1) && (lbyte == '[')) {
+                            lbyte = 0x1d; /* FNC1 */
+
+                        }
+
+                        qr_bscan(lbyte, 0x80);
+
+                        if (debug) {
+                            System.out.printf("0x%2X(%d) ", lbyte, lbyte);
+                        }
+                    }
+
+                    if (debug) {
+                        System.out.printf("\n");
+                    }
+
+                    break;
+                case ALPHANUM:
+                    /* Alphanumeric mode */
+                    /* Mode indicator */
+                    binary += "0010";
+
+                    /* Character count indicator */
+                    qr_bscan(short_data_block_length, 0x40 << (2 * scheme)); /* scheme = 1..3 */
+
+                    if (debug) {
+                        System.out.printf("Alpha block (length %d)\n\t", short_data_block_length);
+                    }
+
+                    /* Character representation */
+                    i = 0;
+                    while (i < short_data_block_length) {
+
+                        if (percent == 0) {
+                            if ((inputDataType == DataType.GS1) && (content.charAt(position + i) == '%')) {
+                                first = positionOf('%', rhodium);
+                                second = positionOf('%', rhodium);
+                                count = 2;
+                                prod = (first * 45) + second;
+                                i++;
                             } else {
-                                first = positionOf(content.charAt(position + i), rhodium);
+                                if ((inputDataType == DataType.GS1) && (content.charAt(position + i) == '[')) {
+                                    first = positionOf('%', rhodium); /* FNC1 */
+
+                                } else {
+                                    first = positionOf(content.charAt(position + i), rhodium);
+                                }
+                                count = 1;
+                                i++;
+                                prod = first;
+
+                                if (inputMode[position + i] == qrMode.ALPHANUM) {
+                                    if ((inputDataType == DataType.GS1) && (content.charAt(position + i) == '%')) {
+                                        second = positionOf('%', rhodium);
+                                        count = 2;
+                                        prod = (first * 45) + second;
+                                        percent = 1;
+                                    } else {
+                                        if ((inputDataType == DataType.GS1) && (content.charAt(position + i) == '[')) {
+                                            second = positionOf('%', rhodium); /* FNC1 */
+
+                                        } else {
+                                            second = positionOf(content.charAt(position + i), rhodium);
+                                        }
+                                        count = 2;
+                                        i++;
+                                        prod = (first * 45) + second;
+                                    }
+                                }
                             }
+                        } else {
+                            first = positionOf('%', rhodium);
                             count = 1;
                             i++;
                             prod = first;
+                            percent = 0;
 
                             if (inputMode[position + i] == qrMode.ALPHANUM) {
                                 if ((inputDataType == DataType.GS1) && (content.charAt(position + i) == '%')) {
@@ -671,6 +966,7 @@ public class QrCode extends Symbol {
                                 } else {
                                     if ((inputDataType == DataType.GS1) && (content.charAt(position + i) == '[')) {
                                         second = positionOf('%', rhodium); /* FNC1 */
+
                                     } else {
                                         second = positionOf(content.charAt(position + i), rhodium);
                                     }
@@ -680,90 +976,67 @@ public class QrCode extends Symbol {
                                 }
                             }
                         }
-                    } else {
-                        first = positionOf('%', rhodium);
-                        count = 1;
-                        i++;
-                        prod = first;
-                        percent = 0;
 
-                        if (inputMode[position + i] == qrMode.ALPHANUM) {
-                            if ((inputDataType == DataType.GS1) && (content.charAt(position + i) == '%')) {
-                                second = positionOf('%', rhodium);
-                                count = 2;
-                                prod = (first * 45) + second;
-                                percent = 1;
-                            } else {
-                                if ((inputDataType == DataType.GS1) && (content.charAt(position + i) == '[')) {
-                                    second = positionOf('%', rhodium); /* FNC1 */
-                                } else {
-                                    second = positionOf(content.charAt(position + i), rhodium);
-                                }
-                                count = 2;
-                                i++;
-                                prod = (first * 45) + second;
+                        qr_bscan(prod, count == 2 ? 0x400 : 0x20); /* count = 1..2 */
+
+                        if (debug) {
+                            System.out.printf("0x%4X ", prod);
+                        }
+                    }
+                    ;
+
+                    if (debug) {
+                        System.out.printf("\n");
+                    }
+
+                    break;
+                case NUMERIC:
+                    /* Numeric mode */
+                    /* Mode indicator */
+                    binary += "0001";
+
+                    /* Character count indicator */
+                    qr_bscan(short_data_block_length, 0x80 << (2 * scheme)); /* scheme = 1..3 */
+
+                    if (debug) {
+                        System.out.printf("Number block (length %d)\n\t", short_data_block_length);
+                    }
+
+                    /* Character representation */
+                    i = 0;
+                    while (i < short_data_block_length) {
+
+                        first = Character.getNumericValue(content.charAt(position + i));
+                        count = 1;
+                        prod = first;
+
+                        if ((i + 1) < short_data_block_length) {
+                            second = Character.getNumericValue(content.charAt(position + i + 1));
+                            count = 2;
+                            prod = (prod * 10) + second;
+
+                            if ((i + 2) < short_data_block_length) {
+                                third = Character.getNumericValue(content.charAt(position + i + 2));
+                                count = 3;
+                                prod = (prod * 10) + third;
                             }
                         }
-                    }
 
-                    qr_bscan(prod, count == 2 ? 0x400 : 0x20); /* count = 1..2 */
+                        qr_bscan(prod, 1 << (3 * count)); /* count = 1..3 */
 
-                    if (debug) {
-                        System.out.printf("0x%4X ", prod);
-                    }
-                };
-
-                if (debug) {
-                    System.out.printf("\n");
-                }
-
-                break;
-            case NUMERIC:
-                /* Numeric mode */
-                /* Mode indicator */
-                binary += "0001";
-
-                /* Character count indicator */
-                qr_bscan(short_data_block_length, 0x80 << (2 * scheme)); /* scheme = 1..3 */
-
-                if (debug) {
-                    System.out.printf("Number block (length %d)\n\t", short_data_block_length);
-                }
-
-                /* Character representation */
-                i = 0;
-                while (i < short_data_block_length) {
-
-                    first = Character.getNumericValue(content.charAt(position + i));
-                    count = 1;
-                    prod = first;
-
-                    if ((i + 1) < short_data_block_length) {
-                        second = Character.getNumericValue(content.charAt(position + i + 1));
-                        count = 2;
-                        prod = (prod * 10) + second;
-
-                        if ((i + 2) < short_data_block_length) {
-                            third = Character.getNumericValue(content.charAt(position + i + 2));
-                            count = 3;
-                            prod = (prod * 10) + third;
+                        if (debug) {
+                            System.out.printf("0x%4X (%d)", prod, prod);
                         }
-                    }
 
-                    qr_bscan(prod, 1 << (3 * count)); /* count = 1..3 */
+                        i += count;
+                    }
+                    ;
 
                     if (debug) {
-                        System.out.printf("0x%4X (%d)", prod, prod);
+                        System.out.printf("\n");
                     }
 
-                    i += count;
-                };
-
-                if (debug) {
-                    System.out.printf("\n");
-                }
-
-                break;
+                    break;
             }
             position += short_data_block_length;
         } while (position < content.length());
@@ -786,7 +1059,7 @@ public class QrCode extends Symbol {
         /* Put data into 8-bit codewords */
         for (i = 0; i < current_bytes; i++) {
             datastream[i] = 0x00;
-            for(weight = 0; weight < 8; weight++) {
+            for (weight = 0; weight < 8; weight++) {
                 if (binary.charAt((i * 8) + weight) == '1') {
                     datastream[i] += (0x80 >> weight);
                 }
@@ -819,7 +1092,7 @@ public class QrCode extends Symbol {
     private void qr_bscan(int data, int h) {
 
         for (;
-            (h != 0); h >>= 1) {
+                (h != 0); h >>= 1) {
             if ((data & h) != 0) {
                 binary += "1";
             } else {
@@ -1049,8 +1322,9 @@ public class QrCode extends Symbol {
         i = 0;
         do {
             x = (size - 2) - (row * 2);
-            if (x < 6)
+            if (x < 6) {
                 x--; /* skip over vertical timing pattern */
+            }
 
             if ((grid[(y * size) + (x + 1)] & 0xf0) == 0) {
                 if (cwbit(i)) {
@@ -1154,7 +1428,7 @@ public class QrCode extends Symbol {
                     p = 0x00;
                 }
 
-                eval[(y * size) + x] = (byte)(mask[(y * size) + x] ^ p);
+                eval[(y * size) + x] = (byte) (mask[(y * size) + x] ^ p);
             }
         }
 
@@ -1198,7 +1472,6 @@ public class QrCode extends Symbol {
         int dark_mods;
         int percentage, k;
         byte[] local = new byte[size * size];
-
 
         for (x = 0; x < size; x++) {
             for (y = 0; y < size; y++) {
@@ -1258,7 +1531,7 @@ public class QrCode extends Symbol {
         for (x = 0; x < size; x++) {
             for (y = 0; y < (size - 7); y++) {
                 p = 0;
-                for(weight = 0; weight < 7; weight++) {
+                for (weight = 0; weight < 7; weight++) {
                     if (local[((y + weight) * size) + x] == '1') {
                         p += (0x40 >> weight);
                     }
@@ -1273,7 +1546,7 @@ public class QrCode extends Symbol {
         for (y = 0; y < size; y++) {
             for (x = 0; x < (size - 7); x++) {
                 p = 0;
-                for(weight = 0; weight < 7; weight++) {
+                for (weight = 0; weight < 7; weight++) {
                     if (local[(y * size) + x + weight] == '1') {
                         p += (0x40 >> weight);
                     }
@@ -1313,15 +1586,15 @@ public class QrCode extends Symbol {
         int i;
 
         switch (ecc_level) {
-        case L:
-            format += 0x08;
-            break;
-        case Q:
-            format += 0x18;
-            break;
-        case H:
-            format += 0x10;
-            break;
+            case L:
+                format += 0x08;
+                break;
+            case Q:
+                format += 0x18;
+                break;
+            case H:
+                format += 0x10;
+                break;
         }
 
         seq = qr_annex_c[format];

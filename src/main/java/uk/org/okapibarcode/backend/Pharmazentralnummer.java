@@ -16,6 +16,8 @@
 package uk.org.okapibarcode.backend;
 
 /**
+ * PZN is a Code 39 based symbology used by the pharmaceutical industry in 
+ * Germany. PZN encodes a 6 digit number and includes a modulo-10 check digit.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */

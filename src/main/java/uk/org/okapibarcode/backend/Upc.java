@@ -19,6 +19,13 @@ import java.awt.Rectangle;
 /**
  * Implements UPC bar code symbology
  * According to BS EN 797:1996
+ * <br>
+ * UPC-A requires an 11 digit article number. The check digit is calculated.
+ * UPC-E is a zero-compressed version of UPC-A developed for smaller packages. 
+ * The code requires a 6 digit article number (digits 0-9). The check digit
+ * is calculated. Also supports Number System 1 encoding by entering a 7-digit
+ * article number stating with the digit 1. In addition EAN-2 and EAN-5 add-on
+ * symbols can be added using the + character followed by the add-on data.
  *
  * @author <a href="mailto:jakel2006@me.com">Robert Elliott</a>
  */

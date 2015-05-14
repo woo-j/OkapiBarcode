@@ -561,11 +561,6 @@ public class AztecCode extends Symbol {
         return output;
     }
 
-    private enum az_type {
-
-        UPPER, LOWER, MIXED, PUNC, DIGIT, BINARY
-    };
-
     byte[] inputBytes;
     int inputByteLength;
     String binary_string;
@@ -590,8 +585,8 @@ public class AztecCode extends Symbol {
         boolean done;
         ExtendedChannel eci = new ExtendedChannel();
         
-        inputBytes = eci.getBytes(content);
-        eciMode = eci.getMode();
+        eciMode = eci.getBestEci(content);
+        inputBytes = eci.getBytes(content, eciMode);
 
         if (readerInit) {
             comp_loop = 1;
@@ -600,14 +595,6 @@ public class AztecCode extends Symbol {
         if ((inputDataType == DataType.GS1) && (readerInit)) {
             error_msg = "Cannot encode in GS1 and Reader Initialisation mode at the same time";
             return false;
-        }
-
-        /* Aztec code can't handle NULL characters */
-        for (i = 0; i < inputBytes.length; i++) {
-            if ((inputBytes[i] & 0xFF) == 0) {
-                error_msg = "Invalid character (NULL) in input data";
-                return false;
-            }
         }
 
         if (generateAztecBinary() == false) {
@@ -1325,7 +1312,7 @@ public class AztecCode extends Symbol {
                 charmap[maplength] = 400; // (0)
                 typemap[maplength++] = 8; // PUNC
             } else {
-                if ((inputBytes[i] & 0xFF) > 0x7F) {
+                if (((inputBytes[i] & 0xFF) > 0x7F) || ((inputBytes[i] & 0xFF) == 0x00)) {
                     charmap[maplength] = (inputBytes[i] & 0xFF);
                     typemap[maplength++] = 32; //BINARY
                 } else {

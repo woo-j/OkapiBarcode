@@ -48,6 +48,7 @@ public class Pdf417 extends Symbol {
     private Mode symbolMode;
     private int[] inputData;
     private int selectedSymbolWidth;
+    private boolean eciLatch;
 
     /**
      * Set the width of the symbol by specifying the number of columns
@@ -530,17 +531,17 @@ public class Pdf417 extends Symbol {
         int i;
         int sourceLength = content.length();
 
-        if (inputDataType == DataType.ECI) {
-            ExtendedChannel eci = new ExtendedChannel();
-            inputBytes = eci.getBytes(content);
-            eciMode = eci.getMode();
-        } else {
-            try {
-                inputBytes = content.getBytes("ISO8859_1");
-            } catch (UnsupportedEncodingException e) {
-                error_msg = "Invalid character in input data";
-                return false;
+        try {
+            if (content.matches("[\u0000-\u00FF]+")) {
+                inputBytes = content.getBytes("ISO-8859-1");
+                eciLatch = false;
+            } else {
+                inputBytes = content.getBytes("UTF-8");
+                eciLatch = true;
             }
+        } catch (UnsupportedEncodingException e) {
+                error_msg = "Byte conversion encoding error";
+                return false;
         }
 
         inputData = new int[sourceLength];
@@ -643,30 +644,13 @@ public class Pdf417 extends Symbol {
             codeWordCount++;
         }
         
-        if ((inputDataType == DataType.ECI) && (eciMode != 3)) {
-            /* Encoding ECI assignment numbers, from ISO/IEC 15438 Table 8 */
-            if (eciMode <= 899) {
-                codeWords[codeWordCount] = 927;
-                codeWordCount++;
-                codeWords[codeWordCount] = eciMode;
-                codeWordCount++;
-            }
-            if ((eciMode >= 900) && (eciMode <= 810899)) {
-                codeWords[codeWordCount] = 926;
-                codeWordCount++;
-                codeWords[codeWordCount] = (eciMode / 900) - 1;
-                codeWordCount++;
-                codeWords[codeWordCount] = eciMode % 900;
-                codeWordCount++;
-            }
-            if ((eciMode >= 810900) && (eciMode <= 811799)) {
-                codeWords[codeWordCount] = 925;
-                codeWordCount++;
-                codeWords[codeWordCount] = eciMode - 810900;
-                codeWordCount++;
-            }
+        if (eciLatch) {
+            /* ECI Latch to UTF-8 encoding */
+            codeWords[codeWordCount] = 927;
+            codeWordCount++;
+            codeWords[codeWordCount] = 26;
+            codeWordCount++;
         }
-
 
         for (i = 0; i < blockIndex; i++) {
             switch (blockType[i]) {
@@ -979,28 +963,12 @@ public class Pdf417 extends Symbol {
             codeWordCount++;
         }
         
-        if ((inputDataType == DataType.ECI) && (eciMode != 3)) {
-            /* Encoding ECI assignment numbers, from ISO/IEC 24728 Table 8 */
-            if (eciMode <= 899) {
-                codeWords[codeWordCount] = 927;
-                codeWordCount++;
-                codeWords[codeWordCount] = eciMode;
-                codeWordCount++;
-            }
-            if ((eciMode >= 900) && (eciMode <= 810899)) {
-                codeWords[codeWordCount] = 926;
-                codeWordCount++;
-                codeWords[codeWordCount] = (eciMode / 900) - 1;
-                codeWordCount++;
-                codeWords[codeWordCount] = eciMode % 900;
-                codeWordCount++;
-            }
-            if ((eciMode >= 810900) && (eciMode <= 811799)) {
-                codeWords[codeWordCount] = 925;
-                codeWordCount++;
-                codeWords[codeWordCount] = eciMode - 810900;
-                codeWordCount++;
-            }
+        if (eciLatch) {
+            /* ECI Latch to UTF-8 encoding */
+            codeWords[codeWordCount] = 927;
+            codeWordCount++;
+            codeWords[codeWordCount] = 26;
+            codeWordCount++;
         }
 
         for (i = 0; i < blockIndex; i++) {

@@ -36,7 +36,6 @@ public abstract class Symbol {
     protected int default_height;
     protected boolean readerInit;
     protected String encodeInfo = "";
-    protected int eciMode = 3;
 
     public enum DataType {
         UTF8, LATIN1, BINARY, GS1, HIBC, ECI
@@ -197,13 +196,6 @@ public abstract class Symbol {
                     default: readable += input_data.charAt(i);
                         break;
                 }
-            }
-        }
-        
-        if (inputDataType == DataType.ECI) {
-            if ((eciMode < 0) || (eciMode > 999999)) {
-                // Should never happen
-                throw new OkapiException("Invalid ECI mode");
             }
         }
 

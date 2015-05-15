@@ -18,12 +18,11 @@ package uk.org.okapibarcode.backend;
 import java.io.UnsupportedEncodingException;
 
 /**
- * Implements Grid Matrix bar code symbology
- * According to AIMD014
+ * Implements Grid Matrix bar code symbology According to AIMD014
  * <br>
- * Grid Matrix is a matrix symbology which can encode characters in the
- * ISO/IEC 8859-1 (Latin-1) character set as well as those in the GB-2312
- * character set. Input is assumed to be formatted as a UTF string.
+ * Grid Matrix is a matrix symbology which can encode characters in the ISO/IEC
+ * 8859-1 (Latin-1) character set as well as those in the GB-2312 character set.
+ * Input is assumed to be formatted as a UTF string.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
@@ -43,9 +42,6 @@ public class GridMatrix extends Symbol {
     private final int[] gm_max_cw = {
         11, 40, 79, 146, 218, 305, 405, 521, 650, 794, 953, 1125, 1313
     };
-    /*private final int[] gm_total_cw = {
-        18, 50, 98, 162, 242, 338, 450, 578, 722, 882, 1058, 1250, 1458
-    };*/
 
     private final int[] gm_data_codewords = {
         0, 15, 13, 11, 9,
@@ -143,109 +139,148 @@ public class GridMatrix extends Symbol {
     };
 
     private final int[] gm_macro_matrix = {
-        728,625,626,627,628,629,630,631,632,633,634,635,636,637,638,639,640,641,642,643,644,645,646,647,648,649,650,
-        727,624,529,530,531,532,533,534,535,536,537,538,539,540,541,542,543,544,545,546,547,548,549,550,551,552,651,
-        726,623,528,441,442,443,444,445,446,447,448,449,450,451,452,453,454,455,456,457,458,459,460,461,462,553,652,
-        725,622,527,440,361,362,363,364,365,366,367,368,369,370,371,372,373,374,375,376,377,378,379,380,463,554,653,
-        724,621,526,439,360,289,290,291,292,293,294,295,296,297,298,299,300,301,302,303,304,305,306,381,464,555,654,
-        723,620,525,438,359,288,225,226,227,228,229,230,231,232,233,234,235,236,237,238,239,240,307,382,465,556,655,
-        722,619,524,437,358,287,224,169,170,171,172,173,174,175,176,177,178,179,180,181,182,241,308,383,466,557,656,
-        721,618,523,436,357,286,223,168,121,122,123,124,125,126,127,128,129,130,131,132,183,242,309,384,467,558,657,
-        720,617,522,435,356,285,222,167,120,81,82,83,84,85,86,87,88,89,90,133,184,243,310,385,468,559,658,
-        719,616,521,434,355,284,221,166,119,80,49,50,51,52,53,54,55,56,91,134,185,244,311,386,469,560,659,
-        718,615,520,433,354,283,220,165,118,79,48,25,26,27,28,29,30,57,92,135,186,245,312,387,470,561,660,
-        717,614,519,432,353,282,219,164,117,78,47,24,9,10,11,12,31,58,93,136,187,246,313,388,471,562,661,
-        716,613,518,431,352,281,218,163,116,77,46,23,8,1,2,13,32,59,94,137,188,247,314,389,472,563,662,
-        715,612,517,430,351,280,217,162,115,76,45,22,7,0,3,14,33,60,95,138,189,248,315,390,473,564,663,
-        714,611,516,429,350,279,216,161,114,75,44,21,6,5,4,15,34,61,96,139,190,249,316,391,474,565,664,
-        713,610,515,428,349,278,215,160,113,74,43,20,19,18,17,16,35,62,97,140,191,250,317,392,475,566,665,
-        712,609,514,427,348,277,214,159,112,73,42,41,40,39,38,37,36,63,98,141,192,251,318,393,476,567,666,
-        711,608,513,426,347,276,213,158,111,72,71,70,69,68,67,66,65,64,99,142,193,252,319,394,477,568,667,
-        710,607,512,425,346,275,212,157,110,109,108,107,106,105,104,103,102,101,100,143,194,253,320,395,478,569,668,
-        709,606,511,424,345,274,211,156,155,154,153,152,151,150,149,148,147,146,145,144,195,254,321,396,479,570,669,
-        708,605,510,423,344,273,210,209,208,207,206,205,204,203,202,201,200,199,198,197,196,255,322,397,480,571,670,
-        707,604,509,422,343,272,271,270,269,268,267,266,265,264,263,262,261,260,259,258,257,256,323,398,481,572,671,
-        706,603,508,421,342,341,340,339,338,337,336,335,334,333,332,331,330,329,328,327,326,325,324,399,482,573,672,
-        705,602,507,420,419,418,417,416,415,414,413,412,411,410,409,408,407,406,405,404,403,402,401,400,483,574,673,
-        704,601,506,505,504,503,502,501,500,499,498,497,496,495,494,493,492,491,490,489,488,487,486,485,484,575,674,
-        703,600,599,598,597,596,595,594,593,592,591,590,589,588,587,586,585,584,583,582,581,580,579,578,577,576,675,
-        702,701,700,699,698,697,696,695,694,693,692,691,690,689,688,687,686,685,684,683,682,681,680,679,678,677,676
+        728, 625, 626, 627, 628, 629, 630, 631, 632, 633, 634, 635, 636, 637, 638, 639, 640, 641, 642, 643, 644, 645, 646, 647, 648, 649, 650,
+        727, 624, 529, 530, 531, 532, 533, 534, 535, 536, 537, 538, 539, 540, 541, 542, 543, 544, 545, 546, 547, 548, 549, 550, 551, 552, 651,
+        726, 623, 528, 441, 442, 443, 444, 445, 446, 447, 448, 449, 450, 451, 452, 453, 454, 455, 456, 457, 458, 459, 460, 461, 462, 553, 652,
+        725, 622, 527, 440, 361, 362, 363, 364, 365, 366, 367, 368, 369, 370, 371, 372, 373, 374, 375, 376, 377, 378, 379, 380, 463, 554, 653,
+        724, 621, 526, 439, 360, 289, 290, 291, 292, 293, 294, 295, 296, 297, 298, 299, 300, 301, 302, 303, 304, 305, 306, 381, 464, 555, 654,
+        723, 620, 525, 438, 359, 288, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 307, 382, 465, 556, 655,
+        722, 619, 524, 437, 358, 287, 224, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 241, 308, 383, 466, 557, 656,
+        721, 618, 523, 436, 357, 286, 223, 168, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 183, 242, 309, 384, 467, 558, 657,
+        720, 617, 522, 435, 356, 285, 222, 167, 120, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 133, 184, 243, 310, 385, 468, 559, 658,
+        719, 616, 521, 434, 355, 284, 221, 166, 119, 80, 49, 50, 51, 52, 53, 54, 55, 56, 91, 134, 185, 244, 311, 386, 469, 560, 659,
+        718, 615, 520, 433, 354, 283, 220, 165, 118, 79, 48, 25, 26, 27, 28, 29, 30, 57, 92, 135, 186, 245, 312, 387, 470, 561, 660,
+        717, 614, 519, 432, 353, 282, 219, 164, 117, 78, 47, 24, 9, 10, 11, 12, 31, 58, 93, 136, 187, 246, 313, 388, 471, 562, 661,
+        716, 613, 518, 431, 352, 281, 218, 163, 116, 77, 46, 23, 8, 1, 2, 13, 32, 59, 94, 137, 188, 247, 314, 389, 472, 563, 662,
+        715, 612, 517, 430, 351, 280, 217, 162, 115, 76, 45, 22, 7, 0, 3, 14, 33, 60, 95, 138, 189, 248, 315, 390, 473, 564, 663,
+        714, 611, 516, 429, 350, 279, 216, 161, 114, 75, 44, 21, 6, 5, 4, 15, 34, 61, 96, 139, 190, 249, 316, 391, 474, 565, 664,
+        713, 610, 515, 428, 349, 278, 215, 160, 113, 74, 43, 20, 19, 18, 17, 16, 35, 62, 97, 140, 191, 250, 317, 392, 475, 566, 665,
+        712, 609, 514, 427, 348, 277, 214, 159, 112, 73, 42, 41, 40, 39, 38, 37, 36, 63, 98, 141, 192, 251, 318, 393, 476, 567, 666,
+        711, 608, 513, 426, 347, 276, 213, 158, 111, 72, 71, 70, 69, 68, 67, 66, 65, 64, 99, 142, 193, 252, 319, 394, 477, 568, 667,
+        710, 607, 512, 425, 346, 275, 212, 157, 110, 109, 108, 107, 106, 105, 104, 103, 102, 101, 100, 143, 194, 253, 320, 395, 478, 569, 668,
+        709, 606, 511, 424, 345, 274, 211, 156, 155, 154, 153, 152, 151, 150, 149, 148, 147, 146, 145, 144, 195, 254, 321, 396, 479, 570, 669,
+        708, 605, 510, 423, 344, 273, 210, 209, 208, 207, 206, 205, 204, 203, 202, 201, 200, 199, 198, 197, 196, 255, 322, 397, 480, 571, 670,
+        707, 604, 509, 422, 343, 272, 271, 270, 269, 268, 267, 266, 265, 264, 263, 262, 261, 260, 259, 258, 257, 256, 323, 398, 481, 572, 671,
+        706, 603, 508, 421, 342, 341, 340, 339, 338, 337, 336, 335, 334, 333, 332, 331, 330, 329, 328, 327, 326, 325, 324, 399, 482, 573, 672,
+        705, 602, 507, 420, 419, 418, 417, 416, 415, 414, 413, 412, 411, 410, 409, 408, 407, 406, 405, 404, 403, 402, 401, 400, 483, 574, 673,
+        704, 601, 506, 505, 504, 503, 502, 501, 500, 499, 498, 497, 496, 495, 494, 493, 492, 491, 490, 489, 488, 487, 486, 485, 484, 575, 674,
+        703, 600, 599, 598, 597, 596, 595, 594, 593, 592, 591, 590, 589, 588, 587, 586, 585, 584, 583, 582, 581, 580, 579, 578, 577, 576, 675,
+        702, 701, 700, 699, 698, 697, 696, 695, 694, 693, 692, 691, 690, 689, 688, 687, 686, 685, 684, 683, 682, 681, 680, 679, 678, 677, 676
+    };
+    
+    private final char[] MIXED_ALPHANUM_SET = {
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D',
+        'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'O', 'P', 'R', 'S', 'T',
+        'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
+        'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
+        'w', 'x', 'y', 'z', ' '
     };
 
     private enum gmMode {
-        NULL, GM_NUMBER, GM_LOWER, GM_UPPER, GM_MIXED, GM_CONTROL, GM_BYTE, GM_CHINESE
+
+        NULL, GM_NUMBER, GM_LOWER, GM_UPPER, GM_MIXED, GM_CONTROL, GM_BYTE
     };
-    private int[] gbdata;
+    private int[] inputByte;
     private String binary;
     private int[] word = new int[1460];
     private boolean[] grid;
-    
+    private boolean eciLatch;
+
     private int preferredVersion = 0;
-    
+
     /**
-     * Set preferred size, or "version" of the symbol according to the
-     * following table. This value may be ignored if the data to be encoded
-     * does not fit into a symbol of the selected size.
+     * Set preferred size, or "version" of the symbol according to the following
+     * table. This value may be ignored if the data to be encoded does not fit
+     * into a symbol of the selected size.
      * <table summary="Available Grid Matrix symbol sizes">
-  <tbody>
-    <tr>
-      <th><p>Input</p></th>
-      <th><p>Size</p></th>
-    </tr>
-    <tr>
-      <td><p>1</p></td>
-      <td><p>18 x 18</p></td>
-    </tr>
-    <tr>
-      <td><p>2</p></td>
-      <td><p>30 x 30</p></td>
-    </tr>
-    <tr>
-      <td><p>3</p></td>
-      <td><p>42 x 42</p></td>
-    </tr>
-    <tr>
-      <td><p>4</p></td>
-      <td><p>54 x 54</p></td>
-    </tr>
-    <tr>
-      <td><p>5</p></td>
-      <td><p>66 x 66</p></td>
-    </tr>
-    <tr>
-      <td><p>6</p></td>
-      <td><p>78 x 78</p></td>
-    </tr>
-    <tr>
-      <td><p>7</p></td>
-      <td><p>90x 90</p></td>
-    </tr>
-    <tr>
-      <td><p>8</p></td>
-      <td><p>102 x 102</p></td>
-    </tr>
-    <tr>
-      <td><p>9</p></td>
-      <td><p>114 x 114</p></td>
-    </tr>
-    <tr>
-      <td><p>10</p></td>
-      <td><p>126 x 126</p></td>
-    </tr>
-    <tr>
-      <td><p>11</p></td>
-      <td><p>138 x 138</p></td>
-    </tr>
-    <tr>
-      <td><p>12</p></td>
-      <td><p>150 x 150</p></td>
-    </tr>
-    <tr>
-      <td><p>13</p></td>
-      <td><p>162 x 162</p></td>
-    </tr>
-  </tbody>
-</table>
+     * <tbody>
+     * <tr>
+     * <th><p>
+     * Input</p></th>
+     * <th><p>
+     * Size</p></th>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 1</p></td>
+     * <td><p>
+     * 18 x 18</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 2</p></td>
+     * <td><p>
+     * 30 x 30</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 3</p></td>
+     * <td><p>
+     * 42 x 42</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 4</p></td>
+     * <td><p>
+     * 54 x 54</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 5</p></td>
+     * <td><p>
+     * 66 x 66</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 6</p></td>
+     * <td><p>
+     * 78 x 78</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 7</p></td>
+     * <td><p>
+     * 90x 90</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 8</p></td>
+     * <td><p>
+     * 102 x 102</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 9</p></td>
+     * <td><p>
+     * 114 x 114</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 10</p></td>
+     * <td><p>
+     * 126 x 126</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 11</p></td>
+     * <td><p>
+     * 138 x 138</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 12</p></td>
+     * <td><p>
+     * 150 x 150</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 13</p></td>
+     * <td><p>
+     * 162 x 162</p></td>
+     * </tr>
+     * </tbody>
+     * </table>
+     *
      * @param version Symbol version
      */
     public void setPreferredVersion(int version) {
@@ -253,52 +288,56 @@ public class GridMatrix extends Symbol {
     }
 
     private int preferredEccLevel = -1;
-    
+
     /**
-     * Set the preferred amount of the symbol which should be dedicated
-     * to error correction data. Values should be selected from the
-     * following tabe:
+     * Set the preferred amount of the symbol which should be dedicated to error
+     * correction data. Values should be selected from the following table:
      * <table summary="Available options for error correction capacity">
-  <tbody>
-    <tr>
-      <th><p>Mode</p></th>
-      <th><p>Error Correction Capacity</p></th>
-    </tr>
-    <tr>
-      <td><p>1</p></td>
-      <td><p>Approximately 10%</p></td>
-    </tr>
-    <tr>
-      <td><p>2</p></td>
-      <td><p>Approximately 20%</p></td>
-    </tr>
-    <tr>
-      <td><p>3</p></td>
-      <td><p>Approximately 30%</p></td>
-    </tr>
-    <tr>
-      <td><p>4</p></td>
-      <td><p>Approximately 40%</p></td>
-    </tr>
-    <tr>
-      <td><p>5</p></td>
-      <td><p>Approximately 50%</p></td>
-    </tr>
-  </tbody>
-</table>
+     * <tbody>
+     * <tr>
+     * <th><p>
+     * Mode</p></th>
+     * <th><p>
+     * Error Correction Capacity</p></th>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 1</p></td>
+     * <td><p>
+     * Approximately 10%</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 2</p></td>
+     * <td><p>
+     * Approximately 20%</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 3</p></td>
+     * <td><p>
+     * Approximately 30%</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 4</p></td>
+     * <td><p>
+     * Approximately 40%</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 5</p></td>
+     * <td><p>
+     * Approximately 50%</p></td>
+     * </tr>
+     * </tbody>
+     * </table>
+     *
      * @param eccLevel Error correction mode
      */
-    public void setPreferredEccLevel (int eccLevel) {
+    public void setPreferredEccLevel(int eccLevel) {
         preferredEccLevel = eccLevel;
-    }    
-    
-    private final char[] europium = {
-        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D',
-        'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'O', 'P', 'R', 'S', 'T',
-        'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
-        'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
-        'w', 'x', 'y', 'z', ' '
-    };
+    }
 
     @Override
     public boolean encode() {
@@ -307,33 +346,32 @@ public class GridMatrix extends Symbol {
         int x, y, i;
         int data_cw, input_latch = 0;
         int data_max;
-        int length = content.length();
+        int length;
         boolean reader = false; // FIXME: Get value from user
-        byte[] euccn;
-        String onechar;
         String bin;
+        byte[] inputData;
 
         for (i = 0; i < 1460; i++) {
             word[i] = 0;
         }
 
-        gbdata = new int[length + 1];
-
-        /* Convert Unicode input to GB2312 */
-        for (i = 0; i < length; i++) {
-            if (content.charAt(i) <= 0xFF) {
-                gbdata[i] = content.charAt(i);
+        try {
+            if (content.matches("[\u0000-\u00FF]+")) {
+                inputData = content.getBytes("ISO-8859-1");
+                eciLatch = false;
             } else {
-                onechar = "";
-                onechar += content.charAt(i);
-                try {
-                    euccn = onechar.getBytes("EUC_CN");
-                } catch (UnsupportedEncodingException e) {
-                    error_msg = "Invalid character(s) in input data";
-                    return false;
-                }
-                gbdata[i] = ((euccn[0] & 0xFF) * 256) + (euccn[1] & 0xFF);
+                inputData = content.getBytes("UTF-8");
+                eciLatch = true;
             }
+        } catch (UnsupportedEncodingException e) {
+                error_msg = "Byte conversion encoding error";
+                return false;
+        }
+        length = inputData.length;
+        inputByte = new int[length];
+        
+        for (i = 0; i < length; i++) {
+            inputByte[i] = inputData[i] & 0xFF;
         }
 
         error_number = encodeGridMatrixBinary(length, reader);
@@ -414,18 +452,18 @@ public class GridMatrix extends Symbol {
 
         data_max = 1313;
         switch (ecc_level) {
-        case 2:
-            data_max = 1167;
-            break;
-        case 3:
-            data_max = 1021;
-            break;
-        case 4:
-            data_max = 875;
-            break;
-        case 5:
-            data_max = 729;
-            break;
+            case 2:
+                data_max = 1167;
+                break;
+            case 3:
+                data_max = 1021;
+                break;
+            case 4:
+                data_max = 875;
+                break;
+            case 5:
+                data_max = 729;
+                break;
         }
 
         if (data_cw > data_max) {
@@ -499,12 +537,10 @@ public class GridMatrix extends Symbol {
 
     private int encodeGridMatrixBinary(int length, boolean reader) {
         /* Create a binary stream representation of the input data.
-	   7 sets are defined - Chinese characters, Numerals, Lower case letters, Upper case letters,
-	   Mixed numerals and latters, Control characters and 8-bit binary data */
+         7 sets are defined - Chinese characters, Numerals, Lower case letters, Upper case letters,
+         Mixed numerals and latters, Control characters and 8-bit binary data */
         int sp, glyph = 0;
         gmMode current_mode, next_mode, last_mode;
-        int c1, c2;
-        boolean done;
         int p = 0, ppos;
         int punt = 0;
         int number_pad_posn;
@@ -522,171 +558,139 @@ public class GridMatrix extends Symbol {
         if (reader) {
             binary += "1010"; /* FNC3 - Reader Initialisation */
         }
+        
+        if (eciLatch) {
+            binary += "1100"; /* ECI */
+            binary += "00011010"; /* 26 (UTF-8) */
+        }
 
         do {
             next_mode = seekForward(length, sp, current_mode);
 
             if (next_mode != current_mode) {
                 switch (current_mode) {
-                case NULL:
-                    switch (next_mode) {
-                    case GM_CHINESE:
-                        binary += "0001";
+                    case NULL:
+                        switch (next_mode) {
+                            case GM_NUMBER:
+                                binary += "0010";
+                                break;
+                            case GM_LOWER:
+                                binary += "0011";
+                                break;
+                            case GM_UPPER:
+                                binary += "0100";
+                                break;
+                            case GM_MIXED:
+                                binary += "0101";
+                                break;
+                            case GM_BYTE:
+                                binary += "0111";
+                                break;
+                        }
                         break;
                     case GM_NUMBER:
-                        binary += "0010";
-                        break;
-                    case GM_LOWER:
-                        binary += "0011";
-                        break;
-                    case GM_UPPER:
-                        binary += "0100";
-                        break;
-                    case GM_MIXED:
-                        binary += "0101";
-                        break;
-                    case GM_BYTE:
-                        binary += "0111";
-                        break;
-                    }
-                    break;
-                case GM_CHINESE:
-                    switch (next_mode) {
-                    case GM_NUMBER:
-                        binary += "1111111100001";
-                        break; // 8161
-                    case GM_LOWER:
-                        binary += "1111111100010";
-                        break; // 8162
-                    case GM_UPPER:
-                        binary += "1111111100011";
-                        break; // 8163
-                    case GM_MIXED:
-                        binary += "1111111100100";
-                        break; // 8164
-                    case GM_BYTE:
-                        binary += "1111111100101";
-                        break; // 8165
-                    }
-                    break;
-                case GM_NUMBER:
-                    /* add numeric block padding value */
-                    temp_binary = binary.substring(0, number_pad_posn);
-                    switch (p) {
-                    case 1:
-                        temp_binary += "10";
-                        break; // 2 pad digits
-                    case 2:
-                        temp_binary += "01";
-                        break; // 1 pad digit
-                    case 3:
-                        temp_binary += "00";
-                        break; // 0 pad digits
-                    }
-                    temp_binary += binary.substring(number_pad_posn, binary.length());
-                    binary = temp_binary;
+                        /* add numeric block padding value */
+                        temp_binary = binary.substring(0, number_pad_posn);
+                        switch (p) {
+                            case 1:
+                                temp_binary += "10";
+                                break; // 2 pad digits
+                            case 2:
+                                temp_binary += "01";
+                                break; // 1 pad digit
+                            case 3:
+                                temp_binary += "00";
+                                break; // 0 pad digits
+                        }
+                        temp_binary += binary.substring(number_pad_posn, binary.length());
+                        binary = temp_binary;
 
-                    switch (next_mode) {
-                    case GM_CHINESE:
-                        binary += "1111111011";
-                        break; // 1019
+                        switch (next_mode) {
+                            case GM_LOWER:
+                                binary += "1111111100";
+                                break; // 1020
+                            case GM_UPPER:
+                                binary += "1111111101";
+                                break; // 1021
+                            case GM_MIXED:
+                                binary += "1111111110";
+                                break; // 1022
+                            case GM_BYTE:
+                                binary += "1111111111";
+                                break; // 1023
+                        }
+                        break;
                     case GM_LOWER:
-                        binary += "1111111100";
-                        break; // 1020
                     case GM_UPPER:
-                        binary += "1111111101";
-                        break; // 1021
+                        switch (next_mode) {
+                            case GM_NUMBER:
+                                binary += "11101";
+                                break; // 29
+                            case GM_LOWER:
+                            case GM_UPPER:
+                                binary += "11110";
+                                break; // 30
+                            case GM_MIXED:
+                                binary += "1111100";
+                                break; // 124
+                            case GM_BYTE:
+                                binary += "1111110";
+                                break; // 126
+                        }
+                        break;
                     case GM_MIXED:
-                        binary += "1111111110";
-                        break; // 1022
+                        switch (next_mode) {
+                            case GM_NUMBER:
+                                binary += "1111110010";
+                                break; // 1010
+                            case GM_LOWER:
+                                binary += "1111110011";
+                                break; // 1011
+                            case GM_UPPER:
+                                binary += "1111110100";
+                                break; // 1012
+                            case GM_BYTE:
+                                binary += "1111110111";
+                                break; // 1015
+                        }
+                        break;
                     case GM_BYTE:
-                        binary += "1111111111";
-                        break; // 1023
-                    }
-                    break;
-                case GM_LOWER:
-                case GM_UPPER:
-                    switch (next_mode) {
-                    case GM_CHINESE:
-                        binary += "11100";
-                        break; // 28
-                    case GM_NUMBER:
-                        binary += "11101";
-                        break; // 29
-                    case GM_LOWER:
-                    case GM_UPPER:
-                        binary += "11110";
-                        break; // 30
-                    case GM_MIXED:
-                        binary += "1111100";
-                        break; // 124
-                    case GM_BYTE:
-                        binary += "1111110";
-                        break; // 126
-                    }
-                    break;
-                case GM_MIXED:
-                    switch (next_mode) {
-                    case GM_CHINESE:
-                        binary += "1111110001";
-                        break; // 1009
-                    case GM_NUMBER:
-                        binary += "1111110010";
-                        break; // 1010
-                    case GM_LOWER:
-                        binary += "1111110011";
-                        break; // 1011
-                    case GM_UPPER:
-                        binary += "1111110100";
-                        break; // 1012
-                    case GM_BYTE:
-                        binary += "1111110111";
-                        break; // 1015
-                    }
-                    break;
-                case GM_BYTE:
-                    /* add byte block length indicator */
-                    addByteCount(byte_count_posn, byte_count);
-                    byte_count = 0;
-                    switch (next_mode) {
-                    case GM_CHINESE:
-                        binary += "0001";
-                        break; // 1
-                    case GM_NUMBER:
-                        binary += "0010";
-                        break; // 2
-                    case GM_LOWER:
-                        binary += "0011";
-                        break; // 3
-                    case GM_UPPER:
-                        binary += "0100";
-                        break; // 4
-                    case GM_MIXED:
-                        binary += "0101";
-                        break; // 5
-                    }
-                    break;
+                        /* add byte block length indicator */
+                        addByteCount(byte_count_posn, byte_count);
+                        byte_count = 0;
+                        switch (next_mode) {
+                            case GM_NUMBER:
+                                binary += "0010";
+                                break; // 2
+                            case GM_LOWER:
+                                binary += "0011";
+                                break; // 3
+                            case GM_UPPER:
+                                binary += "0100";
+                                break; // 4
+                            case GM_MIXED:
+                                binary += "0101";
+                                break; // 5
+                        }
+                        break;
                 }
                 if (debug) {
                     switch (next_mode) {
-                    case GM_CHINESE:
-                        System.out.printf("CHIN ");
-                        break;
-                    case GM_NUMBER:
-                        System.out.printf("NUMB ");
-                        break;
-                    case GM_LOWER:
-                        System.out.printf("LOWR ");
-                        break;
-                    case GM_UPPER:
-                        System.out.printf("UPPR ");
-                        break;
-                    case GM_MIXED:
-                        System.out.printf("MIXD ");
-                        break;
-                    case GM_BYTE:
-                        System.out.printf("BYTE ");
-                        break;
+                        case GM_NUMBER:
+                            System.out.printf("NUMB ");
+                            break;
+                        case GM_LOWER:
+                            System.out.printf("LOWR ");
+                            break;
+                        case GM_UPPER:
+                            System.out.printf("UPPR ");
+                            break;
+                        case GM_MIXED:
+                            System.out.printf("MIXD ");
+                            break;
+                        case GM_BYTE:
+                            System.out.printf("BYTE ");
+                            break;
                     }
                 }
             }
@@ -694,124 +698,84 @@ public class GridMatrix extends Symbol {
             current_mode = next_mode;
 
             switch (current_mode) {
-            case GM_CHINESE:
-                done = false;
-                if (gbdata[sp] > 0xff) {
-                    /* GB2312 character */
-                    c1 = (gbdata[sp] & 0xff00) >> 8;
-                    c2 = gbdata[sp] & 0xff;
+                case GM_NUMBER:
+                    if (last_mode != current_mode) {
+                        /* Reserve a space for numeric digit padding value (2 bits) */
+                        number_pad_posn = binary.length();
+                    }
+                    p = 0;
+                    ppos = -1;
 
-                    if ((c1 >= 0xa0) && (c1 <= 0xa9)) {
-                        glyph = (0x60 * (c1 - 0xa1)) + (c2 - 0xa0);
-                    }
-                    if ((c1 >= 0xb0) && (c1 <= 0xf7)) {
-                        glyph = (0x60 * (c1 - 0xb0 + 9)) + (c2 - 0xa0);
-                    }
-                    done = true;
-                }
-                if (!(done)) {
-                    if (sp != (length - 1)) {
-                        if ((gbdata[sp] == 0x13) && (gbdata[sp + 1] == 0x10)) {
-                            /* End of Line */
-                            glyph = 7776;
+                    /* Numeric compression can also include certain combinations of
+                     non-numeric character */
+                    numbuf[0] = '0';
+                    numbuf[1] = '0';
+                    numbuf[2] = '0';
+                    do {
+                        if ((inputByte[sp] >= '0') && (inputByte[sp] <= '9')) {
+                            numbuf[p] = inputByte[sp];
                             sp++;
+                            p++;
                         }
-                        done = true;
-                    }
-                }
-                if (!(done)) {
-                    if (sp != (length - 1)) {
-                        if (((gbdata[sp] >= '0') && (gbdata[sp] <= '9')) && ((gbdata[sp + 1] >= '0') && (gbdata[sp + 1] <= '9'))) {
-                            /* Two digits */
-                            glyph = 8033 + (10 * (gbdata[sp] - '0')) + (gbdata[sp + 1] - '0');
-                            sp++;
+                        switch (inputByte[sp]) {
+                            case ' ':
+                            case '+':
+                            case '-':
+                            case '.':
+                            case ',':
+                                punt = inputByte[sp];
+                                sp++;
+                                ppos = p;
+                                break;
                         }
-                    }
-                }
-                if (!(done)) {
-                    /* Byte value */
-                    glyph = 7777 + gbdata[sp];
-                }
+                        if (sp < (length - 1)) {
+                            if ((inputByte[sp] == 0x13) && (inputByte[sp + 1] == 0x10)) {
+                                /* <end of line> */
+                                punt = inputByte[sp];
+                                sp += 2;
+                                ppos = p;
+                            }
+                        }
+                    } while ((p < 3) && (sp < length));
 
-                if (debug) {
-                    System.out.printf("[%d] ", glyph);
-                }
+                    if (ppos != -1) {
+                        switch (punt) {
+                            case ' ':
+                                glyph = 0;
+                                break;
+                            case '+':
+                                glyph = 3;
+                                break;
+                            case '-':
+                                glyph = 6;
+                                break;
+                            case '.':
+                                glyph = 9;
+                                break;
+                            case ',':
+                                glyph = 12;
+                                break;
+                            case 0x13:
+                                glyph = 15;
+                                break;
+                        }
+                        glyph += ppos;
+                        glyph += 1000;
 
-                for (i = 0x1000; i > 0; i = i >> 1) {
-                    if ((glyph & i) != 0) {
-                        binary += "1";
-                    } else {
-                        binary += "0";
-                    }
-                }
-                sp++;
-                break;
+                        if (debug) {
+                            System.out.printf("[%d] ", glyph);
+                        }
 
-            case GM_NUMBER:
-                if (last_mode != current_mode) {
-                    /* Reserve a space for numeric digit padding value (2 bits) */
-                    number_pad_posn = binary.length();
-                }
-                p = 0;
-                ppos = -1;
-
-                /* Numeric compression can also include certain combinations of
-				   non-numeric character */
-
-                numbuf[0] = '0';
-                numbuf[1] = '0';
-                numbuf[2] = '0';
-                do {
-                    if ((gbdata[sp] >= '0') && (gbdata[sp] <= '9')) {
-                        numbuf[p] = gbdata[sp];
-                        sp++;
-                        p++;
-                    }
-                    switch (gbdata[sp]) {
-                    case ' ':
-                    case '+':
-                    case '-':
-                    case '.':
-                    case ',':
-                        punt = gbdata[sp];
-                        sp++;
-                        ppos = p;
-                        break;
-                    }
-                    if (sp < (length - 1)) {
-                        if ((gbdata[sp] == 0x13) && (gbdata[sp + 1] == 0x10)) {
-                            /* <end of line> */
-                            punt = gbdata[sp];
-                            sp += 2;
-                            ppos = p;
+                        for (i = 0x200; i > 0; i = i >> 1) {
+                            if ((glyph & i) != 0) {
+                                binary += "1";
+                            } else {
+                                binary += "0";
+                            }
                         }
                     }
-                } while ((p < 3) && (sp < length));
 
-                if (ppos != -1) {
-                    switch (punt) {
-                    case ' ':
-                        glyph = 0;
-                        break;
-                    case '+':
-                        glyph = 3;
-                        break;
-                    case '-':
-                        glyph = 6;
-                        break;
-                    case '.':
-                        glyph = 9;
-                        break;
-                    case ',':
-                        glyph = 12;
-                        break;
-                    case 0x13:
-                        glyph = 15;
-                        break;
-                    }
-                    glyph += ppos;
-                    glyph += 1000;
-
+                    glyph = (100 * (numbuf[0] - '0')) + (10 * (numbuf[1] - '0')) + (numbuf[2] - '0');
                     if (debug) {
                         System.out.printf("[%d] ", glyph);
                     }
@@ -823,159 +787,148 @@ public class GridMatrix extends Symbol {
                             binary += "0";
                         }
                     }
-                }
+                    break;
 
-                glyph = (100 * (numbuf[0] - '0')) + (10 * (numbuf[1] - '0')) + (numbuf[2] - '0');
-                if (debug) {
-                    System.out.printf("[%d] ", glyph);
-                }
+                case GM_BYTE:
+                    if (last_mode != current_mode) {
+                        /* Reserve space for byte block length indicator (9 bits) */
+                        byte_count_posn = binary.length();
+                    }
+                    if (byte_count == 512) {
+                        /* Maximum byte block size is 512 bytes. If longer is needed then start a new block */
+                        addByteCount(byte_count_posn, byte_count);
+                        binary += "0111";
+                        byte_count_posn = binary.length();
+                        byte_count = 0;
+                    }
 
-                for (i = 0x200; i > 0; i = i >> 1) {
-                    if ((glyph & i) != 0) {
-                        binary += "1";
+                    glyph = inputByte[sp];
+                    if (debug) {
+                        System.out.printf("[%d] ", glyph);
+                    }
+                    for (i = 0x80; i > 0; i = i >> 1) {
+                        if ((glyph & i) != 0) {
+                            binary += "1";
+                        } else {
+                            binary += "0";
+                        }
+                    }
+                    sp++;
+                    byte_count++;
+                    break;
+
+                case GM_MIXED:
+                    shift = 1;
+                    if ((inputByte[sp] >= '0') && (inputByte[sp] <= '9')) {
+                        shift = 0;
+                    }
+                    if ((inputByte[sp] >= 'A') && (inputByte[sp] <= 'Z')) {
+                        shift = 0;
+                    }
+                    if ((inputByte[sp] >= 'a') && (inputByte[sp] <= 'z')) {
+                        shift = 0;
+                    }
+                    if (inputByte[sp] == ' ') {
+                        shift = 0;
+                    }
+
+                    if (shift == 0) {
+                        /* Mixed Mode character */
+                        glyph = positionOf((char) inputByte[sp], MIXED_ALPHANUM_SET);
+                        if (debug) {
+                            System.out.printf("[%d] ", glyph);
+                        }
+
+                        for (i = 0x20; i > 0; i = i >> 1) {
+                            if ((glyph & i) != 0) {
+                                binary += "1";
+                            } else {
+                                binary += "0";
+                            }
+                        }
                     } else {
-                        binary += "0";
+                        /* Shift Mode character */
+                        binary += "1111110110"; /* 1014 - shift indicator */
+
+                        addShiftCharacter(inputByte[sp]);
                     }
-                }
-                break;
 
-            case GM_BYTE:
-                if (last_mode != current_mode) {
-                    /* Reserve space for byte block length indicator (9 bits) */
-                    byte_count_posn = binary.length();
-                }
-                if (byte_count == 512) {
-                    /* Maximum byte block size is 512 bytes. If longer is needed then start a new block */
-                    addByteCount(byte_count_posn, byte_count);
-                    binary += "0111";
-                    byte_count_posn = binary.length();
-                    byte_count = 0;
-                }
+                    sp++;
+                    break;
 
-                glyph = gbdata[sp];
-                if (debug) {
-                    System.out.printf("[%d] ", glyph);
-                }
-                for (i = 0x80; i > 0; i = i >> 1) {
-                    if ((glyph & i) != 0) {
-                        binary += "1";
+                case GM_UPPER:
+                    shift = 1;
+                    if ((inputByte[sp] >= 'A') && (inputByte[sp] <= 'Z')) {
+                        shift = 0;
+                    }
+                    if (inputByte[sp] == ' ') {
+                        shift = 0;
+                    }
+
+                    if (shift == 0) {
+                        /* Upper Case character */
+                        //glyph = posn("ABCDEFGHIJKLMNOPQRSTUVWXYZ ", gbdata[sp]);
+                        glyph = positionOf((char) inputByte[sp], MIXED_ALPHANUM_SET) - 10;
+                        if (glyph == 53) {
+                            // Space character
+                            glyph = 27;
+                        }
+                        if (debug) {
+                            System.out.printf("[%d] ", glyph);
+                        }
+
+                        for (i = 0x10; i > 0; i = i >> 1) {
+                            if ((glyph & i) != 0) {
+                                binary += "1";
+                            } else {
+                                binary += "0";
+                            }
+                        }
+
                     } else {
-                        binary += "0";
-                    }
-                }
-                sp++;
-                byte_count++;
-                break;
+                        /* Shift Mode character */
+                        binary += "1111101"; /* 127 - shift indicator */
 
-            case GM_MIXED:
-                shift = 1;
-                if ((gbdata[sp] >= '0') && (gbdata[sp] <= '9')) {
-                    shift = 0;
-                }
-                if ((gbdata[sp] >= 'A') && (gbdata[sp] <= 'Z')) {
-                    shift = 0;
-                }
-                if ((gbdata[sp] >= 'a') && (gbdata[sp] <= 'z')) {
-                    shift = 0;
-                }
-                if (gbdata[sp] == ' ') {
-                    shift = 0;
-                }
-
-                if (shift == 0) {
-                    /* Mixed Mode character */
-                    glyph = positionOf((char) gbdata[sp], europium);
-                    if (debug) {
-                        System.out.printf("[%d] ", glyph);
+                        addShiftCharacter(inputByte[sp]);
                     }
 
-                    for (i = 0x20; i > 0; i = i >> 1) {
-                        if ((glyph & i) != 0) {
-                            binary += "1";
-                        } else {
-                            binary += "0";
+                    sp++;
+                    break;
+
+                case GM_LOWER:
+                    shift = 1;
+                    if ((inputByte[sp] >= 'a') && (inputByte[sp] <= 'z')) {
+                        shift = 0;
+                    }
+                    if (inputByte[sp] == ' ') {
+                        shift = 0;
+                    }
+
+                    if (shift == 0) {
+                        /* Lower Case character */
+                        //glyph = posn("abcdefghijklmnopqrstuvwxyz ", gbdata[sp]);
+                        glyph = positionOf((char) inputByte[sp], MIXED_ALPHANUM_SET) - 36;
+                        if (debug) {
+                            System.out.printf("[%d] ", glyph);
                         }
-                    }
-                } else {
-                    /* Shift Mode character */
-                    binary += "1111110110"; /* 1014 - shift indicator */
-                    addShiftCharacter(gbdata[sp]);
-                }
 
-                sp++;
-                break;
-
-            case GM_UPPER:
-                shift = 1;
-                if ((gbdata[sp] >= 'A') && (gbdata[sp] <= 'Z')) {
-                    shift = 0;
-                }
-                if (gbdata[sp] == ' ') {
-                    shift = 0;
-                }
-
-                if (shift == 0) {
-                    /* Upper Case character */
-                    //glyph = posn("ABCDEFGHIJKLMNOPQRSTUVWXYZ ", gbdata[sp]);
-                    glyph = positionOf((char) gbdata[sp], europium) - 10;
-                    if (glyph == 53) {
-                        // Space character
-                        glyph = 27;
-                    }
-                    if (debug) {
-                        System.out.printf("[%d] ", glyph);
-                    }
-
-                    for (i = 0x10; i > 0; i = i >> 1) {
-                        if ((glyph & i) != 0) {
-                            binary += "1";
-                        } else {
-                            binary += "0";
+                        for (i = 0x10; i > 0; i = i >> 1) {
+                            if ((glyph & i) != 0) {
+                                binary += "1";
+                            } else {
+                                binary += "0";
+                            }
                         }
+
+                    } else {
+                        /* Shift Mode character */
+                        binary += "1111101"; /* 127 - shift indicator */
+
+                        addShiftCharacter(inputByte[sp]);
                     }
 
-                } else {
-                    /* Shift Mode character */
-                    binary += "1111101"; /* 127 - shift indicator */
-                    addShiftCharacter(gbdata[sp]);
-                }
-
-                sp++;
-                break;
-
-            case GM_LOWER:
-                shift = 1;
-                if ((gbdata[sp] >= 'a') && (gbdata[sp] <= 'z')) {
-                    shift = 0;
-                }
-                if (gbdata[sp] == ' ') {
-                    shift = 0;
-                }
-
-                if (shift == 0) {
-                    /* Lower Case character */
-                    //glyph = posn("abcdefghijklmnopqrstuvwxyz ", gbdata[sp]);
-                    glyph = positionOf((char) gbdata[sp], europium) - 36;
-                    if (debug) {
-                        System.out.printf("[%d] ", glyph);
-                    }
-
-                    for (i = 0x10; i > 0; i = i >> 1) {
-                        if ((glyph & i) != 0) {
-                            binary += "1";
-                        } else {
-                            binary += "0";
-                        }
-                    }
-
-                } else {
-                    /* Shift Mode character */
-                    binary += "1111101"; /* 127 - shift indicator */
-                    addShiftCharacter(gbdata[sp]);
-                }
-
-                sp++;
-                break;
+                    sp++;
+                    break;
             }
             if (binary.length() > 9191) {
                 return 1;
@@ -987,15 +940,15 @@ public class GridMatrix extends Symbol {
             /* add numeric block padding value */
             temp_binary = binary.substring(0, number_pad_posn);
             switch (p) {
-            case 1:
-                temp_binary += "10";
-                break; // 2 pad digits
-            case 2:
-                temp_binary += "01";
-                break; // 1 pad digit
-            case 3:
-                temp_binary += "00";
-                break; // 0 pad digits
+                case 1:
+                    temp_binary += "10";
+                    break; // 2 pad digits
+                case 2:
+                    temp_binary += "01";
+                    break; // 1 pad digit
+                case 3:
+                    temp_binary += "00";
+                    break; // 0 pad digits
             }
             temp_binary += binary.substring(number_pad_posn, binary.length());
             binary = temp_binary;
@@ -1008,22 +961,19 @@ public class GridMatrix extends Symbol {
 
         /* Add "end of data" character */
         switch (current_mode) {
-        case GM_CHINESE:
-            binary += "1111111100000";
-            break; // 8160
-        case GM_NUMBER:
-            binary += "1111111010";
-            break; // 1018
-        case GM_LOWER:
-        case GM_UPPER:
-            binary += "11011";
-            break; // 27
-        case GM_MIXED:
-            binary += "1111110000";
-            break; // 1008
-        case GM_BYTE:
-            binary += "0000";
-            break; // 0
+            case GM_NUMBER:
+                binary += "1111111010";
+                break; // 1018
+            case GM_LOWER:
+            case GM_UPPER:
+                binary += "11011";
+                break; // 27
+            case GM_MIXED:
+                binary += "1111110000";
+                break; // 1008
+            case GM_BYTE:
+                binary += "0000";
+                break; // 0
         }
 
         /* Add padding bits if required */
@@ -1044,125 +994,102 @@ public class GridMatrix extends Symbol {
 
     private gmMode seekForward(int length, int position, gmMode current_mode) {
         /* In complete contrast to the method recommended in Annex D of the ANSI standard this
-               code uses a look-ahead test in the same manner as Data Matrix. This decision was made
-               because the "official" algorithm does not provide clear methods for dealing with all
-               possible combinations of input data */
+         code uses a look-ahead test in the same manner as Data Matrix. This decision was made
+         because the "official" algorithm does not provide clear methods for dealing with all
+         possible combinations of input data */
 
-        int number_count, byte_count, mixed_count, upper_count, lower_count, chinese_count;
+        int number_count, byte_count, mixed_count, upper_count, lower_count;
         int sp, done;
         int best_count, last = -1;
         gmMode best_mode;
 
-        if (gbdata[position] > 0xff) {
-            return gmMode.GM_CHINESE;
-        }
-
         switch (current_mode) {
-        case GM_CHINESE:
-            number_count = 13;
-            byte_count = 13;
-            mixed_count = 13;
-            upper_count = 13;
-            lower_count = 13;
-            chinese_count = 0;
-            break;
-        case GM_NUMBER:
-            number_count = 0;
-            byte_count = 10;
-            mixed_count = 10;
-            upper_count = 10;
-            lower_count = 10;
-            chinese_count = 10;
-            break;
-        case GM_LOWER:
-            number_count = 5;
-            byte_count = 7;
-            mixed_count = 7;
-            upper_count = 5;
-            lower_count = 0;
-            chinese_count = 5;
-            break;
-        case GM_UPPER:
-            number_count = 5;
-            byte_count = 7;
-            mixed_count = 7;
-            upper_count = 0;
-            lower_count = 5;
-            chinese_count = 5;
-            break;
-        case GM_MIXED:
-            number_count = 10;
-            byte_count = 10;
-            mixed_count = 0;
-            upper_count = 10;
-            lower_count = 10;
-            chinese_count = 10;
-            break;
-        case GM_BYTE:
-            number_count = 4;
-            byte_count = 0;
-            mixed_count = 4;
-            upper_count = 4;
-            lower_count = 4;
-            chinese_count = 4;
-            break;
-        default:
-            /* Start of symbol */
-            number_count = 4;
-            byte_count = 4;
-            mixed_count = 4;
-            upper_count = 4;
-            lower_count = 4;
-            chinese_count = 4;
+            case GM_NUMBER:
+                number_count = 0;
+                byte_count = 10;
+                mixed_count = 10;
+                upper_count = 10;
+                lower_count = 10;
+                break;
+            case GM_LOWER:
+                number_count = 5;
+                byte_count = 7;
+                mixed_count = 7;
+                upper_count = 5;
+                lower_count = 0;
+                break;
+            case GM_UPPER:
+                number_count = 5;
+                byte_count = 7;
+                mixed_count = 7;
+                upper_count = 0;
+                lower_count = 5;
+                break;
+            case GM_MIXED:
+                number_count = 10;
+                byte_count = 10;
+                mixed_count = 0;
+                upper_count = 10;
+                lower_count = 10;
+                break;
+            case GM_BYTE:
+                number_count = 4;
+                byte_count = 0;
+                mixed_count = 4;
+                upper_count = 4;
+                lower_count = 4;
+                break;
+            default:
+                /* Start of symbol */
+                number_count = 4;
+                byte_count = 4;
+                mixed_count = 4;
+                upper_count = 4;
+                lower_count = 4;
         }
 
         for (sp = position;
-        (sp < length) && (sp <= (position + 8)); sp++) {
+                (sp < length) && (sp <= (position + 8)); sp++) {
 
             done = 0;
 
-            if (gbdata[sp] >= 0xff) {
+            if (inputByte[sp] >= 0xff) {
                 byte_count += 17;
                 mixed_count += 23;
                 upper_count += 18;
                 lower_count += 18;
-                chinese_count += 13;
                 done = 1;
             }
 
-            if ((gbdata[sp] >= 'a') && (gbdata[sp] <= 'z')) {
+            if ((inputByte[sp] >= 'a') && (inputByte[sp] <= 'z')) {
                 byte_count += 8;
                 mixed_count += 6;
                 upper_count += 10;
                 lower_count += 5;
-                chinese_count += 13;
                 done = 1;
             }
 
-            if ((gbdata[sp] >= 'A') && (gbdata[sp] <= 'Z')) {
+            if ((inputByte[sp] >= 'A') && (inputByte[sp] <= 'Z')) {
                 byte_count += 8;
                 mixed_count += 6;
                 upper_count += 5;
                 lower_count += 10;
-                chinese_count += 13;
                 done = 1;
             }
 
-            if ((gbdata[sp] >= '0') && (gbdata[sp] <= '9')) {
+            if ((inputByte[sp] >= '0') && (inputByte[sp] <= '9')) {
                 byte_count += 8;
                 mixed_count += 6;
                 upper_count += 8;
                 lower_count += 8;
-                chinese_count += 13;
                 done = 1;
             }
 
-            if (gbdata[sp] == ' ') {
+            if (inputByte[sp] == ' ') {
                 byte_count += 8;
                 mixed_count += 6;
                 upper_count += 5;
                 lower_count += 5;
-                chinese_count += 13;
                 done = 1;
             }
 
@@ -1172,32 +1099,12 @@ public class GridMatrix extends Symbol {
                 mixed_count += 16;
                 upper_count += 13;
                 lower_count += 13;
-                chinese_count += 13;
             }
 
-            if (gbdata[sp] >= 0x7f) {
+            if (inputByte[sp] >= 0x7f) {
                 mixed_count += 20;
                 upper_count += 20;
                 lower_count += 20;
-            }
-        }
-
-        /* Adjust for <end of line> */
-        for (sp = position;
-        (sp < (length - 1)) && (sp <= (position + 7)); sp++) {
-            if ((gbdata[sp] == 0x13) && (gbdata[sp] == 0x10)) {
-                chinese_count -= 13;
-            }
-        }
-
-        /* Adjust for double digits */
-        for (sp = position;
-        (sp < (length - 1)) && (sp <= (position + 7)); sp++) {
-            if (sp != last) {
-                if (((gbdata[sp] >= '0') && (gbdata[sp] <= '9')) && ((gbdata[sp + 1] >= '0') && (gbdata[sp + 1] <= '9'))) {
-                    chinese_count -= 13;
-                    last = sp + 1;
-                }
             }
         }
 
@@ -1205,16 +1112,11 @@ public class GridMatrix extends Symbol {
         number_count += numberModeCost(length, position);
 
         if (debug) {
-            System.out.printf("C %d / B %d / M %d / U %d / L %d / N %d\n", chinese_count, byte_count, mixed_count, upper_count, lower_count, number_count);
+            System.out.printf("B %d / M %d / U %d / L %d / N %d\n", byte_count, mixed_count, upper_count, lower_count, number_count);
         }
 
-        best_count = chinese_count;
-        best_mode = gmMode.GM_CHINESE;
-
-        if (byte_count <= best_count) {
-            best_count = byte_count;
-            best_mode = gmMode.GM_BYTE;
-        }
+        best_count = byte_count;
+        best_mode = gmMode.GM_BYTE;
 
         if (mixed_count <= best_count) {
             best_count = mixed_count;
@@ -1242,8 +1144,8 @@ public class GridMatrix extends Symbol {
     private int numberModeCost(int length, int position) {
         /* Attempt to calculate the 'cost' of using numeric mode from a given position in number of bits */
         /* Also ensures that numeric mode is not selected when it cannot be used: for example in
-	   a string which has "2.2.0" (cannot have more than one non-numeric character for each
-	   block of three numeric characters) */
+         a string which has "2.2.0" (cannot have more than one non-numeric character for each
+         block of three numeric characters) */
         int sp;
         int numb = 0, nonum = 0, done;
         int tally = 0;
@@ -1253,21 +1155,21 @@ public class GridMatrix extends Symbol {
         do {
             done = 0;
 
-            if ((gbdata[sp] >= '0') && (gbdata[sp] <= '9')) {
+            if ((inputByte[sp] >= '0') && (inputByte[sp] <= '9')) {
                 numb++;
                 done = 1;
             }
-            switch (gbdata[sp]) {
-            case ' ':
-            case '+':
-            case '-':
-            case '.':
-            case ',':
-                nonum++;
-                done = 1;
+            switch (inputByte[sp]) {
+                case ' ':
+                case '+':
+                case '-':
+                case '.':
+                case ',':
+                    nonum++;
+                    done = 1;
             }
             if ((sp + 1) < length) {
-                if ((gbdata[sp] == 0x13) && (gbdata[sp + 1] == 0x10)) {
+                if ((inputByte[sp] == 0x13) && (inputByte[sp + 1] == 0x10)) {
                     nonum++;
                     done = 1;
                     sp++;
@@ -1365,7 +1267,6 @@ public class GridMatrix extends Symbol {
         int[] ecc_block = new int[70];
         ReedSolomon rs = new ReedSolomon();
 
-
         data_cw = gm_data_codewords[((layers - 1) * 5) + (ecc_level - 1)];
 
         for (i = 0; i < 1320; i++) {
@@ -1416,7 +1317,6 @@ public class GridMatrix extends Symbol {
             data_size = block_size - ecc_size;
 
             /* printf("block %d/%d: data %d / ecc %d\n", i + 1, (b1 + b2), data_size, ecc_size);*/
-
             for (j = 0; j < data_size; j++) {
                 data_block[j] = data[wp];
                 wp++;

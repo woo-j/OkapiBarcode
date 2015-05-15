@@ -15,6 +15,8 @@
  */
 package uk.org.okapibarcode.backend;
 
+import java.io.UnsupportedEncodingException;
+
 /**
  * Implements Aztec Code bar code symbology According to ISO/IEC 24778:2008
  * <p>
@@ -28,6 +30,7 @@ package uk.org.okapibarcode.backend;
 public class AztecCode extends Symbol {
 
     private int preferredSize = 0;
+    private boolean eciLatch;
 
     /**
      * Sets a preferred symbol size. This value may be ignored if data string is
@@ -583,10 +586,19 @@ public class AztecCode extends Symbol {
         String bin;
         int t;
         boolean done;
-        ExtendedChannel eci = new ExtendedChannel();
         
-        eciMode = eci.getBestEci(content);
-        inputBytes = eci.getBytes(content, eciMode);
+        try {
+            if (content.matches("[\u0000-\u00FF]+")) {
+                inputBytes = content.getBytes("ISO-8859-1");
+                eciLatch = false;
+            } else {
+                inputBytes = content.getBytes("UTF-8");
+                eciLatch = true;
+            }
+        } catch (UnsupportedEncodingException e) {
+                error_msg = "Byte conversion encoding error";
+                return false;
+        }
 
         if (readerInit) {
             comp_loop = 1;
@@ -1275,32 +1287,10 @@ public class AztecCode extends Symbol {
             typemap[maplength++] = 8; // PUNC
         }
 
-        if ((inputDataType == DataType.ECI) && (eciMode != 3)) {
-            int flagNumber = 6;
-
-            if (eciMode < 100000) {
-                flagNumber = 5;
-            }
-
-            if (eciMode < 10000) {
-                flagNumber = 4;
-            }
-
-            if (eciMode < 1000) {
-                flagNumber = 3;
-            }
-
-            if (eciMode < 100) {
-                flagNumber = 2;
-            }
-
-            if (eciMode < 10) {
-                flagNumber = 1;
-            }
-
+        if (eciLatch) {
             charmap[maplength] = 0; // FLG
             typemap[maplength++] = 8; // PUNC
-            charmap[maplength] = 400 + flagNumber;
+            charmap[maplength] = 401; // (1)
             typemap[maplength++] = 8; // PUNC
         }
 
@@ -2108,7 +2098,9 @@ public class AztecCode extends Symbol {
                         }
                         binary_string += tribit[charmap[i] - 400];
                         if (charmap[i] != 400) {
-                            binary_string += eciToBinary();
+                            /* ECI latch 26 (UTF-8) */
+                            binary_string += quadbit[(2 - '0') + 2];
+                            binary_string += quadbit[(6 - '0') + 2];
                         }
                     } else {
                         binary_string += pentbit[charmap[i]];
@@ -2146,20 +2138,5 @@ public class AztecCode extends Symbol {
         }
 
         return true;
-    }
-
-    private String eciToBinary() {
-        String binary = "";
-        String eciNumber = Integer.toString(eciMode);
-        int i;
-
-        for (i = 0; i < eciNumber.length(); i++) {
-            binary += quadbit[(eciNumber.charAt(i) - '0') + 2];
-            if (debug) {
-                System.out.printf("%c ", eciNumber.charAt(i));
-            }
-        }
-
-        return binary;
     }
 }

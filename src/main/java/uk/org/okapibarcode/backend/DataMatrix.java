@@ -18,11 +18,11 @@ package uk.org.okapibarcode.backend;
 import java.io.UnsupportedEncodingException;
 
 /**
- * Implements Data Matrix ECC 200 bar code symbology
- * According to ISO/IEC 16022:2006
+ * Implements Data Matrix ECC 200 bar code symbology According to ISO/IEC
+ * 16022:2006
  * <p>
- * Data Matrix is a 2D matrix symbology capable of encoding characters
- * in the ISO/IEC 8859-1 (Latin-1) character set.
+ * Data Matrix is a 2D matrix symbology capable of encoding characters in the
+ * ISO/IEC 8859-1 (Latin-1) character set.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
@@ -107,6 +107,7 @@ public class DataMatrix extends Symbol {
     };
 
     private enum dm_mode {
+
         DM_ASCII, DM_C40, DM_TEXT, DM_X12, DM_EDIFACT, DM_BASE256
     }
     private int[] target = new int[2200];
@@ -117,6 +118,7 @@ public class DataMatrix extends Symbol {
     private boolean isSquare;
     private int[] inputData;
     private int preferredSize = 0;
+    private boolean eciLatch;
 
     private int process_p;
     private int[] process_buffer = new int[8];
@@ -127,119 +129,184 @@ public class DataMatrix extends Symbol {
 
     /**
      * Override selection of symbol size. When set as <code>false</code> the
-     * symbol will be the smallest available for the amount of data given.
-     * When set as <code>true</code> the encoding will not use rectangular
-     * symbols.
+     * symbol will be the smallest available for the amount of data given. When
+     * set as <code>true</code> the encoding will not use rectangular symbols.
+     *
      * @param input Forces a square symbol when set to <code>true</code>
      */
     public void forceSquare(boolean input) {
         isSquare = input;
     }
-    
-    /** Set the prefereed symbol size according to the values in the
-     * following table. Values may be ignored if the data is too big to fit
-     * in the specified symbol, or if <code>forceSquare</code> mode has
-     * been invoked.
+
+    /**
+     * Set the prefereed symbol size according to the values in the following
+     * table. Values may be ignored if the data is too big to fit in the
+     * specified symbol, or if <code>forceSquare</code> mode has been invoked.
      * <table summary="Available Data Matrix symbol sizes">
-  <tbody>
-    <tr>
-      <th><p>Input</p></th>
-      <th><p>Symbol Size</p></th>
-      <th><p>Input</p></th>
-      <th><p>Symbol Size</p></th>
-    </tr>
-    <tr>
-      <td><p>1</p></td>
-      <td><p>10 x 10</p></td>
-      <td><p>16</p></td>
-      <td><p>64 x 64</p></td>
-    </tr>
-    <tr>
-      <td><p>2</p></td>
-      <td><p>12 x 12</p></td>
-      <td><p>17</p></td>
-      <td><p>72 x 72</p></td>
-    </tr>
-    <tr>
-      <td><p>3</p></td>
-      <td><p>14 x 14</p></td>
-      <td><p>18</p></td>
-      <td><p>80 x 80</p></td>
-    </tr>
-    <tr>
-      <td><p>4</p></td>
-      <td><p>16 x 16</p></td>
-      <td><p>19</p></td>
-      <td><p>88 x 88</p></td>
-    </tr>
-    <tr>
-      <td><p>5</p></td>
-      <td><p>18 x 18</p></td>
-      <td><p>20</p></td>
-      <td><p>96 x 96</p></td>
-    </tr>
-    <tr>
-      <td><p>6</p></td>
-      <td><p>20 x 20</p></td>
-      <td><p>21</p></td>
-      <td><p>104 x 104</p></td>
-    </tr>
-    <tr>
-      <td><p>7</p></td>
-      <td><p>22 x 22</p></td>
-      <td><p>22</p></td>
-      <td><p>120 x 120</p></td>
-    </tr>
-    <tr>
-      <td><p>8</p></td>
-      <td><p>24 x 24</p></td>
-      <td><p>23</p></td>
-      <td><p>132 x 132</p></td>
-    </tr>
-    <tr>
-      <td><p>9</p></td>
-      <td><p>26 x 26</p></td>
-      <td><p>24</p></td>
-      <td><p>144 x 144</p></td>
-    </tr>
-    <tr>
-      <td><p>10</p></td>
-      <td><p>32 x 32</p></td>
-      <td><p>25</p></td>
-      <td><p>8 x 18</p></td>
-    </tr>
-    <tr>
-      <td><p>11</p></td>
-      <td><p>36 x 36</p></td>
-      <td><p>26</p></td>
-      <td><p>8 x 32</p></td>
-    </tr>
-    <tr>
-      <td><p>12</p></td>
-      <td><p>40 x 40</p></td>
-      <td><p>27</p></td>
-      <td><p>12 x 26</p></td>
-    </tr>
-    <tr>
-      <td><p>13</p></td>
-      <td><p>44 x 44</p></td>
-      <td><p>28</p></td>
-      <td><p>12 x 36</p></td>
-    </tr>
-    <tr>
-      <td><p>14</p></td>
-      <td><p>48 x 48</p></td>
-      <td><p>29</p></td>
-      <td><p>16 x 36</p></td>
-    </tr>
-    <tr>
-      <td><p>15</p></td>
-      <td><p>52 x 52</p></td>
-      <td><p>30</p></td>
-      <td><p>16 x 48</p></td>
-    </tr>
-  </tbody>
-</table>
+     * <tbody>
+     * <tr>
+     * <th><p>
+     * Input</p></th>
+     * <th><p>
+     * Symbol Size</p></th>
+     * <th><p>
+     * Input</p></th>
+     * <th><p>
+     * Symbol Size</p></th>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 1</p></td>
+     * <td><p>
+     * 10 x 10</p></td>
+     * <td><p>
+     * 16</p></td>
+     * <td><p>
+     * 64 x 64</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 2</p></td>
+     * <td><p>
+     * 12 x 12</p></td>
+     * <td><p>
+     * 17</p></td>
+     * <td><p>
+     * 72 x 72</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 3</p></td>
+     * <td><p>
+     * 14 x 14</p></td>
+     * <td><p>
+     * 18</p></td>
+     * <td><p>
+     * 80 x 80</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 4</p></td>
+     * <td><p>
+     * 16 x 16</p></td>
+     * <td><p>
+     * 19</p></td>
+     * <td><p>
+     * 88 x 88</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 5</p></td>
+     * <td><p>
+     * 18 x 18</p></td>
+     * <td><p>
+     * 20</p></td>
+     * <td><p>
+     * 96 x 96</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 6</p></td>
+     * <td><p>
+     * 20 x 20</p></td>
+     * <td><p>
+     * 21</p></td>
+     * <td><p>
+     * 104 x 104</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 7</p></td>
+     * <td><p>
+     * 22 x 22</p></td>
+     * <td><p>
+     * 22</p></td>
+     * <td><p>
+     * 120 x 120</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 8</p></td>
+     * <td><p>
+     * 24 x 24</p></td>
+     * <td><p>
+     * 23</p></td>
+     * <td><p>
+     * 132 x 132</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 9</p></td>
+     * <td><p>
+     * 26 x 26</p></td>
+     * <td><p>
+     * 24</p></td>
+     * <td><p>
+     * 144 x 144</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 10</p></td>
+     * <td><p>
+     * 32 x 32</p></td>
+     * <td><p>
+     * 25</p></td>
+     * <td><p>
+     * 8 x 18</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 11</p></td>
+     * <td><p>
+     * 36 x 36</p></td>
+     * <td><p>
+     * 26</p></td>
+     * <td><p>
+     * 8 x 32</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 12</p></td>
+     * <td><p>
+     * 40 x 40</p></td>
+     * <td><p>
+     * 27</p></td>
+     * <td><p>
+     * 12 x 26</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 13</p></td>
+     * <td><p>
+     * 44 x 44</p></td>
+     * <td><p>
+     * 28</p></td>
+     * <td><p>
+     * 12 x 36</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 14</p></td>
+     * <td><p>
+     * 48 x 48</p></td>
+     * <td><p>
+     * 29</p></td>
+     * <td><p>
+     * 16 x 36</p></td>
+     * </tr>
+     * <tr>
+     * <td><p>
+     * 15</p></td>
+     * <td><p>
+     * 52 x 52</p></td>
+     * <td><p>
+     * 30</p></td>
+     * <td><p>
+     * 16 x 48</p></td>
+     * </tr>
+     * </tbody>
+     * </table>
+     *
      * @param size Symbol size
      */
     public void setPreferredSize(int size) {
@@ -256,18 +323,18 @@ public class DataMatrix extends Symbol {
         int[] grid;
         String bin;
         byte[] inputBytes;
-        
-        if (inputDataType == DataType.ECI) {
-            ExtendedChannel eci = new ExtendedChannel();
-            inputBytes = eci.getBytes(content);
-            eciMode = eci.getMode();
-        } else {
-            try {
-                inputBytes = content.getBytes("ISO8859_1");
-            } catch (UnsupportedEncodingException e) {
-                error_msg = "Invalid character in input data";
-                return false;
+
+        try {
+            if (content.matches("[\u0000-\u00FF]+")) {
+                inputBytes = content.getBytes("ISO-8859-1");
+                eciLatch = false;
+            } else {
+                inputBytes = content.getBytes("UTF-8");
+                eciLatch = true;
             }
+        } catch (UnsupportedEncodingException e) {
+            error_msg = "Byte conversion encoding error";
+            return false;
         }
 
         inputData = new int[content.length()];
@@ -298,16 +365,16 @@ public class DataMatrix extends Symbol {
         if (isSquare) {
             // Force to use square symbol
             switch (calcsize) {
-            case 2:
-            case 4:
-            case 6:
-            case 9:
-            case 11:
-            case 14:
-                calcsize++;
-                break;
-            default:
-                break;
+                case 2:
+                case 4:
+                case 6:
+                case 9:
+                case 11:
+                case 14:
+                    calcsize++;
+                    break;
+                default:
+                    break;
             }
         }
 
@@ -424,55 +491,47 @@ public class DataMatrix extends Symbol {
         /* step (a) */
         current_mode = dm_mode.DM_ASCII;
         next_mode = dm_mode.DM_ASCII;
-        
+
         if (inputDataType == DataType.GS1) {
-            target[tp] = 232; tp++;
+            target[tp] = 232;
+            tp++;
             binary[binary_length] = ' ';
             binary_length++;
-            if (debug) System.out.printf("FN1 ");
+            if (debug) {
+                System.out.printf("FN1 ");
+            }
         } /* FNC1 */
-        
-        if ((inputDataType == DataType.ECI) && (eciMode != 3)) {
-            /* Encoding ECI assignment numbers, from ISO/IEC 16022 Table 6 */
-            target[tp] = 241;
+
+        if (eciLatch) {
+            /* Encode ECI latch for UTF-8 encoding */
+            target[tp] = 241; // ECI
             tp++;
-            if (eciMode <= 126) {
-                target[tp] = eciMode + 1;
-                tp++;
+            target[tp] = 27;
+            tp++;
+            if (debug) {
+                System.out.printf("ECI [26] ");
             }
-            if ((eciMode >= 127) && (eciMode <= 16382)) {
-                target[tp] = ((eciMode - 127) / 254) + 128;
-                tp++;
-                target[tp] = ((eciMode - 127) % 254) + 1;
-                tp++;
-            }
-            if (eciMode >= 16383) {
-                target[tp] = ((eciMode - 16383) / 64516) + 192;
-                tp++;
-                target[tp] = (((eciMode - 16383) / 254) % 254) + 1;
-                tp++;
-                target[tp] = ((eciMode - 16383) % 254) + 1;
-                tp++;
-            }
-            if (debug) System.out.printf("ECI [%d] ", eciMode);
         }
 
-        if(readerInit) {
+        if (readerInit) {
             if (inputDataType == DataType.GS1) {
                 error_msg = "Cannot encode in GS1 mode and Reader Initialisation at the same time";
                 return 0;
             } else {
-                target[tp] = 234; tp++; /* Reader Programming */
+                target[tp] = 234;
+                tp++; /* Reader Programming */
+
                 binary[binary_length] = ' ';
                 binary_length++;
-                if (debug) System.out.printf("RP ");
+                if (debug) {
+                    System.out.printf("RP ");
+                }
             }
         }
 
         /* Check for Macro05/Macro06 */
         /* "[)>[RS]05[GS]...[RS][EOT]" -> CW 236 */
         /* "[)>[RS]06[GS]...[RS][EOT]" -> CW 237 */
-
         if (tp == 0 & sp == 0 && inputlen >= 9) {
             if (inputData[0] == '[' && inputData[1] == ')' && inputData[2] == '>'
                     && inputData[3] == '\u001e' && inputData[4] == '0'
@@ -481,19 +540,23 @@ public class DataMatrix extends Symbol {
                     && inputData[inputlen - 2] == '\u001e'
                     && inputData[inputlen - 1] == '\u0004') {
                 /* Output macro Codeword */
-		if (inputData[5] == '5') {
-			target[tp] = 236;
-			if (debug) System.out.printf("Macro05 ");
-		} else {
-			target[tp] = 237;
-			if (debug) System.out.printf("Macro06 ");
-		}
-		tp++;
-		binary[binary_length] = ' ';
+                if (inputData[5] == '5') {
+                    target[tp] = 236;
+                    if (debug) {
+                        System.out.printf("Macro05 ");
+                    }
+                } else {
+                    target[tp] = 237;
+                    if (debug) {
+                        System.out.printf("Macro06 ");
+                    }
+                }
+                tp++;
+                binary[binary_length] = ' ';
                 binary_length++;
-		/* Remove macro characters from input string */
-		sp = 7;
-		inputlen -= 2;
+                /* Remove macro characters from input string */
+                sp = 7;
+                inputlen -= 2;
             }
         }
 
@@ -512,7 +575,9 @@ public class DataMatrix extends Symbol {
                 if (isTwoDigits(sp)) {
                     target[tp] = (10 * Character.getNumericValue(inputData[sp]))
                             + Character.getNumericValue(inputData[sp + 1]) + 130;
-                    if (debug) System.out.printf("N%d ", target[tp] - 130);
+                    if (debug) {
+                        System.out.printf("N%d ", target[tp] - 130);
+                    }
                     tp++;
                     binary[binary_length] = ' ';
                     binary_length++;
@@ -522,49 +587,64 @@ public class DataMatrix extends Symbol {
 
                     if (next_mode != dm_mode.DM_ASCII) {
                         switch (next_mode) {
-                        case DM_C40:
-                            target[tp] = 230;
-                            tp++;
-                            binary[binary_length] = ' ';
-                            binary_length++;
-                            if (debug) System.out.printf("C40 ");
-                            break;
-                        case DM_TEXT:
-                            target[tp] = 239;
-                            tp++;
-                            binary[binary_length] = ' ';
-                            binary_length++;
-                            if (debug) System.out.printf("TEX ");
-                            break;
-                        case DM_X12:
-                            target[tp] = 238;
-                            tp++;
-                            binary[binary_length] = ' ';
-                            binary_length++;
-                            if (debug) System.out.printf("X12 ");
-                            break;
-                        case DM_EDIFACT:
-                            target[tp] = 240;
-                            tp++;
-                            binary[binary_length] = ' ';
-                            binary_length++;
-                            if (debug) System.out.printf("EDI ");
-                            break;
-                        case DM_BASE256:
-                            target[tp] = 231;
-                            tp++;
-                            binary[binary_length] = ' ';
-                            binary_length++;
-                            if (debug) System.out.printf("BAS ");
-                            break;
+                            case DM_C40:
+                                target[tp] = 230;
+                                tp++;
+                                binary[binary_length] = ' ';
+                                binary_length++;
+                                if (debug) {
+                                    System.out.printf("C40 ");
+                                }
+                                break;
+                            case DM_TEXT:
+                                target[tp] = 239;
+                                tp++;
+                                binary[binary_length] = ' ';
+                                binary_length++;
+                                if (debug) {
+                                    System.out.printf("TEX ");
+                                }
+                                break;
+                            case DM_X12:
+                                target[tp] = 238;
+                                tp++;
+                                binary[binary_length] = ' ';
+                                binary_length++;
+                                if (debug) {
+                                    System.out.printf("X12 ");
+                                }
+                                break;
+                            case DM_EDIFACT:
+                                target[tp] = 240;
+                                tp++;
+                                binary[binary_length] = ' ';
+                                binary_length++;
+                                if (debug) {
+                                    System.out.printf("EDI ");
+                                }
+                                break;
+                            case DM_BASE256:
+                                target[tp] = 231;
+                                tp++;
+                                binary[binary_length] = ' ';
+                                binary_length++;
+                                if (debug) {
+                                    System.out.printf("BAS ");
+                                }
+                                break;
                         }
                     } else {
                         if (inputData[sp] > 127) {
                             target[tp] = 235; /* FNC4 */
-                            if (debug) System.out.printf("FN4 ");
+
+                            if (debug) {
+                                System.out.printf("FN4 ");
+                            }
                             tp++;
                             target[tp] = (inputData[sp] - 128) + 1;
-                            if (debug) System.out.printf("A%02X ", target[tp] - 1);
+                            if (debug) {
+                                System.out.printf("A%02X ", target[tp] - 1);
+                            }
                             tp++;
                             binary[binary_length] = ' ';
                             binary_length++;
@@ -573,10 +653,15 @@ public class DataMatrix extends Symbol {
                         } else {
                             if ((inputDataType == DataType.GS1) && (inputData[sp] == '[')) {
                                 target[tp] = 232; /* FNC1 */
-                                if (debug) System.out.printf("FN1 ");
+
+                                if (debug) {
+                                    System.out.printf("FN1 ");
+                                }
                             } else {
                                 target[tp] = inputData[sp] + 1;
-                                if (debug) System.out.printf("A%02X ", target[tp] - 1);
+                                if (debug) {
+                                    System.out.printf("A%02X ", target[tp] - 1);
+                                }
                             }
                             tp++;
                             binary[binary_length] = ' ';
@@ -602,14 +687,18 @@ public class DataMatrix extends Symbol {
                     tp++;
                     binary[binary_length] = ' ';
                     binary_length++; /* Unlatch */
+
                     next_mode = dm_mode.DM_ASCII;
-                    if (debug) System.out.printf("ASC ");
+                    if (debug) {
+                        System.out.printf("ASC ");
+                    }
                 } else {
                     if (inputData[sp] > 127) {
                         process_buffer[process_p] = 1;
                         process_p++;
                         process_buffer[process_p] = 30;
                         process_p++; /* Upper Shift */
+
                         shift_set = c40_shift[inputData[sp] - 128];
                         value = c40_value[inputData[sp] - 128];
                     } else {
@@ -620,6 +709,7 @@ public class DataMatrix extends Symbol {
                     if ((inputDataType == DataType.GS1) && (inputData[sp] == '[')) {
                         shift_set = 2;
                         value = 27; /* FNC1 */
+
                     }
 
                     if (shift_set != 0) {
@@ -632,8 +722,8 @@ public class DataMatrix extends Symbol {
                     if (process_p >= 3) {
                         int iv;
 
-                        iv = (1600 * process_buffer[0]) + (40 * process_buffer[1]) +
-                                (process_buffer[2]) + 1;
+                        iv = (1600 * process_buffer[0]) + (40 * process_buffer[1])
+                                + (process_buffer[2]) + 1;
                         target[tp] = iv / 256;
                         tp++;
                         target[tp] = iv % 256;
@@ -642,8 +732,10 @@ public class DataMatrix extends Symbol {
                         binary_length++;
                         binary[binary_length] = ' ';
                         binary_length++;
-                        if (debug) System.out.printf("[%d %d %d] ", process_buffer[0],
-                                process_buffer[1], process_buffer[2]);
+                        if (debug) {
+                            System.out.printf("[%d %d %d] ", process_buffer[0],
+                                    process_buffer[1], process_buffer[2]);
+                        }
 
                         process_buffer[0] = process_buffer[3];
                         process_buffer[1] = process_buffer[4];
@@ -671,14 +763,18 @@ public class DataMatrix extends Symbol {
                     tp++;
                     binary[binary_length] = ' ';
                     binary_length++; /* Unlatch */
+
                     next_mode = dm_mode.DM_ASCII;
-                    if (debug) System.out.printf("ASC ");
+                    if (debug) {
+                        System.out.printf("ASC ");
+                    }
                 } else {
                     if (inputData[sp] > 127) {
                         process_buffer[process_p] = 1;
                         process_p++;
                         process_buffer[process_p] = 30;
                         process_p++; /* Upper Shift */
+
                         shift_set = text_shift[inputData[sp] - 128];
                         value = text_value[inputData[sp] - 128];
                     } else {
@@ -689,6 +785,7 @@ public class DataMatrix extends Symbol {
                     if ((inputDataType == DataType.GS1) && (inputData[sp] == '[')) {
                         shift_set = 2;
                         value = 27; /* FNC1 */
+
                     }
 
                     if (shift_set != 0) {
@@ -701,8 +798,8 @@ public class DataMatrix extends Symbol {
                     if (process_p >= 3) {
                         int iv;
 
-                        iv = (1600 * process_buffer[0]) + (40 * process_buffer[1]) +
-                                (process_buffer[2]) + 1;
+                        iv = (1600 * process_buffer[0]) + (40 * process_buffer[1])
+                                + (process_buffer[2]) + 1;
                         target[tp] = iv / 256;
                         tp++;
                         target[tp] = iv % 256;
@@ -711,8 +808,10 @@ public class DataMatrix extends Symbol {
                         binary_length++;
                         binary[binary_length] = ' ';
                         binary_length++;
-                        if (debug) System.out.printf("[%d %d %d] ",
-                                process_buffer[0], process_buffer[1], process_buffer[2]);
+                        if (debug) {
+                            System.out.printf("[%d %d %d] ",
+                                    process_buffer[0], process_buffer[1], process_buffer[2]);
+                        }
 
                         process_buffer[0] = process_buffer[3];
                         process_buffer[1] = process_buffer[4];
@@ -740,8 +839,11 @@ public class DataMatrix extends Symbol {
                     tp++;
                     binary[binary_length] = ' ';
                     binary_length++; /* Unlatch */
+
                     next_mode = dm_mode.DM_ASCII;
-                    if (debug) System.out.printf("ASC ");
+                    if (debug) {
+                        System.out.printf("ASC ");
+                    }
                 } else {
                     if (inputData[sp] == 13) {
                         value = 0;
@@ -778,8 +880,10 @@ public class DataMatrix extends Symbol {
                         binary_length++;
                         binary[binary_length] = ' ';
                         binary_length++;
-                        if (debug) System.out.printf("[%d %d %d] ",
-                                process_buffer[0], process_buffer[1], process_buffer[2]);
+                        if (debug) {
+                            System.out.printf("[%d %d %d] ",
+                                    process_buffer[0], process_buffer[1], process_buffer[2]);
+                        }
 
                         process_buffer[0] = process_buffer[3];
                         process_buffer[1] = process_buffer[4];
@@ -835,9 +939,11 @@ public class DataMatrix extends Symbol {
                     binary_length++;
                     binary[binary_length] = ' ';
                     binary_length++;
-                    if (debug) System.out.printf("[%d %d %d %d] ",
-                            process_buffer[0], process_buffer[1],
-                            process_buffer[2], process_buffer[3]);
+                    if (debug) {
+                        System.out.printf("[%d %d %d %d] ",
+                                process_buffer[0], process_buffer[1],
+                                process_buffer[2], process_buffer[3]);
+                    }
 
                     process_buffer[0] = process_buffer[4];
                     process_buffer[1] = process_buffer[5];
@@ -857,14 +963,18 @@ public class DataMatrix extends Symbol {
 
                 if (next_mode == dm_mode.DM_BASE256) {
                     target[tp] = inputData[sp];
-                    if (debug) System.out.printf("B%02X ", target[tp]);
+                    if (debug) {
+                        System.out.printf("B%02X ", target[tp]);
+                    }
                     tp++;
                     sp++;
                     binary[binary_length] = 'b';
                     binary_length++;
                 } else {
                     next_mode = dm_mode.DM_ASCII;
-                    if (debug) System.out.printf("ASC ");
+                    if (debug) {
+                        System.out.printf("ASC ");
+                    }
                 }
             }
 
@@ -892,9 +1002,9 @@ public class DataMatrix extends Symbol {
                     } else {
                         insertAt(i, 'b');
                         insertAt(i + 1, 'b');
-                        insertValueAt(i, tp, (char)((binary_count / 250) + 249));
+                        insertValueAt(i, tp, (char) ((binary_count / 250) + 249));
                         tp++;
-                        insertValueAt(i + 1, tp, (char)(binary_count % 250));
+                        insertValueAt(i + 1, tp, (char) (binary_count % 250));
                         tp++;
                     }
                 }
@@ -927,12 +1037,12 @@ public class DataMatrix extends Symbol {
         last_mode = current_mode;
         return tp;
     }
-    
+
     private int encodeRemainder(int symbols_left, int target_length) {
 
         int inputlen = content.length();
-        
-	switch (last_mode) {
+
+        switch (last_mode) {
             case DM_C40:
             case DM_TEXT:
                 if (symbols_left == process_p) { // No unlatch required!
@@ -954,7 +1064,8 @@ public class DataMatrix extends Symbol {
                 }
 
                 if (symbols_left > process_p) {
-                    target[target_length] = (254); target_length++;    // Unlatch and encode remaining data in ascii.
+                    target[target_length] = (254);
+                    target_length++;    // Unlatch and encode remaining data in ascii.
                     if (process_p == 1 || (process_p == 2 && process_buffer[0] < 3)) {	// Check for a shift value.
 
                         target[target_length] = inputData[inputlen - 1] + 1;
@@ -985,27 +1096,27 @@ public class DataMatrix extends Symbol {
                     }
                 }
 
-                    if (symbols_left > process_p) {	// Unlatch and encode remaining data in ascii.
+                if (symbols_left > process_p) {	// Unlatch and encode remaining data in ascii.
 
-                        target[target_length] = (254);
-                        target_length++;   // Unlatch.
+                    target[target_length] = (254);
+                    target_length++;   // Unlatch.
 
-                        if (process_p == 1){
-                            target[target_length] = inputData[inputlen - 1] + 1;
-                            target_length++;
-                        }
-
-                        if (process_p == 2) {
-                            target[target_length] = inputData[inputlen - 2] + 1;
-                            target_length++;
-                            target[target_length] = inputData[inputlen - 1] + 1;
-                            target_length++;
-                        }
+                    if (process_p == 1) {
+                        target[target_length] = inputData[inputlen - 1] + 1;
+                        target_length++;
                     }
-                    break;
+
+                    if (process_p == 2) {
+                        target[target_length] = inputData[inputlen - 2] + 1;
+                        target_length++;
+                        target[target_length] = inputData[inputlen - 1] + 1;
+                        target_length++;
+                    }
+                }
+                break;
 
             case DM_EDIFACT:
-                if (symbols_left == process_p)	// Unlatch not required!
+                if (symbols_left == process_p) // Unlatch not required!
                 {
                     if (process_p == 1) {
                         target[target_length] = inputData[inputlen - 1] + 1;
@@ -1020,8 +1131,8 @@ public class DataMatrix extends Symbol {
                     }
 
                     if (process_p == 3) { // Append edifact unlatch value (31) and encode as triple.
-                        target[target_length] = (process_buffer[0] << 2) +
-                                ((process_buffer[1] & 0x30) >> 4);
+                        target[target_length] = (process_buffer[0] << 2)
+                                + ((process_buffer[1] & 0x30) >> 4);
                         target_length++;
                         target[target_length] = ((process_buffer[1] & 0x0f) << 4)
                                 + ((process_buffer[2] & 0x3c) >> 2);
@@ -1067,9 +1178,9 @@ public class DataMatrix extends Symbol {
                 break;
         }
 
-        if(debug) {
+        if (debug) {
             System.out.printf("+Buffer=: ");
-            for(int i = 0; i < target_length; i++) {
+            for (int i = 0; i < target_length; i++) {
                 System.out.printf("%02X ", target[i]);
             }
 
@@ -1119,30 +1230,30 @@ public class DataMatrix extends Symbol {
         }
 
         switch (current_mode) {
-        case DM_C40:
-            c40_count = 0.0;
-            break;
-        case DM_TEXT:
-            text_count = 0.0;
-            break;
-        case DM_X12:
-            x12_count = 0.0;
-            break;
-        case DM_EDIFACT:
-            edf_count = 0.0;
-            break;
-        case DM_BASE256:
-            b256_count = 0.0;
-            break;
+            case DM_C40:
+                c40_count = 0.0;
+                break;
+            case DM_TEXT:
+                text_count = 0.0;
+                break;
+            case DM_X12:
+                x12_count = 0.0;
+                break;
+            case DM_EDIFACT:
+                edf_count = 0.0;
+                break;
+            case DM_BASE256:
+                b256_count = 0.0;
+                break;
         }
 
         for (sp = position;
-        (sp < sourcelen) && (sp <= (position + 8)); sp++) {
+                (sp < sourcelen) && (sp <= (position + 8)); sp++) {
 
             if (inputData[sp] <= 127) {
                 reduced_char = (char) inputData[sp];
             } else {
-                reduced_char = (char)(inputData[sp] - 127);
+                reduced_char = (char) (inputData[sp] - 127);
             }
 
             /* ascii */
@@ -1222,10 +1333,6 @@ public class DataMatrix extends Symbol {
             if (inputData[sp] > 128) {
                 edf_count += (4.0 / 3.0);
             }
-
-            /* if (sp >= (sourcelen - 5)) {
-                edf_count += 6.0;
-            } */ /* MMmmm fudge! */
 
             /* base 256 */
             /* step (q) */
@@ -1351,18 +1458,20 @@ public class DataMatrix extends Symbol {
         int i, prn, temp;
 
         switch (last_mode) {
-        case DM_C40:
-        case DM_TEXT:
-        case DM_X12:
-            target[tp] = 254;
-            tp++; /* Unlatch */
-            tail_length--;
+            case DM_C40:
+            case DM_TEXT:
+            case DM_X12:
+                target[tp] = 254;
+                tp++; /* Unlatch */
+
+                tail_length--;
         }
 
         for (i = tail_length; i > 0; i--) {
             if (i == tail_length) {
                 target[tp] = 129;
                 tp++; /* Pad */
+
             } else {
                 prn = ((149 * (tp + 1)) % 253) + 1;
                 temp = 129 + prn;
@@ -1410,8 +1519,7 @@ public class DataMatrix extends Symbol {
                 }
                 r -= 2;
                 c += 2;
-            }
-            while (r >= 0 && c < NC);
+            } while (r >= 0 && c < NC);
             r++;
             c += 3;
             // down/left
@@ -1421,14 +1529,12 @@ public class DataMatrix extends Symbol {
                 }
                 r += 2;
                 c -= 2;
-            }
-            while (r < NR && c >= 0);
+            } while (r < NR && c >= 0);
             r += 3;
             c++;
-        }
-        while (r < NR || c < NC);
+        } while (r < NR || c < NC);
         // unfilled corner
-        if (places[NR * NC - 1] == 0)  {
+        if (places[NR * NC - 1] == 0) {
             places[NR * NC - 1] = places[NR * NC - NC - 2] = 1;
         }
     }

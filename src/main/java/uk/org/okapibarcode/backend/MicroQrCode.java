@@ -126,11 +126,12 @@ public class MicroQrCode extends Symbol {
         preferredEccLevel = eccMode;
     }
 
+    /* Table 5 - Encoding/Decoding table for Alphanumeric mode */
     private static final char[] RHODIUM = {
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D',
         'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R',
-        'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', ' ', '$', '%', '*', '\'', '+',
-        '-', '.', '/', ':'
+        'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', ' ', '$', '%', '*', '+', '-',
+        '.', '/', ':'
     };
 
     private static final int[] QR_ANNEX_C1 = {
@@ -706,10 +707,12 @@ public class MicroQrCode extends Symbol {
                     count = 1;
                     prod = first;
 
-                    if (inputMode[position + i + 1] == qrMode.ALPHANUM) {
-                        second = positionOf(content.charAt(position + i + 1), RHODIUM);
-                        count = 2;
-                        prod = (first * 45) + second;
+                    if ((i + 1) < short_data_block_length) {
+                        if (inputMode[position + i + 1] == qrMode.ALPHANUM) {
+                            second = positionOf(content.charAt(position + i + 1), RHODIUM);
+                            count = 2;
+                            prod = (first * 45) + second;
+                        }
                     }
 
                     binary += toBinary(prod, 1 << (5 * count)); /* count = 1..2 */
@@ -745,16 +748,20 @@ public class MicroQrCode extends Symbol {
                     count = 1;
                     prod = first;
 
-                    if (inputMode[position + i + 1] == qrMode.NUMERIC) {
-                        second = Character.getNumericValue(content.charAt(position + i + 1));
-                        count = 2;
-                        prod = (prod * 10) + second;
+                    if ((i + 1) < short_data_block_length) {
+                        if (inputMode[position + i + 1] == qrMode.NUMERIC) {
+                            second = Character.getNumericValue(content.charAt(position + i + 1));
+                            count = 2;
+                            prod = (prod * 10) + second;
+                        }
                     }
 
-                    if (inputMode[position + i + 2] == qrMode.NUMERIC) {
-                        third = Character.getNumericValue(content.charAt(position + i + 2));
-                        count = 3;
-                        prod = (prod * 10) + third;
+                    if ((i + 2) < short_data_block_length) {
+                        if (inputMode[position + i + 2] == qrMode.NUMERIC) {
+                            third = Character.getNumericValue(content.charAt(position + i + 2));
+                            count = 3;
+                            prod = (prod * 10) + third;
+                        }
                     }
 
                     binary += toBinary(prod, 1 << (3 * count)); /* count = 1..3 */

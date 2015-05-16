@@ -317,11 +317,11 @@ public class QrCode extends Symbol {
         preferredEccLevel = eccMode;
     }
 
+    /* Table 5 - Encoding/Decoding table for Alphanumeric mode */
     private final char[] rhodium = {
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E',
         'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
-        'U', 'V', 'W', 'X', 'Y', 'Z', ' ', '$', '%', '*', '\'', '+', '-', '.',
-        '/', ':'
+        'U', 'V', 'W', 'X', 'Y', 'Z', ' ', '$', '%', '*', '+', '-', '.', '/', ':'
     };
 
     private final int[] qr_data_codewords_L = {
@@ -834,7 +834,8 @@ public class QrCode extends Symbol {
         int short_data_block_length, i, scheme = 1;
         int padbits;
         int current_binlen, current_bytes;
-        int toggle, percent;
+        int toggle;
+        boolean alphanumPercent;
         String oneChar;
         qrMode data_block;
         int jis;
@@ -889,7 +890,7 @@ public class QrCode extends Symbol {
             System.out.printf("\tIntermediate coding: ");
         }
         
-        percent = 0;
+        alphanumPercent = false;
 
         do {
             data_block = inputMode[position];
@@ -988,7 +989,7 @@ public class QrCode extends Symbol {
                     i = 0;
                     while (i < short_data_block_length) {
 
-                        if (percent == 0) {
+                        if (!alphanumPercent) {
                             if ((inputDataType == DataType.GS1) && (inputData[position + i] == '%')) {
                                 first = positionOf('%', rhodium);
                                 second = positionOf('%', rhodium);
@@ -1006,12 +1007,41 @@ public class QrCode extends Symbol {
                                 i++;
                                 prod = first;
 
+                                if (i < short_data_block_length) {
+                                    if (inputMode[position + i] == qrMode.ALPHANUM) {
+                                        if ((inputDataType == DataType.GS1) && (inputData[position + i] == '%')) {
+                                            second = positionOf('%', rhodium);
+                                            count = 2;
+                                            prod = (first * 45) + second;
+                                            alphanumPercent = true;
+                                        } else {
+                                            if ((inputDataType == DataType.GS1) && (inputData[position + i] == '[')) {
+                                                second = positionOf('%', rhodium); /* FNC1 */
+
+                                            } else {
+                                                second = positionOf((char) (inputData[position + i] & 0xFF), rhodium);
+                                            }
+                                            count = 2;
+                                            i++;
+                                            prod = (first * 45) + second;
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            first = positionOf('%', rhodium);
+                            count = 1;
+                            i++;
+                            prod = first;
+                            alphanumPercent = false;
+
+                            if (i < short_data_block_length) {
                                 if (inputMode[position + i] == qrMode.ALPHANUM) {
                                     if ((inputDataType == DataType.GS1) && (inputData[position + i] == '%')) {
                                         second = positionOf('%', rhodium);
                                         count = 2;
                                         prod = (first * 45) + second;
-                                        percent = 1;
+                                        alphanumPercent = true;
                                     } else {
                                         if ((inputDataType == DataType.GS1) && (inputData[position + i] == '[')) {
                                             second = positionOf('%', rhodium); /* FNC1 */
@@ -1025,31 +1055,6 @@ public class QrCode extends Symbol {
                                     }
                                 }
                             }
-                        } else {
-                            first = positionOf('%', rhodium);
-                            count = 1;
-                            i++;
-                            prod = first;
-                            percent = 0;
-
-                            if (inputMode[position + i] == qrMode.ALPHANUM) {
-                                if ((inputDataType == DataType.GS1) && (inputData[position + i] == '%')) {
-                                    second = positionOf('%', rhodium);
-                                    count = 2;
-                                    prod = (first * 45) + second;
-                                    percent = 1;
-                                } else {
-                                    if ((inputDataType == DataType.GS1) && (inputData[position + i] == '[')) {
-                                        second = positionOf('%', rhodium); /* FNC1 */
-
-                                    } else {
-                                        second = positionOf((char) (inputData[position + i] & 0xFF), rhodium);
-                                    }
-                                    count = 2;
-                                    i++;
-                                    prod = (first * 45) + second;
-                                }
-                            }
                         }
 
                         qr_bscan(prod, count == 2 ? 0x400 : 0x20); /* count = 1..2 */
@@ -1057,9 +1062,7 @@ public class QrCode extends Symbol {
                         if (debug) {
                             System.out.printf("%d ", prod);
                         }
-                    }
-                    ;
-
+                    };
                     break;
                 case NUMERIC:
                     /* Numeric mode */
@@ -1085,12 +1088,12 @@ public class QrCode extends Symbol {
                             second = Character.getNumericValue(inputData[position + i + 1]);
                             count = 2;
                             prod = (prod * 10) + second;
+                        }
 
-                            if ((i + 2) < short_data_block_length) {
-                                third = Character.getNumericValue(inputData[position + i + 2]);
-                                count = 3;
-                                prod = (prod * 10) + third;
-                            }
+                        if ((i + 2) < short_data_block_length) {
+                            third = Character.getNumericValue(inputData[position + i + 2]);
+                            count = 3;
+                            prod = (prod * 10) + third;
                         }
 
                         qr_bscan(prod, 1 << (3 * count)); /* count = 1..3 */
@@ -1100,9 +1103,7 @@ public class QrCode extends Symbol {
                         }
 
                         i += count;
-                    }
-                    ;
-
+                    };
                     break;
             }
             position += short_data_block_length;

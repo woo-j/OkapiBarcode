@@ -603,6 +603,15 @@ public class AztecCode extends Symbol {
         if (readerInit) {
             comp_loop = 1;
         }
+        
+        if (debug) {
+            System.out.printf("Aztec Code Content=\"%s\"\n", content);
+            if (eciLatch) {
+                System.out.printf("\tUTF-8 encoding\n");
+            } else {
+                System.out.printf("\tISO 8859-1 encoding\n");
+            }
+        }
 
         if ((inputDataType == DataType.GS1) && (readerInit)) {
             error_msg = "Cannot encode in GS1 and Reader Initialisation mode at the same time";
@@ -796,7 +805,7 @@ public class AztecCode extends Symbol {
                 }
 
                 if (debug) {
-                    System.out.printf("Codewords:\n");
+                    System.out.printf("\tCodewords: ");
                     for (i = 0; i < (adjusted_length / codeword_size); i++) {
                         int l = 0, m = (1 << (codeword_size - 1));
                         for (j = 0; j < codeword_size; j++) {
@@ -805,7 +814,7 @@ public class AztecCode extends Symbol {
                             }
                             m = m >> 1;
                         }
-                        System.out.print("[" + l + "] ");
+                        System.out.printf("%d ", l);
                     }
                     System.out.println();
                 }
@@ -915,13 +924,18 @@ public class AztecCode extends Symbol {
             }
 
             if (debug) {
-                System.out.printf("Codewords:\n");
+                System.out.printf("\tCodewords: ");
                 for (i = 0; i < (adjusted_length / codeword_size); i++) {
+                    int l = 0, m = (1 << (codeword_size - 1));
                     for (j = 0; j < codeword_size; j++) {
-                        System.out.printf("%c", adjusted_string.charAt((i * codeword_size) + j));
+                        if (adjusted_string.charAt((i * codeword_size) + j) == '1') {
+                            l += m;
+                        }
+                        m = m >> 1;
                     }
-                    System.out.printf("\n");
+                    System.out.printf("%d ", l);
                 }
+                System.out.println();
             }
         }
 
@@ -939,21 +953,20 @@ public class AztecCode extends Symbol {
         }
 
         if (debug) {
-            System.out.printf("Generating a ");
             if (compact) {
-                System.out.printf("compact");
+                System.out.printf("\tCompact");
             } else {
-                System.out.printf("full-size");
+                System.out.printf("\tFull-size");
             }
-            System.out.printf(" symbol with %d layers\n", layers);
+            System.out.printf(" symbol with %d layers, ", layers);
             System.out.printf("Requires ");
             if (compact) {
                 System.out.printf("%d", AztecCompactSizes[layers - 1]);
             } else {
                 System.out.printf("%d", AztecSizes[layers - 1]);
             }
-            System.out.printf(" codewords of %d-bits\n", codeword_size);
-            System.out.printf("    (%d data words, %d ecc words)\n", data_blocks, ecc_blocks);
+            System.out.printf(" codewords of %d-bits", codeword_size);
+            System.out.printf(" (%d data words, %d ecc words)\n", data_blocks, ecc_blocks);
         }
 
         encodeInfo += "Compact Mode: ";
@@ -1106,7 +1119,7 @@ public class AztecCode extends Symbol {
                 }
             }
             if (debug) {
-                System.out.printf("Mode Message = %s\n", descriptor);
+                System.out.printf("\tMode Message: %s\n", descriptor);
             }
             j = 2;
         } else {
@@ -1138,7 +1151,7 @@ public class AztecCode extends Symbol {
             }
 
             if (debug) {
-                System.out.printf("Mode Message = %s\n", descriptor);
+                System.out.printf("\tMode Message: %s\n", descriptor);
             }
             j = 4;
         }
@@ -1188,7 +1201,7 @@ public class AztecCode extends Symbol {
         }
 
         if (debug) {
-            System.out.printf("Full Mode Message = %s\n", descriptor);
+            System.out.printf("\tFull Mode Message: %s\n", descriptor);
         }
 
         readable = "";
@@ -1535,7 +1548,7 @@ public class AztecCode extends Symbol {
         binary_string = "";
 
         if (debug) {
-            System.out.print("Text string: ");
+            System.out.print("\tIntermediate encoding: ");
         }
         curtable = 1; /* start with 1 table */
 
@@ -2098,9 +2111,12 @@ public class AztecCode extends Symbol {
                         }
                         binary_string += tribit[charmap[i] - 400];
                         if (charmap[i] != 400) {
+                            if (debug) {
+                                System.out.printf("ECI#26 ");
+                            }
                             /* ECI latch 26 (UTF-8) */
-                            binary_string += quadbit[(2 - '0') + 2];
-                            binary_string += quadbit[(6 - '0') + 2];
+                            binary_string += quadbit[2 + 2];
+                            binary_string += quadbit[6 + 2];
                         }
                     } else {
                         binary_string += pentbit[charmap[i]];

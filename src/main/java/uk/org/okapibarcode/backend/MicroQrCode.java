@@ -161,6 +161,10 @@ public class MicroQrCode extends Symbol {
             return false;
         }
 
+        if (debug) {
+            System.out.printf("Micro QR Code Content = \"%s\"\n", content);
+        }
+        
         for (i = 0; i < 4; i++) {
             version_valid[i] = true;
         }
@@ -567,24 +571,28 @@ public class MicroQrCode extends Symbol {
         inter_byte_used = false;
         inter_alphanum_used = false;
 
+//        if (debug) {
+//            for (i = 0; i < content.length(); i++) {
+//                switch (inputMode[i]) {
+//                case KANJI:
+//                    System.out.print("K");
+//                    break;
+//                case BINARY:
+//                    System.out.print("B");
+//                    break;
+//                case ALPHANUM:
+//                    System.out.print("A");
+//                    break;
+//                case NUMERIC:
+//                    System.out.print("N");
+//                    break;
+//                }
+//            }
+//            System.out.println();
+//        }
+        
         if (debug) {
-            for (i = 0; i < content.length(); i++) {
-                switch (inputMode[i]) {
-                case KANJI:
-                    System.out.print("K");
-                    break;
-                case BINARY:
-                    System.out.print("B");
-                    break;
-                case ALPHANUM:
-                    System.out.print("A");
-                    break;
-                case NUMERIC:
-                    System.out.print("N");
-                    break;
-                }
-            }
-            System.out.println();
+            System.out.printf("\tIntermediate code: ");
         }
 
         do {
@@ -610,8 +618,7 @@ public class MicroQrCode extends Symbol {
                 binary += (char) short_data_block_length;
 
                 if (debug) {
-                    System.out.printf("Kanji block (length %d)\n",
-                            short_data_block_length);
+                    System.out.printf("KANJ ");
                 }
 
                 /* Character representation */
@@ -623,7 +630,7 @@ public class MicroQrCode extends Symbol {
                     try {
                         jisBytes = oneChar.getBytes("SJIS");
                     } catch (UnsupportedEncodingException e) {
-                        error_msg = "Invalid character(s) in input data";
+                        error_msg = "Character encoding error";
                         return false;
                     }
 
@@ -641,16 +648,12 @@ public class MicroQrCode extends Symbol {
                     binary += toBinary(prod, 0x1000);
 
                     if (debug) {
-                        System.out.printf("\t0x%4X\n", prod);
+                        System.out.printf("%d ", prod);
                     }
 
                     if (binary.length() > 128) {
                         return false;
                     }
-                }
-
-                if (debug) {
-                    System.out.printf("\n");
                 }
 
                 break;
@@ -664,8 +667,7 @@ public class MicroQrCode extends Symbol {
                 binary += (char) short_data_block_length;
 
                 if (debug) {
-                    System.out.printf("Byte block (length %d)\n\t",
-                            short_data_block_length);
+                    System.out.printf("BYTE ");
                 }
 
                 /* Character representation */
@@ -675,16 +677,12 @@ public class MicroQrCode extends Symbol {
                     binary += toBinary(lbyte, 0x80);
 
                     if (debug) {
-                        System.out.printf("0x%4X ", lbyte);
+                        System.out.printf("%d ", lbyte);
                     }
 
                     if (binary.length() > 128) {
                         return false;
                     }
-                }
-
-                if (debug) {
-                    System.out.printf("\n");
                 }
 
                 break;
@@ -698,8 +696,7 @@ public class MicroQrCode extends Symbol {
                 binary += (char) short_data_block_length;
 
                 if (debug) {
-                    System.out.printf("Alpha block (length %d)\n\t",
-                            short_data_block_length);
+                    System.out.printf("ALPH ");
                 }
 
                 /* Character representation */
@@ -718,7 +715,7 @@ public class MicroQrCode extends Symbol {
                     binary += toBinary(prod, 1 << (5 * count)); /* count = 1..2 */
 
                     if (debug) {
-                        System.out.printf("0x%4X ", prod);
+                        System.out.printf("%d ", prod);
                     }
 
                     if (binary.length() > 128) {
@@ -727,10 +724,6 @@ public class MicroQrCode extends Symbol {
 
                     i += 2;
                 };
-
-                if (debug) {
-                    System.out.printf("\n");
-                }
 
                 break;
             case NUMERIC:
@@ -742,8 +735,7 @@ public class MicroQrCode extends Symbol {
                 binary += (char) short_data_block_length;
 
                 if (debug) {
-                    System.out.printf("Number block (length %d)\n\t",
-                            short_data_block_length);
+                    System.out.printf("NUMB ");
                 }
 
                 /* Character representation */
@@ -768,7 +760,7 @@ public class MicroQrCode extends Symbol {
                     binary += toBinary(prod, 1 << (3 * count)); /* count = 1..3 */
 
                     if (debug) {
-                        System.out.printf("0x%4X (%d)", prod, prod);
+                        System.out.printf("%d ", prod);
                     }
 
                     if (binary.length() > 128) {
@@ -777,16 +769,15 @@ public class MicroQrCode extends Symbol {
 
                     i += 3;
                 };
-
-                if (debug) {
-                    System.out.printf("\n");
-                }
-
                 break;
             }
 
             position += short_data_block_length;
         } while (position < content.length() - 1);
+        
+        if (debug) {
+            System.out.printf("\n");
+        }
 
         return true;
     }
@@ -1044,6 +1035,14 @@ public class MicroQrCode extends Symbol {
         if (full_stream.charAt(19) == '1') {
             data_blocks[2] += 0x01;
         }
+        
+        if (debug) {
+            System.out.printf("\tCodewords: ");
+            for (i = 0; i < data_codewords; i++) {
+                System.out.printf("%d ", data_blocks[i]);
+            }
+            System.out.printf("\n");
+        }
 
         /* Calculate Reed-Solomon error codewords */
         rs.init_gf(0x11d);
@@ -1141,6 +1140,14 @@ public class MicroQrCode extends Symbol {
             if (full_stream.charAt((i * 8) + 7) == '1') {
                 data_blocks[i] += 0x01;
             }
+        }
+        
+        if (debug) {
+            System.out.printf("\tCodewords: ");
+            for (i = 0; i < data_codewords; i++) {
+                System.out.printf("%d ", data_blocks[i]);
+            }
+            System.out.printf("\n");
         }
 
         /* Calculate Reed-Solomon error codewords */
@@ -1286,6 +1293,14 @@ public class MicroQrCode extends Symbol {
                 data_blocks[2] += 0x01;
             }
         }
+        
+        if (debug) {
+            System.out.printf("\tCodewords: ");
+            for (i = 0; i < data_codewords; i++) {
+                System.out.printf("%d ", data_blocks[i]);
+            }
+            System.out.printf("\n");
+        }
 
         /* Calculate Reed-Solomon error codewords */
         rs.init_gf(0x11d);
@@ -1390,6 +1405,14 @@ public class MicroQrCode extends Symbol {
             if (full_stream.charAt((i * 8) + 7) == '1') {
                 data_blocks[i] += 0x01;
             }
+        }
+        
+        if (debug) {
+            System.out.printf("\tCodewords: ");
+            for (i = 0; i < data_codewords; i++) {
+                System.out.printf("%d ", data_blocks[i]);
+            }
+            System.out.printf("\n");
         }
 
         /* Calculate Reed-Solomon error codewords */

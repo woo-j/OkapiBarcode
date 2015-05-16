@@ -115,6 +115,10 @@ public class Code128 extends Symbol {
         int c_count;
         int linkage_flag = 0;
         
+        if (debug) {
+            System.out.printf("Code 128 Content = \"%s\"\n", content);
+        }
+        
         try {
             inputBytes = content.getBytes("ISO8859_1");
         } catch (UnsupportedEncodingException e) {
@@ -360,6 +364,9 @@ public class Code128 extends Symbol {
             return false;
         }
 
+        if (debug) {
+            System.out.printf("\tCoding: ");
+        }
 
         /* So now we know what start character to use - we can get on with it! */
         if(readerInit) {
@@ -373,7 +380,7 @@ public class Code128 extends Symbol {
                     values[1] = 96;
                     bar_characters++;
                     if(debug) {
-                        System.out.println("\tStart A\n\tFNC3");
+                        System.out.printf("STARTA FNC3 ");
                     }
                     break;
                 case LATCHB: /* Start B */
@@ -384,7 +391,7 @@ public class Code128 extends Symbol {
                     values[1] = 96;
                     bar_characters++;
                     if(debug) {
-                        System.out.println("\tStart B\n\tFNC3");
+                        System.out.printf("STARTB FNC3 ");
                     }
                     break;
                 default: /* Start C */
@@ -397,7 +404,7 @@ public class Code128 extends Symbol {
                     bar_characters += 2;
                     current_set = Mode.LATCHC;
                     if(debug) {
-                        System.out.println("\tStart B\n\tFNC3\n\tCODE C");
+                        System.out.printf("STARTB FNC3 CODEC ");
                     }
                     break;
         	}
@@ -410,7 +417,7 @@ public class Code128 extends Symbol {
                 values[0] = 103;
                 current_set = Mode.LATCHA;
                 if (debug) {
-                    System.out.println("\tStart A");
+                    System.out.printf("STARTA ");
                 }
                 break;
             case LATCHB:
@@ -419,7 +426,7 @@ public class Code128 extends Symbol {
                 values[0] = 104;
                 current_set = Mode.LATCHB;
                 if (debug) {
-                    System.out.println("\tStart B");
+                    System.out.printf("STARTB ");
                 }
                 break;
             default:
@@ -428,7 +435,7 @@ public class Code128 extends Symbol {
                 values[0] = 105;
                 current_set = Mode.LATCHC;
                 if (debug) {
-                    System.out.println("\tStart C");
+                    System.out.printf("STARTC ");
                 }
                 break;
             }
@@ -440,7 +447,7 @@ public class Code128 extends Symbol {
             values[1] = 102;
             bar_characters++;
             if (debug) {
-                System.out.println("\tFNC1");
+                System.out.printf("FNC1 ");
             }
         }
 
@@ -452,7 +459,7 @@ public class Code128 extends Symbol {
                 values[bar_characters] = 101;
                 values[bar_characters + 1] = 101;
                 if (debug) {
-                    System.out.println("\tFNC4\n\tFNC4");
+                    System.out.printf("FNC4 FNC4 ");
                 }
                 break;
             case LATCHB:
@@ -461,7 +468,7 @@ public class Code128 extends Symbol {
                 values[bar_characters] = 100;
                 values[bar_characters + 1] = 100;
                 if (debug) {
-                    System.out.println("\tFNC4\n\tFNC4");
+                    System.out.printf("FNC4 FNC4 ");
                 }
                 break;
             }
@@ -481,7 +488,7 @@ public class Code128 extends Symbol {
                     bar_characters++;
                     current_set = Mode.LATCHA;
                     if (debug) {
-                        System.out.println("\tCODE A");
+                        System.out.printf("CODEA ");
                     }
                     break;
                 case LATCHB:
@@ -490,7 +497,7 @@ public class Code128 extends Symbol {
                     bar_characters++;
                     current_set = Mode.LATCHB;
                     if (debug) {
-                        System.out.println("\tCODE B");
+                        System.out.printf("CODEB ");
                     }
                     break;
                 case LATCHC:
@@ -499,7 +506,7 @@ public class Code128 extends Symbol {
                     bar_characters++;
                     current_set = Mode.LATCHC;
                     if (debug) {
-                        System.out.println("\tCODE C");
+                        System.out.printf("CODE C");
                     }
                     break;
                 }
@@ -515,7 +522,7 @@ public class Code128 extends Symbol {
                         values[bar_characters] = 101;
                         values[bar_characters + 1] = 101;
                         if (debug) {
-                            System.out.println("\tFNC4\n\tFNC4");
+                            System.out.printf("FNC4 FNC4 ");
                         }
                         break;
                     case LATCHB:
@@ -524,7 +531,7 @@ public class Code128 extends Symbol {
                         values[bar_characters] = 100;
                         values[bar_characters + 1] = 100;
                         if (debug) {
-                            System.out.println("\tFNC4\n\tFNC4");
+                            System.out.printf("FNC4 FNC4 ");
                         }
                         break;
                     }
@@ -540,7 +547,7 @@ public class Code128 extends Symbol {
                         values[bar_characters] = 101;
                         values[bar_characters + 1] = 101;
                         if (debug) {
-                            System.out.println("\tFNC4\n\tFNC4");
+                            System.out.printf("FNC4 FNC4 ");
                         }
                         break;
                     case LATCHB:
@@ -549,7 +556,7 @@ public class Code128 extends Symbol {
                         values[bar_characters] = 100;
                         values[bar_characters + 1] = 100;
                         if (debug) {
-                            System.out.println("\tFNC4\n\tFNC4");
+                            System.out.printf("FNC4 FNC4 ");
                         }
                         break;
                     }
@@ -565,14 +572,14 @@ public class Code128 extends Symbol {
                     dest += code128Table[101]; /* FNC 4 */
                     values[bar_characters] = 101;
                     if (debug) {
-                        System.out.println("\tFNC4");
+                        System.out.printf("FNC4 ");
                     }
                     break;
                 case LATCHB:
                     dest += code128Table[100]; /* FNC 4 */
                     values[bar_characters] = 100;
                     if (debug) {
-                        System.out.println("\tFNC4");
+                        System.out.printf("FNC4 ");
                     }
                     break;
                 }
@@ -584,7 +591,7 @@ public class Code128 extends Symbol {
                 dest += code128Table[98];
                 values[bar_characters] = 98;
                 if (debug) {
-                    System.out.println("\tSHIFT");
+                    System.out.printf("SHFT ");
                 }
                 bar_characters++;
             }
@@ -613,9 +620,7 @@ public class Code128 extends Symbol {
                         }
                     }
                     if (debug) {
-                        System.out.print("\t[");
-                        System.out.print(values[bar_characters]);
-                        System.out.println("]");
+                        System.out.printf("%d ", values[bar_characters]);
                     }
                     bar_characters++;
                     read++;
@@ -630,9 +635,7 @@ public class Code128 extends Symbol {
                         values[bar_characters] = c - 32;
                     }
                     if (debug) {
-                        System.out.print("\t[");
-                        System.out.print(values[bar_characters]);
-                        System.out.println("]");
+                        System.out.printf("%d ", values[bar_characters]);
                     }
                     bar_characters++;
                     read++;
@@ -645,9 +648,7 @@ public class Code128 extends Symbol {
                     dest += code128Table[weight];
                     values[bar_characters] = weight;
                     if (debug) {
-                        System.out.print("\t[");
-                        System.out.print(values[bar_characters]);
-                        System.out.println("]");
+                        System.out.printf("%d ", values[bar_characters]);
                     }
                     bar_characters++;
                     read += 2;
@@ -660,11 +661,15 @@ public class Code128 extends Symbol {
                 bar_characters++;
                 read++;
                 if (debug) {
-                    System.out.println("\tFNC1");
+                    System.out.printf("FNC1 ");
                 }
             }
 
         } while (read < sourcelen);
+        
+        if (debug) {
+            System.out.printf("\n");
+        }
 
         /* "...note that the linkage flag is an extra code set character between
 	the last data character and the Symbol Check Character" (GS1 Specification) */
@@ -681,7 +686,7 @@ public class Code128 extends Symbol {
                     case LATCHC: linkage_flag = 101; break;
                 }
                 if (debug) {
-                    System.out.print("Composite Latch A/B  ");
+                    System.out.print("\tAdding composite latch A/B, ");
                 }
                 encodeInfo += "Linkage flag: " + linkage_flag + '\n';
                 break;
@@ -693,7 +698,7 @@ public class Code128 extends Symbol {
                     case LATCHC: linkage_flag = 100; break;
                 }
                 if (debug) {
-                    System.out.print("Composite Latch C  ");
+                    System.out.print("\tAdding composite latch C, ");
                 }
                 encodeInfo += "Linkage flag: " + linkage_flag + '\n';
                 break;
@@ -705,7 +710,7 @@ public class Code128 extends Symbol {
             dest += code128Table[linkage_flag];
             values[bar_characters] = linkage_flag;
             if (debug) {
-                System.out.println("[" + linkage_flag + "]");
+                System.out.printf("Linkage flag: %d\n", linkage_flag);
             }
             bar_characters++;
 	}
@@ -719,16 +724,13 @@ public class Code128 extends Symbol {
         }
         dest += code128Table[total_sum % 103];
         if (debug) {
-            System.out.println("\t Check: " + (total_sum % 103));
+            System.out.println("\tCheck Digit: " + (total_sum % 103));
         }
         encodeInfo += "Data Codewords: " + bar_characters + '\n';
         encodeInfo += "Check Digit: " + (total_sum % 103) + '\n';
 
         /* Stop character */
         dest += code128Table[106];
-        if (debug) {
-            System.out.println("\tStop");
-        }
 
         if (!(inputDataType == DataType.GS1)) {
             readable = content;

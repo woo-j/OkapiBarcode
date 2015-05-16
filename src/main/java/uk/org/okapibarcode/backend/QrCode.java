@@ -452,6 +452,10 @@ public class QrCode extends Symbol {
         int bitmask;
         String bin;
 
+        if (debug) {
+            System.out.printf("QR Code Content = \"%s\"\n", content);
+        }
+        
         inputMode = new qrMode[content.length()];
         define_mode();
         est_binlen = estimate_binary_length();
@@ -626,7 +630,7 @@ public class QrCode extends Symbol {
                     inputData[i] = inputBytes[i] & 0xFF;
                 }
                 if (debug) {
-                    System.out.printf("Encoding in ISO 8859-1 character set\n");
+                    System.out.printf("\tEncoding in ISO 8859-1 character set\n");
                 }
             } else {
                 /* Try Shift-JIS */
@@ -653,7 +657,7 @@ public class QrCode extends Symbol {
                         inputData[i] = (int) content.charAt(i);
                     }
                     if (debug) {
-                        System.out.printf("Encoding in Shift-JIS character set\n");
+                        System.out.printf("\tEncoding in Shift-JIS character set\n");
                     }
                 } else {
                     /* Shift-JIS encoding not sucessful, use UTF-8 */
@@ -666,7 +670,7 @@ public class QrCode extends Symbol {
                         inputData[i] = inputBytes[i] & 0xFF;
                     }
                     if (debug) {
-                        System.out.printf("Encoding in UFT-8 character set\n");
+                        System.out.printf("\tEncoding in UFT-8 character set\n");
                     }
                 }
             }
@@ -861,26 +865,30 @@ public class QrCode extends Symbol {
             scheme = 3;
         }
 
-        if (debug) {
-            for (i = 0; i < inputLength; i++) {
-                switch (inputMode[i]) {
-                    case KANJI:
-                        System.out.print("K");
-                        break;
-                    case BINARY:
-                        System.out.print("B");
-                        break;
-                    case ALPHANUM:
-                        System.out.print("A");
-                        break;
-                    case NUMERIC:
-                        System.out.print("N");
-                        break;
-                }
-            }
-            System.out.printf("\n");
-        }
+//        if (debug) {
+//            for (i = 0; i < inputLength; i++) {
+//                switch (inputMode[i]) {
+//                    case KANJI:
+//                        System.out.print("K");
+//                        break;
+//                    case BINARY:
+//                        System.out.print("B");
+//                        break;
+//                    case ALPHANUM:
+//                        System.out.print("A");
+//                        break;
+//                    case NUMERIC:
+//                        System.out.print("N");
+//                        break;
+//                }
+//            }
+//            System.out.printf("\n");
+//        }
 
+        if (debug) {
+            System.out.printf("\tIntermediate coding: ");
+        }
+        
         percent = 0;
 
         do {
@@ -901,7 +909,7 @@ public class QrCode extends Symbol {
                     qr_bscan(short_data_block_length, 0x20 << (scheme * 2)); /* scheme = 1..3 */
 
                     if (debug) {
-                        System.out.printf("Kanji block (length %d)\n", short_data_block_length);
+                        System.out.printf("KNJI ");
                     }
 
                     /* Character representation */
@@ -931,14 +939,9 @@ public class QrCode extends Symbol {
                         qr_bscan(prod, 0x1000);
 
                         if (debug) {
-                            System.out.printf("\t0x%4X\n", prod);
+                            System.out.printf("%d ", prod);
                         }
                     }
-
-                    if (debug) {
-                        System.out.printf("\n");
-                    }
-
                     break;
                 case BINARY:
                     /* Byte mode */
@@ -949,7 +952,7 @@ public class QrCode extends Symbol {
                     qr_bscan(short_data_block_length, scheme > 1 ? 0x8000 : 0x80); /* scheme = 1..3 */
 
                     if (debug) {
-                        System.out.printf("Byte block (length %d)\n\t", short_data_block_length);
+                        System.out.printf("BYTE ");
                     }
 
                     /* Character representation */
@@ -964,12 +967,8 @@ public class QrCode extends Symbol {
                         qr_bscan(lbyte, 0x80);
 
                         if (debug) {
-                            System.out.printf("0x%2X(%d) ", lbyte, lbyte);
+                            System.out.printf("%d ", lbyte);
                         }
-                    }
-
-                    if (debug) {
-                        System.out.printf("\n");
                     }
 
                     break;
@@ -982,7 +981,7 @@ public class QrCode extends Symbol {
                     qr_bscan(short_data_block_length, 0x40 << (2 * scheme)); /* scheme = 1..3 */
 
                     if (debug) {
-                        System.out.printf("Alpha block (length %d)\n\t", short_data_block_length);
+                        System.out.printf("ALPH ");
                     }
 
                     /* Character representation */
@@ -1056,14 +1055,10 @@ public class QrCode extends Symbol {
                         qr_bscan(prod, count == 2 ? 0x400 : 0x20); /* count = 1..2 */
 
                         if (debug) {
-                            System.out.printf("0x%4X ", prod);
+                            System.out.printf("%d ", prod);
                         }
                     }
                     ;
-
-                    if (debug) {
-                        System.out.printf("\n");
-                    }
 
                     break;
                 case NUMERIC:
@@ -1075,7 +1070,7 @@ public class QrCode extends Symbol {
                     qr_bscan(short_data_block_length, 0x80 << (2 * scheme)); /* scheme = 1..3 */
 
                     if (debug) {
-                        System.out.printf("Number block (length %d)\n\t", short_data_block_length);
+                        System.out.printf("NUMB ");
                     }
 
                     /* Character representation */
@@ -1101,21 +1096,21 @@ public class QrCode extends Symbol {
                         qr_bscan(prod, 1 << (3 * count)); /* count = 1..3 */
 
                         if (debug) {
-                            System.out.printf("0x%4X (%d)", prod, prod);
+                            System.out.printf("%d ", prod);
                         }
 
                         i += count;
                     }
                     ;
 
-                    if (debug) {
-                        System.out.printf("\n");
-                    }
-
                     break;
             }
             position += short_data_block_length;
         } while (position < inputLength);
+        
+        if (debug) {
+            System.out.printf("\n");
+        }
 
         /* Terminator */
         binary += "0000";
@@ -1155,9 +1150,9 @@ public class QrCode extends Symbol {
         }
 
         if (debug) {
-            System.out.printf("Resulting codewords:\n\t");
+            System.out.printf("\tCodewords: ");
             for (i = 0; i < target_binlen; i++) {
-                System.out.printf("0x%2X ", datastream[i]);
+                System.out.printf("%d ", datastream[i]);
             }
             System.out.printf("\n");
         }
@@ -1216,20 +1211,20 @@ public class QrCode extends Symbol {
             for (k = 0; k < ecc_block_length; k++) {
                 ecc_block[k] = rs.getResult(k);
             }
-            if (debug) {
-                System.out.printf("Block %d: ", i + 1);
-                for (j = 0; j < length_this_block; j++) {
-                    System.out.printf("%2X ", data_block[j]);
-                }
-                if (i < qty_short_blocks) {
-                    System.out.printf("   ");
-                }
-                System.out.printf(" // ");
-                for (j = 0; j < ecc_block_length; j++) {
-                    System.out.printf("%2X ", ecc_block[ecc_block_length - j - 1]);
-                }
-                System.out.printf("\n");
-            }
+//            if (debug) {
+//                System.out.printf("\tBlock %d: ", i + 1);
+//                for (j = 0; j < length_this_block; j++) {
+//                    System.out.printf("%d ", data_block[j]);
+//                }
+//                if (i < qty_short_blocks) {
+//                    System.out.printf("   ");
+//                }
+//                System.out.printf(" // ");
+//                for (j = 0; j < ecc_block_length; j++) {
+//                    System.out.printf("%2X ", ecc_block[ecc_block_length - j - 1]);
+//                }
+//                System.out.printf("\n");
+//            }
 
             for (j = 0; j < short_data_block_length; j++) {
                 interleaved_data[(j * blocks) + i] = data_block[j];
@@ -1253,13 +1248,13 @@ public class QrCode extends Symbol {
             fullstream[j + data_cw] = interleaved_ecc[j];
         }
 
-        if (debug) {
-            System.out.printf("\nData Stream: \n");
-            for (j = 0; j < (data_cw + ecc_cw); j++) {
-                System.out.printf("%2X ", fullstream[j]);
-            }
-            System.out.printf("\n");
-        }
+//        if (debug) {
+//            System.out.printf("\tStream: ");
+//            for (j = 0; j < (data_cw + ecc_cw); j++) {
+//                System.out.printf("%d ", fullstream[j]);
+//            }
+//            System.out.printf("\n");
+//        }
     }
 
     private void setup_grid(int size, int version) {

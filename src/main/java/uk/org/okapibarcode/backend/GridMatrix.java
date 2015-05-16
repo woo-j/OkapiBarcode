@@ -356,6 +356,10 @@ public class GridMatrix extends Symbol {
         for (i = 0; i < 1460; i++) {
             word[i] = 0;
         }
+        
+        if (debug) {
+            System.out.printf("Grid Matrix Content=\"%s\"\n", content);
+        }
 
         try {
             if (content.matches("[\u0000-\u00FF]+")) {
@@ -369,7 +373,7 @@ public class GridMatrix extends Symbol {
                 eciLatch = false;
                 chineseLatch = false;
                 if (debug) {
-                    System.out.printf("Using ISO 8859-1 character encoding\n");
+                    System.out.printf("\tUsing ISO 8859-1 character encoding\n");
                 }
             } else {
                 /* Try converting to GB2312 */
@@ -403,7 +407,7 @@ public class GridMatrix extends Symbol {
                         }
                     }
                     if (debug) {
-                        System.out.printf("Using GB2312 character encoding");
+                        System.out.printf("\tUsing GB2312 character encoding\n");
                     }
                     eciLatch = false;
                     chineseLatch = true;
@@ -416,7 +420,7 @@ public class GridMatrix extends Symbol {
                         inputByte[i] = inputData[i] & 0xFF;
                     }
                     if (debug) {
-                        System.out.printf("Using UTF-8 character encoding");
+                        System.out.printf("\tUsing UTF-8 character encoding\n");
                     }
                     eciLatch = true;
                     chineseLatch = false;
@@ -609,17 +613,25 @@ public class GridMatrix extends Symbol {
         sp = 0;
         current_mode = gmMode.NULL;
         number_pad_posn = 0;
+        
+        if (debug) {
+            System.out.printf("\tIntermediate encoding: ");
+        }
 
         if (reader) {
             binary += "1010"; /* FNC3 - Reader Initialisation */
+            if (debug) {
+                System.out.printf("INIT ");
+            }
 
         }
 
         if (eciLatch) {
             binary += "1100"; /* ECI */
-
             binary += "00011010"; /* 26 (UTF-8) */
-
+            if (debug) {
+                System.out.printf("ECI#26 ");
+            }
         }
 
         do {
@@ -833,7 +845,7 @@ public class GridMatrix extends Symbol {
                     }
 
                     if (debug) {
-                        System.out.printf("[%d] ", glyph);
+                        System.out.printf("%d ", glyph);
                     }
 
                     for (i = 0x1000; i > 0; i = i >> 1) {
@@ -911,7 +923,7 @@ public class GridMatrix extends Symbol {
                         glyph += 1000;
 
                         if (debug) {
-                            System.out.printf("[%d] ", glyph);
+                            System.out.printf("%d ", glyph);
                         }
 
                         for (i = 0x200; i > 0; i = i >> 1) {
@@ -925,7 +937,7 @@ public class GridMatrix extends Symbol {
 
                     glyph = (100 * (numbuf[0] - '0')) + (10 * (numbuf[1] - '0')) + (numbuf[2] - '0');
                     if (debug) {
-                        System.out.printf("[%d] ", glyph);
+                        System.out.printf("%d ", glyph);
                     }
 
                     for (i = 0x200; i > 0; i = i >> 1) {
@@ -952,7 +964,7 @@ public class GridMatrix extends Symbol {
 
                     glyph = inputByte[sp];
                     if (debug) {
-                        System.out.printf("[%d] ", glyph);
+                        System.out.printf("%d ", glyph);
                     }
                     for (i = 0x80; i > 0; i = i >> 1) {
                         if ((glyph & i) != 0) {
@@ -984,7 +996,7 @@ public class GridMatrix extends Symbol {
                         /* Mixed Mode character */
                         glyph = positionOf((char) inputByte[sp], MIXED_ALPHANUM_SET);
                         if (debug) {
-                            System.out.printf("[%d] ", glyph);
+                            System.out.printf("%d ", glyph);
                         }
 
                         for (i = 0x20; i > 0; i = i >> 1) {
@@ -1022,7 +1034,7 @@ public class GridMatrix extends Symbol {
                             glyph = 27;
                         }
                         if (debug) {
-                            System.out.printf("[%d] ", glyph);
+                            System.out.printf("%d ", glyph);
                         }
 
                         for (i = 0x10; i > 0; i = i >> 1) {
@@ -1057,7 +1069,7 @@ public class GridMatrix extends Symbol {
                         //glyph = posn("abcdefghijklmnopqrstuvwxyz ", gbdata[sp]);
                         glyph = positionOf((char) inputByte[sp], MIXED_ALPHANUM_SET) - 36;
                         if (debug) {
-                            System.out.printf("[%d] ", glyph);
+                            System.out.printf("%d ", glyph);
                         }
 
                         for (i = 0x10; i > 0; i = i >> 1) {
@@ -1305,9 +1317,9 @@ public class GridMatrix extends Symbol {
         /* Numeric mode is more complex */
         number_count += numberModeCost(length, position);
 
-        if (debug) {
-            System.out.printf("C %d / B %d / M %d / U %d / L %d / N %d\n", chinese_count, byte_count, mixed_count, upper_count, lower_count, number_count);
-        }
+//        if (debug) {
+//            System.out.printf("C %d / B %d / M %d / U %d / L %d / N %d\n", chinese_count, byte_count, mixed_count, upper_count, lower_count, number_count);
+//        }
 
         if (chineseLatch) {
             /* GB2312 encoding enabled */
@@ -1450,7 +1462,7 @@ public class GridMatrix extends Symbol {
         }
 
         if (debug) {
-            System.out.printf("SHIFT [%d] ", glyph);
+            System.out.printf("SFT/%d ", glyph);
         }
 
         for (i = 0x20; i > 0; i = i >> 1) {

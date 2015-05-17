@@ -98,7 +98,6 @@ public class DataBarExpanded extends Symbol {
      * @param columns Number of segments in each row
      */
     public void setNoOfColumns(int columns) {
-        // TODO: Value currently ignored!
         preferredNoOfColumns = columns;
     }
 
@@ -365,7 +364,7 @@ public class DataBarExpanded extends Symbol {
             /* RSS Expanded Stacked */
             codeblocks = (data_chars + 1) / 2 + ((data_chars + 1) % 2);
 
-            blocksPerRow = -1; // FIXME: Get value from user
+            blocksPerRow = preferredNoOfColumns;
             if ((blocksPerRow < 1) || (blocksPerRow > 10)) {
                 blocksPerRow = 2;
             }

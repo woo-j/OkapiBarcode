@@ -69,9 +69,8 @@ public class Code3Of9Extended extends Symbol {
             c.setCheckDigit(Code3Of9.CheckDigit.MOD43);
         }
 
-        //FIXME: Filter out extended ASCII and Unicode
-        if (!(content.matches("[\\x00-\\x7F]+"))) {
-            error_msg = "Invalid characters in input";
+        if (!content.matches("[\u0000-\u007F]+")) {
+            error_msg = "Invalid characters in input data";
             return false;
         }
 

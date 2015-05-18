@@ -137,6 +137,11 @@ public class CodeOne extends Symbol {
         int data_cw, ecc_cw;
         int[] sub_data = new int[190];
         String bin;
+        
+        if (!content.matches("[\u0000-\u00FF]+")) {
+            error_msg = "Invalid characters in input data";
+            return false;
+        }        
 
         if (preferredVersion == Version.S) {
             /* Version S */

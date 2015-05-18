@@ -163,7 +163,7 @@ public class AustraliaPost extends Symbol{
                     case 13: formatControlCode = "59";
                         break;
                     case 16: formatControlCode = "59";
-                        if (!(content.matches("[0-9]+?"))) {
+                        if (!(content.matches("[0-9]+"))) {
                             error_msg = "Invalid characters in data";
                             return false;
                         }
@@ -171,7 +171,7 @@ public class AustraliaPost extends Symbol{
                     case 18: formatControlCode = "62";
                         break;
                     case 23: formatControlCode = "62";
-                        if (!(content.matches("[0-9]+?"))) {
+                        if (!(content.matches("[0-9]+"))) {
                             error_msg = "Invalid characters in data";
                             return false;
                         }
@@ -215,7 +215,7 @@ public class AustraliaPost extends Symbol{
         }
         zeroPaddedInput += content;
 
-        if (!(content.matches("[0-9A-Za-z #]+?"))) {
+        if (!(content.matches("[0-9A-Za-z #]+"))) {
             error_msg = "Invalid characters in data";
             return false;
         }
@@ -223,7 +223,7 @@ public class AustraliaPost extends Symbol{
         /* Verify that the first 8 characters are numbers */
         deliveryPointId = zeroPaddedInput.substring(0, 8);
 
-        if (!(deliveryPointId.matches("[0-9]+?"))) {
+        if (!(deliveryPointId.matches("[0-9]+"))) {
             error_msg = "Invalid characters in DPID";
             return false;
         }

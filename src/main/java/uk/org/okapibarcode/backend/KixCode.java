@@ -49,10 +49,12 @@ public class KixCode extends Symbol {
         int i;
 
         content = content.toUpperCase(Locale.ENGLISH);
-        //if(!(content.matches("[0-9][A-Z]+?"))) {
-        //    error_msg = "Invalid characters in data";
-        //    return false;
-        //}
+        
+        if(!(content.matches("[0-9A-Z]+"))) {
+            error_msg = "Invalid characters in data";
+            return false;
+        }
+        
         dest = "";
 
         for (i = 0; i < content.length(); i++) {

@@ -32,7 +32,7 @@ public class KoreaPost extends Symbol {
     public boolean encode() {
         String accumulator = "";
 
-        if (!(content.matches("[0-9]+?"))) {
+        if (!(content.matches("[0-9]+"))) {
             error_msg = "Invalid characters in input";
             return false;
         }

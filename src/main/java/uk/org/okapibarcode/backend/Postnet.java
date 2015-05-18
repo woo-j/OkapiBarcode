@@ -82,7 +82,7 @@ public class Postnet extends Symbol {
             return false;
         }
 
-        if (!(content.matches("[0-9]+?"))) {
+        if (!(content.matches("[0-9]+"))) {
             error_msg = "Invalid characters in data";
             return false;
         }
@@ -119,7 +119,7 @@ public class Postnet extends Symbol {
             return false;
         }
 
-        if (!(content.matches("[0-9]+?"))) {
+        if (!(content.matches("[0-9]+"))) {
             error_msg = "Invalid characters in data";
             return false;
         }

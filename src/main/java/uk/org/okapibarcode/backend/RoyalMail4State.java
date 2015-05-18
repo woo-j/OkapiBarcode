@@ -51,7 +51,7 @@ public class RoyalMail4State extends Symbol {
         int index;
 
         content = content.toUpperCase(Locale.ENGLISH);
-        if(!(content.matches("[0-9A-Z]+?"))) {
+        if(!(content.matches("[0-9A-Z]+"))) {
             error_msg = "Invalid characters in data";
             return false;
         }

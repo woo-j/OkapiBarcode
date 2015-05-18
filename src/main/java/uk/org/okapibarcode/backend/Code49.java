@@ -1002,6 +1002,11 @@ public class Code49 extends Symbol {
         int c_grid[][] = new int[8][8];
         int w_grid[][] = new int[8][4];
 
+        if (!content.matches("[\u0000-\u007F]+")) {
+            error_msg = "Invalid characters in input data";
+            return false;
+        }        
+        
         if (inputDataType == DataType.GS1) {
             intermediate += "*"; // FNC1
         }

@@ -81,10 +81,15 @@ public class CodablockF extends Symbol {
             return false;
         }
 
+        if (!content.matches("[\u0000-\u00FF]+")) {
+            error_msg = "Invalid characters in input data";
+            return false;
+        }
+        
         try {
             inputBytes = content.getBytes("ISO8859_1");
         } catch (UnsupportedEncodingException e) {
-            error_msg = "Invalid character in input data";
+            error_msg = "Character encoding error";
             return false;
         }
 

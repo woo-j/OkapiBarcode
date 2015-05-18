@@ -39,7 +39,7 @@ public class Codabar extends Symbol {
 
     @Override
     public boolean encode() {
-        if (!(content.matches("[A-D]{1}[0-9:/\\$\\.\\+-]+[A-D]{1}"))) {
+        if (!(content.matches("[A-D]{1}[0-9:/\\$\\.\\+\u002D]+[A-D]{1}"))) {
             error_msg = "Invalid characters in input";
             return false;
         }

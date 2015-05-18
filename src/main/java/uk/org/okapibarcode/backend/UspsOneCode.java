@@ -202,6 +202,11 @@ public class UspsOneCode extends Symbol {
         int[] characters = new int[10];
         boolean[] bar_map = new boolean[130];
         char c;
+        
+        if (!content.matches("[0-9\u002D]+")) {
+            error_msg = "Invalid characters in input data";
+            return false;
+        }
 
         if (length > 32) {
             error_msg = "Input too long";

@@ -90,7 +90,11 @@ public class Telepen extends Symbol {
 
         int l = content.length();
 
-        //FIXME: Ensure no extended ASCII or Unicode charcters are entered
+        if (!content.matches("[\u0000-\u007F]+")) {
+            error_msg = "Invalid characters in input data";
+            return false;
+        }
+        
         dest = TeleTable['_']; // Start
         for (int i = 0; i < l; i++) {
             asciicode = content.charAt(i);
@@ -130,7 +134,7 @@ public class Telepen extends Symbol {
         char c1, c2;
 
         //FIXME: Ensure no extended ASCII or Unicode charcters are entered
-        if (!(content.matches("[0-9X]+?"))) {
+        if (!(content.matches("[0-9X]+"))) {
             error_msg = "Invalid characters in input";
             return false;
         }

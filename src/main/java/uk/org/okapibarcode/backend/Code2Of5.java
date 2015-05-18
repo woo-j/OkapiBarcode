@@ -156,7 +156,7 @@ public class Code2Of5 extends Symbol {
 
     private boolean dataMatrixTof() {
 
-        if (!(content.matches("[0-9]+?"))) {
+        if (!(content.matches("[0-9]+"))) {
             error_msg = "Invalid characters in input";
             return false;
         }
@@ -178,7 +178,7 @@ public class Code2Of5 extends Symbol {
     }
 
     private boolean industrialTof() {
-        if (!(content.matches("[0-9]+?"))) {
+        if (!(content.matches("[0-9]+"))) {
             error_msg = "Invalid characters in input";
             return false;
         }
@@ -201,7 +201,7 @@ public class Code2Of5 extends Symbol {
     }
 
     private boolean iataTof() {
-        if (!(content.matches("[0-9]+?"))) {
+        if (!(content.matches("[0-9]+"))) {
             error_msg = "Invalid characters in input";
             return false;
         }
@@ -224,7 +224,7 @@ public class Code2Of5 extends Symbol {
     }
 
     private boolean dataLogic() {
-        if (!(content.matches("[0-9]+?"))) {
+        if (!(content.matches("[0-9]+"))) {
             error_msg = "Invalid characters in input";
             return false;
         }
@@ -255,7 +255,7 @@ public class Code2Of5 extends Symbol {
         } else {
             readable = "0" + content;
         }
-        if (!(readable.matches("[0-9]+?"))) {
+        if (!(readable.matches("[0-9]+"))) {
             error_msg = "Invalid characters in input";
             return false;
         }
@@ -298,7 +298,7 @@ public class Code2Of5 extends Symbol {
         int input_length = content.length();
         String dest;
 
-        if (!(content.matches("[0-9]+?"))) {
+        if (!(content.matches("[0-9]+"))) {
             error_msg = "Invalid characters in input";
             return false;
         }
@@ -347,7 +347,7 @@ public class Code2Of5 extends Symbol {
         int input_length = content.length();
         String dest;
 
-        if (!(content.matches("[0-9]+?"))) {
+        if (!(content.matches("[0-9]+"))) {
             error_msg = "Invalid characters in input";
             return false;
         }
@@ -397,7 +397,7 @@ public class Code2Of5 extends Symbol {
         int input_length = content.length();
         String dest;
 
-        if (!(content.matches("[0-9]+?"))) {
+        if (!(content.matches("[0-9]+"))) {
             error_msg = "Invalid characters in input";
             return false;
         }

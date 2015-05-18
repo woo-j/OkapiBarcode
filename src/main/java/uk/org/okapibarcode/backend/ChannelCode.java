@@ -56,7 +56,7 @@ public class ChannelCode extends Symbol {
             return false;
         }
 
-        if (!(content.matches("[0-9]+?"))) {
+        if (!(content.matches("[0-9]+"))) {
             error_msg = "Invalid characters in input";
             return false;
         }

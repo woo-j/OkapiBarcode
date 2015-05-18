@@ -38,7 +38,7 @@ public class Code11 extends Symbol {
     /** {@inheritDoc} */
     @Override
     public boolean encode() {
-        if (!(content.matches("[0-9-]+?"))) {
+        if (!(content.matches("[0-9-]+"))) {
             error_msg = "Invalid characters in input";
             return false;
         }
@@ -89,7 +89,7 @@ public class Code11 extends Symbol {
         horizontalSpacing += CODE_11_TABLE[checkDigitK];
         horizontalSpacing += "112211";
 
-        readable = content + (char) (checkDigitC + '0') + (char) (checkDigitK + '0');
+        readable = content + CHARACTER_SET[checkDigitC] + CHARACTER_SET[checkDigitK];
         pattern = new String[1];
         pattern[0] = horizontalSpacing;
         row_count = 1;

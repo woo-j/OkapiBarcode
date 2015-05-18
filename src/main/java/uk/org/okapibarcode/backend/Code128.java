@@ -119,10 +119,15 @@ public class Code128 extends Symbol {
             System.out.printf("Code 128 Content = \"%s\"\n", content);
         }
         
+        if (!content.matches("[\u0000-\u00FF]+")) {
+            error_msg = "Invalid characters in input data";
+            return false;
+        }
+        
         try {
             inputBytes = content.getBytes("ISO8859_1");
         } catch (UnsupportedEncodingException e) {
-            error_msg = "Invalid character in input data";
+            error_msg = "Character encoding error";
             return false;
         }
 

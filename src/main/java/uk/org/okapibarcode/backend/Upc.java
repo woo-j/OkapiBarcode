@@ -145,7 +145,7 @@ public class Upc extends Symbol {
         int i;
         char check;
 
-        if (!(content.matches("[0-9]+?"))) {
+        if (!(content.matches("[0-9]+"))) {
             error_msg = "Invalid characters in input";
             return false;
         }
@@ -189,7 +189,7 @@ public class Upc extends Symbol {
         char[] equivalent = new char[12];
         String equiv = "";
 
-        if (!(content.matches("[0-9]+?"))) {
+        if (!(content.matches("[0-9]+"))) {
             error_msg = "Invalid characters in input";
             return false;
         }

@@ -69,7 +69,7 @@ public class Code3Of9 extends Symbol {
     @Override
     public boolean encode() {
 
-        if (!(content.matches("[0-9A-Z\\. \\-$/+%]+?"))) {
+        if (!(content.matches("[0-9A-Z\\. \\-$/+%]+"))) {
             error_msg = "Invalid characters in input";
             return false;
         }

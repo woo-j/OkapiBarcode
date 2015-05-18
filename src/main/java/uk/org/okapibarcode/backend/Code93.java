@@ -76,6 +76,11 @@ public class Code93 extends Symbol {
         char[] controlChars = toControlChars(content);
         int l = controlChars.length;
 
+        if (!content.matches("[\u0000-\u007F]+")) {
+            error_msg = "Invalid characters in input data";
+            return false;
+        }        
+        
         int[] values = new int[controlChars.length + 2];
         for (int i = 0; i < l; i++) {
             values[i] = positionOf(controlChars[i], CODE_93_LOOKUP);

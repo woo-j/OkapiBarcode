@@ -118,7 +118,6 @@ public class DataMatrix extends Symbol {
     private boolean isSquare;
     private int[] inputData;
     private int preferredSize = 0;
-    private boolean eciLatch;
 
     private int process_p;
     private int[] process_buffer = new int[8];
@@ -322,20 +321,8 @@ public class DataMatrix extends Symbol {
         int x, y, NC, NR, v;
         int[] grid;
         String bin;
-        byte[] inputBytes;
 
-        try {
-            if (content.matches("[\u0000-\u00FF]+")) {
-                inputBytes = content.getBytes("ISO-8859-1");
-                eciLatch = false;
-            } else {
-                inputBytes = content.getBytes("UTF-8");
-                eciLatch = true;
-            }
-        } catch (UnsupportedEncodingException e) {
-            error_msg = "Byte conversion encoding error";
-            return false;
-        }
+        eciProcess(); // Get ECI mode
 
         inputData = new int[content.length()];
         for (i = 0; i < content.length(); i++) {
@@ -502,14 +489,33 @@ public class DataMatrix extends Symbol {
             }
         } /* FNC1 */
 
-        if (eciLatch) {
-            /* Encode ECI latch for UTF-8 encoding */
+        if (eciMode != 3) {
             target[tp] = 241; // ECI
             tp++;
-            target[tp] = 27;
-            tp++;
+
+            if (eciMode <= 126) {
+                target[tp] = eciMode + 1;
+                tp++;
+            }
+            
+            if ((eciMode >= 127) && (eciMode <= 16382)) {
+                target[tp] = ((eciMode - 127) / 254) + 128;
+                tp++;
+                target[tp] = ((eciMode - 127) % 254) + 1;
+                tp++;
+            }
+            
+            if (eciMode >= 16383) {
+                target[tp] = ((eciMode - 16383) / 64516) + 192;
+                tp++;
+                target[tp] = (((eciMode - 16383) / 254) % 254) + 1;
+                tp++;
+                target[tp] = ((eciMode - 16383) & 254) + 1;
+                tp++;
+            }
+            
             if (debug) {
-                System.out.printf("ECI [26] ");
+                System.out.printf("ECI %d ", eciMode);
             }
         }
 

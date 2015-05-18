@@ -17,6 +17,7 @@ package uk.org.okapibarcode.backend;
 
 import java.awt.Rectangle;
 import java.awt.geom.Ellipse2D;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 /**
  * Generic barcode symbology class
@@ -36,6 +37,8 @@ public abstract class Symbol {
     protected int default_height;
     protected boolean readerInit;
     protected String encodeInfo = "";
+    protected int eciMode = 3;
+    protected byte[] inputBytes;
 
     public enum DataType {
         UTF8, LATIN1, BINARY, GS1, HIBC, ECI
@@ -210,6 +213,229 @@ public abstract class Symbol {
         } else {
             throw new OkapiException("No input data");
         }
+    }
+    
+    protected void eciProcess() {
+        int qmarksBefore, qmarksAfter;
+        int i;
+        
+        qmarksBefore = 0;
+        for (i = 0; i < content.length(); i++) {
+            if (content.charAt(i) == '?') {
+                qmarksBefore++;
+            }
+            
+            qmarksAfter = eciEncode("ISO8859_1");
+            if (qmarksAfter == qmarksBefore) {
+                eciMode = 3;
+                if (debug) {
+                    System.out.printf("\tEncoding in ISO 8859-1 character set\n");
+                }
+                return;
+            }
+            
+            qmarksAfter = eciEncode("ISO8859_2");
+            if (qmarksAfter == qmarksBefore) {
+                eciMode = 4;
+                if (debug) {
+                    System.out.printf("\tEncoding in ISO 8859-2 character set\n");
+                }                
+                return;
+            }
+            
+            qmarksAfter = eciEncode("ISO8859_3");
+            if (qmarksAfter == qmarksBefore) {
+                eciMode = 5;
+                if (debug) {
+                    System.out.printf("\tEncoding in ISO 8859-3 character set\n");
+                }                
+                return;
+            }
+            
+            qmarksAfter = eciEncode("ISO8859_4");
+            if (qmarksAfter == qmarksBefore) {
+                eciMode = 6;
+                if (debug) {
+                    System.out.printf("\tEncoding in ISO 8859-4 character set\n");
+                }                
+                return;
+            }
+            
+            qmarksAfter = eciEncode("ISO8859_5");
+            if (qmarksAfter == qmarksBefore) {
+                eciMode = 7;
+                if (debug) {
+                    System.out.printf("\tEncoding in ISO 8859-5 character set\n");
+                }                
+                return;
+            }
+            
+            qmarksAfter = eciEncode("ISO8859_6");
+            if (qmarksAfter == qmarksBefore) {
+                eciMode = 8;
+                if (debug) {
+                    System.out.printf("\tEncoding in ISO 8859-6 character set\n");
+                }                
+                return;
+            }
+            
+            qmarksAfter = eciEncode("ISO8859_7");
+            if (qmarksAfter == qmarksBefore) {
+                eciMode = 9;
+                if (debug) {
+                    System.out.printf("\tEncoding in ISO 8859-7 character set\n");
+                }                
+                return;
+            }
+            
+            qmarksAfter = eciEncode("ISO8859_8");
+            if (qmarksAfter == qmarksBefore) {
+                eciMode = 10;
+                if (debug) {
+                    System.out.printf("\tEncoding in ISO 8859-8 character set\n");
+                }                
+                return;
+            }
+            
+            qmarksAfter = eciEncode("ISO8859_9");
+            if (qmarksAfter == qmarksBefore) {
+                eciMode = 11;
+                if (debug) {
+                    System.out.printf("\tEncoding in ISO 8859-9 character set\n");
+                }                
+                return;
+            }
+            
+            qmarksAfter = eciEncode("ISO8859_10");
+            if (qmarksAfter == qmarksBefore) {
+                eciMode = 12;
+                if (debug) {
+                    System.out.printf("\tEncoding in ISO 8859-10 character set\n");
+                }                
+                return;
+            }            
+            
+            qmarksAfter = eciEncode("ISO8859_11");
+            if (qmarksAfter == qmarksBefore) {
+                eciMode = 13;
+                if (debug) {
+                    System.out.printf("\tEncoding in ISO 8859-11 character set\n");
+                }                
+                return;
+            }    
+            
+            qmarksAfter = eciEncode("ISO8859_13");
+            if (qmarksAfter == qmarksBefore) {
+                eciMode = 15;
+                if (debug) {
+                    System.out.printf("\tEncoding in ISO 8859-13 character set\n");
+                }                
+                return;
+            }   
+            
+            qmarksAfter = eciEncode("ISO8859_14");
+            if (qmarksAfter == qmarksBefore) {
+                eciMode = 16;
+                if (debug) {
+                    System.out.printf("\tEncoding in ISO 8859-14 character set\n");
+                }                
+                return;
+            }   
+            
+            qmarksAfter = eciEncode("ISO8859_15");
+            if (qmarksAfter == qmarksBefore) {
+                eciMode = 17;
+                if (debug) {
+                    System.out.printf("\tEncoding in ISO 8859-15 character set\n");
+                }                
+                return;
+            }   
+            
+            qmarksAfter = eciEncode("ISO8859_16");
+            if (qmarksAfter == qmarksBefore) {
+                eciMode = 18;
+                if (debug) {
+                    System.out.printf("\tEncoding in ISO 8859-16 character set\n");
+                }                
+                return;
+            }     
+            
+            qmarksAfter = eciEncode("Windows_1250");
+            if (qmarksAfter == qmarksBefore) {
+                eciMode = 21;
+                if (debug) {
+                    System.out.printf("\tEncoding in Windows-1250 character set\n");
+                }                
+                return;
+            }      
+            
+            qmarksAfter = eciEncode("Windows_1251");
+            if (qmarksAfter == qmarksBefore) {
+                eciMode = 22;
+                if (debug) {
+                    System.out.printf("\tEncoding in Windows-1251 character set\n");
+                }                
+                return;
+            }      
+            
+            qmarksAfter = eciEncode("Windows_1252");
+            if (qmarksAfter == qmarksBefore) {
+                eciMode = 23;
+                if (debug) {
+                    System.out.printf("\tEncoding in Windows-1252 character set\n");
+                }                
+                return;
+            }      
+            
+            
+            qmarksAfter = eciEncode("Windows_1256");
+            if (qmarksAfter == qmarksBefore) {
+                eciMode = 24;
+                if (debug) {
+                    System.out.printf("\tEncoding in Windows-1256 character set\n");
+                }                
+                return;
+            }              
+            
+            qmarksAfter = eciEncode("SJIS");
+            if (qmarksAfter == qmarksBefore) {
+                eciMode = 20;
+                if (debug) {
+                    System.out.printf("\tEncoding in Shift-JIS character set\n");
+                }                
+                return;
+            }            
+            
+            /* default */
+            qmarksAfter = eciEncode("UTF8");
+            eciMode = 26;
+            if (debug) {
+                System.out.printf("\tEncoding in UTF-8 character set\n");
+            }            
+            return;
+        }
+    }
+    
+    protected int eciEncode(String charset) {
+        /* getBytes replaces unconverted characters to '?', so count
+           the number of question marks to find if conversion was sucessful.
+        */
+        int i, qmarksAfter;
+        
+        try {
+            inputBytes = content.getBytes(charset);
+        } catch (UnsupportedEncodingException e) {
+            return -1;
+        }
+        
+        qmarksAfter = 0;
+        for (i = 0; i < inputBytes.length; i++) {
+            if (inputBytes[i] == '?') {
+                qmarksAfter++;
+            }
+        }
+        
+        return qmarksAfter;
     }
 
     abstract boolean encode();

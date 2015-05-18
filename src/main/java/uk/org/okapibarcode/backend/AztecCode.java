@@ -30,7 +30,6 @@ import java.io.UnsupportedEncodingException;
 public class AztecCode extends Symbol {
 
     private int preferredSize = 0;
-    private boolean eciLatch;
 
     /**
      * Sets a preferred symbol size. This value may be ignored if data string is
@@ -564,7 +563,6 @@ public class AztecCode extends Symbol {
         return output;
     }
 
-    byte[] inputBytes;
     int inputByteLength;
     String binary_string;
 
@@ -587,31 +585,15 @@ public class AztecCode extends Symbol {
         int t;
         boolean done;
         
-        try {
-            if (content.matches("[\u0000-\u00FF]+")) {
-                inputBytes = content.getBytes("ISO-8859-1");
-                eciLatch = false;
-            } else {
-                inputBytes = content.getBytes("UTF-8");
-                eciLatch = true;
-            }
-        } catch (UnsupportedEncodingException e) {
-                error_msg = "Byte conversion encoding error";
-                return false;
-        }
-
         if (readerInit) {
             comp_loop = 1;
         }
         
         if (debug) {
             System.out.printf("Aztec Code Content=\"%s\"\n", content);
-            if (eciLatch) {
-                System.out.printf("\tUTF-8 encoding\n");
-            } else {
-                System.out.printf("\tISO 8859-1 encoding\n");
-            }
         }
+        
+        eciProcess(); // Get ECI mode
 
         if ((inputDataType == DataType.GS1) && (readerInit)) {
             error_msg = "Cannot encode in GS1 and Reader Initialisation mode at the same time";
@@ -1300,10 +1282,35 @@ public class AztecCode extends Symbol {
             typemap[maplength++] = 8; // PUNC
         }
 
-        if (eciLatch) {
+        if (eciMode != 3) {
+            int flagNumber;
+            
             charmap[maplength] = 0; // FLG
             typemap[maplength++] = 8; // PUNC
-            charmap[maplength] = 401; // (1)
+            
+            flagNumber = 6;
+            
+            if (eciMode < 100000) {
+                flagNumber = 5;
+            }
+            
+            if (eciMode < 10000) {
+                flagNumber = 4;
+            }
+            
+            if (eciMode < 1000) {
+                flagNumber = 3;
+            }
+            
+            if (eciMode < 100) {
+                flagNumber = 2;
+            }
+            
+            if (eciMode < 10) {
+                flagNumber = 1;
+            }
+            
+            charmap[maplength] = 400 + flagNumber;
             typemap[maplength++] = 8; // PUNC
         }
 
@@ -1324,7 +1331,7 @@ public class AztecCode extends Symbol {
                 }
             }
         }
-
+        
         /* Look for double character encoding possibilities */
         i = 0;
         do {
@@ -1332,9 +1339,11 @@ public class AztecCode extends Symbol {
                 /* CR LF combination */
                 charmap[i] = 2;
                 typemap[i] = 8; // PUNC
-                for (j = i + 1; j < maplength; j++) {
-                    charmap[i + j] = charmap[i + j + 1];
-                    typemap[i + j] = typemap[i + j + 1];
+                if ((i + 1) != maplength) {
+                    for (j = i + 1; j < maplength; j++) {
+                        charmap[j] = charmap[j + 1];
+                        typemap[j] = typemap[j + 1];
+                    }
                 }
                 maplength--;
             }
@@ -1343,9 +1352,11 @@ public class AztecCode extends Symbol {
                 /* . SP combination */
                 charmap[i] = 3;
                 typemap[i] = 8; // PUNC;
-                for (j = i + 1; j < maplength; j++) {
-                    charmap[i + j] = charmap[i + j + 1];
-                    typemap[i + j] = typemap[i + j + 1];
+                if ((i + 1) != maplength) {
+                    for (j = i + 1; j < maplength; j++) {
+                        charmap[j] = charmap[j + 1];
+                        typemap[j] = typemap[j + 1];
+                    }
                 }
                 maplength--;
             }
@@ -1354,9 +1365,11 @@ public class AztecCode extends Symbol {
                 /* , SP combination */
                 charmap[i] = 4;
                 typemap[i] = 8; //PUNC;
-                for (j = i + 1; j < maplength; j++) {
-                    charmap[i + j] = charmap[i + j + 1];
-                    typemap[i + j] = typemap[i + j + 1];
+                if ((i + 1) != maplength) {
+                    for (j = i + 1; j < maplength; j++) {
+                        charmap[j] = charmap[j + 1];
+                        typemap[j] = typemap[j + 1];
+                    }
                 }
                 maplength--;
             }
@@ -1365,9 +1378,11 @@ public class AztecCode extends Symbol {
                 /* : SP combination */
                 charmap[i] = 5;
                 typemap[i] = 8; //PUNC;
-                for (j = i + 1; j < maplength; j++) {
-                    charmap[i + j] = charmap[i + j + 1];
-                    typemap[i + j] = typemap[i + j + 1];
+                if ((i + 1) != maplength) {
+                    for (j = i + 1; j < maplength; j++) {
+                        charmap[j] = charmap[j + 1];
+                        typemap[j] = typemap[j + 1];
+                    }
                 }
                 maplength--;
             }
@@ -1545,6 +1560,20 @@ public class AztecCode extends Symbol {
                 }
             }
         }
+        
+//        if (debug) {
+//            System.out.printf("Charmap: ");
+//            for (i = 0; i < maplength; i++) {
+//                System.out.printf("%d ", charmap[i]);
+//            }
+//            System.out.printf("\n");
+//            
+//            System.out.printf("Typemap: ");
+//            for (i = 0; i < maplength; i++) {
+//                System.out.printf("%d ", typemap[i]);
+//            }
+//            System.out.printf("\n");
+//        }
         binary_string = "";
 
         if (debug) {
@@ -2111,12 +2140,8 @@ public class AztecCode extends Symbol {
                         }
                         binary_string += tribit[charmap[i] - 400];
                         if (charmap[i] != 400) {
-                            if (debug) {
-                                System.out.printf("ECI#26 ");
-                            }
-                            /* ECI latch 26 (UTF-8) */
-                            binary_string += quadbit[2 + 2];
-                            binary_string += quadbit[6 + 2];
+                            /* ECI */
+                            binary_string += eciToBinary();
                         }
                     } else {
                         binary_string += pentbit[charmap[i]];
@@ -2154,5 +2179,20 @@ public class AztecCode extends Symbol {
         }
 
         return true;
+    }
+    
+    private String eciToBinary() {
+        String binary = "";
+        String eciNumber = Integer.toString(eciMode);
+        int i;
+        
+        for (i = 0; i < eciNumber.length(); i++) {
+            binary += quadbit[(eciNumber.charAt(i) - '0') + 2];
+            if (debug) {
+                System.out.printf("%c ", eciNumber.charAt(i));
+            }
+        }
+        
+        return binary;
     }
 }

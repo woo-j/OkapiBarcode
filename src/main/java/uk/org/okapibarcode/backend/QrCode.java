@@ -47,7 +47,6 @@ public class QrCode extends Symbol {
     private byte[] grid;
     private byte[] eval;
     private int preferredVersion = 0;
-    private boolean eciLatch;
     private boolean japaneseLatch;
     private int inputLength;
 
@@ -615,68 +614,25 @@ public class QrCode extends Symbol {
 
     private void define_mode() {
         int i, mlen, j;
-        int qmarksBefore, qmarksAfter;
-        byte[] inputBytes;
 
-        try {
-            if (content.matches("[\u0000-\u00FF]+")) {
-                /* Encode in ISO 8859-1 */
-                inputBytes = content.getBytes("ISO8859_1");
-                inputLength = inputBytes.length;
-                eciLatch = false;
-                japaneseLatch = false;
-                inputData = new int[inputLength];
-                for (i = 0; i < inputLength; i++) {
-                    inputData[i] = inputBytes[i] & 0xFF;
-                }
-                if (debug) {
-                    System.out.printf("\tEncoding in ISO 8859-1 character set\n");
-                }
-            } else {
-                /* Try Shift-JIS */
-                qmarksBefore = 0;
-                for (i = 0; i < content.length(); i++) {
-                    if (content.charAt(i) == '?') {
-                        qmarksBefore++;
-                    }
-                }
-                inputBytes = content.getBytes("SJIS");
-                qmarksAfter = 0;
-                for (i = 0; i < inputBytes.length; i++) {
-                    if (inputBytes[i] == '?') {
-                        qmarksAfter++;
-                    }
-                }
-                if (qmarksBefore == qmarksAfter) {
-                    /* Shift-JIS encoding successful */
-                    eciLatch = false;
-                    japaneseLatch = true;
-                    inputLength = content.length();
-                    inputData = new int[inputLength];
-                    for (i = 0; i < inputLength; i++) {
-                        inputData[i] = (int) content.charAt(i);
-                    }
-                    if (debug) {
-                        System.out.printf("\tEncoding in Shift-JIS character set\n");
-                    }
-                } else {
-                    /* Shift-JIS encoding not sucessful, use UTF-8 */
-                    inputBytes = content.getBytes("UTF8");
-                    eciLatch = true;
-                    japaneseLatch = false;
-                    inputLength = inputBytes.length;
-                    inputData = new int[inputLength];
-                    for (i = 0; i < inputLength; i++) {
-                        inputData[i] = inputBytes[i] & 0xFF;
-                    }
-                    if (debug) {
-                        System.out.printf("\tEncoding in UFT-8 character set\n");
-                    }
-                }
+        eciProcess(); // Get ECI mode
+        
+        if (eciMode == 20) {
+            /* Shift-JIS encoding, use Kanji mode */
+            japaneseLatch = true;
+            inputLength = content.length();
+            inputData = new int[inputLength];
+            for (i = 0; i < inputLength; i++) {
+                inputData[i] = (int) content.charAt(i);
             }
-        } catch (UnsupportedEncodingException e) {
-            error_msg = "Byte conversion encoding error";
-            return;
+        } else {
+            /* Any other encoding method */
+            japaneseLatch = false;
+            inputLength = inputBytes.length;
+            inputData = new int[inputLength];
+            for (i = 0; i < inputLength; i++) {
+                inputData[i] = inputBytes[i] & 0xFF;
+            }
         }
 
         inputMode = new qrMode[inputLength];
@@ -846,11 +802,23 @@ public class QrCode extends Symbol {
 
         binary = "";
 
-        if (eciLatch) {
+        if ((eciMode != 3) && (eciMode != 20)) {
             binary += "0111"; /* ECI */
-
-            binary += "00011010"; /* 26 (UTF-8) */
-
+            
+            if ((eciMode >= 0) && (eciMode <= 127)) {
+                binary += "0";
+                qr_bscan(eciMode, 0x40);
+            }
+            
+            if ((eciMode >= 128) && (eciMode <= 16383)) {
+                binary += "10";
+                qr_bscan(eciMode, 0x1000);
+            }
+            
+            if ((eciMode >= 16384) && (eciMode <= 999999)) {
+                binary += "110";
+                qr_bscan(eciMode, 0x100000);
+            }
         }
 
         if (inputDataType == DataType.GS1) {

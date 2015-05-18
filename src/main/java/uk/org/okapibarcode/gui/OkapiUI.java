@@ -1958,8 +1958,8 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
     }
 
     public void encodeData() {
-        int pWidth = 480;
-        int pHeight = 480;
+        int pWidth = 688;
+        int pHeight = 459;
         double bWidth;
         double bHeight;
 
@@ -1986,7 +1986,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
             topPanel.updateUI();
             return;
         }
-
+        
         bWidth = pWidth / symbol.getWidth();
 
         bHeight = pHeight / symbol.getHeight();

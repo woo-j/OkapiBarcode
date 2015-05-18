@@ -16,7 +16,7 @@
 
 package uk.org.okapibarcode.backend;
 
-import static java.nio.charset.StandardCharsets.ISO_8859_1;
+import java.io.UnsupportedEncodingException;
 
 import java.awt.geom.Ellipse2D;
 import java.util.Arrays;
@@ -117,6 +117,7 @@ public class MaxiCode extends Symbol {
     private int[] set = new int[144];
     private int[] character = new int[144];
     private boolean[][] grid = new boolean[33][30];
+    private boolean eciLatch;
 
     /**
      * Sets the MaxiCode mode to use. Only modes 2 to 6 are supported.
@@ -220,7 +221,9 @@ public class MaxiCode extends Symbol {
         // copy input data over into source
         int sourcelen = content.length();
         source = new int[sourcelen];
-        byte[] inputBytes = content.getBytes(ISO_8859_1);
+
+        eciProcess();
+        
         for (int i = 0; i < sourcelen; i++) {
             source[i] = inputBytes[i] & 0xFF;
         }
@@ -777,6 +780,37 @@ public class MaxiCode extends Symbol {
                 i++;
             }
         } while (i < set.length);
+        
+        /* Inject ECI codes to beginning of data, according to Table 3 */
+        if (eciMode != 3) {
+            insert(0, 27); // ECI
+            
+            if ((eciMode >= 0) && (eciMode <= 31)) {
+                insert(1, eciMode & 0x1F);
+                length += 2;
+            }
+            
+            if ((eciMode >= 32) && (eciMode <= 1023)) {
+                insert(1, 0x20 + (eciMode >> 6));
+                insert(2, eciMode & 0x3F);
+                length += 3;
+            }
+            
+            if ((eciMode >= 1024) && (eciMode <= 32767)) {
+                insert(1, 0x30 + (eciMode >> 12));
+                insert(2, (eciMode >> 6) & 0x3F);
+                insert(3, eciMode & 0x3F);
+                length += 4;
+            }
+            
+            if ((eciMode >= 32768) && (eciMode <= 999999)) {
+                insert(1, 0x38 + (eciMode >> 18));
+                insert(2, (eciMode >> 12) & 0x3F);
+                insert(3, (eciMode >> 6) & 0x3F);
+                insert(4, eciMode & 0x3F);
+                length += 5;
+            }
+        }
 
         /* Make sure we haven't exceeded the maximum data length. */
         if ((mode == 2 || mode == 3) && length > 84) {

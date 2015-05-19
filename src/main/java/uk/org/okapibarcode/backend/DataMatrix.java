@@ -15,8 +15,6 @@
  */
 package uk.org.okapibarcode.backend;
 
-import java.io.UnsupportedEncodingException;
-
 /**
  * Implements Data Matrix ECC 200 bar code symbology According to ISO/IEC
  * 16022:2006

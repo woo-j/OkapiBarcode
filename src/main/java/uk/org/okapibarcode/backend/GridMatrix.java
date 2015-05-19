@@ -347,7 +347,6 @@ public class GridMatrix extends Symbol {
         int data_cw, input_latch = 0;
         int data_max;
         int length;
-        boolean reader = false; // FIXME: Get value from user
         String bin;
         int qmarksBefore, qmarksAfter;
 
@@ -409,7 +408,7 @@ public class GridMatrix extends Symbol {
             return false;
         }
 
-        error_number = encodeGridMatrixBinary(length, reader);
+        error_number = encodeGridMatrixBinary(length, readerInit);
         if (error_number != 0) {
             error_msg = "Input data too long";
             return false;

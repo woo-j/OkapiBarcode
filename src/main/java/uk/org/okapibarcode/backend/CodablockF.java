@@ -71,7 +71,6 @@ public class CodablockF extends Symbol {
         int[] row_check = new int[44];
         int k1_sum, k2_sum;
         int k1_check, k2_check;
-        byte[] inputBytes;
 
         input_length = content.length();
         final_mode = cfMode.MODEA;

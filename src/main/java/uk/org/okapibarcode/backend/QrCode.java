@@ -47,7 +47,6 @@ public class QrCode extends Symbol {
     private byte[] grid;
     private byte[] eval;
     private int preferredVersion = 0;
-    private boolean japaneseLatch;
     private int inputLength;
 
     /**
@@ -619,7 +618,6 @@ public class QrCode extends Symbol {
         
         if (eciMode == 20) {
             /* Shift-JIS encoding, use Kanji mode */
-            japaneseLatch = true;
             inputLength = content.length();
             inputData = new int[inputLength];
             for (i = 0; i < inputLength; i++) {
@@ -627,7 +625,6 @@ public class QrCode extends Symbol {
             }
         } else {
             /* Any other encoding method */
-            japaneseLatch = false;
             inputLength = inputBytes.length;
             inputData = new int[inputLength];
             for (i = 0; i < inputLength; i++) {

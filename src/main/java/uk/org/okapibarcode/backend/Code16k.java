@@ -78,15 +78,14 @@ public class Code16k extends Symbol {
         char[] set, fset;
         Mode mode;
         char last_set, last_fset, current_set;
-        int i, j, k, m, e_count, read, mx_reader, writer;
+        int i, j, k, m, read;
         int[] values;
         int bar_characters;
         double glyph_count;
-        int errornum, first_sum, second_sum;
+        int first_sum, second_sum;
         int input_length;
         int c_count;
         boolean f_state;
-        byte[] inputBytes;
         int[] inputData;
 
         if (!content.matches("[\u0000-\u00FF]+")) {
@@ -107,7 +106,6 @@ public class Code16k extends Symbol {
             inputData[i] = inputBytes[i] & 0xFF;
         }
 
-        e_count = 0;
         bar_characters = 0;
         set = new char[160];
         fset = new char[160];

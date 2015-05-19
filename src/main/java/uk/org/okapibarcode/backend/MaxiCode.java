@@ -16,8 +16,6 @@
 
 package uk.org.okapibarcode.backend;
 
-import java.io.UnsupportedEncodingException;
-
 import java.awt.geom.Ellipse2D;
 import java.util.Arrays;
 
@@ -117,7 +115,6 @@ public class MaxiCode extends Symbol {
     private int[] set = new int[144];
     private int[] character = new int[144];
     private boolean[][] grid = new boolean[33][30];
-    private boolean eciLatch;
 
     /**
      * Sets the MaxiCode mode to use. Only modes 2 to 6 are supported.

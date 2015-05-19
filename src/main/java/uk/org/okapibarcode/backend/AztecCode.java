@@ -15,8 +15,6 @@
  */
 package uk.org.okapibarcode.backend;
 
-import java.io.UnsupportedEncodingException;
-
 /**
  * Implements Aztec Code bar code symbology According to ISO/IEC 24778:2008
  * <p>

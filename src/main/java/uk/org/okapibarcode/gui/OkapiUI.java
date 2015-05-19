@@ -447,7 +447,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         outFileFormatLabel.setText("File Format:");
 
-        outFilenameCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Same as Data", "Serial Number" }));
+        outFilenameCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Same as Data", "Line Number" }));
 
         outFormatCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Portable Network Graphic (*.png)", "Joint Photographic Expert Group Image (*.jpg)", "Graphics Interchange Format (*.gif)", "Windows Bitmap (*.bmp)", "Scalable Vector Graphic (*.svg)", "Encapsulated Post Script (*.eps)" }));
 
@@ -520,7 +520,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                             .addComponent(prefixField, javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(folderField, javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(outFormatCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 365, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 79, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(batchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(directoryButton, javax.swing.GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE)
                             .addComponent(runBatchButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
@@ -570,7 +570,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                             .addComponent(outFormatCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(runBatchButton))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(batchOutputArea, javax.swing.GroupLayout.DEFAULT_SIZE, 176, Short.MAX_VALUE)
+                .addComponent(batchOutputArea, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -1300,7 +1300,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 .addContainerGap()
                 .addComponent(encodeInfoArea, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
-            .addComponent(attributeScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 688, Short.MAX_VALUE)
+            .addComponent(attributeScrollPane)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, attributePanelLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(inkButton, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1496,13 +1496,14 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         int inputCount = 0;
         String errorLog;
         String progressLog = "";
-        int i;
+        int i, k;
         int lineCount = 0;
         double percentage;
+        int countLength, currentLength;
 
         errorLog = "Starting batch process..." + '\n';
         batchOutputArea.setText(errorLog);
-
+        
         switch(outFormatCombo.getSelectedIndex()) {
             case 0:
                 extension = ".png";
@@ -1524,27 +1525,35 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 extension = ".eps";
                 break;
         }
-
+        
         for(i = 0; i < sequenceArea.getText().length(); i++) {
             if (sequenceArea.getText().charAt(i) == '\n') {
                 inputCount++;
             }
         }
+        
+        countLength = Integer.toString(inputCount + 1).length();
 
         for(i = 0; i < sequenceArea.getText().length(); i++) {
             if (sequenceArea.getText().charAt(i) == '\n') {
-                outputCount = Integer.toString(lineCount);
-                if (!(thisData.isEmpty())) {
-                    SaveImage saveImage = new SaveImage();
+                currentLength = Integer.toString(lineCount + 1).length();
+                outputCount = "";
+                for (k = 0; k < (countLength - currentLength); k++) {
+                    // Add leading zeroes to file name
+                    outputCount += "0";
+                }
+                outputCount += Integer.toString(lineCount + 1);
+                if (!thisData.equals("")) {
                     if (outFilenameCombo.getSelectedIndex() == 0) {
-                        fullFileName = folderField.getText()
-                                + prefixField.getText() + thisData + extension;
+                        fullFileName = folderField.getText() + prefixField.getText()
+                            + thisData + extension;
                     } else {
                         fullFileName = folderField.getText()
                                 + prefixField.getText() + outputCount + extension;
                     }
+                    File file = new File(fullFileName);
                     try {
-                        File file = new File(fullFileName);
+                        SaveImage saveImage = new SaveImage();
                         dataInput = thisData;
                         compositeInput = "";
                         encodeData();
@@ -1557,7 +1566,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                         errorLog += "I/O exception writing to " + fullFileName
                                 + " at line " + (lineCount + 1) + ": " + e.getMessage() + '\n';
                     }
-                    thisData = "";
                 }
                 lineCount++;
                 percentage = (double)(lineCount) / (double)(inputCount);
@@ -1565,8 +1573,11 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 progressLog = "Completed line " + lineCount + " of "
                         + inputCount + " (" + (int)(percentage) + "% done)";
                 batchOutputArea.setText(errorLog + progressLog);
+                thisData = "";
             } else {
-                thisData += sequenceArea.getText().charAt(i);
+                if (Character.isLetterOrDigit(sequenceArea.getText().charAt(i))) {
+                    thisData += sequenceArea.getText().charAt(i);
+                }
             }
         }
         progressLog += '\n' + "Finished!";

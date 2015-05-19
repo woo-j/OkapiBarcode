@@ -336,7 +336,7 @@
                                   <Component id="folderField" alignment="0" max="32767" attributes="0"/>
                                   <Component id="outFormatCombo" min="-2" pref="365" max="-2" attributes="0"/>
                               </Group>
-                              <EmptySpace pref="79" max="32767" attributes="0"/>
+                              <EmptySpace max="32767" attributes="0"/>
                               <Group type="103" groupAlignment="0" max="-2" attributes="0">
                                   <Component id="directoryButton" pref="131" max="32767" attributes="0"/>
                                   <Component id="runBatchButton" max="32767" attributes="0"/>
@@ -400,7 +400,7 @@
                           </Group>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="batchOutputArea" pref="176" max="32767" attributes="0"/>
+                      <Component id="batchOutputArea" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -490,7 +490,7 @@
                 <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
                   <StringArray count="2">
                     <StringItem index="0" value="Same as Data"/>
-                    <StringItem index="1" value="Serial Number"/>
+                    <StringItem index="1" value="Line Number"/>
                   </StringArray>
                 </Property>
               </Properties>
@@ -562,7 +562,7 @@
                       <Component id="encodeInfoArea" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
-                  <Component id="attributeScrollPane" alignment="0" pref="688" max="32767" attributes="0"/>
+                  <Component id="attributeScrollPane" alignment="0" max="32767" attributes="0"/>
                   <Group type="102" alignment="1" attributes="0">
                       <EmptySpace max="32767" attributes="0"/>
                       <Component id="inkButton" min="-2" pref="130" max="-2" attributes="0"/>

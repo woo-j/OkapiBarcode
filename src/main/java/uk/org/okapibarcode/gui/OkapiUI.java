@@ -1481,6 +1481,8 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
             File file = fileChooser.getSelectedFile();
             try {
                 sequenceArea.setText(OpenFile.ReadFile(file, true));
+                //FIXME: Should be replaced with InputStreamReader to catch UTF-8
+                //or other encoding system data. Currently makes Mojibake.
             } catch (java.io.IOException e) {
                 System.out.println("Cannot read from file" + fileChooser.getSelectedFile().toString());
             }
@@ -1546,7 +1548,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 if (!thisData.equals("")) {
                     if (outFilenameCombo.getSelectedIndex() == 0) {
                         fullFileName = folderField.getText() + prefixField.getText()
-                            + thisData + extension;
+                            + osFriendly(thisData) + extension;
                     } else {
                         fullFileName = folderField.getText()
                                 + prefixField.getText() + outputCount + extension;
@@ -1575,7 +1577,9 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 batchOutputArea.setText(errorLog + progressLog);
                 thisData = "";
             } else {
-                if (Character.isLetterOrDigit(sequenceArea.getText().charAt(i))) {
+                char currentChar = sequenceArea.getText().charAt(i);
+                
+                if ((currentChar != 0x0D) && (currentChar != 0x0A)) {
                     thisData += sequenceArea.getText().charAt(i);
                 }
             }
@@ -1584,6 +1588,55 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         batchOutputArea.setText(errorLog + progressLog);
     }//GEN-LAST:event_runBatchButtonActionPerformed
 
+    private String osFriendly(String data) {
+        /* Allow only permissable characters to be used in filenames */
+        
+        String dataCopy = "";
+        char c;
+        boolean valid;
+        
+        for (int i = 0; i < data.length(); i++) {
+            c = data.charAt(i);
+            
+            valid = true;
+            if ((c > 0x00) && (c < 0x20)) {
+                valid = false;
+            }
+            if ((c > 0x7E) && (c < 0xA0)) {
+                valid = false;
+            }
+            
+            switch (c) {
+                case '/':
+                case '\\':
+                case '?':
+                case '%':
+                case '*':
+                case ':':
+                case '|':
+                case '"':
+                case '<':
+                case '>':
+                case '.':
+                case ',':
+                case '=':
+                case '+':
+                case ']':
+                case '[':
+                case '!':
+                case '@':
+                    valid = false;
+            }
+            
+            if (valid) {
+                dataCopy += c;
+            }
+            
+        }
+        
+        return dataCopy;
+    }
+    
     private void inkButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_inkButtonActionPerformed
         // Select colour for foreground
         final JColorChooser chooser = new JColorChooser();

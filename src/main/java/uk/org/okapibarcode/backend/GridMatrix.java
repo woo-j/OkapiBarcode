@@ -398,6 +398,7 @@ public class GridMatrix extends Symbol {
                 /* GB2312 encoding didn't work, use other ECI mode */
                 eciProcess(); // Get ECI mode
                 length = inputBytes.length;
+                inputIntArray = new int[length];
                 for (i = 0; i < length; i++) {
                     inputIntArray[i] = inputBytes[i] & 0xFF;
                 }                

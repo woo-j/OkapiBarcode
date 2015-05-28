@@ -23,8 +23,13 @@ import java.awt.event.TextEvent;
 import java.awt.event.TextListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 
 import javax.swing.BorderFactory;
 import javax.swing.JColorChooser;
@@ -1480,12 +1485,25 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
             try {
-                sequenceArea.setText(OpenFile.ReadFile(file, true));
-                //FIXME: Should be replaced with InputStreamReader to catch UTF-8
-                //or other encoding system data. Currently makes Mojibake.
-            } catch (java.io.IOException e) {
+                String str;
+                
+                sequenceArea.setText("");
+                
+                BufferedReader in = new BufferedReader(
+                    new InputStreamReader(
+                        new FileInputStream(file), "UTF8"));
+                
+                while ((str = in.readLine()) != null) {
+                    sequenceArea.setText(sequenceArea.getText() + str + '\n');
+                }
+            } catch (UnsupportedEncodingException e) {
+                System.out.println("Encoding exception");                
+            } catch (IOException e) {
                 System.out.println("Cannot read from file" + fileChooser.getSelectedFile().toString());
+            } catch (Exception e) {
+                System.out.println("Exception");
             }
+        
         }
     }//GEN-LAST:event_batchFileButtonActionPerformed
 

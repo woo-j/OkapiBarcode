@@ -1468,7 +1468,7 @@ public class MicroQrCode extends Symbol {
             grid[(8 * size) + i] += 0x20;
             grid[(i * size) + 8] += 0x20;
         }
-        grid[(8 * size) + 8] += 20;
+        grid[(8 * size) + 8] += 0x20;
     }
 
     private void placeFinderPattern(int size, int x, int y) {

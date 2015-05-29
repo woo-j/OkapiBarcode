@@ -233,16 +233,16 @@ public class MicroQrCode extends Symbol {
         }
 
         /* Eliminate possible versions depending on length of binary data */
-        if ((binaryCount[0] - 3) > 20) {
+        if (binaryCount[0] > 20) {
             version_valid[0] = false;
         }
-        if ((binaryCount[1] - 5) > 40) {
+        if (binaryCount[1] > 40) {
             version_valid[1] = false;
         }
-        if ((binaryCount[2] - 7) > 84) {
+        if (binaryCount[2] > 84) {
             version_valid[2] = false;
         }
-        if ((binaryCount[3] - 9) > 128) {
+        if (binaryCount[3] > 128) {
             error_msg = "Input data too long";
             return false;
         }

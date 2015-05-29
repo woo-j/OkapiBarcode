@@ -37,11 +37,7 @@ public class MicroQrCode extends Symbol {
 
     private qrMode[] inputMode;
     private String binary;
-    private boolean inter_byte_used;
-    private boolean inter_alphanum_used;
-    private boolean inter_kanji_used;
-    private int[] binary_count = new int[4];
-    private String full_stream;
+    private int[] binaryCount = new int[4];
     private int[] grid;
     private int[] eval;
     private int preferredVersion;
@@ -156,6 +152,9 @@ public class MicroQrCode extends Symbol {
         int bitmask;
         int format, format_full;
         String bin;
+        boolean byteModeUsed;
+        boolean alphanumModeUsed;
+        boolean kanjiModeUsed;        
 
         if (content.length() > 35) {
             error_msg = "Input data too long";
@@ -197,40 +196,53 @@ public class MicroQrCode extends Symbol {
                 inputMode[i] = qrMode.NUMERIC;
             }
         }
-
-        if (!(generateIntermediate())) {
-            error_msg = "Input data too long";
-            return false;
+        
+        byteModeUsed = false;
+        alphanumModeUsed = false;
+        kanjiModeUsed = false;
+        
+        for (i = 0; i < content.length(); i++) {
+            if (inputMode[i] == qrMode.BINARY) {
+                byteModeUsed = true;
+            }
+            
+            if (inputMode[i] == qrMode.ALPHANUM) {
+                alphanumModeUsed = true;
+            }
+            
+            if (inputMode[i] == qrMode.KANJI) {
+                kanjiModeUsed = true;
+            }
         }
 
         getBinaryLength();
 
         /* Eliminate possivle versions depending on type of content */
-        if (inter_byte_used) {
+        if (byteModeUsed) {
             version_valid[0] = false;
             version_valid[1] = false;
         }
 
-        if (inter_alphanum_used) {
+        if (alphanumModeUsed) {
             version_valid[0] = false;
         }
 
-        if (inter_kanji_used) {
+        if (kanjiModeUsed) {
             version_valid[0] = false;
             version_valid[1] = false;
         }
 
         /* Eliminate possible versions depending on length of binary data */
-        if (binary_count[0] > 20) {
+        if ((binaryCount[0] - 3) > 20) {
             version_valid[0] = false;
         }
-        if (binary_count[1] > 40) {
+        if ((binaryCount[1] - 5) > 40) {
             version_valid[1] = false;
         }
-        if (binary_count[2] > 84) {
+        if ((binaryCount[2] - 7) > 84) {
             version_valid[2] = false;
         }
-        if (binary_count[3] > 128) {
+        if ((binaryCount[3] - 9) > 128) {
             error_msg = "Input data too long";
             return false;
         }
@@ -247,7 +259,7 @@ public class MicroQrCode extends Symbol {
             version_valid[0] = false;
             version_valid[1] = false;
             version_valid[2] = false;
-            if (binary_count[3] > 80) {
+            if (binaryCount[3] > 80) {
                 error_msg = "Input data too long";
                 return false;
             }
@@ -255,13 +267,13 @@ public class MicroQrCode extends Symbol {
 
         if (ecc_level == EccMode.M) {
             version_valid[0] = false;
-            if (binary_count[1] > 32) {
+            if (binaryCount[1] > 32) {
                 version_valid[1] = false;
             }
-            if (binary_count[2] > 68) {
+            if (binaryCount[2] > 68) {
                 version_valid[2] = false;
             }
-            if (binary_count[3] > 112) {
+            if (binaryCount[3] > 112) {
                 error_msg = "Input data too long";
                 return false;
             }
@@ -288,28 +300,32 @@ public class MicroQrCode extends Symbol {
 
         /* If there is enough unused space then increase the error correction level */
         if (version == 3) {
-            if (binary_count[3] <= 112) {
+            if (binaryCount[3] <= 112) {
                 ecc_level = EccMode.M;
             }
-            if (binary_count[3] <= 80) {
+            if (binaryCount[3] <= 80) {
                 ecc_level = EccMode.Q;
             }
         }
 
         if (version == 2) {
-            if (binary_count[2] <= 68) {
+            if (binaryCount[2] <= 68) {
                 ecc_level = EccMode.M;
             }
         }
 
         if (version == 1) {
-            if (binary_count[1] <= 32) {
+            if (binaryCount[1] <= 32) {
                 ecc_level = EccMode.M;
             }
         }
 
-        full_stream = "";
-        expandBinaryString(version);
+        binary = "";
+        generateBinary(version);
+        if (binary.length() > 128) {
+            error_msg = "Input data too long";
+            return false;
+        }
 
         switch (version) {
         case 0:
@@ -556,74 +572,151 @@ public class MicroQrCode extends Symbol {
         return retval;
     }
 
-    private boolean generateIntermediate() {
-        /* Convert input data to an "intermediate stage" where data is binary encoded but
-	   control information is not */
+    private String toBinary(int data, int h) {
+        String argument = "";
+        for (;
+        (h != 0); h >>= 1) {
+            if ((data & h) != 0) {
+                argument += "1";
+            } else {
+                argument += "0";
+            }
+        }
+        return argument;
+    }
+
+    private void getBinaryLength() {
+        int i;
+        qrMode currentMode = qrMode.NULL;
+        int blockLength;
+
+        /* Always include a terminator */
+        for (i = 0; i < 4; i++) {
+            binaryCount[i] = 0;
+        }
+        
+        for (i = 0; i < content.length(); i++) {
+            if(currentMode != inputMode[i]) {
+                
+                blockLength = 0;
+                do {
+                    blockLength++;
+                } while (((i + blockLength) < content.length())
+                    && (inputMode[i + blockLength] == inputMode[i]));
+                
+                switch (inputMode[i]) {
+                    case KANJI:
+                        binaryCount[2] += 5 + (blockLength * 13);
+                        binaryCount[3] += 7 + (blockLength * 13);
+                        
+                        break;
+                    case BINARY:
+                        binaryCount[2] += 6 + (blockLength * 8);
+                        binaryCount[3] += 8 + (blockLength * 8);
+                        break;
+                    case ALPHANUM:
+                        int alphaLength;
+                        
+                        if ((blockLength % 2) == 1) {
+                            /* Odd length block */
+                            alphaLength = ((blockLength - 1) / 2) * 11;
+                            alphaLength += 6;
+                        } else {
+                            /* Even length block */
+                            alphaLength = (blockLength / 2) * 11;
+                        }
+                        
+                        binaryCount[1] += 4 + alphaLength;
+                        binaryCount[2] += 6 + alphaLength;
+                        binaryCount[3] += 8 + alphaLength;
+                        break;
+                    case NUMERIC:
+                        int numLength;
+                        
+                        switch(blockLength % 3) {
+                            case 1:
+                                /* one digit left over */
+                                numLength = ((blockLength - 1) / 3) * 10;
+                                numLength += 4;
+                                break;
+                            case 2:
+                                /* two digits left over */
+                                numLength = ((blockLength - 2) / 3) * 10;
+                                numLength += 7;
+                                break;
+                            default:
+                                /* blockLength is a multiple of 3 */
+                                numLength = (blockLength / 3) * 10;
+                                break;
+                        }
+                        
+                        binaryCount[0] += 3 + numLength;
+                        binaryCount[1] += 5 + numLength;
+                        binaryCount[2] += 7 + numLength;
+                        binaryCount[3] += 9 + numLength;
+                        break;
+                }
+                currentMode = inputMode[i];
+            }
+        }
+        
+        /* Add terminator */
+        if (binaryCount[1] < 37) {
+            binaryCount[1] += 5;
+        }
+        
+        if (binaryCount[2] < 81) {
+            binaryCount[2] += 7;
+        }
+        
+        if (binaryCount[3] < 125) {
+            binaryCount[3] += 9;
+        }
+    }
+
+    private void generateBinary(int version) {
         int position = 0;
-        int short_data_block_length, i;
+        int blockLength, i;
         qrMode data_block;
         int msb, lsb, prod, jis;
         String oneChar;
         byte[] jisBytes;
-        int count, first, second, third;
-
-        binary = "";
-        inter_kanji_used = false;
-        inter_byte_used = false;
-        inter_alphanum_used = false;
-
-//        if (debug) {
-//            for (i = 0; i < content.length(); i++) {
-//                switch (inputMode[i]) {
-//                case KANJI:
-//                    System.out.print("K");
-//                    break;
-//                case BINARY:
-//                    System.out.print("B");
-//                    break;
-//                case ALPHANUM:
-//                    System.out.print("A");
-//                    break;
-//                case NUMERIC:
-//                    System.out.print("N");
-//                    break;
-//                }
-//            }
-//            System.out.println();
-//        }
+        int count, first, second, third;        
         
         if (debug) {
             System.out.printf("\tIntermediate code: ");
         }
-
+        
         do {
-            if (binary.length() > 128) {
-                return false;
-            }
-
             data_block = inputMode[position];
-            short_data_block_length = 0;
+            blockLength = 0;
             do {
-                short_data_block_length++;
-            } while (((short_data_block_length + position) < content.length())
-                    && (inputMode[position + short_data_block_length] == data_block));
+                blockLength++;
+            } while (((blockLength + position) < content.length())
+                    && (inputMode[position + blockLength] == data_block));
 
             switch (data_block) {
             case KANJI:
                 /* Kanji mode */
                 /* Mode indicator */
-                binary += "K";
-                inter_kanji_used = true;
+                switch (version) {
+                case 2:
+                    binary += "11";
+                    break;
+                case 3:
+                    binary += "011";
+                    break;
+                }
 
                 /* Character count indicator */
-                binary += (char) short_data_block_length;
+                binary += toBinary(blockLength, 1 << version); /* version = 2..3 */
 
                 if (debug) {
-                    System.out.printf("KANJ ");
+                    System.out.printf("KANJ [%d] ", blockLength);
                 }
 
                 /* Character representation */
-                for (i = 0; i < short_data_block_length; i++) {
+                for (i = 0; i < blockLength; i++) {
                     oneChar = "";
                     oneChar += content.charAt(position + i);
 
@@ -632,7 +725,7 @@ public class MicroQrCode extends Symbol {
                         jisBytes = oneChar.getBytes("SJIS");
                     } catch (UnsupportedEncodingException e) {
                         error_msg = "Character encoding error";
-                        return false;
+                        return;
                     }
 
                     jis = ((jisBytes[0] & 0xFF) << 8) + (jisBytes[1] & 0xFF);
@@ -651,28 +744,30 @@ public class MicroQrCode extends Symbol {
                     if (debug) {
                         System.out.printf("%d ", prod);
                     }
-
-                    if (binary.length() > 128) {
-                        return false;
-                    }
                 }
 
                 break;
             case BINARY:
                 /* Byte mode */
                 /* Mode indicator */
-                binary += "B";
-                inter_byte_used = true;
+                switch (version) {
+                case 2:
+                    binary += "10";
+                    break;
+                case 3:
+                    binary += "010";
+                    break;
+                }
 
                 /* Character count indicator */
-                binary += (char) short_data_block_length;
+                binary += toBinary(blockLength, 2 << version); /* version = 2..3 */
 
                 if (debug) {
-                    System.out.printf("BYTE ");
+                    System.out.printf("BYTE [%d] ", blockLength);
                 }
 
                 /* Character representation */
-                for (i = 0; i < short_data_block_length; i++) {
+                for (i = 0; i < blockLength; i++) {
                     int lbyte = content.charAt(position + i);
 
                     binary += toBinary(lbyte, 0x80);
@@ -680,34 +775,39 @@ public class MicroQrCode extends Symbol {
                     if (debug) {
                         System.out.printf("%d ", lbyte);
                     }
-
-                    if (binary.length() > 128) {
-                        return false;
-                    }
                 }
 
                 break;
             case ALPHANUM:
                 /* Alphanumeric mode */
                 /* Mode indicator */
-                binary += "A";
-                inter_alphanum_used = true;
+                switch (version) {
+                case 1:
+                    binary += "1";
+                    break;
+                case 2:
+                    binary += "01";
+                    break;
+                case 3:
+                    binary += "001";
+                    break;
+                }
 
                 /* Character count indicator */
-                binary += (char) short_data_block_length;
+                binary += toBinary(blockLength, 2 << version); /* version = 1..3 */
 
                 if (debug) {
-                    System.out.printf("ALPH ");
+                    System.out.printf("ALPH [%d] ", blockLength);
                 }
 
                 /* Character representation */
                 i = 0;
-                while (i < short_data_block_length) {
+                while (i < blockLength) {
                     first = positionOf(content.charAt(position + i), RHODIUM);
                     count = 1;
                     prod = first;
 
-                    if ((i + 1) < short_data_block_length) {
+                    if ((i + 1) < blockLength) {
                         if (inputMode[position + i + 1] == qrMode.ALPHANUM) {
                             second = positionOf(content.charAt(position + i + 1), RHODIUM);
                             count = 2;
@@ -721,34 +821,40 @@ public class MicroQrCode extends Symbol {
                         System.out.printf("%d ", prod);
                     }
 
-                    if (binary.length() > 128) {
-                        return false;
-                    }
-
                     i += 2;
-                };
+                }
 
                 break;
             case NUMERIC:
                 /* Numeric mode */
                 /* Mode indicator */
-                binary += "N";
+                switch (version) {
+                case 1:
+                    binary += "0";
+                    break;
+                case 2:
+                    binary += "00";
+                    break;
+                case 3:
+                    binary += "000";
+                    break;
+                }
 
                 /* Character count indicator */
-                binary += (char) short_data_block_length;
+                binary += toBinary(blockLength, 4 << version); /* version = 0..3 */
 
                 if (debug) {
-                    System.out.printf("NUMB ");
+                    System.out.printf("NUMB [%d] ", blockLength);
                 }
 
                 /* Character representation */
                 i = 0;
-                while (i < short_data_block_length) {
+                while (i < blockLength) {
                     first = Character.getNumericValue(content.charAt(position + i));
                     count = 1;
                     prod = first;
 
-                    if ((i + 1) < short_data_block_length) {
+                    if ((i + 1) < blockLength) {
                         if (inputMode[position + i + 1] == qrMode.NUMERIC) {
                             second = Character.getNumericValue(content.charAt(position + i + 1));
                             count = 2;
@@ -756,7 +862,7 @@ public class MicroQrCode extends Symbol {
                         }
                     }
 
-                    if ((i + 2) < short_data_block_length) {
+                    if ((i + 2) < blockLength) {
                         if (inputMode[position + i + 2] == qrMode.NUMERIC) {
                             third = Character.getNumericValue(content.charAt(position + i + 2));
                             count = 3;
@@ -770,174 +876,39 @@ public class MicroQrCode extends Symbol {
                         System.out.printf("%d ", prod);
                     }
 
-                    if (binary.length() > 128) {
-                        return false;
-                    }
-
                     i += 3;
-                };
+                }
                 break;
             }
 
-            position += short_data_block_length;
+            position += blockLength;
         } while (position < content.length() - 1);
+        
+        /* Add terminator */
+        switch(version) {
+            case 0:
+                binary += "000";
+                break;
+            case 1:
+                if (binary.length() < 37) {
+                    binary += "00000";
+                }
+                break;
+            case 2:
+                if (binary.length() < 81) {
+                    binary += "0000000";
+                }
+                break;
+            case 3:
+                if (binary.length() < 125) {
+                    binary += "000000000";
+                }
+                break;
+        }
         
         if (debug) {
             System.out.printf("\n");
         }
-
-        return true;
-    }
-
-    private String toBinary(int data, int h) {
-        String argument = "";
-        for (;
-        (h != 0); h >>= 1) {
-            if ((data & h) != 0) {
-                argument += "1";
-            } else {
-                argument += "0";
-            }
-        }
-        return argument;
-    }
-
-    private void getBinaryLength() {
-        int i;
-
-        for (i = 0; i < 4; i++) {
-            binary_count[i] = 0;
-        }
-
-        i = 0;
-        do {
-            if ((binary.charAt(i) == '0') || (binary.charAt(i) == '1')) {
-                binary_count[0]++;
-                binary_count[1]++;
-                binary_count[2]++;
-                binary_count[3]++;
-                i++;
-            } else {
-                switch (binary.charAt(i)) {
-                case 'K':
-                    binary_count[2] += 5;
-                    binary_count[3] += 7;
-                    i += 2;
-                    break;
-                case 'B':
-                    binary_count[2] += 6;
-                    binary_count[3] += 8;
-                    i += 2;
-                    break;
-                case 'A':
-                    binary_count[1] += 4;
-                    binary_count[2] += 6;
-                    binary_count[3] += 8;
-                    i += 2;
-                    break;
-                case 'N':
-                    binary_count[0] += 3;
-                    binary_count[1] += 5;
-                    binary_count[2] += 7;
-                    binary_count[3] += 9;
-                    i += 2;
-                    break;
-                }
-            }
-        } while (i < binary.length());
-    }
-
-    private void expandBinaryString(int version) {
-        int i;
-
-        i = 0;
-        do {
-            switch (binary.charAt(i)) {
-            case '1':
-                full_stream += "1";
-                i++;
-                break;
-            case '0':
-                full_stream += "0";
-                i++;
-                break;
-            case 'N':
-                /* Numeric Mode */
-                /* Mode indicator */
-                switch (version) {
-                case 1:
-                    full_stream += "0";
-                    break;
-                case 2:
-                    full_stream += "00";
-                    break;
-                case 3:
-                    full_stream += "000";
-                    break;
-                }
-
-                /* Character count indicator */
-                full_stream += toBinary(binary.charAt(i + 1), 4 << version); /* version = 0..3 */
-
-                i += 2;
-                break;
-            case 'A':
-                /* Alphanumeric Mode */
-                /* Mode indicator */
-                switch (version) {
-                case 1:
-                    full_stream += "1";
-                    break;
-                case 2:
-                    full_stream += "01";
-                    break;
-                case 3:
-                    full_stream += "001";
-                    break;
-                }
-
-                /* Character count indicator */
-                full_stream += toBinary(binary.charAt(i + 1), 2 << version); /* version = 1..3 */
-
-                i += 2;
-                break;
-            case 'B':
-                /* Byte Mode */
-                /* Mode indicator */
-                switch (version) {
-                case 2:
-                    full_stream += "10";
-                    break;
-                case 3:
-                    full_stream += "010";
-                    break;
-                }
-
-                /* Character count indicator */
-                full_stream += toBinary(binary.charAt(i + 1), 2 << version); /* version = 2..3 */
-
-                i += 2;
-                break;
-            case 'K':
-                /* Kanji Mode */
-                /* Mode indicator */
-                switch (version) {
-                case 2:
-                    full_stream += "11";
-                    break;
-                case 3:
-                    full_stream += "011";
-                    break;
-                }
-
-                /* Character count indicator */
-                full_stream += toBinary(binary.charAt(i + 1), 1 << version); /* version = 2..3 */
-
-                i += 2;
-                break;
-            }
-
-        } while (i < binary.length());
     }
 
     private void generateM1Symbol() {
@@ -951,51 +922,38 @@ public class MicroQrCode extends Symbol {
         bits_total = 20;
         latch = 0;
 
-        /* Add terminator */
-        bits_left = bits_total - full_stream.length();
-        if (bits_left <= 3) {
+        /* Manage last (4-bit) block */
+        bits_left = bits_total - binary.length();
+        if (bits_left <= 4) {
             for (i = 0; i < bits_left; i++) {
-                full_stream += "0";
+                binary += "0";
             }
             latch = 1;
-        } else {
-            full_stream += "000";
-        }
-
-        if (latch == 0) {
-            /* Manage last (4-bit) block */
-            bits_left = bits_total - full_stream.length();
-            if (bits_left <= 4) {
-                for (i = 0; i < bits_left; i++) {
-                    full_stream += "0";
-                }
-                latch = 1;
-            }
         }
 
         if (latch == 0) {
             /* Complete current byte */
-            remainder = 8 - (full_stream.length() % 8);
+            remainder = 8 - (binary.length() % 8);
             if (remainder == 8) {
                 remainder = 0;
             }
             for (i = 0; i < remainder; i++) {
-                full_stream += "0";
+                binary += "0";
             }
 
             /* Add padding */
-            bits_left = bits_total - full_stream.length();
+            bits_left = bits_total - binary.length();
             if (bits_left > 4) {
                 remainder = (bits_left - 4) / 8;
                 for (i = 0; i < remainder; i++) {
                     if ((i & 1) != 0) {
-                        full_stream += "00010001";
+                        binary += "00010001";
                     } else {
-                        full_stream += "11101100";
+                        binary += "11101100";
                     }
                 }
             }
-            full_stream += "0000";
+            binary += "0000";
         }
 
         data_codewords = 3;
@@ -1004,42 +962,42 @@ public class MicroQrCode extends Symbol {
         /* Copy data into codewords */
         for (i = 0; i < (data_codewords - 1); i++) {
             data_blocks[i] = 0;
-            if (full_stream.charAt(i * 8) == '1') {
+            if (binary.charAt(i * 8) == '1') {
                 data_blocks[i] += 0x80;
             }
-            if (full_stream.charAt((i * 8) + 1) == '1') {
+            if (binary.charAt((i * 8) + 1) == '1') {
                 data_blocks[i] += 0x40;
             }
-            if (full_stream.charAt((i * 8) + 2) == '1') {
+            if (binary.charAt((i * 8) + 2) == '1') {
                 data_blocks[i] += 0x20;
             }
-            if (full_stream.charAt((i * 8) + 3) == '1') {
+            if (binary.charAt((i * 8) + 3) == '1') {
                 data_blocks[i] += 0x10;
             }
-            if (full_stream.charAt((i * 8) + 4) == '1') {
+            if (binary.charAt((i * 8) + 4) == '1') {
                 data_blocks[i] += 0x08;
             }
-            if (full_stream.charAt((i * 8) + 5) == '1') {
+            if (binary.charAt((i * 8) + 5) == '1') {
                 data_blocks[i] += 0x04;
             }
-            if (full_stream.charAt((i * 8) + 6) == '1') {
+            if (binary.charAt((i * 8) + 6) == '1') {
                 data_blocks[i] += 0x02;
             }
-            if (full_stream.charAt((i * 8) + 7) == '1') {
+            if (binary.charAt((i * 8) + 7) == '1') {
                 data_blocks[i] += 0x01;
             }
         }
         data_blocks[2] = 0;
-        if (full_stream.charAt(16) == '1') {
+        if (binary.charAt(16) == '1') {
             data_blocks[2] += 0x08;
         }
-        if (full_stream.charAt(17) == '1') {
+        if (binary.charAt(17) == '1') {
             data_blocks[2] += 0x04;
         }
-        if (full_stream.charAt(18) == '1') {
+        if (binary.charAt(18) == '1') {
             data_blocks[2] += 0x02;
         }
-        if (full_stream.charAt(19) == '1') {
+        if (binary.charAt(19) == '1') {
             data_blocks[2] += 0x01;
         }
         
@@ -1061,55 +1019,40 @@ public class MicroQrCode extends Symbol {
 
         /* Add Reed-Solomon codewords to binary data */
         for (i = 0; i < ecc_codewords; i++) {
-            full_stream += toBinary(ecc_blocks[ecc_codewords - i - 1], 0x80);
+            binary += toBinary(ecc_blocks[ecc_codewords - i - 1], 0x80);
         }
     }
 
     private void generateM2Symbol(EccMode ecc_mode) {
-        int i, latch;
+        int i;
         int bits_total, bits_left, remainder;
         int data_codewords, ecc_codewords;
         int[] data_blocks = new int[6];
         int[] ecc_blocks = new int[7];
         ReedSolomon rs = new ReedSolomon();
 
-        latch = 0;
-
         bits_total = 40; // ecc_mode == EccMode.L
         if (ecc_mode == EccMode.M) {
             bits_total = 32;
         }
 
-        /* Add terminator */
-        bits_left = bits_total - full_stream.length();
-        if (bits_left <= 5) {
-            for (i = 0; i < bits_left; i++) {
-                full_stream += "0";
-            }
-            latch = 1;
-        } else {
-            full_stream += "00000";
+        /* Complete current byte */
+        remainder = 8 - (binary.length() % 8);
+        if (remainder == 8) {
+            remainder = 0;
+        }
+        for (i = 0; i < remainder; i++) {
+            binary += "0";
         }
 
-        if (latch == 0) {
-            /* Complete current byte */
-            remainder = 8 - (full_stream.length() % 8);
-            if (remainder == 8) {
-                remainder = 0;
-            }
-            for (i = 0; i < remainder; i++) {
-                full_stream += "0";
-            }
-
-            /* Add padding */
-            bits_left = bits_total - full_stream.length();
-            remainder = bits_left / 8;
-            for (i = 0; i < remainder; i++) {
-                if ((i & 1) != 0) {
-                    full_stream += "00010001";
-                } else {
-                    full_stream += "11101100";
-                }
+        /* Add padding */
+        bits_left = bits_total - binary.length();
+        remainder = bits_left / 8;
+        for (i = 0; i < remainder; i++) {
+            if ((i & 1) != 0) {
+                binary += "00010001";
+            } else {
+                binary += "11101100";
             }
         }
 
@@ -1123,28 +1066,28 @@ public class MicroQrCode extends Symbol {
         /* Copy data into codewords */
         for (i = 0; i < data_codewords; i++) {
             data_blocks[i] = 0;
-            if (full_stream.charAt(i * 8) == '1') {
+            if (binary.charAt(i * 8) == '1') {
                 data_blocks[i] += 0x80;
             }
-            if (full_stream.charAt((i * 8) + 1) == '1') {
+            if (binary.charAt((i * 8) + 1) == '1') {
                 data_blocks[i] += 0x40;
             }
-            if (full_stream.charAt((i * 8) + 2) == '1') {
+            if (binary.charAt((i * 8) + 2) == '1') {
                 data_blocks[i] += 0x20;
             }
-            if (full_stream.charAt((i * 8) + 3) == '1') {
+            if (binary.charAt((i * 8) + 3) == '1') {
                 data_blocks[i] += 0x10;
             }
-            if (full_stream.charAt((i * 8) + 4) == '1') {
+            if (binary.charAt((i * 8) + 4) == '1') {
                 data_blocks[i] += 0x08;
             }
-            if (full_stream.charAt((i * 8) + 5) == '1') {
+            if (binary.charAt((i * 8) + 5) == '1') {
                 data_blocks[i] += 0x04;
             }
-            if (full_stream.charAt((i * 8) + 6) == '1') {
+            if (binary.charAt((i * 8) + 6) == '1') {
                 data_blocks[i] += 0x02;
             }
-            if (full_stream.charAt((i * 8) + 7) == '1') {
+            if (binary.charAt((i * 8) + 7) == '1') {
                 data_blocks[i] += 0x01;
             }
         }
@@ -1167,7 +1110,7 @@ public class MicroQrCode extends Symbol {
 
         /* Add Reed-Solomon codewords to binary data */
         for (i = 0; i < ecc_codewords; i++) {
-            full_stream += toBinary(ecc_blocks[ecc_codewords - i - 1], 0x80);
+            binary += toBinary(ecc_blocks[ecc_codewords - i - 1], 0x80);
         }
     }
 
@@ -1186,51 +1129,38 @@ public class MicroQrCode extends Symbol {
             bits_total = 68;
         }
 
-        /* Add terminator */
-        bits_left = bits_total - full_stream.length();
-        if (bits_left <= 7) {
+        /* Manage last (4-bit) block */
+        bits_left = bits_total - binary.length();
+        if (bits_left <= 4) {
             for (i = 0; i < bits_left; i++) {
-                full_stream += "0";
+                binary += "0";
             }
             latch = 1;
-        } else {
-            full_stream += "0000000";
-        }
-
-        if (latch == 0) {
-            /* Manage last (4-bit) block */
-            bits_left = bits_total - full_stream.length();
-            if (bits_left <= 4) {
-                for (i = 0; i < bits_left; i++) {
-                    full_stream += "0";
-                }
-                latch = 1;
-            }
         }
 
         if (latch == 0) {
             /* Complete current byte */
-            remainder = 8 - (full_stream.length() % 8);
+            remainder = 8 - (binary.length() % 8);
             if (remainder == 8) {
                 remainder = 0;
             }
             for (i = 0; i < remainder; i++) {
-                full_stream += "0";
+                binary += "0";
             }
 
             /* Add padding */
-            bits_left = bits_total - full_stream.length();
+            bits_left = bits_total - binary.length();
             if (bits_left > 4) {
                 remainder = (bits_left - 4) / 8;
                 for (i = 0; i < remainder; i++) {
                     if ((i & 1) != 0) {
-                        full_stream += "00010001";
+                        binary += "00010001";
                     } else {
-                        full_stream += "11101100";
+                        binary += "11101100";
                     }
                 }
             }
-            full_stream += "0000";
+            binary += "0000";
         }
 
         data_codewords = 11;
@@ -1243,60 +1173,60 @@ public class MicroQrCode extends Symbol {
         /* Copy data into codewords */
         for (i = 0; i < (data_codewords - 1); i++) {
             data_blocks[i] = 0;
-            if (full_stream.charAt(i * 8) == '1') {
+            if (binary.charAt(i * 8) == '1') {
                 data_blocks[i] += 0x80;
             }
-            if (full_stream.charAt((i * 8) + 1) == '1') {
+            if (binary.charAt((i * 8) + 1) == '1') {
                 data_blocks[i] += 0x40;
             }
-            if (full_stream.charAt((i * 8) + 2) == '1') {
+            if (binary.charAt((i * 8) + 2) == '1') {
                 data_blocks[i] += 0x20;
             }
-            if (full_stream.charAt((i * 8) + 3) == '1') {
+            if (binary.charAt((i * 8) + 3) == '1') {
                 data_blocks[i] += 0x10;
             }
-            if (full_stream.charAt((i * 8) + 4) == '1') {
+            if (binary.charAt((i * 8) + 4) == '1') {
                 data_blocks[i] += 0x08;
             }
-            if (full_stream.charAt((i * 8) + 5) == '1') {
+            if (binary.charAt((i * 8) + 5) == '1') {
                 data_blocks[i] += 0x04;
             }
-            if (full_stream.charAt((i * 8) + 6) == '1') {
+            if (binary.charAt((i * 8) + 6) == '1') {
                 data_blocks[i] += 0x02;
             }
-            if (full_stream.charAt((i * 8) + 7) == '1') {
+            if (binary.charAt((i * 8) + 7) == '1') {
                 data_blocks[i] += 0x01;
             }
         }
 
         if (ecc_mode == EccMode.L) {
             data_blocks[11] = 0;
-            if (full_stream.charAt(80) == '1') {
+            if (binary.charAt(80) == '1') {
                 data_blocks[2] += 0x08;
             }
-            if (full_stream.charAt(81) == '1') {
+            if (binary.charAt(81) == '1') {
                 data_blocks[2] += 0x04;
             }
-            if (full_stream.charAt(82) == '1') {
+            if (binary.charAt(82) == '1') {
                 data_blocks[2] += 0x02;
             }
-            if (full_stream.charAt(83) == '1') {
+            if (binary.charAt(83) == '1') {
                 data_blocks[2] += 0x01;
             }
         }
 
         if (ecc_mode == EccMode.M) {
             data_blocks[9] = 0;
-            if (full_stream.charAt(64) == '1') {
+            if (binary.charAt(64) == '1') {
                 data_blocks[2] += 0x08;
             }
-            if (full_stream.charAt(65) == '1') {
+            if (binary.charAt(65) == '1') {
                 data_blocks[2] += 0x04;
             }
-            if (full_stream.charAt(66) == '1') {
+            if (binary.charAt(66) == '1') {
                 data_blocks[2] += 0x02;
             }
-            if (full_stream.charAt(67) == '1') {
+            if (binary.charAt(67) == '1') {
                 data_blocks[2] += 0x01;
             }
         }
@@ -1319,19 +1249,17 @@ public class MicroQrCode extends Symbol {
 
         /* Add Reed-Solomon codewords to binary data */
         for (i = 0; i < ecc_codewords; i++) {
-            full_stream += toBinary(ecc_blocks[ecc_codewords - i - 1], 0x80);
+            binary += toBinary(ecc_blocks[ecc_codewords - i - 1], 0x80);
         }
     }
 
     private void generateM4Symbol(EccMode ecc_mode) {
-        int i, latch;
+        int i;
         int bits_total, bits_left, remainder;
         int data_codewords, ecc_codewords;
         int[] data_blocks = new int[17];
         int[] ecc_blocks = new int[15];
         ReedSolomon rs = new ReedSolomon();
-
-        latch = 0;
 
         bits_total = 128; // ecc_mode == EccMode.L
         if (ecc_mode == EccMode.M) {
@@ -1341,36 +1269,23 @@ public class MicroQrCode extends Symbol {
             bits_total = 80;
         }
 
-        /* Add terminator */
-        bits_left = bits_total - full_stream.length();
-        if (bits_left <= 9) {
-            for (i = 0; i < bits_left; i++) {
-                full_stream += "0";
-            }
-            latch = 1;
-        } else {
-            full_stream += "000000000";
+        /* Complete current byte */
+        remainder = 8 - (binary.length() % 8);
+        if (remainder == 8) {
+            remainder = 0;
+        }
+        for (i = 0; i < remainder; i++) {
+            binary += "0";
         }
 
-        if (latch == 0) {
-            /* Complete current byte */
-            remainder = 8 - (full_stream.length() % 8);
-            if (remainder == 8) {
-                remainder = 0;
-            }
-            for (i = 0; i < remainder; i++) {
-                full_stream += "0";
-            }
-
-            /* Add padding */
-            bits_left = bits_total - full_stream.length();
-            remainder = bits_left / 8;
-            for (i = 0; i < remainder; i++) {
-                if ((i & 1) != 0) {
-                    full_stream += "00010001";
-                } else {
-                    full_stream += "11101100";
-                }
+        /* Add padding */
+        bits_left = bits_total - binary.length();
+        remainder = bits_left / 8;
+        for (i = 0; i < remainder; i++) {
+            if ((i & 1) != 0) {
+                binary += "00010001";
+            } else {
+                binary += "11101100";
             }
         }
 
@@ -1388,28 +1303,28 @@ public class MicroQrCode extends Symbol {
         /* Copy data into codewords */
         for (i = 0; i < data_codewords; i++) {
             data_blocks[i] = 0;
-            if (full_stream.charAt(i * 8) == '1') {
+            if (binary.charAt(i * 8) == '1') {
                 data_blocks[i] += 0x80;
             }
-            if (full_stream.charAt((i * 8) + 1) == '1') {
+            if (binary.charAt((i * 8) + 1) == '1') {
                 data_blocks[i] += 0x40;
             }
-            if (full_stream.charAt((i * 8) + 2) == '1') {
+            if (binary.charAt((i * 8) + 2) == '1') {
                 data_blocks[i] += 0x20;
             }
-            if (full_stream.charAt((i * 8) + 3) == '1') {
+            if (binary.charAt((i * 8) + 3) == '1') {
                 data_blocks[i] += 0x10;
             }
-            if (full_stream.charAt((i * 8) + 4) == '1') {
+            if (binary.charAt((i * 8) + 4) == '1') {
                 data_blocks[i] += 0x08;
             }
-            if (full_stream.charAt((i * 8) + 5) == '1') {
+            if (binary.charAt((i * 8) + 5) == '1') {
                 data_blocks[i] += 0x04;
             }
-            if (full_stream.charAt((i * 8) + 6) == '1') {
+            if (binary.charAt((i * 8) + 6) == '1') {
                 data_blocks[i] += 0x02;
             }
-            if (full_stream.charAt((i * 8) + 7) == '1') {
+            if (binary.charAt((i * 8) + 7) == '1') {
                 data_blocks[i] += 0x01;
             }
         }
@@ -1432,7 +1347,7 @@ public class MicroQrCode extends Symbol {
 
         /* Add Reed-Solomon codewords to binary data */
         for (i = 0; i < ecc_codewords; i++) {
-            full_stream += toBinary(ecc_blocks[ecc_codewords - i - 1], 0x80);
+            binary += toBinary(ecc_blocks[ecc_codewords - i - 1], 0x80);
         }
     }
 
@@ -1501,14 +1416,14 @@ public class MicroQrCode extends Symbol {
 
         int i, n, x, y;
 
-        n = full_stream.length();
+        n = binary.length();
         y = size - 1;
         i = 0;
         do {
             x = (size - 2) - (row * 2);
 
             if ((grid[(y * size) + (x + 1)] & 0xf0) == 0) {
-                if (full_stream.charAt(i) == '1') {
+                if (binary.charAt(i) == '1') {
                     grid[(y * size) + (x + 1)] = 0x01;
                 } else {
                     grid[(y * size) + (x + 1)] = 0x00;
@@ -1518,7 +1433,7 @@ public class MicroQrCode extends Symbol {
 
             if (i < n) {
                 if ((grid[(y * size) + x] & 0xf0) == 0) {
-                    if (full_stream.charAt(i) == '1') {
+                    if (binary.charAt(i) == '1') {
                         grid[(y * size) + x] = 0x01;
                     } else {
                         grid[(y * size) + x] = 0x00;

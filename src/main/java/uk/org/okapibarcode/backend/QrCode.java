@@ -445,7 +445,7 @@ public class QrCode extends Symbol {
         EccMode ecc_level;
         int max_cw;
         int autosize;
-        int target_binlen, version, blocks;
+        int targetCwCount, version, blocks;
         int size;
         int bitmask;
         String bin;
@@ -516,42 +516,42 @@ public class QrCode extends Symbol {
         }
 
         /* Ensure maxium error correction capacity */
-        if (est_binlen <= qr_data_codewords_M[version - 1]) {
+        if (est_binlen <= (qr_data_codewords_M[version - 1] * 8)) {
             ecc_level = EccMode.M;
         }
-        if (est_binlen <= qr_data_codewords_Q[version - 1]) {
+        if (est_binlen <= (qr_data_codewords_Q[version - 1] * 8)) {
             ecc_level = EccMode.Q;
         }
-        if (est_binlen <= qr_data_codewords_H[version - 1]) {
+        if (est_binlen <= (qr_data_codewords_H[version - 1] * 8)) {
             ecc_level = EccMode.H;
         }
 
-        target_binlen = qr_data_codewords_L[version - 1];
+        targetCwCount = qr_data_codewords_L[version - 1];
         blocks = qr_blocks_L[version - 1];
         switch (ecc_level) {
             case M:
-                target_binlen = qr_data_codewords_M[version - 1];
+                targetCwCount = qr_data_codewords_M[version - 1];
                 blocks = qr_blocks_M[version - 1];
                 break;
             case Q:
-                target_binlen = qr_data_codewords_Q[version - 1];
+                targetCwCount = qr_data_codewords_Q[version - 1];
                 blocks = qr_blocks_Q[version - 1];
                 break;
             case H:
-                target_binlen = qr_data_codewords_H[version - 1];
+                targetCwCount = qr_data_codewords_H[version - 1];
                 blocks = qr_blocks_H[version - 1];
                 break;
         }
 
-        datastream = new int[target_binlen + 1];
+        datastream = new int[targetCwCount + 1];
         fullstream = new int[qr_total_codewords[version - 1] + 1];
 
-        if (!(qr_binary(version, target_binlen, est_binlen))) {
+        if (!(qr_binary(version, targetCwCount))) {
             /* Invalid characters used - stop encoding */
             return false;
         }
 
-        add_ecc(version, target_binlen, blocks);
+        add_ecc(version, targetCwCount, blocks);
 
         size = qr_sizes[version - 1];
 
@@ -781,7 +781,7 @@ public class QrCode extends Symbol {
         return count;
     }
 
-    private boolean qr_binary(int version, int target_binlen, int est_binlen) {
+    private boolean qr_binary(int version, int target_binlen) {
         /* Convert input data to a binary stream and add padding */
         int position = 0;
         int short_data_block_length, i, scheme = 1;

@@ -154,7 +154,7 @@ public class MicroQrCode extends Symbol {
         String bin;
         boolean byteModeUsed;
         boolean alphanumModeUsed;
-        boolean kanjiModeUsed;        
+        boolean kanjiModeUsed;
 
         if (content.length() > 35) {
             error_msg = "Input data too long";
@@ -165,6 +165,11 @@ public class MicroQrCode extends Symbol {
             System.out.printf("Micro QR Code Content = \"%s\"\n", content);
         }
         
+        if (!inputCharCheck()) {
+            error_msg = "Invalid characters in input data";
+            return false;
+        }
+             
         for (i = 0; i < 4; i++) {
             version_valid[i] = true;
         }
@@ -470,6 +475,44 @@ public class MicroQrCode extends Symbol {
 
         plotSymbol();
         return true;
+    }
+    
+    private boolean inputCharCheck() {
+        int qmarkBefore, qmarkAfter;
+        int i;
+        byte[] temp;
+        
+        /* Check that input includes valid characters */
+        
+        if (content.matches("[\u0000-\u00FF]+")) {
+            /* All characters in ISO 8859-1 */
+            return true;
+        }
+        
+        /* Otherwise check for Shift-JIS characters */
+        qmarkBefore = 0;
+        for (i = 0; i < content.length(); i++) {
+            if (content.charAt(i) == '?') {
+                qmarkBefore++;
+            }
+        }
+        
+        try {
+            temp = content.getBytes("SJIS");
+        } catch (UnsupportedEncodingException e) {
+            error_msg = "Character encoding error";
+            return false;
+        }
+        
+        qmarkAfter = 0;
+        for (i = 0; i < temp.length; i++) {
+            if (temp[i] == '?')  {
+                qmarkAfter++;
+            }
+        }
+        
+        /* If these values are the same, conversion was sucessful */
+        return (qmarkBefore == qmarkAfter);
     }
 
     private char levelToLetter(EccMode ecc_mode) {

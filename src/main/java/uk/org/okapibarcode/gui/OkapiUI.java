@@ -2977,7 +2977,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         symbolName = new DefaultMutableTreeNode(new SymbolType("Two Track", SymbolType.Encoding.PHARMA_TWOTRACK));
         symbolSubType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("PZN", SymbolType.Encoding.PZN));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("PZN8", SymbolType.Encoding.PZN));
         symbolType.add(symbolName);
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables

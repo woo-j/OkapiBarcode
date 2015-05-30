@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Robin Stuart
+ * Copyright 2015 Robin Stuart
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,15 @@
 package uk.org.okapibarcode.backend;
 
 /**
- * PZN is a Code 39 based symbology used by the pharmaceutical industry in 
- * Germany. PZN encodes a 6 digit number and includes a modulo-10 check digit.
+ * PZN8 is a Code 39 based symbology used by the pharmaceutical industry in 
+ * Germany. PZN8 encodes a 7 digit number and includes a modulo-10 check digit.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class Pharmazentralnummer extends Symbol {
 
     /* Pharmazentral Nummer is a Code 3 of 9 symbol with an extra
-     * check digit.
+     * check digit. Now generates PZN-8.
      */
 
     @Override
@@ -34,7 +34,7 @@ public class Pharmazentralnummer extends Symbol {
         int zeroes, count = 0, check_digit;
         Code3Of9 c = new Code3Of9();
 
-        if (l > 6) {
+        if (l > 7) {
             error_msg = "Input data too long";
             return false;
         }
@@ -45,14 +45,14 @@ public class Pharmazentralnummer extends Symbol {
         }
 
         localstr = "-";
-        zeroes = 6 - l + 1;
+        zeroes = 7 - l + 1;
         for (int i = 1; i < zeroes; i++)
             localstr += '0';
 
         localstr += content;
 
-        for (int i = 1; i < 7; i++) {
-            count += (i + 1) * Character.getNumericValue(localstr.charAt(i));
+        for (int i = 1; i < 8; i++) {
+            count += i * Character.getNumericValue(localstr.charAt(i));
         }
 
         check_digit = count % 11;
@@ -67,7 +67,7 @@ public class Pharmazentralnummer extends Symbol {
         encodeInfo += "Check Digit: " + check_digit + "\n";
 
         localstr += (char)(check_digit + '0');
-
+        
         try {
             c.setContent(localstr);
         } catch (OkapiException e) {
@@ -75,7 +75,7 @@ public class Pharmazentralnummer extends Symbol {
             return false;
         }
 
-        readable = "PZN" + localstr + (char)(check_digit + '0');
+        readable = "PZN" + localstr;
         pattern = new String[1];
         pattern[0] = c.pattern[0];
         row_count = 1;

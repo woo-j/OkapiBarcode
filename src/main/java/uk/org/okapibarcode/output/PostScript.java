@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Robin Stuart
+ * Copyright 2015 Robin Stuart
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import java.util.ArrayList;
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
-public class PostScript {
+public class PostScript {  
     public ArrayList<Rectangle> rectangle = new ArrayList<>();
     public ArrayList<uk.org.okapibarcode.backend.TextBox> textbox = new ArrayList<>();
     public ArrayList<uk.org.okapibarcode.backend.Hexagon> hexagon = new ArrayList<>();
@@ -99,7 +99,7 @@ public class PostScript {
                             + String.format("%.2f", fgGreen) + " "
                             + String.format("%.2f", fgBlue) + " setrgbcolor\n";
                     outStream += rectangle.get(i).height + ".00 "
-                            + (symbol_height - rectangle.get(i).y) + ".00 TB "
+                            + (symbol_height - rectangle.get(i).y - rectangle.get(i).height) + ".00 TB "
                             + rectangle.get(i).x + ".00 "
                             + rectangle.get(i).width + ".00 TR\n";
                 } else {
@@ -110,7 +110,7 @@ public class PostScript {
                                 + String.format("%.2f", fgGreen) + " "
                                 + String.format("%.2f", fgBlue) + " setrgbcolor\n";
                         outStream += rectangle.get(i).height + ".00 "
-                                + (symbol_height - rectangle.get(i).y) + ".00 ";
+                                + (symbol_height - rectangle.get(i).y - rectangle.get(i).height) + ".00 ";
                     }
                     outStream += "TB " + rectangle.get(i).x + ".00 "
                             + rectangle.get(i).width + ".00 TR\n";
@@ -123,7 +123,7 @@ public class PostScript {
                     outStream += "TE\n";
                     outStream += String.format("%.2f", fgRed) + " "
                             + String.format("%.2f", fgGreen) + " "
-                            + String.format("%.2f", fgBlue) + " setrgbcolor\\n";
+                            + String.format("%.2f", fgBlue) + " setrgbcolor\n";
                 }
                 outStream += "matrix currentmatrix\n";
                 outStream += "/Helvetica findfont\n";
@@ -150,12 +150,25 @@ public class PostScript {
                             + String.format("%.2f", fgGreen) + " "
                             + String.format("%.2f", fgBlue) + " setrgbcolor\n";
                 }
-                outStream += String.format("%.2f", symbol_height - ellipse.get(i).x + (ellipse.get(i).width / 2))
-                        + " " + String.format("%.2f", ellipse.get(i).y + (ellipse.get(i).width / 2))
-                        + " " + String.format("%.2f", ellipse.get(i).width / 2)
-                        + " " + String.format("%.2f", ellipse.get(i + 1).x + (ellipse.get(i + 1).width / 2))
-                        + " " + String.format("%.2f", symbol_height - ellipse.get(i + 1).y + (ellipse.get(i + 1).width / 2))
-                        + " " + String.format("%.2f", ellipse.get(i + 1).width / 2)
+                double x_position_1, x_position_2;
+                double y_position_1, y_position_2;
+                double radius_1, radius_2;
+                
+                x_position_1 = ellipse.get(i).x + (ellipse.get(i).width / 2);
+                x_position_2 = ellipse.get(i + 1).x + (ellipse.get(i + 1).width / 2);
+                y_position_1 = symbol_height - ellipse.get(i).y - (ellipse.get(i).width / 2);
+                y_position_2 = symbol_height - ellipse.get(i + 1).y - (ellipse.get(i + 1).width / 2);
+                radius_1 = ellipse.get(i).width / 2;
+                radius_2 = ellipse.get(i + 1).width / 2;
+                
+                outStream += String.format("%.2f", x_position_1)
+                        + " " + String.format("%.2f", y_position_1)
+                        + " " + String.format("%.2f", radius_1)
+                        + " " + String.format("%.2f", x_position_2)
+                        + " " + String.format("%.2f", y_position_2)
+                        + " " + String.format("%.2f", radius_2)
+                        + " " + String.format("%.2f", x_position_2 + radius_2)
+                        + " " + String.format("%.2f", y_position_2)
                         + " TC\n";
             }
 
@@ -163,7 +176,7 @@ public class PostScript {
             for(i = 0; i < hexagon.size(); i++) {
                 for(j = 0; j < 6; j++) {
                     outStream += String.format("%.2f", hexagon.get(i).pointX[j]) + " "
-                            + String.format("%.2f", symbol_height - hexagon.get(i).pointY[j]) + " ";
+                            + String.format("%.2f", (symbol_height - hexagon.get(i).pointY[j])) + " ";
                 }
                 outStream += " TH\n";
             }

@@ -35,12 +35,12 @@ import javax.swing.JPanel;
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class SaveSymbol extends JPanel{
-    private int magnification = 1; // Magnification doesn't change depending on symbol size
+    private int magnification = 4; // Magnification doesn't change depending on symbol size
     private int borderSize = 5 * magnification; // Add whitespace when saving to file
     Polygon polygon;
 
     public void setMagnification(int factor) {
-        magnification = factor;
+        magnification = factor * 4;
     }
     
     public void setBorderSize(int borderWidth) {

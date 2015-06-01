@@ -35,10 +35,18 @@ import javax.swing.JPanel;
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class SaveSymbol extends JPanel{
-    private static int magnification = 4; // Magnification doesn't change depending on symbol size
-    private static int borderSize = 5; // Add whitespace when saving to file
+    private int magnification = 1; // Magnification doesn't change depending on symbol size
+    private int borderSize = 5 * magnification; // Add whitespace when saving to file
     Polygon polygon;
 
+    public void setMagnification(int factor) {
+        magnification = factor;
+    }
+    
+    public void setBorderSize(int borderWidth) {
+        borderSize = borderWidth;
+    }
+    
     @Override
     public Dimension getPreferredSize() {
         return new Dimension((OkapiUI.symbol.getWidth() * magnification) + (2 * borderSize),
@@ -57,6 +65,7 @@ public class SaveSymbol extends JPanel{
 
         Graphics2D g2 = (Graphics2D) g;
 
+        // Rectangles
         for (i = 0; i != OkapiUI.symbol.rect.size(); i++) {
             x = (OkapiUI.symbol.rect.get(i).x * magnification) + borderSize;
             y = (OkapiUI.symbol.rect.get(i).y * magnification) + borderSize;
@@ -66,6 +75,7 @@ public class SaveSymbol extends JPanel{
             g2.fill(new Rectangle((int) x, (int) y, (int) w, (int) h));
         }
 
+        // Text
         for (i = 0; i < OkapiUI.symbol.txt.size(); i++) {
             g2.setFont(f);
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -74,6 +84,7 @@ public class SaveSymbol extends JPanel{
                     (float) (OkapiUI.symbol.txt.get(i).y * magnification) + borderSize);
         }
 
+        // Hexagons
         for (i = 0; i < OkapiUI.symbol.hex.size(); i++) {
             polygon = new Polygon();
             for (j = 0; j < 6; j++) {
@@ -85,6 +96,7 @@ public class SaveSymbol extends JPanel{
             g2.fill(polygon);
         }
 
+        // Circles
         for (i = 0; i < OkapiUI.symbol.target.size(); i++) {
             x = (OkapiUI.symbol.target.get(i).x * magnification) + borderSize;
             y = (OkapiUI.symbol.target.get(i).y * magnification) + borderSize;

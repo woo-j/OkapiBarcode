@@ -28,6 +28,8 @@ import java.util.ArrayList;
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class ScalableVectorGraphics {
+    private int magnification = 1; // Magnification doesn't change depending on symbol size
+    private int borderSize = 5 * magnification; // Add whitespace when saving to file
     public ArrayList<Rectangle> rectangle = new ArrayList<>();
     public ArrayList<uk.org.okapibarcode.backend.TextBox> textbox = new ArrayList<>();
     public ArrayList<uk.org.okapibarcode.backend.Hexagon> hexagon = new ArrayList<>();
@@ -38,6 +40,14 @@ public class ScalableVectorGraphics {
     private String fgColour = "000000";
     private String bgColour = "FFFFFF";
 
+    public void setMagnification(int factor) {
+        magnification = factor;
+    }
+    
+    public void setBorderSize(int borderWidth) {
+        borderSize = borderWidth;
+    }    
+    
     public void setShapes(ArrayList<Rectangle> bcs, ArrayList<uk.org.okapibarcode.backend.TextBox> txt,
             ArrayList<uk.org.okapibarcode.backend.Hexagon> hex, ArrayList<Ellipse2D.Double> target) {
         rectangle = bcs;
@@ -47,8 +57,8 @@ public class ScalableVectorGraphics {
     }
 
     public void setValues (String readable, int width, int height) {
-        symbol_width = width;
-        symbol_height = height;
+        symbol_width = width * magnification + (2 * borderSize);
+        symbol_height = height * magnification + (2 * borderSize);
         symbol_text = readable;
     }
 
@@ -78,16 +88,16 @@ public class ScalableVectorGraphics {
 
             // Rectangles
             for (i = 0; i < rectangle.size(); i++) {
-                outStream += "      <rect x=\"" + rectangle.get(i).x
-                        + ".00\" y=\"" + rectangle.get(i).y + ".00\" width=\""
-                        + rectangle.get(i).width + ".00\" height=\""
-                        + rectangle.get(i).height + ".00\" />\n";
+                outStream += "      <rect x=\"" + ((rectangle.get(i).x * magnification) + borderSize)
+                        + ".00\" y=\"" + ((rectangle.get(i).y * magnification) + borderSize) + ".00\" width=\""
+                        + (rectangle.get(i).width * magnification) + ".00\" height=\""
+                        + (rectangle.get(i).height * magnification) + ".00\" />\n";
             }
 
             // Text
             for(i = 0; i < textbox.size(); i++) {
-                outStream += "      <text x=\"" + textbox.get(i).x + "\" y=\""
-                        + textbox.get(i).y + "\" text-anchor=\"middle\"\n";
+                outStream += "      <text x=\"" + ((textbox.get(i).x * magnification) + borderSize) + "\" y=\""
+                        + ((textbox.get(i).y * magnification) + borderSize) + "\" text-anchor=\"middle\"\n";
                 outStream += "         font-family=\"Helvetica\" font-size=\"8\" fill=\""
                         + fgColour + "\" >\n";
                 outStream += "         " + textbox.get(i).text + "\n";
@@ -102,10 +112,13 @@ public class ScalableVectorGraphics {
                     nowColour = bgColour;
                 }
                 outStream += "      <circle cx=\""
-                        + String.format("%.2f", ellipse.get(i).x + (ellipse.get(i).width / 2))
+                        + String.format("%.2f", (((ellipse.get(i).x + 
+                                (ellipse.get(i).width / 2))) * magnification) + borderSize)
                         + "\" cy=\""
-                        + String.format("%.2f", ellipse.get(i).y + (ellipse.get(i).width / 2))
-                        + "\" r=\"" + String.format("%.2f", ellipse.get(i).width / 2)
+                        + String.format("%.2f", (((ellipse.get(i).y + 
+                                (ellipse.get(i).width / 2))) * magnification) + borderSize)
+                        + "\" r=\"" + String.format("%.2f", ((ellipse.get(i).width / 2)
+                                * magnification))
                         + "\" fill=\"#" + nowColour + "\" />\n";
             }
 
@@ -118,8 +131,10 @@ public class ScalableVectorGraphics {
                     } else {
                         outStream += "L ";
                     }
-                    outStream += String.format("%.2f", hexagon.get(i).pointX[j]) + " "
-                            + String.format("%.2f", hexagon.get(i).pointY[j]) + " ";
+                    outStream += String.format("%.2f", ((hexagon.get(i).pointX[j]
+                                * magnification) + borderSize)) + " "
+                            + String.format("%.2f", ((hexagon.get(i).pointY[j]
+                                * magnification) + borderSize)) + " ";
                 }
                 outStream += "Z\" />\n";
             }

@@ -33,30 +33,36 @@ import uk.org.okapibarcode.output.ScalableVectorGraphics;
 public class SaveImage {
 
     public void saveImage(File file, JPanel panel) throws IOException {
+        int magnification = 1;
+        int borderSize = 5;
 
         String extension = "";
         int i = file.getName().lastIndexOf('.');
         if (i > 0) {
             extension = file.getName().substring(i + 1);
         }
-        BufferedImage img = new BufferedImage(panel.getWidth(), panel.getHeight(), BufferedImage.TYPE_INT_RGB);
-        panel.paint(img.getGraphics());
 
         switch (extension) {
             case "png":
             case "gif":
             case "jpg":
             case "bmp":
+                BufferedImage img = new BufferedImage(panel.getWidth(), panel.getHeight(), BufferedImage.TYPE_INT_RGB);
+                panel.paint(img.getGraphics());
                 ImageIO.write(img, extension, file);
                 break;
             case "svg":
                 ScalableVectorGraphics svg = new ScalableVectorGraphics();
+                svg.setMagnification(magnification);
+                svg.setBorderSize(borderSize);
                 svg.setShapes(OkapiUI.symbol.rect, OkapiUI.symbol.txt, OkapiUI.symbol.hex, OkapiUI.symbol.target);
                 svg.setValues(OkapiUI.dataInput, OkapiUI.symbol.getWidth(), OkapiUI.symbol.getHeight());
                 svg.write(file);
                 break;
             case "eps":
                 PostScript eps = new PostScript();
+                eps.setMagnification(magnification);
+                eps.setBorderSize(borderSize);
                 eps.setShapes(OkapiUI.symbol.rect, OkapiUI.symbol.txt, OkapiUI.symbol.hex, OkapiUI.symbol.target);
                 eps.setValues(OkapiUI.dataInput, OkapiUI.symbol.getWidth(), OkapiUI.symbol.getHeight());
                 eps.write(file);

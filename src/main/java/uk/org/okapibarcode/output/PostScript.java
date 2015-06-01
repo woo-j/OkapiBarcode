@@ -28,6 +28,8 @@ import java.util.ArrayList;
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class PostScript {  
+    private int magnification = 1; // Magnification doesn't change depending on symbol size
+    private int borderSize = 5 * magnification; // Add whitespace when saving to file
     public ArrayList<Rectangle> rectangle = new ArrayList<>();
     public ArrayList<uk.org.okapibarcode.backend.TextBox> textbox = new ArrayList<>();
     public ArrayList<uk.org.okapibarcode.backend.Hexagon> hexagon = new ArrayList<>();
@@ -37,6 +39,14 @@ public class PostScript {
     private String symbol_text = "";
     double fgRed, fgGreen, fgBlue;
     double bgRed, bgGreen, bgBlue;
+    
+    public void setMagnification(int factor) {
+        magnification = factor;
+    }
+    
+    public void setBorderSize(int borderWidth) {
+        borderSize = borderWidth;
+    }    
 
     public void setShapes(ArrayList<Rectangle> bcs, ArrayList<uk.org.okapibarcode.backend.TextBox> txt,
             ArrayList<uk.org.okapibarcode.backend.Hexagon> hex, ArrayList<Ellipse2D.Double> target) {
@@ -47,8 +57,8 @@ public class PostScript {
     }
 
     public void setValues (String readable, int width, int height) {
-        symbol_width = width;
-        symbol_height = height;
+        symbol_width = (width * magnification) + (2 * borderSize);
+        symbol_height = (height * magnification) + (2 * borderSize);
         symbol_text = readable;
         fgRed = fgGreen = fgBlue = 0.0;
         bgRed = bgGreen = bgBlue = 1.0;
@@ -99,9 +109,10 @@ public class PostScript {
                             + String.format("%.2f", fgGreen) + " "
                             + String.format("%.2f", fgBlue) + " setrgbcolor\n";
                     outStream += rectangle.get(i).height + ".00 "
-                            + (symbol_height - rectangle.get(i).y - rectangle.get(i).height) + ".00 TB "
-                            + rectangle.get(i).x + ".00 "
-                            + rectangle.get(i).width + ".00 TR\n";
+                            + (((symbol_height - rectangle.get(i).y - 
+                                rectangle.get(i).height) * magnification) + borderSize) + ".00 TB "
+                            + ((rectangle.get(i).x * magnification) + borderSize) + ".00 "
+                            + (rectangle.get(i).width * magnification) + ".00 TR\n";
                 } else {
                     if ((rectangle.get(i).height != rectangle.get(i - 1).height)
                                 || (rectangle.get(i).y != rectangle.get(i - 1).y)) {
@@ -109,11 +120,12 @@ public class PostScript {
                         outStream += String.format("%.2f", fgRed) + " "
                                 + String.format("%.2f", fgGreen) + " "
                                 + String.format("%.2f", fgBlue) + " setrgbcolor\n";
-                        outStream += rectangle.get(i).height + ".00 "
-                                + (symbol_height - rectangle.get(i).y - rectangle.get(i).height) + ".00 ";
+                        outStream += (rectangle.get(i).height * magnification) + ".00 "
+                                + (((symbol_height - rectangle.get(i).y - 
+                                    rectangle.get(i).height) * magnification) + borderSize) + ".00 ";
                     }
-                    outStream += "TB " + rectangle.get(i).x + ".00 "
-                            + rectangle.get(i).width + ".00 TR\n";
+                    outStream += "TB " + ((rectangle.get(i).x * magnification) + borderSize) + ".00 "
+                            + (rectangle.get(i).width * magnification) + ".00 TR\n";
                 }
             }
 
@@ -129,8 +141,9 @@ public class PostScript {
                 outStream += "/Helvetica findfont\n";
                 outStream += "8.00 scalefont setfont\n";
                 outStream += " 0 0 moveto "
-                        + String.format("%.2f", textbox.get(i).x)
-                        + " " + String.format("%.2f", symbol_height - textbox.get(i).y)
+                        + String.format("%.2f", (textbox.get(i).x * magnification) + borderSize)
+                        + " " + String.format("%.2f", ((symbol_height - textbox.get(i).y) 
+                                * magnification) + borderSize)
                         + " translate 0.00 rotate 0 0 moveto\n";
                 outStream += " (" + textbox.get(i).text + ") stringwidth\n";
                 outStream += "pop\n";
@@ -140,6 +153,7 @@ public class PostScript {
             }
 
             // Circles
+            // Because MaxiCode size is fixed, this ignores magnification
             for (i = 0; i < ellipse.size(); i += 2) {
                 if (i == 0) {
                     outStream += "TE\n";
@@ -161,22 +175,23 @@ public class PostScript {
                 radius_1 = ellipse.get(i).width / 2;
                 radius_2 = ellipse.get(i + 1).width / 2;
                 
-                outStream += String.format("%.2f", x_position_1)
-                        + " " + String.format("%.2f", y_position_1)
+                outStream += String.format("%.2f", x_position_1 + borderSize)
+                        + " " + String.format("%.2f", y_position_1 + borderSize)
                         + " " + String.format("%.2f", radius_1)
-                        + " " + String.format("%.2f", x_position_2)
-                        + " " + String.format("%.2f", y_position_2)
+                        + " " + String.format("%.2f", x_position_2 + borderSize)
+                        + " " + String.format("%.2f", y_position_2 + borderSize)
                         + " " + String.format("%.2f", radius_2)
-                        + " " + String.format("%.2f", x_position_2 + radius_2)
-                        + " " + String.format("%.2f", y_position_2)
+                        + " " + String.format("%.2f", x_position_2 + radius_2 + borderSize)
+                        + " " + String.format("%.2f", y_position_2 + borderSize)
                         + " TC\n";
             }
 
             // Hexagons
+            // Because MaxiCode size is fixed, this ignores magnification
             for(i = 0; i < hexagon.size(); i++) {
                 for(j = 0; j < 6; j++) {
-                    outStream += String.format("%.2f", hexagon.get(i).pointX[j]) + " "
-                            + String.format("%.2f", (symbol_height - hexagon.get(i).pointY[j])) + " ";
+                    outStream += String.format("%.2f", (hexagon.get(i).pointX[j] + borderSize)) + " "
+                            + String.format("%.2f", (symbol_height - hexagon.get(i).pointY[j]) + borderSize) + " ";
                 }
                 outStream += " TH\n";
             }

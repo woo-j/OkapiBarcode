@@ -110,7 +110,6 @@ public class Code128 extends Symbol {
         int values[] = new int[200];
         int c;
         String dest = "";
-        byte[] inputBytes;
         int[] inputData;
         int c_count;
         int linkage_flag = 0;

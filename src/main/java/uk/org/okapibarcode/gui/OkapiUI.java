@@ -87,6 +87,7 @@ import uk.org.okapibarcode.backend.Symbol;
 import uk.org.okapibarcode.backend.Telepen;
 import uk.org.okapibarcode.backend.Upc;
 import uk.org.okapibarcode.backend.UspsOneCode;
+import uk.org.okapibarcode.backend.UspsPackage;
 
 /**
  * The main Okapi Barcode UI.
@@ -2526,6 +2527,10 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 UspsOneCode uspsOneCode = new UspsOneCode();
                 uspsOneCode.setContent(dataInput);
                 return uspsOneCode;
+            case USPS_IMPB:
+                UspsPackage uspsPackage = new UspsPackage();
+                uspsPackage.setContent(dataInput);
+                return uspsPackage;
             case QR:
             case QR_HIBC:
                 QrCode qrCode = new QrCode();
@@ -2926,7 +2931,10 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         symbolSubType = new DefaultMutableTreeNode("USPS");
         symbolType.add(symbolSubType);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("OneCode", SymbolType.Encoding.USPS_IMAIL));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Intelligent Mail", SymbolType.Encoding.USPS_IMAIL));
+        symbolSubType.add(symbolName);
+        
+        symbolName = new DefaultMutableTreeNode(new SymbolType("IM Package Barcode", SymbolType.Encoding.USPS_IMPB));
         symbolSubType.add(symbolName);
 
         symbolName = new DefaultMutableTreeNode(new SymbolType("PostNet", SymbolType.Encoding.USPS_POSTNET));

@@ -25,6 +25,7 @@ import java.util.ArrayList;
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public abstract class Symbol {
+
     protected String content;
     protected String readable;
     protected String[] pattern;
@@ -35,6 +36,7 @@ public abstract class Symbol {
     protected int symbol_height;
     protected int symbol_width;
     protected int default_height;
+    protected int moduleWidth;
     protected boolean readerInit;
     protected String encodeInfo = "";
     protected int eciMode = 3;
@@ -56,6 +58,7 @@ public abstract class Symbol {
         row_count = 0;
         error_msg = "";
         default_height = 40;
+        moduleWidth = 1;
         symbol_height = 0;
         symbol_width = 0;
         inputDataType = DataType.ECI;
@@ -96,6 +99,42 @@ public abstract class Symbol {
      */
     public final void unsetReaderInit() {
         readerInit = false;
+    }
+
+    /**
+     * Sets the default bar height for this symbol (default value is <code>40</code>).
+     *
+     * @param barHeight the default bar height for this symbol
+     */
+    public void setBarHeight(int barHeight) {
+        this.default_height = barHeight;
+    }
+
+    /**
+     * Returns the default bar height for this symbol.
+     *
+     * @return the default bar height for this symbol
+     */
+    public int getBarHeight() {
+        return default_height;
+    }
+
+    /**
+     * Sets the module width for this symbol (default value is <code>1</code>).
+     *
+     * @param moduleWidth the module width for this symbol
+     */
+    public void setModuleWidth(int moduleWidth) {
+        this.moduleWidth = moduleWidth;
+    }
+
+    /**
+     * Returns the module width for this symbol.
+     *
+     * @return the module width for this symbol
+     */
+    public int getModuleWidth() {
+        return moduleWidth;
     }
 
     /**
@@ -451,9 +490,8 @@ public abstract class Symbol {
             black = true;
             x = 0;
             for (xBlock = 0; xBlock < pattern[yBlock].length(); xBlock++) {
-                if (black == true) {
-                    black = false;
-                    w = pattern[yBlock].charAt(xBlock) - '0';
+                w = (pattern[yBlock].charAt(xBlock) - '0') * moduleWidth;
+                if (black) {
                     if (row_height[yBlock] == -1) {
                         h = default_height;
                     } else {
@@ -466,10 +504,9 @@ public abstract class Symbol {
                     if ((x + w) > symbol_width) {
                         symbol_width = x + w;
                     }
-                } else {
-                    black = true;
                 }
-                x += (double)(pattern[yBlock].charAt(xBlock) - '0');
+                black = !black;
+                x += w;
             }
             if ((y + h) > symbol_height) {
                 symbol_height = y + h;

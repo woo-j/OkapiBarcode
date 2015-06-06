@@ -15,7 +15,9 @@
  */
 package uk.org.okapibarcode.gui;
 
-import java.awt.Color;
+import static java.awt.Color.BLACK;
+import static java.awt.Color.WHITE;
+
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -25,7 +27,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
 import uk.org.okapibarcode.output.PostScriptRenderer;
-import uk.org.okapibarcode.output.ScalableVectorGraphics;
+import uk.org.okapibarcode.output.SvgRenderer;
 
 /**
  * Save bar code image to image file
@@ -54,16 +56,11 @@ public class SaveImage {
                 ImageIO.write(img, extension, file);
                 break;
             case "svg":
-                ScalableVectorGraphics svg = new ScalableVectorGraphics();
-                svg.setMagnification(magnification);
-                svg.setBorderSize(borderSize);
-                svg.setShapes(OkapiUI.symbol.rect, OkapiUI.symbol.txt, OkapiUI.symbol.hex, OkapiUI.symbol.target);
-                svg.setValues(OkapiUI.dataInput, OkapiUI.symbol.getWidth(), OkapiUI.symbol.getHeight());
-                svg.write(file);
+                SvgRenderer svg = new SvgRenderer(new FileOutputStream(file), magnification, WHITE, BLACK, borderSize);
+                svg.render(OkapiUI.symbol);
                 break;
             case "eps":
-                FileOutputStream out = new FileOutputStream(file);
-                PostScriptRenderer eps = new PostScriptRenderer(out, magnification, Color.WHITE, Color.BLACK, borderSize);
+                PostScriptRenderer eps = new PostScriptRenderer(new FileOutputStream(file), magnification, WHITE, BLACK, borderSize);
                 eps.render(OkapiUI.symbol);
                 break;
             default:

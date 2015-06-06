@@ -22,8 +22,6 @@ import uk.org.okapibarcode.backend.Symbol;
 
 /**
  * Renders symbols to some output format.
- *
- * TODO: SVG output should be renderer, too
  */
 public interface SymbolRenderer {
 

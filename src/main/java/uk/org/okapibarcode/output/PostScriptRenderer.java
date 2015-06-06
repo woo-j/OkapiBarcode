@@ -119,7 +119,7 @@ public class PostScriptRenderer implements SymbolRenderer {
                     writer.append(ink.getRed() / 255).append(" ")
                           .append(ink.getGreen() / 255).append(" ")
                           .append(ink.getBlue() / 255).append(" setrgbcolor\n");
-                    writer.append(rect.height).append(" ").append(((height - rect.y - rect.height) * magnification) + margin).append(" TB ")
+                    writer.append(rect.height).append(" ").append(((height - rect.y - rect.height) * magnification) - margin).append(" TB ")
                           .append((rect.x * magnification) + margin).append(" ").append(rect.width * magnification).append(" TR\n");
                 } else {
                     Rectangle prev = symbol.rect.get(i - 1);
@@ -129,7 +129,7 @@ public class PostScriptRenderer implements SymbolRenderer {
                               .append(ink.getGreen() / 255).append(" ")
                               .append(ink.getBlue() / 255).append(" setrgbcolor\n");
                         writer.append(rect.height * magnification).append(" ")
-                              .append(((height - rect.y - rect.height) * magnification) + margin).append(" ");
+                              .append(((height - rect.y - rect.height) * magnification) - margin).append(" ");
                     }
                     writer.append("TB ").append((rect.x * magnification) + margin).append(" ").append(rect.width * magnification).append(" TR\n");
                 }
@@ -148,7 +148,7 @@ public class PostScriptRenderer implements SymbolRenderer {
                 writer.append("/Helvetica findfont\n");
                 writer.append(8.0 * magnification).append(" scalefont setfont\n");
                 writer.append(" 0 0 moveto ").append((text.x * magnification) + margin).append(" ")
-                      .append(((height - text.y) * magnification) + margin).append(" translate 0.00 rotate 0 0 moveto\n");
+                      .append(((height - text.y) * magnification) - margin).append(" translate 0.00 rotate 0 0 moveto\n");
                 writer.append(" (").append(text.text).append(") stringwidth\n");
                 writer.append("pop\n");
                 writer.append("-2 div 0 rmoveto\n");
@@ -177,13 +177,13 @@ public class PostScriptRenderer implements SymbolRenderer {
                 double r1 = ellipse1.width / 2;
                 double r2 = ellipse2.width / 2;
                 writer.append(x1 + margin)
-                      .append(" ").append(y1 + margin)
+                      .append(" ").append(y1 - margin)
                       .append(" ").append(r1)
                       .append(" ").append(x2 + margin)
-                      .append(" ").append(y2 + margin)
+                      .append(" ").append(y2 - margin)
                       .append(" ").append(r2)
                       .append(" ").append(x2 + r2 + margin)
-                      .append(" ").append(y2 + margin)
+                      .append(" ").append(y2 - margin)
                       .append(" TC\n");
             }
 
@@ -192,7 +192,7 @@ public class PostScriptRenderer implements SymbolRenderer {
             for (int i = 0; i < symbol.hex.size(); i++) {
                 Hexagon hexagon = symbol.hex.get(i);
                 for (int j = 0; j < 6; j++) {
-                    writer.append(hexagon.pointX[j] + margin).append(" ").append((height - hexagon.pointY[j]) + margin).append(" ");
+                    writer.append(hexagon.pointX[j] + margin).append(" ").append((height - hexagon.pointY[j]) - margin).append(" ");
                 }
                 writer.append(" TH\n");
             }

@@ -20,12 +20,18 @@ import java.awt.geom.Ellipse2D;
 import java.util.Arrays;
 
 /**
+ * <p>
  * Implements MaxiCode according to ISO 16023:2000.
+ *
  * <p>
  * MaxiCode employs a pattern of hexagons around a central 'bulls-eye'
  * finder pattern. Encoding in several modes is supported, but encoding in
  * Mode 2 and 3 require primary messages to be set. Input characters can be
  * any from the ISO 8859-1 (Latin-1) character set.
+ *
+ * <p>
+ * TODO: Add ECI functionality.
+ *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  * @author Daniel Gredler
  */
@@ -220,7 +226,7 @@ public class MaxiCode extends Symbol {
         source = new int[sourcelen];
 
         eciProcess();
-        
+
         for (int i = 0; i < sourcelen; i++) {
             source[i] = inputBytes[i] & 0xFF;
         }
@@ -777,29 +783,29 @@ public class MaxiCode extends Symbol {
                 i++;
             }
         } while (i < set.length);
-        
+
         /* Inject ECI codes to beginning of data, according to Table 3 */
         if (eciMode != 3) {
             insert(0, 27); // ECI
-            
+
             if ((eciMode >= 0) && (eciMode <= 31)) {
                 insert(1, eciMode & 0x1F);
                 length += 2;
             }
-            
+
             if ((eciMode >= 32) && (eciMode <= 1023)) {
                 insert(1, 0x20 + (eciMode >> 6));
                 insert(2, eciMode & 0x3F);
                 length += 3;
             }
-            
+
             if ((eciMode >= 1024) && (eciMode <= 32767)) {
                 insert(1, 0x30 + (eciMode >> 12));
                 insert(2, (eciMode >> 6) & 0x3F);
                 insert(3, eciMode & 0x3F);
                 length += 4;
             }
-            
+
             if ((eciMode >= 32768) && (eciMode <= 999999)) {
                 insert(1, 0x38 + (eciMode >> 18));
                 insert(2, (eciMode >> 12) & 0x3F);

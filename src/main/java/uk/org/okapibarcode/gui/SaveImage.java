@@ -15,14 +15,16 @@
  */
 package uk.org.okapibarcode.gui;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
-import uk.org.okapibarcode.output.PostScript;
+import uk.org.okapibarcode.output.PostScriptRenderer;
 import uk.org.okapibarcode.output.ScalableVectorGraphics;
 
 /**
@@ -60,12 +62,9 @@ public class SaveImage {
                 svg.write(file);
                 break;
             case "eps":
-                PostScript eps = new PostScript();
-                eps.setMagnification(magnification);
-                eps.setBorderSize(borderSize);
-                eps.setShapes(OkapiUI.symbol.rect, OkapiUI.symbol.txt, OkapiUI.symbol.hex, OkapiUI.symbol.target);
-                eps.setValues(OkapiUI.dataInput, OkapiUI.symbol.getWidth(), OkapiUI.symbol.getHeight());
-                eps.write(file);
+                FileOutputStream out = new FileOutputStream(file);
+                PostScriptRenderer eps = new PostScriptRenderer(out, magnification, Color.WHITE, Color.BLACK, borderSize);
+                eps.render(OkapiUI.symbol);
                 break;
             default:
                 System.out.println("Unsupported output format");

@@ -16,12 +16,14 @@
 
 package uk.org.okapibarcode.output;
 
+import java.io.IOException;
+
 import uk.org.okapibarcode.backend.Symbol;
 
 /**
  * Renders symbols to some output format.
  *
- * TODO: PostScript and SVG output should be renderers, too
+ * TODO: SVG output should be renderer, too
  */
 public interface SymbolRenderer {
 
@@ -29,7 +31,8 @@ public interface SymbolRenderer {
      * Renders the specified symbology.
      *
      * @param symbol the symbology to render
+     * @throws IOException if there is an I/O error
      */
-    void render(Symbol symbol);
+    void render(Symbol symbol) throws IOException;
 
 }

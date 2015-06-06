@@ -254,6 +254,10 @@ public abstract class Symbol {
         }
     }
 
+    public String getContent() {
+        return content;
+    }
+
     protected void eciProcess() {
         int qmarksBefore, qmarksAfter;
         int i;

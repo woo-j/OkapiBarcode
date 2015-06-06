@@ -31,7 +31,6 @@ import org.junit.runners.Parameterized.Parameters;
 import org.reflections.Reflections;
 
 import uk.org.okapibarcode.output.Java2DRenderer;
-import uk.org.okapibarcode.output.SymbolRenderer;
 
 /**
  * <p>
@@ -258,7 +257,7 @@ public class SymbolTest {
         g2d.setPaint(Color.WHITE);
         g2d.fillRect(0, 0, width, height);
 
-        SymbolRenderer renderer = new Java2DRenderer(g2d, magnification, Color.WHITE, Color.BLACK);
+        Java2DRenderer renderer = new Java2DRenderer(g2d, magnification, Color.WHITE, Color.BLACK);
         renderer.render(symbol);
 
         g2d.dispose();

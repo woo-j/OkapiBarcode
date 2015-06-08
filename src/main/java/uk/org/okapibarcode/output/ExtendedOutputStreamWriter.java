@@ -19,6 +19,7 @@ package uk.org.okapibarcode.output;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 
 /**
  * {@link OutputStreamWriter} extension which provides some convenience methods for writing numbers.
@@ -29,13 +30,13 @@ class ExtendedOutputStreamWriter extends OutputStreamWriter {
     private final String doubleFormat;
 
     /**
-     * Creates a new extended output stream writer.
+     * Creates a new extended output stream writer, using the UTF-8 charset.
      *
      * @param out the stream to write to
      * @param doubleFormat the format to use when writing doubles to the stream
      */
     public ExtendedOutputStreamWriter(OutputStream out, String doubleFormat) {
-        super(out);
+        super(out, StandardCharsets.UTF_8);
         this.doubleFormat = doubleFormat;
     }
 

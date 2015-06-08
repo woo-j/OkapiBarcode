@@ -16,12 +16,13 @@
 
 package uk.org.okapibarcode.output;
 
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 import org.junit.Test;
 
@@ -68,12 +69,13 @@ public class PostScriptRendererTest {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PostScriptRenderer renderer = new PostScriptRenderer(baos, magnification, paper, ink, margin);
         renderer.render(symbol);
-        byte[] actual = baos.toByteArray();
+        String actual = new String(baos.toByteArray(), StandardCharsets.UTF_8);
 
         InputStream is = getClass().getResourceAsStream(expectationFile);
-        byte[] expected = new byte[is.available()];
-        is.read(expected);
+        byte[] expectedBytes = new byte[is.available()];
+        is.read(expectedBytes);
+        String expected = new String(expectedBytes, StandardCharsets.UTF_8);
 
-        assertArrayEquals(expected, actual);
+        assertEquals(expected, actual);
     }
 }

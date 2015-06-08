@@ -57,6 +57,13 @@ public class PostScriptRendererTest {
     }
 
     @Test
+    public void testCode93Colors() throws IOException {
+        Code93 code93 = new Code93();
+        code93.setContent("123456789");
+        test(code93, 1, Color.GREEN, Color.RED, 5, "code93-colors.eps");
+    }
+
+    @Test
     public void testMaxiCodeBasic() throws IOException {
         MaxiCode maxicode = new MaxiCode();
         maxicode.setMode(4);

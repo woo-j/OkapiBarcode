@@ -83,11 +83,11 @@ public class SvgRenderer implements SymbolRenderer {
 
         String fgColour = String.format("%02X", ink.getRed())
                         + String.format("%02X", ink.getGreen())
-                        + String.format("%02X", ink.getRed());
+                        + String.format("%02X", ink.getBlue());
 
         String bgColour = String.format("%02X", paper.getRed())
                         + String.format("%02X", paper.getGreen())
-                        + String.format("%02X", paper.getRed());
+                        + String.format("%02X", paper.getBlue());
 
         try (ExtendedOutputStreamWriter writer = new ExtendedOutputStreamWriter(out, "%.2f")) {
 

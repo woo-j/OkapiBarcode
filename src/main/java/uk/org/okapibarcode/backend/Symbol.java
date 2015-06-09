@@ -195,11 +195,7 @@ public abstract class Symbol {
      * @return the height of the symbol, including the human-readable text, if any
      */
     public int getHeight() {
-        return getHeight(txt.isEmpty());
-    }
-
-    protected int getHeight(boolean withoutHumanReadable) {
-        if (withoutHumanReadable) {
+        if (txt.isEmpty()) {
             return symbol_height;
         } else {
             return symbol_height + getHumanReadableHeight();
@@ -207,13 +203,13 @@ public abstract class Symbol {
     }
 
     /**
-     * Returns the height of the human-readable text. This height is an approximation, since it is
-     * calculated without access to a font engine.
+     * Returns the height of the human-readable text, including the space between the text and other symbols.
+     * This height is an approximation, since it is calculated without access to a font engine.
      *
      * @return the height of the human-readable text
      */
     public int getHumanReadableHeight() {
-        return (int) fontSize;
+        return (int) Math.ceil(fontSize * 1.2); // 0.2 space between bars and text
     }
 
     protected int positionOf(char thischar, char[] LookUp) {
@@ -568,7 +564,8 @@ public abstract class Symbol {
 
         if (!(readable.isEmpty())) {
             // Calculated position is approximately central
-            TextBox text = new TextBox(((symbol_width - (5.0 * readable.length())) / 2), getHeight(false), readable);
+            double baseline = getHeight() + fontSize;
+            TextBox text = new TextBox(((symbol_width - (5.0 * readable.length())) / 2), baseline, readable);
             txt.add(text);
         }
     }

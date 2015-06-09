@@ -249,8 +249,8 @@ public class SymbolTest {
     private static BufferedImage draw(Symbol symbol) {
 
         int magnification = 10;
-        int width = symbol.symbol_width * magnification;
-        int height = symbol.symbol_height * magnification;
+        int width = symbol.getWidth() * magnification;
+        int height = symbol.getHeight() * magnification;
 
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
         Graphics2D g2d = img.createGraphics();
@@ -309,13 +309,17 @@ public class SymbolTest {
      * @throws ReflectiveOperationException if there is any reflection error
      * @throws IllegalArgumentException if the specified parameter is not valid
      */
-    private static void invoke(Object object, Method setter, Object parameter) throws ReflectiveOperationException,
-                    IllegalArgumentException {
+    private static < E extends Enum< E >> void invoke(Object object, Method setter, Object parameter)
+                    throws ReflectiveOperationException, IllegalArgumentException {
         Class< ? > paramType = setter.getParameters()[0].getType();
         if (String.class.equals(paramType)) {
             setter.invoke(object, parameter.toString());
         } else if (int.class.equals(paramType)) {
             setter.invoke(object, Integer.parseInt(parameter.toString()));
+        } else if (paramType.isEnum()) {
+            @SuppressWarnings("unchecked")
+            Class< E > e = (Class< E >) paramType;
+            setter.invoke(object, Enum.valueOf(e, parameter.toString()));
         } else {
             throw new RuntimeException("Unknown setter type: " + paramType);
         }

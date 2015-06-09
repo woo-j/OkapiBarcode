@@ -71,7 +71,7 @@ public class Java2DRenderer implements SymbolRenderer {
 
         Map< TextAttribute, Object > attributes = new HashMap<>();
         attributes.put(TextAttribute.TRACKING, 0);
-        Font f = new Font("Arial", Font.PLAIN, (int) (9 * magnification)).deriveFont(attributes);
+        Font f = new Font(symbol.getFontName(), Font.PLAIN, (int) (symbol.getFontSize() * magnification)).deriveFont(attributes);
 
         Font oldFont = g2d.getFont();
         Color oldColor = g2d.getColor();

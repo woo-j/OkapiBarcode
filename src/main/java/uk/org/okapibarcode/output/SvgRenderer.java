@@ -121,7 +121,8 @@ public class SvgRenderer implements SymbolRenderer {
                 writer.append("      <text x=\"").append((text.x * magnification) + margin)
                       .append("\" y=\"").append((text.y * magnification) + margin)
                       .append("\" text-anchor=\"middle\"\n");
-                writer.append("         font-family=\"Helvetica\" font-size=\"").append(8.0 * magnification)
+                writer.append("         font-family=\"").append(symbol.getFontName())
+                      .append("\" font-size=\"").append(symbol.getFontSize() * magnification)
                       .append("\" fill=\"").append(fgColour).append("\" >\n");
                 writer.append("         ").append(text.text).append("\n");
                 writer.append("      </text>\n");

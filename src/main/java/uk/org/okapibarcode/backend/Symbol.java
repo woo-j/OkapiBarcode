@@ -27,25 +27,27 @@ import java.util.ArrayList;
 public abstract class Symbol {
 
     protected String content;
-    protected String readable;
+    protected String readable = "";
     protected String[] pattern;
-    protected int row_count;
+    protected int row_count = 0;
     protected int[] row_height;
     protected boolean debug = false;
-    protected String error_msg;
-    protected int symbol_height;
-    protected int symbol_width;
-    protected int default_height;
-    protected int moduleWidth;
+    protected String error_msg = "";
+    protected int symbol_height = 0;
+    protected int symbol_width = 0;
+    protected int default_height = 40;
+    protected int moduleWidth = 1;
+    protected String fontName = "Helvetica";
+    protected double fontSize = 8;
     protected boolean readerInit;
     protected String encodeInfo = "";
     protected int eciMode = 3;
     protected byte[] inputBytes;
+    protected DataType inputDataType = DataType.ECI;
 
     public enum DataType {
         UTF8, LATIN1, BINARY, GS1, HIBC, ECI
     }
-    protected DataType inputDataType;
 
     // TODO: These values to become accessible only to renderer
     public ArrayList< Rectangle > rect = new ArrayList<>();
@@ -54,14 +56,6 @@ public abstract class Symbol {
     public ArrayList< Ellipse2D.Double > target = new ArrayList<>();
 
     public Symbol() {
-        readable = "";
-        row_count = 0;
-        error_msg = "";
-        default_height = 40;
-        moduleWidth = 1;
-        symbol_height = 0;
-        symbol_width = 0;
-        inputDataType = DataType.ECI;
         unsetReaderInit();
     }
 
@@ -138,6 +132,42 @@ public abstract class Symbol {
     }
 
     /**
+     * Sets the name of the font to use to render the human-readable text (default value is <code>Helvetica</code>).
+     *
+     * @param fontName the name of the font to use to render the human-readable text
+     */
+    public void setFontName(String fontName) {
+        this.fontName = fontName;
+    }
+
+    /**
+     * Returns the name of the font to use to render the human-readable text.
+     *
+     * @return the name of the font to use to render the human-readable text
+     */
+    public String getFontName() {
+        return fontName;
+    }
+
+    /**
+     * Sets the size of the font to use to render the human-readable text (default value is <code>8</code>).
+     *
+     * @param fontSize the size of the font to use to render the human-readable text
+     */
+    public void setFontSize(double fontSize) {
+        this.fontSize = fontSize;
+    }
+
+    /**
+     * Returns the size of the font to use to render the human-readable text.
+     *
+     * @return the size of the font to use to render the human-readable text
+     */
+    public double getFontSize() {
+        return fontSize;
+    }
+
+    /**
      * Gets the width of the encoded symbol as a multiple of the
      * x-dimension.
      * @return an <code>integer</code> specifying the width of the symbol
@@ -155,19 +185,28 @@ public abstract class Symbol {
         return encodeInfo;
     }
 
-    // TODO: surely we'll need something better than this to account for the height
-    // of the human readable aspect of different bar codes
     /**
-     * Gets the height of the encoded symbol as a multiple of the
-     * x-dimension.
-     * @return an <code>integer</code> specifying the height of the symbol
+     * Returns the height of the symbol, including the human-readable text, if any. This height is
+     * an approximation, since it is calculated without access to a font engine.
+     *
+     * @return the height of the symbol, including the human-readable text, if any
      */
     public int getHeight() {
         if (txt.isEmpty()) {
             return symbol_height;
         } else {
-            return symbol_height + 10;
+            return symbol_height + getHumanReadableHeight();
         }
+    }
+
+    /**
+     * Returns the height of the human-readable text. This height is an approximation, since it is
+     * calculated without access to a font engine.
+     *
+     * @return the height of the human-readable text
+     */
+    public int getHumanReadableHeight() {
+        return (int) fontSize;
     }
 
     protected int positionOf(char thischar, char[] LookUp) {

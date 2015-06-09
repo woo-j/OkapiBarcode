@@ -145,8 +145,8 @@ public class PostScriptRenderer implements SymbolRenderer {
                           .append(ink.getBlue() / 255).append(" setrgbcolor\n");
                 }
                 writer.append("matrix currentmatrix\n");
-                writer.append("/Helvetica findfont\n");
-                writer.append(8.0 * magnification).append(" scalefont setfont\n");
+                writer.append("/").append(symbol.getFontName()).append(" findfont\n");
+                writer.append(symbol.getFontSize() * magnification).append(" scalefont setfont\n");
                 writer.append(" 0 0 moveto ").append((text.x * magnification) + margin).append(" ")
                       .append(((height - text.y) * magnification) - margin).append(" translate 0.00 rotate 0 0 moveto\n");
                 writer.append(" (").append(text.text).append(") stringwidth\n");

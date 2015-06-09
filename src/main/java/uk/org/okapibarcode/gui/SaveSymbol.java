@@ -42,15 +42,16 @@ public class SaveSymbol extends JPanel{
     public void setMagnification(int factor) {
         magnification = factor * 4;
     }
-    
+
     public void setBorderSize(int borderWidth) {
         borderSize = borderWidth;
     }
-    
+
     @Override
     public Dimension getPreferredSize() {
-        return new Dimension((OkapiUI.symbol.getWidth() * magnification) + (2 * borderSize),
-                (OkapiUI.symbol.getHeight() * magnification) + (2 * borderSize));
+        final int w = (OkapiUI.symbol.getWidth() * magnification) + (2 * borderSize);
+        final int h = (OkapiUI.symbol.getHeight() * magnification) + (2 * borderSize);
+        return new Dimension(w, h);
     }
 
     @Override

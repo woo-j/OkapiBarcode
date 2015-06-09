@@ -66,9 +66,9 @@ public class SvgRendererTest {
     @Test
     public void testCode93CustomFont() throws IOException {
         Code93 code93 = new Code93();
-        code93.setContent("123456789");
         code93.setFontName("Arial");
         code93.setFontSize(26);
+        code93.setContent("123456789");
         test(code93, 1, Color.WHITE, Color.BLACK, 5, "code93-custom-font.svg");
     }
 

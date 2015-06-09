@@ -20,7 +20,10 @@ import java.awt.geom.Ellipse2D;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 /**
- * Generic barcode symbology class
+ * Generic barcode symbology class.
+ *
+ * TODO: Setting attributes like module width, font size, etc should probably throw
+ * an exception if set *after* encoding has already been completed.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */

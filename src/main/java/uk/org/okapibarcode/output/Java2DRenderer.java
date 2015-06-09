@@ -32,9 +32,6 @@ import uk.org.okapibarcode.backend.TextBox;
 
 /**
  * Renders symbologies using the Java 2D API.
- *
- * TODO: use this instead of code in DrawSymbol#paintComponent(Graphics) and SaveSymbol#paintComponent(Graphics),
- *       but keep background setting and antialiasing in those two places
  */
 public class Java2DRenderer implements SymbolRenderer {
 

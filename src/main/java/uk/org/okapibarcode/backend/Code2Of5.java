@@ -442,7 +442,7 @@ public class Code2Of5 extends Symbol {
     }
 
     @Override
-    public void plotSymbol() {
+    protected void plotSymbol() {
         int xBlock;
         int x, y, w, h;
         boolean black;

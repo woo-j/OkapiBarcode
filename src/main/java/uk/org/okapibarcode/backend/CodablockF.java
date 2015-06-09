@@ -815,7 +815,7 @@ public class CodablockF extends Symbol {
     }
 
     @Override
-    public void plotSymbol() {
+    protected void plotSymbol() {
         int xBlock, yBlock;
         int x, y, w, h;
         boolean black;

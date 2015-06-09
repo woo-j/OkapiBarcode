@@ -19,7 +19,7 @@ import java.awt.Rectangle;
 
 /**
  * Implements the Code 2 of 5 family of barcode standards.
- * 
+ *
  * @author <a href="mailto:jakel2006@me.com">Robert Elliott</a>
  */
 public class Code2Of5 extends Symbol {
@@ -69,7 +69,7 @@ public class Code2Of5 extends Symbol {
     }
 
     /**
-     * Select Code 2 of 5 Data Logic. Encodes any length numeric input 
+     * Select Code 2 of 5 Data Logic. Encodes any length numeric input
      * (digits 0-9) and does not include a check digit.
      */
     public void setDataLogicMode() {
@@ -77,8 +77,8 @@ public class Code2Of5 extends Symbol {
     }
 
     /**
-     * Select Interleaved Code 2 of 5. encodes pairs of numbers, and so can 
-     * only encode an even number of digits (0-9). If an odd number of digits 
+     * Select Interleaved Code 2 of 5. encodes pairs of numbers, and so can
+     * only encode an even number of digits (0-9). If an odd number of digits
      * is entered a leading zero is added. No check digit is calculated.
      */
     public void setInterleavedMode() {
@@ -491,7 +491,7 @@ public class Code2Of5 extends Symbol {
         }
         if (!(readable.isEmpty())) {
             // Calculated position is approximately central
-            TextBox text = new TextBox(((symbol_width - (5.0 * readable.length())) / 2), symbol_height + 8.0, readable);
+            TextBox text = new TextBox(((symbol_width - (5.0 * readable.length())) / 2), getHeight(false), readable);
             txt.add(text);
         }
     }

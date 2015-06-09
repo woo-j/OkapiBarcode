@@ -192,7 +192,11 @@ public abstract class Symbol {
      * @return the height of the symbol, including the human-readable text, if any
      */
     public int getHeight() {
-        if (txt.isEmpty()) {
+        return getHeight(txt.isEmpty());
+    }
+
+    protected int getHeight(boolean withoutHumanReadable) {
+        if (withoutHumanReadable) {
             return symbol_height;
         } else {
             return symbol_height + getHumanReadableHeight();
@@ -561,7 +565,7 @@ public abstract class Symbol {
 
         if (!(readable.isEmpty())) {
             // Calculated position is approximately central
-            TextBox text = new TextBox(((symbol_width - (5.0 * readable.length())) / 2), symbol_height + 8.0, readable);
+            TextBox text = new TextBox(((symbol_width - (5.0 * readable.length())) / 2), getHeight(false), readable);
             txt.add(text);
         }
     }

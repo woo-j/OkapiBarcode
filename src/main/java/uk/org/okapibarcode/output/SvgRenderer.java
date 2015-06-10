@@ -95,11 +95,11 @@ public class SvgRenderer implements SymbolRenderer {
             writer.append("<?xml version=\"1.0\" standalone=\"no\"?>\n");
             writer.append("<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\"\n");
             writer.append("   \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n");
-            writer.append("<svg width=\"").appendInt(width).append("\" height=\"").appendInt(height).append("\" version=\"1.1\"\n");
-            writer.append("   xmlns=\"http://www.w3.org/2000/svg\">\n");
-            writer.append("   <desc>").append(title).append("\n");
-            writer.append("   </desc>\n");
-            writer.append("\n");
+            writer.append("<svg width=\"").appendInt(width)
+                  .append("\" height=\"").appendInt(height)
+                  .append("\" version=\"1.1")
+                  .append("\" xmlns=\"http://www.w3.org/2000/svg\">\n");
+            writer.append("   <desc>").append(title).append("</desc>\n");
             writer.append("   <g id=\"barcode\" fill=\"#").append(fgColour).append("\">\n");
             writer.append("      <rect x=\"0\" y=\"0\" width=\"").appendInt(width)
                   .append("\" height=\"").appendInt(height)
@@ -123,7 +123,7 @@ public class SvgRenderer implements SymbolRenderer {
                       .append("\" text-anchor=\"middle\"\n");
                 writer.append("         font-family=\"").append(symbol.getFontName())
                       .append("\" font-size=\"").append(symbol.getFontSize() * magnification)
-                      .append("\" fill=\"").append(fgColour).append("\" >\n");
+                      .append("\" fill=\"").append(fgColour).append("\">\n");
                 writer.append("         ").append(text.text).append("\n");
                 writer.append("      </text>\n");
             }

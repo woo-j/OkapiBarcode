@@ -30,14 +30,13 @@ import java.awt.Rectangle;
  */
 public class Ean extends Symbol {
 
-    private boolean useAddOn;
-    private String addOnContent;
-
-    private enum ean_mode {
+    public static enum Mode {
         EAN8, EAN13
     };
 
-    private ean_mode mode;
+    private boolean useAddOn;
+    private String addOnContent;
+    private Mode mode;
     private boolean linkageFlag;
 
     private String[] EAN13Parity = {
@@ -54,24 +53,14 @@ public class Ean extends Symbol {
     };
 
     public Ean() {
-        mode = ean_mode.EAN13;
+        mode = Mode.EAN13;
         useAddOn = false;
         addOnContent = "";
         linkageFlag = false;
     }
 
-    /**
-     * Encode input data in an EAN-8 symbol
-     */
-    public void setEan8Mode() {
-        mode = ean_mode.EAN8;
-    }
-
-    /**
-     * Encode input data in an EAN-13 symbol
-     */
-    public void setEan13Mode() {
-        mode = ean_mode.EAN13;
+    public void setMode(Mode mode) {
+        this.mode = mode;
     }
 
     protected void setLinkageFlag() {
@@ -272,6 +261,7 @@ public class Ean extends Symbol {
         int x, y, w, h;
         boolean black;
         int compositeOffset = 0;
+        int shortLongDiff = 5;
 
         rect.clear();
         txt.clear();
@@ -287,12 +277,12 @@ public class Ean extends Symbol {
                 w = pattern[0].charAt(xBlock) - '0';
                 h = default_height;
                 /* Add extension to guide bars */
-                if (mode == ean_mode.EAN13) {
+                if (mode == Mode.EAN13) {
                     if ((x < 3) || (x > 91)) {
-                        h += 5;
+                        h += shortLongDiff;
                     }
                     if ((x > 45) && (x < 49)) {
-                        h += 5;
+                        h += shortLongDiff;
                     }
                     if (x > 95) {
                         // Drop add-on
@@ -306,12 +296,12 @@ public class Ean extends Symbol {
                         }
                     }
                 }
-                if (mode == ean_mode.EAN8) {
+                if (mode == Mode.EAN8) {
                     if ((x < 3) || (x > 62)) {
-                        h += 5;
+                        h += shortLongDiff;
                     }
                     if ((x > 30) && (x < 35)) {
-                        h += 5;
+                        h += shortLongDiff;
                     }
                     if (x > 66) {
                         // Drop add-on
@@ -336,9 +326,10 @@ public class Ean extends Symbol {
             x += (double)(pattern[0].charAt(xBlock) - '0');
 
         }
+
         if (linkageFlag) {
-            // Add seperator for composite symbology
-            if (mode == ean_mode.EAN13) {
+            // Add separator for composite symbology
+            if (mode == Mode.EAN13) {
                 rect.add(new Rectangle(0 + 6, 0, 1, 2));
                 rect.add(new Rectangle(94 + 6, 0, 1, 2));
                 rect.add(new Rectangle(-1 + 6, 2, 1, 2));
@@ -350,37 +341,31 @@ public class Ean extends Symbol {
                 rect.add(new Rectangle(67 + 6, 2, 1, 2));
             }
         }
+
         symbol_height = default_height + 5;
+
         /* Now add the text */
-        if (mode == ean_mode.EAN13) {
-            TextBox t1 = new TextBox(0.0, symbol_height + 3.0 + compositeOffset, readable.substring(0, 1));
-            txt.add(t1);
-            TextBox t2 = new TextBox(17.0, symbol_height + 3.0 + compositeOffset, readable.substring(1, 7));
-            txt.add(t2);
-            TextBox t3 = new TextBox(63.0, symbol_height + 3.0 + compositeOffset, readable.substring(7, 13));
-            txt.add(t3);
+        double baseline = getHeight() + fontSize - shortLongDiff + compositeOffset;
+        double addOnBaseline = 6.0 + compositeOffset;
+        if (mode == Mode.EAN13) {
+            txt.add(new TextBox(3, baseline, readable.substring(0, 1)));
+            txt.add(new TextBox(30, baseline, readable.substring(1, 7)));
+            txt.add(new TextBox(77, baseline, readable.substring(7, 13)));
             if (useAddOn) {
-                if(addOnContent.length() == 2) {
-                    TextBox t4 = new TextBox(114.0, 6.0 + compositeOffset, addOnContent);
-                    txt.add(t4);
+                if (addOnContent.length() == 2) {
+                    txt.add(new TextBox(118, addOnBaseline, addOnContent));
                 } else {
-                    TextBox t4 = new TextBox(124.0, 6.0 + compositeOffset, addOnContent);
-                    txt.add(t4);
+                    txt.add(new TextBox(133, addOnBaseline, addOnContent));
                 }
             }
-        }
-        if (mode == ean_mode.EAN8) {
-            TextBox t1 = new TextBox(15.0, symbol_height + 3.0 + compositeOffset, readable.substring(0, 4));
-            txt.add(t1);
-            TextBox t2 = new TextBox(46.0, symbol_height + 3.0 + compositeOffset, readable.substring(4, 8));
-            txt.add(t2);
+        } else { // EAN8
+            txt.add(new TextBox(23, baseline, readable.substring(0, 4)));
+            txt.add(new TextBox(55, baseline, readable.substring(4, 8)));
             if (useAddOn) {
-                if(addOnContent.length() == 2) {
-                    TextBox t4 = new TextBox(86.0, 6.0 + compositeOffset, addOnContent);
-                    txt.add(t4);
+                if (addOnContent.length() == 2) {
+                    txt.add(new TextBox(93, addOnBaseline, addOnContent));
                 } else {
-                    TextBox t4 = new TextBox(96.0, 6.0 + compositeOffset, addOnContent);
-                    txt.add(t4);
+                    txt.add(new TextBox(105, addOnBaseline, addOnContent));
                 }
             }
         }

@@ -562,11 +562,10 @@ public abstract class Symbol {
 
         mergeVerticalBlocks();
 
-        if (!(readable.isEmpty())) {
-            // Calculated position is approximately central
+        if (!readable.isEmpty()) {
             double baseline = getHeight() + fontSize;
-            TextBox text = new TextBox(((symbol_width - (5.0 * readable.length())) / 2), baseline, readable);
-            txt.add(text);
+            double centerX = getWidth() / 2;
+            txt.add(new TextBox(centerX, baseline, readable));
         }
     }
 

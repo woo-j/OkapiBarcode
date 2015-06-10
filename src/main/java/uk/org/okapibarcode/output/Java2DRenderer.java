@@ -18,11 +18,13 @@ package uk.org.okapibarcode.output;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.font.TextAttribute;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -84,8 +86,12 @@ public class Java2DRenderer implements SymbolRenderer {
             g2d.fill(new Rectangle((int) x, (int) y, (int) w, (int) h));
         }
 
+        FontMetrics fm = g2d.getFontMetrics();
         for (TextBox text : symbol.txt) {
-            g2d.drawString(text.text, (float) (text.x * magnification), (float) (text.y * magnification));
+            Rectangle2D bounds = fm.getStringBounds(text.text, g2d);
+            float x = (float) ((text.x * magnification) - (bounds.getWidth() / 2));
+            float y = (float) (text.y * magnification);
+            g2d.drawString(text.text, x, y);
         }
 
         for (Hexagon hexagon : symbol.hex) {

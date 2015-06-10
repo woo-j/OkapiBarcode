@@ -429,25 +429,25 @@ public class Composite extends Symbol {
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 7, 15, 25, 37, 17, 9, 29, 31, 25, 19, 1, 7, 15, 25, 37, 17, 9, 29, 31, 25,
         9, 8, 36, 19, 17, 33, 1, 9, 8, 36, 19, 17, 35, 1, 7, 15, 25, 37, 33, 17, 37, 47, 49, 43, 1, 7, 15, 25, 37, 33, 17, 37, 47, 49,
         0, 3, 6, 0, 6, 0, 0, 0, 3, 6, 0, 6, 6, 0, 0, 6, 0, 0, 0, 0, 6, 6, 0, 3, 0, 0, 6, 0, 0, 0, 0, 6, 6, 0};
-    
+
     private String binary_string;
     private int ecc;
 
     public static enum LinearEncoding {
-        UPCA, UPCE, EAN, CODE_128, DATABAR_14, DATABAR_14_STACK, 
+        UPCA, UPCE, EAN, CODE_128, DATABAR_14, DATABAR_14_STACK,
         DATABAR_14_STACK_OMNI, DATABAR_LIMITED, DATABAR_EXPANDED,
         DATABAR_EXPANDED_STACK
     }
     private LinearEncoding symbology = LinearEncoding.CODE_128;
-    
+
     private enum gfMode {
         NUMERIC, ALPHA, ISOIEC, INVALID_CHAR, ANY_ENC, ALPHA_OR_ISO
     };
-    
+
     public enum CompositeMode {
         CC_A, CC_B, CC_C
     }
-    
+
     private String general_field;
     private gfMode[] general_field_type;
     private int cc_width;
@@ -463,12 +463,12 @@ public class Composite extends Symbol {
     public Composite() {
         inputDataType = Symbol.DataType.GS1;
     }
-    
+
     @Override
     public void setDataType(DataType dummy) {
         // Do nothing!
     }
-    
+
     /**
      * Set the type of linear component included in the composite symbol,
      * this will determine how the lower part of the symbol is encoded.
@@ -503,7 +503,7 @@ public class Composite extends Symbol {
         ArrayList < Rectangle > linear_rect = new ArrayList < > ();
         ArrayList < TextBox > linear_txt = new ArrayList < > ();
         ArrayList < Rectangle > combine_rect = new ArrayList < > ();
-        ArrayList < TextBox > combine_txt = new ArrayList < > ();        
+        ArrayList < TextBox > combine_txt = new ArrayList < > ();
         String linear_encodeInfo = null;
         String linear_error_msg = "";
         int linear_height = 0;
@@ -511,12 +511,12 @@ public class Composite extends Symbol {
         int bottom_shift = 0;
         int max_x = 0;
         int i;
-        
+
         if (linearContent.isEmpty()) {
             error_msg = "No linear data set";
             return false;
-        }        
-        
+        }
+
         // Manage composite component encoding first
         if (!(encodeComposite())) {
             return false;
@@ -527,7 +527,7 @@ public class Composite extends Symbol {
             switch (symbology) {
                 case UPCA:
                     Upc upca = new Upc();
-                    upca.setUpcaMode();
+                    upca.setMode(Upc.Mode.UPCA);
                     upca.setLinkageFlag();
                     upca.setContent(linearContent);
                     linear_rect = upca.rect;
@@ -538,29 +538,29 @@ public class Composite extends Symbol {
                     break;
                 case UPCE:
                     Upc upce = new Upc();
-                    upce.setUpceMode();
+                    upce.setMode(Upc.Mode.UPCE);
                     upce.setLinkageFlag();
                     upce.setContent(linearContent);
                     linear_rect = upce.rect;
                     linear_txt = upce.txt;
-                    linear_height = upce.symbol_height;                    
+                    linear_height = upce.symbol_height;
                     linear_encodeInfo = upce.encodeInfo;
                     top_shift = 3;
                     break;
                 case EAN:
                     Ean ean = new Ean();
                     if (eanCalculateVersion() == 8) {
-                        ean.setEan8Mode();
+                        ean.setMode(Ean.Mode.EAN8);
                         bottom_shift = 8;
                     } else {
-                        ean.setEan13Mode();
+                        ean.setMode(Ean.Mode.EAN13);
                         top_shift = 3;
                     }
                     ean.setLinkageFlag();
                     ean.setContent(linearContent);
                     linear_rect = ean.rect;
                     linear_txt = ean.txt;
-                    linear_height = ean.symbol_height;                    
+                    linear_height = ean.symbol_height;
                     linear_encodeInfo = ean.encodeInfo;
                     break;
                 case CODE_128:
@@ -580,8 +580,8 @@ public class Composite extends Symbol {
                     code128.setContent(linearContent);
                     linear_rect = code128.rect;
                     linear_txt = code128.txt;
-                    linear_height = code128.symbol_height;                    
-                    linear_encodeInfo = code128.encodeInfo;            
+                    linear_height = code128.symbol_height;
+                    linear_encodeInfo = code128.encodeInfo;
                     break;
                 case DATABAR_14:
                     DataBar14 dataBar14 = new DataBar14();
@@ -590,7 +590,7 @@ public class Composite extends Symbol {
                     dataBar14.setContent(linearContent);
                     linear_rect = dataBar14.rect;
                     linear_txt = dataBar14.txt;
-                    linear_height = dataBar14.symbol_height;                    
+                    linear_height = dataBar14.symbol_height;
                     linear_encodeInfo = dataBar14.encodeInfo;
                     bottom_shift = 4;
                     break;
@@ -601,7 +601,7 @@ public class Composite extends Symbol {
                     dataBar14SO.setContent(linearContent);
                     linear_rect = dataBar14SO.rect;
                     linear_txt = dataBar14SO.txt;
-                    linear_height = dataBar14SO.symbol_height;                    
+                    linear_height = dataBar14SO.symbol_height;
                     linear_encodeInfo = dataBar14SO.encodeInfo;
                     top_shift = 1;
                     break;
@@ -612,7 +612,7 @@ public class Composite extends Symbol {
                     dataBar14S.setContent(linearContent);
                     linear_rect = dataBar14S.rect;
                     linear_txt = dataBar14S.txt;
-                    linear_height = dataBar14S.symbol_height;                    
+                    linear_height = dataBar14S.symbol_height;
                     linear_encodeInfo = dataBar14S.encodeInfo;
                     top_shift = 1;
                     break;
@@ -622,7 +622,7 @@ public class Composite extends Symbol {
                     dataBarLimited.setContent(linearContent);
                     linear_rect = dataBarLimited.rect;
                     linear_txt = dataBarLimited.txt;
-                    linear_height = dataBarLimited.symbol_height;                    
+                    linear_height = dataBarLimited.symbol_height;
                     linear_encodeInfo = dataBarLimited.encodeInfo;
                     top_shift = 1;
                     break;
@@ -633,10 +633,10 @@ public class Composite extends Symbol {
                     dataBarExpanded.setContent(linearContent);
                     linear_rect = dataBarExpanded.rect;
                     linear_txt = dataBarExpanded.txt;
-                    linear_height = dataBarExpanded.symbol_height;                    
+                    linear_height = dataBarExpanded.symbol_height;
                     linear_encodeInfo = dataBarExpanded.encodeInfo;
                     top_shift = 2;
-                    break;   
+                    break;
                 case DATABAR_EXPANDED_STACK:
                     DataBarExpanded dataBarExpandedS = new DataBarExpanded();
                     dataBarExpandedS.setLinkageFlag();
@@ -644,7 +644,7 @@ public class Composite extends Symbol {
                     dataBarExpandedS.setContent(linearContent);
                     linear_rect = dataBarExpandedS.rect;
                     linear_txt = dataBarExpandedS.txt;
-                    linear_height = dataBarExpandedS.symbol_height;                    
+                    linear_height = dataBarExpandedS.symbol_height;
                     linear_encodeInfo = dataBarExpandedS.encodeInfo;
                     top_shift = 2;
                     break;
@@ -655,12 +655,12 @@ public class Composite extends Symbol {
         } catch (OkapiException e) {
             linear_error_msg = e.getMessage();
         }
-        
+
         if (!linear_error_msg.isEmpty()) {
             error_msg = linear_error_msg;
             return false;
         }
-        
+
         for (i = 0; i < rect.size(); i++) {
             Rectangle comprect = new Rectangle(rect.get(i).x + top_shift, rect.get(i).y, rect.get(i).width, rect.get(i).height);
             if ((rect.get(i).x + top_shift + rect.get(i).width) > max_x) {
@@ -690,13 +690,13 @@ public class Composite extends Symbol {
         txt = combine_txt;
         symbol_height += linear_height;
         symbol_width = max_x;
-        
+
         encodeInfo += linear_encodeInfo;
-        
+
         return true;
     }
-    
-    
+
+
     private boolean encodeComposite() {
 
         if (content.length() > 2990) {

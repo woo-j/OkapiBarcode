@@ -147,13 +147,24 @@ public class SymbolTest {
 
         assertEquals("error message", "", symbol.error_msg);
 
-        List< String > expectedCodewords = Files.readAllLines(codewordsFile.toPath(), UTF_8);
-        int[] actualCodewords = symbol.getCodewords();
-        assertEquals(expectedCodewords.size(), actualCodewords.length);
-        for (int i = 0; i < actualCodewords.length; i++) {
-            int expected = getInt(expectedCodewords.get(i));
-            int actual = actualCodewords[i];
-            assertEquals("at codeword index " + i, expected, actual);
+        List< String > expectedList = Files.readAllLines(codewordsFile.toPath(), UTF_8);
+
+        try {
+            int[] actualCodewords = symbol.getCodewords();
+            assertEquals(expectedList.size(), actualCodewords.length);
+            for (int i = 0; i < actualCodewords.length; i++) {
+                int expected = getInt(expectedList.get(i));
+                int actual = actualCodewords[i];
+                assertEquals("at codeword index " + i, expected, actual);
+            }
+        } catch (UnsupportedOperationException e) {
+            String[] actualPatterns = symbol.pattern;
+            assertEquals(expectedList.size(), actualPatterns.length);
+            for (int i = 0; i < actualPatterns.length; i++) {
+                String expected = expectedList.get(i);
+                String actual = actualPatterns[i];
+                assertEquals("at pattern index " + i, expected, actual);
+            }
         }
 
         BufferedImage expected = ImageIO.read(pngFile);
@@ -194,9 +205,11 @@ public class SymbolTest {
      * @throws IOException if there is any I/O error
      */
     private void generateErrorExpectationFile(Symbol symbol) throws IOException {
-        PrintWriter writer = new PrintWriter(errorFile);
-        writer.println(symbol.error_msg);
-        writer.close();
+        if (!errorFile.exists()) {
+            PrintWriter writer = new PrintWriter(errorFile);
+            writer.println(symbol.error_msg);
+            writer.close();
+        }
     }
 
     /**
@@ -206,12 +219,20 @@ public class SymbolTest {
      * @throws IOException if there is any I/O error
      */
     private void generateCodewordsExpectationFile(Symbol symbol) throws IOException {
-        int[] codewords = symbol.getCodewords();
-        PrintWriter writer = new PrintWriter(codewordsFile);
-        for (int codeword : codewords) {
-            writer.println(codeword);
+        if (!codewordsFile.exists()) {
+            PrintWriter writer = new PrintWriter(codewordsFile);
+            try {
+                int[] codewords = symbol.getCodewords();
+                for (int codeword : codewords) {
+                    writer.println(codeword);
+                }
+            } catch (UnsupportedOperationException e) {
+                for (String pattern : symbol.pattern) {
+                    writer.println(pattern);
+                }
+            }
+            writer.close();
         }
-        writer.close();
     }
 
     /**
@@ -221,8 +242,10 @@ public class SymbolTest {
      * @throws IOException if there is any I/O error
      */
     private void generatePngExpectationFile(Symbol symbol) throws IOException {
-        BufferedImage img = draw(symbol);
-        ImageIO.write(img, "png", pngFile);
+        if (!pngFile.exists()) {
+            BufferedImage img = draw(symbol);
+            ImageIO.write(img, "png", pngFile);
+        }
     }
 
     /**
@@ -309,6 +332,7 @@ public class SymbolTest {
      * @throws ReflectiveOperationException if there is any reflection error
      * @throws IllegalArgumentException if the specified parameter is not valid
      */
+    @SuppressWarnings("unchecked")
     private static < E extends Enum< E >> void invoke(Object object, Method setter, Object parameter)
                     throws ReflectiveOperationException, IllegalArgumentException {
         Class< ? > paramType = setter.getParameters()[0].getType();
@@ -316,8 +340,9 @@ public class SymbolTest {
             setter.invoke(object, parameter.toString());
         } else if (int.class.equals(paramType)) {
             setter.invoke(object, Integer.parseInt(parameter.toString()));
+        } else if (double.class.equals(paramType)) {
+            setter.invoke(object, Double.parseDouble(parameter.toString()));
         } else if (paramType.isEnum()) {
-            @SuppressWarnings("unchecked")
             Class< E > e = (Class< E >) paramType;
             setter.invoke(object, Enum.valueOf(e, parameter.toString()));
         } else {
@@ -386,6 +411,8 @@ public class SymbolTest {
     @Parameters(name = "test {index}: {5}: {6}")
     public static List< Object[] > data() {
 
+        String filter = System.getProperty("okapi.symbol.test");
+
         String backend = "uk.org.okapibarcode.backend";
         Reflections reflections = new Reflections(backend);
         Set< Class< ? extends Symbol >> symbols = reflections.getSubTypesOf(Symbol.class);
@@ -393,13 +420,15 @@ public class SymbolTest {
         List< Object[] > data = new ArrayList<>();
         for (Class< ? extends Symbol > symbol : symbols) {
             String symbolName = symbol.getSimpleName().toLowerCase();
-            String dir = "src/test/resources/" + backend.replace('.', '/') + "/" + symbolName;
-            for (File file : getPropertiesFiles(dir)) {
-                String fileBaseName = file.getName().replaceAll(".properties", "");
-                File codewordsFile = new File(file.getParentFile(), fileBaseName + ".codewords");
-                File pngFile = new File(file.getParentFile(), fileBaseName + ".png");
-                File errorFile = new File(file.getParentFile(), fileBaseName + ".error");
-                data.add(new Object[] { symbol, file, codewordsFile, pngFile, errorFile, symbolName, fileBaseName });
+            if (filter == null || filter.equals(symbolName)) {
+                String dir = "src/test/resources/" + backend.replace('.', '/') + "/" + symbolName;
+                for (File file : getPropertiesFiles(dir)) {
+                    String fileBaseName = file.getName().replaceAll(".properties", "");
+                    File codewordsFile = new File(file.getParentFile(), fileBaseName + ".codewords");
+                    File pngFile = new File(file.getParentFile(), fileBaseName + ".png");
+                    File errorFile = new File(file.getParentFile(), fileBaseName + ".error");
+                    data.add(new Object[] { symbol, file, codewordsFile, pngFile, errorFile, symbolName, fileBaseName });
+                }
             }
         }
 

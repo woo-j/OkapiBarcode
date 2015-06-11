@@ -15,6 +15,9 @@
  */
 package uk.org.okapibarcode.backend;
 
+import static uk.org.okapibarcode.backend.HumanReadableLocation.NONE;
+import static uk.org.okapibarcode.backend.HumanReadableLocation.TOP;
+
 import java.awt.Rectangle;
 /**
  * Implements UPC bar code symbology
@@ -72,6 +75,15 @@ public class Upc extends Symbol {
 
     public void unsetLinkageFlag() {
         linkageFlag = false;
+    }
+
+    @Override
+    public void setHumanReadableLocation(HumanReadableLocation humanReadableLocation) {
+        if (humanReadableLocation == TOP) {
+            throw new IllegalArgumentException("Cannot display human-readable text above UPC bar codes.");
+        } else {
+            super.setHumanReadableLocation(humanReadableLocation);
+        }
     }
 
     @Override
@@ -418,29 +430,31 @@ public class Upc extends Symbol {
         symbol_height = default_height + 5;
 
         /* Now add the text */
-        double baseline = getHeight() + fontSize - shortLongDiff + compositeOffset;
-        double addOnBaseline = 6.0 + compositeOffset;
-        if (mode == Mode.UPCA) {
-            txt.add(new TextBox(3, baseline, readable.substring(0, 1)));
-            txt.add(new TextBox(34, baseline, readable.substring(1, 6)));
-            txt.add(new TextBox(73, baseline, readable.substring(6, 11)));
-            txt.add(new TextBox(104, baseline, readable.substring(11, 12)));
-            if (useAddOn) {
-                if (addOnContent.length() == 2) {
-                    txt.add(new TextBox(118, addOnBaseline, addOnContent));
-                } else {
-                    txt.add(new TextBox(133, addOnBaseline, addOnContent));
+        if (humanReadableLocation != NONE) {
+            double baseline = getHeight() + fontSize - shortLongDiff + compositeOffset;
+            double addOnBaseline = 6.0 + compositeOffset;
+            if (mode == Mode.UPCA) {
+                txt.add(new TextBox(3, baseline, readable.substring(0, 1)));
+                txt.add(new TextBox(34, baseline, readable.substring(1, 6)));
+                txt.add(new TextBox(73, baseline, readable.substring(6, 11)));
+                txt.add(new TextBox(104, baseline, readable.substring(11, 12)));
+                if (useAddOn) {
+                    if (addOnContent.length() == 2) {
+                        txt.add(new TextBox(118, addOnBaseline, addOnContent));
+                    } else {
+                        txt.add(new TextBox(133, addOnBaseline, addOnContent));
+                    }
                 }
-            }
-        } else { // UPCE
-            txt.add(new TextBox(3, baseline, readable.substring(0, 1)));
-            txt.add(new TextBox(30, baseline, readable.substring(1, 7)));
-            txt.add(new TextBox(61, baseline, readable.substring(7, 8)));
-            if (useAddOn) {
-                if (addOnContent.length() == 2) {
-                    txt.add(new TextBox(75, addOnBaseline, addOnContent));
-                } else {
-                    txt.add(new TextBox(90, addOnBaseline, addOnContent));
+            } else { // UPCE
+                txt.add(new TextBox(3, baseline, readable.substring(0, 1)));
+                txt.add(new TextBox(30, baseline, readable.substring(1, 7)));
+                txt.add(new TextBox(61, baseline, readable.substring(7, 8)));
+                if (useAddOn) {
+                    if (addOnContent.length() == 2) {
+                        txt.add(new TextBox(75, addOnBaseline, addOnContent));
+                    } else {
+                        txt.add(new TextBox(90, addOnBaseline, addOnContent));
+                    }
                 }
             }
         }

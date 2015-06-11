@@ -15,6 +15,10 @@
  */
 package uk.org.okapibarcode.backend;
 
+import static uk.org.okapibarcode.backend.HumanReadableLocation.BOTTOM;
+import static uk.org.okapibarcode.backend.HumanReadableLocation.NONE;
+import static uk.org.okapibarcode.backend.HumanReadableLocation.TOP;
+
 import java.awt.Rectangle;
 import java.awt.geom.Ellipse2D;
 import java.io.UnsupportedEncodingException;
@@ -42,6 +46,7 @@ public abstract class Symbol {
     protected int moduleWidth = 1;
     protected String fontName = "Helvetica";
     protected double fontSize = 8;
+    protected HumanReadableLocation humanReadableLocation = BOTTOM;
     protected boolean readerInit;
     protected String encodeInfo = "";
     protected int eciMode = 3;
@@ -210,6 +215,24 @@ public abstract class Symbol {
      */
     public int getHumanReadableHeight() {
         return (int) Math.ceil(fontSize * 1.2); // 0.2 space between bars and text
+    }
+
+    /**
+     * Sets the location of the human-readable text (default value is {@link HumanReadableLocation#BOTTOM}).
+     *
+     * @param humanReadableLocation the location of the human-readable text
+     */
+    public void setHumanReadableLocation(HumanReadableLocation humanReadableLocation) {
+        this.humanReadableLocation = humanReadableLocation;
+    }
+
+    /**
+     * Returns the location of the human-readable text.
+     *
+     * @return the location of the human-readable text
+     */
+    public HumanReadableLocation getHumanReadableLocation() {
+        return humanReadableLocation;
     }
 
     protected int positionOf(char thischar, char[] LookUp) {
@@ -530,8 +553,17 @@ public abstract class Symbol {
 
         rect.clear();
         txt.clear();
-        y = 0;
+
+        int baseY;
+        if (humanReadableLocation == TOP) {
+            baseY = getHumanReadableHeight();
+        } else {
+            baseY = 0;
+        }
+
         h = 0;
+        y = baseY;
+
         for (yBlock = 0; yBlock < row_count; yBlock++) {
             black = true;
             x = 0;
@@ -554,16 +586,21 @@ public abstract class Symbol {
                 black = !black;
                 x += w;
             }
-            if ((y + h) > symbol_height) {
-                symbol_height = y + h;
+            if ((y - baseY + h) > symbol_height) {
+                symbol_height = y - baseY + h;
             }
             y += h;
         }
 
         mergeVerticalBlocks();
 
-        if (!readable.isEmpty()) {
-            double baseline = getHeight() + fontSize;
+        if (humanReadableLocation != NONE && !readable.isEmpty()) {
+            double baseline;
+            if (humanReadableLocation == TOP) {
+                baseline = fontSize;
+            } else {
+                baseline = getHeight() + fontSize;
+            }
             double centerX = getWidth() / 2;
             txt.add(new TextBox(centerX, baseline, readable));
         }

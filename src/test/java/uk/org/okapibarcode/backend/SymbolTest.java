@@ -338,10 +338,14 @@ public class SymbolTest {
         Class< ? > paramType = setter.getParameters()[0].getType();
         if (String.class.equals(paramType)) {
             setter.invoke(object, parameter.toString());
+        } else if (boolean.class.equals(paramType)) {
+            setter.invoke(object, Boolean.valueOf(parameter.toString()));
         } else if (int.class.equals(paramType)) {
             setter.invoke(object, Integer.parseInt(parameter.toString()));
         } else if (double.class.equals(paramType)) {
             setter.invoke(object, Double.parseDouble(parameter.toString()));
+        } else if (Character.class.equals(paramType)) {
+            setter.invoke(object, parameter.toString().charAt(0));
         } else if (paramType.isEnum()) {
             Class< E > e = (Class< E >) paramType;
             setter.invoke(object, Enum.valueOf(e, parameter.toString()));

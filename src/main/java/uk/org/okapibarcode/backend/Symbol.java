@@ -200,11 +200,7 @@ public abstract class Symbol {
      * @return the height of the symbol, including the human-readable text, if any
      */
     public int getHeight() {
-        if (txt.isEmpty()) {
-            return symbol_height;
-        } else {
-            return symbol_height + getHumanReadableHeight();
-        }
+        return symbol_height + getHumanReadableHeight();
     }
 
     /**
@@ -214,6 +210,19 @@ public abstract class Symbol {
      * @return the height of the human-readable text
      */
     public int getHumanReadableHeight() {
+        if (txt.isEmpty()) {
+            return 0;
+        } else {
+            return getTheoreticalHumanReadableHeight();
+        }
+    }
+
+    /**
+     * Returns the height of the human-readable text, assuming this symbol had human-readable text.
+     *
+     * @return the height of the human-readable text, assuming this symbol had human-readable text
+     */
+    protected int getTheoreticalHumanReadableHeight() {
         return (int) Math.ceil(fontSize * 1.2); // 0.2 space between bars and text
     }
 
@@ -556,7 +565,7 @@ public abstract class Symbol {
 
         int baseY;
         if (humanReadableLocation == TOP) {
-            baseY = getHumanReadableHeight();
+            baseY = getTheoreticalHumanReadableHeight();
         } else {
             baseY = 0;
         }

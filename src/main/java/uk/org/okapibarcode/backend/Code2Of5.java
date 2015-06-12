@@ -456,7 +456,7 @@ public class Code2Of5 extends Symbol {
 
         int baseY;
         if (humanReadableLocation == TOP) {
-            baseY = getHumanReadableHeight();
+            baseY = getTheoreticalHumanReadableHeight();
         } else {
             baseY = 0;
         }

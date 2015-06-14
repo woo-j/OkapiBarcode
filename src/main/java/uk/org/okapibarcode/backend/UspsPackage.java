@@ -15,6 +15,8 @@
  */
 package uk.org.okapibarcode.backend;
 
+import java.awt.Rectangle;
+
 /**
  * USPS Intelligent Mail Package Barcode (IMpb)<br>
  * A linear barcode based on GS1-128. Includes additional data checks.
@@ -85,5 +87,55 @@ public class UspsPackage extends Symbol{
         plotSymbol();
         
         return true;
+    }
+    
+    @Override
+    protected void plotSymbol() {
+        int xBlock;
+        int x, y, w, h;
+        boolean black;
+        int offset = 20;
+        int yoffset = 15;
+        String banner = "USPS TRACKING #";
+
+        rect.clear();
+        txt.clear();
+        y = yoffset;
+        h = 0;
+        black = true;
+        x = 0;
+        for (xBlock = 0; xBlock < pattern[0].length(); xBlock++) {
+            w = pattern[0].charAt(xBlock) - '0';
+            if (black) {
+                if (row_height[0] == -1) {
+                    h = default_height;
+                } else {
+                    h = row_height[0];
+                }
+                Rectangle thisrect = new Rectangle(x + offset, y, w, h);
+                if ((w != 0.0) && (h != 0.0)) {
+                    rect.add(thisrect);
+                }
+                symbol_width = x + w + (2 * offset);
+            }
+            black = !black;
+            x += w;
+        }
+        symbol_height = h + (2 * yoffset);
+        
+        // Add boundary bars
+        Rectangle topBar = new Rectangle(0, 0, symbol_width, 2);
+        Rectangle bottomBar = new Rectangle(0, symbol_height - 2, symbol_width, 2);
+        rect.add(topBar);
+        rect.add(bottomBar);
+        
+        if (!(readable.isEmpty())) {
+            // Calculated position is approximately central
+            TextBox text = new TextBox(((symbol_width - (5.0 * readable.length())) / 2), symbol_height - 6.0, readable);
+            txt.add(text);
+        }
+        
+        TextBox bannerText = new TextBox(((symbol_width - (5.0 * banner.length())) / 2), 12.0, banner);
+        txt.add(bannerText);
     }
 }

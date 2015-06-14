@@ -16,6 +16,7 @@
 package uk.org.okapibarcode.backend;
 
 import java.awt.Rectangle;
+import static uk.org.okapibarcode.backend.HumanReadableLocation.TOP;
 
 /**
  * USPS Intelligent Mail Package Barcode (IMpb)<br>
@@ -130,13 +131,8 @@ public class UspsPackage extends Symbol{
         rect.add(topBar);
         rect.add(bottomBar);
         
-        if (!(readable.isEmpty())) {
-            // Calculated position is approximately central
-            TextBox text = new TextBox(((symbol_width - (5.0 * readable.length())) / 2), symbol_height - 6.0, readable);
-            txt.add(text);
-        }
-        
-        TextBox bannerText = new TextBox(((symbol_width - (5.0 * banner.length())) / 2), 12.0, banner);
-        txt.add(bannerText);
+        double centerX = getWidth() / 2;
+        txt.add(new TextBox(centerX, getHeight() - 6.0, readable));
+        txt.add(new TextBox(centerX, 12.0, banner));
     }
 }

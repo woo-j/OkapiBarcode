@@ -15,13 +15,16 @@
  */
 package uk.org.okapibarcode.backend;
 
+import static uk.org.okapibarcode.backend.HumanReadableLocation.NONE;
+import static uk.org.okapibarcode.backend.HumanReadableLocation.TOP;
+
 import java.awt.Rectangle;
 /**
  * Implements UPC bar code symbology
  * According to BS EN 797:1996
  * <br>
  * UPC-A requires an 11 digit article number. The check digit is calculated.
- * UPC-E is a zero-compressed version of UPC-A developed for smaller packages. 
+ * UPC-E is a zero-compressed version of UPC-A developed for smaller packages.
  * The code requires a 6 digit article number (digits 0-9). The check digit
  * is calculated. Also supports Number System 1 encoding by entering a 7-digit
  * article number stating with the digit 1. In addition EAN-2 and EAN-5 add-on
@@ -31,13 +34,13 @@ import java.awt.Rectangle;
  */
 public class Upc extends Symbol {
 
-    private boolean useAddOn;
-    private String addOnContent;
-
-    private enum upc_mode {
+    public static enum Mode {
         UPCA, UPCE
     };
-    private upc_mode mode;
+
+    private boolean useAddOn;
+    private String addOnContent;
+    private Mode mode;
     private boolean linkageFlag;
 
     private String[] setAC = {
@@ -58,16 +61,12 @@ public class Upc extends Symbol {
     }; /* Not covered by BS EN 797 */
 
     public Upc() {
-        mode = upc_mode.UPCA;
+        mode = Mode.UPCA;
         linkageFlag = false;
     }
 
-    public void setUpcaMode() {
-        mode = upc_mode.UPCA;
-    }
-
-    public void setUpceMode() {
-        mode = upc_mode.UPCE;
+    public void setMode(Mode mode) {
+        this.mode = mode;
     }
 
     public void setLinkageFlag() {
@@ -76,6 +75,15 @@ public class Upc extends Symbol {
 
     public void unsetLinkageFlag() {
         linkageFlag = false;
+    }
+
+    @Override
+    public void setHumanReadableLocation(HumanReadableLocation humanReadableLocation) {
+        if (humanReadableLocation == TOP) {
+            throw new IllegalArgumentException("Cannot display human-readable text above UPC bar codes.");
+        } else {
+            super.setHumanReadableLocation(humanReadableLocation);
+        }
     }
 
     @Override
@@ -89,7 +97,7 @@ public class Upc extends Symbol {
             error_msg = "Missing UPC data";
             retval = false;
         } else {
-            if (mode == upc_mode.UPCA) {
+            if (mode == Mode.UPCA) {
                 retval = upca();
             } else {
                 retval = upce();
@@ -337,11 +345,12 @@ public class Upc extends Symbol {
     }
 
     @Override
-    public void plotSymbol() {
+    protected void plotSymbol() {
         int xBlock;
         int x, y, w, h;
         boolean black;
         int compositeOffset = 0;
+        int shortLongDiff = 5;
 
         rect.clear();
         txt.clear();
@@ -357,12 +366,12 @@ public class Upc extends Symbol {
                 w = pattern[0].charAt(xBlock) - '0';
                 h = default_height;
                 /* Add extension to guide bars */
-                if (mode == upc_mode.UPCA) {
+                if (mode == Mode.UPCA) {
                     if ((x < 10) || (x > 84)) {
-                        h += 5;
+                        h += shortLongDiff;
                     }
                     if ((x > 45) && (x < 49)) {
-                        h += 5;
+                        h += shortLongDiff;
                     }
                     if (x > 95) {
                         // Drop add-on
@@ -377,7 +386,7 @@ public class Upc extends Symbol {
                     }
                 } else {
                     if ((x < 4) || (x > 45)) {
-                        h += 5;
+                        h += shortLongDiff;
                     }
                     if (x > 52) {
                         // Drop add-on
@@ -391,7 +400,6 @@ public class Upc extends Symbol {
                         }
                     }
                 }
-                System.out.println("y " + (y + compositeOffset));
                 Rectangle thisrect = new Rectangle(x + 6, y + compositeOffset, w, h);
                 rect.add(thisrect);
                 if ((x + w + 12) > symbol_width) {
@@ -403,56 +411,50 @@ public class Upc extends Symbol {
             x += pattern[0].charAt(xBlock) - '0';
 
         }
+
         if (linkageFlag) {
-            // Add seperator for composite symbology
-            if (mode == upc_mode.UPCA) {
+            // Add separator for composite symbology
+            if (mode == Mode.UPCA) {
                 rect.add(new Rectangle(0 + 6, 0, 1, 2));
                 rect.add(new Rectangle(94 + 6, 0, 1, 2));
                 rect.add(new Rectangle(-1 + 6, 2, 1, 2));
                 rect.add(new Rectangle(95 + 6, 2, 1, 2));
-            } else {
+            } else { // UPCE
                 rect.add(new Rectangle(0 + 6, 0, 1, 2));
                 rect.add(new Rectangle(50 + 6, 0, 1, 2));
                 rect.add(new Rectangle(-1 + 6, 2, 1, 2));
                 rect.add(new Rectangle(51 + 6, 2, 1, 2));
             }
         }
+
         symbol_height = default_height + 5;
 
         /* Now add the text */
-        if (mode == upc_mode.UPCA) {
-            TextBox t1 = new TextBox(0.0, symbol_height + 3.0 + compositeOffset, readable.substring(0, 1));
-            txt.add(t1);
-            TextBox t2 = new TextBox(23.0, symbol_height + 3.0 + compositeOffset, readable.substring(1, 6));
-            txt.add(t2);
-            TextBox t3 = new TextBox(60.0, symbol_height + 3.0 + compositeOffset, readable.substring(6, 11));
-            txt.add(t3);
-            TextBox t4 = new TextBox(103.0, symbol_height + 3.0 + compositeOffset, readable.substring(11, 12));
-            txt.add(t4);
-            if (useAddOn) {
-                if(addOnContent.length() == 2) {
-                    TextBox t5 = new TextBox(114.0, 6.0 + compositeOffset, addOnContent);
-                    txt.add(t5);
-                } else {
-                    TextBox t5 = new TextBox(124.0, 6.0 + compositeOffset, addOnContent);
-                    txt.add(t5);
+        if (humanReadableLocation != NONE) {
+            double baseline = getHeight() + fontSize - shortLongDiff + compositeOffset;
+            double addOnBaseline = 6.0 + compositeOffset;
+            if (mode == Mode.UPCA) {
+                txt.add(new TextBox(3, baseline, readable.substring(0, 1)));
+                txt.add(new TextBox(34, baseline, readable.substring(1, 6)));
+                txt.add(new TextBox(73, baseline, readable.substring(6, 11)));
+                txt.add(new TextBox(104, baseline, readable.substring(11, 12)));
+                if (useAddOn) {
+                    if (addOnContent.length() == 2) {
+                        txt.add(new TextBox(118, addOnBaseline, addOnContent));
+                    } else {
+                        txt.add(new TextBox(133, addOnBaseline, addOnContent));
+                    }
                 }
-            }
-        }
-        if (mode == upc_mode.UPCE) {
-            TextBox t1 = new TextBox(0.0, symbol_height + 3.0 + compositeOffset, readable.substring(0, 1));
-            txt.add(t1);
-            TextBox t2 = new TextBox(18.0, symbol_height + 3.0 + compositeOffset, readable.substring(1, 7));
-            txt.add(t2);
-            TextBox t3 = new TextBox(59.0, symbol_height + 3.0 + compositeOffset, readable.substring(7, 8));
-            txt.add(t3);
-            if (useAddOn) {
-                if(addOnContent.length() == 2) {
-                    TextBox t4 = new TextBox(70.0, 6.0 + compositeOffset, addOnContent);
-                    txt.add(t4);
-                } else {
-                    TextBox t4 = new TextBox(80.0, 6.0 + compositeOffset, addOnContent);
-                    txt.add(t4);
+            } else { // UPCE
+                txt.add(new TextBox(3, baseline, readable.substring(0, 1)));
+                txt.add(new TextBox(30, baseline, readable.substring(1, 7)));
+                txt.add(new TextBox(61, baseline, readable.substring(7, 8)));
+                if (useAddOn) {
+                    if (addOnContent.length() == 2) {
+                        txt.add(new TextBox(75, addOnBaseline, addOnContent));
+                    } else {
+                        txt.add(new TextBox(90, addOnBaseline, addOnContent));
+                    }
                 }
             }
         }

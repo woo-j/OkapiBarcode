@@ -13,102 +13,58 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package uk.org.okapibarcode.gui;
 
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Polygon;
-import java.awt.Rectangle;
 import java.awt.RenderingHints;
-import java.awt.font.TextAttribute;
-import java.awt.geom.Ellipse2D;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.swing.JPanel;
 
+import uk.org.okapibarcode.output.Java2DRenderer;
+
 /**
- * Draw symbol in "invisible" panel for saving to file
+ * Draw symbol in "invisible" panel for saving to file.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
-public class SaveSymbol extends JPanel{
-    private int magnification = 4; // Magnification doesn't change depending on symbol size
-    private int borderSize = 5 * magnification; // Add whitespace when saving to file
-    Polygon polygon;
+public class SaveSymbol extends JPanel {
+
+    /** Serial version UID. */
+    private static final long serialVersionUID = 8948804628452979514L;
+
+    private int magnification = 4;
+    private int margin = 5 * magnification;
 
     public void setMagnification(int factor) {
         magnification = factor * 4;
     }
-    
-    public void setBorderSize(int borderWidth) {
-        borderSize = borderWidth;
+
+    public void setMargin(int margin) {
+        this.margin = margin;
     }
-    
+
+    /** {@inheritDoc} */
     @Override
     public Dimension getPreferredSize() {
-        return new Dimension((OkapiUI.symbol.getWidth() * magnification) + (2 * borderSize),
-                (OkapiUI.symbol.getHeight() * magnification) + (2 * borderSize));
+        final int w = (OkapiUI.symbol.getWidth() * magnification) + (2 * margin);
+        final int h = (OkapiUI.symbol.getHeight() * magnification) + (2 * margin);
+        return new Dimension(w, h);
     }
 
+    /** {@inheritDoc} */
     @Override
     protected void paintComponent(Graphics g) {
-        int i, j;
-        double x, y, h, w;
-        this.setBackground(OkapiUI.paperColour);
+
+        setBackground(OkapiUI.paperColour);
         super.paintComponent(g);
-        Map<TextAttribute, Object> attributes = new HashMap<>();
-        attributes.put(TextAttribute.TRACKING, 0);
-        Font f = new Font("Arial", Font.PLAIN, 10 * (int) (magnification * 0.9)).deriveFont(attributes);
 
-        Graphics2D g2 = (Graphics2D) g;
+        Graphics2D g2d = (Graphics2D) g;
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        // Rectangles
-        for (i = 0; i != OkapiUI.symbol.rect.size(); i++) {
-            x = (OkapiUI.symbol.rect.get(i).x * magnification) + borderSize;
-            y = (OkapiUI.symbol.rect.get(i).y * magnification) + borderSize;
-            w = OkapiUI.symbol.rect.get(i).width * magnification;
-            h = OkapiUI.symbol.rect.get(i).height * magnification;
-            g2.setColor(OkapiUI.inkColour);
-            g2.fill(new Rectangle((int) x, (int) y, (int) w, (int) h));
-        }
-
-        // Text
-        for (i = 0; i < OkapiUI.symbol.txt.size(); i++) {
-            g2.setFont(f);
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2.drawString(OkapiUI.symbol.txt.get(i).text,
-                    (float) (OkapiUI.symbol.txt.get(i).x * magnification) + borderSize,
-                    (float) (OkapiUI.symbol.txt.get(i).y * magnification) + borderSize);
-        }
-
-        // Hexagons
-        for (i = 0; i < OkapiUI.symbol.hex.size(); i++) {
-            polygon = new Polygon();
-            for (j = 0; j < 6; j++) {
-                polygon.addPoint((int) (OkapiUI.symbol.hex.get(i).pointX[j] * magnification) + borderSize,
-                        (int) (OkapiUI.symbol.hex.get(i).pointY[j] * magnification) + borderSize);
-            }
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2.setColor(OkapiUI.inkColour);
-            g2.fill(polygon);
-        }
-
-        // Circles
-        for (i = 0; i < OkapiUI.symbol.target.size(); i++) {
-            x = (OkapiUI.symbol.target.get(i).x * magnification) + borderSize;
-            y = (OkapiUI.symbol.target.get(i).y * magnification) + borderSize;
-            w = OkapiUI.symbol.target.get(i).width * magnification;
-            h = OkapiUI.symbol.target.get(i).height * magnification;
-            if ((i & 1) == 0) {
-                g2.setColor(OkapiUI.inkColour);
-            } else {
-                g2.setColor(OkapiUI.paperColour);
-            }
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2.fill(new Ellipse2D.Double(x, y, w, h));
-        }
+        Java2DRenderer renderer = new Java2DRenderer(g2d, magnification, OkapiUI.paperColour, OkapiUI.inkColour);
+        renderer.render(OkapiUI.symbol);
     }
 }

@@ -15,11 +15,14 @@
  */
 package uk.org.okapibarcode.backend;
 
+import static uk.org.okapibarcode.backend.HumanReadableLocation.NONE;
+import static uk.org.okapibarcode.backend.HumanReadableLocation.TOP;
+
 import java.awt.Rectangle;
 
 /**
  * Implements the Code 2 of 5 family of barcode standards.
- * 
+ *
  * @author <a href="mailto:jakel2006@me.com">Robert Elliott</a>
  */
 public class Code2Of5 extends Symbol {
@@ -69,7 +72,7 @@ public class Code2Of5 extends Symbol {
     }
 
     /**
-     * Select Code 2 of 5 Data Logic. Encodes any length numeric input 
+     * Select Code 2 of 5 Data Logic. Encodes any length numeric input
      * (digits 0-9) and does not include a check digit.
      */
     public void setDataLogicMode() {
@@ -77,8 +80,8 @@ public class Code2Of5 extends Symbol {
     }
 
     /**
-     * Select Interleaved Code 2 of 5. encodes pairs of numbers, and so can 
-     * only encode an even number of digits (0-9). If an odd number of digits 
+     * Select Interleaved Code 2 of 5. encodes pairs of numbers, and so can
+     * only encode an even number of digits (0-9). If an odd number of digits
      * is entered a leading zero is added. No check digit is calculated.
      */
     public void setInterleavedMode() {
@@ -141,16 +144,18 @@ public class Code2Of5 extends Symbol {
             break;
         }
 
-        if (retval && debug) {
-            System.out.println("Calculated: " + readable);
-
-        } else {
-            System.out.println("2 of 5 FAIL");
+        if (debug) {
+            if (retval) {
+                System.out.println("Calculated: " + readable);
+            } else {
+                System.out.println("2 of 5 FAIL");
+            }
         }
 
-        if (retval == true) {
+        if (retval) {
             plotSymbol();
         }
+
         return retval;
     }
 
@@ -442,25 +447,34 @@ public class Code2Of5 extends Symbol {
     }
 
     @Override
-    public void plotSymbol() {
+    protected void plotSymbol() {
+
         int xBlock;
-        int x, y, w, h;
-        boolean black;
-        int offset = 0;
 
         rect.clear();
         txt.clear();
-        y = 0;
-        h = 0;
-        black = true;
-        x = 0;
+
+        int baseY;
+        if (humanReadableLocation == TOP) {
+            baseY = getTheoreticalHumanReadableHeight();
+        } else {
+            baseY = 0;
+        }
+
+        int x = 0;
+        int y = baseY;
+        int h = 0;
+        boolean black = true;
+
+        int offset = 0;
         if (mode == tof_mode.ITF14) {
             offset = 20;
         }
+
         for(xBlock = 0; xBlock < pattern[0].length(); xBlock++) {
             if (black == true) {
                 black = false;
-                w = pattern[0].charAt(xBlock) - '0';
+                int w = pattern[0].charAt(xBlock) - '0';
                 if(row_height[0] == -1) {
                     h = default_height;
                 } else {
@@ -476,6 +490,7 @@ public class Code2Of5 extends Symbol {
             }
             x += (double) (pattern[0].charAt(xBlock) - '0');
         }
+
         symbol_height = h;
 
         if (mode == tof_mode.ITF14) {
@@ -489,10 +504,16 @@ public class Code2Of5 extends Symbol {
             rect.add(leftBar);
             rect.add(rightBar);
         }
-        if (!(readable.isEmpty())) {
-            // Calculated position is approximately central
-            TextBox text = new TextBox(((symbol_width - (5.0 * readable.length())) / 2), symbol_height + 8.0, readable);
-            txt.add(text);
+
+        if (humanReadableLocation != NONE && !readable.isEmpty()) {
+            double baseline;
+            if (humanReadableLocation == TOP) {
+                baseline = fontSize;
+            } else {
+                baseline = getHeight() + fontSize;
+            }
+            double centerX = getWidth() / 2;
+            txt.add(new TextBox(centerX, baseline, readable));
         }
     }
 }

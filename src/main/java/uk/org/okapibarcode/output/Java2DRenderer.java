@@ -18,11 +18,13 @@ package uk.org.okapibarcode.output;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.font.TextAttribute;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,9 +34,6 @@ import uk.org.okapibarcode.backend.TextBox;
 
 /**
  * Renders symbologies using the Java 2D API.
- *
- * TODO: use this instead of code in DrawSymbol#paintComponent(Graphics) and SaveSymbol#paintComponent(Graphics),
- *       but keep background setting and antialiasing in those two places
  */
 public class Java2DRenderer implements SymbolRenderer {
 
@@ -71,7 +70,7 @@ public class Java2DRenderer implements SymbolRenderer {
 
         Map< TextAttribute, Object > attributes = new HashMap<>();
         attributes.put(TextAttribute.TRACKING, 0);
-        Font f = new Font("Arial", Font.PLAIN, (int) (9 * magnification)).deriveFont(attributes);
+        Font f = new Font(symbol.getFontName(), Font.PLAIN, (int) (symbol.getFontSize() * magnification)).deriveFont(attributes);
 
         Font oldFont = g2d.getFont();
         Color oldColor = g2d.getColor();
@@ -87,8 +86,12 @@ public class Java2DRenderer implements SymbolRenderer {
             g2d.fill(new Rectangle((int) x, (int) y, (int) w, (int) h));
         }
 
+        FontMetrics fm = g2d.getFontMetrics();
         for (TextBox text : symbol.txt) {
-            g2d.drawString(text.text, (float) (text.x * magnification), (float) (text.y * magnification));
+            Rectangle2D bounds = fm.getStringBounds(text.text, g2d);
+            float x = (float) ((text.x * magnification) - (bounds.getWidth() / 2));
+            float y = (float) (text.y * magnification);
+            g2d.drawString(text.text, x, y);
         }
 
         for (Hexagon hexagon : symbol.hex) {

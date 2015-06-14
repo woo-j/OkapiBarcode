@@ -34,8 +34,8 @@ public class Code93 extends Symbol {
         "bU", "aA", "aB", "aC", "aD", "aE", "aF", "aG", "aH", "aI",
         "aJ", "aK", "aL", "aM", "aN", "aO", "aP", "aQ", "aR", "aS",
         "aT", "aU", "aV", "aW", "aX", "aY", "aZ", "bA", "bB", "bC",
-        "bD", "bE", " ",  "cA", "cB", "cC", "cD", "cE", "cF", "cG",
-        "cH", "cI", "cJ", "cK", "cL", "cM", "cN", "cO", "0",  "1",
+        "bD", "bE", " ",  "cA", "cB", "cC", "$",  "%",  "cF", "cG",
+        "cH", "cI", "cJ", "+",  "cL", "-",  ".",  "/",  "0",  "1",
         "2",  "3",  "4",  "5",  "6",  "7",  "8",  "9",  "cZ", "bF",
         "bG", "bH", "bI", "bJ", "bV", "A",  "B",  "C",  "D",  "E",
         "F",  "G",  "H",  "I",  "J",  "K",  "L",  "M",  "N",  "O",
@@ -69,6 +69,48 @@ public class Code93 extends Symbol {
         "112131", "113121", "211131", "121221", "312111",
         "311121", "122211" };
 
+    /** Whether or not to show check digits in the human-readable text. */
+    private boolean showCheckDigits = true;
+
+    /** Optional start/stop delimiter to be shown in the human-readable text. */
+    private Character startStopDelimiter;
+
+    /**
+     * Sets whether or not to show check digits in the human-readable text (defaults to <code>true</code>).
+     *
+     * @param showCheckDigits whether or not to show check digits in the human-readable text
+     */
+    public void setShowCheckDigits(boolean showCheckDigits) {
+        this.showCheckDigits = showCheckDigits;
+    }
+
+    /**
+     * Returns whether or not this symbol shows check digits in the human-readable text.
+     *
+     * @return whether or not this symbol shows check digits in the human-readable text
+     */
+    public boolean getShowCheckDigits() {
+        return showCheckDigits;
+    }
+
+    /**
+     * Sets an optional start/stop delimiter to be shown in the human-readable text (defaults to <code>null</code>).
+     *
+     * @param startStopDelimiter an optional start/stop delimiter to be shown in the human-readable text
+     */
+    public void setStartStopDelimiter(Character startStopDelimiter) {
+        this.startStopDelimiter = startStopDelimiter;
+    }
+
+    /**
+     * Returns the optional start/stop delimiter to be shown in the human-readable text.
+     *
+     * @return the optional start/stop delimiter to be shown in the human-readable text
+     */
+    public Character getStartStopDelimiter() {
+        return startStopDelimiter;
+    }
+
     /** {@inheritDoc} */
     @Override
     public boolean encode() {
@@ -79,8 +121,8 @@ public class Code93 extends Symbol {
         if (!content.matches("[\u0000-\u007F]+")) {
             error_msg = "Invalid characters in input data";
             return false;
-        }        
-        
+        }
+
         int[] values = new int[controlChars.length + 2];
         for (int i = 0; i < l; i++) {
             values[i] = positionOf(controlChars[i], CODE_93_LOOKUP);
@@ -94,14 +136,19 @@ public class Code93 extends Symbol {
         values[l] = k;
         l++;
 
+        readable = content;
+        if (showCheckDigits) {
+            readable = readable + CODE_93_LOOKUP[c] + CODE_93_LOOKUP[k];
+        }
+        if (startStopDelimiter != null) {
+            readable = startStopDelimiter + readable + startStopDelimiter;
+        }
+
         encodeInfo += "Check Digit C: " + c + "\n";
         encodeInfo += "Check Digit K: " + k + "\n";
-        readable = content + CODE_93_LOOKUP[c] + CODE_93_LOOKUP[k];
-        pattern = new String[1];
-        pattern[0] = toPattern(values);
+        pattern = new String[] { toPattern(values) };
         row_count = 1;
-        row_height = new int[1];
-        row_height[0] = -1;
+        row_height = new int[] { -1 };
 
         plotSymbol();
 

@@ -901,7 +901,7 @@ public class MaxiCode extends Symbol {
 
     /** {@inheritDoc} */
     @Override
-    public void plotSymbol() {
+    protected void plotSymbol() {
 
         // hexagons
         for (int row = 0; row < 33; row++) {

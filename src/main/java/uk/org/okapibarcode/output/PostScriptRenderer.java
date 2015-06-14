@@ -119,8 +119,10 @@ public class PostScriptRenderer implements SymbolRenderer {
                     writer.append(ink.getRed() / 255).append(" ")
                           .append(ink.getGreen() / 255).append(" ")
                           .append(ink.getBlue() / 255).append(" setrgbcolor\n");
-                    writer.append(rect.height).append(" ").append(((height - rect.y - rect.height) * magnification) - margin).append(" TB ")
-                          .append((rect.x * magnification) + margin).append(" ").append(rect.width * magnification).append(" TR\n");
+                    writer.append(rect.height * magnification).append(" ")
+                          .append(height - ((rect.y + rect.height) * magnification) - margin).append(" TB ")
+                          .append((rect.x * magnification) + margin).append(" ")
+                          .append(rect.width * magnification).append(" TR\n");
                 } else {
                     Rectangle prev = symbol.rect.get(i - 1);
                     if (rect.height != prev.height || rect.y != prev.y) {
@@ -129,7 +131,7 @@ public class PostScriptRenderer implements SymbolRenderer {
                               .append(ink.getGreen() / 255).append(" ")
                               .append(ink.getBlue() / 255).append(" setrgbcolor\n");
                         writer.append(rect.height * magnification).append(" ")
-                              .append(((height - rect.y - rect.height) * magnification) - margin).append(" ");
+                              .append(height - ((rect.y + rect.height) * magnification) - margin).append(" ");
                     }
                     writer.append("TB ").append((rect.x * magnification) + margin).append(" ").append(rect.width * magnification).append(" TR\n");
                 }
@@ -145,10 +147,10 @@ public class PostScriptRenderer implements SymbolRenderer {
                           .append(ink.getBlue() / 255).append(" setrgbcolor\n");
                 }
                 writer.append("matrix currentmatrix\n");
-                writer.append("/Helvetica findfont\n");
-                writer.append(8.0 * magnification).append(" scalefont setfont\n");
+                writer.append("/").append(symbol.getFontName()).append(" findfont\n");
+                writer.append(symbol.getFontSize() * magnification).append(" scalefont setfont\n");
                 writer.append(" 0 0 moveto ").append((text.x * magnification) + margin).append(" ")
-                      .append(((height - text.y) * magnification) - margin).append(" translate 0.00 rotate 0 0 moveto\n");
+                      .append(height - (text.y * magnification) - margin).append(" translate 0.00 rotate 0 0 moveto\n");
                 writer.append(" (").append(text.text).append(") stringwidth\n");
                 writer.append("pop\n");
                 writer.append("-2 div 0 rmoveto\n");

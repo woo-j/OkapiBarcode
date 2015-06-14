@@ -83,11 +83,11 @@ public class SvgRenderer implements SymbolRenderer {
 
         String fgColour = String.format("%02X", ink.getRed())
                         + String.format("%02X", ink.getGreen())
-                        + String.format("%02X", ink.getRed());
+                        + String.format("%02X", ink.getBlue());
 
         String bgColour = String.format("%02X", paper.getRed())
                         + String.format("%02X", paper.getGreen())
-                        + String.format("%02X", paper.getRed());
+                        + String.format("%02X", paper.getBlue());
 
         try (ExtendedOutputStreamWriter writer = new ExtendedOutputStreamWriter(out, "%.2f")) {
 
@@ -95,11 +95,11 @@ public class SvgRenderer implements SymbolRenderer {
             writer.append("<?xml version=\"1.0\" standalone=\"no\"?>\n");
             writer.append("<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\"\n");
             writer.append("   \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n");
-            writer.append("<svg width=\"").appendInt(width).append("\" height=\"").appendInt(height).append("\" version=\"1.1\"\n");
-            writer.append("   xmlns=\"http://www.w3.org/2000/svg\">\n");
-            writer.append("   <desc>").append(title).append("\n");
-            writer.append("   </desc>\n");
-            writer.append("\n");
+            writer.append("<svg width=\"").appendInt(width)
+                  .append("\" height=\"").appendInt(height)
+                  .append("\" version=\"1.1")
+                  .append("\" xmlns=\"http://www.w3.org/2000/svg\">\n");
+            writer.append("   <desc>").append(title).append("</desc>\n");
             writer.append("   <g id=\"barcode\" fill=\"#").append(fgColour).append("\">\n");
             writer.append("      <rect x=\"0\" y=\"0\" width=\"").appendInt(width)
                   .append("\" height=\"").appendInt(height)
@@ -121,8 +121,9 @@ public class SvgRenderer implements SymbolRenderer {
                 writer.append("      <text x=\"").append((text.x * magnification) + margin)
                       .append("\" y=\"").append((text.y * magnification) + margin)
                       .append("\" text-anchor=\"middle\"\n");
-                writer.append("         font-family=\"Helvetica\" font-size=\"").append(8.0 * magnification)
-                      .append("\" fill=\"").append(fgColour).append("\" >\n");
+                writer.append("         font-family=\"").append(symbol.getFontName())
+                      .append("\" font-size=\"").append(symbol.getFontSize() * magnification)
+                      .append("\" fill=\"").append(fgColour).append("\">\n");
                 writer.append("         ").append(text.text).append("\n");
                 writer.append("      </text>\n");
             }

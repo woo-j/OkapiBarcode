@@ -16,12 +16,13 @@
 
 package uk.org.okapibarcode.output;
 
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 import org.junit.Test;
 
@@ -56,6 +57,22 @@ public class SvgRendererTest {
     }
 
     @Test
+    public void testCode93Colors() throws IOException {
+        Code93 code93 = new Code93();
+        code93.setContent("123456789");
+        test(code93, 1, Color.GREEN, Color.RED, 5, "code93-colors.svg");
+    }
+
+    @Test
+    public void testCode93CustomFont() throws IOException {
+        Code93 code93 = new Code93();
+        code93.setFontName("Arial");
+        code93.setFontSize(26);
+        code93.setContent("123456789");
+        test(code93, 1, Color.WHITE, Color.BLACK, 5, "code93-custom-font.svg");
+    }
+
+    @Test
     public void testMaxiCodeBasic() throws IOException {
         MaxiCode maxicode = new MaxiCode();
         maxicode.setMode(4);
@@ -68,12 +85,13 @@ public class SvgRendererTest {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         SvgRenderer renderer = new SvgRenderer(baos, magnification, paper, ink, margin);
         renderer.render(symbol);
-        byte[] actual = baos.toByteArray();
+        String actual = new String(baos.toByteArray(), StandardCharsets.UTF_8);
 
         InputStream is = getClass().getResourceAsStream(expectationFile);
-        byte[] expected = new byte[is.available()];
-        is.read(expected);
+        byte[] expectedBytes = new byte[is.available()];
+        is.read(expectedBytes);
+        String expected = new String(expectedBytes, StandardCharsets.UTF_8);
 
-        assertArrayEquals(expected, actual);
+        assertEquals(expected, actual);
     }
 }

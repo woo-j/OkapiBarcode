@@ -4,7 +4,7 @@ apply plugin: 'jacoco'
 
 group = 'uk.org.okapibarcode'
 archivesBaseName = 'okapibarcode'
-version = '0.1-beta-2'
+version = '0.1-beta-3'
 
 repositories {
     mavenCentral()
@@ -37,7 +37,7 @@ task wrapper(type: Wrapper) {
 /*                         CONFIGURATION FOR UPLOAD TO MAVEN CENTRAL REPO                         */
 /*                                                                                                */
 /* The signing credentials and Sonatype OSSRH credentials must be in the gradle.properties file.  */
-/* Upload to Maven Central with the command "gradle uploadArchives".                              */
+/* Upload to Maven Central with the command "gradlew uploadArchives".                             */
 /* http://central.sonatype.org/pages/gradle.html                                                  */
 /* http://central.sonatype.org/pages/ossrh-guide.html                                             */
 /*                                                                                                */

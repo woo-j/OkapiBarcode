@@ -16,7 +16,6 @@
 package uk.org.okapibarcode.backend;
 
 import java.awt.Rectangle;
-import static uk.org.okapibarcode.backend.HumanReadableLocation.TOP;
 
 /**
  * USPS Intelligent Mail Package Barcode (IMpb)<br>

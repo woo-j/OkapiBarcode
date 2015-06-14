@@ -885,7 +885,6 @@ public class GridMatrix extends Symbol {
                     do {
                         if ((inputIntArray[sp] >= '0') && (inputIntArray[sp] <= '9')) {
                             numbuf[p] = inputIntArray[sp];
-                            sp++;
                             p++;
                         }
                         switch (inputIntArray[sp]) {
@@ -895,7 +894,6 @@ public class GridMatrix extends Symbol {
                             case '.':
                             case ',':
                                 punt = inputIntArray[sp];
-                                sp++;
                                 ppos = p;
                                 break;
                         }
@@ -903,10 +901,11 @@ public class GridMatrix extends Symbol {
                             if ((inputIntArray[sp] == 0x13) && (inputIntArray[sp + 1] == 0x10)) {
                                 /* <end of line> */
                                 punt = inputIntArray[sp];
-                                sp += 2;
+                                sp++;
                                 ppos = p;
                             }
                         }
+                        sp++;
                     } while ((p < 3) && (sp < length));
 
                     if (ppos != -1) {

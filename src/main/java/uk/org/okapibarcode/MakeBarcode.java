@@ -606,6 +606,86 @@ public class MakeBarcode {
                     aztecRune.setContent(dataInput);
                     symbol = aztecRune;
                     break;
+                case 130:
+                    // Composite symbol with EAN linear
+                    Composite compositeEan = new Composite();
+                    compositeEan.setSymbology(Composite.LinearEncoding.EAN);
+                    compositeEan.setLinear(settings.getPrimaryData());
+                    compositeEan.setContent(dataInput);
+                    symbol = compositeEan;
+                    break;
+                case 131:
+                    // Composite with Code 128 linear
+                    Composite compositeC128 = new Composite();
+                    compositeC128.setSymbology(Composite.LinearEncoding.CODE_128);
+                    compositeC128.setLinear(settings.getPrimaryData());
+                    compositeC128.setContent(dataInput);
+                    symbol = compositeC128;
+                    break;
+                case 132:
+                    // Composite with Databar-14
+                    Composite compositeDb14 = new Composite();
+                    compositeDb14.setSymbology(Composite.LinearEncoding.DATABAR_14);
+                    compositeDb14.setLinear(settings.getPrimaryData());
+                    compositeDb14.setContent(dataInput);
+                    symbol = compositeDb14;
+                    break;
+                case 133:
+                    // Composite with Databar Limited
+                    Composite compositeDbLtd = new Composite();
+                    compositeDbLtd.setSymbology(Composite.LinearEncoding.DATABAR_LIMITED);
+                    compositeDbLtd.setLinear(settings.getPrimaryData());
+                    compositeDbLtd.setContent(dataInput);
+                    symbol = compositeDbLtd;
+                    break;
+                case 134:
+                    // Composite with Databar Extended
+                    Composite compositeDbExt = new Composite();
+                    compositeDbExt.setSymbology(Composite.LinearEncoding.DATABAR_EXPANDED);
+                    compositeDbExt.setLinear(settings.getPrimaryData());
+                    compositeDbExt.setContent(dataInput);
+                    symbol = compositeDbExt;
+                    break;
+                case 135:
+                    // Composite with UPC-A
+                    Composite compositeUpcA = new Composite();
+                    compositeUpcA.setSymbology(Composite.LinearEncoding.UPCA);
+                    compositeUpcA.setLinear(settings.getPrimaryData());
+                    compositeUpcA.setContent(dataInput);
+                    symbol = compositeUpcA;
+                    break;
+                case 136:
+                    // Composite with UPC-E
+                    Composite compositeUpcE = new Composite();
+                    compositeUpcE.setSymbology(Composite.LinearEncoding.UPCE);
+                    compositeUpcE.setLinear(settings.getPrimaryData());
+                    compositeUpcE.setContent(dataInput);
+                    symbol = compositeUpcE;
+                    break;
+                case 137:
+                    // Composite with Databar-14 Stacked
+                    Composite compositeDb14Stack = new Composite();
+                    compositeDb14Stack.setSymbology(Composite.LinearEncoding.DATABAR_14_STACK);
+                    compositeDb14Stack.setLinear(settings.getPrimaryData());
+                    compositeDb14Stack.setContent(dataInput);
+                    symbol = compositeDb14Stack;
+                    break;
+                case 138:
+                    // Composite with Databar-14 Stacked Omnidirectional
+                    Composite compositeDb14SO = new Composite();
+                    compositeDb14SO.setSymbology(Composite.LinearEncoding.DATABAR_14_STACK_OMNI);
+                    compositeDb14SO.setLinear(settings.getPrimaryData());
+                    compositeDb14SO.setContent(dataInput);
+                    symbol = compositeDb14SO;
+                    break;
+                case 139:
+                    // Composite with Databar-14 Expanded Stacked
+                    Composite compositeDb14ES = new Composite();
+                    compositeDb14ES.setSymbology(Composite.LinearEncoding.DATABAR_EXPANDED_STACK);
+                    compositeDb14ES.setLinear(settings.getPrimaryData());
+                    compositeDb14ES.setContent(dataInput);
+                    symbol = compositeDb14ES;
+                    break;                    
                 case 140:
                     // Channel Code
                     ChannelCode channelCode = new ChannelCode();

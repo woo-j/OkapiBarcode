@@ -15,13 +15,15 @@
  */
 package uk.org.okapibarcode;
 
-import static java.awt.Color.BLACK;
-import static java.awt.Color.WHITE;
 import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import javax.imageio.ImageIO;
 import uk.org.okapibarcode.backend.AustraliaPost;
 import uk.org.okapibarcode.backend.AztecCode;
 import uk.org.okapibarcode.backend.AztecRune;
@@ -66,6 +68,7 @@ import uk.org.okapibarcode.backend.Telepen;
 import uk.org.okapibarcode.backend.Upc;
 import uk.org.okapibarcode.backend.UspsOneCode;
 import uk.org.okapibarcode.backend.UspsPackage;
+import uk.org.okapibarcode.output.Java2DRenderer;
 import uk.org.okapibarcode.output.PostScriptRenderer;
 import uk.org.okapibarcode.output.SvgRenderer;
 
@@ -794,17 +797,25 @@ public class MakeBarcode {
             }
             
             switch (extension) {
-//                case "png":
-//                case "gif":
-//                case "jpg":
-//                case "bmp":
-//                    BufferedImage image = new BufferedImage(symbol.getWidth(), symbol.getHeight(), BufferedImage.TYPE_INT_ARGB);
-//                    Graphics2D g2d = image.createGraphics();
-//                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-//
-//                    Java2DRenderer renderer = new Java2DRenderer(g2d, magnification, OkapiUI.paperColour, OkapiUI.inkColour);
-//                    renderer.render(symbol);
-//                    break;
+                case "png":
+                case "gif":
+                case "jpg":
+                case "bmp":
+                    BufferedImage image = new BufferedImage(symbol.getWidth(), symbol.getHeight(), BufferedImage.TYPE_INT_ARGB);
+                    Graphics2D g2d = image.createGraphics();
+                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                    Java2DRenderer renderer = new Java2DRenderer(g2d, magnification, paper, ink);
+                    renderer.render(symbol);
+                    
+                    try {
+                        ImageIO.write(image, extension, file);
+                    } catch (IOException e) {
+                        System.out.printf("Error outputting to file\n");
+                        return;
+                    }
+                    
+                    break;
                 case "svg":
                     SvgRenderer svg = new SvgRenderer(new FileOutputStream(file), magnification, paper, ink, borderSize);
                     svg.render(symbol);

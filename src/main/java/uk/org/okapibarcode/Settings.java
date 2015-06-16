@@ -33,7 +33,7 @@ public class Settings {
     private String inputFile = "";
     
     @Parameter(names = {"-o", "--output"}, description = "Write image to file", required = false)
-    private String outputFile = "out.svg";
+    private String outputFile = "out.png";
     
     @Parameter(names = {"-d", "--data"}, description = "Barcode content", required = false)
     private String inputData = "";

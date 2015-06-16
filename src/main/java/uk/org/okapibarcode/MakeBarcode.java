@@ -17,6 +17,7 @@ package uk.org.okapibarcode;
 
 import static java.awt.Color.BLACK;
 import static java.awt.Color.WHITE;
+import java.awt.Color;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
@@ -83,6 +84,26 @@ public class MakeBarcode {
         int borderSize = 0;
         Symbol symbol;
         String extension = "";
+        
+        if (!(settings.getForegroundColour().matches("[0-9A-F]+"))) {
+            System.out.printf("Invalid ink colour\n");
+            return;
+        }
+        
+        if (!(settings.getBackgroundColour().matches("[0-9A-F]+"))) {
+            System.out.printf("Invalid paper colour\n");
+            return;
+        }
+        
+        Color ink = Color.decode("0x" + settings.getForegroundColour());
+        Color paper = Color.decode("0x" + settings.getBackgroundColour());
+        
+        
+        
+        if (settings.isReverseColour()) {
+            ink = Color.WHITE;
+            paper = Color.BLACK;
+        }
         
         try {
             /* values marked "Legacy" are for compatability purposes
@@ -785,11 +806,11 @@ public class MakeBarcode {
 //                    renderer.render(symbol);
 //                    break;
                 case "svg":
-                    SvgRenderer svg = new SvgRenderer(new FileOutputStream(file), magnification, WHITE, BLACK, borderSize);
+                    SvgRenderer svg = new SvgRenderer(new FileOutputStream(file), magnification, paper, ink, borderSize);
                     svg.render(symbol);
                     break;
                 case "eps":
-                    PostScriptRenderer eps = new PostScriptRenderer(new FileOutputStream(file), magnification, WHITE, BLACK, borderSize);
+                    PostScriptRenderer eps = new PostScriptRenderer(new FileOutputStream(file), magnification, paper, ink, borderSize);
                     eps.render(symbol);
                     break;
                 default:

@@ -2497,14 +2497,13 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
             case PDF417_HIBC:
             case PDF417_TRUNCATED:
                 Pdf417 pdf417 = new Pdf417();
-                pdf417.setNormalMode();
                 if (useGS1Check.isSelected()) {
                     pdf417.setDataType(Symbol.DataType.GS1);
                 }
                 if (selectedSymbol.symbology == SymbolType.Encoding.PDF417_HIBC) {
                     pdf417.setDataType(Symbol.DataType.HIBC);
                 } else if (selectedSymbol.symbology == SymbolType.Encoding.PDF417_TRUNCATED) {
-                    pdf417.setTruncMode();
+                    pdf417.setMode(Pdf417.Mode.TRUNCATED);
                 }
                 pdf417.setPreferredEccLevel(pdfEccCombo.getSelectedIndex() - 1);
                 pdf417.setNumberOfColumns(pdfColumnsCombo.getSelectedIndex());
@@ -2516,7 +2515,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
             case PDF417_MICRO:
             case PDF417_MICRO_HIBC:
                 Pdf417 microPdf417 = new Pdf417();
-                microPdf417.setNormalMode();
+                microPdf417.setMode(Pdf417.Mode.MICRO);
                 if (useGS1Check.isSelected()) {
                     microPdf417.setDataType(Symbol.DataType.GS1);
                 }
@@ -2527,7 +2526,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                     microPdf417.setReaderInit();
                 }
                 microPdf417.setNumberOfColumns(microPdfColumnsCombo.getSelectedIndex());
-                microPdf417.setMicroMode();
                 microPdf417.setContent(dataInput);
                 return microPdf417;
             case AZTEC:

@@ -20,10 +20,12 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+
 import javax.imageio.ImageIO;
+
 import uk.org.okapibarcode.backend.AustraliaPost;
 import uk.org.okapibarcode.backend.AztecCode;
 import uk.org.okapibarcode.backend.AztecRune;
@@ -77,37 +79,32 @@ import uk.org.okapibarcode.output.SvgRenderer;
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class MakeBarcode {
-    
-    public void MakeBarcode() {
-    }
-    
+
     public void process(Settings settings, String dataInput) {
         int type = settings.getSymbolType();
         int magnification = 1;
         int borderSize = 0;
         Symbol symbol;
         String extension = "";
-        
+
         if (!(settings.getForegroundColour().matches("[0-9A-F]+"))) {
             System.out.printf("Invalid ink colour\n");
             return;
         }
-        
+
         if (!(settings.getBackgroundColour().matches("[0-9A-F]+"))) {
             System.out.printf("Invalid paper colour\n");
             return;
         }
-        
+
         Color ink = Color.decode("0x" + settings.getForegroundColour());
         Color paper = Color.decode("0x" + settings.getBackgroundColour());
-        
-        
-        
+
         if (settings.isReverseColour()) {
             ink = Color.WHITE;
             paper = Color.BLACK;
         }
-        
+
         try {
             /* values marked "Legacy" are for compatability purposes
                and should not be documented.
@@ -137,7 +134,7 @@ public class MakeBarcode {
                     // IATA 2 of 5
                     Code2Of5 c25iata = new Code2Of5();
                     c25iata.setIATAMode();
-                    c25iata.setContent(dataInput);       
+                    c25iata.setContent(dataInput);
                     symbol = c25iata;
                     break;
                 case 6:
@@ -152,7 +149,7 @@ public class MakeBarcode {
                     Code2Of5 c25ind = new Code2Of5();
                     c25ind.setIndustrialMode();
                     c25ind.setContent(dataInput);
-                    symbol = c25ind;                    
+                    symbol = c25ind;
                     break;
                 case 8:
                 case 99:
@@ -190,7 +187,7 @@ public class MakeBarcode {
                 case 18:
                     // Codabar
                     Codabar codabar = new Codabar();
-                    codabar.setContent(dataInput); 
+                    codabar.setContent(dataInput);
                     symbol = codabar;
                     break;
                 case 20:
@@ -217,7 +214,7 @@ public class MakeBarcode {
                     }
                     code128.setContent(dataInput);
                     symbol = code128;
-                    break;                    
+                    break;
                 case 21:
                     // Leitcode
                     Code2Of5 dpLeit = new Code2Of5();
@@ -346,14 +343,13 @@ public class MakeBarcode {
                 case 107: // Legacy
                     // PDF417
                     Pdf417 pdf417 = new Pdf417();
-                    pdf417.setNormalMode();
                     if (settings.isDataGs1Mode()) {
                         pdf417.setDataType(Symbol.DataType.GS1);
                     }
                     if ((type == 106) || (type == 107)) {
                         pdf417.setDataType(Symbol.DataType.HIBC);
                     } else if (type == 56) {
-                        pdf417.setTruncMode();
+                        pdf417.setMode(Pdf417.Mode.TRUNCATED);
                     }
                     pdf417.setPreferredEccLevel(settings.getSymbolECC() - 1);
                     pdf417.setNumberOfColumns(settings.getSymbolColumns());
@@ -525,7 +521,7 @@ public class MakeBarcode {
                 case 109: // Legacy
                     // MicroPDF
                     Pdf417 microPdf417 = new Pdf417();
-                    microPdf417.setNormalMode();
+                    microPdf417.setMode(Pdf417.Mode.MICRO);
                     if (settings.isDataGs1Mode()) {
                         microPdf417.setDataType(Symbol.DataType.GS1);
                     }
@@ -536,7 +532,6 @@ public class MakeBarcode {
                         microPdf417.setReaderInit();
                     }
                     microPdf417.setNumberOfColumns(settings.getSymbolColumns());
-                    microPdf417.setMicroMode();
                     microPdf417.setContent(dataInput);
                     symbol = microPdf417;
                     break;
@@ -563,7 +558,7 @@ public class MakeBarcode {
                 case 90:
                     // Dutch Post KIX Code
                     KixCode kixCode = new KixCode();
-                    kixCode.setContent(dataInput); 
+                    kixCode.setContent(dataInput);
                     symbol = kixCode;
                     break;
                 case 92:
@@ -589,7 +584,7 @@ public class MakeBarcode {
                     Code32 code32 = new Code32();
                     code32.setContent(dataInput);
                     symbol = code32;
-                    break;                    
+                    break;
                 case 97:
                     // Micro QR Code
                     MicroQrCode microQrCode = new MicroQrCode();
@@ -709,7 +704,7 @@ public class MakeBarcode {
                     compositeDb14ES.setLinear(settings.getPrimaryData());
                     compositeDb14ES.setContent(dataInput);
                     symbol = compositeDb14ES;
-                    break;                    
+                    break;
                 case 140:
                     // Channel Code
                     ChannelCode channelCode = new ChannelCode();
@@ -787,15 +782,15 @@ public class MakeBarcode {
             System.out.printf("Encoding error: %s\n", e.getMessage());
             return;
         }
-        
+
         File file = new File(settings.getOutputFile());
-        
+
         try {
             int i = file.getName().lastIndexOf('.');
             if (i > 0) {
                 extension = file.getName().substring(i + 1);
             }
-            
+
             switch (extension) {
                 case "png":
                 case "gif":
@@ -807,14 +802,14 @@ public class MakeBarcode {
 
                     Java2DRenderer renderer = new Java2DRenderer(g2d, magnification, paper, ink);
                     renderer.render(symbol);
-                    
+
                     try {
                         ImageIO.write(image, extension, file);
                     } catch (IOException e) {
                         System.out.printf("Error outputting to file\n");
                         return;
                     }
-                    
+
                     break;
                 case "svg":
                     SvgRenderer svg = new SvgRenderer(new FileOutputStream(file), magnification, paper, ink, borderSize);
@@ -835,9 +830,9 @@ public class MakeBarcode {
         } catch (IOException e) {
             System.out.printf("Write Error\n");
             return;
-        }        
+        }
     }
-    
+
     private int eanCalculateVersion(String dataInput) {
         /* Determine if EAN-8 or EAN-13 is being used */
 

@@ -19,11 +19,13 @@ package uk.org.okapibarcode.backend;
 import java.math.BigInteger;
 
 /**
+ * <p>
  * Implements PDF417 bar code symbology and MicroPDF417 bar code symbology
  * according to ISO/IEC 15438:2006 and ISO/IEC 24728:2006 respectively.
- * <br>
- * PDF417 supports encoding up to the ISO standard maximum symbol size of 925 
- * codewords which (at error correction level 0) allows a maximum data size 
+ *
+ * <p>
+ * PDF417 supports encoding up to the ISO standard maximum symbol size of 925
+ * codewords which (at error correction level 0) allows a maximum data size
  * of 1850 text characters, or 2710 digits. The maximum size MicroPDF417 symbol
  * can hold 250 alphanumeric characters or 366 digits.
  *
@@ -31,12 +33,12 @@ import java.math.BigInteger;
  */
 public class Pdf417 extends Symbol {
 
-    private enum EncodingMode {
-        FALSE, TEX, BYT, NUM
+    public static enum Mode {
+        NORMAL, TRUNCATED, MICRO
     };
 
-    private enum Mode {
-        NORMAL, TRUNCATED, MICRO
+    private static enum EncodingMode {
+        FALSE, TEX, BYT, NUM
     };
 
     private int blockLength[] = new int[1000];
@@ -44,31 +46,10 @@ public class Pdf417 extends Symbol {
     private int blockIndex;
     private int[] codeWords = new int[2700];
     private int codeWordCount;
-    private Mode symbolMode;
+    private Mode symbolMode = Mode.NORMAL;
     private int[] inputData;
     private int selectedSymbolWidth;
-
-    /**
-     * Set the width of the symbol by specifying the number of columns
-     * of data codewords. Valid values are 1-30 for PDF417 and 1-4
-     * for MicroPDF417.
-     * @param columns Number of columns in symbol
-     */
-    public void setNumberOfColumns(int columns) {
-        selectedSymbolWidth = columns;
-    }
-
     private int preferredEccLevel = -1;
-
-    /**
-     * Set the amount of the symbol which is dedicated to error correction
-     * codewords. The number of codewords of error correction data is
-     * determined by 2<sup>(eccLevel + 1)</sup>.
-     * @param eccLevel Level of error correction (0-8)
-     */
-    public void setPreferredEccLevel(int eccLevel) {
-        preferredEccLevel = eccLevel;
-    }
 
     private static final int[] COEFRS = {
         /* k = 2 */
@@ -405,7 +386,7 @@ public class Pdf417 extends Symbol {
         1, 14, 2, 7, 3, 25, 8, 16, 5, 17, 9, 6, 10, 11, 28, 12, 19, 13, 29, 20, 30, 21, 22, 31, 23, 32, 33, 34
     };
 
-    /* rows, columns, error codewords, k-offset of valid MicroPDF417 sizes from ISO/IEC 24728:2006 */
+    /* Rows, columns, error codewords, k-offset of valid MicroPDF417 sizes from ISO/IEC 24728:2006 */
     private static final int[] MICRO_VARIANTS = {
         1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
         11, 14, 17, 20, 24, 28, 8, 11, 14, 17, 20, 23, 26, 6, 8, 10, 12, 15, 20, 26, 32, 38, 44, 4, 6, 8, 10, 12, 15, 20, 26, 32, 38, 44,
@@ -422,7 +403,7 @@ public class Pdf417 extends Symbol {
     };
 
     /* Left and Right Row Address Pattern from Table 2 */
-    private final String[] RAPLR = {
+    private static final String[] RAPLR = {
         "",       "221311", "311311", "312211", "222211", "213211", "214111", "223111",
         "313111", "322111", "412111", "421111", "331111", "241111", "232111", "231211", "321211",
         "411211", "411121", "411112", "321112", "312112", "311212", "311221", "311131", "311122",
@@ -432,7 +413,7 @@ public class Pdf417 extends Symbol {
     };
 
     /* Centre Row Address Pattern from Table 2 */
-    private final String[] RAPC = {
+    private static final String[] RAPC = {
         "",       "112231", "121231", "122131", "131131", "131221", "132121", "141121",
         "141211", "142111", "133111", "132211", "131311", "122311", "123211", "124111", "115111",
         "114211", "114121", "123121", "123112", "122212", "122221", "121321", "121411", "112411",
@@ -506,20 +487,30 @@ public class Pdf417 extends Symbol {
         718, 435
     };
 
-    public Pdf417() {
-        symbolMode = Mode.NORMAL;
+    /**
+     * Sets the width of the symbol by specifying the number of columns
+     * of data codewords. Valid values are 1-30 for PDF417 and 1-4
+     * for MicroPDF417.
+     *
+     * @param columns the number of columns in the symbol
+     */
+    public void setNumberOfColumns(int columns) {
+        selectedSymbolWidth = columns;
     }
 
-    public void setNormalMode() {
-        symbolMode = Mode.NORMAL;
+    /**
+     * Set the amount of the symbol which is dedicated to error correction
+     * codewords. The number of codewords of error correction data is
+     * determined by 2<sup>(eccLevel + 1)</sup>.
+     *
+     * @param eccLevel level of error correction (0-8)
+     */
+    public void setPreferredEccLevel(int eccLevel) {
+        preferredEccLevel = eccLevel;
     }
 
-    public void setTruncMode() {
-        symbolMode = Mode.TRUNCATED;
-    }
-
-    public void setMicroMode() {
-        symbolMode = Mode.MICRO;
+    public void setMode(Mode mode) {
+        symbolMode = mode;
     }
 
     @Override
@@ -629,7 +620,7 @@ public class Pdf417 extends Symbol {
             codeWords[codeWordCount] = 921; /* Reader Initialisation */
             codeWordCount++;
         }
-        
+
         if (eciMode != 3) {
             /* Encoding ECI assignment number, from ISO/IEC 15438 Table 8 */
             if (eciMode <= 899) {
@@ -638,7 +629,7 @@ public class Pdf417 extends Symbol {
                 codeWords[codeWordCount] = eciMode;
                 codeWordCount++;
             }
-            
+
             if ((eciMode >= 900) && (eciMode <= 810899)) {
                 codeWords[codeWordCount] = 926;
                 codeWordCount++;
@@ -647,7 +638,7 @@ public class Pdf417 extends Symbol {
                 codeWords[codeWordCount] = eciMode % 900;
                 codeWordCount++;
             }
-            
+
             if ((eciMode >= 810900) && (eciMode <= 811799)) {
                 codeWords[codeWordCount] = 925;
                 codeWordCount++;
@@ -966,7 +957,7 @@ public class Pdf417 extends Symbol {
             codeWords[codeWordCount] = 921; /* Reader Initialisation */
             codeWordCount++;
         }
-        
+
         if (eciMode != 3) {
             /* Encoding ECI assignment number, from ISO/IEC 15438 Table 8 */
             if (eciMode <= 899) {
@@ -975,7 +966,7 @@ public class Pdf417 extends Symbol {
                 codeWords[codeWordCount] = eciMode;
                 codeWordCount++;
             }
-            
+
             if ((eciMode >= 900) && (eciMode <= 810899)) {
                 codeWords[codeWordCount] = 926;
                 codeWordCount++;
@@ -984,7 +975,7 @@ public class Pdf417 extends Symbol {
                 codeWords[codeWordCount] = eciMode % 900;
                 codeWordCount++;
             }
-            
+
             if ((eciMode >= 810900) && (eciMode <= 811799)) {
                 codeWords[codeWordCount] = 925;
                 codeWordCount++;

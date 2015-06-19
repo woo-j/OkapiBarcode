@@ -378,14 +378,14 @@ public class GridMatrix extends Symbol {
                 inputIntArray = new int[inputBytes.length];
                 length = 0;
                 for (i = 0; i < inputBytes.length; i++) {
-                    if ((inputBytes[i] >= 0xA1) && (inputBytes[i] <= 0xF7)) {
+                    if (((inputBytes[i] & 0xFF) >= 0xA1) && ((inputBytes[i] & 0xFF) <= 0xF7)) {
                         /* Double byte character */
-                        inputIntArray[i] = ((inputBytes[i] & 0xFF) * 256) + (inputBytes[i + 1] & 0xFF);
+                        inputIntArray[length] = ((inputBytes[i] & 0xFF) * 256) + (inputBytes[i + 1] & 0xFF);
                         i++;
                         length++;
                     } else {
                         /* Single byte character */
-                        inputIntArray[i] = inputBytes[i] & 0xFF;
+                        inputIntArray[length] = inputBytes[i] & 0xFF;
                         length++;
                     }
                 }

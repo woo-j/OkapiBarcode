@@ -54,11 +54,12 @@ public class PostScriptRenderer implements SymbolRenderer {
      *
      * @param out the output stream to render to
      * @param magnification the magnification factor to apply
+     * @param margin the size of the additional margin to add around the bar code
      * @param paper the paper (background) color
      * @param ink the ink (foreground) color
-     * @param margin the size of the additional margin to add around the bar code
+     * 
      */
-    public PostScriptRenderer(OutputStream out, double magnification, Color paper, Color ink, int margin) {
+    public PostScriptRenderer(OutputStream out, double magnification, int margin, Color paper, Color ink) {
         this.out = out;
         this.magnification = magnification;
         this.paper = paper;
@@ -103,12 +104,12 @@ public class PostScriptRenderer implements SymbolRenderer {
 
             // Background
             writer.append("newpath\n");
-            writer.append(ink.getRed() / 255).append(" ")
-                  .append(ink.getGreen() / 255).append(" ")
-                  .append(ink.getBlue() / 255).append(" setrgbcolor\n");
-            writer.append(paper.getRed() / 255).append(" ")
-                  .append(paper.getGreen() / 255).append(" ")
-                  .append(paper.getBlue() / 255).append(" setrgbcolor\n");
+            writer.append(ink.getRed() / 255.0).append(" ")
+                  .append(ink.getGreen() / 255.0).append(" ")
+                  .append(ink.getBlue() / 255.0).append(" setrgbcolor\n");
+            writer.append(paper.getRed() / 255.0).append(" ")
+                  .append(paper.getGreen() / 255.0).append(" ")
+                  .append(paper.getBlue() / 255.0).append(" setrgbcolor\n");
             writer.append(height).append(" 0.00 TB 0.00 ").append(width).append(" TR\n");
 
             // Rectangles
@@ -116,9 +117,9 @@ public class PostScriptRenderer implements SymbolRenderer {
                 Rectangle rect = symbol.rect.get(i);
                 if (i == 0) {
                     writer.append("TE\n");
-                    writer.append(ink.getRed() / 255).append(" ")
-                          .append(ink.getGreen() / 255).append(" ")
-                          .append(ink.getBlue() / 255).append(" setrgbcolor\n");
+                    writer.append(ink.getRed() / 255.0).append(" ")
+                          .append(ink.getGreen() / 255.0).append(" ")
+                          .append(ink.getBlue() / 255.0).append(" setrgbcolor\n");
                     writer.append(rect.height * magnification).append(" ")
                           .append(height - ((rect.y + rect.height) * magnification) - margin).append(" TB ")
                           .append((rect.x * magnification) + margin).append(" ")
@@ -127,9 +128,9 @@ public class PostScriptRenderer implements SymbolRenderer {
                     Rectangle prev = symbol.rect.get(i - 1);
                     if (rect.height != prev.height || rect.y != prev.y) {
                         writer.append("TE\n");
-                        writer.append(ink.getRed() / 255).append(" ")
-                              .append(ink.getGreen() / 255).append(" ")
-                              .append(ink.getBlue() / 255).append(" setrgbcolor\n");
+                        writer.append(ink.getRed() / 255.0).append(" ")
+                              .append(ink.getGreen() / 255.0).append(" ")
+                              .append(ink.getBlue() / 255.0).append(" setrgbcolor\n");
                         writer.append(rect.height * magnification).append(" ")
                               .append(height - ((rect.y + rect.height) * magnification) - margin).append(" ");
                     }
@@ -142,9 +143,9 @@ public class PostScriptRenderer implements SymbolRenderer {
                 TextBox text = symbol.txt.get(i);
                 if (i == 0) {
                     writer.append("TE\n");;
-                    writer.append(ink.getRed() / 255).append(" ")
-                          .append(ink.getGreen() / 255).append(" ")
-                          .append(ink.getBlue() / 255).append(" setrgbcolor\n");
+                    writer.append(ink.getRed() / 255.0).append(" ")
+                          .append(ink.getGreen() / 255.0).append(" ")
+                          .append(ink.getBlue() / 255.0).append(" setrgbcolor\n");
                 }
                 writer.append("matrix currentmatrix\n");
                 writer.append("/").append(symbol.getFontName()).append(" findfont\n");
@@ -165,12 +166,12 @@ public class PostScriptRenderer implements SymbolRenderer {
                 Ellipse2D.Double ellipse2 = symbol.target.get(i + 1);
                 if (i == 0) {
                     writer.append("TE\n");
-                    writer.append(ink.getRed() / 255).append(" ")
-                          .append(ink.getGreen() / 255).append(" ")
-                          .append(ink.getBlue() / 255).append(" setrgbcolor\n");
-                    writer.append(ink.getRed() / 255).append(" ")
-                          .append(ink.getGreen() / 255).append(" ")
-                          .append(ink.getBlue() / 255).append(" setrgbcolor\n");
+                    writer.append(ink.getRed() / 255.0).append(" ")
+                          .append(ink.getGreen() / 255.0).append(" ")
+                          .append(ink.getBlue() / 255.0).append(" setrgbcolor\n");
+                    writer.append(ink.getRed() / 255.0).append(" ")
+                          .append(ink.getGreen() / 255.0).append(" ")
+                          .append(ink.getBlue() / 255.0).append(" setrgbcolor\n");
                 }
                 double x1 = ellipse1.x + (ellipse1.width / 2);
                 double x2 = ellipse2.x + (ellipse2.width / 2);

@@ -48,20 +48,25 @@ public class Java2DRenderer implements SymbolRenderer {
 
     /** The ink (foreground) color. */
     private final Color ink;
+    
+    /** The size of the additional margin to add around the barcode. */
+    private final int margin;    
 
     /**
      * Creates a new Java 2D renderer.
      *
      * @param g2d the graphics to render to
      * @param magnification the magnification factor to apply
+     * @param margin the size of the additional margin to add around the bar code
      * @param paper the paper (background) color
      * @param ink the ink (foreground) color
      */
-    public Java2DRenderer(Graphics2D g2d, double magnification, Color paper, Color ink) {
+    public Java2DRenderer(Graphics2D g2d, double magnification, int margin, Color paper, Color ink) {
         this.g2d = g2d;
         this.magnification = magnification;
         this.paper = paper;
         this.ink = ink;
+        this.margin = margin;
     }
 
     /** {@inheritDoc} */
@@ -71,16 +76,15 @@ public class Java2DRenderer implements SymbolRenderer {
         Map< TextAttribute, Object > attributes = new HashMap<>();
         attributes.put(TextAttribute.TRACKING, 0);
         Font f = new Font(symbol.getFontName(), Font.PLAIN, (int) (symbol.getFontSize() * magnification)).deriveFont(attributes);
-
         Font oldFont = g2d.getFont();
         Color oldColor = g2d.getColor();
-
+        
         g2d.setFont(f);
         g2d.setColor(ink);
 
         for (Rectangle rect : symbol.rect) {
-            double x = rect.x * magnification;
-            double y = rect.y * magnification;
+            double x = (rect.x * magnification) + margin;
+            double y = (rect.y * magnification) + margin;
             double w = rect.width * magnification;
             double h = rect.height * magnification;
             g2d.fill(new Rectangle((int) x, (int) y, (int) w, (int) h));
@@ -89,25 +93,26 @@ public class Java2DRenderer implements SymbolRenderer {
         FontMetrics fm = g2d.getFontMetrics();
         for (TextBox text : symbol.txt) {
             Rectangle2D bounds = fm.getStringBounds(text.text, g2d);
-            float x = (float) ((text.x * magnification) - (bounds.getWidth() / 2));
-            float y = (float) (text.y * magnification);
+            float x = (float) ((text.x * magnification) - (bounds.getWidth() / 2)) + margin;
+            float y = (float) (text.y * magnification) + margin;
             g2d.drawString(text.text, x, y);
         }
 
         for (Hexagon hexagon : symbol.hex) {
             Polygon polygon = new Polygon();
             for (int j = 0; j < 6; j++) {
-                polygon.addPoint((int) (hexagon.pointX[j] * magnification), (int) (hexagon.pointY[j] * magnification));
+                polygon.addPoint((int) ((hexagon.pointX[j] * magnification) + margin),
+                        (int) ((hexagon.pointY[j] * magnification) + margin));
             }
             g2d.fill(polygon);
         }
 
         for (int i = 0; i < symbol.target.size(); i++) {
             Ellipse2D.Double ellipse = symbol.target.get(i);
-            double x = ellipse.x * magnification;
-            double y = ellipse.y * magnification;
-            double w = ellipse.width * magnification;
-            double h = ellipse.height * magnification;
+            double x = (ellipse.x * magnification) + margin;
+            double y = (ellipse.y * magnification) + margin;
+            double w = (ellipse.width * magnification) + margin;
+            double h = (ellipse.height * magnification) + margin;
             if ((i & 1) == 0) {
                 g2d.setColor(ink);
             } else {

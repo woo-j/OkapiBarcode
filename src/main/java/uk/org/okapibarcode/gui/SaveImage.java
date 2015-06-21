@@ -15,9 +15,6 @@
  */
 package uk.org.okapibarcode.gui;
 
-import static java.awt.Color.BLACK;
-import static java.awt.Color.WHITE;
-
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -56,11 +53,11 @@ public class SaveImage {
                 ImageIO.write(img, extension, file);
                 break;
             case "svg":
-                SvgRenderer svg = new SvgRenderer(new FileOutputStream(file), magnification, WHITE, BLACK, borderSize);
+                SvgRenderer svg = new SvgRenderer(new FileOutputStream(file), magnification, borderSize, OkapiUI.paperColour, OkapiUI.inkColour);
                 svg.render(OkapiUI.symbol);
                 break;
             case "eps":
-                PostScriptRenderer eps = new PostScriptRenderer(new FileOutputStream(file), magnification, WHITE, BLACK, borderSize);
+                PostScriptRenderer eps = new PostScriptRenderer(new FileOutputStream(file), magnification, borderSize, OkapiUI.paperColour, OkapiUI.inkColour);
                 eps.render(OkapiUI.symbol);
                 break;
             default:

@@ -82,28 +82,18 @@ public class MakeBarcode {
 
     public void process(Settings settings, String dataInput, String outputFileName) {
         int type = settings.getSymbolType();
-        int magnification = 1;
-        int borderSize = 0;
+        int magnification = 4;
+        int borderSize = 5 * magnification;
         Symbol symbol;
         String extension = "";
 
-        if (!(settings.getForegroundColour().matches("[0-9A-F]+"))) {
-            System.out.printf("Invalid ink colour\n");
-            return;
-        }
+        Color ink = settings.getForegroundColour();
+        Color paper = settings.getBackgroundColour();
 
-        if (!(settings.getBackgroundColour().matches("[0-9A-F]+"))) {
-            System.out.printf("Invalid paper colour\n");
-            return;
-        }
-
-        Color ink = Color.decode("0x" + settings.getForegroundColour());
-        Color paper = Color.decode("0x" + settings.getBackgroundColour());
-
-        if (settings.isReverseColour()) {
-            ink = Color.WHITE;
-            paper = Color.BLACK;
-        }
+//        if (settings.isReverseColour()) {
+//            ink = Color.WHITE;
+//            paper = Color.BLACK;
+//        }
 
         try {
             /* values marked "Legacy" are for compatability purposes
@@ -796,11 +786,17 @@ public class MakeBarcode {
                 case "gif":
                 case "jpg":
                 case "bmp":
-                    BufferedImage image = new BufferedImage(symbol.getWidth(), symbol.getHeight(), BufferedImage.TYPE_INT_ARGB);
+                    BufferedImage image = new BufferedImage((symbol.getWidth() * magnification) + (2 * borderSize),
+                            (symbol.getHeight() * magnification) + (2 * borderSize), BufferedImage.TYPE_INT_RGB);
                     Graphics2D g2d = image.createGraphics();
                     g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    
+                    //FIXME: Setting background colour should be done in Java2DRenderer()
+                    g2d.setColor(paper);
+                    g2d.fillRect(0, 0, (symbol.getWidth() * magnification) + (2 * borderSize),
+                            (symbol.getHeight() * magnification) + (2 * borderSize));
 
-                    Java2DRenderer renderer = new Java2DRenderer(g2d, magnification, paper, ink);
+                    Java2DRenderer renderer = new Java2DRenderer(g2d, magnification, borderSize, paper, ink);
                     renderer.render(symbol);
 
                     try {
@@ -810,11 +806,11 @@ public class MakeBarcode {
                     }
                     break;
                 case "svg":
-                    SvgRenderer svg = new SvgRenderer(new FileOutputStream(file), magnification, paper, ink, borderSize);
+                    SvgRenderer svg = new SvgRenderer(new FileOutputStream(file), magnification, borderSize, paper, ink);
                     svg.render(symbol);
                     break;
                 case "eps":
-                    PostScriptRenderer eps = new PostScriptRenderer(new FileOutputStream(file), magnification, paper, ink, borderSize);
+                    PostScriptRenderer eps = new PostScriptRenderer(new FileOutputStream(file), magnification, borderSize, paper, ink);
                     eps.render(symbol);
                     break;
                 default:

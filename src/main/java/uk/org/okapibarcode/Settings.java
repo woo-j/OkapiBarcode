@@ -17,6 +17,7 @@
 package uk.org.okapibarcode;
 
 import com.beust.jcommander.Parameter;
+import java.awt.Color;
 /**
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
@@ -195,15 +196,33 @@ public class Settings {
     /**
      * @return the foregroundColour
      */
-    public String getForegroundColour() {
-        return foregroundColour;
+    public Color getForegroundColour() {
+        Color inkColour = Color.BLACK;
+        String fgColour;
+        
+        fgColour = foregroundColour.toUpperCase();
+        
+        if (fgColour.matches("[0-9A-F]+") && (fgColour.length() == 6)) {
+            inkColour = Color.decode("0x" + fgColour);
+        }
+        
+        return inkColour;
     }
 
     /**
      * @return the backgroundColour
      */
-    public String getBackgroundColour() {
-        return backgroundColour;
+    public Color getBackgroundColour() {
+        Color paperColour = Color.WHITE;
+        String bgColour;
+        
+        bgColour = backgroundColour.toUpperCase();
+        
+        if (bgColour.matches("[0-9A-F]+") && (bgColour.length() == 6)) {
+            paperColour = Color.decode("0x" + bgColour);
+        }
+        
+        return paperColour;
     }
 
     /**

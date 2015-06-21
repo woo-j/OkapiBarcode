@@ -64,7 +64,7 @@ public class SaveSymbol extends JPanel {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        Java2DRenderer renderer = new Java2DRenderer(g2d, magnification, OkapiUI.paperColour, OkapiUI.inkColour);
+        Java2DRenderer renderer = new Java2DRenderer(g2d, magnification, margin, OkapiUI.paperColour, OkapiUI.inkColour);
         renderer.render(OkapiUI.symbol);
     }
 }

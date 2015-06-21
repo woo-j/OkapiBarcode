@@ -54,11 +54,12 @@ public class SvgRenderer implements SymbolRenderer {
      *
      * @param out the output stream to render to
      * @param magnification the magnification factor to apply
+     * @param margin the size of the additional margin to add around the bar code
      * @param paper the paper (background) color
      * @param ink the ink (foreground) color
-     * @param margin the size of the additional margin to add around the bar code
+     * 
      */
-    public SvgRenderer(OutputStream out, double magnification, Color paper, Color ink, int margin) {
+    public SvgRenderer(OutputStream out, double magnification, int margin, Color paper, Color ink) {
         this.out = out;
         this.magnification = magnification;
         this.paper = paper;

@@ -90,10 +90,10 @@ public class MakeBarcode {
         Color ink = settings.getForegroundColour();
         Color paper = settings.getBackgroundColour();
 
-//        if (settings.isReverseColour()) {
-//            ink = Color.WHITE;
-//            paper = Color.BLACK;
-//        }
+        if (settings.isReverseColour()) {
+            ink = Color.WHITE;
+            paper = Color.BLACK;
+        }
 
         try {
             /* values marked "Legacy" are for compatability purposes

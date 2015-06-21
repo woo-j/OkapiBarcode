@@ -18,6 +18,13 @@ package uk.org.okapibarcode;
 
 import uk.org.okapibarcode.gui.OkapiUI;
 import com.beust.jcommander.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 
 /**
  * Starts the Okapi Barcode UI.
@@ -96,7 +103,7 @@ public class OkapiBarcode {
                 inputData = escapeCharProcess(inputData);
             }
             MakeBarcode mb = new MakeBarcode();
-            mb.process(settings, inputData);
+            mb.process(settings, inputData, settings.getOutputFile());
         } else {
             processFile(settings);
         }
@@ -105,12 +112,106 @@ public class OkapiBarcode {
     }
     
     private static void processFile(Settings settings) {
+        File name = new File(settings.getInputFile());
+        FileInputStream fis;
+        byte[] inputBytes;
+        String inputData;
+        int counter = 0;
         
-        //String inputFromFile;
-        //inputFromFile = OpenFile.ReadFile(file, true);
-        
-        System.out.println("File handling coming soon!");
+        if (!(settings.isBatchMode())) {
+            // Encode all data from selected file in one symbol
+            try {
+                fis = new FileInputStream(name);
+                inputBytes = new byte[fis.available()];
+                fis.read(inputBytes);
+                inputData = new String(inputBytes, "UTF-8");
+                MakeBarcode mb = new MakeBarcode();
+                mb.process(settings, inputData, settings.getOutputFile());
+            } catch (IOException e) {
+                System.out.println("File Read Error");
+            } 
+        } else {
+            // Encode each line of input data in a seperate symbol
+            try {
+                BufferedReader in = new BufferedReader(
+                    new InputStreamReader(
+                        new FileInputStream(name), "UTF8"));
+
+                while ((inputData = in.readLine()) != null) {
+                    counter++;
+                    MakeBarcode mb = new MakeBarcode();
+                    mb.process(settings, inputData, calcFileName(settings, counter));
+                }
+            } catch (UnsupportedEncodingException e) {
+                System.out.println("Encoding exception");
+            } catch (IOException e) {
+                System.out.println("File Read Error");
+            }
+        }
     }    
+    
+    private static String calcFileName(Settings settings, int counter) {
+        String fileName = "";
+        String number;
+        int spaces = 0;
+        int blanks;
+        int blankPosition;
+        String template;
+        
+        number = Integer.toString(counter);
+
+        if (settings.getOutputFile().equals("out.png")) {
+            // No filename set by user
+            template = "~~~~~.png";
+        } else {
+            template = settings.getOutputFile();
+        }
+        
+        for (int i = 0; i < template.length(); i++) {
+            switch(template.charAt(i)) {
+                case '#':
+                case '~':
+                    spaces++;
+                    break;
+            }
+        }
+        
+        blanks = spaces - number.length();
+        
+        if (blanks < 0) {
+            // Not enough room in template for file number
+            System.out.println("Invalid output filename");
+            return "out.png";
+        }
+        
+        blankPosition = 0;
+        
+        for (int i = 0; i < template.length(); i++) {
+            switch(template.charAt(i)) {
+                case '#':
+                    if (blankPosition >= blanks) {
+                        fileName += number.charAt(blankPosition - blanks);
+                    } else {
+                        fileName += ' ';
+                    }
+                    blankPosition++;
+                    break;
+                case '~':
+                    if (blankPosition >= blanks) {
+                        fileName += number.charAt(blankPosition - blanks);
+                    } else {
+                        fileName += '0';
+                    }
+                    blankPosition++;
+                    break;
+                default:
+                    fileName += template.charAt(i);
+                    break;
+            }
+        }
+        
+        return fileName;
+    }
     
     private static String escapeCharProcess(String inputString) {
         String outputString = "";

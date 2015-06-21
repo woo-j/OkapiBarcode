@@ -80,7 +80,7 @@ import uk.org.okapibarcode.output.SvgRenderer;
  */
 public class MakeBarcode {
 
-    public void process(Settings settings, String dataInput) {
+    public void process(Settings settings, String dataInput, String outputFileName) {
         int type = settings.getSymbolType();
         int magnification = 1;
         int borderSize = 0;
@@ -783,7 +783,7 @@ public class MakeBarcode {
             return;
         }
 
-        File file = new File(settings.getOutputFile());
+        File file = new File(outputFileName);
 
         try {
             int i = file.getName().lastIndexOf('.');
@@ -807,9 +807,7 @@ public class MakeBarcode {
                         ImageIO.write(image, extension, file);
                     } catch (IOException e) {
                         System.out.printf("Error outputting to file\n");
-                        return;
                     }
-
                     break;
                 case "svg":
                     SvgRenderer svg = new SvgRenderer(new FileOutputStream(file), magnification, paper, ink, borderSize);
@@ -826,10 +824,8 @@ public class MakeBarcode {
 
         } catch (FileNotFoundException e){
             System.out.printf("File Not Found\n");
-            return;
         } catch (IOException e) {
             System.out.printf("Write Error\n");
-            return;
         }
     }
 

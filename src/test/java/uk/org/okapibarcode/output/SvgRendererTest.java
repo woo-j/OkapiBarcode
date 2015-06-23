@@ -83,7 +83,7 @@ public class SvgRendererTest {
     private void test(Symbol symbol, double magnification, Color paper, Color ink, int margin, String expectationFile) throws IOException {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        SvgRenderer renderer = new SvgRenderer(baos, magnification, paper, ink, margin);
+        SvgRenderer renderer = new SvgRenderer(baos, magnification, margin, paper, ink);
         renderer.render(symbol);
         String actual = new String(baos.toByteArray(), StandardCharsets.UTF_8);
 

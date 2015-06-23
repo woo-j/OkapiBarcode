@@ -280,7 +280,7 @@ public class SymbolTest {
         g2d.setPaint(Color.WHITE);
         g2d.fillRect(0, 0, width, height);
 
-        Java2DRenderer renderer = new Java2DRenderer(g2d, magnification, Color.WHITE, Color.BLACK);
+        Java2DRenderer renderer = new Java2DRenderer(g2d, magnification, 0, Color.WHITE, Color.BLACK);
         renderer.render(symbol);
 
         g2d.dispose();

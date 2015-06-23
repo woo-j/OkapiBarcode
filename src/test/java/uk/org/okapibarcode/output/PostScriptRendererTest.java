@@ -83,7 +83,7 @@ public class PostScriptRendererTest {
     private void test(Symbol symbol, double magnification, Color paper, Color ink, int margin, String expectationFile) throws IOException {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        PostScriptRenderer renderer = new PostScriptRenderer(baos, magnification, paper, ink, margin);
+        PostScriptRenderer renderer = new PostScriptRenderer(baos, magnification, margin, paper, ink);
         renderer.render(symbol);
         String actual = new String(baos.toByteArray(), StandardCharsets.UTF_8);
 

@@ -185,6 +185,8 @@ public class GridMatrix extends Symbol {
     private int[] word = new int[1460];
     private boolean[] grid;
     private boolean chineseLatch;
+    private gmMode appxDnextSection = gmMode.NULL;
+    private gmMode appxDlastSection = gmMode.NULL;
 
     private int preferredVersion = 0;
 
@@ -585,7 +587,42 @@ public class GridMatrix extends Symbol {
         int shift, i;
         int[] numbuf = new int[3];
         String temp_binary;
+        gmMode[] modeMap = calculateModeMap(length);
 
+        
+        // GM_NUMBER, GM_LOWER, GM_UPPER, GM_MIXED, GM_CONTROL, GM_BYTE, GM_CHINESE
+//        System.out.printf("AnnxD Start\n");
+//        for(i = 0; i < length; i++) {
+//            System.out.printf("%d\t", inputIntArray[i]);
+//            switch (modeMap[i]) {
+//                case NULL:
+//                    System.out.printf("NULL");
+//                    break;
+//                case GM_CHINESE:
+//                    System.out.printf("CHINESE");
+//                    break;
+//                case GM_BYTE:
+//                    System.out.printf("BYTE");
+//                    break;
+//                case GM_LOWER:
+//                    System.out.printf("LOWER");
+//                    break;
+//                case GM_UPPER:
+//                    System.out.printf("UPPER");
+//                    break;
+//                case GM_NUMBER:
+//                    System.out.printf("NUMBER");
+//                    break;
+//                case GM_CONTROL:
+//                    System.out.printf("CONTROL");
+//                    break;
+//                case GM_MIXED:
+//                    System.out.printf("MIXED");
+//                    break;
+//            }
+//            System.out.printf("\n");
+//        }
+        
         binary = "";
 
         sp = 0;
@@ -646,7 +683,7 @@ public class GridMatrix extends Symbol {
         }
 
         do {
-            next_mode = seekForward(length, sp, current_mode);
+            next_mode = modeMap[sp];
 
             if (next_mode != current_mode) {
                 switch (current_mode) {
@@ -833,7 +870,7 @@ public class GridMatrix extends Symbol {
                     }
                     if (!(done)) {
                         if (sp != (length - 1)) {
-                            if ((inputIntArray[sp] == 0x13) && (inputIntArray[sp + 1] == 0x10)) {
+                            if ((inputIntArray[sp] == 13) && (inputIntArray[sp + 1] == 10)) {
                                 /* End of Line */
                                 glyph = 7776;
                                 sp++;
@@ -898,7 +935,7 @@ public class GridMatrix extends Symbol {
                                 break;
                         }
                         if (sp < (length - 1)) {
-                            if ((inputIntArray[sp] == 0x13) && (inputIntArray[sp + 1] == 0x10)) {
+                            if ((inputIntArray[sp] == 13) && (inputIntArray[sp + 1] == 10)) {
                                 /* <end of line> */
                                 punt = inputIntArray[sp];
                                 sp++;
@@ -1168,283 +1205,702 @@ public class GridMatrix extends Symbol {
 
         return 0;
     }
-
-    private gmMode seekForward(int length, int position, gmMode current_mode) {
-        /* In complete contrast to the method recommended in Annex D of the ANSI standard this
-         code uses a look-ahead test in the same manner as Data Matrix. This decision was made
-         because the "official" algorithm does not provide clear methods for dealing with all
-         possible combinations of input data */
-
-        int number_count, byte_count, mixed_count, upper_count, lower_count, chinese_count;
-        int sp, done;
-        int best_count, last = -1;
-        gmMode best_mode;
-
-        if (inputIntArray[position] > 0xff) {
-            return gmMode.GM_CHINESE;
+    
+    // Test string AAT2556 电池充电器＋降压转换器 200mA至2A tel:86 010 82512738
+    private gmMode[] calculateModeMap(int length) {
+        gmMode[] modeMap = new gmMode[length];
+        int i;
+        int digitStart, digitLength;
+        boolean digits;
+        int spaceStart, spaceLength;
+        boolean spaces;
+        int[] segmentLength;
+        gmMode[] segmentType;
+        int[] segmentStart;
+        int segmentCount;
+        
+        // Step 1
+        // Characters in GB2312 are encoded as Chinese characters
+        for (i = 0; i < length; i++) {
+            modeMap[i] = gmMode.NULL;
+            if (inputIntArray[i] > 0xFF) {
+                modeMap[i] = gmMode.GM_CHINESE;
+            }
         }
+        
+        // Consecutive <end of line> characters, if preceeded by or followed
+        // by chinese characters, are encoded as chinese characters.
+        i = 1;
+        do {
+            if ((inputIntArray[i] == 13) && (inputIntArray[i + 1] == 10)) {
+                // End of line (CR/LF)
+                
+                if (modeMap[i - 1] == gmMode.GM_CHINESE) {
+                    modeMap[i] = gmMode.GM_CHINESE;
+                    modeMap[i + 1] = gmMode.GM_CHINESE;
+                }
+                i += 2;
+            } else {
+                i++;
+            }
+        } while (i < length);
+        
+        i = length - 3;
+        do {
+            if ((inputIntArray[i] == 13) && (inputIntArray[i + 1] == 10)) {
+                // End of line (CR/LF)
+                if (modeMap[i + 2] == gmMode.GM_CHINESE) {
+                    modeMap[i] = gmMode.GM_CHINESE;
+                    modeMap[i + 1] = gmMode.GM_CHINESE;
+                }
+                i -= 2;
+            } else {
+                i--;
+            }
+        } while (i > 0);
+        
+        // Digit pairs between chinese characters encode as chinese characters.
+        digits = false;
+        digitLength = 0;
+        digitStart = 0;
+        for (i = 1; i < length - 1; i++) {
+            if ((inputIntArray[i] >= 48) && (inputIntArray[i] <= 57)) {
+                // '0' to '9'
+                if (digits == false) {
+                    digits = true;
+                    digitLength = 1;
+                    digitStart = i;
+                } else {
+                    digitLength++;
+                }
+            } else {
+                if (digits == true) {
+                    if ((digitLength % 2) == 0) {
+                        if ((modeMap[digitStart - 1] == gmMode.GM_CHINESE) &&
+                                (modeMap[i] == gmMode.GM_CHINESE)) {
+                            for(int j = 0; j < digitLength; j++) {
+                                modeMap[i - j - 1] = gmMode.GM_CHINESE;
+                            }
+                        }
+                    }
+                    digits = false;
+                }
+            }
+        }
+        
+        // Step 2: all characters 'a' to 'z' are lowercase.
+        for (i = 0; i < length; i++) {
+            if ((inputIntArray[i] >= 97) && (inputIntArray[i] <= 122)) {
+                modeMap[i] = gmMode.GM_LOWER;
+            }
+        }
+        
+        // Step 3: all characters 'A' to 'Z' are uppercase.
+        for (i = 0; i < length; i++) {
+            if ((inputIntArray[i] >= 65) && (inputIntArray[i] <= 90)) {
+                modeMap[i] = gmMode.GM_UPPER;
+            }
+        }
+        
+        // Step 4: find consecutive <space> characters preceeded or followed
+        // by uppercase or lowercase.
+        spaces = false;
+        spaceLength = 0;
+        spaceStart = 0;
+        for (i = 1; i < length - 1; i++) {
+            if (inputIntArray[i] == 32) {
+                if (spaces == false) {
+                    spaces = true;
+                    spaceLength = 1;
+                    spaceStart = i;
+                } else {
+                    spaceLength++;
+                }
+            } else {
+                if (spaces == true) {
+                    
+                    gmMode modeX = modeMap[spaceStart - 1];
+                    gmMode modeY = modeMap[i];
+                    
+                    if ((modeX == gmMode.GM_LOWER) || (modeX == gmMode.GM_UPPER)) {
+                        for (int j = 0; j < spaceLength; j++) {
+                            modeMap[i - j - 1] = modeX;
+                        }
+                    } else {
+                        if ((modeY == gmMode.GM_LOWER) || (modeY == gmMode.GM_UPPER)) {
+                            for (int j = 0; j < spaceLength; j++) {
+                                modeMap[i - j - 1] = modeY;
+                            }
+                        }
+                    }
+                    spaces = false;
+                }
+            }
+        }
+        
+        // Step 5: Unassigned characters '0' to '9' are assigned as numerals.
+        // Non-numeric characters in table 7 are also assigned as numerals.
+        for(i = 0; i < length; i++) {
+            if(modeMap[i] == gmMode.NULL) {
+                if ((inputIntArray[i] >= 48) && (inputIntArray[i] <= 57)) {
+                    // '0' to '9'
+                    modeMap[i] = gmMode.GM_NUMBER;
+                } else {
+                    switch (inputIntArray[i]) {
+                        case 32: // Space
+                        case 43: // '+'
+                        case 45: // '-'
+                        case 46: // "."
+                        case 44: // ","
+                            modeMap[i] = gmMode.GM_NUMBER;
+                            break;
+                        case 13: // CR
+                            if (i < length - 1) {
+                                if (inputIntArray[i + 1] == 10) { // LF
+                                    // <end of line>
+                                    modeMap[i] = gmMode.GM_NUMBER;
+                                    modeMap[i + 1] = gmMode.GM_NUMBER;
+                                }
+                            }
+                    }
+                }
+            }
+        }
+        
+        // Step 6: The remining unassigned bytes are assigned as 8-bit binary
+        for(i = 0; i < length; i++) {
+            if (modeMap[i] == gmMode.NULL) {
+                modeMap[i] = gmMode.GM_BYTE;
+            }
+        }
+        
+        // break into segments
+        segmentLength = new int[length];
+        segmentType = new gmMode[length];
+        segmentStart = new int[length];
+        
+        segmentCount = 0;
+        segmentLength[0] = 1;
+        segmentType[0] = modeMap[0];
+        segmentStart[0] = 0;
+        for (i = 1; i < length; i++) {
+            if (modeMap[i] == modeMap[i - 1]) {
+                segmentLength[segmentCount]++;
+            } else {
+                segmentCount++;
+                segmentLength[segmentCount] = 1;
+                segmentType[segmentCount] = modeMap[i];
+                segmentStart[segmentCount] = i;
+            }
+        }
+        
+        // A segment can be a control segment if
+        // a) It is not the start segment of the data stream
+        // b) All characters are control characters
+        // c) The length of the segment is no more than 3
+        // d) The previous segment is not chinese
+        if (segmentCount > 1) {
+            for (i = 1; i < segmentCount; i++) { // (a)
+                if ((segmentLength[i] <= 3) && (segmentType[i - 1] != gmMode.GM_CHINESE)) { // (c) and (d)
+                    boolean controlLatch = true;
+                    for (int j = 0; j < segmentLength[i]; j++) {
+                        boolean thischarLatch = false;
+                        for(int k = 0; k < 63; k++) {
+                            if (inputIntArray[segmentStart[i] + j] == shift_set[k]) {
+                                thischarLatch = true;
+                            }
+                        }
+                        
+                        if (!(thischarLatch)) {
+                            // This character is not a control character
+                            controlLatch = false;
+                        }
+                    }
+                    
+                    if (controlLatch) { // (b)
+                        segmentType[i] = gmMode.GM_CONTROL;
+//                        for (int j = 0; j < segmentLength[i]; j++) {
+//                            modeMap[segmentStart[i] + j] = gmMode.GM_CONTROL;
+//                        }
+                    }
+                }
+            }
+        }
+        
+        // Stages 7 to 9
+        if (segmentCount >= 3) {
+            for (i = 0; i < segmentCount - 1; i++) {
+                gmMode pm, tm, nm, lm;
+                int tl, nl, ll, position;
+                boolean lastSegment = false;
 
-        switch (current_mode) {
+                if (i == 0) {
+                    pm = gmMode.NULL;
+                } else {
+                    pm = segmentType[i - 1];
+                }
+
+                tm = segmentType[i];
+                tl = segmentLength[i];
+                
+                nm = segmentType[i + 1];
+                nl = segmentLength[i + 1];
+                
+                lm = segmentType[i + 2];
+                ll = segmentLength[i + 2];
+                
+                position = segmentStart[i];
+                
+                if (i + 2 == segmentCount) {
+                    lastSegment = true;
+                }
+                
+//                System.out.printf("\nSegment %d %s %s [%d] %s [%d] %s [%d]\n", i, modeToString(pm), 
+//                        modeToString(tm), tl, modeToString(nm), nl, modeToString(lm), ll);
+                
+                segmentType[i] = getBestMode(pm, tm, nm, lm, tl, nl, ll, position, lastSegment);
+                
+                if (segmentType[i] == gmMode.GM_CONTROL) {
+                    segmentType[i] = segmentType[i - 1];
+                }
+                
+//                System.out.printf("Best fit %s %s %s\n", modeToString(segmentType[i]),
+//                        modeToString(appxDnextSection), modeToString(appxDlastSection));
+            }
+            
+            segmentType[i] = appxDnextSection;
+            segmentType[i + 1] = appxDlastSection;
+            
+            if (segmentType[i] == gmMode.GM_CONTROL) {
+                segmentType[i] = segmentType[i - 1];
+            }
+            if (segmentType[i + 1] == gmMode.GM_CONTROL) {
+                segmentType[i + 1] = segmentType[i];
+            }            
+        }
+        
+        // Copy segments back to modeMap
+        for (i = 0; i < segmentCount; i++) {
+            for (int j = 0; j < segmentLength[i]; j++) {
+                modeMap[segmentStart[i] + j] = segmentType[i];
+            }
+        }
+        
+        return modeMap;
+    }
+    
+    private boolean isTransitionValid(gmMode previousMode, gmMode thisMode) {
+        // Filters possible encoding data types from table D.1
+        boolean isValid = false;
+        
+        switch (previousMode) {
             case GM_CHINESE:
-                number_count = 13;
-                byte_count = 13;
-                mixed_count = 13;
-                upper_count = 13;
-                lower_count = 13;
-                chinese_count = 0;
+                switch (thisMode) {
+                    case GM_CHINESE:
+                    case GM_BYTE:
+                        isValid = true;
+                        break;
+                }
                 break;
             case GM_NUMBER:
-                number_count = 0;
-                byte_count = 10;
-                mixed_count = 10;
-                upper_count = 10;
-                lower_count = 10;
-                chinese_count = 10;
+                switch (thisMode) {
+                    case GM_NUMBER:
+                    case GM_MIXED:
+                    case GM_BYTE:
+                    case GM_CHINESE:
+                        isValid = true;
+                        break;
+                }
                 break;
             case GM_LOWER:
-                number_count = 5;
-                byte_count = 7;
-                mixed_count = 7;
-                upper_count = 5;
-                lower_count = 0;
-                chinese_count = 5;
+                switch (thisMode) {
+                    case GM_LOWER:
+                    case GM_MIXED:
+                    case GM_BYTE:
+                    case GM_CHINESE:
+                        isValid = true;
+                        break;
+                }
                 break;
             case GM_UPPER:
-                number_count = 5;
-                byte_count = 7;
-                mixed_count = 7;
-                upper_count = 0;
-                lower_count = 5;
-                chinese_count = 5;
+                switch (thisMode) {
+                    case GM_UPPER:
+                    case GM_MIXED:
+                    case GM_BYTE:
+                    case GM_CHINESE:
+                        isValid = true;
+                        break;
+                }
                 break;
-            case GM_MIXED:
-                number_count = 10;
-                byte_count = 10;
-                mixed_count = 0;
-                upper_count = 10;
-                lower_count = 10;
-                chinese_count = 10;
+            case GM_CONTROL:
+                switch (thisMode) {
+                    case GM_CONTROL:
+                    case GM_BYTE:
+                    case GM_CHINESE:
+                        isValid = true;
+                        break;
+                }
                 break;
             case GM_BYTE:
-                number_count = 4;
-                byte_count = 0;
-                mixed_count = 4;
-                upper_count = 4;
-                lower_count = 4;
-                chinese_count = 4;
+                switch (thisMode) {
+                    case GM_BYTE:
+                    case GM_CHINESE:
+                        isValid = true;
+                        break;
+                }
+                break;
+        }
+        
+        return isValid;
+    }
+    
+    private gmMode intToMode(int input) {
+        gmMode retVal;
+        
+        switch (input) {
+            case 1:
+                retVal = gmMode.GM_CHINESE;
+                break;
+            case 2:
+                retVal = gmMode.GM_BYTE;
+                break;
+            case 3:
+                retVal = gmMode.GM_CONTROL;
+                break;
+            case 4:
+                retVal = gmMode.GM_MIXED;
+                break;
+            case 5:
+                retVal = gmMode.GM_UPPER;
+                break;
+            case 6:
+                retVal = gmMode.GM_LOWER;
+                break;
+            case 7:
+                retVal = gmMode.GM_NUMBER;
                 break;
             default:
-                /* Start of symbol */
-                number_count = 4;
-                byte_count = 4;
-                mixed_count = 4;
-                upper_count = 4;
-                lower_count = 4;
-                chinese_count = 4;
+                retVal = gmMode.NULL;
+                break;
         }
-
-        for (sp = position;
-                (sp < length) && (sp <= (position + 8)); sp++) {
-
-            done = 0;
-
-            if (inputIntArray[sp] >= 0xff) {
-                byte_count += 17;
-                mixed_count += 23;
-                upper_count += 18;
-                lower_count += 18;
-                chinese_count += 13;
-                done = 1;
-            }
-
-            if ((inputIntArray[sp] >= 'a') && (inputIntArray[sp] <= 'z')) {
-                byte_count += 8;
-                mixed_count += 6;
-                upper_count += 10;
-                lower_count += 5;
-                chinese_count += 13;
-                done = 1;
-            }
-
-            if ((inputIntArray[sp] >= 'A') && (inputIntArray[sp] <= 'Z')) {
-                byte_count += 8;
-                mixed_count += 6;
-                upper_count += 5;
-                lower_count += 10;
-                chinese_count += 13;
-                done = 1;
-            }
-
-            if ((inputIntArray[sp] >= '0') && (inputIntArray[sp] <= '9')) {
-                byte_count += 8;
-                mixed_count += 6;
-                upper_count += 8;
-                lower_count += 8;
-                chinese_count += 13;
-                done = 1;
-            }
-
-            if (inputIntArray[sp] == ' ') {
-                byte_count += 8;
-                mixed_count += 6;
-                upper_count += 5;
-                lower_count += 5;
-                chinese_count += 13;
-                done = 1;
-            }
-
-            if (done == 0) {
-                /* Control character */
-                byte_count += 8;
-                mixed_count += 16;
-                upper_count += 13;
-                lower_count += 13;
-                chinese_count += 13;
-            }
-
-            if (inputIntArray[sp] >= 0x7f) {
-                mixed_count += 20;
-                upper_count += 20;
-                lower_count += 20;
-            }
-        }
-
-        /* Adjust for <end of line> */
-        for (sp = position;
-                (sp < (length - 1)) && (sp <= (position + 7)); sp++) {
-            if ((inputIntArray[sp] == 0x13) && (inputIntArray[sp] == 0x10)) {
-                chinese_count -= 13;
-            }
-        }
-
-        /* Adjust for double digits */
-        for (sp = position;
-                (sp < (length - 1)) && (sp <= (position + 7)); sp++) {
-            if (sp != last) {
-                if (((inputIntArray[sp] >= '0') && (inputIntArray[sp] <= '9')) && ((inputIntArray[sp + 1] >= '0') && (inputIntArray[sp + 1] <= '9'))) {
-                    chinese_count -= 13;
-                    last = sp + 1;
-                }
-            }
-        }
-
-        /* Numeric mode is more complex */
-        number_count += numberModeCost(length, position);
-
-//        if (debug) {
-//            System.out.printf("C %d / B %d / M %d / U %d / L %d / N %d\n", chinese_count, byte_count, mixed_count, upper_count, lower_count, number_count);
-//        }
-
-        if (chineseLatch) {
-            /* GB2312 encoding enabled */
-            best_count = chinese_count;
-            best_mode = gmMode.GM_CHINESE;
-            if (byte_count <= best_count) {
-                best_count = byte_count;
-                best_mode = gmMode.GM_BYTE;
-            }
-        } else {
-            /* UTF-8 encoding enabled */
-            best_count = byte_count;
-            best_mode = gmMode.GM_BYTE;
-        }
-
-        if (mixed_count <= best_count) {
-            best_count = mixed_count;
-            best_mode = gmMode.GM_MIXED;
-        }
-
-        if (upper_count <= best_count) {
-            best_count = upper_count;
-            best_mode = gmMode.GM_UPPER;
-        }
-
-        if (lower_count <= best_count) {
-            best_count = lower_count;
-            best_mode = gmMode.GM_LOWER;
-        }
-
-        if (number_count <= best_count) {
-            best_mode = gmMode.GM_NUMBER;
-        }
-
-        return best_mode;
-
+        
+        return retVal;
     }
-
-    private int numberModeCost(int length, int position) {
-        /* Attempt to calculate the 'cost' of using numeric mode from a given position in number of bits */
-        /* Also ensures that numeric mode is not selected when it cannot be used: for example in
-         a string which has "2.2.0" (cannot have more than one non-numeric character for each
-         block of three numeric characters) */
-        int sp;
-        int numb = 0, nonum = 0, done;
-        int tally = 0;
-
-        sp = position;
-
+    
+    private gmMode getBestMode(gmMode pm, gmMode tm, gmMode nm, gmMode lm, int tl, int nl, int ll, int position, boolean lastSegment) {
+        int tmi, nmi, lmi;
+        gmMode bestMode = tm;
+        int binaryLength;
+        int bestBinaryLength = Integer.MAX_VALUE;
+        
+        for(tmi = 1; tmi < 8; tmi++) {
+            if (isTransitionValid(tm, intToMode(tmi))) {
+                for(nmi = 1; nmi < 8; nmi++) {
+                    if (isTransitionValid(nm, intToMode(nmi))) {
+                        for (lmi = 1; lmi < 8; lmi++) {
+                            if (isTransitionValid(lm, intToMode(lmi))) {
+                                binaryLength = getBinaryLength(pm, intToMode(tmi), intToMode(nmi), intToMode(lmi), tl, nl, ll, position, lastSegment);
+                                
+                                if (binaryLength <= bestBinaryLength) {
+                                    bestMode = intToMode(tmi);
+                                    appxDnextSection = intToMode(nmi);
+                                    appxDlastSection = intToMode(lmi);
+                                    bestBinaryLength = binaryLength;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        return bestMode;
+    }
+    
+    private String modeToString(gmMode mode) {
+        String output;
+        
+        switch (mode) {
+            case GM_CHINESE:
+                output = "CHINESE";
+                break;
+            case GM_NUMBER:
+                output = "NUMBER";
+                break;
+            case GM_LOWER:
+                output = "LOWER";
+                break;
+            case GM_UPPER:
+                output = "UPPER";
+                break;
+            case GM_MIXED:
+                output = "MIXED";
+                break;
+            case GM_CONTROL:
+                output = "CONTROL";
+                break;
+            case GM_BYTE:
+                output = "BYTE";
+                break;
+            default:
+                output = "NULL";
+                break;
+        }
+        
+        return output;
+    }
+    
+    private int getBinaryLength(gmMode pm, gmMode tm, gmMode nm, gmMode lm, int tl, int nl, int ll, int position, boolean lastSegment) {
+        int binaryLength;
+        
+//        System.out.printf("P %s, T %s, N %s, L %s ", modeToString(pm), modeToString(tm), modeToString(nm), modeToString(lm));
+        
+        binaryLength = getChunkLength(pm, tm, tl, position);
+        binaryLength += getChunkLength(tm, nm, nl, (position + tl));
+        binaryLength += getChunkLength(nm, lm, ll, (position + tl + nl));
+        
+        if (lastSegment) {
+            switch (lm) {
+                case GM_CHINESE:
+                    binaryLength += 13;
+                    break;
+                case GM_NUMBER:
+                    binaryLength += 10;
+                    break;
+                case GM_LOWER:
+                case GM_UPPER:
+                    binaryLength += 5;
+                    break;
+                case GM_MIXED:
+                    binaryLength += 10;
+                    break;
+                case GM_BYTE:
+                    binaryLength += 4;
+                    break;
+            }
+//            System.out.printf("LAST ");
+        }
+        
+//        System.out.printf(" = %db\n", binaryLength);
+        
+        return binaryLength;
+    }
+    
+    private int getChunkLength(gmMode lastMode, gmMode thisMode, int thisLength, int position) {
+        int byteLength;
+        
+        switch (thisMode) {
+            case GM_CHINESE:
+                byteLength = calcChineseLength(position, thisLength);
+                break;
+            case GM_NUMBER:
+                byteLength = calcNumberLength(position, thisLength);
+                break;
+            case GM_LOWER:
+                byteLength = 5 * thisLength;
+                break;
+            case GM_UPPER:
+                byteLength = 5 * thisLength;
+                break;
+            case GM_MIXED:
+                byteLength = calcMixedLength(position, thisLength);
+                break;
+            case GM_CONTROL:
+                switch (lastMode) {
+                    case GM_UPPER:
+                    case GM_LOWER:
+                        byteLength = (7 + 6) * thisLength;
+                        break;
+                    default:
+                    //case GM_MIXED:
+                        byteLength = (10 + 6) * thisLength;
+                        break;
+                }
+                break;
+            default:
+            //case GM_BYTE:
+                byteLength = calcByteLength(position, thisLength);
+                break;
+        }
+        
+        switch (lastMode) {
+            case NULL:
+                byteLength += 4;
+                break;
+            case GM_CHINESE:
+                if ((thisMode != gmMode.GM_CHINESE) && (thisMode != gmMode.GM_CONTROL)) {
+                    byteLength += 13;
+                }
+                break;
+            case GM_NUMBER:
+                if ((thisMode != gmMode.GM_CHINESE) && (thisMode != gmMode.GM_CONTROL)) {
+                    byteLength += 10;
+                }
+                break;
+            case GM_LOWER:
+                switch (thisMode) {
+                    case GM_CHINESE:
+                    case GM_NUMBER:
+                    case GM_UPPER:
+                        byteLength += 5;
+                        break;
+                    case GM_MIXED:
+                    case GM_CONTROL:
+                    case GM_BYTE:
+                        byteLength += 7;
+                        break;
+                }
+                break;
+            case GM_UPPER:
+                switch (thisMode) {
+                    case GM_CHINESE:
+                    case GM_NUMBER:
+                    case GM_LOWER:
+                        byteLength += 5;
+                        break;
+                    case GM_MIXED:
+                    case GM_CONTROL:
+                    case GM_BYTE:
+                        byteLength += 7;
+                        break;
+                }
+                break;
+            case GM_MIXED:
+                if (thisMode != gmMode.GM_MIXED) {
+                    byteLength += 10;
+                }
+                break;
+            case GM_BYTE:
+                if (thisMode != gmMode.GM_BYTE) {
+                    byteLength += 4;
+                }
+                break;
+        }
+        
+        if ((lastMode != gmMode.GM_BYTE) && (thisMode == gmMode.GM_BYTE)) {
+            byteLength += 9;
+        }
+        
+        if ((lastMode != gmMode.GM_NUMBER) && (thisMode == gmMode.GM_NUMBER)) {
+            byteLength += 2;
+        }
+        
+//        System.out.printf("%db ", byteLength);
+        
+        return byteLength;
+    }
+    
+    private int calcChineseLength(int position, int length) {
+        int i = 0;
+        int bits = 0;
+        
         do {
-            done = 0;
-
-            if ((inputIntArray[sp] >= '0') && (inputIntArray[sp] <= '9')) {
-                numb++;
-                done = 1;
-            }
-            switch (inputIntArray[sp]) {
-                case ' ':
-                case '+':
-                case '-':
-                case '.':
-                case ',':
-                    nonum++;
-                    done = 1;
-            }
-            if ((sp + 1) < length) {
-                if ((inputIntArray[sp] == 0x13) && (inputIntArray[sp + 1] == 0x10)) {
-                    nonum++;
-                    done = 1;
-                    sp++;
+            bits += 13;
+            
+            if (i < length) {
+                if ((inputIntArray[position + i] == 13) && (inputIntArray[position + i + 1] == 10)) {
+                    // <end of line>
+                    i++;
+                }
+                
+                if (((inputIntArray[position + i] >= 48) && (inputIntArray[position + i] <= 57)) &&
+                       ((inputIntArray[position + i + 1] >= 48) && (inputIntArray[position + i + 1] <= 57))) {
+                    // two digits
+                    i++;
                 }
             }
-
-            if (done == 0) {
-                tally += 80;
+            i++;
+        } while (i < length);
+        
+        return bits;
+    }
+    
+    private int calcMixedLength(int position, int length) {
+        int bits = 0;
+        int i;
+        
+        for (i = 0; i < length; i++) {
+            bits += 6;
+            for(int k = 0; k < 63; k++) {
+                if (inputIntArray[position + i] == shift_set[k]) {
+                    bits += 10;
+                }
+            }
+        }
+        
+        return bits;
+    }
+    
+    private int calcNumberLength(int position, int length) {
+        int i;
+        int bits = 0;
+        int numbers = 0;
+        int nonnumbers = 0;
+        
+        for (i = 0; i < length; i++) {
+            if ((inputIntArray[position + i] >= 48) && (inputIntArray[position + i] <= 57)) {
+                numbers++;
             } else {
-                if (numb == 3) {
-                    if (nonum == 0) {
-                        tally += 10;
-                    }
-                    if (nonum == 1) {
-                        tally += 20;
-                    }
-                    if (nonum > 1) {
-                        tally += 80;
-                    }
-                    numb = 0;
-                    nonum = 0;
+                nonnumbers++;
+            }
+            
+            if (i != 0) {
+                if ((inputIntArray[position + i] == 10) && (inputIntArray[position + i - 1] == 13)) {
+                    // <end of line>
+                    nonnumbers--;
                 }
             }
-
-            sp++;
-        } while ((sp < length) && (sp <= (position + 8)));
-
-        if (numb == 0) {
-            tally += 80;
-        }
-
-        if (numb > 1) {
-            if (nonum == 0) {
-                tally += 10;
-            }
-            if (nonum == 1) {
-                tally += 20;
-            }
-            if (nonum > 1) {
-                tally += 80;
+            
+            if (numbers == 3) {
+                if (nonnumbers == 1) {
+                    bits += 20;
+                } else {
+                    bits += 10;
+                }
+                if (nonnumbers > 1) {
+                    // Invalid encoding
+                    bits += 100;
+                }
+                numbers = 0;
+                nonnumbers = 0;
             }
         }
-
-        return tally;
+        
+        if (numbers > 0) {
+            if (nonnumbers == 1) {
+                bits += 20;
+            } else {
+                bits += 10;
+            }
+        }
+        
+        if (nonnumbers > 1) {
+            // Invalid
+            bits += 100;
+        }
+        
+        if (!((inputIntArray[position + i - 1] >= 48) && (inputIntArray[position + i - 1] <= 57))) {
+            // Data must end with a digit
+            bits += 100;
+        }
+        
+        
+        return bits;
+    }
+    
+    private int calcByteLength(int position, int length) {
+        int i;
+        int bits = 0;
+        
+        for (i = 0; i < length; i++) {
+            if (inputIntArray[position + i] <= 0xFF) {
+                bits += 8;
+            } else {
+                bits += 16;
+            }
+        }
+        
+        return bits;
     }
 
     private void addByteCount(int byte_count_posn, int byte_count) {
@@ -1513,6 +1969,14 @@ public class GridMatrix extends Symbol {
             }
         }
 
+        if (debug) {
+            System.out.printf("\tCodewords: ");
+            for (i = 0; i < data_cw; i++) {
+                System.out.printf("%d ", data[i]);
+            }
+            System.out.printf("\n");
+        }
+        
         /* Add padding codewords */
         data[data_posn] = 0x00;
         for (i = (data_posn + 1); i < data_cw; i++) {

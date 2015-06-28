@@ -184,7 +184,6 @@ public class GridMatrix extends Symbol {
     private String binary;
     private int[] word = new int[1460];
     private boolean[] grid;
-    private boolean chineseLatch;
     private gmMode appxDnextSection = gmMode.NULL;
     private gmMode appxDlastSection = gmMode.NULL;
 
@@ -395,7 +394,6 @@ public class GridMatrix extends Symbol {
                     System.out.printf("\tUsing GB2312 character encoding\n");
                 }
                 eciMode = 29;
-                chineseLatch = true;
             } else {
                 /* GB2312 encoding didn't work, use other ECI mode */
                 eciProcess(); // Get ECI mode
@@ -404,7 +402,6 @@ public class GridMatrix extends Symbol {
                 for (i = 0; i < length; i++) {
                     inputIntArray[i] = inputBytes[i] & 0xFF;
                 }                
-                chineseLatch = false;
             }
         } catch (UnsupportedEncodingException e) {
             error_msg = "Byte conversion encoding error";
@@ -419,13 +416,14 @@ public class GridMatrix extends Symbol {
 
         /* Determine the size of the symbol */
         data_cw = binary.length() / 7;
-
-        auto_layers = 13;
-        for (i = 12; i > 0; i--) {
-            if (gm_recommend_cw[(i - 1)] >= data_cw) {
-                auto_layers = i;
+        
+        auto_layers = 0;
+        for (i = 0; i < 13; i++) {
+            if (gm_recommend_cw[i] < data_cw) {
+                auto_layers = i + 1;
             }
         }
+
         min_layers = 13;
         for (i = 12; i > 0; i--) {
             if (gm_max_cw[(i - 1)] >= data_cw) {
@@ -588,40 +586,6 @@ public class GridMatrix extends Symbol {
         int[] numbuf = new int[3];
         String temp_binary;
         gmMode[] modeMap = calculateModeMap(length);
-
-        
-        // GM_NUMBER, GM_LOWER, GM_UPPER, GM_MIXED, GM_CONTROL, GM_BYTE, GM_CHINESE
-//        System.out.printf("AnnxD Start\n");
-//        for(i = 0; i < length; i++) {
-//            System.out.printf("%d\t", inputIntArray[i]);
-//            switch (modeMap[i]) {
-//                case NULL:
-//                    System.out.printf("NULL");
-//                    break;
-//                case GM_CHINESE:
-//                    System.out.printf("CHINESE");
-//                    break;
-//                case GM_BYTE:
-//                    System.out.printf("BYTE");
-//                    break;
-//                case GM_LOWER:
-//                    System.out.printf("LOWER");
-//                    break;
-//                case GM_UPPER:
-//                    System.out.printf("UPPER");
-//                    break;
-//                case GM_NUMBER:
-//                    System.out.printf("NUMBER");
-//                    break;
-//                case GM_CONTROL:
-//                    System.out.printf("CONTROL");
-//                    break;
-//                case GM_MIXED:
-//                    System.out.printf("MIXED");
-//                    break;
-//            }
-//            System.out.printf("\n");
-//        }
         
         binary = "";
 
@@ -1074,7 +1038,6 @@ public class GridMatrix extends Symbol {
 
                     if (shift == 0) {
                         /* Upper Case character */
-                        //glyph = posn("ABCDEFGHIJKLMNOPQRSTUVWXYZ ", gbdata[sp]);
                         glyph = positionOf((char) inputIntArray[sp], MIXED_ALPHANUM_SET) - 10;
                         if (glyph == 52) {
                             // Space character
@@ -1113,7 +1076,6 @@ public class GridMatrix extends Symbol {
 
                     if (shift == 0) {
                         /* Lower Case character */
-                        //glyph = posn("abcdefghijklmnopqrstuvwxyz ", gbdata[sp]);
                         glyph = positionOf((char) inputIntArray[sp], MIXED_ALPHANUM_SET) - 36;
                         if (debug) {
                             System.out.printf("%d ", glyph);
@@ -1206,7 +1168,6 @@ public class GridMatrix extends Symbol {
         return 0;
     }
     
-    // Test string AAT2556 电池充电器＋降压转换器 200mA至2A tel:86 010 82512738
     private gmMode[] calculateModeMap(int length) {
         gmMode[] modeMap = new gmMode[length];
         int i;
@@ -1230,34 +1191,36 @@ public class GridMatrix extends Symbol {
         
         // Consecutive <end of line> characters, if preceeded by or followed
         // by chinese characters, are encoded as chinese characters.
-        i = 1;
-        do {
-            if ((inputIntArray[i] == 13) && (inputIntArray[i + 1] == 10)) {
-                // End of line (CR/LF)
-                
-                if (modeMap[i - 1] == gmMode.GM_CHINESE) {
-                    modeMap[i] = gmMode.GM_CHINESE;
-                    modeMap[i + 1] = gmMode.GM_CHINESE;
+        if (length > 3) {
+            i = 1;
+            do {
+                if ((inputIntArray[i] == 13) && (inputIntArray[i + 1] == 10)) {
+                    // End of line (CR/LF)
+
+                    if (modeMap[i - 1] == gmMode.GM_CHINESE) {
+                        modeMap[i] = gmMode.GM_CHINESE;
+                        modeMap[i + 1] = gmMode.GM_CHINESE;
+                    }
+                    i += 2;
+                } else {
+                    i++;
                 }
-                i += 2;
-            } else {
-                i++;
-            }
-        } while (i < length);
-        
-        i = length - 3;
-        do {
-            if ((inputIntArray[i] == 13) && (inputIntArray[i + 1] == 10)) {
-                // End of line (CR/LF)
-                if (modeMap[i + 2] == gmMode.GM_CHINESE) {
-                    modeMap[i] = gmMode.GM_CHINESE;
-                    modeMap[i + 1] = gmMode.GM_CHINESE;
+            } while (i < length - 1);
+
+            i = length - 3;
+            do {
+                if ((inputIntArray[i] == 13) && (inputIntArray[i + 1] == 10)) {
+                    // End of line (CR/LF)
+                    if (modeMap[i + 2] == gmMode.GM_CHINESE) {
+                        modeMap[i] = gmMode.GM_CHINESE;
+                        modeMap[i + 1] = gmMode.GM_CHINESE;
+                    }
+                    i -= 2;
+                } else {
+                    i--;
                 }
-                i -= 2;
-            } else {
-                i--;
-            }
-        } while (i > 0);
+            } while (i > 0);
+        }
         
         // Digit pairs between chinese characters encode as chinese characters.
         digits = false;
@@ -1419,9 +1382,6 @@ public class GridMatrix extends Symbol {
                     
                     if (controlLatch) { // (b)
                         segmentType[i] = gmMode.GM_CONTROL;
-//                        for (int j = 0; j < segmentLength[i]; j++) {
-//                            modeMap[segmentStart[i] + j] = gmMode.GM_CONTROL;
-//                        }
                     }
                 }
             }
@@ -1476,7 +1436,12 @@ public class GridMatrix extends Symbol {
             }
             if (segmentType[i + 1] == gmMode.GM_CONTROL) {
                 segmentType[i + 1] = segmentType[i];
-            }            
+            }
+            
+// Uncomment these lines to override mode selection and generate symbol as shown 
+// in image D.1 for the test data "AAT2556 电池充电器＋降压转换器 200mA至2A tel:86 019 82512738"
+//            segmentType[9] = gmMode.GM_LOWER;
+//            segmentType[10] = gmMode.GM_LOWER;
         }
         
         // Copy segments back to modeMap
@@ -1617,38 +1582,38 @@ public class GridMatrix extends Symbol {
         return bestMode;
     }
     
-    private String modeToString(gmMode mode) {
-        String output;
-        
-        switch (mode) {
-            case GM_CHINESE:
-                output = "CHINESE";
-                break;
-            case GM_NUMBER:
-                output = "NUMBER";
-                break;
-            case GM_LOWER:
-                output = "LOWER";
-                break;
-            case GM_UPPER:
-                output = "UPPER";
-                break;
-            case GM_MIXED:
-                output = "MIXED";
-                break;
-            case GM_CONTROL:
-                output = "CONTROL";
-                break;
-            case GM_BYTE:
-                output = "BYTE";
-                break;
-            default:
-                output = "NULL";
-                break;
-        }
-        
-        return output;
-    }
+//    private String modeToString(gmMode mode) {
+//        String output;
+//        
+//        switch (mode) {
+//            case GM_CHINESE:
+//                output = "CHINESE";
+//                break;
+//            case GM_NUMBER:
+//                output = "NUMBER";
+//                break;
+//            case GM_LOWER:
+//                output = "LOWER";
+//                break;
+//            case GM_UPPER:
+//                output = "UPPER";
+//                break;
+//            case GM_MIXED:
+//                output = "MIXED";
+//                break;
+//            case GM_CONTROL:
+//                output = "CONTROL";
+//                break;
+//            case GM_BYTE:
+//                output = "BYTE";
+//                break;
+//            default:
+//                output = "NULL";
+//                break;
+//        }
+//        
+//        return output;
+//    }
     
     private int getBinaryLength(gmMode pm, gmMode tm, gmMode nm, gmMode lm, int tl, int nl, int ll, int position, boolean lastSegment) {
         int binaryLength;
@@ -1706,16 +1671,7 @@ public class GridMatrix extends Symbol {
                 byteLength = calcMixedLength(position, thisLength);
                 break;
             case GM_CONTROL:
-                switch (lastMode) {
-                    case GM_UPPER:
-                    case GM_LOWER:
-                        byteLength = (7 + 6) * thisLength;
-                        break;
-                    default:
-                    //case GM_MIXED:
-                        byteLength = (10 + 6) * thisLength;
-                        break;
-                }
+                byteLength = 6 * thisLength;
                 break;
             default:
             //case GM_BYTE:
@@ -1968,14 +1924,6 @@ public class GridMatrix extends Symbol {
                 }
             }
         }
-
-        if (debug) {
-            System.out.printf("\tCodewords: ");
-            for (i = 0; i < data_cw; i++) {
-                System.out.printf("%d ", data[i]);
-            }
-            System.out.printf("\n");
-        }
         
         /* Add padding codewords */
         data[data_posn] = 0x00;
@@ -1985,6 +1933,14 @@ public class GridMatrix extends Symbol {
             } else {
                 data[i] = 0x00;
             }
+        }
+        
+        if (debug) {
+            System.out.printf("\tCodewords: ");
+            for (i = 0; i < data_cw; i++) {
+                System.out.printf("%d ", data[i]);
+            }
+            System.out.printf("\n");
         }
 
         /* Get block sizes */

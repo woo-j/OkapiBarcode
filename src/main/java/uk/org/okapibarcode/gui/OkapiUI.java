@@ -2686,10 +2686,10 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                     gridMatrix.setReaderInit();
                 }
                 if (gridmatrixUserEcc.isSelected()) {
-                    gridMatrix.setPreferredEccLevel(gridmatrixUserEccCombo.getSelectedIndex());
+                    gridMatrix.setPreferredEccLevel(gridmatrixUserEccCombo.getSelectedIndex() + 1);
                 }
                 if (gridmatrixUserSize.isSelected()) {
-                    gridMatrix.setPreferredVersion(gridmatrixUserSizeCombo.getSelectedIndex());
+                    gridMatrix.setPreferredVersion(gridmatrixUserSizeCombo.getSelectedIndex() + 1);
                 }
                 gridMatrix.setContent(dataInput);
                 return gridMatrix;

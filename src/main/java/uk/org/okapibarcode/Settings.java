@@ -18,6 +18,7 @@ package uk.org.okapibarcode;
 
 import com.beust.jcommander.Parameter;
 import java.awt.Color;
+import uk.org.okapibarcode.backend.HumanReadableLocation;
 /**
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
@@ -97,6 +98,9 @@ public class Settings {
     
     @Parameter(names = "--notext", description = "Remove human readable text", required = false)
     private boolean supressHrt = false;
+    
+    @Parameter(names = "--textabove", description = "Place human readable text above symbol", required = false)
+    private boolean superHrt = false;
     
     @Parameter(names = "--square", description = "Force Data Matrix symbols to be square", required = false)
     private boolean makeSquare = false;
@@ -291,8 +295,18 @@ public class Settings {
     /**
      * @return the supressHrt
      */
-    public boolean isSupressHrt() {
-        return supressHrt;
+    public HumanReadableLocation getHrtPosition() {
+        HumanReadableLocation temp = HumanReadableLocation.BOTTOM;
+        
+        if(superHrt) {
+            temp = HumanReadableLocation.TOP;
+        }
+        
+        if(supressHrt) {
+            temp = HumanReadableLocation.NONE;
+        }
+        
+        return temp;
     }
 
     /**

@@ -495,10 +495,10 @@ public class Code2Of5 extends Symbol {
 
         if (mode == tof_mode.ITF14) {
             // Add bounding box
-            Rectangle topBar = new Rectangle(0, 0, symbol_width, 4);
-            Rectangle bottomBar = new Rectangle(0, symbol_height - 4, symbol_width, 4);
-            Rectangle leftBar = new Rectangle(0, 0, 4, symbol_height);
-            Rectangle rightBar = new Rectangle(symbol_width - 4, 0, 4, symbol_height);
+            Rectangle topBar = new Rectangle(0, baseY, symbol_width, 4);
+            Rectangle bottomBar = new Rectangle(0, baseY + symbol_height - 4, symbol_width, 4);
+            Rectangle leftBar = new Rectangle(0, baseY, 4, symbol_height);
+            Rectangle rightBar = new Rectangle(symbol_width - 4, baseY, 4, symbol_height);
             rect.add(topBar);
             rect.add(bottomBar);
             rect.add(leftBar);

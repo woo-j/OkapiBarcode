@@ -74,6 +74,7 @@ import uk.org.okapibarcode.output.Java2DRenderer;
 import uk.org.okapibarcode.output.PostScriptRenderer;
 import uk.org.okapibarcode.output.SvgRenderer;
 
+import uk.org.okapibarcode.backend.HumanReadableLocation;
 /**
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
@@ -86,6 +87,7 @@ public class MakeBarcode {
         int borderSize = 5 * magnification;
         Symbol symbol;
         String extension = "";
+        HumanReadableLocation hrtLocation = settings.getHrtPosition();
 
         Color ink = settings.getForegroundColour();
         Color paper = settings.getBackgroundColour();
@@ -103,6 +105,7 @@ public class MakeBarcode {
                 case 1:
                     // Code 11
                     Code11 code11 = new Code11();
+                    code11.setHumanReadableLocation(hrtLocation);
                     code11.setContent(dataInput);
                     symbol = code11;
                     break;
@@ -110,6 +113,7 @@ public class MakeBarcode {
                     // Code 2 of 5
                     Code2Of5 c25matrix = new Code2Of5();
                     c25matrix.setMatrixMode();
+                    c25matrix.setHumanReadableLocation(hrtLocation);
                     c25matrix.setContent(dataInput);
                     symbol = c25matrix;
                     break;
@@ -117,6 +121,7 @@ public class MakeBarcode {
                     //Interleaved 2 of 5
                     Code2Of5 c25inter = new Code2Of5();
                     c25inter.setInterleavedMode();
+                    c25inter.setHumanReadableLocation(hrtLocation);
                     c25inter.setContent(dataInput);
                     symbol = c25inter;
                     break;
@@ -124,6 +129,7 @@ public class MakeBarcode {
                     // IATA 2 of 5
                     Code2Of5 c25iata = new Code2Of5();
                     c25iata.setIATAMode();
+                    c25iata.setHumanReadableLocation(hrtLocation);
                     c25iata.setContent(dataInput);
                     symbol = c25iata;
                     break;
@@ -131,6 +137,7 @@ public class MakeBarcode {
                     // Data Logic
                     Code2Of5 c25logic = new Code2Of5();
                     c25logic.setDataLogicMode();
+                    c25logic.setHumanReadableLocation(hrtLocation);
                     c25logic.setContent(dataInput);
                     symbol = c25logic;
                     break;
@@ -138,6 +145,7 @@ public class MakeBarcode {
                     // Industrial 2 of 5
                     Code2Of5 c25ind = new Code2Of5();
                     c25ind.setIndustrialMode();
+                    c25ind.setHumanReadableLocation(hrtLocation);
                     c25ind.setContent(dataInput);
                     symbol = c25ind;
                     break;
@@ -149,12 +157,14 @@ public class MakeBarcode {
                     if ((type == 99) || (type == 101)) {
                         code3of9.setDataType(Symbol.DataType.HIBC);
                     }
+                    code3of9.setHumanReadableLocation(hrtLocation);
                     code3of9.setContent(dataInput);
                     symbol = code3of9;
                     break;
                 case 9:
                     // Extended Code 39
                     Code3Of9Extended code3of9ext = new Code3Of9Extended();
+                    code3of9ext.setHumanReadableLocation(hrtLocation);
                     code3of9ext.setContent(dataInput);
                     symbol = code3of9ext;
                     break;
@@ -177,6 +187,7 @@ public class MakeBarcode {
                 case 18:
                     // Codabar
                     Codabar codabar = new Codabar();
+                    codabar.setHumanReadableLocation(hrtLocation);
                     codabar.setContent(dataInput);
                     symbol = codabar;
                     break;
@@ -202,6 +213,7 @@ public class MakeBarcode {
                     if (settings.isReaderInit()) {
                         code128.setReaderInit();
                     }
+                    code128.setHumanReadableLocation(hrtLocation);
                     code128.setContent(dataInput);
                     symbol = code128;
                     break;
@@ -209,6 +221,7 @@ public class MakeBarcode {
                     // Leitcode
                     Code2Of5 dpLeit = new Code2Of5();
                     dpLeit.setDPLeitMode();
+                    dpLeit.setHumanReadableLocation(hrtLocation);
                     dpLeit.setContent(dataInput);
                     symbol = dpLeit;
                     break;
@@ -216,6 +229,7 @@ public class MakeBarcode {
                     // Identcode
                     Code2Of5 dpIdent = new Code2Of5();
                     dpIdent.setDPIdentMode();
+                    dpIdent.setHumanReadableLocation(hrtLocation);
                     dpIdent.setContent(dataInput);
                     symbol = dpIdent;
                     break;
@@ -234,12 +248,14 @@ public class MakeBarcode {
                 case 24:
                     // Code 49
                     Code49 code49 = new Code49();
+                    code49.setHumanReadableLocation(hrtLocation);
                     code49.setContent(dataInput);
                     symbol = code49;
                     break;
                 case 25:
                     // Code 93
                     Code93 code93 = new Code93();
+                    code93.setHumanReadableLocation(hrtLocation);
                     code93.setContent(dataInput);
                     symbol = code93;
                     break;
@@ -247,12 +263,14 @@ public class MakeBarcode {
                     // Databar-14
                     DataBar14 dataBar14 = new DataBar14();
                     dataBar14.setLinearMode();
+                    dataBar14.setHumanReadableLocation(hrtLocation);
                     dataBar14.setContent(dataInput);
                     symbol = dataBar14;
                     break;
                 case 30:
                     // Databar Limited
                     DataBarLimited dataBarLimited = new DataBarLimited();
+                    dataBarLimited.setHumanReadableLocation(hrtLocation);
                     dataBarLimited.setContent(dataInput);
                     symbol = dataBarLimited;
                     break;
@@ -260,6 +278,7 @@ public class MakeBarcode {
                     // Databar Expanded
                     DataBarExpanded dataBarE = new DataBarExpanded();
                     dataBarE.setNotStacked();
+                    dataBarE.setHumanReadableLocation(hrtLocation);
                     dataBarE.setContent(dataInput);
                     symbol = dataBarE;
                     break;
@@ -267,6 +286,7 @@ public class MakeBarcode {
                     // Telepen Alpha
                     Telepen telepen = new Telepen();
                     telepen.setNormalMode();
+                    telepen.setHumanReadableLocation(hrtLocation);
                     telepen.setContent(dataInput);
                     symbol = telepen;
                     break;
@@ -306,12 +326,14 @@ public class MakeBarcode {
                 case 47:
                     // MSI Plessey
                     MsiPlessey msiPlessey = new MsiPlessey();
+                    msiPlessey.setHumanReadableLocation(hrtLocation);
                     msiPlessey.setContent(dataInput);
                     symbol = msiPlessey;
                     break;
                 case 50:
                     // LOGMARS
                     Logmars logmars = new Logmars();
+                    logmars.setHumanReadableLocation(hrtLocation);
                     logmars.setContent(dataInput);
                     symbol = logmars;
                     break;
@@ -461,6 +483,7 @@ public class MakeBarcode {
                 case 75:
                     // NVE-18
                     Nve18 nve18 = new Nve18();
+                    nve18.setHumanReadableLocation(hrtLocation);
                     nve18.setContent(dataInput);
                     symbol = nve18;
                     break;
@@ -473,6 +496,7 @@ public class MakeBarcode {
                 case 77:
                     // Korea Post
                     KoreaPost koreaPost = new KoreaPost();
+                    koreaPost.setHumanReadableLocation(hrtLocation);
                     koreaPost.setContent(dataInput);
                     symbol = koreaPost;
                     break;
@@ -535,6 +559,7 @@ public class MakeBarcode {
                     // Telepen Numeric
                     Telepen telepenNum = new Telepen();
                     telepenNum.setNumericMode();
+                    telepenNum.setHumanReadableLocation(hrtLocation);
                     telepenNum.setContent(dataInput);
                     symbol = telepenNum;
                     break;
@@ -542,6 +567,7 @@ public class MakeBarcode {
                     // ITF-14
                     Code2Of5 itf14 = new Code2Of5();
                     itf14.setITF14Mode();
+                    itf14.setHumanReadableLocation(hrtLocation);
                     itf14.setContent(dataInput);
                     symbol = itf14;
                     break;
@@ -572,6 +598,7 @@ public class MakeBarcode {
                 case 93:
                     // Code 32
                     Code32 code32 = new Code32();
+                    code32.setHumanReadableLocation(hrtLocation);
                     code32.setContent(dataInput);
                     symbol = code32;
                     break;
@@ -699,6 +726,7 @@ public class MakeBarcode {
                     // Channel Code
                     ChannelCode channelCode = new ChannelCode();
                     channelCode.setNumberOfChannels(settings.getSymbolColumns());
+                    channelCode.setHumanReadableLocation(hrtLocation);
                     channelCode.setContent(dataInput);
                     symbol = channelCode;
                     break;

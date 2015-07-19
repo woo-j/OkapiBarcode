@@ -417,7 +417,7 @@ public class GridMatrix extends Symbol {
         /* Determine the size of the symbol */
         data_cw = binary.length() / 7;
         
-        auto_layers = 0;
+        auto_layers = 1;
         for (i = 0; i < 13; i++) {
             if (gm_recommend_cw[i] < data_cw) {
                 auto_layers = i + 1;

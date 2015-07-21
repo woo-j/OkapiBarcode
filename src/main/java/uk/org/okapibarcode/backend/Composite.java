@@ -459,6 +459,9 @@ public class Composite extends Symbol {
     private CompositeMode cc_mode;
     private String linearContent;
     private CompositeMode userPreferredMode = CompositeMode.CC_A;
+    private int target_bitsize;
+    private int remainder;
+    private int linearWidth; // Width of Code 128 linear
 
     public Composite() {
         inputDataType = Symbol.DataType.GS1;
@@ -511,6 +514,7 @@ public class Composite extends Symbol {
         int bottom_shift = 0;
         int max_x = 0;
         int i;
+        linearWidth = 0;
 
         if (linearContent.isEmpty()) {
             error_msg = "No linear data set";
@@ -577,7 +581,9 @@ public class Composite extends Symbol {
                             bottom_shift = 7;
                             break;
                     }
+                    code128.setDataType(Symbol.DataType.GS1);
                     code128.setContent(linearContent);
+                    linearWidth = code128.symbol_width;
                     linear_rect = code128.rect;
                     linear_txt = code128.txt;
                     linear_height = code128.symbol_height;
@@ -660,6 +666,21 @@ public class Composite extends Symbol {
             error_msg = linear_error_msg;
             return false;
         }
+        
+        if ((cc_mode == CompositeMode.CC_C) && (symbology == LinearEncoding.CODE_128)) {
+            /* Width of composite component depends on width of linear component,
+               so recalculate.
+            */
+            System.out.printf("Going back in\n");
+            row_count = 0;
+            rect.clear();
+            symbol_height = 0;
+            symbol_width = 0;
+            encodeInfo = "";
+            if (!(encodeComposite())) {
+                return false;
+            }
+        }
 
         for (i = 0; i < rect.size(); i++) {
             Rectangle comprect = new Rectangle(rect.get(i).x + top_shift, rect.get(i).y, rect.get(i).width, rect.get(i).height);
@@ -738,20 +759,17 @@ public class Composite extends Symbol {
                 break;
         }
 
-        if (debug) {
-            System.out.println("Calculating composite component");
-            System.out.println("Width: " + cc_width + " modules");
-        }
+        encodeInfo += "Composite width: " + Integer.toString(cc_width) + "\n";
 
         if (cc_mode == CompositeMode.CC_A) {
-            if (!(cc_binary_string(cc_mode))) {
+            if (!(cc_binary_string())) {
                 cc_mode = CompositeMode.CC_B;
             }
         }
 
         if (cc_mode == CompositeMode.CC_B) { /* If the data didn't fit into CC-A it is recalculated for CC-B */
-            if (!(cc_binary_string(cc_mode))) {
-                if (!(symbology.equals("CODE 128"))) {
+            if (!(cc_binary_string())) {
+                if (symbology != LinearEncoding.CODE_128) {
                     error_msg = "Input too long";
                     return false;
                 } else {
@@ -763,48 +781,24 @@ public class Composite extends Symbol {
         if (cc_mode == CompositeMode.CC_C) {
             /* If the data didn't fit in CC-B (and linear
              * part is GS1-128) it is recalculated for CC-C */
-            if (!(cc_binary_string(cc_mode))) {
+            if (!(cc_binary_string())) {
                 error_msg = "Input too long";
                 return false;
             }
         }
 
-        if (debug) {
-            switch (cc_mode) {
-                case CC_A:
-                    System.out.println("Encoding using CC-A");
-                    break;
-                case CC_B:
-                    System.out.println("Encoding using CC-B");
-                    break;
-                case CC_C:
-                    System.out.println("Encoding using CC-C");
-                    break;
-            }
-        }
-
-        switch (cc_mode) {
-            case CC_A:
-                encodeInfo += "Composite type: CC-A\n";
-                break;
-            case CC_B:
-                encodeInfo += "Composite type: CC-B\n";
-                break;
-            case CC_C:
-                encodeInfo += "Composite type: CC-C\n";
-                break;
-        }
-        encodeInfo += "Composite width: " + cc_width + " modules\n";
-
         switch (cc_mode) { /* Note that ecc_level is only relevant to CC-C */
             case CC_A:
                 cc_a();
+                encodeInfo += "Composite type: CC-A\n";
                 break;
             case CC_B:
                 cc_b();
+                encodeInfo += "Composite type: CC-B\n";
                 break;
             case CC_C:
                 cc_c();
+                encodeInfo += "Composite type: CC-C\n";
                 break;
         }
 
@@ -838,797 +832,10 @@ public class Composite extends Symbol {
             return 13;
         }
     }
-
-    private boolean cc_binary_string(CompositeMode cc_mode) {
-        /* Handles all data encodation from section 5 of ISO/IEC 24723 */
-        int encoding_method, read_posn, d1, d2, value, alpha_pad;
-        int i, j, ai_crop, fnc1_latch;
-        int group_val;
-        int ai90_mode, remainder, binary_length;
-        boolean latch;
-        int target_bitsize;
-        int alpha, alphanum, numeric, test1, test2, test3, next_ai_posn;
-        int numeric_value, table3_letter;
-        String numeric_part;
-        String ninety;
-        int latchOffset;
-
-        encoding_method = 1;
-        read_posn = 0;
-        ai_crop = 0;
-        fnc1_latch = 0;
-        alpha_pad = 0;
-        ai90_mode = 0;
-        ecc = 0;
-        value = 0;
-        target_bitsize = 0;
-
-        if (debug) {
-            switch (cc_mode) {
-                case CC_A:
-                    System.out.println("Generating CC-A binary");
-                    break;
-                case CC_B:
-                    System.out.println("Generatinc CC-B binary");
-                    break;
-                case CC_C:
-                    System.out.println("Generating CC-C binary");
-                    break;
-            }
-        }
-
-        if ((content.charAt(0) == '1') && ((content.charAt(1) == '0') || (content.charAt(1) == '1') || (content.charAt(1) == '7')) && (content.length() > 8)) {
-            /* Source starts (10), (11) or (17) */
-            encoding_method = 2;
-        }
-
-        if ((content.charAt(0) == '9') && (content.charAt(1) == '0')) {
-            /* Source starts (90) */
-            encoding_method = 3;
-        }
-
-        encodeInfo += "Composite encoding: " + encoding_method + "\n";
-
-        binary_string = "";
-
-        if (encoding_method == 1) {
-            binary_string += "0";
-        }
-
-        if (encoding_method == 2) {
-            /* Encoding Method field "10" - date and lot number */
-
-            binary_string += "10";
-
-            if (content.charAt(1) == '0') {
-                /* No date data */
-                binary_string += "11";
-                read_posn = 2;
-            } else {
-                /* Production Date (11) or Expiration Date (17) */
-                group_val = ((10 * (content.charAt(2) - '0')) + (content.charAt(3) - '0')) * 384;
-                group_val += (((10 * (content.charAt(4) - '0')) + (content.charAt(5) - '0')) - 1) * 32;
-                group_val += (10 * (content.charAt(6) - '0')) + (content.charAt(7) - '0');
-
-                for (j = 0; j < 16; j++) {
-                    if ((group_val & (0x8000 >> j)) == 0) {
-                        binary_string += "0";
-                    } else {
-                        binary_string += "1";
-                    }
-                }
-
-                if (content.charAt(1) == '1') {
-                    /* Production Date AI 11 */
-                    binary_string += "0";
-                } else {
-                    /* Expiration Date AI 17 */
-                    binary_string += "1";
-                }
-                read_posn = 8;
-            }
-
-            if ((content.charAt(read_posn) == '1') && (content.charAt(read_posn + 1) == '0')) {
-                /* Followed by AI 10 - strip this from general field */
-                read_posn += 2;
-            } else {
-                /* An FNC1 character needs to be inserted in the general field */
-                fnc1_latch = 1;
-            }
-        }
-
-        if (encoding_method == 3) {
-            /* Encodation Method field of "11" - AI 90 */
-            /* "This encodation method may be used if an element string with an AI
-             90 occurs at the start of the data message, and if the data field
-             following the two-digit AI 90 starts with an alphanumeric string which
-             complies with a specific format." (para 5.2.2) */
-
-            j = content.length();
-            for (i = content.length(); i > 2; i--) {
-                if (content.charAt(i - 1) == '[') {
-                    j = i;
-                }
-            }
-
-            ninety = content.substring(2, j - 1);
-
-            if (debug) {
-                System.out.println("          AI90 substring: " + ninety);
-            }
-
-            /* Find out if the AI 90 data is alphabetic or numeric or both */
-
-            alpha = 0;
-            alphanum = 0;
-            numeric = 0;
-
-            for (i = 0; i < ninety.length(); i++) {
-
-                if ((ninety.charAt(i) >= 'A') && (ninety.charAt(i) <= 'Z')) {
-                    /* Character is alphabetic */
-                    alpha += 1;
-                }
-
-                if ((ninety.charAt(i) >= '0') && (ninety.charAt(i) <= '9')) {
-                    /* Character is numeric */
-                    numeric += 1;
-                }
-
-                switch (ninety.charAt(i)) {
-                    case '*':
-                    case ',':
-                    case '-':
-                    case '.':
-                    case '/':
-                        alphanum += 1;
-                        break;
-                }
-
-                if (!(((ninety.charAt(i) >= '0') && (ninety.charAt(i) <= '9')) || ((ninety.charAt(i) >= 'A') && (ninety.charAt(i) <= 'Z')))) {
-                    if ((ninety.charAt(i) != '*') && (ninety.charAt(i) != ',') && (ninety.charAt(i) != '-') && (ninety.charAt(i) != '.') && (ninety.charAt(i) != '/')) {
-                        /* An Invalid AI 90 character */
-                        error_msg = "Invalid AI 90 data";
-                        return false;
-                    }
-                }
-            }
-
-            if (debug) {
-                System.out.print("          AI90 is ");
-                if (alphanum > 0) {
-                    System.out.println("alphanumeric");
-                } else {
-                    if (alpha > 0) {
-                        System.out.println("alphabetic");
-                    } else {
-                        System.out.println("numeric");
-                    }
-                }
-            }
-
-            /* must start with 0, 1, 2 or 3 digits followed by an uppercase character */
-            test1 = -1;
-            for (i = 3; i >= 0; i--) {
-                if ((ninety.charAt(i) >= 'A') && (ninety.charAt(i) <= 'Z')) {
-                    test1 = i;
-                }
-            }
-
-            test2 = 0;
-            for (i = 0; i < test1; i++) {
-                if (!((ninety.charAt(i) >= '0') && (ninety.charAt(i) <= '9'))) {
-                    test2 = 1;
-                }
-            }
-
-            /* leading zeros are not permitted */
-            test3 = 0;
-            if ((test1 >= 1) && (ninety.charAt(0) == '0')) {
-                test3 = 1;
-            }
-
-            if ((test1 != -1) && (test2 != 1) && (test3 == 0)) {
-                /* Encodation method "11" can be used */
-                if (debug) {
-                    System.out.println("          Using encoding method 11");
-                }
-                binary_string += "11";
-
-                numeric -= test1;
-                alpha--;
-
-                /* Decide on numeric, alpha or alphanumeric mode */
-                /* Alpha mode is a special mode for AI 90 */
-
-                if (alphanum > 0) {
-                    /* Alphanumeric mode */
-                    binary_string += "0";
-                    ai90_mode = 1;
-                } else {
-                    if (alpha > numeric) {
-                        /* Alphabetic mode */
-                        binary_string += "11";
-                        ai90_mode = 2;
-                    } else {
-                        /* Numeric mode */
-                        binary_string += "10";
-                        ai90_mode = 3;
-                    }
-                }
-
-                next_ai_posn = 2 + ninety.length();
-
-                if (content.charAt(next_ai_posn) == '[') {
-                    /* There are more AIs afterwords */
-                    if ((content.charAt(next_ai_posn + 1) == '2') && (content.charAt(next_ai_posn + 2) == '1')) {
-                        /* AI 21 follows */
-                        ai_crop = 1;
-                    }
-
-                    if ((content.charAt(next_ai_posn + 1) == '8') && (content.charAt(next_ai_posn + 2) == '0') && (content.charAt(next_ai_posn + 3) == '0') && (content.charAt(next_ai_posn + 4) == '4')) {
-                        /* AI 8004 follows */
-                        ai_crop = 2;
-                    }
-                }
-
-                switch (ai_crop) {
-                    case 0:
-                        binary_string += "0";
-                        break;
-                    case 1:
-                        binary_string += "10";
-                        break;
-                    case 2:
-                        binary_string += "11";
-                        break;
-                }
-
-                if (test1 == 0) {
-                    numeric_part = "0";
-                } else {
-                    numeric_part = ninety.substring(0, test1);
-                }
-
-                numeric_value = 0;
-                for (i = 0; i < numeric_part.length(); i++) {
-                    numeric_value *= 10;
-                    numeric_value += numeric_part.charAt(i) - '0';
-                }
-
-                table3_letter = -1;
-                if (numeric_value < 31) {
-                    switch (ninety.charAt(test1)) {
-                        case 'B':
-                            table3_letter = 0;
-                            break;
-                        case 'D':
-                            table3_letter = 1;
-                            break;
-                        case 'H':
-                            table3_letter = 2;
-                            break;
-                        case 'I':
-                            table3_letter = 3;
-                            break;
-                        case 'J':
-                            table3_letter = 4;
-                            break;
-                        case 'K':
-                            table3_letter = 5;
-                            break;
-                        case 'L':
-                            table3_letter = 6;
-                            break;
-                        case 'N':
-                            table3_letter = 7;
-                            break;
-                        case 'P':
-                            table3_letter = 8;
-                            break;
-                        case 'Q':
-                            table3_letter = 9;
-                            break;
-                        case 'R':
-                            table3_letter = 10;
-                            break;
-                        case 'S':
-                            table3_letter = 11;
-                            break;
-                        case 'T':
-                            table3_letter = 12;
-                            break;
-                        case 'V':
-                            table3_letter = 13;
-                            break;
-                        case 'W':
-                            table3_letter = 14;
-                            break;
-                        case 'Z':
-                            table3_letter = 15;
-                            break;
-                    }
-                }
-
-                if (table3_letter != -1) {
-                    /* Encoding can be done according to 5.2.2 c) 2) */
-                    /* five bit binary string representing value before letter */
-                    for (j = 0; j < 5; j++) {
-                        if ((numeric_value & (0x10 >> j)) == 0x00) {
-                            binary_string += "0";
-                        } else {
-                            binary_string += "1";
-                        }
-                    }
-
-                    /* followed by four bit representation of letter from Table 3 */
-                    for (j = 0; j < 4; j++) {
-                        if ((table3_letter & (0x08 >> j)) == 0x00) {
-                            binary_string += "0";
-                        } else {
-                            binary_string += "1";
-                        }
-                    }
-                } else {
-                    /* Encoding is done according to 5.2.2 c) 3) */
-                    binary_string += "11111";
-                    /* ten bit representation of number */
-                    for (j = 0; j < 10; j++) {
-                        if ((numeric_value & (0x200 >> j)) == 0x00) {
-                            binary_string += "0";
-                        } else {
-                            binary_string += "1";
-                        }
-                    }
-
-                    /* five bit representation of ASCII character */
-                    for (j = 0; j < 5; j++) {
-                        if (((ninety.charAt(test1) - 65) & (0x10 >> j)) == 0x00) {
-                            binary_string += "0";
-                        } else {
-                            binary_string += "1";
-                        }
-                    }
-                }
-
-                read_posn = test1 + 3;
-            } else {
-                if (debug) {
-                    System.out.println("          AI90 compression rejected, use general field");
-                }
-                /* Use general field encodation instead */
-                binary_string += "0";
-                read_posn = 0;
-            }
-        }
-
-        /* Now encode the rest of the AI 90 data field */
-        if (ai90_mode == 2) {
-            /* Alpha encodation (section 5.2.3) */
-            do {
-                if ((content.charAt(read_posn) >= '0') && (content.charAt(read_posn) <= '9')) {
-                    for (j = 0; j < 5; j++) {
-                        if (((content.charAt(read_posn) + 4) & (0x10 >> j)) == 0x00) {
-                            binary_string += "0";
-                        } else {
-                            binary_string += "1";
-                        }
-                    }
-                }
-
-                if ((content.charAt(read_posn) >= 'A') && (content.charAt(read_posn) <= 'Z')) {
-                    for (j = 0; j < 6; j++) {
-                        if (((content.charAt(read_posn) - 65) & (0x20 >> j)) == 0x00) {
-                            binary_string += "0";
-                        } else {
-                            binary_string += "1";
-                        }
-                    }
-                }
-
-                if (content.charAt(read_posn) == '[') {
-                    binary_string += "11111";
-                }
-
-                read_posn++;
-            } while ((content.charAt(read_posn - 1) != '[') && (read_posn < content.length()));
-            alpha_pad = 1; /* This is overwritten if a general field is encoded */
-        }
-
-        if (ai90_mode == 1) {
-            /* Alphanumeric mode */
-            do {
-                if ((content.charAt(read_posn) >= '0') && (content.charAt(read_posn) <= '9')) {
-                    for (j = 0; j < 5; j++) {
-                        if (((content.charAt(read_posn) - 43) & (0x10 >> j)) == 0x00) {
-                            binary_string += "0";
-                        } else {
-                            binary_string += "1";
-                        }
-                    }
-                }
-
-                if ((content.charAt(read_posn) >= 'A') && (content.charAt(read_posn) <= 'Z')) {
-                    for (j = 0; j < 6; j++) {
-                        if (((content.charAt(read_posn) - 33) & (0x20 >> j)) == 0x00) {
-                            binary_string += "0";
-                        } else {
-                            binary_string += "1";
-                        }
-                    }
-                }
-
-                switch (content.charAt(read_posn)) {
-                    case '[':
-                        binary_string += "01111";
-                        break;
-                    case '*':
-                        binary_string += "111010";
-                        break;
-                    case ',':
-                        binary_string += "111011";
-                        break;
-                    case '-':
-                        binary_string += "111100";
-                        break;
-                    case '.':
-                        binary_string += "111101";
-                        break;
-                    case '/':
-                        binary_string += "111110";
-                        break;
-                }
-
-                read_posn++;
-            } while ((content.charAt(read_posn - 1) != '[') && (content.charAt(read_posn - 1) != '\0'));
-        }
-
-        read_posn += (2 * ai_crop);
-
-        if (debug) {
-            System.out.println("     Compressed binary: " + binary_string);
-        }
-
-        /* The compressed data field has been processed if appropriate - the
-         rest of the data (if any) goes into a general-purpose data compaction field */
-
-        j = 0;
-        general_field = "";
-        if (fnc1_latch == 1) {
-            /* Encodation method "10" has been used but it is not followed by
-             AI 10, so a FNC1 character needs to be added */
-            general_field += "[";
-        }
-
-        general_field += content.substring(read_posn);
-
-        if (debug) {
-            System.out.println("     General field: " + general_field);
-        }
-
-        latch = false;
-        if (general_field.length() != 0) {
-            alpha_pad = 0;
-
-
-            general_field_type = new gfMode[general_field.length()];
-
-            for (i = 0; i < general_field.length(); i++) {
-                /* Table 13 - ISO/IEC 646 encodation */
-                if ((general_field.charAt(i) < ' ') || (general_field.charAt(i) > 'z')) {
-                    general_field_type[i] = gfMode.INVALID_CHAR;
-                    latch = true;
-                } else {
-                    general_field_type[i] = gfMode.ISOIEC;
-                }
-
-                if (general_field.charAt(i) == '#') {
-                    general_field_type[i] = gfMode.INVALID_CHAR;
-                    latch = true;
-                }
-                if (general_field.charAt(i) == '$') {
-                    general_field_type[i] = gfMode.INVALID_CHAR;
-                    latch = true;
-                }
-                if (general_field.charAt(i) == '@') {
-                    general_field_type[i] = gfMode.INVALID_CHAR;
-                    latch = true;
-                }
-                if (general_field.charAt(i) == 92) {
-                    general_field_type[i] = gfMode.INVALID_CHAR;
-                    latch = true;
-                }
-                if (general_field.charAt(i) == '^') {
-                    general_field_type[i] = gfMode.INVALID_CHAR;
-                    latch = true;
-                }
-                if (general_field.charAt(i) == 96) {
-                    general_field_type[i] = gfMode.INVALID_CHAR;
-                    latch = true;
-                }
-
-                /* Table 12 - Alphanumeric encodation */
-                if ((general_field.charAt(i) >= 'A') && (general_field.charAt(i) <= 'Z')) {
-                    general_field_type[i] = gfMode.ALPHA_OR_ISO;
-                }
-                if (general_field.charAt(i) == '*') {
-                    general_field_type[i] = gfMode.ALPHA_OR_ISO;
-                }
-                if (general_field.charAt(i) == ',') {
-                    general_field_type[i] = gfMode.ALPHA_OR_ISO;
-                }
-                if (general_field.charAt(i) == '-') {
-                    general_field_type[i] = gfMode.ALPHA_OR_ISO;
-                }
-                if (general_field.charAt(i) == '.') {
-                    general_field_type[i] = gfMode.ALPHA_OR_ISO;
-                }
-                if (general_field.charAt(i) == '/') {
-                    general_field_type[i] = gfMode.ALPHA_OR_ISO;
-                }
-
-                /* Numeric encodation */
-                if ((general_field.charAt(i) >= '0') && (general_field.charAt(i) <= '9')) {
-                    general_field_type[i] = gfMode.ANY_ENC;
-                }
-                if (general_field.charAt(i) == '[') {
-                    /* FNC1 can be encoded in any system */
-                    general_field_type[i] = gfMode.ANY_ENC;
-                }
-
-            }
-
-            if (latch) {
-                /* Invalid characters in input data */
-                error_msg = "Invalid characters in input data";
-                return false;
-            }
-
-            for (i = 0; i < general_field.length() - 1; i++) {
-                if ((general_field_type[i] == gfMode.ISOIEC) && (general_field.charAt(i + 1) == '[')) {
-                    general_field_type[i + 1] = gfMode.ISOIEC;
-                }
-            }
-
-            for (i = 0; i < general_field.length() - 1; i++) {
-                if ((general_field_type[i] == gfMode.ALPHA_OR_ISO) && (general_field.charAt(i + 1) == '[')) {
-                    general_field_type[i + 1] = gfMode.ALPHA_OR_ISO;
-                }
-            }
-
-            latch = applyGeneralFieldRules();
-
-            i = 0;
-            do {
-                switch (general_field_type[i]) {
-                    case NUMERIC:
-                        if (i != 0) {
-                            if ((general_field_type[i - 1] != gfMode.NUMERIC) && (general_field.charAt(i - 1) != '[')) {
-                                binary_string += "000"; /* Numeric latch */
-                            }
-                        }
-
-                        if (general_field.charAt(i) != '[') {
-                            d1 = general_field.charAt(i) - '0';
-                        } else {
-                            d1 = 10;
-                        }
-
-                        if (i < general_field.length() - 1) {
-                            if (general_field.charAt(i + 1) != '[') {
-                                d2 = general_field.charAt(i + 1) - '0';
-                            } else {
-                                d2 = 10;
-                            }
-                        } else {
-                            d2 = 10;
-                        }
-
-                        value = (11 * d1) + d2 + 8;
-
-                        for (j = 0; j < 7; j++) {
-                            if ((value & 0x40 >> j) == 0x00) {
-                                binary_string += "0";
-                            } else {
-                                binary_string += "1";
-                            }
-                        }
-
-                        i += 2;
-                        break;
-
-                    case ALPHA:
-                        if (i != 0) {
-                            if ((general_field_type[i - 1] == gfMode.NUMERIC) || (general_field.charAt(i - 1) == '[')) {
-                                binary_string += "0000"; /* Alphanumeric latch */
-                            }
-                            if (general_field_type[i - 1] == gfMode.ISOIEC) {
-                                binary_string += "00100"; /* ISO/IEC 646 latch */
-                            }
-                        }
-
-                        if ((general_field.charAt(i) >= '0') && (general_field.charAt(i) <= '9')) {
-
-                            value = general_field.charAt(i) - 43;
-
-                            for (j = 0; j < 5; j++) {
-                                if ((value & (0x10 >> j)) == 0x00) {
-                                    binary_string += "0";
-                                } else {
-                                    binary_string += "1";
-                                }
-                            }
-                        }
-
-                        if ((general_field.charAt(i) >= 'A') && (general_field.charAt(i) <= 'Z')) {
-
-                            value = general_field.charAt(i) - 33;
-
-                            for (j = 0; j < 6; j++) {
-                                if ((value & (0x20 >> j)) == 0x00) {
-                                    binary_string += "0";
-                                } else {
-                                    binary_string += "1";
-                                }
-                            }
-                        }
-
-                        if (general_field.charAt(i) == '[') {
-                            binary_string += "01111"; /* FNC1/Numeric latch */
-                        }
-                        if (general_field.charAt(i) == '*') {
-                            binary_string += "111010"; /* asterisk */
-                        }
-                        if (general_field.charAt(i) == ',') {
-                            binary_string += "111011"; /* comma */
-                        }
-                        if (general_field.charAt(i) == '-') {
-                            binary_string += "111100"; /* minus or hyphen */
-                        }
-                        if (general_field.charAt(i) == '.') {
-                            binary_string += "111101"; /* period or full stop */
-                        }
-                        if (general_field.charAt(i) == '/') {
-                            binary_string += "111110"; /* slash or solidus */
-                        }
-
-                        i++;
-                        break;
-
-                    case ISOIEC:
-                        if (i != 0) {
-                            if ((general_field_type[i - 1] == gfMode.NUMERIC) || (general_field.charAt(i - 1) == '[')) {
-                                binary_string += "0000"; /* Alphanumeric latch */
-                                binary_string += "00100"; /* ISO/IEC 646 latch */
-                            }
-                            if (general_field_type[i - 1] == gfMode.ALPHA) {
-                                binary_string += "00100"; /* ISO/IEC 646 latch */
-                            }
-                        }
-
-                        if ((general_field.charAt(i) >= '0') && (general_field.charAt(i) <= '9')) {
-
-                            value = general_field.charAt(i) - 43;
-
-                            for (j = 0; j < 5; j++) {
-                                if ((value & (0x10 >> j)) == 0x00) {
-                                    binary_string += "0";
-                                } else {
-                                    binary_string += "1";
-                                }
-                            }
-                        }
-
-                        if ((general_field.charAt(i) >= 'A') && (general_field.charAt(i) <= 'Z')) {
-
-                            value = general_field.charAt(i) - 1;
-
-                            for (j = 0; j < 7; j++) {
-                                if ((value & (0x40 >> j)) == 0x00) {
-                                    binary_string += "0";
-                                } else {
-                                    binary_string += "1";
-                                }
-                            }
-                        }
-
-                        if ((general_field.charAt(i) >= 'a') && (general_field.charAt(i) <= 'z')) {
-
-                            value = general_field.charAt(i) - 7;
-
-                            for (j = 0; j < 7; j++) {
-                                if ((value & (0x40 >> j)) == 0x00) {
-                                    binary_string += "0";
-                                } else {
-                                    binary_string += "1";
-                                }
-                            }
-                        }
-
-                        if (general_field.charAt(i) == '[') {
-                            binary_string += "01111"; /* FNC1/Numeric latch */
-                        }
-                        if (general_field.charAt(i) == '!') {
-                            binary_string += "11101000"; /* exclamation mark */
-                        }
-                        if (general_field.charAt(i) == 34) {
-                            binary_string += "11101001"; /* quotation mark */
-                        }
-                        if (general_field.charAt(i) == 37) {
-                            binary_string += "11101010"; /* percent sign */
-                        }
-                        if (general_field.charAt(i) == '&') {
-                            binary_string += "11101011"; /* ampersand */
-                        }
-                        if (general_field.charAt(i) == 39) {
-                            binary_string += "11101100"; /* apostrophe */
-                        }
-                        if (general_field.charAt(i) == '(') {
-                            binary_string += "11101101"; /* left parenthesis */
-                        }
-                        if (general_field.charAt(i) == ')') {
-                            binary_string += "11101110"; /* right parenthesis */
-                        }
-                        if (general_field.charAt(i) == '*') {
-                            binary_string += "11101111"; /* asterisk */
-                        }
-                        if (general_field.charAt(i) == '+') {
-                            binary_string += "11110000"; /* plus sign */
-                        }
-                        if (general_field.charAt(i) == ',') {
-                            binary_string += "11110001"; /* comma */
-                        }
-                        if (general_field.charAt(i) == '-') {
-                            binary_string += "11110010"; /* minus or hyphen */
-                        }
-                        if (general_field.charAt(i) == '.') {
-                            binary_string += "11110011"; /* period or full stop */
-                        }
-                        if (general_field.charAt(i) == '/') {
-                            binary_string += "11110100"; /* slash or solidus */
-                        }
-                        if (general_field.charAt(i) == ':') {
-                            binary_string += "11110101"; /* colon */
-                        }
-                        if (general_field.charAt(i) == ';') {
-                            binary_string += "11110110"; /* semicolon */
-                        }
-                        if (general_field.charAt(i) == '<') {
-                            binary_string += "11110111"; /* less-than sign */
-                        }
-                        if (general_field.charAt(i) == '=') {
-                            binary_string += "11111000"; /* equals sign */
-                        }
-                        if (general_field.charAt(i) == '>') {
-                            binary_string += "11111001"; /* greater-than sign */
-                        }
-                        if (general_field.charAt(i) == '?') {
-                            binary_string += "11111010"; /* question mark */
-                        }
-                        if (general_field.charAt(i) == '_') {
-                            binary_string += "11111011"; /* underline or low line */
-                        }
-                        if (general_field.charAt(i) == ' ') {
-                            binary_string += "11111100"; /* space */
-                        }
-
-                        i++;
-                        break;
-                }
-
-
-                latchOffset = 0;
-                if (latch) {
-                    latchOffset = 1;
-                }
-            } while ((i + latchOffset) < general_field.length());
-        }
-
-        if (debug) {
-            System.out.println("     Resultant binary length: " + binary_string.length());
-        }
-
-        binary_length = binary_string.length();
+    
+    private boolean calculateSymbolSize() {
+        int i;
+        int binary_length = binary_string.length();
         if (cc_mode == CompositeMode.CC_A) {
             /* CC-A 2D component - calculate remaining space */
             switch (cc_width) {
@@ -1844,12 +1051,13 @@ public class Composite extends Symbol {
             codewords_used += ecc_codewords;
             codewords_used += 3;
 
-            //		if(codewords_used > symbol->option_3) {
-            //			return ZERROR_TOO_LONG;
-            //		}
-            cc_width = (int)(0.5 + Math.sqrt((codewords_used) / 3.0));
-            // FIXME:		*(cc_width) = (lin_width - 62) / 17;
-            //cc_width = (200 - 62) / 17;
+            if (linearWidth == 0) {
+                /* Linear component not yet calculated */
+                cc_width = (int)(0.5 + Math.sqrt((codewords_used) / 3.0));
+            } else {
+                cc_width = (linearWidth - 53) / 17;
+            }
+
             if ((codewords_used / cc_width) > 90) {
                 /* stop the symbol from becoming too high */
                 cc_width = cc_width + 1;
@@ -1872,40 +1080,835 @@ public class Composite extends Symbol {
         }
 
         remainder = target_bitsize - binary_length;
+        return true;
+    }
 
-        if (debug) {
-            System.out.println("     1st pass target size is " + target_bitsize + ", room left is " + remainder);
+    private boolean cc_binary_string() {
+        /* Handles all data encodation from section 5 of ISO/IEC 24723 */
+        int encoding_method, read_posn, d1, d2, value, alpha_pad;
+        int i, j, ai_crop, fnc1_latch;
+        int group_val;
+        int ai90_mode;
+        boolean latch;
+        int alpha, alphanum, numeric, test1, test2, test3, next_ai_posn;
+        int numeric_value, table3_letter;
+        String numeric_part;
+        String ninety;
+        int latchOffset;
+
+        encoding_method = 1;
+        read_posn = 0;
+        ai_crop = 0;
+        fnc1_latch = 0;
+        alpha_pad = 0;
+        ai90_mode = 0;
+        ecc = 0;
+        value = 0;
+        target_bitsize = 0;
+
+        if ((content.charAt(0) == '1') && ((content.charAt(1) == '0') || (content.charAt(1) == '1') || (content.charAt(1) == '7')) && (content.length() >= 8)) {
+            /* Source starts (10), (11) or (17) */
+            encoding_method = 2;
+        }
+
+        if ((content.charAt(0) == '9') && (content.charAt(1) == '0')) {
+            /* Source starts (90) */
+            encoding_method = 3;
+        }
+
+        encodeInfo += "Composite Encodation: ";
+        switch (encoding_method) {
+            case 1:
+                encodeInfo += "0\n";
+                break;
+            case 2:
+                encodeInfo += "10\n";
+                break;
+            case 3:
+                encodeInfo += "11\n";
+                break;
+        }
+
+        binary_string = "";
+
+        if (encoding_method == 1) {
+            binary_string += "0";
+        }
+
+        if (encoding_method == 2) {
+            /* Encoding Method field "10" - date and lot number */
+
+            binary_string += "10";
+
+            if (content.charAt(1) == '0') {
+                /* No date data */
+                binary_string += "11";
+                read_posn = 2;
+            } else {
+                /* Production Date (11) or Expiration Date (17) */
+                group_val = ((10 * (content.charAt(2) - '0')) + (content.charAt(3) - '0')) * 384;
+                group_val += (((10 * (content.charAt(4) - '0')) + (content.charAt(5) - '0')) - 1) * 32;
+                group_val += (10 * (content.charAt(6) - '0')) + (content.charAt(7) - '0');
+
+                for (j = 0; j < 16; j++) {
+                    if ((group_val & (0x8000 >> j)) == 0) {
+                        binary_string += "0";
+                    } else {
+                        binary_string += "1";
+                    }
+                }
+
+                if (content.charAt(1) == '1') {
+                    /* Production Date AI 11 */
+                    binary_string += "0";
+                } else {
+                    /* Expiration Date AI 17 */
+                    binary_string += "1";
+                }
+                read_posn = 8;
+            }
+
+            if((read_posn + 2) < content.length()) {
+                if ((content.charAt(read_posn) == '1') && (content.charAt(read_posn + 1) == '0')) {
+                    /* Followed by AI 10 - strip this from general field */
+                    read_posn += 2;
+                } else {
+                    /* An FNC1 character needs to be inserted in the general field */
+                    fnc1_latch = 1;
+                }
+            } else {
+                fnc1_latch = 1;
+            }
+        }
+
+        if (encoding_method == 3) {
+            /* Encodation Method field of "11" - AI 90 */
+            /* "This encodation method may be used if an element string with an AI
+             90 occurs at the start of the data message, and if the data field
+             following the two-digit AI 90 starts with an alphanumeric string which
+             complies with a specific format." (para 5.2.2) */
+
+            j = content.length();
+            for (i = content.length(); i > 2; i--) {
+                if (content.charAt(i - 1) == '[') {
+                    j = i;
+                }
+            }
+
+            ninety = content.substring(2, j - 1);
+
+//            if (debug) {
+//                System.out.println("          AI90 substring: " + ninety);
+//            }
+
+            /* Find out if the AI 90 data is alphabetic or numeric or both */
+
+            alpha = 0;
+            alphanum = 0;
+            numeric = 0;
+
+            for (i = 0; i < ninety.length(); i++) {
+
+                if ((ninety.charAt(i) >= 'A') && (ninety.charAt(i) <= 'Z')) {
+                    /* Character is alphabetic */
+                    alpha += 1;
+                }
+
+                if ((ninety.charAt(i) >= '0') && (ninety.charAt(i) <= '9')) {
+                    /* Character is numeric */
+                    numeric += 1;
+                }
+
+                switch (ninety.charAt(i)) {
+                    case '*':
+                    case ',':
+                    case '-':
+                    case '.':
+                    case '/':
+                        alphanum += 1;
+                        break;
+                }
+
+                if (!(((ninety.charAt(i) >= '0') && (ninety.charAt(i) <= '9')) || ((ninety.charAt(i) >= 'A') && (ninety.charAt(i) <= 'Z')))) {
+                    if ((ninety.charAt(i) != '*') && (ninety.charAt(i) != ',') && (ninety.charAt(i) != '-') && (ninety.charAt(i) != '.') && (ninety.charAt(i) != '/')) {
+                        /* An Invalid AI 90 character */
+                        error_msg = "Invalid AI 90 data";
+                        return false;
+                    }
+                }
+            }
+
+//            if (debug) {
+//                System.out.print("          AI90 is ");
+//                if (alphanum > 0) {
+//                    System.out.println("alphanumeric");
+//                } else {
+//                    if (alpha > 0) {
+//                        System.out.println("alphabetic");
+//                    } else {
+//                        System.out.println("numeric");
+//                    }
+//                }
+//            }
+
+            /* must start with 0, 1, 2 or 3 digits followed by an uppercase character */
+            test1 = -1;
+            for (i = 3; i >= 0; i--) {
+                if ((ninety.charAt(i) >= 'A') && (ninety.charAt(i) <= 'Z')) {
+                    test1 = i;
+                }
+            }
+
+            test2 = 0;
+            for (i = 0; i < test1; i++) {
+                if (!((ninety.charAt(i) >= '0') && (ninety.charAt(i) <= '9'))) {
+                    test2 = 1;
+                }
+            }
+
+            /* leading zeros are not permitted */
+            test3 = 0;
+            if ((test1 >= 1) && (ninety.charAt(0) == '0')) {
+                test3 = 1;
+            }
+
+            if ((test1 != -1) && (test2 != 1) && (test3 == 0)) {
+                /* Encodation method "11" can be used */
+//                if (debug) {
+//                    System.out.println("          Using encoding method 11");
+//                }
+                binary_string += "11";
+
+                numeric -= test1;
+                alpha--;
+
+                /* Decide on numeric, alpha or alphanumeric mode */
+                /* Alpha mode is a special mode for AI 90 */
+
+                if (alphanum > 0) {
+                    /* Alphanumeric mode */
+                    binary_string += "0";
+                    ai90_mode = 1;
+                } else {
+                    if (alpha > numeric) {
+                        /* Alphabetic mode */
+                        binary_string += "11";
+                        ai90_mode = 2;
+                    } else {
+                        /* Numeric mode */
+                        binary_string += "10";
+                        ai90_mode = 3;
+                    }
+                }
+
+                next_ai_posn = 2 + ninety.length();
+
+                if (content.charAt(next_ai_posn) == '[') {
+                    /* There are more AIs afterwords */
+                    if ((content.charAt(next_ai_posn + 1) == '2') && (content.charAt(next_ai_posn + 2) == '1')) {
+                        /* AI 21 follows */
+                        ai_crop = 1;
+                    }
+
+                    if ((content.charAt(next_ai_posn + 1) == '8') && (content.charAt(next_ai_posn + 2) == '0') && (content.charAt(next_ai_posn + 3) == '0') && (content.charAt(next_ai_posn + 4) == '4')) {
+                        /* AI 8004 follows */
+                        ai_crop = 2;
+                    }
+                }
+
+                switch (ai_crop) {
+                    case 0:
+                        binary_string += "0";
+                        break;
+                    case 1:
+                        binary_string += "10";
+                        break;
+                    case 2:
+                        binary_string += "11";
+                        break;
+                }
+
+                if (test1 == 0) {
+                    numeric_part = "0";
+                } else {
+                    numeric_part = ninety.substring(0, test1);
+                }
+
+                numeric_value = 0;
+                for (i = 0; i < numeric_part.length(); i++) {
+                    numeric_value *= 10;
+                    numeric_value += numeric_part.charAt(i) - '0';
+                }
+
+                table3_letter = -1;
+                if (numeric_value < 31) {
+                    switch (ninety.charAt(test1)) {
+                        case 'B':
+                            table3_letter = 0;
+                            break;
+                        case 'D':
+                            table3_letter = 1;
+                            break;
+                        case 'H':
+                            table3_letter = 2;
+                            break;
+                        case 'I':
+                            table3_letter = 3;
+                            break;
+                        case 'J':
+                            table3_letter = 4;
+                            break;
+                        case 'K':
+                            table3_letter = 5;
+                            break;
+                        case 'L':
+                            table3_letter = 6;
+                            break;
+                        case 'N':
+                            table3_letter = 7;
+                            break;
+                        case 'P':
+                            table3_letter = 8;
+                            break;
+                        case 'Q':
+                            table3_letter = 9;
+                            break;
+                        case 'R':
+                            table3_letter = 10;
+                            break;
+                        case 'S':
+                            table3_letter = 11;
+                            break;
+                        case 'T':
+                            table3_letter = 12;
+                            break;
+                        case 'V':
+                            table3_letter = 13;
+                            break;
+                        case 'W':
+                            table3_letter = 14;
+                            break;
+                        case 'Z':
+                            table3_letter = 15;
+                            break;
+                    }
+                }
+
+                if (table3_letter != -1) {
+                    /* Encoding can be done according to 5.2.2 c) 2) */
+                    /* five bit binary string representing value before letter */
+                    for (j = 0; j < 5; j++) {
+                        if ((numeric_value & (0x10 >> j)) == 0x00) {
+                            binary_string += "0";
+                        } else {
+                            binary_string += "1";
+                        }
+                    }
+
+                    /* followed by four bit representation of letter from Table 3 */
+                    for (j = 0; j < 4; j++) {
+                        if ((table3_letter & (0x08 >> j)) == 0x00) {
+                            binary_string += "0";
+                        } else {
+                            binary_string += "1";
+                        }
+                    }
+                } else {
+                    /* Encoding is done according to 5.2.2 c) 3) */
+                    binary_string += "11111";
+                    /* ten bit representation of number */
+                    for (j = 0; j < 10; j++) {
+                        if ((numeric_value & (0x200 >> j)) == 0x00) {
+                            binary_string += "0";
+                        } else {
+                            binary_string += "1";
+                        }
+                    }
+
+                    /* five bit representation of ASCII character */
+                    for (j = 0; j < 5; j++) {
+                        if (((ninety.charAt(test1) - 65) & (0x10 >> j)) == 0x00) {
+                            binary_string += "0";
+                        } else {
+                            binary_string += "1";
+                        }
+                    }
+                }
+
+                read_posn = test1 + 3;
+            } else {
+//                if (debug) {
+//                    System.out.println("          AI90 compression rejected, use general field");
+//                }
+                /* Use general field encodation instead */
+                binary_string += "0";
+                read_posn = 0;
+            }
+        
+
+            /* Now encode the rest of the AI 90 data field */
+            if (ai90_mode == 2) {
+                /* Alpha encodation (section 5.2.3) */
+                do {
+                    if ((content.charAt(read_posn) >= '0') && (content.charAt(read_posn) <= '9')) {
+                        for (j = 0; j < 5; j++) {
+                            if (((content.charAt(read_posn) + 4) & (0x10 >> j)) == 0x00) {
+                                binary_string += "0";
+                            } else {
+                                binary_string += "1";
+                            }
+                        }
+                    }
+
+                    if ((content.charAt(read_posn) >= 'A') && (content.charAt(read_posn) <= 'Z')) {
+                        for (j = 0; j < 6; j++) {
+                            if (((content.charAt(read_posn) - 65) & (0x20 >> j)) == 0x00) {
+                                binary_string += "0";
+                            } else {
+                                binary_string += "1";
+                            }
+                        }
+                    }
+
+                    if (content.charAt(read_posn) == '[') {
+                        binary_string += "11111";
+                    }
+
+                    read_posn++;
+                } while ((content.charAt(read_posn - 1) != '[') && (read_posn < content.length()));
+                alpha_pad = 1; /* This is overwritten if a general field is encoded */
+            }
+
+            if (ai90_mode == 1) {
+                /* Alphanumeric mode */
+                do {
+                    if ((content.charAt(read_posn) >= '0') && (content.charAt(read_posn) <= '9')) {
+                        for (j = 0; j < 5; j++) {
+                            if (((content.charAt(read_posn) - 43) & (0x10 >> j)) == 0x00) {
+                                binary_string += "0";
+                            } else {
+                                binary_string += "1";
+                            }
+                        }
+                    }
+
+                    if ((content.charAt(read_posn) >= 'A') && (content.charAt(read_posn) <= 'Z')) {
+                        for (j = 0; j < 6; j++) {
+                            if (((content.charAt(read_posn) - 33) & (0x20 >> j)) == 0x00) {
+                                binary_string += "0";
+                            } else {
+                                binary_string += "1";
+                            }
+                        }
+                    }
+
+                    switch (content.charAt(read_posn)) {
+                        case '[':
+                            binary_string += "01111";
+                            break;
+                        case '*':
+                            binary_string += "111010";
+                            break;
+                        case ',':
+                            binary_string += "111011";
+                            break;
+                        case '-':
+                            binary_string += "111100";
+                            break;
+                        case '.':
+                            binary_string += "111101";
+                            break;
+                        case '/':
+                            binary_string += "111110";
+                            break;
+                    }
+
+                    read_posn++;
+                } while ((content.charAt(read_posn - 1) != '[') && (content.charAt(read_posn - 1) != '\0'));
+            }
+
+            read_posn += (2 * ai_crop);
+        }
+
+//        if (debug) {
+//            System.out.println("     Compressed binary: " + binary_string);
+//        }
+
+        /* The compressed data field has been processed if appropriate - the
+         rest of the data (if any) goes into a general-purpose data compaction field */
+
+        j = 0;
+        general_field = "";
+        if (fnc1_latch == 1) {
+            /* Encodation method "10" has been used but it is not followed by
+             AI 10, so a FNC1 character needs to be added */
+            general_field += "[";
+        }
+
+        general_field += content.substring(read_posn);
+
+//        if (debug) {
+//            System.out.println("     General field: " + general_field);
+//        }
+
+        latch = false;
+        if (general_field.length() != 0) {
+            alpha_pad = 0;
+
+
+            general_field_type = new gfMode[general_field.length()];
+
+            for (i = 0; i < general_field.length(); i++) {
+                /* Table 13 - ISO/IEC 646 encodation */
+                if ((general_field.charAt(i) < ' ') || (general_field.charAt(i) > 'z')) {
+                    general_field_type[i] = gfMode.INVALID_CHAR;
+                    latch = true;
+                } else {
+                    general_field_type[i] = gfMode.ISOIEC;
+                }
+
+                if (general_field.charAt(i) == '#') {
+                    general_field_type[i] = gfMode.INVALID_CHAR;
+                    latch = true;
+                }
+                if (general_field.charAt(i) == '$') {
+                    general_field_type[i] = gfMode.INVALID_CHAR;
+                    latch = true;
+                }
+                if (general_field.charAt(i) == '@') {
+                    general_field_type[i] = gfMode.INVALID_CHAR;
+                    latch = true;
+                }
+                if (general_field.charAt(i) == 92) {
+                    general_field_type[i] = gfMode.INVALID_CHAR;
+                    latch = true;
+                }
+                if (general_field.charAt(i) == '^') {
+                    general_field_type[i] = gfMode.INVALID_CHAR;
+                    latch = true;
+                }
+                if (general_field.charAt(i) == 96) {
+                    general_field_type[i] = gfMode.INVALID_CHAR;
+                    latch = true;
+                }
+
+                /* Table 12 - Alphanumeric encodation */
+                if ((general_field.charAt(i) >= 'A') && (general_field.charAt(i) <= 'Z')) {
+                    general_field_type[i] = gfMode.ALPHA_OR_ISO;
+                }
+                if (general_field.charAt(i) == '*') {
+                    general_field_type[i] = gfMode.ALPHA_OR_ISO;
+                }
+                if (general_field.charAt(i) == ',') {
+                    general_field_type[i] = gfMode.ALPHA_OR_ISO;
+                }
+                if (general_field.charAt(i) == '-') {
+                    general_field_type[i] = gfMode.ALPHA_OR_ISO;
+                }
+                if (general_field.charAt(i) == '.') {
+                    general_field_type[i] = gfMode.ALPHA_OR_ISO;
+                }
+                if (general_field.charAt(i) == '/') {
+                    general_field_type[i] = gfMode.ALPHA_OR_ISO;
+                }
+
+                /* Numeric encodation */
+                if ((general_field.charAt(i) >= '0') && (general_field.charAt(i) <= '9')) {
+                    general_field_type[i] = gfMode.ANY_ENC;
+                }
+                if (general_field.charAt(i) == '[') {
+                    /* FNC1 can be encoded in any system */
+                    general_field_type[i] = gfMode.ANY_ENC;
+                }
+
+            }
+
+            if (latch) {
+                /* Invalid characters in input data */
+                error_msg = "Invalid characters in input data";
+                return false;
+            }
+
+            for (i = 0; i < general_field.length() - 1; i++) {
+                if ((general_field_type[i] == gfMode.ISOIEC) && (general_field.charAt(i + 1) == '[')) {
+                    general_field_type[i + 1] = gfMode.ISOIEC;
+                }
+            }
+
+            for (i = 0; i < general_field.length() - 1; i++) {
+                if ((general_field_type[i] == gfMode.ALPHA_OR_ISO) && (general_field.charAt(i + 1) == '[')) {
+                    general_field_type[i + 1] = gfMode.ALPHA_OR_ISO;
+                }
+            }
+
+            latch = applyGeneralFieldRules();
+
+            i = 0;
+            do {
+                switch (general_field_type[i]) {
+                    case NUMERIC:
+                        if (i != 0) {
+                            if ((general_field_type[i - 1] != gfMode.NUMERIC) && (general_field.charAt(i - 1) != '[')) {
+                                binary_string += "000"; /* Numeric latch */
+                            }
+                        }
+
+                        if (general_field.charAt(i) != '[') {
+                            d1 = general_field.charAt(i) - '0';
+                        } else {
+                            d1 = 10;
+                        }
+
+                        if (i < general_field.length() - 1) {
+                            if (general_field.charAt(i + 1) != '[') {
+                                d2 = general_field.charAt(i + 1) - '0';
+                            } else {
+                                d2 = 10;
+                            }
+                        } else {
+                            d2 = 10;
+                        }
+
+                        if ((d1 != 10) || (d2 != 10)) {
+                            /* If (d1==10)&&(d2==10) then input is either FNC1,FNC1 or FNC1,EOL */
+                            value = (11 * d1) + d2 + 8;
+
+                            for (j = 0; j < 7; j++) {
+                                if ((value & 0x40 >> j) == 0x00) {
+                                    binary_string += "0";
+                                } else {
+                                    binary_string += "1";
+                                }
+                            }
+
+                            i += 2;
+                        }
+                        break;
+
+                    case ALPHA:
+                        if (i != 0) {
+                            if ((general_field_type[i - 1] == gfMode.NUMERIC) || (general_field.charAt(i - 1) == '[')) {
+                                binary_string += "0000"; /* Alphanumeric latch */
+                            }
+                            if (general_field_type[i - 1] == gfMode.ISOIEC) {
+                                binary_string += "00100"; /* ISO/IEC 646 latch */
+                            }
+                        }
+
+                        if ((general_field.charAt(i) >= '0') && (general_field.charAt(i) <= '9')) {
+
+                            value = general_field.charAt(i) - 43;
+
+                            for (j = 0; j < 5; j++) {
+                                if ((value & (0x10 >> j)) == 0x00) {
+                                    binary_string += "0";
+                                } else {
+                                    binary_string += "1";
+                                }
+                            }
+                        }
+
+                        if ((general_field.charAt(i) >= 'A') && (general_field.charAt(i) <= 'Z')) {
+
+                            value = general_field.charAt(i) - 33;
+
+                            for (j = 0; j < 6; j++) {
+                                if ((value & (0x20 >> j)) == 0x00) {
+                                    binary_string += "0";
+                                } else {
+                                    binary_string += "1";
+                                }
+                            }
+                        }
+
+                        if (general_field.charAt(i) == '[') {
+                            binary_string += "01111"; /* FNC1/Numeric latch */
+                        }
+                        if (general_field.charAt(i) == '*') {
+                            binary_string += "111010"; /* asterisk */
+                        }
+                        if (general_field.charAt(i) == ',') {
+                            binary_string += "111011"; /* comma */
+                        }
+                        if (general_field.charAt(i) == '-') {
+                            binary_string += "111100"; /* minus or hyphen */
+                        }
+                        if (general_field.charAt(i) == '.') {
+                            binary_string += "111101"; /* period or full stop */
+                        }
+                        if (general_field.charAt(i) == '/') {
+                            binary_string += "111110"; /* slash or solidus */
+                        }
+
+                        i++;
+                        break;
+
+                    case ISOIEC:
+                        if (i != 0) {
+                            if ((general_field_type[i - 1] == gfMode.NUMERIC) || (general_field.charAt(i - 1) == '[')) {
+                                binary_string += "0000"; /* Alphanumeric latch */
+                                binary_string += "00100"; /* ISO/IEC 646 latch */
+                            }
+                            if (general_field_type[i - 1] == gfMode.ALPHA) {
+                                binary_string += "00100"; /* ISO/IEC 646 latch */
+                            }
+                        }
+
+                        if ((general_field.charAt(i) >= '0') && (general_field.charAt(i) <= '9')) {
+
+                            value = general_field.charAt(i) - 43;
+
+                            for (j = 0; j < 5; j++) {
+                                if ((value & (0x10 >> j)) == 0x00) {
+                                    binary_string += "0";
+                                } else {
+                                    binary_string += "1";
+                                }
+                            }
+                        }
+
+                        if ((general_field.charAt(i) >= 'A') && (general_field.charAt(i) <= 'Z')) {
+
+                            value = general_field.charAt(i) - 1;
+
+                            for (j = 0; j < 7; j++) {
+                                if ((value & (0x40 >> j)) == 0x00) {
+                                    binary_string += "0";
+                                } else {
+                                    binary_string += "1";
+                                }
+                            }
+                        }
+
+                        if ((general_field.charAt(i) >= 'a') && (general_field.charAt(i) <= 'z')) {
+
+                            value = general_field.charAt(i) - 7;
+
+                            for (j = 0; j < 7; j++) {
+                                if ((value & (0x40 >> j)) == 0x00) {
+                                    binary_string += "0";
+                                } else {
+                                    binary_string += "1";
+                                }
+                            }
+                        }
+
+                        if (general_field.charAt(i) == '[') {
+                            binary_string += "01111"; /* FNC1/Numeric latch */
+                        }
+                        if (general_field.charAt(i) == '!') {
+                            binary_string += "11101000"; /* exclamation mark */
+                        }
+                        if (general_field.charAt(i) == 34) {
+                            binary_string += "11101001"; /* quotation mark */
+                        }
+                        if (general_field.charAt(i) == 37) {
+                            binary_string += "11101010"; /* percent sign */
+                        }
+                        if (general_field.charAt(i) == '&') {
+                            binary_string += "11101011"; /* ampersand */
+                        }
+                        if (general_field.charAt(i) == 39) {
+                            binary_string += "11101100"; /* apostrophe */
+                        }
+                        if (general_field.charAt(i) == '(') {
+                            binary_string += "11101101"; /* left parenthesis */
+                        }
+                        if (general_field.charAt(i) == ')') {
+                            binary_string += "11101110"; /* right parenthesis */
+                        }
+                        if (general_field.charAt(i) == '*') {
+                            binary_string += "11101111"; /* asterisk */
+                        }
+                        if (general_field.charAt(i) == '+') {
+                            binary_string += "11110000"; /* plus sign */
+                        }
+                        if (general_field.charAt(i) == ',') {
+                            binary_string += "11110001"; /* comma */
+                        }
+                        if (general_field.charAt(i) == '-') {
+                            binary_string += "11110010"; /* minus or hyphen */
+                        }
+                        if (general_field.charAt(i) == '.') {
+                            binary_string += "11110011"; /* period or full stop */
+                        }
+                        if (general_field.charAt(i) == '/') {
+                            binary_string += "11110100"; /* slash or solidus */
+                        }
+                        if (general_field.charAt(i) == ':') {
+                            binary_string += "11110101"; /* colon */
+                        }
+                        if (general_field.charAt(i) == ';') {
+                            binary_string += "11110110"; /* semicolon */
+                        }
+                        if (general_field.charAt(i) == '<') {
+                            binary_string += "11110111"; /* less-than sign */
+                        }
+                        if (general_field.charAt(i) == '=') {
+                            binary_string += "11111000"; /* equals sign */
+                        }
+                        if (general_field.charAt(i) == '>') {
+                            binary_string += "11111001"; /* greater-than sign */
+                        }
+                        if (general_field.charAt(i) == '?') {
+                            binary_string += "11111010"; /* question mark */
+                        }
+                        if (general_field.charAt(i) == '_') {
+                            binary_string += "11111011"; /* underline or low line */
+                        }
+                        if (general_field.charAt(i) == ' ') {
+                            binary_string += "11111100"; /* space */
+                        }
+
+                        i++;
+                        break;
+                }
+
+
+                latchOffset = 0;
+                if (latch) {
+                    latchOffset = 1;
+                }
+            } while ((i + latchOffset) < general_field.length());
+        }
+
+        if (calculateSymbolSize() == false) {
+            return false;
         }
 
         if (latch) {
-            i = 0;
+            i = general_field.length() - 1;
             /* There is still one more numeric digit to encode */
 
-            if ((remainder >= 4) && (remainder <= 6)) {
-                d1 = general_field.charAt(i) - '0';
-                d1++;
-
-                for (j = 0; j < 4; j++) {
-                    if ((value & (0x08 >> j)) == 0x00) {
-                        binary_string += "0";
-                    } else {
-                        binary_string += "1";
-                    }
-                }
+            if (general_field.charAt(i) == '[') {
+                binary_string += "000001111";
             } else {
-                d1 = general_field.charAt(i) - '0';
-                d2 = 10;
+                if ((remainder >= 4) && (remainder <= 6)) {
+                    d1 = general_field.charAt(i) - '0';
+                    d1++;
 
-                value = (11 * d1) + d2 + 8;
-
-                for (j = 0; j < 7; j++) {
-                    if ((value & (0x40 >> j)) == 0x00) {
-                        binary_string += "0";
-                    } else {
-                        binary_string += "1";
+                    for (j = 0; j < 4; j++) {
+                        if ((value & (0x08 >> j)) == 0x00) {
+                            binary_string += "0";
+                        } else {
+                            binary_string += "1";
+                        }
                     }
+                } else {
+                    d1 = general_field.charAt(i) - '0';
+                    d2 = 10;
+
+                    value = (11 * d1) + d2 + 8;
+
+                    for (j = 0; j < 7; j++) {
+                        if ((value & (0x40 >> j)) == 0x00) {
+                            binary_string += "0";
+                        } else {
+                            binary_string += "1";
+                        }
+                    }
+                    /* This may push the symbol up to the next size */
                 }
-                /* This may push the symbol up to the next size */
             }
         }
 
@@ -1913,258 +1916,16 @@ public class Composite extends Symbol {
             error_msg = "Input too long";
             return false;
         }
-
-        /* all the code below is repeated from above - it needs to be calculated again because the
-         size of the symbol may have changed when adding data in the above sequence */
-
-        binary_length = binary_string.length();
-        if (cc_mode == CompositeMode.CC_A) {
-            /* CC-A 2D component - calculate padding required */
-            switch (cc_width) {
-                case 2:
-                    if (binary_length > 167) {
-                        return false;
-                    }
-                    if (binary_length <= 167) {
-                        target_bitsize = 167;
-                    }
-                    if (binary_length <= 138) {
-                        target_bitsize = 138;
-                    }
-                    if (binary_length <= 118) {
-                        target_bitsize = 118;
-                    }
-                    if (binary_length <= 108) {
-                        target_bitsize = 108;
-                    }
-                    if (binary_length <= 88) {
-                        target_bitsize = 88;
-                    }
-                    if (binary_length <= 78) {
-                        target_bitsize = 78;
-                    }
-                    if (binary_length <= 59) {
-                        target_bitsize = 59;
-                    }
-                    break;
-                case 3:
-                    if (binary_length > 167) {
-                        return false;
-                    }
-                    if (binary_length <= 167) {
-                        target_bitsize = 167;
-                    }
-                    if (binary_length <= 138) {
-                        target_bitsize = 138;
-                    }
-                    if (binary_length <= 118) {
-                        target_bitsize = 118;
-                    }
-                    if (binary_length <= 98) {
-                        target_bitsize = 98;
-                    }
-                    if (binary_length <= 78) {
-                        target_bitsize = 78;
-                    }
-                    break;
-                case 4:
-                    if (binary_length > 197) {
-                        return false;
-                    }
-                    if (binary_length <= 197) {
-                        target_bitsize = 197;
-                    }
-                    if (binary_length <= 167) {
-                        target_bitsize = 167;
-                    }
-                    if (binary_length <= 138) {
-                        target_bitsize = 138;
-                    }
-                    if (binary_length <= 108) {
-                        target_bitsize = 108;
-                    }
-                    if (binary_length <= 78) {
-                        target_bitsize = 78;
-                    }
-                    break;
-            }
+        
+        /* size of the symbol may have changed when adding data in the above sequence */
+        if (calculateSymbolSize() == false) {
+            return false;
         }
 
-        if (cc_mode == CompositeMode.CC_B) {
-            /* CC-B 2D component */
-            switch (cc_width) {
-                case 2:
-                    if (binary_length > 336) {
-                        return false;
-                    }
-                    if (binary_length <= 336) {
-                        target_bitsize = 336;
-                    }
-                    if (binary_length <= 296) {
-                        target_bitsize = 296;
-                    }
-                    if (binary_length <= 256) {
-                        target_bitsize = 256;
-                    }
-                    if (binary_length <= 208) {
-                        target_bitsize = 208;
-                    }
-                    if (binary_length <= 160) {
-                        target_bitsize = 160;
-                    }
-                    if (binary_length <= 104) {
-                        target_bitsize = 104;
-                    }
-                    if (binary_length <= 56) {
-                        target_bitsize = 56;
-                    }
-                    break;
-                case 3:
-                    if (binary_length > 768) {
-                        return false;
-                    }
-                    if (binary_length <= 768) {
-                        target_bitsize = 768;
-                    }
-                    if (binary_length <= 648) {
-                        target_bitsize = 648;
-                    }
-                    if (binary_length <= 536) {
-                        target_bitsize = 536;
-                    }
-                    if (binary_length <= 416) {
-                        target_bitsize = 416;
-                    }
-                    if (binary_length <= 304) {
-                        target_bitsize = 304;
-                    }
-                    if (binary_length <= 208) {
-                        target_bitsize = 208;
-                    }
-                    if (binary_length <= 152) {
-                        target_bitsize = 152;
-                    }
-                    if (binary_length <= 112) {
-                        target_bitsize = 112;
-                    }
-                    if (binary_length <= 72) {
-                        target_bitsize = 72;
-                    }
-                    if (binary_length <= 32) {
-                        target_bitsize = 32;
-                    }
-                    break;
-                case 4:
-                    if (binary_length > 1184) {
-                        return false;
-                    }
-                    if (binary_length <= 1184) {
-                        target_bitsize = 1184;
-                    }
-                    if (binary_length <= 1016) {
-                        target_bitsize = 1016;
-                    }
-                    if (binary_length <= 840) {
-                        target_bitsize = 840;
-                    }
-                    if (binary_length <= 672) {
-                        target_bitsize = 672;
-                    }
-                    if (binary_length <= 496) {
-                        target_bitsize = 496;
-                    }
-                    if (binary_length <= 352) {
-                        target_bitsize = 352;
-                    }
-                    if (binary_length <= 264) {
-                        target_bitsize = 264;
-                    }
-                    if (binary_length <= 208) {
-                        target_bitsize = 208;
-                    }
-                    if (binary_length <= 152) {
-                        target_bitsize = 152;
-                    }
-                    if (binary_length <= 96) {
-                        target_bitsize = 96;
-                    }
-                    if (binary_length <= 56) {
-                        target_bitsize = 56;
-                    }
-                    break;
-            }
-        }
-
-        if (cc_mode == CompositeMode.CC_C) {
-            /* CC-C 2D Component is a bit more complex! */
-            int byte_length, codewords_used, ecc_level, ecc_codewords, rows;
-            int codewords_total, target_codewords, target_bytesize;
-
-            byte_length = binary_length / 8;
-            if (binary_length % 8 != 0) {
-                byte_length++;
-            }
-
-            codewords_used = (byte_length / 6) * 5;
-            codewords_used += byte_length % 6;
-
-            ecc_level = 7;
-            if (codewords_used <= 1280) {
-                ecc_level = 6;
-            }
-            if (codewords_used <= 640) {
-                ecc_level = 5;
-            }
-            if (codewords_used <= 320) {
-                ecc_level = 4;
-            }
-            if (codewords_used <= 160) {
-                ecc_level = 3;
-            }
-            if (codewords_used <= 40) {
-                ecc_level = 2;
-            }
-            ecc = ecc_level;
-            ecc_codewords = 1;
-            for (i = 1; i <= (ecc_level + 1); i++) {
-                ecc_codewords *= 2;
-            }
-
-            codewords_used += ecc_codewords;
-            codewords_used += 3;
-
-            //		if(codewords_used > symbol->option_3) {
-            //			return ZERROR_TOO_LONG;
-            //		}
-            cc_width = (int)(0.5 + Math.sqrt((codewords_used) / 3.0));
-            // FIXME:		*(cc_width) = (lin_width - 62) / 17;
-            //cc_width = (200 - 62) / 17;
-            if ((codewords_used / cc_width) > 90) {
-                /* stop the symbol from becoming too high */
-                cc_width = cc_width + 1;
-            }
-
-            rows = codewords_used / cc_width;
-            if (codewords_used % cc_width != 0) {
-                rows++;
-            }
-
-            codewords_total = cc_width * rows;
-
-            target_codewords = codewords_total - ecc_codewords;
-            target_codewords -= 3;
-
-            target_bytesize = 6 * (target_codewords / 5);
-            target_bytesize += target_codewords % 5;
-
-            target_bitsize = 8 * target_bytesize;
-        }
-
-        if (debug) {
-            System.out.println("     2nd pass target size is " + target_bitsize + ", room left is " + (target_bitsize - binary_string.length()));
-        }
-
-        if (binary_length < target_bitsize) {
+        encodeInfo += "Composite Binary Length: " + Integer.toString(binary_string.length()) + "\n";
+        displayBinaryString();
+        
+        if (binary_string.length() < target_bitsize) {
             /* Now add padding to binary string */
             if (alpha_pad == 1) {
                 binary_string += "11111";
@@ -2184,6 +1945,45 @@ public class Composite extends Symbol {
         }
 
         return true;
+    }
+    
+    private void displayBinaryString() {
+        int i, nibble;
+        /* Display binary string as hexadecimal */
+        
+        encodeInfo += "Composite Binary String: ";
+        nibble = 0;
+        for(i = 0; i < binary_string.length(); i++) {
+            switch (i % 4) {
+                case 0:
+                    if (binary_string.charAt(i) == '1') {
+                        nibble += 8;
+                    }
+                    break;
+                case 1:
+                    if (binary_string.charAt(i) == '1') {
+                        nibble += 4;
+                    }
+                    break;
+                case 2:
+                    if (binary_string.charAt(i) == '1') {
+                        nibble += 2;
+                    }
+                    break;
+                case 3:
+                    if (binary_string.charAt(i) == '1') {
+                        nibble += 1;
+                    }
+                    encodeInfo += Integer.toHexString(nibble);
+                    nibble = 0;
+                    break;                    
+            }
+        }
+        
+        if ((binary_string.length() % 4) != 0) {
+            encodeInfo += Integer.toHexString(nibble);
+        }
+        encodeInfo += "\n";
     }
 
     private boolean applyGeneralFieldRules() {
@@ -2304,13 +2104,13 @@ public class Composite extends Symbol {
 
     private void cc_a() {
         /* CC-A 2D component */
-        int i, strpos, segment, bitlen, cwCnt, variant, rows;
+        int i, strpos, segment, cwCnt, variant, rows;
         int k, offset, j, total;
         int[] rsCodeWords = new int[8];
         int LeftRAPStart, RightRAPStart, CentreRAPStart, StartCluster;
         int LeftRAP, RightRAP, CentreRAP, Cluster;
         int[] dummy = new int[5];
-        int writer, flip, loop;
+        int flip, loop;
         String codebarre;
         String bin;
         String local_source; /* A copy of source but with padding zeroes to make 208 bits */
@@ -2412,13 +2212,14 @@ public class Composite extends Symbol {
         rows = ccaVariants[variant];
         k = ccaVariants[17 + variant];
         offset = ccaVariants[34 + variant];
-
+        
         /* Reed-Solomon error correction */
 
         for (i = 0; i < 8; i++) {
             rsCodeWords[i] = 0;
         }
         total = 0;
+        encodeInfo += "Composite Codewords: ";
         for (i = 0; i < cwCnt; i++) {
             total = (codeWords[i] + rsCodeWords[k - 1]) % 929;
             for (j = k - 1; j >= 0; j--) {
@@ -2428,14 +2229,16 @@ public class Composite extends Symbol {
                     rsCodeWords[j] = (rsCodeWords[j - 1] + 929 - (total * ccaCoeffs[offset + j]) % 929) % 929;
                 }
             }
+            encodeInfo += Integer.toString(codeWords[i]) + " ";
         }
+        encodeInfo += "\n";
 
         for (j = 0; j < k; j++) {
             if (rsCodeWords[j] != 0) {
                 rsCodeWords[j] = 929 - rsCodeWords[j];
             }
         }
-
+        
         for (i = k - 1; i >= 0; i--) {
             codeWords[cwCnt] = rsCodeWords[i];
             cwCnt++;
@@ -2753,6 +2556,7 @@ public class Composite extends Symbol {
             mccorrection[loop] = 0;
         }
         total = 0;
+        encodeInfo += "Composite Codewords: ";
         for (i = 0; i < longueur; i++) {
             total = (codeWords[i] + mccorrection[k - 1]) % 929;
             for (j = k - 1; j >= 0; j--) {
@@ -2762,7 +2566,9 @@ public class Composite extends Symbol {
                     mccorrection[j] = (mccorrection[j - 1] + 929 - (total * Microcoeffs[offset + j]) % 929) % 929;
                 }
             }
+            encodeInfo += Integer.toString(codeWords[i]) + " ";
         }
+        encodeInfo += "\n";
 
         for (j = 0; j < k; j++) {
             if (mccorrection[j] != 0) {
@@ -2888,10 +2694,12 @@ public class Composite extends Symbol {
         int[] dummy = new int[35];
         String codebarre;
         String bin;
-        inputData = new int[(content.length() / 8) + 4];
+        inputData = new int[(binary_string.length() / 8) + 4];
 
-        length = content.length() / 8;
+        length = binary_string.length() / 8;
 
+        System.out.printf("Binlen: %d, bin: %s\n", binary_string.length(), binary_string);
+        
         for (i = 0; i < length; i++) {
             binloc = i * 8;
 
@@ -2901,7 +2709,9 @@ public class Composite extends Symbol {
                     inputData[i] += 0x80 >> j;
                 }
             }
+            System.out.printf("%d ", inputData[i]);
         }
+        System.out.printf("\n");
 
         codeWordCount = 0;
 
@@ -2955,6 +2765,7 @@ public class Composite extends Symbol {
             mccorrection[loop] = 0;
         }
         total = 0;
+        encodeInfo += "Composite Codewords: ";
         for (i = 0; i < longueur; i++) {
             total = (codeWords[i] + mccorrection[k - 1]) % 929;
             for (j = k - 1; j >= 0; j--) {
@@ -2964,7 +2775,9 @@ public class Composite extends Symbol {
                     mccorrection[j] = (mccorrection[j - 1] + 929 - (total * coefrs[offset + j]) % 929) % 929;
                 }
             }
+            encodeInfo += Integer.toString(codeWords[i]) + " ";
         }
+        encodeInfo += "\n";
 
         for (j = 0; j < k; j++) {
             if (mccorrection[j] != 0) {
@@ -2986,8 +2799,6 @@ public class Composite extends Symbol {
         row_count = codeWordCount / cc_width;
         pattern = new String[row_count];
         row_height = new int[row_count];
-        System.out.println("cwc" + codeWordCount + "ccw" + cc_width);
-        System.out.println("rows needed " + row_count);
 
         /* we now encode each row */
         for (i = 0; i <= (codeWordCount / cc_width) - 1; i++) {
@@ -3047,43 +2858,38 @@ public class Composite extends Symbol {
         BigInteger total;
         BigInteger word;
 
-        if (content.length() == 1) {
-            codeWords[codeWordCount++] = 913;
-            codeWords[codeWordCount++] = inputData[start];
+        /* select the switch for multiple of 6 bytes */
+        if ((binary_string.length() % 6) == 0) {
+            codeWords[codeWordCount++] = 924;
         } else {
-            /* select the switch for multiple of 6 bytes */
-            if ((content.length() % 6) == 0) {
-                codeWords[codeWordCount++] = 924;
-            } else {
-                codeWords[codeWordCount++] = 901;
-            }
+            codeWords[codeWordCount++] = 901;
+        }
 
-            while (len < length) {
-                chunkLen = length - len;
-                if (6 <= chunkLen) /* Take groups of 6 */ {
-                    chunkLen = 6;
-                    len += chunkLen;
-                    total = BigInteger.valueOf(0);
+        while (len < length) {
+            chunkLen = length - len;
+            if (6 <= chunkLen) /* Take groups of 6 */ {
+                chunkLen = 6;
+                len += chunkLen;
+                total = BigInteger.valueOf(0);
 
-                    while ((chunkLen--) != 0) {
-                        mantisa = BigInteger.valueOf(inputData[start++]);
-                        total = total.or(mantisa.shiftLeft(chunkLen * 8));
-                    }
+                while ((chunkLen--) != 0) {
+                    mantisa = BigInteger.valueOf(inputData[start++]);
+                    total = total.or(mantisa.shiftLeft(chunkLen * 8));
+                }
 
-                    chunkLen = 5;
+                chunkLen = 5;
 
-                    while ((chunkLen--) != 0) {
+                while ((chunkLen--) != 0) {
 
-                        word = total.mod(BigInteger.valueOf(900));
-                        codeWords[codeWordCount + chunkLen] = word.intValue();
-                        total = total.divide(BigInteger.valueOf(900));
-                    }
-                    codeWordCount += 5;
-                } else /*  If it remain a group of less than 6 bytes   */ {
-                    len += chunkLen;
-                    while ((chunkLen--) != 0) {
-                        codeWords[codeWordCount++] = inputData[start++];
-                    }
+                    word = total.mod(BigInteger.valueOf(900));
+                    codeWords[codeWordCount + chunkLen] = word.intValue();
+                    total = total.divide(BigInteger.valueOf(900));
+                }
+                codeWordCount += 5;
+            } else /*  If it remain a group of less than 6 bytes   */ {
+                len += chunkLen;
+                while ((chunkLen--) != 0) {
+                    codeWords[codeWordCount++] = inputData[start++];
                 }
             }
         }

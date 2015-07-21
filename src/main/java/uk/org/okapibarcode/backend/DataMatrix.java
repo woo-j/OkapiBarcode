@@ -460,6 +460,7 @@ public class DataMatrix extends Symbol {
         /* Supports encoding FNC1 in supporting systems */
         /* Supports ECI encoding for whole message only, not inline switching */
 
+        encodeInfo += "Encoding: ";
         int sp, tp, i;
         dm_mode current_mode, next_mode;
         int inputlen = content.length();
@@ -482,9 +483,7 @@ public class DataMatrix extends Symbol {
             tp++;
             binary[binary_length] = ' ';
             binary_length++;
-            if (debug) {
-                System.out.printf("FN1 ");
-            }
+            encodeInfo += "FNC1 ";
         } /* FNC1 */
 
         if (eciMode != 3) {
@@ -512,9 +511,7 @@ public class DataMatrix extends Symbol {
                 tp++;
             }
             
-            if (debug) {
-                System.out.printf("ECI %d ", eciMode);
-            }
+            encodeInfo += "ECI ";
         }
 
         if (readerInit) {
@@ -527,9 +524,7 @@ public class DataMatrix extends Symbol {
 
                 binary[binary_length] = ' ';
                 binary_length++;
-                if (debug) {
-                    System.out.printf("RP ");
-                }
+                encodeInfo += "RP ";
             }
         }
 
@@ -546,14 +541,10 @@ public class DataMatrix extends Symbol {
                 /* Output macro Codeword */
                 if (inputData[5] == '5') {
                     target[tp] = 236;
-                    if (debug) {
-                        System.out.printf("Macro05 ");
-                    }
+                    encodeInfo += "Micro05 ";
                 } else {
                     target[tp] = 237;
-                    if (debug) {
-                        System.out.printf("Macro06 ");
-                    }
+                    encodeInfo += "Macro06 ";
                 }
                 tp++;
                 binary[binary_length] = ' ';
@@ -579,9 +570,7 @@ public class DataMatrix extends Symbol {
                 if (isTwoDigits(sp)) {
                     target[tp] = (10 * Character.getNumericValue(inputData[sp]))
                             + Character.getNumericValue(inputData[sp + 1]) + 130;
-                    if (debug) {
-                        System.out.printf("N%d ", target[tp] - 130);
-                    }
+                    encodeInfo += Integer.toString(target[tp] - 130) + " ";
                     tp++;
                     binary[binary_length] = ' ';
                     binary_length++;
@@ -596,59 +585,45 @@ public class DataMatrix extends Symbol {
                                 tp++;
                                 binary[binary_length] = ' ';
                                 binary_length++;
-                                if (debug) {
-                                    System.out.printf("C40 ");
-                                }
+                                encodeInfo += "C40 ";
                                 break;
                             case DM_TEXT:
                                 target[tp] = 239;
                                 tp++;
                                 binary[binary_length] = ' ';
                                 binary_length++;
-                                if (debug) {
-                                    System.out.printf("TEX ");
-                                }
+                                encodeInfo += "TEX ";
                                 break;
                             case DM_X12:
                                 target[tp] = 238;
                                 tp++;
                                 binary[binary_length] = ' ';
                                 binary_length++;
-                                if (debug) {
-                                    System.out.printf("X12 ");
-                                }
+                                encodeInfo += "X12 ";
                                 break;
                             case DM_EDIFACT:
                                 target[tp] = 240;
                                 tp++;
                                 binary[binary_length] = ' ';
                                 binary_length++;
-                                if (debug) {
-                                    System.out.printf("EDI ");
-                                }
+                                encodeInfo += "EDI ";
                                 break;
                             case DM_BASE256:
                                 target[tp] = 231;
                                 tp++;
                                 binary[binary_length] = ' ';
                                 binary_length++;
-                                if (debug) {
-                                    System.out.printf("BAS ");
-                                }
+                                encodeInfo += "BAS ";
                                 break;
                         }
                     } else {
                         if (inputData[sp] > 127) {
                             target[tp] = 235; /* FNC4 */
 
-                            if (debug) {
-                                System.out.printf("FN4 ");
-                            }
+                            encodeInfo += "FNC4 ";
                             tp++;
                             target[tp] = (inputData[sp] - 128) + 1;
-                            if (debug) {
-                                System.out.printf("A%02X ", target[tp] - 1);
-                            }
+                            encodeInfo += Integer.toString(target[tp] - 1) + " ";
                             tp++;
                             binary[binary_length] = ' ';
                             binary_length++;
@@ -657,15 +632,10 @@ public class DataMatrix extends Symbol {
                         } else {
                             if ((inputDataType == DataType.GS1) && (inputData[sp] == '[')) {
                                 target[tp] = 232; /* FNC1 */
-
-                                if (debug) {
-                                    System.out.printf("FN1 ");
-                                }
+                                encodeInfo += "FNC1 ";
                             } else {
                                 target[tp] = inputData[sp] + 1;
-                                if (debug) {
-                                    System.out.printf("A%02X ", target[tp] - 1);
-                                }
+                                encodeInfo += Integer.toString(target[tp] - 1) + " ";
                             }
                             tp++;
                             binary[binary_length] = ' ';
@@ -693,9 +663,7 @@ public class DataMatrix extends Symbol {
                     binary_length++; /* Unlatch */
 
                     next_mode = dm_mode.DM_ASCII;
-                    if (debug) {
-                        System.out.printf("ASC ");
-                    }
+                    encodeInfo += "ASC ";
                 } else {
                     if (inputData[sp] > 127) {
                         process_buffer[process_p] = 1;
@@ -736,10 +704,9 @@ public class DataMatrix extends Symbol {
                         binary_length++;
                         binary[binary_length] = ' ';
                         binary_length++;
-                        if (debug) {
-                            System.out.printf("[%d %d %d] ", process_buffer[0],
-                                    process_buffer[1], process_buffer[2]);
-                        }
+                        encodeInfo += "(" + Integer.toString(process_buffer[0]) +
+                                " " + Integer.toString(process_buffer[1]) + " " +
+                                Integer.toString(process_buffer[2]) + ") ";
 
                         process_buffer[0] = process_buffer[3];
                         process_buffer[1] = process_buffer[4];
@@ -769,9 +736,7 @@ public class DataMatrix extends Symbol {
                     binary_length++; /* Unlatch */
 
                     next_mode = dm_mode.DM_ASCII;
-                    if (debug) {
-                        System.out.printf("ASC ");
-                    }
+                    encodeInfo += "ASC ";
                 } else {
                     if (inputData[sp] > 127) {
                         process_buffer[process_p] = 1;
@@ -812,10 +777,9 @@ public class DataMatrix extends Symbol {
                         binary_length++;
                         binary[binary_length] = ' ';
                         binary_length++;
-                        if (debug) {
-                            System.out.printf("[%d %d %d] ",
-                                    process_buffer[0], process_buffer[1], process_buffer[2]);
-                        }
+                        encodeInfo += "(" + Integer.toString(process_buffer[0]) +
+                                " " + Integer.toString(process_buffer[1]) + " " +
+                                Integer.toString(process_buffer[2]) + ") ";
 
                         process_buffer[0] = process_buffer[3];
                         process_buffer[1] = process_buffer[4];
@@ -845,9 +809,7 @@ public class DataMatrix extends Symbol {
                     binary_length++; /* Unlatch */
 
                     next_mode = dm_mode.DM_ASCII;
-                    if (debug) {
-                        System.out.printf("ASC ");
-                    }
+                    encodeInfo += "ASC ";
                 } else {
                     if (inputData[sp] == 13) {
                         value = 0;
@@ -884,10 +846,9 @@ public class DataMatrix extends Symbol {
                         binary_length++;
                         binary[binary_length] = ' ';
                         binary_length++;
-                        if (debug) {
-                            System.out.printf("[%d %d %d] ",
-                                    process_buffer[0], process_buffer[1], process_buffer[2]);
-                        }
+                        encodeInfo += "(" + Integer.toString(process_buffer[0]) +
+                                " " + Integer.toString(process_buffer[1]) + " " +
+                                Integer.toString(process_buffer[2]) + ") ";
 
                         process_buffer[0] = process_buffer[3];
                         process_buffer[1] = process_buffer[4];
@@ -943,11 +904,9 @@ public class DataMatrix extends Symbol {
                     binary_length++;
                     binary[binary_length] = ' ';
                     binary_length++;
-                    if (debug) {
-                        System.out.printf("[%d %d %d %d] ",
-                                process_buffer[0], process_buffer[1],
-                                process_buffer[2], process_buffer[3]);
-                    }
+                    encodeInfo += "(" + Integer.toString(process_buffer[0]) +
+                            " " + Integer.toString(process_buffer[1]) + " " +
+                            Integer.toString(process_buffer[2]) + ") ";
 
                     process_buffer[0] = process_buffer[4];
                     process_buffer[1] = process_buffer[5];
@@ -967,18 +926,14 @@ public class DataMatrix extends Symbol {
 
                 if (next_mode == dm_mode.DM_BASE256) {
                     target[tp] = inputData[sp];
-                    if (debug) {
-                        System.out.printf("B%02X ", target[tp]);
-                    }
+                    encodeInfo += Integer.toString(target[tp]) + " ";
                     tp++;
                     sp++;
                     binary[binary_length] = 'b';
                     binary_length++;
                 } else {
                     next_mode = dm_mode.DM_ASCII;
-                    if (debug) {
-                        System.out.printf("ASC ");
-                    }
+                    encodeInfo += "ASC ";
                 }
             }
 
@@ -1029,14 +984,22 @@ public class DataMatrix extends Symbol {
                 }
             }
         }
-
-        if (debug) {
-            System.out.printf("\nHex Data: ");
-            for (i = 0; i < tp; i++) {
-                System.out.printf("%02X ", target[i]);
-            }
-            System.out.printf("\n");
+        
+        encodeInfo += "\n";
+        
+        encodeInfo += "Codewords: ";
+        for (i = 0; i < tp; i++) {
+            encodeInfo += Integer.toString(target[i]) + " ";
         }
+        encodeInfo += "\n";
+
+//        if (debug) {
+//            System.out.printf("\nHex Data: ");
+//            for (i = 0; i < tp; i++) {
+//                System.out.printf("%02X ", target[i]);
+//            }
+//            System.out.printf("\n");
+//        }
 
         last_mode = current_mode;
         return tp;
@@ -1182,14 +1145,14 @@ public class DataMatrix extends Symbol {
                 break;
         }
 
-        if (debug) {
-            System.out.printf("+Buffer=: ");
-            for (int i = 0; i < target_length; i++) {
-                System.out.printf("%02X ", target[i]);
-            }
-
-            System.out.printf("\n\n");
-        }
+//        if (debug) {
+//            System.out.printf("+Buffer=: ");
+//            for (int i = 0; i < target_length; i++) {
+//                System.out.printf("%02X ", target[i]);
+//            }
+//
+//            System.out.printf("\n\n");
+//        }
 
         return target_length;
     }

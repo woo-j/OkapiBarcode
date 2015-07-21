@@ -215,10 +215,10 @@ public class DataBarLimited extends Symbol {
         left_reg = accum.divide(new BigInteger("2013571"));
         right_reg = accum.mod(new BigInteger("2013571"));
 
-        if (debug) {
-            System.out.println("left " + left_reg.toString());
-            System.out.println("right " + right_reg.toString());
-        }
+//        if (debug) {
+//            System.out.println("left " + left_reg.toString());
+//            System.out.println("right " + right_reg.toString());
+//        }
 
         left_group = 0;
         if (left_reg.compareTo(new BigInteger("183063")) == 1) {
@@ -259,11 +259,14 @@ public class DataBarLimited extends Symbol {
         if (right_reg.compareTo(new BigInteger("1996938")) == 1) {
             right_group = 6;
         }
+        
+        encodeInfo += "Data Characters: " + Integer.toString(left_group + 1) +
+                " " + Integer.toString(right_group + 1) + "\n";
 
-        if (debug) {
-            System.out.println("left group " + (left_group + 1));
-            System.out.println("right group " + (right_group + 1));
-        }
+//        if (debug) {
+//            System.out.println("left group " + (left_group + 1));
+//            System.out.println("right group " + (right_group + 1));
+//        }
 
         switch(left_group) {
             case 1:
@@ -315,14 +318,14 @@ public class DataBarLimited extends Symbol {
 	right_odd = right_character / t_even_ltd[right_group];
 	right_even = right_character % t_even_ltd[right_group];
 
-        if (debug) {
-            System.out.println("left char " + left_character);
-            System.out.println("right char " + right_character);
-            System.out.println("left even " + left_even);
-            System.out.println("right even " + right_even);
-            System.out.println("left odd " + left_odd);
-            System.out.println("right odd " + right_odd);
-        }
+//        if (debug) {
+//            System.out.println("left char " + left_character);
+//            System.out.println("right char " + right_character);
+//            System.out.println("left even " + left_even);
+//            System.out.println("right even " + right_even);
+//            System.out.println("left odd " + left_odd);
+//            System.out.println("right odd " + right_odd);
+//        }
 
         getWidths(left_odd, modules_odd_ltd[left_group], 7, widest_odd_ltd[left_group], 1);
 	left_widths[0] = widths[0];
@@ -365,9 +368,11 @@ public class DataBarLimited extends Symbol {
 	}
 	checksum %= 89;
 
-        if (debug) {
-            System.out.println("checksum " + checksum);
-        }
+        encodeInfo += "Checksum: " + Integer.toString(checksum) + "\n";
+        
+//        if (debug) {
+//            System.out.println("checksum " + checksum);
+//        }
 
 	for(i = 0; i < 14; i++) {
             check_elements[i] = finder_pattern_ltd[i + (checksum * 14)];

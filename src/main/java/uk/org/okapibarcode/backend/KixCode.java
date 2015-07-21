@@ -60,6 +60,8 @@ public class KixCode extends Symbol {
         for (i = 0; i < content.length(); i++) {
             dest += RoyalTable[positionOf(content.charAt(i), krSet)];
         }
+        
+        encodeInfo += "Encoding: " + dest + "\n";
 
         readable = "";
         pattern = new String[1];

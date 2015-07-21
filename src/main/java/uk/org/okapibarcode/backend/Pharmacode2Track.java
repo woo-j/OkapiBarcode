@@ -77,6 +77,8 @@ public class Pharmacode2Track extends Symbol {
         for (i = (inter.length() - 1); i >= 0; i--) {
             dest += inter.charAt(i);
         }
+        
+        encodeInfo += "Encoding: " + dest + "\n";
 
         readable = "";
         pattern = new String[1];

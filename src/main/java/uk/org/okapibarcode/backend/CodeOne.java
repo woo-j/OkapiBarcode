@@ -356,6 +356,12 @@ public class CodeOne extends Symbol {
             }
 
             encodeInfo += "Version:  " + (char)((size - 1) + 'A') + "\n";
+            
+            encodeInfo += "Codewords: ";
+            for(i = 0; i < data_length; i++) {
+                encodeInfo += Integer.toString(data[i]) + " ";
+            }
+            encodeInfo += "\n";
 
             for (i = data_length; i < c1_data_length[size - 1]; i++) {
                 data[i] = 129; /* Pad */
@@ -380,8 +386,7 @@ public class CodeOne extends Symbol {
                 }
             }
 
-            encodeInfo += "Data Codewords: " + c1_data_length[size - 1] + "\n";
-            encodeInfo += "ECC Codewords: " + c1_ecc_length[size - 1] + "\n";
+            encodeInfo += "ECC Codeword Count: " + c1_ecc_length[size - 1] + "\n";
 
             /* "Stream" combines data and error correction data */
             for (i = 0; i < data_length; i++) {
@@ -426,16 +431,6 @@ public class CodeOne extends Symbol {
                     }
                     i++;
                 }
-            }
-
-            if(debug) {
-                System.out.println("Data Grid:");
-                for(i = 0; i < (c1_grid_height[size - 1] * 2); i++) {
-                    for(j = 0; j < (c1_grid_width[size - 1] * 4); j++) {
-                        System.out.printf("%c", datagrid[i][j]);
-                    }
-                    System.out.println();
-		}
             }
 
             encodeInfo += "Grid Size: " + c1_grid_width[size - 1] + " X " +
@@ -757,7 +752,6 @@ public class CodeOne extends Symbol {
         int data_left, decimal_count;
         int sub_value;
         int bits_left_in_byte, target_count;
-        int sub_target;
         boolean isTwoDigits;
 
         try {
@@ -840,8 +834,8 @@ public class CodeOne extends Symbol {
                     if (j == 13) {
                         latch = false;
                         for (i = sourcePoint + 13; i < length; i++) {
-                            if (!((source[sourcePoint + i] >= '0') &&
-                                    (source[sourcePoint + i] <= '9'))) {
+                            if (!((source[i] >= '0') &&
+                                    (source[i] <= '9'))) {
                                 latch = true;
                             }
                         }
@@ -1568,14 +1562,6 @@ public class CodeOne extends Symbol {
             return 0;
         }
 
-        if (debug) {
-            System.out.println("targets:");
-            for(i = 0; i < targetPoint; i++) {
-                    System.out.printf("[%d]", data[i]);
-            }
-            System.out.println();
-        }
-
         return targetPoint;
     }
 
@@ -1799,9 +1785,9 @@ public class CodeOne extends Symbol {
             }
         }
 
-        if(debug) {
-            System.out.printf("> scores: ASCII %.2f  C40 %.2f  TEXT %.2f  EDI %.2f  BYTE %.2f\n", ascii_count, c40_count, text_count, edi_count, byte_count);
-        }
+//        if(debug) {
+//            System.out.printf("> scores: ASCII %.2f  C40 %.2f  TEXT %.2f  EDI %.2f  BYTE %.2f\n", ascii_count, c40_count, text_count, edi_count, byte_count);
+//        }
 
         return best_scheme;
     }

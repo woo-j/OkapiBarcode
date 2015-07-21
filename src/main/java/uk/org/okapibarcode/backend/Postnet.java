@@ -101,6 +101,7 @@ public class Postnet extends Symbol {
         dest += PN_TABLE[check_digit];
 
         dest += "L";
+        encodeInfo += "Encoding: " + dest + "\n";        
         readable = "";
         pattern = new String[1];
         pattern[0] = dest;
@@ -138,6 +139,7 @@ public class Postnet extends Symbol {
         dest += PL_TABLE[check_digit];
 
         dest += "L";
+        encodeInfo += "Encoding: " + dest + "\n";          
         readable = "";
         pattern = new String[1];
         pattern[0] = dest;

@@ -126,6 +126,7 @@ public class Code3Of9 extends Symbol {
 
         if (checkOption == CheckDigit.MOD43) {
             readable = "*" + content + check_digit + "*";
+            encodeInfo += "Check Digit: " + check_digit + "\n";
         } else {
             readable = "*" + content + "*";
         }

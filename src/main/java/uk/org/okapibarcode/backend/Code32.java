@@ -105,9 +105,6 @@ public class Code32 extends Symbol {
         row_count = 1;
         row_height = new int[1];
         row_height[0] = -1;
-        if (debug) {
-            System.out.println("Encoded: " + risultante);
-        }
         encodeInfo += "Code 39 Equivalent: " + risultante + '\n';
         try {
             c39.setContent(risultante);

@@ -275,6 +275,24 @@ public class AustraliaPost extends Symbol{
         barStateValues += "13";
 
         encodeInfo += "Total length: " + barStateValues.length() + '\n';
+        encodeInfo += "Encoding: ";
+        for (i = 0; i < barStateValues.length(); i++) {
+            switch (barStateValues.charAt(i)) {
+                case '1':
+                    encodeInfo += "A";
+                    break;
+                case '2':
+                    encodeInfo += "D";
+                    break;
+                case '0':
+                    encodeInfo += "F";
+                    break;
+                case '3':
+                    encodeInfo += "T";
+                    break;                    
+            }
+        }
+        encodeInfo += "\n";
 
         readable = "";
         pattern = new String[1];

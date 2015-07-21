@@ -195,6 +195,7 @@ public class DataBarExpanded extends Symbol {
 
         data_chars = binary_string.length() / 12;
 
+        encodeInfo += "Data characters: ";
         for (i = 0; i < data_chars; i++) {
             vs[i] = 0;
             for (j = 0; j < 12; j++) {
@@ -202,10 +203,12 @@ public class DataBarExpanded extends Symbol {
                     vs[i] += 2048 >> j;
                 }
             }
-            if (debug) {
-                System.out.println("Data character (vs[" + i + "]) is " + vs[i]);
-            }
+//            if (debug) {
+//                System.out.println("Data character (vs[" + i + "]) is " + vs[i]);
+//            }
+            encodeInfo += Integer.toString(vs[i]) + " ";
         }
+        encodeInfo += "\n";
 
         for (i = 0; i < data_chars; i++) {
             if (vs[i] <= 347) {
@@ -251,6 +254,8 @@ public class DataBarExpanded extends Symbol {
         }
 
         check_char = (211 * ((data_chars + 1) - 4)) + (checksum % 211);
+        
+        encodeInfo += "Check Character: " + Integer.toString(check_char) + "\n";
 
         c_group = 1;
         if ((check_char >= 348) && (check_char <= 1387)) {
@@ -554,17 +559,17 @@ public class DataBarExpanded extends Symbol {
                 && (source.charAt(1) == '1'))) {
             /* (01) and other AIs */
             encoding_method = 1;
-            if (debug) System.out.printf("Choosing Method 1\n");
+//            if (debug) System.out.printf("Choosing Method 1\n");
         } else {
             /* any AIs */
             encoding_method = 2;
-            if (debug) System.out.printf("Choosing Mehod 2\n");
+//            if (debug) System.out.printf("Choosing Mehod 2\n");
         }
 
         if (((source.length() >= 20) && (encoding_method == 1))
                 && ((source.charAt(2) == '9') && (source.charAt(16) == '3'))) {
             /* Possibly encoding method > 2 */
-            if (debug) System.out.printf("Checking for other methods\n");
+//            if (debug) System.out.printf("Checking for other methods\n");
 
             if ((source.length() >= 26) && (source.charAt(17) == '1')) {
                 /* Methods 3, 7, 9, 11 and 13 */
@@ -613,9 +618,9 @@ public class DataBarExpanded extends Symbol {
                         }
                     }
                 }
-                if (debug) System.out.printf("Now using method %d\n", encoding_method);
+//                if (debug) System.out.printf("Now using method %d\n", encoding_method);
             }
-
+            
             if ((source.length() >= 26) && (source.charAt(17) == '2')) {
                 /* Methods 4, 8, 10, 12 and 14 */
 
@@ -672,7 +677,7 @@ public class DataBarExpanded extends Symbol {
                         }
                     }
                 }
-                if (debug) System.out.printf("Now using method %d\n", encoding_method);
+//                if (debug) System.out.printf("Now using method %d\n", encoding_method);
 
             }
 
@@ -688,10 +693,11 @@ public class DataBarExpanded extends Symbol {
                     /* (01) and (393x) */
                     encoding_method = 6;
                 }
-                if (debug) System.out.printf("Now using method %d\n", encoding_method);
+//                if (debug) System.out.printf("Now using method %d\n", encoding_method);
             }
         }
 
+        encodeInfo += "Encoding Method: " + Integer.toString(encoding_method) + "\n";
         switch (encoding_method) { /* Encoding method - Table 10 */
         case 1:
             binary_string += "1XX";
@@ -750,7 +756,7 @@ public class DataBarExpanded extends Symbol {
             read_posn = source.length();
             break;
         }
-        if (debug) System.out.printf("Setting binary = %s\n", binary_string);
+//        if (debug) System.out.printf("Setting binary = %s\n", binary_string);
 
 
         /* Variable length symbol bit field is just given a place holder (XX)
@@ -770,7 +776,7 @@ public class DataBarExpanded extends Symbol {
 
         /* Now encode the compressed data field */
 
-        if (debug) System.out.printf("Proceeding to encode data\n");
+//        if (debug) System.out.printf("Proceeding to encode data\n");
         if (encoding_method == 1) {
             /* Encoding method field "1" - general item identification data */
             group_val = source.charAt(2) - '0';
@@ -1009,7 +1015,7 @@ public class DataBarExpanded extends Symbol {
 
         general_field = source.substring(read_posn);
         general_field_type = new encodeMode[general_field.length()];
-        if (debug) System.out.printf("General field data = %s\n", general_field);
+//        if (debug) System.out.printf("General field data = %s\n", general_field);
 
         if (general_field.length() != 0) {
             latch = false;
@@ -1096,9 +1102,9 @@ public class DataBarExpanded extends Symbol {
                 }
             }
 
-            if (debug) {
-                System.out.println("General field length = " + general_field.length());
-            }
+//            if (debug) {
+//                System.out.println("General field length = " + general_field.length());
+//            }
             latch = applyGeneralFieldRules();
 
             /* Set initial mode if not NUMERIC */
@@ -1114,18 +1120,18 @@ public class DataBarExpanded extends Symbol {
 
             i = 0;
             do {
-                if (debug) System.out.printf("Processing character %d ", i);
+//                if (debug) System.out.printf("Processing character %d ", i);
                 switch (general_field_type[i]) {
                 case NUMERIC:
-                    if (debug) System.out.printf("as NUMERIC:");
+//                    if (debug) System.out.printf("as NUMERIC:");
 
                     if (last_mode != encodeMode.NUMERIC) {
                         binary_string += "000"; /* Numeric latch */
-                        if (debug) System.out.printf("<NUMERIC LATCH>\n");
+//                        if (debug) System.out.printf("<NUMERIC LATCH>\n");
                     }
 
-                    if (debug) System.out.printf("  %c%c > ", general_field.charAt(i),
-                            general_field.charAt(i + 1));
+//                    if (debug) System.out.printf("  %c%c > ", general_field.charAt(i),
+//                            general_field.charAt(i + 1));
                     if (general_field.charAt(i) != '[') {
                         d1 = general_field.charAt(i) - '0';
                     } else {
@@ -1143,20 +1149,20 @@ public class DataBarExpanded extends Symbol {
                     for (j = 0; j < 7; j++) {
                         if ((value & (0x40 >> j)) != 0) {
                             binary_string += "1";
-                            if (debug) System.out.print("1");
+//                            if (debug) System.out.print("1");
                         } else {
                             binary_string += "0";
-                            if (debug) System.out.print("0");
+//                            if (debug) System.out.print("0");
                         }
                     }
 
                     i += 2;
-                    if (debug) System.out.printf("\n");
+//                    if (debug) System.out.printf("\n");
                     last_mode = encodeMode.NUMERIC;
                     break;
 
                 case ALPHA:
-                    if (debug) System.out.printf("as ALPHA\n");
+//                    if (debug) System.out.printf("as ALPHA\n");
                     if (i != 0) {
                         if (last_mode == encodeMode.NUMERIC) {
                             binary_string += "0000"; /* Alphanumeric latch */
@@ -1207,7 +1213,7 @@ public class DataBarExpanded extends Symbol {
                     break;
 
                 case ISOIEC:
-                    if (debug) System.out.printf("as ISOIEC\n");
+//                    if (debug) System.out.printf("as ISOIEC\n");
                     if (i != 0) {
                         if (last_mode == encodeMode.NUMERIC) {
                             binary_string += "0000"; /* Alphanumeric latch */
@@ -1295,8 +1301,8 @@ public class DataBarExpanded extends Symbol {
                     current_length++;
                 }
             } while (current_length < general_field.length());
-            if (debug) System.out.printf("Resultant binary = %s\n", binary_string);
-            if (debug) System.out.printf("\tLength: %d\n", binary_string.length());
+//            if (debug) System.out.printf("Resultant binary = %s\n", binary_string);
+//            if (debug) System.out.printf("\tLength: %d\n", binary_string.length());
 
             remainder = 12 - (binary_string.length() % 12);
             if (remainder == 12) {
@@ -1308,7 +1314,7 @@ public class DataBarExpanded extends Symbol {
 
             if (latch) {
                 /* There is still one more numeric digit to encode */
-                if (debug) System.out.printf("Adding extra (odd) numeric digit\n");
+//                if (debug) System.out.printf("Adding extra (odd) numeric digit\n");
 
                 if (last_mode == encodeMode.NUMERIC) {
                     if ((remainder >= 4) && (remainder <= 6)) {
@@ -1348,8 +1354,8 @@ public class DataBarExpanded extends Symbol {
                     }
                 }
 
-                if (debug) System.out.printf("Resultant binary = %s\n", binary_string);
-                if (debug) System.out.printf("\tLength: %d\n", binary_string.length());
+//                if (debug) System.out.printf("Resultant binary = %s\n", binary_string);
+//                if (debug) System.out.printf("\tLength: %d\n", binary_string.length());
             }
         }
 
@@ -1364,7 +1370,7 @@ public class DataBarExpanded extends Symbol {
                 remainder = (i + 24) - binary_string.length();
             }
         }
-
+        
         /* Now add padding to binary string (7.2.5.5.4) */
         i = remainder;
         if ((general_field.length() != 0) && (last_mode == encodeMode.NUMERIC)) {
@@ -1404,10 +1410,52 @@ public class DataBarExpanded extends Symbol {
             binary_string = binary_string.substring(0, 6) + patch
                     + binary_string.substring(8);
         }
-        if (debug) System.out.printf("Resultant binary = %s\n", binary_string);
-        if (debug) System.out.printf("\tLength: %d\n", binary_string.length());
+        
+        encodeInfo += "Binary length: " + Integer.toString(binary_string.length()) + "\n";
+        displayBinaryString();
+//        if (debug) System.out.printf("Resultant binary = %s\n", binary_string);
+//        if (debug) System.out.printf("\tLength: %d\n", binary_string.length());
         return true;
     }
+    
+    private void displayBinaryString() {
+        int i, nibble;
+        /* Display binary string as hexadecimal */
+        
+        encodeInfo += "Binary String: ";
+        nibble = 0;
+        for(i = 0; i < binary_string.length(); i++) {
+            switch (i % 4) {
+                case 0:
+                    if (binary_string.charAt(i) == '1') {
+                        nibble += 8;
+                    }
+                    break;
+                case 1:
+                    if (binary_string.charAt(i) == '1') {
+                        nibble += 4;
+                    }
+                    break;
+                case 2:
+                    if (binary_string.charAt(i) == '1') {
+                        nibble += 2;
+                    }
+                    break;
+                case 3:
+                    if (binary_string.charAt(i) == '1') {
+                        nibble += 1;
+                    }
+                    encodeInfo += Integer.toHexString(nibble);
+                    nibble = 0;
+                    break;                    
+            }
+        }
+        
+        if ((binary_string.length() % 4) != 0) {
+            encodeInfo += Integer.toHexString(nibble);
+        }
+        encodeInfo += "\n";
+    }    
 
     private boolean applyGeneralFieldRules() {
         /* Attempts to apply encoding rules from secions 7.2.5.5.1 to 7.2.5.5.3

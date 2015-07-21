@@ -73,11 +73,11 @@ public class Code16k extends Symbol {
     @Override
     public boolean encode() {
         String width_pattern;
-        int current_row, rows_needed, flip_flop, looper, first_check, second_check;
+        int current_row, rows_needed, first_check, second_check;
         int indexchaine, pads_needed;
         char[] set, fset;
         Mode mode;
-        char last_set, last_fset, current_set;
+        char last_set, current_set;
         int i, j, k, m, read;
         int[] values;
         int bar_characters;
@@ -272,7 +272,6 @@ public class Code16k extends Symbol {
 
         /* Make sure the data will fit in the symbol */
         last_set = ' ';
-        last_fset = ' ';
         glyph_count = 0.0;
         for (i = 0; i < input_length; i++) {
             if ((set[i] == 'a') || (set[i] == 'b')) {
@@ -297,16 +296,13 @@ public class Code16k extends Symbol {
                     }
                 }
                 if (fset[i] == 'F') {
-                    last_fset = 'F';
                     glyph_count = glyph_count + 2.0;
                 }
             } else {
                 if ((fset[i] == 'F') && (fset[i - 1] != 'F')) {
-                    last_fset = 'F';
                     glyph_count = glyph_count + 2.0;
                 }
                 if ((fset[i] != 'F') && (fset[i - 1] == 'F')) {
-                    last_fset = ' ';
                     glyph_count = glyph_count + 2.0;
                 }
             }
@@ -550,6 +546,7 @@ public class Code16k extends Symbol {
         encodeInfo += "Symbol Rows: " + rows_needed + "\n";
         encodeInfo += "First Check Digit: " + first_check + "\n";
         encodeInfo += "Second Check Digit: " + second_check + "\n";
+        encodeInfo += "Codewords: ";
 
         for (current_row = 0; current_row < rows_needed; current_row++) {
 
@@ -558,19 +555,14 @@ public class Code16k extends Symbol {
             width_pattern += "1";
             for (i = 0; i < 5; i++) {
                 width_pattern += C16KTable[values[(current_row * 5) + i]];
-                if (debug) {
-                    System.out.print("[" + values[(current_row * 5) + i] + "] ");
-                }
-
+                encodeInfo += Integer.toString(values[(current_row * 5) + i]) + " ";
             }
             width_pattern += C16KStartStop[C16KStopValues[current_row]];
-            if (debug) {
-                System.out.println();
-            }
 
             pattern[current_row] = width_pattern;
             row_height[current_row] = 10;
         }
+        encodeInfo += "\n";
         plotSymbol();
         return true;
 

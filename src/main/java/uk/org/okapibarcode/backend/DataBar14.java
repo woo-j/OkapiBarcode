@@ -157,15 +157,20 @@ public class DataBar14 extends Symbol {
         accum = right_reg.mod(new BigInteger("1597"));
         data_character[3] = accum.intValue();
 
-
-        if (debug) {
-            System.out.println("left " + left_reg.toString());
-            System.out.println("right " + right_reg.toString());
-            System.out.println("data1 " + data_character[0]);
-            System.out.println("data2 " + data_character[1]);
-            System.out.println("data3 " + data_character[2]);
-            System.out.println("data4 " + data_character[3]);
+        encodeInfo += "Data characters: ";
+        for (i = 0; i < 4; i++) {
+            encodeInfo += Integer.toString(data_character[i]) + " ";
         }
+        encodeInfo += "\n";
+
+//        if (debug) {
+//            System.out.println("left " + left_reg.toString());
+//            System.out.println("right " + right_reg.toString());
+//            System.out.println("data1 " + data_character[0]);
+//            System.out.println("data2 " + data_character[1]);
+//            System.out.println("data3 " + data_character[2]);
+//            System.out.println("data4 " + data_character[3]);
+//        }
 
         /* Calculate odd and even subset values */
         if ((data_character[0] >= 0) && (data_character[0] <= 160)) {
@@ -232,11 +237,11 @@ public class DataBar14 extends Symbol {
         v_odd[2] = (data_character[2] - g_sum_table[data_group[2]]) / t_table[data_group[2]];
         v_even[2] = (data_character[2] - g_sum_table[data_group[2]]) % t_table[data_group[2]];
 
-        if (debug) {
-            for (i = 0; i < 4; i++) {
-                System.out.println("Vodd[" + i + "] = " + v_odd[i] + "  Veven[" + i + "] = " + v_even[i]);
-            }
-        }
+//        if (debug) {
+//            for (i = 0; i < 4; i++) {
+//                System.out.println("Vodd[" + i + "] = " + v_odd[i] + "  Veven[" + i + "] = " + v_even[i]);
+//            }
+//        }
 
         /* Use RSS subset width algorithm */
         for (i = 0; i < 4; i++) {
@@ -265,15 +270,15 @@ public class DataBar14 extends Symbol {
             }
         }
 
-        if (debug) {
-            for (i = 0; i < 4; i++) {
-                System.out.print("Data " + i + " widths ");
-                for(j = 0; j < 8; j++) {
-                    System.out.print(data_widths[j][i]);
-                }
-                System.out.println();
-            }
-        }
+//        if (debug) {
+//            for (i = 0; i < 4; i++) {
+//                System.out.print("Data " + i + " widths ");
+//                for(j = 0; j < 8; j++) {
+//                    System.out.print(data_widths[j][i]);
+//                }
+//                System.out.println();
+//            }
+//        }
 
         checksum = 0;
         /* Calculate the checksum */
@@ -295,11 +300,13 @@ public class DataBar14 extends Symbol {
         c_left = checksum / 9;
         c_right = checksum % 9;
 
-        if (debug) {
-            System.out.println("checksum " + checksum);
-            System.out.println("left check " + c_left);
-            System.out.println("right check " + c_right);
-        }
+        encodeInfo += "Checksum: " + Integer.toString(checksum) + "\n";
+        
+//        if (debug) {
+//            System.out.println("checksum " + checksum);
+//            System.out.println("left check " + c_left);
+//            System.out.println("right check " + c_right);
+//        }
 
         /* Put element widths together */
         total_widths[0] = 1;

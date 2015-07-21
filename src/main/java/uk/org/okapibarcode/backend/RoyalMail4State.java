@@ -81,6 +81,7 @@ public class RoyalMail4State extends Symbol {
         /* Stop character */
         dest += "F";
 
+        encodeInfo += "Encoding: " + dest + "\n";
         readable = "";
         pattern = new String[1];
         pattern[0] = dest;

@@ -85,10 +85,6 @@ public class JapanPost extends Symbol {
             inter += "d";
         }
 
-        if (debug) {
-            System.out.println(inter);
-        }
-
         dest = "FD";
 
         sum = 0;
@@ -102,6 +98,7 @@ public class JapanPost extends Symbol {
         dest += JapanTable[positionOf(chKasutSet[check], kasutSet)];
         dest += "DF";
 
+        encodeInfo += "Encoding: " + dest + "\n";
         encodeInfo += "Check Digit: " + check + "\n";
 
         readable = "";

@@ -1023,10 +1023,6 @@ public class Code49 extends Symbol {
         }
 
         h = intermediate.length();
-        if (debug) {
-            System.out.println(intermediate);
-            System.out.println(h);
-        }
 
         i = 0;
         do {
@@ -1036,9 +1032,6 @@ public class Code49 extends Symbol {
                 int latch = 0;
                 j = 0;
                 do {
-                    if (debug) {
-                        System.out.println(i + j);
-                    }
                     if ((i + j) >= h) {
                         latch = 1;
                     } else {
@@ -1164,14 +1157,6 @@ public class Code49 extends Symbol {
             }
         } while (i < h);
 
-        if (debug) {
-            for (i = 0; i < codeword_count; i++) {
-                System.out.print(i);
-                System.out.print(" ");
-                System.out.println(codewords[i]);
-            }
-        }
-
         switch (codewords[0]) { /* Set starting mode value */
         case 48:
             M = 2;
@@ -1199,8 +1184,7 @@ public class Code49 extends Symbol {
             return false;
         }
 
-        encodeInfo += "Codewords: " + codeword_count + "\n";
-        encodeInfo += "Starting Mode M: " + M + "\n";
+        encodeInfo += "Starting Mode (M): " + M + "\n";
 
         /* Place codewords in code character array (c grid) */
         rows = 0;
@@ -1274,9 +1258,8 @@ public class Code49 extends Symbol {
         c_grid[rows - 1][4] = (x_count % 2401) / 49;
         c_grid[rows - 1][5] = (x_count % 2401) % 49;
 
-        encodeInfo += "Check Digit X: " + x_count + "\n";
-        encodeInfo += "Check Digit Y: " + y_count + "\n";
-        encodeInfo += "Check Digit Z: " + z_count + "\n";
+        encodeInfo += "Check Characters: " + Integer.toString(z_count % 2401) + " " +
+                Integer.toString(y_count % 2401) + "\n";
 
         /* Add last row check character */
         j = 0;
@@ -1284,27 +1267,28 @@ public class Code49 extends Symbol {
             j += c_grid[rows - 1][i];
         }
         c_grid[rows - 1][7] = j % 49;
-
+        
+        encodeInfo += "Codewords: ";
         /* Transfer data to symbol character array (w grid) */
         for (i = 0; i < rows; i++) {
             for (j = 0; j < 4; j++) {
                 w_grid[i][j] = (c_grid[i][2 * j] * 49) + c_grid[i][(2 * j) + 1];
+                encodeInfo += Integer.toString(c_grid[i][2 * j]) + " " +
+                        Integer.toString(c_grid[i][(2 * j) + 1]) + " ";
             }
         }
-
-        encodeInfo += "Symbol Rows: " + rows + "\n";
+        encodeInfo += "\n";
 
         readable = "";
         pattern = new String[rows];
         row_count = rows;
         row_height = new int[rows];
 
+        encodeInfo += "Symbol Characters: ";
         for (i = 0; i < rows; i++) {
             localpattern = "11"; /* Start character */
             for (j = 0; j < 4; j++) {
-                if (debug) {
-                    System.out.print("[" + w_grid[i][j] + "] ");
-                }
+                encodeInfo += Integer.toString(w_grid[i][j]) + " ";
                 if (i != (rows - 1)) {
                     if (c49_table4[i].charAt(j) == 'E') {
                         /* Even Parity */
@@ -1323,11 +1307,8 @@ public class Code49 extends Symbol {
             pattern[i] = localpattern;
             row_height[i] = 10;
 
-            if (debug) {
-                System.out.println("");
-            }
-
         }
+        encodeInfo += "\n";
         plotSymbol();
         return true;
     }

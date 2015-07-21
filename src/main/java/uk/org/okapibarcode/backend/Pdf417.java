@@ -591,26 +591,26 @@ public class Pdf417 extends Symbol {
 
         pdfsmooth();
 
-        if (debug) {
-            System.out.printf("Initial block pattern:\n");
-            for (i = 0; i < blockIndex; i++) {
-                System.out.printf("Len: %d  Type: ", blockLength[i]);
-                switch (blockType[i]) {
-                case TEX:
-                    System.out.printf("Text\n");
-                    break;
-                case BYT:
-                    System.out.printf("Byte\n");
-                    break;
-                case NUM:
-                    System.out.printf("Number\n");
-                    break;
-                default:
-                    System.out.printf("ERROR\n");
-                    break;
-                }
-            }
-        }
+//        if (debug) {
+//            System.out.printf("Initial block pattern:\n");
+//            for (i = 0; i < blockIndex; i++) {
+//                System.out.printf("Len: %d  Type: ", blockLength[i]);
+//                switch (blockType[i]) {
+//                case TEX:
+//                    System.out.printf("Text\n");
+//                    break;
+//                case BYT:
+//                    System.out.printf("Byte\n");
+//                    break;
+//                case NUM:
+//                    System.out.printf("Number\n");
+//                    break;
+//                default:
+//                    System.out.printf("ERROR\n");
+//                    break;
+//                }
+//            }
+//        }
 
         /* now compress the data */
         blockCount = 0;
@@ -665,13 +665,11 @@ public class Pdf417 extends Symbol {
             blockCount = blockCount + blockLength[i];
         }
 
-        if (debug) {
-            System.out.printf("\nCompressed data stream:\n");
-            for (i = 0; i < codeWordCount; i++) {
-                System.out.printf("%d ", codeWords[i]);
-            }
-            System.out.printf("\n\n");
+        encodeInfo += "Codewords: ";
+        for (i = 0; i < codeWordCount; i++) {
+            encodeInfo += Integer.toString(codeWords[i]) + " ";
         }
+        encodeInfo += "\n";
 
         /* Now take care of the number of CWs per row */
 
@@ -795,13 +793,13 @@ public class Pdf417 extends Symbol {
             codeWords[codeWordCount++] = mccorrection[i] != 0 ? 929 - mccorrection[i] : 0;
         }
 
-        if (debug) {
-            System.out.printf("\nFull codeword stream:\n");
-            for (i = 0; i < codeWordCount; i++) {
-                System.out.printf("%d ", codeWords[i]);
-            }
-            System.out.printf("\n\n");
-        }
+//        if (debug) {
+//            System.out.printf("\nFull codeword stream:\n");
+//            for (i = 0; i < codeWordCount; i++) {
+//                System.out.printf("%d ", codeWords[i]);
+//            }
+//            System.out.printf("\n\n");
+//        }
 
         /* 818 - The CW string is finished */
         c1 = (codeWordCount / selectedSymbolWidth - 1) / 3;
@@ -814,10 +812,6 @@ public class Pdf417 extends Symbol {
         row_height = new int[codeWordCount / selectedSymbolWidth];
 
         encodeInfo += "Grid Size: " + selectedSymbolWidth + " X " + row_count + "\n";
-
-        if(debug) {
-            System.out.println("Zebu equivalent:");
-        }
 
         /* we now encode each row */
         for (i = 0; i <= (codeWordCount / selectedSymbolWidth) - 1; i++) {
@@ -866,9 +860,6 @@ public class Pdf417 extends Symbol {
                 bin += PDF_TTF[positionOf(codebarre.charAt(j), BR_SET)];
             }
 
-            if(debug) {
-                System.out.println("   " + codebarre);
-            }
             pattern[i] = bin2pat(bin);
             row_height[i] = 3;
         }
@@ -929,26 +920,26 @@ public class Pdf417 extends Symbol {
 
         pdfsmooth();
 
-        if (debug) {
-            System.out.printf("Initial mapping:\n");
-            for (i = 0; i < blockIndex; i++) {
-                System.out.printf("len: %d   type: ", blockLength[i]);
-                switch (blockType[i]) {
-                    case TEX:
-                        System.out.printf("TEXT\n");
-                        break;
-                    case BYT:
-                        System.out.printf("BYTE\n");
-                        break;
-                    case NUM:
-                        System.out.printf("NUMBER\n");
-                        break;
-                    default:
-                        System.out.printf("*ERROR*\n");
-                        break;
-                }
-            }
-        }
+//        if (debug) {
+//            System.out.printf("Initial mapping:\n");
+//            for (i = 0; i < blockIndex; i++) {
+//                System.out.printf("len: %d   type: ", blockLength[i]);
+//                switch (blockType[i]) {
+//                    case TEX:
+//                        System.out.printf("TEXT\n");
+//                        break;
+//                    case BYT:
+//                        System.out.printf("BYTE\n");
+//                        break;
+//                    case NUM:
+//                        System.out.printf("NUMBER\n");
+//                        break;
+//                    default:
+//                        System.out.printf("*ERROR*\n");
+//                        break;
+//                }
+//            }
+//        }
 
         /* 541 - now compress the data */
         blockCount = 0;
@@ -1010,13 +1001,11 @@ public class Pdf417 extends Symbol {
             selectedSymbolWidth = 0;
         }
 
-        if (debug) {
-            System.out.printf("\nEncoded Data Stream:\n");
-            for (i = 0; i < codeWordCount; i++) {
-                System.out.printf("0x%02X ", codeWords[i]);
-            }
-            System.out.printf("\n");
+        encodeInfo += "Codewords: ";
+        for (i = 0; i < codeWordCount; i++) {
+            encodeInfo += Integer.toString(codeWords[i]) + " ";
         }
+        encodeInfo += "\n";
 
         /* Now figure out which variant of the symbol to use and load values accordingly */
 
@@ -1166,12 +1155,12 @@ public class Pdf417 extends Symbol {
         i = longueur - codeWordCount; /* amount of padding required */
         offset = MICRO_VARIANTS[variant + 102]; /* coefficient offset */
 
-        if (debug) {
-            System.out.printf("\nChoose symbol size:\n");
-            System.out.printf("%d columns x %d rows\n", selectedSymbolWidth, rows);
-            System.out.printf("%d data codewords (including %d pads), %d ecc codewords\n", longueur, i, k);
-            System.out.printf("\n");
-        }
+//        if (debug) {
+//            System.out.printf("\nChoose symbol size:\n");
+//            System.out.printf("%d columns x %d rows\n", selectedSymbolWidth, rows);
+//            System.out.printf("%d data codewords (including %d pads), %d ecc codewords\n", longueur, i, k);
+//            System.out.printf("\n");
+//        }
 
         encodeInfo += "Data Codewords: " + longueur + "\n";
         encodeInfo += "ECC Codewords: " + k + "\n";
@@ -1210,14 +1199,14 @@ public class Pdf417 extends Symbol {
             codeWords[codeWordCount] = mccorrection[i];
             codeWordCount++;
         }
-
-        if (debug) {
-            System.out.printf("Encoded Data Stream with ECC:\n");
-            for (i = 0; i < codeWordCount; i++) {
-                System.out.printf("0x%02X ", codeWords[i]);
-            }
-            System.out.printf("\n");
-        }
+//
+//        if (debug) {
+//            System.out.printf("Encoded Data Stream with ECC:\n");
+//            for (i = 0; i < codeWordCount; i++) {
+//                System.out.printf("0x%02X ", codeWords[i]);
+//            }
+//            System.out.printf("\n");
+//        }
 
         /* Now get the RAP (Row Address Pattern) start values */
         LeftRAPStart = RAP_TABLE[variant];
@@ -1239,11 +1228,11 @@ public class Pdf417 extends Symbol {
 
         encodeInfo += "Grid Size: " + selectedSymbolWidth + " X " + row_count + "\n";
 
-        if (debug)
-            System.out.printf("\nInternal row representation:\n");
+//        if (debug)
+//            System.out.printf("\nInternal row representation:\n");
         for (i = 0; i < rows; i++) {
-            if (debug)
-                System.out.printf("row %d: ", i);
+//            if (debug)
+//                System.out.printf("row %d: ", i);
             codebarre = "";
             offset = 929 * Cluster;
             for (j = 0; j < 5; j++) {
@@ -1251,8 +1240,8 @@ public class Pdf417 extends Symbol {
             }
             for (j = 0; j < selectedSymbolWidth; j++) {
                 dummy[j + 1] = codeWords[i * selectedSymbolWidth + j];
-                if (debug)
-                    System.out.printf("[%d] ", dummy[j + 1]);
+//                if (debug)
+//                    System.out.printf("[%d] ", dummy[j + 1]);
             }
 
             /* Copy the data into codebarre */
@@ -1283,8 +1272,8 @@ public class Pdf417 extends Symbol {
             }
             codebarre += RAPLR[RightRAP];
             codebarre += "1"; /* stop */
-            if (debug)
-                System.out.printf("%s\n", codebarre);
+//            if (debug)
+//                System.out.printf("%s\n", codebarre);
 
             /* Now codebarre is a mixture of letters and numbers */
 

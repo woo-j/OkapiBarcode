@@ -222,50 +222,46 @@ public class CodablockF extends Symbol {
         encodeInfo += "K2 Check Digit: " + k2_check + "\n";
 
 	/* Resolve the data into patterns and place in symbol structure */
+        encodeInfo += "Encoding: ";
 	for(i = 0; i < rows_needed; i++) {
-		if (debug) {
-                    System.out.printf("row %d: 103 ",i);
-                    switch (subset_selector[i]) {
-                        case MODEA: System.out.print("MODEA");
-                            break;
-                        case MODEB: System.out.print("MODEB");
-                            break;
-                        case MODEC: System.out.print("MODEC");
-                            break;
-                    }
-                    System.out.printf(" %d [", row_indicator[i]);
-                    for(j = 0; j < columns_needed; j++) {
-                            System.out.printf("%d ",blockmatrix[i][j]);
-                    }
-                    System.out.printf("] %d 106\n", row_check[i]);
-                }
-		row_pattern = "";
-		/* Start character */
-		row_pattern += C128Table[103]; /* Always Start A */
+            
+            row_pattern = "";
+            /* Start character */
+            row_pattern += C128Table[103]; /* Always Start A */
 
-                switch (subset_selector[i]) {
-                    case MODEA: row_pattern += C128Table[98];
-                        break;
-                    case MODEB: row_pattern += C128Table[100];
-                        break;
-                    case MODEC: row_pattern += C128Table[99];
-                        break;
-                }
-		row_pattern += C128Table[row_indicator[i]];
+            switch (subset_selector[i]) {
+                case MODEA:
+                    row_pattern += C128Table[98];
+                    encodeInfo += "MODEA ";
+                    break;
+                case MODEB:
+                    row_pattern += C128Table[100];
+                    encodeInfo += "MODEB ";
+                    break;
+                case MODEC:
+                    row_pattern += C128Table[99];
+                    encodeInfo += "MODEC ";
+                    break;
+            }
+            row_pattern += C128Table[row_indicator[i]];
+            encodeInfo += Integer.toString(row_indicator[i]) + " ";
 
-		for(j = 0; j < columns_needed; j++) {
-			row_pattern += C128Table[blockmatrix[i][j]];
-		}
+            for(j = 0; j < columns_needed; j++) {
+                    row_pattern += C128Table[blockmatrix[i][j]];
+                    encodeInfo += Integer.toString(blockmatrix[i][j]) + " ";
+            }
 
-		row_pattern += C128Table[row_check[i]];
+            row_pattern += C128Table[row_check[i]];
+            encodeInfo += "(" + Integer.toString(row_check[i]) + ") ";
 
-		/* Stop character */
-		row_pattern += C128Table[106];
+            /* Stop character */
+            row_pattern += C128Table[106];
 
-		/* Write the information into the symbol */
-                pattern[i] = row_pattern;
-                row_height[i] = 15;
+            /* Write the information into the symbol */
+            pattern[i] = row_pattern;
+            row_height[i] = 15;
 	}
+        encodeInfo += "\n";
 
         symbol_height = rows_needed * 15;
         plotSymbol();

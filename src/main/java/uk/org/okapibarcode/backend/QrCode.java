@@ -449,10 +449,6 @@ public class QrCode extends Symbol {
         int size;
         int bitmask;
         String bin;
-
-        if (debug) {
-            System.out.printf("QR Code Content = \"%s\"\n", content);
-        }
         
         inputMode = new qrMode[content.length()];
         define_mode();
@@ -851,9 +847,7 @@ public class QrCode extends Symbol {
 //            System.out.printf("\n");
 //        }
 
-        if (debug) {
-            System.out.printf("\tIntermediate coding: ");
-        }
+        encodeInfo += "Encoding: ";
         
         alphanumPercent = false;
 
@@ -874,9 +868,7 @@ public class QrCode extends Symbol {
                     /* Character count indicator */
                     qr_bscan(short_data_block_length, 0x20 << (scheme * 2)); /* scheme = 1..3 */
 
-                    if (debug) {
-                        System.out.printf("KNJI ");
-                    }
+                    encodeInfo += "KNJI ";
 
                     /* Character representation */
                     for (i = 0; i < short_data_block_length; i++) {
@@ -904,9 +896,7 @@ public class QrCode extends Symbol {
 
                         qr_bscan(prod, 0x1000);
 
-                        if (debug) {
-                            System.out.printf("%d ", prod);
-                        }
+                        encodeInfo += Integer.toString(prod) + " ";
                     }
                     break;
                 case BINARY:
@@ -917,9 +907,7 @@ public class QrCode extends Symbol {
                     /* Character count indicator */
                     qr_bscan(short_data_block_length, scheme > 1 ? 0x8000 : 0x80); /* scheme = 1..3 */
 
-                    if (debug) {
-                        System.out.printf("BYTE ");
-                    }
+                    encodeInfo += "BYTE ";
 
                     /* Character representation */
                     for (i = 0; i < short_data_block_length; i++) {
@@ -932,9 +920,7 @@ public class QrCode extends Symbol {
 
                         qr_bscan(lbyte, 0x80);
 
-                        if (debug) {
-                            System.out.printf("%d ", lbyte);
-                        }
+                        encodeInfo += Integer.toString(lbyte) + " ";
                     }
 
                     break;
@@ -946,9 +932,7 @@ public class QrCode extends Symbol {
                     /* Character count indicator */
                     qr_bscan(short_data_block_length, 0x40 << (2 * scheme)); /* scheme = 1..3 */
 
-                    if (debug) {
-                        System.out.printf("ALPH ");
-                    }
+                    encodeInfo += "ALPH ";
 
                     /* Character representation */
                     i = 0;
@@ -1024,9 +1008,7 @@ public class QrCode extends Symbol {
 
                         qr_bscan(prod, count == 2 ? 0x400 : 0x20); /* count = 1..2 */
 
-                        if (debug) {
-                            System.out.printf("%d ", prod);
-                        }
+                        encodeInfo += Integer.toString(prod) + " ";
                     };
                     break;
                 case NUMERIC:
@@ -1037,9 +1019,7 @@ public class QrCode extends Symbol {
                     /* Character count indicator */
                     qr_bscan(short_data_block_length, 0x80 << (2 * scheme)); /* scheme = 1..3 */
 
-                    if (debug) {
-                        System.out.printf("NUMB ");
-                    }
+                    encodeInfo += "NUMB ";
 
                     /* Character representation */
                     i = 0;
@@ -1063,9 +1043,7 @@ public class QrCode extends Symbol {
 
                         qr_bscan(prod, 1 << (3 * count)); /* count = 1..3 */
 
-                        if (debug) {
-                            System.out.printf("%d ", prod);
-                        }
+                        encodeInfo += Integer.toString(prod) + " ";
 
                         i += count;
                     };
@@ -1074,9 +1052,7 @@ public class QrCode extends Symbol {
             position += short_data_block_length;
         } while (position < inputLength);
         
-        if (debug) {
-            System.out.printf("\n");
-        }
+        encodeInfo += "\n";
 
         /* Terminator */
         binary += "0000";
@@ -1115,13 +1091,11 @@ public class QrCode extends Symbol {
             }
         }
 
-        if (debug) {
-            System.out.printf("\tCodewords: ");
-            for (i = 0; i < target_binlen; i++) {
-                System.out.printf("%d ", datastream[i]);
-            }
-            System.out.printf("\n");
+        encodeInfo += "Codewords: ";
+        for (i = 0; i < target_binlen; i++) {
+            encodeInfo += Integer.toString(datastream[i]) + " ";
         }
+        encodeInfo += "\n";
 
         return true;
     }

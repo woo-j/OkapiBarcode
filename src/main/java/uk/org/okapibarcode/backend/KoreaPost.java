@@ -50,9 +50,9 @@ public class KoreaPost extends Symbol {
         }
         add_zero += content;
 
-        if (debug) {
-            System.out.print("Data: " + add_zero + "\t");
-        }
+//        if (debug) {
+//            System.out.print("Data: " + add_zero + "\t");
+//        }
 
         for (i = 0; i < add_zero.length(); i++) {
             j = Character.getNumericValue(add_zero.charAt(i));
@@ -64,9 +64,9 @@ public class KoreaPost extends Symbol {
         if (checkd == 10) {
             checkd = 0;
         }
-        if (debug) {
-            System.out.println("Check: " + checkd);
-        }
+//        if (debug) {
+//            System.out.println("Check: " + checkd);
+//        }
         encodeInfo += "Check Digit: " + checkd + "\n";
 
         accumulator += KoreaTable[checkd];

@@ -324,6 +324,11 @@ public class MaxiCode extends Symbol {
 
         encodeInfo += "Mode: " + mode + "\n";
         encodeInfo += "ECC Codewords: " + secondaryECMax + "\n";
+        encodeInfo += "Codewords: ";
+        for (int i = 0; i < codewords.length; i++) {
+            encodeInfo += Integer.toString(codewords[i]) + " ";
+        }
+        encodeInfo += "\n";
 
         // copy data into symbol grid
         int[] bit_pattern = new int[7];

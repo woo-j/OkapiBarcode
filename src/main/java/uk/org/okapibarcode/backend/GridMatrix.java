@@ -354,10 +354,6 @@ public class GridMatrix extends Symbol {
         for (i = 0; i < 1460; i++) {
             word[i] = 0;
         }
-        
-        if (debug) {
-            System.out.printf("Grid Matrix Content=\"%s\"\n", content);
-        }
 
         try {
             /* Try converting to GB2312 */
@@ -390,9 +386,7 @@ public class GridMatrix extends Symbol {
                         length++;
                     }
                 }
-                if (debug) {
-                    System.out.printf("\tUsing GB2312 character encoding\n");
-                }
+                encodeInfo += "Using GB2312 character encoding\n";
                 eciMode = 29;
             } else {
                 /* GB2312 encoding didn't work, use other ECI mode */
@@ -593,16 +587,11 @@ public class GridMatrix extends Symbol {
         current_mode = gmMode.NULL;
         number_pad_posn = 0;
         
-        if (debug) {
-            System.out.printf("\tIntermediate encoding: ");
-        }
+        encodeInfo += "Encoding: ";
 
         if (reader) {
             binary += "1010"; /* FNC3 - Reader Initialisation */
-            if (debug) {
-                System.out.printf("INIT ");
-            }
-
+            encodeInfo += "INIT ";
         }
 
         if ((eciMode != 3) && (eciMode != 29)) {
@@ -641,9 +630,7 @@ public class GridMatrix extends Symbol {
                 }
             }            
             
-            if (debug) {
-                System.out.printf("ECI %d ", eciMode);
-            }
+            encodeInfo += "ECI " + Integer.toString(eciMode) + " ";
         }
 
         do {
@@ -790,28 +777,28 @@ public class GridMatrix extends Symbol {
                         }
                         break;
                 }
-                if (debug) {
-                    switch (next_mode) {
-                        case GM_CHINESE:
-                            System.out.printf("CHIN ");
-                            break;
-                        case GM_NUMBER:
-                            System.out.printf("NUMB ");
-                            break;
-                        case GM_LOWER:
-                            System.out.printf("LOWR ");
-                            break;
-                        case GM_UPPER:
-                            System.out.printf("UPPR ");
-                            break;
-                        case GM_MIXED:
-                            System.out.printf("MIXD ");
-                            break;
-                        case GM_BYTE:
-                            System.out.printf("BYTE ");
-                            break;
-                    }
+
+                switch (next_mode) {
+                    case GM_CHINESE:
+                        encodeInfo += "CHIN ";
+                        break;
+                    case GM_NUMBER:
+                        encodeInfo += "NUMB ";
+                        break;
+                    case GM_LOWER:
+                        encodeInfo += "LOWR ";
+                        break;
+                    case GM_UPPER:
+                        encodeInfo += "UPPR ";
+                        break;
+                    case GM_MIXED:
+                        encodeInfo += "MIXD ";
+                        break;
+                    case GM_BYTE:
+                        encodeInfo += "BYTE ";
+                        break;
                 }
+                
             }
             last_mode = current_mode;
             current_mode = next_mode;
@@ -856,9 +843,7 @@ public class GridMatrix extends Symbol {
                         glyph = 7777 + inputIntArray[sp];
                     }
 
-                    if (debug) {
-                        System.out.printf("%d ", glyph);
-                    }
+                    encodeInfo += Integer.toString(glyph) + " ";
 
                     for (i = 0x1000; i > 0; i = i >> 1) {
                         if ((glyph & i) != 0) {
@@ -933,9 +918,7 @@ public class GridMatrix extends Symbol {
                         glyph += ppos;
                         glyph += 1000;
 
-                        if (debug) {
-                            System.out.printf("%d ", glyph);
-                        }
+                        encodeInfo += Integer.toString(glyph) + " ";
 
                         for (i = 0x200; i > 0; i = i >> 1) {
                             if ((glyph & i) != 0) {
@@ -947,9 +930,7 @@ public class GridMatrix extends Symbol {
                     }
 
                     glyph = (100 * (numbuf[0] - '0')) + (10 * (numbuf[1] - '0')) + (numbuf[2] - '0');
-                    if (debug) {
-                        System.out.printf("%d ", glyph);
-                    }
+                    encodeInfo += Integer.toString(glyph) + " ";
 
                     for (i = 0x200; i > 0; i = i >> 1) {
                         if ((glyph & i) != 0) {
@@ -974,9 +955,7 @@ public class GridMatrix extends Symbol {
                     }
 
                     glyph = inputIntArray[sp];
-                    if (debug) {
-                        System.out.printf("%d ", glyph);
-                    }
+                    encodeInfo += Integer.toString(glyph) + " ";
                     for (i = 0x80; i > 0; i = i >> 1) {
                         if ((glyph & i) != 0) {
                             binary += "1";
@@ -1006,9 +985,7 @@ public class GridMatrix extends Symbol {
                     if (shift == 0) {
                         /* Mixed Mode character */
                         glyph = positionOf((char) inputIntArray[sp], MIXED_ALPHANUM_SET);
-                        if (debug) {
-                            System.out.printf("%d ", glyph);
-                        }
+                        encodeInfo += Integer.toString(glyph) + " ";
 
                         for (i = 0x20; i > 0; i = i >> 1) {
                             if ((glyph & i) != 0) {
@@ -1043,9 +1020,7 @@ public class GridMatrix extends Symbol {
                             // Space character
                             glyph = 26;
                         }
-                        if (debug) {
-                            System.out.printf("%d ", glyph);
-                        }
+                        encodeInfo += Integer.toString(glyph) + " ";
 
                         for (i = 0x10; i > 0; i = i >> 1) {
                             if ((glyph & i) != 0) {
@@ -1077,9 +1052,7 @@ public class GridMatrix extends Symbol {
                     if (shift == 0) {
                         /* Lower Case character */
                         glyph = positionOf((char) inputIntArray[sp], MIXED_ALPHANUM_SET) - 36;
-                        if (debug) {
-                            System.out.printf("%d ", glyph);
-                        }
+                        encodeInfo += Integer.toString(glyph) + " ";
 
                         for (i = 0x10; i > 0; i = i >> 1) {
                             if ((glyph & i) != 0) {
@@ -1105,9 +1078,7 @@ public class GridMatrix extends Symbol {
 
         } while (sp < length);
         
-        if (debug) {
-            System.out.printf("\n");
-        }
+        encodeInfo += "\n";
 
         if (current_mode == gmMode.GM_NUMBER) {
             /* add numeric block padding value */
@@ -1887,9 +1858,7 @@ public class GridMatrix extends Symbol {
             }
         }
 
-        if (debug) {
-            System.out.printf("SFT/%d ", glyph);
-        }
+        encodeInfo += "SHT/" + Integer.toString(glyph) + " ";
 
         for (i = 0x20; i > 0; i = i >> 1) {
             if ((glyph & i) != 0) {
@@ -1925,6 +1894,12 @@ public class GridMatrix extends Symbol {
             }
         }
         
+        encodeInfo += "Codewords: ";
+        for (i = 0; i < data_posn; i++) {
+            encodeInfo += Integer.toString(data[i]) + " ";
+        }
+        encodeInfo += "\n";       
+        
         /* Add padding codewords */
         data[data_posn] = 0x00;
         for (i = (data_posn + 1); i < data_cw; i++) {
@@ -1933,14 +1908,6 @@ public class GridMatrix extends Symbol {
             } else {
                 data[i] = 0x00;
             }
-        }
-        
-        if (debug) {
-            System.out.printf("\tCodewords: ");
-            for (i = 0; i < data_cw; i++) {
-                System.out.printf("%d ", data[i]);
-            }
-            System.out.printf("\n");
         }
 
         /* Get block sizes */

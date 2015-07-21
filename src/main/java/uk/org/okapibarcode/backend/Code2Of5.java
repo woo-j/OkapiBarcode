@@ -144,14 +144,6 @@ public class Code2Of5 extends Symbol {
             break;
         }
 
-        if (debug) {
-            if (retval) {
-                System.out.println("Calculated: " + readable);
-            } else {
-                System.out.println("2 of 5 FAIL");
-            }
-        }
-
         if (retval) {
             plotSymbol();
         }

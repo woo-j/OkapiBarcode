@@ -669,9 +669,7 @@ public class Composite extends Symbol {
         
         if ((cc_mode == CompositeMode.CC_C) && (symbology == LinearEncoding.CODE_128)) {
             /* Width of composite component depends on width of linear component,
-               so recalculate.
-            */
-            System.out.printf("Going back in\n");
+               so recalculate. */
             row_count = 0;
             rect.clear();
             symbol_height = 0;
@@ -679,6 +677,12 @@ public class Composite extends Symbol {
             encodeInfo = "";
             if (!(encodeComposite())) {
                 return false;
+            }
+        }
+        
+        if ((cc_mode != CompositeMode.CC_C) && (symbology == LinearEncoding.CODE_128)) {
+            if (linearWidth > symbol_width) {
+                top_shift = (linearWidth - symbol_width) / 2;
             }
         }
 
@@ -1067,6 +1071,16 @@ public class Composite extends Symbol {
             if (codewords_used % cc_width != 0) {
                 rows++;
             }
+            
+            while (cc_width > (3 * rows)) {
+                /* stop the symbol from becoming too wide (section 10) */
+                cc_width--;
+
+                rows = codewords_used / cc_width;
+                if (codewords_used % cc_width != 0) {
+                    rows++;
+                }
+            };
 
             codewords_total = cc_width * rows;
 

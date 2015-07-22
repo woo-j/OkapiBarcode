@@ -1975,10 +1975,8 @@ public class AztecCode extends Symbol {
                             binary_string += eciToBinary();
                         }
                     } else {
-                        binary_string += pentbit[charmap[i]]; // FIXME: Why is this not in if statement?
-                        if (!((chartype == 8) && (charmap[i] == 0))) {
-                            encodeInfo += Integer.toString(charmap[i]) + " ";
-                        }
+                        binary_string += pentbit[charmap[i]];
+                        encodeInfo += Integer.toString(charmap[i]) + " ";
                     }
                     break;
                 case 16:

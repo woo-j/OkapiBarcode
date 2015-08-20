@@ -488,6 +488,23 @@ public class Pdf417 extends Symbol {
     };
 
     /**
+     * Creates a new PDF417 symbol instance.
+     */
+    public Pdf417() {
+        this.default_height = 3;
+    }
+
+    /**
+     * Sets the default bar height (height of a single row) for this symbol (default value is <code>3</code>).
+     *
+     * @param barHeight the default bar height for this symbol
+     */
+    @Override
+    public void setBarHeight(int barHeight) {
+        super.setBarHeight(barHeight);
+    }
+
+    /**
      * Sets the width of the symbol by specifying the number of columns
      * of data codewords. Valid values are 1-30 for PDF417 and 1-4
      * for MicroPDF417.
@@ -861,7 +878,7 @@ public class Pdf417 extends Symbol {
             }
 
             pattern[i] = bin2pat(bin);
-            row_height[i] = 3;
+            row_height[i] = default_height;
         }
         return true;
     }

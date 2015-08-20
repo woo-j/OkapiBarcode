@@ -15,6 +15,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,21 @@ import org.junit.runners.Parameterized.Parameters;
 import org.reflections.Reflections;
 
 import uk.org.okapibarcode.output.Java2DRenderer;
+
+import com.google.zxing.BinaryBitmap;
+import com.google.zxing.DecodeHintType;
+import com.google.zxing.LuminanceSource;
+import com.google.zxing.Reader;
+import com.google.zxing.ReaderException;
+import com.google.zxing.Result;
+import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
+import com.google.zxing.common.HybridBinarizer;
+import com.google.zxing.oned.Code93Reader;
+import com.google.zxing.oned.EAN13Reader;
+import com.google.zxing.oned.EAN8Reader;
+import com.google.zxing.oned.UPCAReader;
+import com.google.zxing.oned.UPCEReader;
+import com.google.zxing.pdf417.PDF417Reader;
 
 /**
  * <p>
@@ -142,14 +158,16 @@ public class SymbolTest {
      *
      * @param symbol the symbol to check
      * @throws IOException if there is any I/O error
+     * @throws ReaderException if ZXing has an issue decoding the barcode image
      */
-    private void verifySuccess(Symbol symbol) throws IOException {
+    private void verifySuccess(Symbol symbol) throws IOException, ReaderException {
 
         assertEquals("error message", "", symbol.error_msg);
 
         List< String > expectedList = Files.readAllLines(codewordsFile.toPath(), UTF_8);
 
         try {
+            // try to verify codewords
             int[] actualCodewords = symbol.getCodewords();
             assertEquals(expectedList.size(), actualCodewords.length);
             for (int i = 0; i < actualCodewords.length; i++) {
@@ -158,6 +176,7 @@ public class SymbolTest {
                 assertEquals("at codeword index " + i, expected, actual);
             }
         } catch (UnsupportedOperationException e) {
+            // codewords aren't supported, try to verify patterns
             String[] actualPatterns = symbol.pattern;
             assertEquals(expectedList.size(), actualPatterns.length);
             for (int i = 0; i < actualPatterns.length; i++) {
@@ -167,9 +186,64 @@ public class SymbolTest {
             }
         }
 
+        // make sure the barcode images match
         BufferedImage expected = ImageIO.read(pngFile);
         BufferedImage actual = draw(symbol);
         assertEqual(expected, actual);
+
+        // if possible, ensure an independent third party (ZXing) can read the generated barcode and agrees on what it represents
+        Reader zxingReader = findReader(symbol);
+        if (zxingReader != null) {
+            LuminanceSource source = new BufferedImageLuminanceSource(expected);
+            BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
+            Map< DecodeHintType, Boolean > hints = Collections.singletonMap(DecodeHintType.PURE_BARCODE, Boolean.TRUE);
+            Result result = zxingReader.decode(bitmap, hints);
+            assertEquals(symbol.getContent(), removeChecksum(result.getText(), symbol));
+        }
+    }
+
+    /**
+     * Returns a ZXing reader that can read the specified symbol.
+     *
+     * @param symbol the symbol to be read
+     * @return a ZXing reader that can read the specified symbol
+     */
+    private static Reader findReader(Symbol symbol) {
+        if (symbol instanceof Code93) {
+            return new Code93Reader();
+        } else if (symbol instanceof Ean) {
+            if (((Ean) symbol).getMode() == Ean.Mode.EAN8) {
+                return new EAN8Reader();
+            } else {
+                return new EAN13Reader();
+            }
+        } else if (symbol instanceof Pdf417) {
+            return new PDF417Reader();
+        } else if (symbol instanceof Upc) {
+            if (((Upc) symbol).getMode() == Upc.Mode.UPCA) {
+                return new UPCAReader();
+            } else {
+                return new UPCEReader();
+            }
+        } else {
+            // no corresponding ZXing reader exists, or it behaves badly so we don't use it for testing
+            return null;
+        }
+    }
+
+    /**
+     * Removes the checksum from the specified barcode content, according to the type of symbol that encoded the content.
+     *
+     * @param s the barcode content
+     * @param symbol the symbol which encoded the content
+     * @return the barcode content, without the checksum
+     */
+    private static String removeChecksum(String s, Symbol symbol) {
+        if (symbol instanceof Ean || symbol instanceof Upc) {
+            return s.substring(0, s.length() - 1);
+        } else {
+            return s;
+        }
     }
 
     /**

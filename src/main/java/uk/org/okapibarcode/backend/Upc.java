@@ -69,6 +69,10 @@ public class Upc extends Symbol {
         this.mode = mode;
     }
 
+    public Mode getMode() {
+        return mode;
+    }
+
     public void setLinkageFlag() {
         linkageFlag = true;
     }

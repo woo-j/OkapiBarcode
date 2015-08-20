@@ -66,6 +66,10 @@ public class Ean extends Symbol {
         this.mode = mode;
     }
 
+    public Mode getMode() {
+        return mode;
+    }
+
     protected void setLinkageFlag() {
         linkageFlag = true;
     }

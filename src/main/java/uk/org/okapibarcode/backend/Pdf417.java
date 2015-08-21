@@ -668,7 +668,8 @@ public class Pdf417 extends Symbol {
             switch (blockType[i]) {
             case TEX:
                 /* text mode */
-                textprocess(blockCount, blockLength[i]);
+                boolean firstBlock = (i == 0);
+                textprocess(blockCount, blockLength[i], firstBlock);
                 break;
             case BYT:
                 /* octet stream mode */
@@ -995,7 +996,8 @@ public class Pdf417 extends Symbol {
         for (i = 0; i < blockIndex; i++) {
             switch (blockType[i]) {
                 case TEX: /* 547 - text mode */
-                    textprocess(blockCount, blockLength[i]);
+                    boolean firstBlock = (i == 0);
+                    textprocess(blockCount, blockLength[i], firstBlock);
                     break;
                 case BYT: /* 670 - octet stream mode */
                     byteprocess(blockCount, blockLength[i]);
@@ -1472,7 +1474,7 @@ public class Pdf417 extends Symbol {
         }
     }
 
-    private void textprocess(int start, int length) {
+    private void textprocess(int start, int length, boolean firstBlock) {
         int j, blockIndext, curtable, wnet;
         int codeascii;
         int[] listet0 = new int[5000];
@@ -1662,9 +1664,14 @@ public class Pdf417 extends Symbol {
             chainet[wnet] = 29;
             wnet++;
         }
+
         /* Now translate the string chainet into codewords */
-        codeWords[codeWordCount] = 900;
-        codeWordCount++;
+
+        if (!firstBlock) {
+            // text compaction mode is the default mode, so no need for an explicit latch if this is the first block
+            codeWords[codeWordCount] = 900;
+            codeWordCount++;
+        }
 
         for (j = 0; j < wnet; j += 2) {
             int cw_number;

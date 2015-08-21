@@ -523,6 +523,9 @@ public class Pdf417 extends Symbol {
      * @param eccLevel level of error correction (0-8)
      */
     public void setPreferredEccLevel(int eccLevel) {
+        if (eccLevel < 0 || eccLevel > 8) {
+            throw new IllegalArgumentException("ECC level must be between 0 and 8.");
+        }
         preferredEccLevel = eccLevel;
     }
 

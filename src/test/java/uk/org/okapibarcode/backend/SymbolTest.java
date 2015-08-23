@@ -198,7 +198,9 @@ public class SymbolTest {
             BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
             Map< DecodeHintType, Boolean > hints = Collections.singletonMap(DecodeHintType.PURE_BARCODE, Boolean.TRUE);
             Result result = zxingReader.decode(bitmap, hints);
-            assertEquals(symbol.getContent(), removeChecksum(result.getText(), symbol));
+            String zxingData = removeChecksum(result.getText(), symbol);
+            String okapiData = symbol.getContent();
+            assertEquals(okapiData, zxingData);
         }
     }
 
@@ -209,26 +211,32 @@ public class SymbolTest {
      * @return a ZXing reader that can read the specified symbol
      */
     private static Reader findReader(Symbol symbol) {
+
         if (symbol instanceof Code93) {
             return new Code93Reader();
         } else if (symbol instanceof Ean) {
-            if (((Ean) symbol).getMode() == Ean.Mode.EAN8) {
+            Ean ean = (Ean) symbol;
+            if (ean.getMode() == Ean.Mode.EAN8) {
                 return new EAN8Reader();
             } else {
                 return new EAN13Reader();
             }
         } else if (symbol instanceof Pdf417) {
-            return new PDF417Reader();
+            Pdf417 pdf417 = (Pdf417) symbol;
+            if (pdf417.getMode() != Pdf417.Mode.MICRO) {
+                return new PDF417Reader();
+            }
         } else if (symbol instanceof Upc) {
-            if (((Upc) symbol).getMode() == Upc.Mode.UPCA) {
+            Upc upc = (Upc) symbol;
+            if (upc.getMode() == Upc.Mode.UPCA) {
                 return new UPCAReader();
             } else {
                 return new UPCEReader();
             }
-        } else {
-            // no corresponding ZXing reader exists, or it behaves badly so we don't use it for testing
-            return null;
         }
+
+        // no corresponding ZXing reader exists, or it behaves badly so we don't use it for testing
+        return null;
     }
 
     /**

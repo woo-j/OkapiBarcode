@@ -533,6 +533,10 @@ public class Pdf417 extends Symbol {
         symbolMode = mode;
     }
 
+    public Mode getMode() {
+        return symbolMode;
+    }
+
     @Override
     public boolean encode() {
         boolean retval = false;
@@ -999,8 +1003,7 @@ public class Pdf417 extends Symbol {
         for (i = 0; i < blockIndex; i++) {
             switch (blockType[i]) {
                 case TEX: /* 547 - text mode */
-                    boolean firstBlock = (i == 0);
-                    textprocess(blockCount, blockLength[i], firstBlock);
+                    textprocess(blockCount, blockLength[i], false);
                     break;
                 case BYT: /* 670 - octet stream mode */
                     byteprocess(blockCount, blockLength[i]);
@@ -1477,7 +1480,7 @@ public class Pdf417 extends Symbol {
         }
     }
 
-    private void textprocess(int start, int length, boolean firstBlock) {
+    private void textprocess(int start, int length, boolean skipLatch) {
         int j, blockIndext, curtable, wnet;
         int codeascii;
         int[] listet0 = new int[5000];
@@ -1670,8 +1673,9 @@ public class Pdf417 extends Symbol {
 
         /* Now translate the string chainet into codewords */
 
-        if (!firstBlock) {
-            // text compaction mode is the default mode, so no need for an explicit latch if this is the first block
+        if (!skipLatch) {
+            // text compaction mode is the default mode for PDF417,
+            // so no need for an explicit latch if this is the first block
             codeWords[codeWordCount] = 900;
             codeWordCount++;
         }

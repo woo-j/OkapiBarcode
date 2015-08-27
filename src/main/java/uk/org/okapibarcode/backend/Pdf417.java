@@ -518,7 +518,8 @@ public class Pdf417 extends Symbol {
     /**
      * Set the amount of the symbol which is dedicated to error correction
      * codewords. The number of codewords of error correction data is
-     * determined by 2<sup>(eccLevel + 1)</sup>.
+     * determined by 2<sup>(eccLevel + 1)</sup>. This attribute is ignored
+     * when using {@link Mode#MICRO micro} mode.
      *
      * @param eccLevel level of error correction (0-8)
      */

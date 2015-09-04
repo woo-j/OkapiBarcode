@@ -1304,13 +1304,7 @@ public class DataBarExpanded extends Symbol {
 //            if (debug) System.out.printf("Resultant binary = %s\n", binary_string);
 //            if (debug) System.out.printf("\tLength: %d\n", binary_string.length());
 
-            remainder = 12 - (binary_string.length() % 12);
-            if (remainder == 12) {
-                remainder = 0;
-            }
-            if (binary_string.length() < 36) {
-                remainder = 36 - binary_string.length();
-            }
+            remainder = calculateRemainder (binary_string.length());
 
             if (latch) {
                 /* There is still one more numeric digit to encode */
@@ -1364,12 +1358,7 @@ public class DataBarExpanded extends Symbol {
             return false;
         }
 
-        remainder = 36 - binary_string.length();
-        if (binary_string.length() > 36) {
-            for (i = 36; i < binary_string.length(); i+= 24) {
-                remainder = (i + 24) - binary_string.length();
-            }
-        }
+        remainder = calculateRemainder (binary_string.length());
         
         /* Now add padding to binary string (7.2.5.5.4) */
         i = remainder;
@@ -1416,6 +1405,17 @@ public class DataBarExpanded extends Symbol {
 //        if (debug) System.out.printf("Resultant binary = %s\n", binary_string);
 //        if (debug) System.out.printf("\tLength: %d\n", binary_string.length());
         return true;
+    }
+    
+    private static int calculateRemainder ( int binaryStringLength ) {
+        int remainder = 12 - (binaryStringLength % 12);
+        if (remainder == 12) {
+            remainder = 0;
+        }
+        if (binaryStringLength < 36) {
+            remainder = 36 - binaryStringLength;
+        }
+        return remainder;
     }
     
     private void displayBinaryString() {

@@ -1371,7 +1371,7 @@ public class Pdf417 extends Symbol {
         throw new OkapiException("Unable to determine MicroPDF417 variant");
     }
 
-    void pdfSmooth() {
+    private void pdfSmooth() {
         int i, length;
         EncodingMode crnt, last, next;
 

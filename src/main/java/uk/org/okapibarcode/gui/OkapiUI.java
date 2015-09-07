@@ -66,6 +66,7 @@ import uk.org.okapibarcode.backend.DataBarLimited;
 import uk.org.okapibarcode.backend.DataMatrix;
 import uk.org.okapibarcode.backend.Ean;
 import uk.org.okapibarcode.backend.GridMatrix;
+import uk.org.okapibarcode.backend.HumanReadableLocation;
 import uk.org.okapibarcode.backend.JapanPost;
 import uk.org.okapibarcode.backend.KixCode;
 import uk.org.okapibarcode.backend.KoreaPost;
@@ -87,8 +88,6 @@ import uk.org.okapibarcode.backend.Telepen;
 import uk.org.okapibarcode.backend.Upc;
 import uk.org.okapibarcode.backend.UspsOneCode;
 import uk.org.okapibarcode.backend.UspsPackage;
-
-import uk.org.okapibarcode.backend.HumanReadableLocation;
 /**
  * The main Okapi Barcode UI.
  *
@@ -2195,10 +2194,10 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         return reversed;
     }
-    
+
     private HumanReadableLocation getHrtLoc() {
         HumanReadableLocation temp = HumanReadableLocation.BOTTOM;
-        
+
         switch(cmbHrtPosition.getSelectedIndex()) {
             case 0:
                 temp = HumanReadableLocation.BOTTOM;
@@ -2210,7 +2209,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 temp = HumanReadableLocation.NONE;
                 break;
         }
-        
+
         return temp;
     }
 
@@ -2551,7 +2550,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                     pdf417.setMode(Pdf417.Mode.TRUNCATED);
                 }
                 pdf417.setPreferredEccLevel(pdfEccCombo.getSelectedIndex() - 1);
-                pdf417.setNumberOfColumns(pdfColumnsCombo.getSelectedIndex());
+                pdf417.setDataColumns(pdfColumnsCombo.getSelectedIndex());
                 if (readerInit) {
                     pdf417.setReaderInit();
                 }
@@ -2570,7 +2569,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 if (readerInit) {
                     microPdf417.setReaderInit();
                 }
-                microPdf417.setNumberOfColumns(microPdfColumnsCombo.getSelectedIndex());
+                microPdf417.setDataColumns(microPdfColumnsCombo.getSelectedIndex());
                 microPdf417.setContent(dataInput);
                 return microPdf417;
             case AZTEC:

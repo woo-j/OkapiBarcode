@@ -49,6 +49,7 @@ import uk.org.okapibarcode.backend.DataBarLimited;
 import uk.org.okapibarcode.backend.DataMatrix;
 import uk.org.okapibarcode.backend.Ean;
 import uk.org.okapibarcode.backend.GridMatrix;
+import uk.org.okapibarcode.backend.HumanReadableLocation;
 import uk.org.okapibarcode.backend.JapanPost;
 import uk.org.okapibarcode.backend.KixCode;
 import uk.org.okapibarcode.backend.KoreaPost;
@@ -73,8 +74,6 @@ import uk.org.okapibarcode.backend.UspsPackage;
 import uk.org.okapibarcode.output.Java2DRenderer;
 import uk.org.okapibarcode.output.PostScriptRenderer;
 import uk.org.okapibarcode.output.SvgRenderer;
-
-import uk.org.okapibarcode.backend.HumanReadableLocation;
 /**
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
@@ -364,7 +363,7 @@ public class MakeBarcode {
                         pdf417.setMode(Pdf417.Mode.TRUNCATED);
                     }
                     pdf417.setPreferredEccLevel(settings.getSymbolECC() - 1);
-                    pdf417.setNumberOfColumns(settings.getSymbolColumns());
+                    pdf417.setDataColumns(settings.getSymbolColumns());
                     if (settings.isReaderInit()) {
                         pdf417.setReaderInit();
                     }
@@ -545,7 +544,7 @@ public class MakeBarcode {
                     if (settings.isReaderInit()) {
                         microPdf417.setReaderInit();
                     }
-                    microPdf417.setNumberOfColumns(settings.getSymbolColumns());
+                    microPdf417.setDataColumns(settings.getSymbolColumns());
                     microPdf417.setContent(dataInput);
                     symbol = microPdf417;
                     break;
@@ -818,7 +817,7 @@ public class MakeBarcode {
                             (symbol.getHeight() * magnification) + (2 * borderSize), BufferedImage.TYPE_INT_RGB);
                     Graphics2D g2d = image.createGraphics();
                     g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    
+
                     //FIXME: Setting background colour should be done in Java2DRenderer()
                     g2d.setColor(paper);
                     g2d.fillRect(0, 0, (symbol.getWidth() * magnification) + (2 * borderSize),

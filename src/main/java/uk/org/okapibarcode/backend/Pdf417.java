@@ -48,7 +48,8 @@ public class Pdf417 extends Symbol {
     private int codeWordCount;
     private Mode symbolMode = Mode.NORMAL;
     private int[] inputData;
-    private int selectedSymbolWidth;
+    private Integer columns;
+    private Integer rows;
     private int preferredEccLevel = -1;
 
     private static final int[] COEFRS = {
@@ -382,24 +383,24 @@ public class Pdf417 extends Symbol {
     };
 
     private static final int[] MICRO_AUTOSIZE = {
-        4, 6, 7, 8, 10, 12, 13, 14, 16, 18, 19, 20, 24, 29, 30, 33, 34, 37, 39, 46, 54, 58, 70, 72, 82, 90, 108, 126,
-        1, 14, 2, 7, 3, 25, 8, 16, 5, 17, 9, 6, 10, 11, 28, 12, 19, 13, 29, 20, 30, 21, 22, 31, 23, 32, 33, 34
+        4, 6,  7, 8, 10, 12, 13, 14, 16, 18, 19, 20, 24, 29, 30, 33, 34, 37, 39, 46, 54, 58, 70, 72, 82, 90, 108, 126, // max codeword counts
+        1, 14, 2, 7, 3,  25, 8,  16, 5,  17, 9,  6,  10, 11, 28, 12, 19, 13, 29, 20, 30, 21, 22, 31, 23, 32, 33,  34   // corresponding variant
     };
 
     /* Rows, columns, error codewords, k-offset of valid MicroPDF417 sizes from ISO/IEC 24728:2006 */
     private static final int[] MICRO_VARIANTS = {
-        1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
-        11, 14, 17, 20, 24, 28, 8, 11, 14, 17, 20, 23, 26, 6, 8, 10, 12, 15, 20, 26, 32, 38, 44, 4, 6, 8, 10, 12, 15, 20, 26, 32, 38, 44,
-        7, 7, 7, 8, 8, 8, 8, 9, 9, 10, 11, 13, 15, 12, 14, 16, 18, 21, 26, 32, 38, 44, 50, 8, 12, 14, 16, 18, 21, 26, 32, 38, 44, 50,
-        0, 0, 0, 7, 7, 7, 7, 15, 15, 24, 34, 57, 84, 45, 70, 99, 115, 133, 154, 180, 212, 250, 294, 7, 45, 70, 99, 115, 133, 154, 180, 212, 250, 294
+        1,  1,  1,  1,  1,  1,  2, 2,  2,  2,  2,  2,  2,  3,  3,  3,  3,   3,   3,   3,   3,   3,   3,   4, 4,  4,  4,  4,   4,   4,   4,   4,   4,   4,  // columns
+        11, 14, 17, 20, 24, 28, 8, 11, 14, 17, 20, 23, 26, 6,  8,  10, 12,  15,  20,  26,  32,  38,  44,  4, 6,  8,  10, 12,  15,  20,  26,  32,  38,  44, // rows
+        7,  7,  7,  8,  8,  8,  8, 9,  9,  10, 11, 13, 15, 12, 14, 16, 18,  21,  26,  32,  38,  44,  50,  8, 12, 14, 16, 18,  21,  26,  32,  38,  44,  50, // k (EC codewords)
+        0,  0,  0,  7,  7,  7,  7, 15, 15, 24, 34, 57, 84, 45, 70, 99, 115, 133, 154, 180, 212, 250, 294, 7, 45, 70, 99, 115, 133, 154, 180, 212, 250, 294 // offset
     };
 
     /* Following is Left RAP, Centre RAP, Right RAP and Start Cluster from ISO/IEC 24728:2006 tables 10, 11 and 12 */
     private static final int[] RAP_TABLE = {
-        1, 8, 36, 19, 9, 25, 1, 1, 8, 36, 19, 9, 27, 1, 7, 15, 25, 37, 1, 1, 21, 15, 1, 47, 1, 7, 15, 25, 37, 1, 1, 21, 15, 1,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 7, 15, 25, 37, 17, 9, 29, 31, 25, 19, 1, 7, 15, 25, 37, 17, 9, 29, 31, 25,
-        9, 8, 36, 19, 17, 33, 1, 9, 8, 36, 19, 17, 35, 1, 7, 15, 25, 37, 33, 17, 37, 47, 49, 43, 1, 7, 15, 25, 37, 33, 17, 37, 47, 49,
-        0, 3, 6, 0, 6, 0, 0, 0, 3, 6, 0, 6, 6, 0, 0, 6, 0, 0, 0, 0, 6, 6, 0, 3, 0, 0, 6, 0, 0, 0, 0, 6, 6, 0
+        1, 8, 36, 19, 9,  25, 1, 1, 8, 36, 19, 9,  27, 1, 7, 15, 25, 37, 1,  1,  21, 15, 1,  47, 1, 7, 15, 25, 37, 1,  1,  21, 15, 1,  // left RAP
+        0, 0, 0,  0,  0,  0,  0, 0, 0, 0,  0,  0,  0,  1, 7, 15, 25, 37, 17, 9,  29, 31, 25, 19, 1, 7, 15, 25, 37, 17, 9,  29, 31, 25, // centre RAP
+        9, 8, 36, 19, 17, 33, 1, 9, 8, 36, 19, 17, 35, 1, 7, 15, 25, 37, 33, 17, 37, 47, 49, 43, 1, 7, 15, 25, 37, 33, 17, 37, 47, 49, // right RAP
+        0, 3, 6,  0,  6,  0,  0, 0, 3, 6,  0,  6,  6,  0, 0, 6,  0,  0,  0,  0,  6,  6,  0,  3,  0, 0, 6,  0,  0,  0,  0,  6,  6,  0   // start cluster
     };
 
     /* Left and Right Row Address Pattern from Table 2 */
@@ -491,7 +492,7 @@ public class Pdf417 extends Symbol {
      * Creates a new PDF417 symbol instance.
      */
     public Pdf417() {
-        this.default_height = 3;
+        setBarHeight(3);
     }
 
     /**
@@ -509,10 +510,22 @@ public class Pdf417 extends Symbol {
      * of data codewords. Valid values are 1-30 for PDF417 and 1-4
      * for MicroPDF417.
      *
-     * @param columns the number of columns in the symbol
+     * @param columns the number of data columns in the symbol
      */
-    public void setNumberOfColumns(int columns) {
-        selectedSymbolWidth = columns;
+    public void setDataColumns(int columns) {
+        this.columns = columns;
+    }
+
+    /**
+     * Sets the height of the symbol by specifying the number of rows
+     * of data codewords. Valid values are 3-90 for PDF417 and 4-44
+     * for MicroPDF417. This attribute is ignored when using
+     * {@link Mode#MICRO micro} mode.
+     *
+     * @param rows the number of rows in the symbol
+     */
+    public void setRows(int rows) {
+        this.rows = rows;
     }
 
     /**
@@ -540,35 +553,36 @@ public class Pdf417 extends Symbol {
 
     @Override
     public boolean encode() {
-        boolean retval = false;
-        int i;
-        int sourceLength = content.length();
 
         eciProcess();
 
+        int sourceLength = content.length();
         inputData = new int[sourceLength];
-        for(i = 0; i < sourceLength; i++) {
+        for (int i = 0; i < sourceLength; i++) {
             inputData[i] = inputBytes[i] & 0xFF;
         }
 
-        switch(symbolMode) {
+        boolean ok;
+        switch (symbolMode) {
+            case MICRO:
+                ok = processMicroPdf417();
+                break;
             case NORMAL:
             case TRUNCATED:
-                retval = pdf417Normal();
-                break;
-            case MICRO:
-                retval = micro_pdf417();
+            default:
+                ok = processPdf417();
                 break;
         }
 
-        if(retval == true) {
+        if (ok) {
             plotSymbol();
         }
-        return retval;
+
+        return ok;
     }
 
-    private boolean pdf417Normal() {
-        int i, k, j, blockCount, longueur, loop, offset;
+    private boolean processPdf417() {
+        int i, j, blockCount, loop, offset;
         int[] mccorrection = new int[520];
         int total;
         int c1, c2, c3;
@@ -614,7 +628,7 @@ public class Pdf417 extends Symbol {
             }
         }
 
-        pdfsmooth();
+        pdfSmooth();
 
 //        if (debug) {
 //            System.out.printf("Initial block pattern:\n");
@@ -674,19 +688,21 @@ public class Pdf417 extends Symbol {
 
         for (i = 0; i < blockIndex; i++) {
             switch (blockType[i]) {
-            case TEX:
-                /* text mode */
-                boolean firstBlock = (i == 0);
-                textprocess(blockCount, blockLength[i], firstBlock);
-                break;
-            case BYT:
-                /* octet stream mode */
-                byteprocess(blockCount, blockLength[i]);
-                break;
-            case NUM:
-                /* numeric mode */
-                numbprocess(blockCount, blockLength[i]);
-                break;
+                case TEX:
+                    /* text mode */
+                    boolean firstBlock = (i == 0);
+                    processText(blockCount, blockLength[i], firstBlock);
+                    break;
+                case BYT:
+                    /* octet stream mode */
+                    processBytes(blockCount, blockLength[i]);
+                    break;
+                case NUM:
+                    /* numeric mode */
+                    processNumbers(blockCount, blockLength[i]);
+                    break;
+                default:
+                    throw new OkapiException("Unknown block type: " + blockType[i]);
             }
             blockCount = blockCount + blockLength[i];
         }
@@ -716,56 +732,58 @@ public class Pdf417 extends Symbol {
             }
         }
 
-        k = 1;
-        for (loop = 1; loop <= (selectedECCLevel + 1); loop++) {
-            k *= 2;
-        }
-        longueur = codeWordCount;
+        int k = 1 << (selectedECCLevel + 1); // error correction codeword count
 
-        if (selectedSymbolWidth > 30) {
-            selectedSymbolWidth = 30;
-        }
-        if (selectedSymbolWidth < 1) {
-            selectedSymbolWidth = (int)(0.5 + Math.sqrt((longueur + k) / 3.0));
-        }
-        if (((longueur + k) / selectedSymbolWidth) > 90) {
-            /* stop the symbol from becoming too high */
-            selectedSymbolWidth++;
-        }
-
-        if (longueur + k > 928) {
-            /* Enforce maximum codeword limit */
-            error_msg = "Input data too big";
+        int totalCodeWordCount = codeWordCount + k + 1;
+        if (totalCodeWordCount > 929) {
+            error_msg = "Input data too big (" + totalCodeWordCount + " codewords)";
             return false;
         }
 
-        if (((longueur + k) / selectedSymbolWidth) > 90) {
-            error_msg = "Resultant symbol is too wide";
+        if (!validateRows(3, 90) || !validateColumns(1, 30)) {
             return false;
         }
 
-        /* Padding calculation */
-        longueur = codeWordCount + 1 + k;
-        i = 0;
-        if ((longueur / selectedSymbolWidth) < 3) {
-            i = (selectedSymbolWidth * 3) - longueur; /* A bar code must have at least three rows */
+        if (columns != null) {
+            if (rows != null) {
+                // user specified both columns and rows; make sure the data fits
+                if (columns * rows < totalCodeWordCount) {
+                    error_msg = "Too few rows (" + rows + ") and columns (" + columns + ") to hold codewords (" + totalCodeWordCount + ")";
+                    return false;
+                }
+            } else {
+                // user only specified column count; figure out row count
+                rows = (int) Math.ceil(totalCodeWordCount / (double) columns);
+            }
         } else {
-            if ((longueur % selectedSymbolWidth) > 0) {
-                i = selectedSymbolWidth - (longueur % selectedSymbolWidth);
+            if (rows != null) {
+                // user only specified row count; figure out column count
+                columns = (int) Math.ceil(totalCodeWordCount / (double) rows);
+            } else {
+                // user didn't specify columns or rows; figure both out
+                columns = (int) (0.5 + Math.sqrt((totalCodeWordCount - 1) / 3.0));
+                rows = (int) Math.ceil(totalCodeWordCount / (double) columns);
             }
         }
-        /* We add the padding */
-        while (i > 0) {
+
+        if (!validateRows(3, 90) || !validateColumns(1, 30)) {
+            return false;
+        }
+
+        /* add the padding */
+        int paddingCount = (columns * rows) - codeWordCount - k - 1;
+        while (paddingCount > 0) {
             codeWords[codeWordCount] = 900;
             codeWordCount++;
-            i--;
+            paddingCount--;
         }
-        /* we add the length descriptor */
+
+        /* add the length descriptor */
         for (i = codeWordCount; i > 0; i--) {
             codeWords[i] = codeWords[i - 1];
         }
-        codeWords[0] = codeWordCount + 1;
         codeWordCount++;
+        codeWords[0] = codeWordCount;
 
         /* 796 - we now take care of the Reed Solomon codes */
         switch (selectedECCLevel) {
@@ -798,12 +816,11 @@ public class Pdf417 extends Symbol {
             break;
         }
 
-        longueur = codeWordCount;
         for (loop = 0; loop < 520; loop++) {
             mccorrection[loop] = 0;
         }
 
-        for (i = 0; i < longueur; i++) {
+        for (i = 0; i < codeWordCount; i++) {
             total = (codeWords[i] + mccorrection[k - 1]) % 929;
             for (j = k - 1; j > 0; j--) {
                 mccorrection[j] = (mccorrection[j - 1] + 929 - (total * COEFRS[offset + j]) % 929) % 929;
@@ -811,7 +828,7 @@ public class Pdf417 extends Symbol {
             mccorrection[0] = (929 - (total * COEFRS[offset + j]) % 929) % 929;
         }
 
-        encodeInfo += "Data Codewords: " + longueur + "\n";
+        encodeInfo += "Data Codewords: " + codeWordCount + "\n";
         encodeInfo += "ECC Codewords: " + k + "\n";
 
         /* we add these codes to the string */
@@ -828,51 +845,42 @@ public class Pdf417 extends Symbol {
 //        }
 
         /* 818 - The CW string is finished */
-        c1 = (codeWordCount / selectedSymbolWidth - 1) / 3;
-        c2 = selectedECCLevel * 3 + (codeWordCount / selectedSymbolWidth - 1) % 3;
-        c3 = selectedSymbolWidth - 1;
+        c1 = (rows - 1) / 3;
+        c2 = (selectedECCLevel * 3) + (rows - 1) % 3;
+        c3 = columns - 1;
 
         readable = "";
-        pattern = new String[codeWordCount / selectedSymbolWidth];
-        row_count = codeWordCount / selectedSymbolWidth;
-        row_height = new int[codeWordCount / selectedSymbolWidth];
-
-        encodeInfo += "Grid Size: " + selectedSymbolWidth + " X " + row_count + "\n";
+        row_count = rows;
+        pattern = new String[rows];
+        row_height = new int[rows];
+        encodeInfo += "Grid Size: " + columns + " X " + rows + "\n";
 
         /* we now encode each row */
-        for (i = 0; i <= (codeWordCount / selectedSymbolWidth) - 1; i++) {
-            for (j = 0; j < selectedSymbolWidth; j++) {
-                dummy[j + 1] = codeWords[i * selectedSymbolWidth + j];
+        for (i = 0; i < rows; i++) {
+            for (j = 0; j < columns; j++) {
+                dummy[j + 1] = codeWords[i * columns + j];
             }
             k = (i / 3) * 30;
             switch (i % 3) {
-            case 0:
-                dummy[0] = k + c1;
-                dummy[selectedSymbolWidth + 1] = k + c3;
-                break;
-            case 1:
-                dummy[0] = k + c2;
-                dummy[selectedSymbolWidth + 1] = k + c1;
-                break;
-            case 2:
-                dummy[0] = k + c3;
-                dummy[selectedSymbolWidth + 1] = k + c2;
-                break;
-            }
-            codebarre = "+*";
-            for (j = 0; j <= selectedSymbolWidth + 1; j++) {
-                switch (i % 3) {
+                case 0:
+                    offset = 0; // cluster 0
+                    dummy[0] = k + c1; // left row indicator
+                    dummy[columns + 1] = k + c3; // right row indicator
+                    break;
                 case 1:
-                    offset = 929; /* cluster(3) */
+                    offset = 929; // cluster 3
+                    dummy[0] = k + c2; // left row indicator
+                    dummy[columns + 1] = k + c1; // right row indicator
                     break;
                 case 2:
-                    offset = 1858; /* cluster(6) */
+                    offset = 1858; // cluster 6
+                    dummy[0] = k + c3; // left row indicator
+                    dummy[columns + 1] = k + c2; // right row indicator
                     break;
-                default:
-                    offset = 0; /* cluster(0) */
-                    break;
-                }
-                if (!((symbolMode == Mode.TRUNCATED) && (j > selectedSymbolWidth))) {
+            }
+            codebarre = "+*";
+            for (j = 0; j <= columns + 1; j++) {
+                if (!(symbolMode == Mode.TRUNCATED && j > columns)) {
                     codebarre += CODAGEMC[offset + dummy[j]];
                     codebarre += "*";
                 }
@@ -880,23 +888,21 @@ public class Pdf417 extends Symbol {
             if(symbolMode != Mode.TRUNCATED) {
                 codebarre += "-";
             }
-
             bin = "";
             for (j = 0; j < codebarre.length(); j++) {
                 bin += PDF_TTF[positionOf(codebarre.charAt(j), BR_SET)];
             }
-
             pattern[i] = bin2pat(bin);
             row_height[i] = default_height;
         }
         return true;
     }
 
-    private boolean micro_pdf417() { /* like PDF417 only much smaller! */
+    private boolean processMicroPdf417() { /* like PDF417 only much smaller! */
 
         int i, k, j, blockCount, longueur, offset;
         int total;
-        int variant, LeftRAPStart, CentreRAPStart, RightRAPStart, StartCluster;
+        int LeftRAPStart, CentreRAPStart, RightRAPStart, StartCluster;
         int LeftRAP, CentreRAP, RightRAP, Cluster, flip, loop, rows;
         String codebarre;
         int[] dummy = new int[5];
@@ -944,7 +950,7 @@ public class Pdf417 extends Symbol {
             }
         }
 
-        pdfsmooth();
+        pdfSmooth();
 
 //        if (debug) {
 //            System.out.printf("Initial mapping:\n");
@@ -1004,28 +1010,21 @@ public class Pdf417 extends Symbol {
         for (i = 0; i < blockIndex; i++) {
             switch (blockType[i]) {
                 case TEX: /* 547 - text mode */
-                    textprocess(blockCount, blockLength[i], false);
+                    processText(blockCount, blockLength[i], false);
                     break;
                 case BYT: /* 670 - octet stream mode */
-                    byteprocess(blockCount, blockLength[i]);
+                    processBytes(blockCount, blockLength[i]);
                     break;
                 case NUM: /* 712 - numeric mode */
-                    numbprocess(blockCount, blockLength[i]);
+                    processNumbers(blockCount, blockLength[i]);
                     break;
+                default:
+                    throw new OkapiException("Unknown block type: " + blockType[i]);
             }
             blockCount = blockCount + blockLength[i];
         }
 
         /* This is where it all changes! */
-
-        if (codeWordCount > 126) {
-            error_msg = "Input data too long";
-            return false;
-        }
-
-        if ((selectedSymbolWidth > 4) || (selectedSymbolWidth < 0)) {
-            selectedSymbolWidth = 0;
-        }
 
         encodeInfo += "Codewords: ";
         for (i = 0; i < codeWordCount; i++) {
@@ -1033,151 +1032,45 @@ public class Pdf417 extends Symbol {
         }
         encodeInfo += "\n";
 
+        if (!validateRows(4, 44) || !validateColumns(1, 4)) {
+            return false;
+        }
+
+        if (columns != null) {
+            int max;
+            switch (columns) {
+                case 1:
+                    max = 20;
+                    break;
+                case 2:
+                    max = 37;
+                    break;
+                case 3:
+                    max = 82;
+                    break;
+                case 4:
+                    max = 126;
+                    break;
+                default:
+                    throw new OkapiException("Invalid column count: " + columns);
+            }
+            if (codeWordCount > max) {
+                error_msg = "Too few columns (" + columns + ") to hold data codewords (" + codeWordCount + ")";
+                return false;
+            }
+        }
+
         /* Now figure out which variant of the symbol to use and load values accordingly */
 
-        variant = 0;
-
-        if ((selectedSymbolWidth == 1) && (codeWordCount > 20)) {
-            /* the user specified 1 column but the data doesn't fit - go to automatic */
-            selectedSymbolWidth = 0;
-        }
-
-        if ((selectedSymbolWidth == 2) && (codeWordCount > 37)) {
-            /* the user specified 2 columns but the data doesn't fit - go to automatic */
-            selectedSymbolWidth = 0;
-        }
-
-        if ((selectedSymbolWidth == 3) && (codeWordCount > 82)) {
-            /* the user specified 3 columns but the data doesn't fit - go to automatic */
-            selectedSymbolWidth = 0;
-        }
-
-        if (selectedSymbolWidth == 1) {
-            /* the user specified 1 column and the data does fit */
-            variant = 6;
-            if (codeWordCount <= 16) {
-                variant = 5;
-            }
-            if (codeWordCount <= 12) {
-                variant = 4;
-            }
-            if (codeWordCount <= 10) {
-                variant = 3;
-            }
-            if (codeWordCount <= 7) {
-                variant = 2;
-            }
-            if (codeWordCount <= 4) {
-                variant = 1;
-            }
-        }
-
-        if (selectedSymbolWidth == 2) {
-            /* the user specified 2 columns and the data does fit */
-            variant = 13;
-            if (codeWordCount <= 33) {
-                variant = 12;
-            }
-            if (codeWordCount <= 29) {
-                variant = 11;
-            }
-            if (codeWordCount <= 24) {
-                variant = 10;
-            }
-            if (codeWordCount <= 19) {
-                variant = 9;
-            }
-            if (codeWordCount <= 13) {
-                variant = 8;
-            }
-            if (codeWordCount <= 8) {
-                variant = 7;
-            }
-        }
-
-        if (selectedSymbolWidth == 3) {
-            /* the user specified 3 columns and the data does fit */
-            variant = 23;
-            if (codeWordCount <= 70) {
-                variant = 22;
-            }
-            if (codeWordCount <= 58) {
-                variant = 21;
-            }
-            if (codeWordCount <= 46) {
-                variant = 20;
-            }
-            if (codeWordCount <= 34) {
-                variant = 19;
-            }
-            if (codeWordCount <= 24) {
-                variant = 18;
-            }
-            if (codeWordCount <= 18) {
-                variant = 17;
-            }
-            if (codeWordCount <= 14) {
-                variant = 16;
-            }
-            if (codeWordCount <= 10) {
-                variant = 15;
-            }
-            if (codeWordCount <= 6) {
-                variant = 14;
-            }
-        }
-
-        if (selectedSymbolWidth == 4) {
-            /* the user specified 4 columns and the data does fit */
-            variant = 34;
-            if (codeWordCount <= 108) {
-                variant = 33;
-            }
-            if (codeWordCount <= 90) {
-                variant = 32;
-            }
-            if (codeWordCount <= 72) {
-                variant = 31;
-            }
-            if (codeWordCount <= 54) {
-                variant = 30;
-            }
-            if (codeWordCount <= 39) {
-                variant = 29;
-            }
-            if (codeWordCount <= 30) {
-                variant = 28;
-            }
-            if (codeWordCount <= 24) {
-                variant = 27;
-            }
-            if (codeWordCount <= 18) {
-                variant = 26;
-            }
-            if (codeWordCount <= 12) {
-                variant = 25;
-            }
-            if (codeWordCount <= 8) {
-                variant = 24;
-            }
-        }
-
-        if (variant == 0) {
-            /* Okapi can choose automatically from all available variations */
-            for (i = 27; i >= 0; i--) {
-
-                if (MICRO_AUTOSIZE[i] >= codeWordCount) {
-                    variant = MICRO_AUTOSIZE[i + 28];
-                }
-            }
-        }
+        int variant = getMicroPdf417Variant(columns, codeWordCount);
 
         /* Now we have the variant we can load the data */
+
         variant--;
-        selectedSymbolWidth = MICRO_VARIANTS[variant]; /* columns */
+        columns = MICRO_VARIANTS[variant]; /* columns */
         rows = MICRO_VARIANTS[variant + 34]; /* rows */
         k = MICRO_VARIANTS[variant + 68]; /* number of EC CWs */
-        longueur = (selectedSymbolWidth * rows) - k; /* number of non-EC CWs */
+        longueur = (columns * rows) - k; /* number of non-EC CWs */
         i = longueur - codeWordCount; /* amount of padding required */
         offset = MICRO_VARIANTS[variant + 102]; /* coefficient offset */
 
@@ -1252,7 +1145,7 @@ public class Pdf417 extends Symbol {
         row_count = rows;
         row_height = new int[rows];
 
-        encodeInfo += "Grid Size: " + selectedSymbolWidth + " X " + row_count + "\n";
+        encodeInfo += "Grid Size: " + columns + " X " + row_count + "\n";
 
 //        if (debug)
 //            System.out.printf("\nInternal row representation:\n");
@@ -1264,8 +1157,8 @@ public class Pdf417 extends Symbol {
             for (j = 0; j < 5; j++) {
                 dummy[j] = 0;
             }
-            for (j = 0; j < selectedSymbolWidth; j++) {
-                dummy[j + 1] = codeWords[i * selectedSymbolWidth + j];
+            for (j = 0; j < columns; j++) {
+                dummy[j + 1] = codeWords[i * columns + j];
 //                if (debug)
 //                    System.out.printf("[%d] ", dummy[j + 1]);
             }
@@ -1275,23 +1168,23 @@ public class Pdf417 extends Symbol {
             codebarre += "1";
             codebarre += CODAGEMC[offset + dummy[1]];
             codebarre += "1";
-            if (selectedSymbolWidth == 3) {
+            if (columns == 3) {
                 codebarre += RAPC[CentreRAP];
             }
-            if (selectedSymbolWidth >= 2) {
+            if (columns >= 2) {
                 codebarre += "1";
                 codebarre += CODAGEMC[offset + dummy[2]];
                 codebarre += "1";
             }
-            if (selectedSymbolWidth == 4) {
+            if (columns == 4) {
                 codebarre += RAPC[CentreRAP];
             }
-            if (selectedSymbolWidth >= 3) {
+            if (columns >= 3) {
                 codebarre += "1";
                 codebarre += CODAGEMC[offset + dummy[3]];
                 codebarre += "1";
             }
-            if (selectedSymbolWidth == 4) {
+            if (columns == 4) {
                 codebarre += "1";
                 codebarre += CODAGEMC[offset + dummy[4]];
                 codebarre += "1";
@@ -1350,19 +1243,135 @@ public class Pdf417 extends Symbol {
         return true;
     }
 
-    private EncodingMode chooseMode(int codeascii) {
-        EncodingMode currentEncodingMode = EncodingMode.BYT;
-        if ((codeascii == '\t') || (codeascii == '\n') || (codeascii == '\r') || ((codeascii >= ' ') && (codeascii <= '~'))) {
-            currentEncodingMode = EncodingMode.TEX;
+    private boolean validateRows(int min, int max) {
+        if (rows != null) {
+            if (rows < min) {
+                error_msg = "Too few rows (" + rows + ")";
+                return false;
+            } else if (rows > max) {
+                error_msg = "Too many rows (" + rows + ")";
+                return false;
+            }
         }
-        if ((codeascii >= '0') && (codeascii <= '9')) {
-            currentEncodingMode = EncodingMode.NUM;
-        }
-
-        return currentEncodingMode;
+        return true;
     }
 
-    void pdfsmooth() {
+    private boolean validateColumns(int min, int max) {
+        if (columns != null) {
+            if (columns < min) {
+                error_msg = "Too few columns (" + columns + ")";
+                return false;
+            } else if (columns > max) {
+                error_msg = "Too many columns (" + columns + ")";
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static EncodingMode chooseMode(int codeascii) {
+        if (codeascii >= '0' && codeascii <= '9') {
+            return EncodingMode.NUM;
+        } else if (codeascii == '\t' || codeascii == '\n' || codeascii == '\r' || (codeascii >= ' ' && codeascii <= '~')) {
+            return EncodingMode.TEX;
+        } else {
+            return EncodingMode.BYT;
+        }
+    }
+
+    private static int getMicroPdf417Variant(Integer columns, int codeWordCount) {
+        if (columns == null) {
+            // Okapi can choose automatically from all available variations
+            for (int i = 0; i < 28; i++) {
+                if (codeWordCount <= MICRO_AUTOSIZE[i]) {
+                    return MICRO_AUTOSIZE[i + 28];
+                }
+            }
+        } else if (columns == 1) {
+            // the user specified 1 column
+            if (codeWordCount <= 4) {
+                return 1;
+            } else if (codeWordCount <= 7) {
+                return 2;
+            } else if (codeWordCount <= 10) {
+                return 3;
+            } else if (codeWordCount <= 12) {
+                return 4;
+            } else if (codeWordCount <= 16) {
+                return 5;
+            } else {
+                return 6;
+            }
+        } else if (columns == 2) {
+            // the user specified 2 columns
+            if (codeWordCount <= 8) {
+                return 7;
+            } else if (codeWordCount <= 13) {
+                return 8;
+            } else if (codeWordCount <= 19) {
+                return 9;
+            } else if (codeWordCount <= 24) {
+                return 10;
+            } else if (codeWordCount <= 29) {
+                return 11;
+            } else if (codeWordCount <= 33) {
+                return 12;
+            } else {
+                return 13;
+            }
+        } else if (columns == 3) {
+            // the user specified 3 columns
+            if (codeWordCount <= 6) {
+                return 14;
+            } else if (codeWordCount <= 10) {
+                return 15;
+            } else if (codeWordCount <= 14) {
+                return 16;
+            } else if (codeWordCount <= 18) {
+                return 17;
+            } else if (codeWordCount <= 24) {
+                return 18;
+            } else if (codeWordCount <= 34) {
+                return 19;
+            } else if (codeWordCount <= 46) {
+                return 20;
+            } else if (codeWordCount <= 58) {
+                return 21;
+            } else if (codeWordCount <= 70) {
+                return 22;
+            } else {
+                return 23;
+            }
+        } else if (columns == 4) {
+            // the user specified 4 columns
+            if (codeWordCount <= 8) {
+                return 24;
+            } else if (codeWordCount <= 12) {
+                return 25;
+            } else if (codeWordCount <= 18) {
+                return 26;
+            } else if (codeWordCount <= 24) {
+                return 27;
+            } else if (codeWordCount <= 30) {
+                return 28;
+            } else if (codeWordCount <= 39) {
+                return 29;
+            } else if (codeWordCount <= 54) {
+                return 30;
+            } else if (codeWordCount <= 72) {
+                return 31;
+            } else if (codeWordCount <= 90) {
+                return 32;
+            } else if (codeWordCount <= 108) {
+                return 33;
+            } else {
+                return 34;
+            }
+        }
+        throw new OkapiException("Unable to determine MicroPDF417 variant");
+    }
+
+    void pdfSmooth() {
         int i, length;
         EncodingMode crnt, last, next;
 
@@ -1481,7 +1490,7 @@ public class Pdf417 extends Symbol {
         }
     }
 
-    private void textprocess(int start, int length, boolean skipLatch) {
+    private void processText(int start, int length, boolean skipLatch) {
         int j, blockIndext, curtable, wnet;
         int codeascii;
         int[] listet0 = new int[5000];
@@ -1690,7 +1699,7 @@ public class Pdf417 extends Symbol {
         }
     }
 
-    private void byteprocess(int start, int length) {
+    private void processBytes(int start, int length) {
         int len = 0;
         int chunkLen = 0;
         BigInteger mantisa;
@@ -1742,7 +1751,7 @@ public class Pdf417 extends Symbol {
         }
     }
 
-    private void numbprocess(int start, int length) {
+    private void processNumbers(int start, int length) {
         String t = "1";
         BigInteger tVal, dVal;
         int[] d = new int[16];

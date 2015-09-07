@@ -733,12 +733,7 @@ public class Pdf417 extends Symbol {
         }
 
         int k = 1 << (selectedECCLevel + 1); // error correction codeword count
-
-        int totalCodeWordCount = codeWordCount + k + 1;
-        if (totalCodeWordCount > 929) {
-            error_msg = "Input data too big (" + totalCodeWordCount + " codewords)";
-            return false;
-        }
+        int dataCodeWordCount = codeWordCount + k + 1; // not including padding
 
         if (!validateRows(3, 90) || !validateColumns(1, 30)) {
             return false;
@@ -747,22 +742,22 @@ public class Pdf417 extends Symbol {
         if (columns != null) {
             if (rows != null) {
                 // user specified both columns and rows; make sure the data fits
-                if (columns * rows < totalCodeWordCount) {
-                    error_msg = "Too few rows (" + rows + ") and columns (" + columns + ") to hold codewords (" + totalCodeWordCount + ")";
+                if (columns * rows < dataCodeWordCount) {
+                    error_msg = "Too few rows (" + rows + ") and columns (" + columns + ") to hold codewords (" + dataCodeWordCount + ")";
                     return false;
                 }
             } else {
                 // user only specified column count; figure out row count
-                rows = (int) Math.ceil(totalCodeWordCount / (double) columns);
+                rows = (int) Math.ceil(dataCodeWordCount / (double) columns);
             }
         } else {
             if (rows != null) {
                 // user only specified row count; figure out column count
-                columns = (int) Math.ceil(totalCodeWordCount / (double) rows);
+                columns = (int) Math.ceil(dataCodeWordCount / (double) rows);
             } else {
                 // user didn't specify columns or rows; figure both out
-                columns = (int) (0.5 + Math.sqrt((totalCodeWordCount - 1) / 3.0));
-                rows = (int) Math.ceil(totalCodeWordCount / (double) columns);
+                columns = (int) (0.5 + Math.sqrt((dataCodeWordCount - 1) / 3.0));
+                rows = (int) Math.ceil(dataCodeWordCount / (double) columns);
             }
         }
 
@@ -834,6 +829,12 @@ public class Pdf417 extends Symbol {
         /* we add these codes to the string */
         for (i = k - 1; i >= 0; i--) {
             codeWords[codeWordCount++] = mccorrection[i] != 0 ? 929 - mccorrection[i] : 0;
+        }
+
+        /* make sure total codeword count isn't too high */
+        if (codeWordCount > 929) {
+            error_msg = "Too many codewords required (" + codeWordCount + ", but max is 929)";
+            return false;
         }
 
 //        if (debug) {

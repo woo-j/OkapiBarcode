@@ -21,9 +21,9 @@ package uk.org.okapibarcode.backend;
  * According to BS EN 798:1996
  * <p>
  * Also known as NW-7, Monarch, ABC Codabar, USD-4, Ames Code and Code 27.
- * Codabar can encode any length string starting and ending with the letters 
- * A-D and containing between these letters the numbers 0-9, dash (-), dollar 
- * ($), colon (:), slash (/), full stop (.) or plus (+). No check digit is 
+ * Codabar can encode any length string starting and ending with the letters
+ * A-D and containing between these letters the numbers 0-9, dash (-), dollar
+ * ($), colon (:), slash (/), full stop (.) or plus (+). No check digit is
  * generated.
  *
  * @author <a href="mailto:jakel2006@me.com">Robert Elliott</a>
@@ -35,7 +35,7 @@ public class Codabar extends Symbol {
         "21212111", "11212121", "11221211", "12121121", "11121221", "11122211"};
 
     private char[] characterSet = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-        '-', '$', ':', '/', '+', '.', 'A', 'B', 'C', 'D'};
+        '-', '$', ':', '/', '.', '+', 'A', 'B', 'C', 'D'};
 
     @Override
     public boolean encode() {
@@ -47,17 +47,21 @@ public class Codabar extends Symbol {
         String horizontalSpacing = "";
 
         int l = content.length();
-        for (int i = 1; i < l; i++) {
+        for (int i = 0; i < l; i++) {
              horizontalSpacing += codabarTable[positionOf(content.charAt(i), characterSet)];
         }
 
         readable = content;
-        pattern = new String[1];
-        pattern[0] = horizontalSpacing;
+        pattern = new String[] { horizontalSpacing };
         row_count = 1;
-        row_height = new int[1];
-        row_height[0] = -1;
+        row_height = new int[] { -1 };
         plotSymbol();
         return true;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected int[] getCodewords() {
+        return getPatternAsCodewords(8);
     }
 }

@@ -41,6 +41,7 @@ import com.google.zxing.ReaderException;
 import com.google.zxing.Result;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.HybridBinarizer;
+import com.google.zxing.oned.CodaBarReader;
 import com.google.zxing.oned.Code93Reader;
 import com.google.zxing.oned.EAN13Reader;
 import com.google.zxing.oned.EAN8Reader;
@@ -199,7 +200,7 @@ public class SymbolTest {
             Map< DecodeHintType, Boolean > hints = Collections.singletonMap(DecodeHintType.PURE_BARCODE, Boolean.TRUE);
             Result result = zxingReader.decode(bitmap, hints);
             String zxingData = removeChecksum(result.getText(), symbol);
-            String okapiData = symbol.getContent();
+            String okapiData = removeStartStopChars(symbol.getContent(), symbol);
             assertEquals(okapiData, zxingData);
         }
     }
@@ -214,6 +215,8 @@ public class SymbolTest {
 
         if (symbol instanceof Code93) {
             return new Code93Reader();
+        } else if (symbol instanceof Codabar) {
+            return new CodaBarReader();
         } else if (symbol instanceof Ean) {
             Ean ean = (Ean) symbol;
             if (ean.getMode() == Ean.Mode.EAN8) {
@@ -249,6 +252,22 @@ public class SymbolTest {
     private static String removeChecksum(String s, Symbol symbol) {
         if (symbol instanceof Ean || symbol instanceof Upc) {
             return s.substring(0, s.length() - 1);
+        } else {
+            return s;
+        }
+    }
+
+    /**
+     * Removes the start/stop characters from the specified barcode content, according to the type of symbol that encoded the
+     * content.
+     *
+     * @param s the barcode content
+     * @param symbol the symbol which encoded the content
+     * @return the barcode content, without the start/stop characters
+     */
+    private static String removeStartStopChars(String s, Symbol symbol) {
+        if (symbol instanceof Codabar) {
+            return s.substring(1, s.length() - 1);
         } else {
             return s;
         }

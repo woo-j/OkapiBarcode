@@ -15,16 +15,17 @@
  */
 package uk.org.okapibarcode.backend;
 
-import java.awt.Rectangle;
+import java.awt.geom.Rectangle2D;
 import java.math.BigInteger;
+
 /**
  * USPS OneCode (also known as Intelligent Mail Barcode)
  * According to USPS-B-3200F
  * Specification at https://ribbs.usps.gov/intelligentmail_mailpieces/documents/tech_guides/SPUSPSG.pdf
  * <br>
- * OneCode is a fixed length (65-bar) symbol which combines routing and 
- * customer information in a single symbol. Input data consists of a 20 digit 
- * tracking code, followed by a dash (-), followed by a delivery point 
+ * OneCode is a fixed length (65-bar) symbol which combines routing and
+ * customer information in a single symbol. Input data consists of a 20 digit
+ * tracking code, followed by a dash (-), followed by a delivery point
  * zip-code which can be 0, 5, 9 or 11 digits in length.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
@@ -202,7 +203,7 @@ public class UspsOneCode extends Symbol {
         int[] characters = new int[10];
         boolean[] bar_map = new boolean[130];
         char c;
-        
+
         if (!content.matches("[0-9\u002D]+")) {
             error_msg = "Invalid characters in input data";
             return false;
@@ -396,7 +397,7 @@ public class UspsOneCode extends Symbol {
             }
             pattern[0] += c;
         }
-        
+
         encodeInfo += "Encoding: " + pattern[0] + "\n";
 
         plotSymbol();
@@ -443,7 +444,7 @@ public class UspsOneCode extends Symbol {
         int xBlock;
         int x, y, w, h;
 
-        rect.clear();
+        rectangles.clear();
         x = 0;
         w = 1;
         y = 0;
@@ -468,10 +469,10 @@ public class UspsOneCode extends Symbol {
                 break;
             }
 
-            Rectangle thisrect = new Rectangle(x, y, w, h);
-            rect.add(thisrect);
+            Rectangle2D.Double rect = new Rectangle2D.Double(x, y, w, h);
+            rectangles.add(rect);
 
-            x += 2.0;
+            x += 2;
         }
         symbol_width = pattern[0].length() * 3;
         symbol_height = 8;

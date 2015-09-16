@@ -15,7 +15,7 @@
  */
 package uk.org.okapibarcode.backend;
 
-import java.awt.Rectangle;
+import java.awt.geom.Rectangle2D;
 import java.io.UnsupportedEncodingException;
 
 /**
@@ -23,7 +23,7 @@ import java.io.UnsupportedEncodingException;
  * According to BS EN 12323:2005
  * <p>
  * Encodes using a stacked symbology based on Code 128. Supports encoding
- * of any 8-bit ISO 8859-1 (Latin-1) data with a maximum data capacity of 77 
+ * of any 8-bit ISO 8859-1 (Latin-1) data with a maximum data capacity of 77
  * alpha-numeric characters or 154 numerical digits.
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
@@ -92,7 +92,7 @@ public class Code16k extends Symbol {
             error_msg = "Invalid characters in input data";
             return false;
         }
-        
+
         try {
             inputBytes = content.getBytes("ISO8859_1");
         } catch (UnsupportedEncodingException e) {
@@ -752,7 +752,7 @@ public class Code16k extends Symbol {
         int x, y, w, h;
         boolean black;
 
-        rect.clear();
+        rectangles.clear();
         y = 1;
         h = 1;
         for (yBlock = 0; yBlock < row_count; yBlock++) {
@@ -767,9 +767,9 @@ public class Code16k extends Symbol {
                     } else {
                         h = row_height[yBlock];
                     }
-                    Rectangle thisrect = new Rectangle(x, y, w, h);
-                    if ((w != 0.0) && (h != 0.0)) {
-                        rect.add(thisrect);
+                    if (w != 0 && h != 0) {
+                        Rectangle2D.Double rect = new Rectangle2D.Double(x, y, w, h);
+                        rectangles.add(rect);
                     }
                     if ((x + w) > symbol_width) {
                         symbol_width = x + w;
@@ -785,18 +785,19 @@ public class Code16k extends Symbol {
             }
             /* Add bars between rows */
             if (yBlock != (row_count - 1)) {
-                Rectangle thisrect = new Rectangle(15, y - 1, (symbol_width - 15), 2);
-                rect.add(thisrect);
+                Rectangle2D.Double rect = new Rectangle2D.Double(15, y - 1, (symbol_width - 15), 2);
+                rectangles.add(rect);
             }
         }
+
         /* Add top and bottom binding bars */
-        Rectangle toprect = new Rectangle(0, 0, (symbol_width + 15), 2);
-        rect.add(toprect);
-        Rectangle botrect = new Rectangle(0, y - 1, (symbol_width + 15), 2);
-        rect.add(botrect);
-        symbol_width += 30.0;
-        symbol_height += 2.0;
-        
+        Rectangle2D.Double top = new Rectangle2D.Double(0, 0, (symbol_width + 15), 2);
+        rectangles.add(top);
+        Rectangle2D.Double bottom = new Rectangle2D.Double(0, y - 1, (symbol_width + 15), 2);
+        rectangles.add(bottom);
+        symbol_width += 30;
+        symbol_height += 2;
+
         mergeVerticalBlocks();
     }
 

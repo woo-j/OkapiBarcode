@@ -15,7 +15,7 @@
  */
 package uk.org.okapibarcode.backend;
 
-import java.awt.Rectangle;
+import java.awt.geom.Rectangle2D;
 import java.io.UnsupportedEncodingException;
 
 /**
@@ -84,7 +84,7 @@ public class CodablockF extends Symbol {
             error_msg = "Invalid characters in input data";
             return false;
         }
-        
+
         try {
             inputBytes = content.getBytes("ISO8859_1");
         } catch (UnsupportedEncodingException e) {
@@ -224,7 +224,7 @@ public class CodablockF extends Symbol {
 	/* Resolve the data into patterns and place in symbol structure */
         encodeInfo += "Encoding: ";
 	for(i = 0; i < rows_needed; i++) {
-            
+
             row_pattern = "";
             /* Start character */
             row_pattern += C128Table[103]; /* Always Start A */
@@ -816,7 +816,7 @@ public class CodablockF extends Symbol {
         int x, y, w, h;
         boolean black;
 
-        rect.clear();
+        rectangles.clear();
         y = 1;
         h = 1;
         for (yBlock = 0; yBlock < row_count; yBlock++) {
@@ -831,9 +831,9 @@ public class CodablockF extends Symbol {
                     } else {
                         h = row_height[yBlock];
                     }
-                    Rectangle thisrect = new Rectangle(x, y, w, h);
-                    if ((w != 0.0) && (h != 0.0)) {
-                        rect.add(thisrect);
+                    if (w != 0 && h != 0) {
+                        Rectangle2D.Double rect = new Rectangle2D.Double(x, y, w, h);
+                        rectangles.add(rect);
                     }
                     if ((x + w) > symbol_width) {
                         symbol_width = x + w;
@@ -849,17 +849,18 @@ public class CodablockF extends Symbol {
             }
             /* Add bars between rows */
             if (yBlock != (row_count - 1)) {
-                Rectangle thisrect = new Rectangle(11, y - 1, (symbol_width - 24), 2);
-                rect.add(thisrect);
+                Rectangle2D.Double rect = new Rectangle2D.Double(11, y - 1, (symbol_width - 24), 2);
+                rectangles.add(rect);
             }
         }
+
         /* Add top and bottom binding bars */
-        Rectangle toprect = new Rectangle(0, 0, symbol_width, 2);
-        rect.add(toprect);
-        Rectangle botrect = new Rectangle(0, y - 1, symbol_width, 2);
-        rect.add(botrect);
-        symbol_height += 2.0;
-        
+        Rectangle2D.Double top = new Rectangle2D.Double(0, 0, symbol_width, 2);
+        rectangles.add(top);
+        Rectangle2D.Double bottom = new Rectangle2D.Double(0, y - 1, symbol_width, 2);
+        rectangles.add(bottom);
+        symbol_height += 2;
+
         mergeVerticalBlocks();
     }
 }

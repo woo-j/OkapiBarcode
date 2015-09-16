@@ -15,7 +15,7 @@
  */
 package uk.org.okapibarcode.backend;
 
-import java.awt.Rectangle;
+import java.awt.geom.Rectangle2D;
 import java.util.Locale;
 /**
  * Implements the Japanese Postal Code symbology as used to encode adress
@@ -52,7 +52,7 @@ public class JapanPost extends Symbol {
             error_msg = "Invalid characters in data";
             return false;
         }
-        
+
         inter = "";
 
         for (i = 0;
@@ -117,7 +117,7 @@ public class JapanPost extends Symbol {
         int xBlock;
         int x, y, w, h;
 
-        rect.clear();
+        rectangles.clear();
         x = 0;
         w = 1;
         y = 0;
@@ -142,10 +142,10 @@ public class JapanPost extends Symbol {
                 break;
             }
 
-            Rectangle thisrect = new Rectangle(x, y, w, h);
-            rect.add(thisrect);
+            Rectangle2D.Double rect = new Rectangle2D.Double(x, y, w, h);
+            rectangles.add(rect);
 
-            x += 2.0;
+            x += 2;
         }
         symbol_width = pattern[0].length() * 3;
         symbol_height = 8;

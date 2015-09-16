@@ -15,7 +15,7 @@
  */
 package uk.org.okapibarcode.backend;
 
-import java.awt.Rectangle;
+import java.awt.geom.Rectangle2D;
 
 /**
  * USPS Intelligent Mail Package Barcode (IMpb)<br>
@@ -89,7 +89,7 @@ public class UspsPackage extends Symbol{
 
         return true;
     }
-    
+
     @Override
     protected void plotSymbol() {
         int xBlock;
@@ -99,8 +99,8 @@ public class UspsPackage extends Symbol{
         int yoffset = 15;
         String banner = "USPS TRACKING #";
 
-        rect.clear();
-        txt.clear();
+        rectangles.clear();
+        texts.clear();
         y = yoffset;
         h = 0;
         black = true;
@@ -113,9 +113,9 @@ public class UspsPackage extends Symbol{
                 } else {
                     h = row_height[0];
                 }
-                Rectangle thisrect = new Rectangle(x + offset, y, w, h);
-                if ((w != 0.0) && (h != 0.0)) {
-                    rect.add(thisrect);
+                if (w != 0 && h != 0) {
+                    Rectangle2D.Double rect = new Rectangle2D.Double(x + offset, y, w, h);
+                    rectangles.add(rect);
                 }
                 symbol_width = x + w + (2 * offset);
             }
@@ -123,15 +123,15 @@ public class UspsPackage extends Symbol{
             x += w;
         }
         symbol_height = h + (2 * yoffset);
-        
+
         // Add boundary bars
-        Rectangle topBar = new Rectangle(0, 0, symbol_width, 2);
-        Rectangle bottomBar = new Rectangle(0, symbol_height - 2, symbol_width, 2);
-        rect.add(topBar);
-        rect.add(bottomBar);
-        
+        Rectangle2D.Double topBar = new Rectangle2D.Double(0, 0, symbol_width, 2);
+        Rectangle2D.Double bottomBar = new Rectangle2D.Double(0, symbol_height - 2, symbol_width, 2);
+        rectangles.add(topBar);
+        rectangles.add(bottomBar);
+
         double centerX = getWidth() / 2;
-        txt.add(new TextBox(centerX, getHeight() - 6.0, readable));
-        txt.add(new TextBox(centerX, 12.0, banner));
+        texts.add(new TextBox(centerX, getHeight() - 6.0, readable));
+        texts.add(new TextBox(centerX, 12.0, banner));
     }
 }

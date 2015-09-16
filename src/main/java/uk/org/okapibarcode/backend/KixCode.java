@@ -15,7 +15,7 @@
  */
 package uk.org.okapibarcode.backend;
 
-import java.awt.Rectangle;
+import java.awt.geom.Rectangle2D;
 import java.util.Locale;
 
 /**
@@ -49,18 +49,18 @@ public class KixCode extends Symbol {
         int i;
 
         content = content.toUpperCase(Locale.ENGLISH);
-        
+
         if(!(content.matches("[0-9A-Z]+"))) {
             error_msg = "Invalid characters in data";
             return false;
         }
-        
+
         dest = "";
 
         for (i = 0; i < content.length(); i++) {
             dest += RoyalTable[positionOf(content.charAt(i), krSet)];
         }
-        
+
         encodeInfo += "Encoding: " + dest + "\n";
 
         readable = "";
@@ -78,7 +78,7 @@ public class KixCode extends Symbol {
         int xBlock;
         int x, y, w, h;
 
-        rect.clear();
+        rectangles.clear();
         x = 0;
         w = 1;
         y = 0;
@@ -103,10 +103,10 @@ public class KixCode extends Symbol {
                 break;
             }
 
-            Rectangle thisrect = new Rectangle(x, y, w, h);
-            rect.add(thisrect);
+            Rectangle2D.Double rect = new Rectangle2D.Double(x, y, w, h);
+            rectangles.add(rect);
 
-            x += 2.0;
+            x += 2;
         }
         symbol_width = pattern[0].length() * 3;
         symbol_height = 8;

@@ -18,7 +18,7 @@ package uk.org.okapibarcode.backend;
 import static uk.org.okapibarcode.backend.HumanReadableLocation.NONE;
 import static uk.org.okapibarcode.backend.HumanReadableLocation.TOP;
 
-import java.awt.Rectangle;
+import java.awt.geom.Rectangle2D;
 /**
  * Implements UPC bar code symbology
  * According to BS EN 797:1996
@@ -356,8 +356,8 @@ public class Upc extends Symbol {
         int compositeOffset = 0;
         int shortLongDiff = 5;
 
-        rect.clear();
-        txt.clear();
+        rectangles.clear();
+        texts.clear();
         black = true;
         x = 0;
         if (linkageFlag) {
@@ -404,8 +404,8 @@ public class Upc extends Symbol {
                         }
                     }
                 }
-                Rectangle thisrect = new Rectangle(x + 6, y + compositeOffset, w, h);
-                rect.add(thisrect);
+                Rectangle2D.Double rect = new Rectangle2D.Double(x + 6, y + compositeOffset, w, h);
+                rectangles.add(rect);
                 if ((x + w + 12) > symbol_width) {
                     symbol_width = x + w + 12;
                 }
@@ -413,21 +413,20 @@ public class Upc extends Symbol {
                 black = true;
             }
             x += pattern[0].charAt(xBlock) - '0';
-
         }
 
         if (linkageFlag) {
             // Add separator for composite symbology
             if (mode == Mode.UPCA) {
-                rect.add(new Rectangle(0 + 6, 0, 1, 2));
-                rect.add(new Rectangle(94 + 6, 0, 1, 2));
-                rect.add(new Rectangle(-1 + 6, 2, 1, 2));
-                rect.add(new Rectangle(95 + 6, 2, 1, 2));
+                rectangles.add(new Rectangle2D.Double(0 + 6, 0, 1, 2));
+                rectangles.add(new Rectangle2D.Double(94 + 6, 0, 1, 2));
+                rectangles.add(new Rectangle2D.Double(-1 + 6, 2, 1, 2));
+                rectangles.add(new Rectangle2D.Double(95 + 6, 2, 1, 2));
             } else { // UPCE
-                rect.add(new Rectangle(0 + 6, 0, 1, 2));
-                rect.add(new Rectangle(50 + 6, 0, 1, 2));
-                rect.add(new Rectangle(-1 + 6, 2, 1, 2));
-                rect.add(new Rectangle(51 + 6, 2, 1, 2));
+                rectangles.add(new Rectangle2D.Double(0 + 6, 0, 1, 2));
+                rectangles.add(new Rectangle2D.Double(50 + 6, 0, 1, 2));
+                rectangles.add(new Rectangle2D.Double(-1 + 6, 2, 1, 2));
+                rectangles.add(new Rectangle2D.Double(51 + 6, 2, 1, 2));
             }
         }
 
@@ -438,26 +437,26 @@ public class Upc extends Symbol {
             double baseline = getHeight() + fontSize - shortLongDiff + compositeOffset;
             double addOnBaseline = 6.0 + compositeOffset;
             if (mode == Mode.UPCA) {
-                txt.add(new TextBox(3, baseline, readable.substring(0, 1)));
-                txt.add(new TextBox(34, baseline, readable.substring(1, 6)));
-                txt.add(new TextBox(73, baseline, readable.substring(6, 11)));
-                txt.add(new TextBox(104, baseline, readable.substring(11, 12)));
+                texts.add(new TextBox(3, baseline, readable.substring(0, 1)));
+                texts.add(new TextBox(34, baseline, readable.substring(1, 6)));
+                texts.add(new TextBox(73, baseline, readable.substring(6, 11)));
+                texts.add(new TextBox(104, baseline, readable.substring(11, 12)));
                 if (useAddOn) {
                     if (addOnContent.length() == 2) {
-                        txt.add(new TextBox(118, addOnBaseline, addOnContent));
+                        texts.add(new TextBox(118, addOnBaseline, addOnContent));
                     } else {
-                        txt.add(new TextBox(133, addOnBaseline, addOnContent));
+                        texts.add(new TextBox(133, addOnBaseline, addOnContent));
                     }
                 }
             } else { // UPCE
-                txt.add(new TextBox(3, baseline, readable.substring(0, 1)));
-                txt.add(new TextBox(30, baseline, readable.substring(1, 7)));
-                txt.add(new TextBox(61, baseline, readable.substring(7, 8)));
+                texts.add(new TextBox(3, baseline, readable.substring(0, 1)));
+                texts.add(new TextBox(30, baseline, readable.substring(1, 7)));
+                texts.add(new TextBox(61, baseline, readable.substring(7, 8)));
                 if (useAddOn) {
                     if (addOnContent.length() == 2) {
-                        txt.add(new TextBox(75, addOnBaseline, addOnContent));
+                        texts.add(new TextBox(75, addOnBaseline, addOnContent));
                     } else {
-                        txt.add(new TextBox(90, addOnBaseline, addOnContent));
+                        texts.add(new TextBox(90, addOnBaseline, addOnContent));
                     }
                 }
             }

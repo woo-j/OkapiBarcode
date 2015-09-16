@@ -16,15 +16,15 @@
 
 package uk.org.okapibarcode.backend;
 
-import java.awt.Rectangle;
+import java.awt.geom.Rectangle2D;
 
 /**
  * Implements <a href="http://en.wikipedia.org/wiki/POSTNET">POSTNET</a> and
  * <a href="http://en.wikipedia.org/wiki/Postal_Alpha_Numeric_Encoding_Technique">PLANET</a>
  * bar code symbologies.
  * <br>
- * PostNet and PLANET both use numerical input data and include a modulo-10 
- * check digit. 
+ * PostNet and PLANET both use numerical input data and include a modulo-10
+ * check digit.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
@@ -101,7 +101,7 @@ public class Postnet extends Symbol {
         dest += PN_TABLE[check_digit];
 
         dest += "L";
-        encodeInfo += "Encoding: " + dest + "\n";        
+        encodeInfo += "Encoding: " + dest + "\n";
         readable = "";
         pattern = new String[1];
         pattern[0] = dest;
@@ -139,7 +139,7 @@ public class Postnet extends Symbol {
         dest += PL_TABLE[check_digit];
 
         dest += "L";
-        encodeInfo += "Encoding: " + dest + "\n";          
+        encodeInfo += "Encoding: " + dest + "\n";
         readable = "";
         pattern = new String[1];
         pattern[0] = dest;
@@ -154,7 +154,7 @@ public class Postnet extends Symbol {
         int xBlock;
         int x, y, w, h;
 
-        rect.clear();
+        rectangles.clear();
         x = 0;
         w = 1;
         for (xBlock = 0; xBlock < pattern[0].length(); xBlock++) {
@@ -166,10 +166,10 @@ public class Postnet extends Symbol {
                 h = 6;
             }
 
-            Rectangle thisrect = new Rectangle(x, y, w, h);
-            rect.add(thisrect);
+            Rectangle2D.Double rect = new Rectangle2D.Double(x, y, w, h);
+            rectangles.add(rect);
 
-            x += 3.0;
+            x += 3;
         }
         symbol_width = pattern[0].length() * 4;
         symbol_height = 12;

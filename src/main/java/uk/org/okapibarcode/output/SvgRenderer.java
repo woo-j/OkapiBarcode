@@ -17,8 +17,8 @@
 package uk.org.okapibarcode.output;
 
 import java.awt.Color;
-import java.awt.Rectangle;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -57,7 +57,6 @@ public class SvgRenderer implements SymbolRenderer {
      * @param margin the size of the additional margin to add around the bar code
      * @param paper the paper (background) color
      * @param ink the ink (foreground) color
-     * 
      */
     public SvgRenderer(OutputStream out, double magnification, int margin, Color paper, Color ink) {
         this.out = out;
@@ -107,8 +106,8 @@ public class SvgRenderer implements SymbolRenderer {
                   .append("\" fill=\"#").append(bgColour).append("\" />\n");
 
             // Rectangles
-            for (int i = 0; i < symbol.rect.size(); i++) {
-                Rectangle rect = symbol.rect.get(i);
+            for (int i = 0; i < symbol.rectangles.size(); i++) {
+                Rectangle2D.Double rect = symbol.rectangles.get(i);
                 writer.append("      <rect x=\"").append((rect.x * magnification) + margin)
                       .append("\" y=\"").append((rect.y * magnification) + margin)
                       .append("\" width=\"").append(rect.width * magnification)
@@ -117,8 +116,8 @@ public class SvgRenderer implements SymbolRenderer {
             }
 
             // Text
-            for (int i = 0; i < symbol.txt.size(); i++) {
-                TextBox text = symbol.txt.get(i);
+            for (int i = 0; i < symbol.texts.size(); i++) {
+                TextBox text = symbol.texts.get(i);
                 writer.append("      <text x=\"").append((text.x * magnification) + margin)
                       .append("\" y=\"").append((text.y * magnification) + margin)
                       .append("\" text-anchor=\"middle\"\n");
@@ -145,8 +144,8 @@ public class SvgRenderer implements SymbolRenderer {
             }
 
             // Hexagons
-            for (int i = 0; i < symbol.hex.size(); i++) {
-                Hexagon hexagon = symbol.hex.get(i);
+            for (int i = 0; i < symbol.hexagons.size(); i++) {
+                Hexagon hexagon = symbol.hexagons.get(i);
                 writer.append("      <path d=\"");
                 for (int j = 0; j < 6; j++) {
                     if (j == 0) {

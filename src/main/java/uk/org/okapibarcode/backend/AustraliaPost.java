@@ -16,11 +16,11 @@
 
 package uk.org.okapibarcode.backend;
 
-import java.awt.Rectangle;
+import java.awt.geom.Rectangle2D;
 
 /**
  * Implements the <a href="http://auspost.com.au/media/documents/a-guide-to-printing-the-4state-barcode-v31-mar2012.pdf">Australia Post 4-State barcode</a>.
- * 
+ *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class AustraliaPost extends Symbol{
@@ -63,9 +63,9 @@ public class AustraliaPost extends Symbol{
     }
 
     /**
-     * Specify encoding of Australia Post Standard Customer Barcode, 
+     * Specify encoding of Australia Post Standard Customer Barcode,
      * Customer Barcode 2 or Customer Barcode 3 (37-bar, 52-bar and 67-bar
-     * symbols) depending on input data length. Valid data characters are 0-9, 
+     * symbols) depending on input data length. Valid data characters are 0-9,
      * A-Z, a-z, space and hash (#). A Format Control Code (FCC) is added and
      * should not be included in the input data.
      * <p>
@@ -123,7 +123,7 @@ public class AustraliaPost extends Symbol{
     }
 
     /**
-     * Specify encoding of a Reply Paid version of the Australia Post 
+     * Specify encoding of a Reply Paid version of the Australia Post
      * 4-State Barcode (FCC 45) which requires an 8-digit DPID input.
      */
     public void setReplyMode() {
@@ -131,7 +131,7 @@ public class AustraliaPost extends Symbol{
     }
 
     /**
-     * Specify encoding of a Routing version of the Australia Post 4-State 
+     * Specify encoding of a Routing version of the Australia Post 4-State
      * Barcode (FCC 87) which requires an 8-digit DPID input.
      */
     public void setRouteMode() {
@@ -139,7 +139,7 @@ public class AustraliaPost extends Symbol{
     }
 
     /**
-     * Specify encoding of a Redirection version of the Australia Post 4-State 
+     * Specify encoding of a Redirection version of the Australia Post 4-State
      * Barcode (FCC 92) which requires an 8-digit DPID input.
      */
     public void setRedirectMode() {
@@ -289,7 +289,7 @@ public class AustraliaPost extends Symbol{
                     break;
                 case '3':
                     encodeInfo += "T";
-                    break;                    
+                    break;
             }
         }
         encodeInfo += "\n";
@@ -341,7 +341,7 @@ public class AustraliaPost extends Symbol{
         int xBlock;
         int x, y, w, h;
 
-        rect.clear();
+        rectangles.clear();
         x = 0;
         w = 1;
         y = 0;
@@ -366,10 +366,10 @@ public class AustraliaPost extends Symbol{
                     break;
             }
 
-            Rectangle thisrect = new Rectangle(x, y, w, h);
-            rect.add(thisrect);
+            Rectangle2D.Double rect = new Rectangle2D.Double(x, y, w, h);
+            rectangles.add(rect);
 
-            x += 2.0;
+            x += 2;
         }
         symbol_width = pattern[0].length() * 3;
         symbol_height = 8;

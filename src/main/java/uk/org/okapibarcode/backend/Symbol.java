@@ -18,9 +18,10 @@ package uk.org.okapibarcode.backend;
 import static uk.org.okapibarcode.backend.HumanReadableLocation.BOTTOM;
 import static uk.org.okapibarcode.backend.HumanReadableLocation.NONE;
 import static uk.org.okapibarcode.backend.HumanReadableLocation.TOP;
+import static uk.org.okapibarcode.util.Doubles.roughlyEqual;
 
-import java.awt.Rectangle;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 /**
@@ -58,9 +59,9 @@ public abstract class Symbol {
     }
 
     // TODO: These values to become accessible only to renderer
-    public ArrayList< Rectangle > rect = new ArrayList<>();
-    public ArrayList< TextBox > txt = new ArrayList<>();
-    public ArrayList< Hexagon > hex = new ArrayList<>();
+    public ArrayList< Rectangle2D.Double > rectangles = new ArrayList<>();
+    public ArrayList< TextBox > texts = new ArrayList<>();
+    public ArrayList< Hexagon > hexagons = new ArrayList<>();
     public ArrayList< Ellipse2D.Double > target = new ArrayList<>();
 
     public Symbol() {
@@ -210,7 +211,7 @@ public abstract class Symbol {
      * @return the height of the human-readable text
      */
     public int getHumanReadableHeight() {
-        if (txt.isEmpty()) {
+        if (texts.isEmpty()) {
             return 0;
         } else {
             return getTheoreticalHumanReadableHeight();
@@ -518,8 +519,8 @@ public abstract class Symbol {
         int x, y, w, h;
         boolean black;
 
-        rect.clear();
-        txt.clear();
+        rectangles.clear();
+        texts.clear();
 
         int baseY;
         if (humanReadableLocation == TOP) {
@@ -542,9 +543,9 @@ public abstract class Symbol {
                     } else {
                         h = row_height[yBlock];
                     }
-                    Rectangle thisrect = new Rectangle(x, y, w, h);
-                    if ((w != 0.0) && (h != 0.0)) {
-                        rect.add(thisrect);
+                    if (w != 0 && h != 0) {
+                        Rectangle2D.Double rect = new Rectangle2D.Double(x, y, w, h);
+                        rectangles.add(rect);
                     }
                     if ((x + w) > symbol_width) {
                         symbol_width = x + w;
@@ -569,7 +570,7 @@ public abstract class Symbol {
                 baseline = getHeight() + fontSize;
             }
             double centerX = getWidth() / 2;
-            txt.add(new TextBox(centerX, baseline, readable));
+            texts.add(new TextBox(centerX, baseline, readable));
         }
     }
 
@@ -579,20 +580,15 @@ public abstract class Symbol {
      * number of rectangles needed to describe a symbol.
      */
     protected void mergeVerticalBlocks() {
-        int i, j;
-        Rectangle firstRect;
-        Rectangle secondRect;
-
-        for(i = 0; i < rect.size() - 1; i++) {
-            for(j = i + 1; j < rect.size(); j++) {
-                firstRect = rect.get(i);
-                secondRect = rect.get(j);
-
-                if ((firstRect.x == secondRect.x) && (firstRect.width == secondRect.width)) {
-                    if ((firstRect.y + firstRect.height) == secondRect.y) {
+        for(int i = 0; i < rectangles.size() - 1; i++) {
+            for(int j = i + 1; j < rectangles.size(); j++) {
+                Rectangle2D.Double firstRect = rectangles.get(i);
+                Rectangle2D.Double secondRect = rectangles.get(j);
+                if (roughlyEqual(firstRect.x, secondRect.x) && roughlyEqual(firstRect.width, secondRect.width)) {
+                    if (roughlyEqual(firstRect.y + firstRect.height, secondRect.y)) {
                         firstRect.height += secondRect.height;
-                        rect.set(i, firstRect);
-                        rect.remove(j);
+                        rectangles.set(i, firstRect);
+                        rectangles.remove(j);
                     }
                 }
             }

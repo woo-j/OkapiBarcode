@@ -18,7 +18,7 @@ package uk.org.okapibarcode.backend;
 import static uk.org.okapibarcode.backend.HumanReadableLocation.NONE;
 import static uk.org.okapibarcode.backend.HumanReadableLocation.TOP;
 
-import java.awt.Rectangle;
+import java.awt.geom.Rectangle2D;
 
 /**
  * Implements the Code 2 of 5 family of barcode standards.
@@ -443,8 +443,8 @@ public class Code2Of5 extends Symbol {
 
         int xBlock;
 
-        rect.clear();
-        txt.clear();
+        rectangles.clear();
+        texts.clear();
 
         int baseY;
         if (humanReadableLocation == TOP) {
@@ -472,9 +472,9 @@ public class Code2Of5 extends Symbol {
                 } else {
                     h = row_height[0];
                 }
-                Rectangle thisrect = new Rectangle(x + offset, y, w, h);
-                if((w != 0.0) && (h != 0.0)) {
-                    rect.add(thisrect);
+                if(w != 0 && h != 0) {
+                    Rectangle2D.Double rect = new Rectangle2D.Double(x + offset, y, w, h);
+                    rectangles.add(rect);
                 }
                 symbol_width = x + w + (2 * offset);
             } else {
@@ -487,14 +487,14 @@ public class Code2Of5 extends Symbol {
 
         if (mode == ToFMode.ITF14) {
             // Add bounding box
-            Rectangle topBar = new Rectangle(0, baseY, symbol_width, 4);
-            Rectangle bottomBar = new Rectangle(0, baseY + symbol_height - 4, symbol_width, 4);
-            Rectangle leftBar = new Rectangle(0, baseY, 4, symbol_height);
-            Rectangle rightBar = new Rectangle(symbol_width - 4, baseY, 4, symbol_height);
-            rect.add(topBar);
-            rect.add(bottomBar);
-            rect.add(leftBar);
-            rect.add(rightBar);
+            Rectangle2D.Double topBar = new Rectangle2D.Double(0, baseY, symbol_width, 4);
+            Rectangle2D.Double bottomBar = new Rectangle2D.Double(0, baseY + symbol_height - 4, symbol_width, 4);
+            Rectangle2D.Double leftBar = new Rectangle2D.Double(0, baseY, 4, symbol_height);
+            Rectangle2D.Double rightBar = new Rectangle2D.Double(symbol_width - 4, baseY, 4, symbol_height);
+            rectangles.add(topBar);
+            rectangles.add(bottomBar);
+            rectangles.add(leftBar);
+            rectangles.add(rightBar);
         }
 
         if (humanReadableLocation != NONE && !readable.isEmpty()) {
@@ -505,7 +505,7 @@ public class Code2Of5 extends Symbol {
                 baseline = getHeight() + fontSize;
             }
             double centerX = getWidth() / 2;
-            txt.add(new TextBox(centerX, baseline, readable));
+            texts.add(new TextBox(centerX, baseline, readable));
         }
     }
 }

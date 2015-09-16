@@ -81,8 +81,8 @@ public class Nve18 extends Symbol {
             return false;
         }
 
-        rect = code128.rect;
-        txt = code128.txt;
+        rectangles = code128.rectangles;
+        texts = code128.texts;
         symbol_height = code128.symbol_height;
         symbol_width = code128.symbol_width;
         encodeInfo += code128.encodeInfo;

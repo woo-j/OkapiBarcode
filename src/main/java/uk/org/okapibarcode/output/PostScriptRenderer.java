@@ -16,9 +16,11 @@
 
 package uk.org.okapibarcode.output;
 
+import static uk.org.okapibarcode.util.Doubles.roughlyEqual;
+
 import java.awt.Color;
-import java.awt.Rectangle;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -57,7 +59,6 @@ public class PostScriptRenderer implements SymbolRenderer {
      * @param margin the size of the additional margin to add around the bar code
      * @param paper the paper (background) color
      * @param ink the ink (foreground) color
-     * 
      */
     public PostScriptRenderer(OutputStream out, double magnification, int margin, Color paper, Color ink) {
         this.out = out;
@@ -113,8 +114,8 @@ public class PostScriptRenderer implements SymbolRenderer {
             writer.append(height).append(" 0.00 TB 0.00 ").append(width).append(" TR\n");
 
             // Rectangles
-            for (int i = 0; i < symbol.rect.size(); i++) {
-                Rectangle rect = symbol.rect.get(i);
+            for (int i = 0; i < symbol.rectangles.size(); i++) {
+                Rectangle2D.Double rect = symbol.rectangles.get(i);
                 if (i == 0) {
                     writer.append("TE\n");
                     writer.append(ink.getRed() / 255.0).append(" ")
@@ -125,8 +126,8 @@ public class PostScriptRenderer implements SymbolRenderer {
                           .append((rect.x * magnification) + margin).append(" ")
                           .append(rect.width * magnification).append(" TR\n");
                 } else {
-                    Rectangle prev = symbol.rect.get(i - 1);
-                    if (rect.height != prev.height || rect.y != prev.y) {
+                    Rectangle2D.Double prev = symbol.rectangles.get(i - 1);
+                    if (!roughlyEqual(rect.height, prev.height) || !roughlyEqual(rect.y, prev.y)) {
                         writer.append("TE\n");
                         writer.append(ink.getRed() / 255.0).append(" ")
                               .append(ink.getGreen() / 255.0).append(" ")
@@ -139,8 +140,8 @@ public class PostScriptRenderer implements SymbolRenderer {
             }
 
             // Text
-            for (int i = 0; i < symbol.txt.size(); i++) {
-                TextBox text = symbol.txt.get(i);
+            for (int i = 0; i < symbol.texts.size(); i++) {
+                TextBox text = symbol.texts.get(i);
                 if (i == 0) {
                     writer.append("TE\n");;
                     writer.append(ink.getRed() / 255.0).append(" ")
@@ -192,8 +193,8 @@ public class PostScriptRenderer implements SymbolRenderer {
 
             // Hexagons
             // Because MaxiCode size is fixed, this ignores magnification
-            for (int i = 0; i < symbol.hex.size(); i++) {
-                Hexagon hexagon = symbol.hex.get(i);
+            for (int i = 0; i < symbol.hexagons.size(); i++) {
+                Hexagon hexagon = symbol.hexagons.get(i);
                 for (int j = 0; j < 6; j++) {
                     writer.append(hexagon.pointX[j] + margin).append(" ").append((height - hexagon.pointY[j]) - margin).append(" ");
                 }

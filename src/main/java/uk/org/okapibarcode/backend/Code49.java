@@ -15,13 +15,13 @@
  */
 package uk.org.okapibarcode.backend;
 
-import java.awt.Rectangle;
+import java.awt.geom.Rectangle2D;
 
 /**
  * Implements Code 49
  * According to ANSI/AIM-BC6-2000
  * <p>
- * Encoding supports full 7-bit ASCII input up to a maximum of 49 characters 
+ * Encoding supports full 7-bit ASCII input up to a maximum of 49 characters
  * or 81 numeric digits. GS1 data encoding is also supported.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
@@ -1005,8 +1005,8 @@ public class Code49 extends Symbol {
         if (!content.matches("[\u0000-\u007F]+")) {
             error_msg = "Invalid characters in input data";
             return false;
-        }        
-        
+        }
+
         if (inputDataType == DataType.GS1) {
             intermediate += "*"; // FNC1
         }
@@ -1267,7 +1267,7 @@ public class Code49 extends Symbol {
             j += c_grid[rows - 1][i];
         }
         c_grid[rows - 1][7] = j % 49;
-        
+
         encodeInfo += "Codewords: ";
         /* Transfer data to symbol character array (w grid) */
         for (i = 0; i < rows; i++) {
@@ -1319,7 +1319,7 @@ public class Code49 extends Symbol {
         int x, y, w, h;
         boolean black;
 
-        rect.clear();
+        rectangles.clear();
         y = 1;
         h = 1;
         for (yBlock = 0; yBlock < row_count; yBlock++) {
@@ -1334,9 +1334,9 @@ public class Code49 extends Symbol {
                     } else {
                         h = row_height[yBlock];
                     }
-                    Rectangle thisrect = new Rectangle(x, y, w, h);
-                    if ((w != 0.0) && (h != 0.0)) {
-                        rect.add(thisrect);
+                    if (w != 0 && h != 0) {
+                        Rectangle2D.Double rect = new Rectangle2D.Double(x, y, w, h);
+                        rectangles.add(rect);
                     }
                     if ((x + w) > symbol_width) {
                         symbol_width = x + w;
@@ -1352,18 +1352,19 @@ public class Code49 extends Symbol {
             }
             /* Add bars between rows */
             if (yBlock != (row_count - 1)) {
-                Rectangle thisrect = new Rectangle(15, y - 1, (symbol_width - 15), 2);
-                rect.add(thisrect);
+                Rectangle2D.Double rect = new Rectangle2D.Double(15, y - 1, (symbol_width - 15), 2);
+                rectangles.add(rect);
             }
         }
+
         /* Add top and bottom binding bars */
-        Rectangle toprect = new Rectangle(0, 0, (symbol_width + 15), 2);
-        rect.add(toprect);
-        Rectangle botrect = new Rectangle(0, y - 1, (symbol_width + 15), 2);
-        rect.add(botrect);
-        symbol_width += 30.0;
-        symbol_height += 2.0;
-        
+        Rectangle2D.Double top = new Rectangle2D.Double(0, 0, (symbol_width + 15), 2);
+        rectangles.add(top);
+        Rectangle2D.Double bottom = new Rectangle2D.Double(0, y - 1, (symbol_width + 15), 2);
+        rectangles.add(bottom);
+        symbol_width += 30;
+        symbol_height += 2;
+
         mergeVerticalBlocks();
     }
 }

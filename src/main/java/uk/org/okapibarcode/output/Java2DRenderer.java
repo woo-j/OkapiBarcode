@@ -48,9 +48,9 @@ public class Java2DRenderer implements SymbolRenderer {
 
     /** The ink (foreground) color. */
     private final Color ink;
-    
+
     /** The size of the additional margin to add around the barcode. */
-    private final int margin;    
+    private final int margin;
 
     /**
      * Creates a new Java 2D renderer.
@@ -78,11 +78,11 @@ public class Java2DRenderer implements SymbolRenderer {
         Font f = new Font(symbol.getFontName(), Font.PLAIN, (int) (symbol.getFontSize() * magnification)).deriveFont(attributes);
         Font oldFont = g2d.getFont();
         Color oldColor = g2d.getColor();
-        
+
         g2d.setFont(f);
         g2d.setColor(ink);
 
-        for (Rectangle rect : symbol.rect) {
+        for (Rectangle2D.Double rect : symbol.rectangles) {
             double x = (rect.x * magnification) + margin;
             double y = (rect.y * magnification) + margin;
             double w = rect.width * magnification;
@@ -91,14 +91,14 @@ public class Java2DRenderer implements SymbolRenderer {
         }
 
         FontMetrics fm = g2d.getFontMetrics();
-        for (TextBox text : symbol.txt) {
+        for (TextBox text : symbol.texts) {
             Rectangle2D bounds = fm.getStringBounds(text.text, g2d);
             float x = (float) ((text.x * magnification) - (bounds.getWidth() / 2)) + margin;
             float y = (float) (text.y * magnification) + margin;
             g2d.drawString(text.text, x, y);
         }
 
-        for (Hexagon hexagon : symbol.hex) {
+        for (Hexagon hexagon : symbol.hexagons) {
             Polygon polygon = new Polygon();
             for (int j = 0; j < 6; j++) {
                 polygon.addPoint((int) ((hexagon.pointX[j] * magnification) + margin),

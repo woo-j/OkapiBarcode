@@ -15,7 +15,7 @@
  */
 package uk.org.okapibarcode.backend;
 
-import java.awt.Rectangle;
+import java.awt.geom.Rectangle2D;
 import java.math.BigInteger;
 import java.util.ArrayList;
 
@@ -503,10 +503,10 @@ public class Composite extends Symbol {
 
     @Override
     public boolean encode() {
-        ArrayList < Rectangle > linear_rect = new ArrayList < > ();
-        ArrayList < TextBox > linear_txt = new ArrayList < > ();
-        ArrayList < Rectangle > combine_rect = new ArrayList < > ();
-        ArrayList < TextBox > combine_txt = new ArrayList < > ();
+        ArrayList < Rectangle2D.Double > linear_rect = new ArrayList<>();
+        ArrayList < TextBox > linear_txt = new ArrayList<>();
+        ArrayList < Rectangle2D.Double > combine_rect = new ArrayList<>();
+        ArrayList < TextBox > combine_txt = new ArrayList<>();
         String linear_encodeInfo = null;
         String linear_error_msg = "";
         int linear_height = 0;
@@ -534,8 +534,8 @@ public class Composite extends Symbol {
                     upca.setMode(Upc.Mode.UPCA);
                     upca.setLinkageFlag();
                     upca.setContent(linearContent);
-                    linear_rect = upca.rect;
-                    linear_txt = upca.txt;
+                    linear_rect = upca.rectangles;
+                    linear_txt = upca.texts;
                     linear_height = upca.symbol_height;
                     linear_encodeInfo = upca.encodeInfo;
                     top_shift = 3;
@@ -545,8 +545,8 @@ public class Composite extends Symbol {
                     upce.setMode(Upc.Mode.UPCE);
                     upce.setLinkageFlag();
                     upce.setContent(linearContent);
-                    linear_rect = upce.rect;
-                    linear_txt = upce.txt;
+                    linear_rect = upce.rectangles;
+                    linear_txt = upce.texts;
                     linear_height = upce.symbol_height;
                     linear_encodeInfo = upce.encodeInfo;
                     top_shift = 3;
@@ -562,8 +562,8 @@ public class Composite extends Symbol {
                     }
                     ean.setLinkageFlag();
                     ean.setContent(linearContent);
-                    linear_rect = ean.rect;
-                    linear_txt = ean.txt;
+                    linear_rect = ean.rectangles;
+                    linear_txt = ean.texts;
                     linear_height = ean.symbol_height;
                     linear_encodeInfo = ean.encodeInfo;
                     break;
@@ -584,8 +584,8 @@ public class Composite extends Symbol {
                     code128.setDataType(Symbol.DataType.GS1);
                     code128.setContent(linearContent);
                     linearWidth = code128.symbol_width;
-                    linear_rect = code128.rect;
-                    linear_txt = code128.txt;
+                    linear_rect = code128.rectangles;
+                    linear_txt = code128.texts;
                     linear_height = code128.symbol_height;
                     linear_encodeInfo = code128.encodeInfo;
                     break;
@@ -594,8 +594,8 @@ public class Composite extends Symbol {
                     dataBar14.setLinkageFlag();
                     dataBar14.setLinearMode();
                     dataBar14.setContent(linearContent);
-                    linear_rect = dataBar14.rect;
-                    linear_txt = dataBar14.txt;
+                    linear_rect = dataBar14.rectangles;
+                    linear_txt = dataBar14.texts;
                     linear_height = dataBar14.symbol_height;
                     linear_encodeInfo = dataBar14.encodeInfo;
                     bottom_shift = 4;
@@ -605,8 +605,8 @@ public class Composite extends Symbol {
                     dataBar14SO.setLinkageFlag();
                     dataBar14SO.setOmnidirectionalMode();
                     dataBar14SO.setContent(linearContent);
-                    linear_rect = dataBar14SO.rect;
-                    linear_txt = dataBar14SO.txt;
+                    linear_rect = dataBar14SO.rectangles;
+                    linear_txt = dataBar14SO.texts;
                     linear_height = dataBar14SO.symbol_height;
                     linear_encodeInfo = dataBar14SO.encodeInfo;
                     top_shift = 1;
@@ -616,8 +616,8 @@ public class Composite extends Symbol {
                     dataBar14S.setLinkageFlag();
                     dataBar14S.setStackedMode();
                     dataBar14S.setContent(linearContent);
-                    linear_rect = dataBar14S.rect;
-                    linear_txt = dataBar14S.txt;
+                    linear_rect = dataBar14S.rectangles;
+                    linear_txt = dataBar14S.texts;
                     linear_height = dataBar14S.symbol_height;
                     linear_encodeInfo = dataBar14S.encodeInfo;
                     top_shift = 1;
@@ -626,8 +626,8 @@ public class Composite extends Symbol {
                     DataBarLimited dataBarLimited = new DataBarLimited();
                     dataBarLimited.setLinkageFlag();
                     dataBarLimited.setContent(linearContent);
-                    linear_rect = dataBarLimited.rect;
-                    linear_txt = dataBarLimited.txt;
+                    linear_rect = dataBarLimited.rectangles;
+                    linear_txt = dataBarLimited.texts;
                     linear_height = dataBarLimited.symbol_height;
                     linear_encodeInfo = dataBarLimited.encodeInfo;
                     top_shift = 1;
@@ -637,8 +637,8 @@ public class Composite extends Symbol {
                     dataBarExpanded.setLinkageFlag();
                     dataBarExpanded.setNotStacked();
                     dataBarExpanded.setContent(linearContent);
-                    linear_rect = dataBarExpanded.rect;
-                    linear_txt = dataBarExpanded.txt;
+                    linear_rect = dataBarExpanded.rectangles;
+                    linear_txt = dataBarExpanded.texts;
                     linear_height = dataBarExpanded.symbol_height;
                     linear_encodeInfo = dataBarExpanded.encodeInfo;
                     top_shift = 2;
@@ -648,8 +648,8 @@ public class Composite extends Symbol {
                     dataBarExpandedS.setLinkageFlag();
                     dataBarExpandedS.setStacked();
                     dataBarExpandedS.setContent(linearContent);
-                    linear_rect = dataBarExpandedS.rect;
-                    linear_txt = dataBarExpandedS.txt;
+                    linear_rect = dataBarExpandedS.rectangles;
+                    linear_txt = dataBarExpandedS.texts;
                     linear_height = dataBarExpandedS.symbol_height;
                     linear_encodeInfo = dataBarExpandedS.encodeInfo;
                     top_shift = 2;
@@ -666,12 +666,12 @@ public class Composite extends Symbol {
             error_msg = linear_error_msg;
             return false;
         }
-        
+
         if ((cc_mode == CompositeMode.CC_C) && (symbology == LinearEncoding.CODE_128)) {
             /* Width of composite component depends on width of linear component,
                so recalculate. */
             row_count = 0;
-            rect.clear();
+            rectangles.clear();
             symbol_height = 0;
             symbol_width = 0;
             encodeInfo = "";
@@ -679,26 +679,26 @@ public class Composite extends Symbol {
                 return false;
             }
         }
-        
+
         if ((cc_mode != CompositeMode.CC_C) && (symbology == LinearEncoding.CODE_128)) {
             if (linearWidth > symbol_width) {
                 top_shift = (linearWidth - symbol_width) / 2;
             }
         }
 
-        for (i = 0; i < rect.size(); i++) {
-            Rectangle comprect = new Rectangle(rect.get(i).x + top_shift, rect.get(i).y, rect.get(i).width, rect.get(i).height);
-            if ((rect.get(i).x + top_shift + rect.get(i).width) > max_x) {
-                max_x = rect.get(i).x + top_shift + rect.get(i).width;
+        for (i = 0; i < rectangles.size(); i++) {
+            Rectangle2D.Double comprect = new Rectangle2D.Double(rectangles.get(i).x + top_shift, rectangles.get(i).y, rectangles.get(i).width, rectangles.get(i).height);
+            if ((rectangles.get(i).x + top_shift + rectangles.get(i).width) > max_x) {
+                max_x = (int) (rectangles.get(i).x + top_shift + rectangles.get(i).width);
             }
             combine_rect.add(comprect);
         }
 
         for (i = 0; i < linear_rect.size(); i++) {
-            Rectangle linrect = new Rectangle(linear_rect.get(i).x + bottom_shift, linear_rect.get(i).y, linear_rect.get(i).width, linear_rect.get(i).height);
+            Rectangle2D.Double linrect = new Rectangle2D.Double(linear_rect.get(i).x + bottom_shift, linear_rect.get(i).y, linear_rect.get(i).width, linear_rect.get(i).height);
             linrect.y += symbol_height;
             if ((linear_rect.get(i).x + bottom_shift + linear_rect.get(i).width) > max_x) {
-                max_x = linear_rect.get(i).x + bottom_shift + linear_rect.get(i).width;
+                max_x = (int) (linear_rect.get(i).x + bottom_shift + linear_rect.get(i).width);
             }
             combine_rect.add(linrect);
         }
@@ -711,8 +711,8 @@ public class Composite extends Symbol {
             combine_txt.add(lintxt);
         }
 
-        rect = combine_rect;
-        txt = combine_txt;
+        rectangles = combine_rect;
+        texts = combine_txt;
         symbol_height += linear_height;
         symbol_width = max_x;
 
@@ -836,7 +836,7 @@ public class Composite extends Symbol {
             return 13;
         }
     }
-    
+
     private boolean calculateSymbolSize() {
         int i;
         int binary_length = binary_string.length();
@@ -1071,7 +1071,7 @@ public class Composite extends Symbol {
             if (codewords_used % cc_width != 0) {
                 rows++;
             }
-            
+
             while (cc_width > (3 * rows)) {
                 /* stop the symbol from becoming too wide (section 10) */
                 cc_width--;
@@ -1458,7 +1458,7 @@ public class Composite extends Symbol {
                 binary_string += "0";
                 read_posn = 0;
             }
-        
+
 
             /* Now encode the rest of the AI 90 data field */
             if (ai90_mode == 2) {
@@ -1930,7 +1930,7 @@ public class Composite extends Symbol {
             error_msg = "Input too long";
             return false;
         }
-        
+
         /* size of the symbol may have changed when adding data in the above sequence */
         if (calculateSymbolSize() == false) {
             return false;
@@ -1938,7 +1938,7 @@ public class Composite extends Symbol {
 
         encodeInfo += "Composite Binary Length: " + Integer.toString(binary_string.length()) + "\n";
         displayBinaryString();
-        
+
         if (binary_string.length() < target_bitsize) {
             /* Now add padding to binary string */
             if (alpha_pad == 1) {
@@ -1960,11 +1960,11 @@ public class Composite extends Symbol {
 
         return true;
     }
-    
+
     private void displayBinaryString() {
         int i, nibble;
         /* Display binary string as hexadecimal */
-        
+
         encodeInfo += "Composite Binary String: ";
         nibble = 0;
         for(i = 0; i < binary_string.length(); i++) {
@@ -1990,10 +1990,10 @@ public class Composite extends Symbol {
                     }
                     encodeInfo += Integer.toHexString(nibble);
                     nibble = 0;
-                    break;                    
+                    break;
             }
         }
-        
+
         if ((binary_string.length() % 4) != 0) {
             encodeInfo += Integer.toHexString(nibble);
         }
@@ -2226,7 +2226,7 @@ public class Composite extends Symbol {
         rows = ccaVariants[variant];
         k = ccaVariants[17 + variant];
         offset = ccaVariants[34 + variant];
-        
+
         /* Reed-Solomon error correction */
 
         for (i = 0; i < 8; i++) {
@@ -2252,7 +2252,7 @@ public class Composite extends Symbol {
                 rsCodeWords[j] = 929 - rsCodeWords[j];
             }
         }
-        
+
         for (i = k - 1; i >= 0; i--) {
             codeWords[cwCnt] = rsCodeWords[i];
             cwCnt++;
@@ -2713,7 +2713,7 @@ public class Composite extends Symbol {
         length = binary_string.length() / 8;
 
         System.out.printf("Binlen: %d, bin: %s\n", binary_string.length(), binary_string);
-        
+
         for (i = 0; i < length; i++) {
             binloc = i * 8;
 

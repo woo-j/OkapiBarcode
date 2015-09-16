@@ -917,7 +917,7 @@ public class MaxiCode extends Symbol {
                         x += 1.23;
                     }
                     double y = (2.135 * row) + 1.43;
-                    hex.add(new Hexagon(x, y));
+                    hexagons.add(new Hexagon(x, y));
                 }
             }
         }

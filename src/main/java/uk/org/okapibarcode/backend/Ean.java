@@ -18,7 +18,7 @@ package uk.org.okapibarcode.backend;
 import static uk.org.okapibarcode.backend.HumanReadableLocation.NONE;
 import static uk.org.okapibarcode.backend.HumanReadableLocation.TOP;
 
-import java.awt.Rectangle;
+import java.awt.geom.Rectangle2D;
 /**
  * Implements EAN bar code symbology
  * According to BS EN 797:1996
@@ -279,8 +279,8 @@ public class Ean extends Symbol {
         int compositeOffset = 0;
         int shortLongDiff = 5;
 
-        rect.clear();
-        txt.clear();
+        rectangles.clear();
+        texts.clear();
         black = true;
         x = 0;
         if (linkageFlag) {
@@ -331,8 +331,8 @@ public class Ean extends Symbol {
                         }
                     }
                 }
-                Rectangle thisrect = new Rectangle(x + 6, y + compositeOffset, w, h);
-                rect.add(thisrect);
+                Rectangle2D.Double rect = new Rectangle2D.Double(x + 6, y + compositeOffset, w, h);
+                rectangles.add(rect);
                 if ((x + w + 12) > symbol_width) {
                     symbol_width = x + w + 12;
                 }
@@ -346,15 +346,15 @@ public class Ean extends Symbol {
         if (linkageFlag) {
             // Add separator for composite symbology
             if (mode == Mode.EAN13) {
-                rect.add(new Rectangle(0 + 6, 0, 1, 2));
-                rect.add(new Rectangle(94 + 6, 0, 1, 2));
-                rect.add(new Rectangle(-1 + 6, 2, 1, 2));
-                rect.add(new Rectangle(95 + 6, 2, 1, 2));
+                rectangles.add(new Rectangle2D.Double(0 + 6, 0, 1, 2));
+                rectangles.add(new Rectangle2D.Double(94 + 6, 0, 1, 2));
+                rectangles.add(new Rectangle2D.Double(-1 + 6, 2, 1, 2));
+                rectangles.add(new Rectangle2D.Double(95 + 6, 2, 1, 2));
             } else {
-                rect.add(new Rectangle(0 + 6, 0, 1, 2));
-                rect.add(new Rectangle(66 + 6, 0, 1, 2));
-                rect.add(new Rectangle(-1 + 6, 2, 1, 2));
-                rect.add(new Rectangle(67 + 6, 2, 1, 2));
+                rectangles.add(new Rectangle2D.Double(0 + 6, 0, 1, 2));
+                rectangles.add(new Rectangle2D.Double(66 + 6, 0, 1, 2));
+                rectangles.add(new Rectangle2D.Double(-1 + 6, 2, 1, 2));
+                rectangles.add(new Rectangle2D.Double(67 + 6, 2, 1, 2));
             }
         }
 
@@ -365,24 +365,24 @@ public class Ean extends Symbol {
             double baseline = getHeight() + fontSize - shortLongDiff + compositeOffset;
             double addOnBaseline = 6.0 + compositeOffset;
             if (mode == Mode.EAN13) {
-                txt.add(new TextBox(3, baseline, readable.substring(0, 1)));
-                txt.add(new TextBox(30, baseline, readable.substring(1, 7)));
-                txt.add(new TextBox(77, baseline, readable.substring(7, 13)));
+                texts.add(new TextBox(3, baseline, readable.substring(0, 1)));
+                texts.add(new TextBox(30, baseline, readable.substring(1, 7)));
+                texts.add(new TextBox(77, baseline, readable.substring(7, 13)));
                 if (useAddOn) {
                     if (addOnContent.length() == 2) {
-                        txt.add(new TextBox(118, addOnBaseline, addOnContent));
+                        texts.add(new TextBox(118, addOnBaseline, addOnContent));
                     } else {
-                        txt.add(new TextBox(133, addOnBaseline, addOnContent));
+                        texts.add(new TextBox(133, addOnBaseline, addOnContent));
                     }
                 }
             } else { // EAN8
-                txt.add(new TextBox(23, baseline, readable.substring(0, 4)));
-                txt.add(new TextBox(55, baseline, readable.substring(4, 8)));
+                texts.add(new TextBox(23, baseline, readable.substring(0, 4)));
+                texts.add(new TextBox(55, baseline, readable.substring(4, 8)));
                 if (useAddOn) {
                     if (addOnContent.length() == 2) {
-                        txt.add(new TextBox(93, addOnBaseline, addOnContent));
+                        texts.add(new TextBox(93, addOnBaseline, addOnContent));
                     } else {
-                        txt.add(new TextBox(105, addOnBaseline, addOnContent));
+                        texts.add(new TextBox(105, addOnBaseline, addOnContent));
                     }
                 }
             }

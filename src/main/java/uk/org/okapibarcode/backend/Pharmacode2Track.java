@@ -16,13 +16,13 @@
 
 package uk.org.okapibarcode.backend;
 
-import java.awt.Rectangle;
+import java.awt.geom.Rectangle2D;
 
 /**
  * Implements the Two-Track Pharmacode bar code symbology.
  * <br>
- * Pharmacode Two-Track is an alternative system to Pharmacode One-Track used 
- * for the identification of pharmaceuticals. The symbology is able to encode 
+ * Pharmacode Two-Track is an alternative system to Pharmacode One-Track used
+ * for the identification of pharmaceuticals. The symbology is able to encode
  * whole numbers between 4 and 64570080.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
@@ -77,7 +77,7 @@ public class Pharmacode2Track extends Symbol {
         for (i = (inter.length() - 1); i >= 0; i--) {
             dest += inter.charAt(i);
         }
-        
+
         encodeInfo += "Encoding: " + dest + "\n";
 
         readable = "";
@@ -95,7 +95,7 @@ public class Pharmacode2Track extends Symbol {
         int xBlock;
         int x, y, w, h;
 
-        rect.clear();
+        rectangles.clear();
         x = 0;
         w = 1;
         y = 0;
@@ -116,10 +116,10 @@ public class Pharmacode2Track extends Symbol {
                 break;
             }
 
-            Rectangle thisrect = new Rectangle(x, y, w, h);
-            rect.add(thisrect);
+            Rectangle2D.Double rect = new Rectangle2D.Double(x, y, w, h);
+            rectangles.add(rect);
 
-            x += 2.0;
+            x += 2;
         }
         symbol_width = pattern[0].length() * 2;
         symbol_height = default_height;

@@ -42,6 +42,7 @@ import com.google.zxing.Result;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.oned.CodaBarReader;
+import com.google.zxing.oned.Code39Reader;
 import com.google.zxing.oned.Code93Reader;
 import com.google.zxing.oned.EAN13Reader;
 import com.google.zxing.oned.EAN8Reader;
@@ -215,6 +216,8 @@ public class SymbolTest {
 
         if (symbol instanceof Code93) {
             return new Code93Reader();
+        } else if (symbol instanceof Code3Of9) {
+            return new Code39Reader();
         } else if (symbol instanceof Codabar) {
             return new CodaBarReader();
         } else if (symbol instanceof Ean) {

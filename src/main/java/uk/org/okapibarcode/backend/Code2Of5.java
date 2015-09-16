@@ -27,31 +27,31 @@ import java.awt.Rectangle;
  */
 public class Code2Of5 extends Symbol {
 
-    private enum tof_mode {
+    private static enum ToFMode {
         MATRIX, INDUSTRIAL, IATA, DATA_LOGIC, INTERLEAVED, ITF14, DPLEIT, DPIDENT
     }
-    private tof_mode mode;
 
-    private String[] C25MatrixTable = {
+    private static final String[] C25_MATRIX_TABLE = {
         "113311", "311131", "131131", "331111", "113131", "313111", "133111", "111331", "311311", "131311"
     };
-    private String[] C25IndustTable = {
+
+    private static final String[] C25_INDUSTRIAL_TABLE = {
         "1111313111", "3111111131", "1131111131", "3131111111", "1111311131", "3111311111", "1131311111", "1111113131", "3111113111", "1131113111"
     };
-    private String[] C25InterTable = {
+
+    private static final String[] C25_INTERLEAVED_TABLE = {
         "11331", "31113", "13113", "33111", "11313", "31311", "13311", "11133", "31131", "13131"
     };
 
-    public Code2Of5() {
-        mode = tof_mode.MATRIX;
-    }
+    /** The 2-of-5 mode. */
+    private ToFMode mode = ToFMode.MATRIX;
 
     /**
      * Select Standard Code 2 of 5 mode, also known as Code 2 of 5 Matrix. (default)
      * Encodes any length numeric input (digits 0-9).
      */
     public void setMatrixMode() {
-        mode = tof_mode.MATRIX;
+        mode = ToFMode.MATRIX;
     }
 
     /**
@@ -59,7 +59,7 @@ public class Code2Of5 extends Symbol {
      * (digits 0-9) and does not include a check digit.
      */
     public void setIndustrialMode() {
-        mode = tof_mode.INDUSTRIAL;
+        mode = ToFMode.INDUSTRIAL;
     }
 
     /**
@@ -68,7 +68,7 @@ public class Code2Of5 extends Symbol {
      * a check digit.
      */
     public void setIATAMode() {
-        mode = tof_mode.IATA;
+        mode = ToFMode.IATA;
     }
 
     /**
@@ -76,7 +76,7 @@ public class Code2Of5 extends Symbol {
      * (digits 0-9) and does not include a check digit.
      */
     public void setDataLogicMode() {
-        mode = tof_mode.DATA_LOGIC;
+        mode = ToFMode.DATA_LOGIC;
     }
 
     /**
@@ -85,7 +85,7 @@ public class Code2Of5 extends Symbol {
      * is entered a leading zero is added. No check digit is calculated.
      */
     public void setInterleavedMode() {
-        mode = tof_mode.INTERLEAVED;
+        mode = ToFMode.INTERLEAVED;
     }
 
     /**
@@ -94,7 +94,7 @@ public class Code2Of5 extends Symbol {
      * digit is calculated.
      */
     public void setITF14Mode() {
-        mode = tof_mode.ITF14;
+        mode = ToFMode.ITF14;
     }
 
     /**
@@ -102,7 +102,7 @@ public class Code2Of5 extends Symbol {
      * Check digit is calculated.
      */
     public void setDPLeitMode() {
-        mode = tof_mode.DPLEIT;
+        mode = ToFMode.DPLEIT;
     }
 
     /**
@@ -110,7 +110,7 @@ public class Code2Of5 extends Symbol {
      * Check digit is calculated.
      */
     public void setDPIdentMode() {
-        mode = tof_mode.DPIDENT;
+        mode = ToFMode.DPIDENT;
     }
 
     @Override
@@ -161,7 +161,7 @@ public class Code2Of5 extends Symbol {
         String dest = "411111";
 
         for (int i = 0; i < content.length(); i++) {
-            dest += C25MatrixTable[Character.getNumericValue(content.charAt(i))];
+            dest += C25_MATRIX_TABLE[Character.getNumericValue(content.charAt(i))];
         }
         dest += "41111";
 
@@ -184,7 +184,7 @@ public class Code2Of5 extends Symbol {
         readable = content;
 
         for (int i = 0; i < readable.length(); i++) {
-            dest += C25IndustTable[Character.getNumericValue(readable.charAt(i))];
+            dest += C25_INDUSTRIAL_TABLE[Character.getNumericValue(readable.charAt(i))];
         }
 
         dest += "31113";
@@ -207,7 +207,7 @@ public class Code2Of5 extends Symbol {
         readable = content;
 
         for (int i = 0; i < readable.length(); i++) {
-            dest += C25IndustTable[Character.getNumericValue(readable.charAt(i))];
+            dest += C25_INDUSTRIAL_TABLE[Character.getNumericValue(readable.charAt(i))];
         }
 
         dest += "311";
@@ -230,7 +230,7 @@ public class Code2Of5 extends Symbol {
         readable = content;
 
         for (int i = 0; i < readable.length(); i++) {
-            dest += C25MatrixTable[Character.getNumericValue(readable.charAt(i))];
+            dest += C25_MATRIX_TABLE[Character.getNumericValue(readable.charAt(i))];
         }
 
         dest += "311";
@@ -277,8 +277,8 @@ public class Code2Of5 extends Symbol {
         char a = readable.charAt(x);
         char b = readable.charAt(y);
 
-        String one = C25InterTable[Character.getNumericValue(a)];
-        String two = C25InterTable[Character.getNumericValue(b)];
+        String one = C25_INTERLEAVED_TABLE[Character.getNumericValue(a)];
+        String two = C25_INTERLEAVED_TABLE[Character.getNumericValue(b)];
         String f = "";
 
         for (int i = 0; i < 5; i++) {
@@ -459,7 +459,7 @@ public class Code2Of5 extends Symbol {
         boolean black = true;
 
         int offset = 0;
-        if (mode == tof_mode.ITF14) {
+        if (mode == ToFMode.ITF14) {
             offset = 20;
         }
 
@@ -485,7 +485,7 @@ public class Code2Of5 extends Symbol {
 
         symbol_height = h;
 
-        if (mode == tof_mode.ITF14) {
+        if (mode == ToFMode.ITF14) {
             // Add bounding box
             Rectangle topBar = new Rectangle(0, baseY, symbol_width, 4);
             Rectangle bottomBar = new Rectangle(0, baseY + symbol_height - 4, symbol_width, 4);

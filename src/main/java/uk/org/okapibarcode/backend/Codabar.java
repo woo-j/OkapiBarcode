@@ -30,12 +30,19 @@ package uk.org.okapibarcode.backend;
  */
 public class Codabar extends Symbol {
 
-    private String[] codabarTable = {"11111221", "11112211", "11121121", "22111111", "11211211", "21111211",
-        "12111121", "12112111", "12211111", "21121111", "11122111", "11221111", "21112121", "21211121",
-        "21212111", "11212121", "11221211", "12121121", "11121221", "11122211"};
+    private static final String[] CODABAR_TABLE = {
+        "11111221", "11112211", "11121121", "22111111", "11211211",
+        "21111211", "12111121", "12112111", "12211111", "21121111",
+        "11122111", "11221111", "21112121", "21211121", "21212111",
+        "11212121", "11221211", "12121121", "11121221", "11122211"
+    };
 
-    private char[] characterSet = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-        '-', '$', ':', '/', '.', '+', 'A', 'B', 'C', 'D'};
+    private static final char[] CHARACTER_SET = {
+        '0', '1', '2', '3', '4',
+        '5', '6', '7', '8', '9',
+        '-', '$', ':', '/', '.',
+        '+', 'A', 'B', 'C', 'D'
+    };
 
     @Override
     public boolean encode() {
@@ -48,7 +55,7 @@ public class Codabar extends Symbol {
 
         int l = content.length();
         for (int i = 0; i < l; i++) {
-             horizontalSpacing += codabarTable[positionOf(content.charAt(i), characterSet)];
+             horizontalSpacing += CODABAR_TABLE[positionOf(content.charAt(i), CHARACTER_SET)];
         }
 
         readable = content;

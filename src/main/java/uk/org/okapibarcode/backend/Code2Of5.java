@@ -158,19 +158,17 @@ public class Code2Of5 extends Symbol {
             return false;
         }
 
-        String dest = "411111";
+        String dest = "311111";
 
         for (int i = 0; i < content.length(); i++) {
             dest += C25_MATRIX_TABLE[Character.getNumericValue(content.charAt(i))];
         }
-        dest += "41111";
+        dest += "31111";
 
         readable = content;
-        pattern = new String[1];
-        pattern[0] = dest;
+        pattern = new String[] { dest };
         row_count = 1;
-        row_height = new int[1];
-        row_height[0] = -1;
+        row_height = new int[] { -1 };
         return true;
     }
 
@@ -189,11 +187,9 @@ public class Code2Of5 extends Symbol {
 
         dest += "31113";
 
-        pattern = new String[1];
-        pattern[0] = dest;
+        pattern = new String[] { dest };
         row_count = 1;
-        row_height = new int[1];
-        row_height[0] = -1;
+        row_height = new int[] { -1 };
         return true;
     }
 
@@ -212,11 +208,9 @@ public class Code2Of5 extends Symbol {
 
         dest += "311";
 
-        pattern = new String[1];
-        pattern[0] = dest;
+        pattern = new String[] { dest };
         row_count = 1;
-        row_height = new int[1];
-        row_height[0] = -1;
+        row_height = new int[] { -1 };
         return true;
     }
 
@@ -235,11 +229,9 @@ public class Code2Of5 extends Symbol {
 
         dest += "311";
 
-        pattern = new String[1];
-        pattern[0] = dest;
+        pattern = new String[] { dest };
         row_count = 1;
-        row_height = new int[1];
-        row_height[0] = -1;
+        row_height = new int[] { -1 };
         return true;
     }
 
@@ -263,13 +255,11 @@ public class Code2Of5 extends Symbol {
             dest += interlace(i, i + 1);
         }
 
-        dest += "211";
+        dest += "311";
 
-        pattern = new String[1];
-        pattern[0] = dest;
+        pattern = new String[] { dest };
         row_count = 1;
-        row_height = new int[1];
-        row_height[0] = -1;
+        row_height = new int[] { -1 };
         return true;
     }
 
@@ -329,13 +319,11 @@ public class Code2Of5 extends Symbol {
             dest += interlace(i, i + 1);
         }
 
-        dest += "211";
+        dest += "311";
 
-        pattern = new String[1];
-        pattern[0] = dest;
+        pattern = new String[] { dest };
         row_count = 1;
-        row_height = new int[1];
-        row_height[0] = -1;
+        row_height = new int[] { -1 };
         return true;
     }
 
@@ -379,13 +367,11 @@ public class Code2Of5 extends Symbol {
             dest += interlace(i, i + 1);
         }
 
-        dest += "211";
+        dest += "311";
 
-        pattern = new String[1];
-        pattern[0] = dest;
+        pattern = new String[] { dest };
         row_count = 1;
-        row_height = new int[1];
-        row_height[0] = -1;
+        row_height = new int[] { -1 };
         return true;
     }
 
@@ -428,13 +414,11 @@ public class Code2Of5 extends Symbol {
             dest += interlace(i, i + 1);
         }
 
-        dest += "211";
+        dest += "311";
 
-        pattern = new String[1];
-        pattern[0] = dest;
+        pattern = new String[] { dest };
         row_count = 1;
-        row_height = new int[1];
-        row_height[0] = -1;
+        row_height = new int[] { -1 };
         return true;
     }
 

@@ -34,7 +34,12 @@ import java.math.BigInteger;
 public class Pdf417 extends Symbol {
 
     public static enum Mode {
-        NORMAL, TRUNCATED, MICRO
+        /** Normal PDF417. */
+        NORMAL,
+        /** Truncated PDF417. */
+        TRUNCATED,
+        /** MicroPDF417. */
+        MICRO
     };
 
     private static enum EncodingMode {
@@ -383,8 +388,8 @@ public class Pdf417 extends Symbol {
     };
 
     private static final int[] MICRO_AUTOSIZE = {
-        4, 6,  7, 8, 10, 12, 13, 14, 16, 18, 19, 20, 24, 29, 30, 33, 34, 37, 39, 46, 54, 58, 70, 72, 82, 90, 108, 126, // max codeword counts
-        1, 14, 2, 7, 3,  25, 8,  16, 5,  17, 9,  6,  10, 11, 28, 12, 19, 13, 29, 20, 30, 21, 22, 31, 23, 32, 33,  34   // corresponding variant
+        4, 6,  7, 8, 8,  10, 10, 12, 12, 13, 14, 16, 18, 18, 19, 20, 24, 24, 24, 29, 30, 33, 34, 37, 39, 46, 54, 58, 70, 72, 82, 90, 108, 126, // max codeword counts
+        1, 14, 2, 7, 24, 3,  15, 25, 4,  8,  16, 5,  17, 26, 9,  6,  10, 18, 27, 11, 28, 12, 19, 13, 29, 20, 30, 21, 22, 31, 23, 32, 33,  34   // corresponding variant
     };
 
     /* Rows, columns, error codewords, k-offset of valid MicroPDF417 sizes from ISO/IEC 24728:2006 */
@@ -519,8 +524,7 @@ public class Pdf417 extends Symbol {
     /**
      * Sets the height of the symbol by specifying the number of rows
      * of data codewords. Valid values are 3-90 for PDF417 and 4-44
-     * for MicroPDF417. This attribute is ignored when using
-     * {@link Mode#MICRO micro} mode.
+     * for MicroPDF417.
      *
      * @param rows the number of rows in the symbol
      */
@@ -541,6 +545,23 @@ public class Pdf417 extends Symbol {
             throw new IllegalArgumentException("ECC level must be between 0 and 8.");
         }
         preferredEccLevel = eccLevel;
+    }
+
+    /**
+     * Forces the use of the specified MicroPDF417 variant. Only valid
+     * when using {@link Mode#MICRO micro} mode.
+     *
+     * @param variant the MicroPDF417 variant to use
+     */
+    public void setVariant(int variant) {
+        if (symbolMode != Mode.MICRO) {
+            throw new IllegalArgumentException("Can only set variant when using MICRO mode.");
+        }
+        if (variant < 1 || variant > 34) {
+            throw new IllegalArgumentException("Variant must be between 1 and 34.");
+        }
+        this.columns = MICRO_VARIANTS[variant - 1];
+        this.rows = MICRO_VARIANTS[variant - 1 + 34];
     }
 
     public void setMode(Mode mode) {
@@ -904,7 +925,7 @@ public class Pdf417 extends Symbol {
         int i, k, j, blockCount, longueur, offset;
         int total;
         int LeftRAPStart, CentreRAPStart, RightRAPStart, StartCluster;
-        int LeftRAP, CentreRAP, RightRAP, Cluster, flip, loop, rows;
+        int LeftRAP, CentreRAP, RightRAP, Cluster, flip, loop;
         String codebarre;
         int[] dummy = new int[5];
         int[] mccorrection = new int[50];
@@ -1063,7 +1084,7 @@ public class Pdf417 extends Symbol {
 
         /* Now figure out which variant of the symbol to use and load values accordingly */
 
-        int variant = getMicroPdf417Variant(columns, codeWordCount);
+        int variant = getMicroPdf417Variant(codeWordCount, columns, rows);
 
         /* Now we have the variant we can load the data */
 
@@ -1280,93 +1301,16 @@ public class Pdf417 extends Symbol {
         }
     }
 
-    private static int getMicroPdf417Variant(Integer columns, int codeWordCount) {
-        if (columns == null) {
-            // Okapi can choose automatically from all available variations
-            for (int i = 0; i < 28; i++) {
-                if (codeWordCount <= MICRO_AUTOSIZE[i]) {
-                    return MICRO_AUTOSIZE[i + 28];
+    private static int getMicroPdf417Variant(int codeWordCount, Integer columns, Integer rows) {
+        for (int i = 0; i < 34; i++) {
+            int maxCodewordCount = MICRO_AUTOSIZE[i];
+            if (codeWordCount <= maxCodewordCount) {
+                int variant = MICRO_AUTOSIZE[i + 34];
+                int columnsForThisVariant = MICRO_VARIANTS[variant - 1];
+                int rowsForThisVariant = MICRO_VARIANTS[variant - 1 + 34];
+                if ((columns == null || columns == columnsForThisVariant) && (rows == null || rows == rowsForThisVariant)) {
+                    return variant;
                 }
-            }
-        } else if (columns == 1) {
-            // the user specified 1 column
-            if (codeWordCount <= 4) {
-                return 1;
-            } else if (codeWordCount <= 7) {
-                return 2;
-            } else if (codeWordCount <= 10) {
-                return 3;
-            } else if (codeWordCount <= 12) {
-                return 4;
-            } else if (codeWordCount <= 16) {
-                return 5;
-            } else {
-                return 6;
-            }
-        } else if (columns == 2) {
-            // the user specified 2 columns
-            if (codeWordCount <= 8) {
-                return 7;
-            } else if (codeWordCount <= 13) {
-                return 8;
-            } else if (codeWordCount <= 19) {
-                return 9;
-            } else if (codeWordCount <= 24) {
-                return 10;
-            } else if (codeWordCount <= 29) {
-                return 11;
-            } else if (codeWordCount <= 33) {
-                return 12;
-            } else {
-                return 13;
-            }
-        } else if (columns == 3) {
-            // the user specified 3 columns
-            if (codeWordCount <= 6) {
-                return 14;
-            } else if (codeWordCount <= 10) {
-                return 15;
-            } else if (codeWordCount <= 14) {
-                return 16;
-            } else if (codeWordCount <= 18) {
-                return 17;
-            } else if (codeWordCount <= 24) {
-                return 18;
-            } else if (codeWordCount <= 34) {
-                return 19;
-            } else if (codeWordCount <= 46) {
-                return 20;
-            } else if (codeWordCount <= 58) {
-                return 21;
-            } else if (codeWordCount <= 70) {
-                return 22;
-            } else {
-                return 23;
-            }
-        } else if (columns == 4) {
-            // the user specified 4 columns
-            if (codeWordCount <= 8) {
-                return 24;
-            } else if (codeWordCount <= 12) {
-                return 25;
-            } else if (codeWordCount <= 18) {
-                return 26;
-            } else if (codeWordCount <= 24) {
-                return 27;
-            } else if (codeWordCount <= 30) {
-                return 28;
-            } else if (codeWordCount <= 39) {
-                return 29;
-            } else if (codeWordCount <= 54) {
-                return 30;
-            } else if (codeWordCount <= 72) {
-                return 31;
-            } else if (codeWordCount <= 90) {
-                return 32;
-            } else if (codeWordCount <= 108) {
-                return 33;
-            } else {
-                return 34;
             }
         }
         throw new OkapiException("Unable to determine MicroPDF417 variant");

@@ -522,6 +522,16 @@ public class Pdf417 extends Symbol {
     }
 
     /**
+     * Returns the number of data columns used by this symbol, or {@code null}
+     * if the number of data columns has not been set.
+     *
+     * @return the number of data columns used by this symbol
+     */
+    public Integer getDataColumns() {
+        return columns;
+    }
+
+    /**
      * Sets the height of the symbol by specifying the number of rows
      * of data codewords. Valid values are 3-90 for PDF417 and 4-44
      * for MicroPDF417.
@@ -530,6 +540,16 @@ public class Pdf417 extends Symbol {
      */
     public void setRows(int rows) {
         this.rows = rows;
+    }
+
+    /**
+     * Returns the number of rows used by this symbol, or {@code null} if
+     * the number of rows has not been set.
+     *
+     * @return the number of rows used by this symbol
+     */
+    public Integer getRows() {
+        return rows;
     }
 
     /**

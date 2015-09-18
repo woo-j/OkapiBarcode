@@ -74,6 +74,9 @@ import com.google.zxing.pdf417.PDF417Reader;
  * <p>
  * If a properties file is found with no matching expectation files, we assume that it was recently added to the test suite and
  * that we need to generate suitable expectation files for it.
+ *
+ * <p>
+ * A single properties file can contain multiple test configurations, as long as the expected output is the same for all of those tests.
  */
 @RunWith(Parameterized.class)
 public class SymbolTest {
@@ -81,8 +84,8 @@ public class SymbolTest {
     /** The type of symbology being tested. */
     private final Class< ? extends Symbol > symbolType;
 
-    /** The properties file containing the test configuration. */
-    private final File propertiesFile;
+    /** The test configuration properties. */
+    private final Map< String, String > properties;
 
     /** The file containing the expected intermediate coding of the bar code, if this test verifies successful behavior. */
     private final File codewordsFile;
@@ -97,7 +100,7 @@ public class SymbolTest {
      * Creates a new test.
      *
      * @param symbolType the type of symbol being tested
-     * @param propertiesFile the properties file containing the test configuration
+     * @param properties the test configuration properties
      * @param codewordsFile the file containing the expected intermediate coding of the bar code, if this test verifies successful behavior
      * @param pngFile the file containing the expected final rendering of the bar code, if this test verifies successful behavior
      * @param errorFile the file containing the expected error message, if this test verifies a failure
@@ -105,10 +108,10 @@ public class SymbolTest {
      * @param fileBaseName the base name of the test file (used only for test naming)
      * @throws IOException if there is any I/O error
      */
-    public SymbolTest(Class< ? extends Symbol > symbolType, File propertiesFile, File codewordsFile, File pngFile,
+    public SymbolTest(Class< ? extends Symbol > symbolType, Map< String, String > properties, File codewordsFile, File pngFile,
                     File errorFile, String symbolName, String fileBaseName) throws IOException {
         this.symbolType = symbolType;
-        this.propertiesFile = propertiesFile;
+        this.properties = properties;
         this.codewordsFile = codewordsFile;
         this.pngFile = pngFile;
         this.errorFile = errorFile;
@@ -121,22 +124,6 @@ public class SymbolTest {
      */
     @Test
     public void test() throws Exception {
-
-        byte[] bytes = Files.readAllBytes(propertiesFile.toPath());
-        String content = new String(bytes, UTF_8);
-        String[] lines = content.split("\r\n"); // useful because sometimes we want to use \n or \r in data, but usually not both together
-
-        Map< String, String > properties = new LinkedHashMap<>();
-        for (String line : lines) {
-            if (!line.startsWith("#") && !line.isEmpty()) {
-                int index = line.indexOf('=');
-                if (index != -1) {
-                    String name = line.substring(0, index);
-                    String value = line.substring(index + 1);
-                    properties.put(name, value);
-                }
-            }
-        }
 
         Symbol symbol = symbolType.newInstance();
 
@@ -512,12 +499,54 @@ public class SymbolTest {
     }
 
     /**
+     * Extracts test configuration properties from the specified properties file. A single properties file can contain
+     * configuration properties for multiple tests.
+     *
+     * @param propertiesFile the properties file to read
+     * @return the test configuration properties in the specified file
+     * @throws IOException if there is an error reading the properties file
+     */
+    private static List< Map< String, String > > readProperties(File propertiesFile) throws IOException {
+
+        byte[] bytes = Files.readAllBytes(propertiesFile.toPath());
+        String content = new String(bytes, UTF_8);
+        String[] lines = content.split("\r\n"); // useful because sometimes we want to use \n or \r in data, but usually not both together
+
+        List< Map< String, String > > allProperties = new ArrayList<>();
+        Map< String, String > properties = new LinkedHashMap<>();
+
+        for (String line : lines) {
+            if (line.isEmpty()) {
+                // an empty line signals the start of a new test configuration within this single file
+                if (!properties.isEmpty()) {
+                    allProperties.add(properties);
+                    properties = new LinkedHashMap<>();
+                }
+            } else if (!line.startsWith("#")) {
+                int index = line.indexOf('=');
+                if (index != -1) {
+                    String name = line.substring(0, index);
+                    String value = line.substring(index + 1);
+                    properties.put(name, value);
+                }
+            }
+        }
+
+        if (!properties.isEmpty()) {
+            allProperties.add(properties);
+        }
+
+        return allProperties;
+    }
+
+    /**
      * Finds all test resources and returns the information that JUnit needs to dynamically create the corresponding test cases.
      *
      * @return the test data needed to dynamically create the test cases
+     * @throws IOException if there is an error reading a file
      */
     @Parameters(name = "test {index}: {5}: {6}")
-    public static List< Object[] > data() {
+    public static List< Object[] > data() throws IOException {
 
         String filter = System.getProperty("okapi.symbol.test");
 
@@ -535,7 +564,9 @@ public class SymbolTest {
                     File codewordsFile = new File(file.getParentFile(), fileBaseName + ".codewords");
                     File pngFile = new File(file.getParentFile(), fileBaseName + ".png");
                     File errorFile = new File(file.getParentFile(), fileBaseName + ".error");
-                    data.add(new Object[] { symbol, file, codewordsFile, pngFile, errorFile, symbolName, fileBaseName });
+                    for (Map< String, String > properties : readProperties(file)) {
+                        data.add(new Object[] { symbol, properties, codewordsFile, pngFile, errorFile, symbolName, fileBaseName });
+                    }
                 }
             }
         }

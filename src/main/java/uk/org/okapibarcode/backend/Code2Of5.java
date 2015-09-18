@@ -46,6 +46,28 @@ public class Code2Of5 extends Symbol {
     /** The 2-of-5 mode. */
     private ToFMode mode = ToFMode.MATRIX;
 
+    /** Ratio of wide bar width to narrow bar width. */
+    private double moduleWidthRatio = 3;
+
+    /**
+     * Sets the ratio of wide bar width to narrow bar width. Valid values are usually
+     * between {@code 2} and {@code 3}. The default value is {@code 3}.
+     *
+     * @param moduleWidthRatio the ratio of wide bar width to narrow bar width
+     */
+    public void setModuleWidthRatio(double moduleWidthRatio) {
+        this.moduleWidthRatio = moduleWidthRatio;
+    }
+
+    /**
+     * Returns the ratio of wide bar width to narrow bar width.
+     *
+     * @return the ratio of wide bar width to narrow bar width
+     */
+    public double getModuleWidthRatio() {
+        return moduleWidthRatio;
+    }
+
     /**
      * Select Standard Code 2 of 5 mode, also known as Code 2 of 5 Matrix. (default)
      * Encodes any length numeric input (digits 0-9).
@@ -274,7 +296,6 @@ public class Code2Of5 extends Symbol {
         for (int i = 0; i < 5; i++) {
             f += one.charAt(i);
             f += two.charAt(i);
-
         }
 
         return f;
@@ -437,7 +458,7 @@ public class Code2Of5 extends Symbol {
             baseY = 0;
         }
 
-        int x = 0;
+        double x = 0;
         int y = baseY;
         int h = 0;
         boolean black = true;
@@ -447,24 +468,23 @@ public class Code2Of5 extends Symbol {
             offset = 20;
         }
 
-        for(xBlock = 0; xBlock < pattern[0].length(); xBlock++) {
-            if (black == true) {
-                black = false;
-                int w = pattern[0].charAt(xBlock) - '0';
-                if(row_height[0] == -1) {
+        for (xBlock = 0; xBlock < pattern[0].length(); xBlock++) {
+            char c = pattern[0].charAt(xBlock);
+            double w = getModuleWidth(c - '0') * moduleWidth;
+            if (black) {
+                if (row_height[0] == -1) {
                     h = default_height;
                 } else {
                     h = row_height[0];
                 }
-                if(w != 0 && h != 0) {
+                if (w != 0 && h != 0) {
                     Rectangle2D.Double rect = new Rectangle2D.Double(x + offset, y, w, h);
                     rectangles.add(rect);
                 }
-                symbol_width = x + w + (2 * offset);
-            } else {
-                black = true;
+                symbol_width = (int) Math.ceil(x + w + (2 * offset));
             }
-            x += (double) (pattern[0].charAt(xBlock) - '0');
+            black = !black;
+            x += w;
         }
 
         symbol_height = h;
@@ -490,6 +510,16 @@ public class Code2Of5 extends Symbol {
             }
             double centerX = getWidth() / 2;
             texts.add(new TextBox(centerX, baseline, readable));
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected double getModuleWidth(int originalWidth) {
+        if (originalWidth == 1) {
+            return 1;
+        } else {
+            return moduleWidthRatio;
         }
     }
 }

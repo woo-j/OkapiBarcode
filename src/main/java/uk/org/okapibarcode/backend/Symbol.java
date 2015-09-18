@@ -516,7 +516,7 @@ public abstract class Symbol {
 
     protected void plotSymbol() {
         int xBlock, yBlock;
-        int x, y, w, h;
+        double x, y, w, h;
         boolean black;
 
         rectangles.clear();
@@ -536,7 +536,8 @@ public abstract class Symbol {
             black = true;
             x = 0;
             for (xBlock = 0; xBlock < pattern[yBlock].length(); xBlock++) {
-                w = (pattern[yBlock].charAt(xBlock) - '0') * moduleWidth;
+                char c = pattern[yBlock].charAt(xBlock);
+                w = getModuleWidth(c - '0') * moduleWidth;
                 if (black) {
                     if (row_height[yBlock] == -1) {
                         h = default_height;
@@ -547,15 +548,15 @@ public abstract class Symbol {
                         Rectangle2D.Double rect = new Rectangle2D.Double(x, y, w, h);
                         rectangles.add(rect);
                     }
-                    if ((x + w) > symbol_width) {
-                        symbol_width = x + w;
+                    if (x + w > symbol_width) {
+                        symbol_width = (int) Math.ceil(x + w);
                     }
                 }
                 black = !black;
                 x += w;
             }
             if ((y - baseY + h) > symbol_height) {
-                symbol_height = y - baseY + h;
+                symbol_height = (int) Math.ceil(y - baseY + h);
             }
             y += h;
         }
@@ -572,6 +573,17 @@ public abstract class Symbol {
             double centerX = getWidth() / 2;
             texts.add(new TextBox(centerX, baseline, readable));
         }
+    }
+
+    /**
+     * Returns the module width to use for the specified original module width, taking into account any module width ratio
+     * customizations. Intended to be overridden by subclasses that support such module width ratio customization.
+     *
+     * @param originalWidth the original module width
+     * @return the module width to use for the specified original module width
+     */
+    protected double getModuleWidth(int originalWidth) {
+        return originalWidth;
     }
 
     /**

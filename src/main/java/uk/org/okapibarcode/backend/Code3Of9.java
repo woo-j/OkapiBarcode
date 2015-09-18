@@ -32,18 +32,7 @@ public class Code3Of9 extends Symbol {
         NONE, MOD43
     }
 
-    private CheckDigit checkOption = CheckDigit.NONE;
-
-    /**
-     * Select addition of optional Modulo-43 check digit or encoding without
-     * check digit.
-     * @param checkMode Check digit option.
-     */
-    public void setCheckDigit(CheckDigit checkMode) {
-        checkOption = checkMode;
-    }
-
-    private final String Code39[] = {
+    private static final String CODE_39[] = {
         "1112212111", "2112111121", "1122111121", "2122111111", "1112211121",
         "2112211111", "1122211111", "1112112121", "2112112111", "1122112111",
         "2111121121", "1121121121", "2121121111", "1111221121", "2111221111",
@@ -55,12 +44,45 @@ public class Code3Of9 extends Symbol {
         "1212111211", "1211121211", "1112121211"
     };
 
-    private final char LookUp[] = {
+    private static final char LOOKUP[] = {
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D',
         'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R',
         'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '-', '.', ' ', '$', '/', '+',
         '%'
     };
+
+    private CheckDigit checkOption = CheckDigit.NONE;
+
+    /** Ratio of wide bar width to narrow bar width. */
+    private double moduleWidthRatio = 2;
+
+    /**
+     * Sets the ratio of wide bar width to narrow bar width. Valid values are usually
+     * between {@code 2} and {@code 3}. The default value is {@code 2}.
+     *
+     * @param moduleWidthRatio the ratio of wide bar width to narrow bar width
+     */
+    public void setModuleWidthRatio(double moduleWidthRatio) {
+        this.moduleWidthRatio = moduleWidthRatio;
+    }
+
+    /**
+     * Returns the ratio of wide bar width to narrow bar width.
+     *
+     * @return the ratio of wide bar width to narrow bar width
+     */
+    public double getModuleWidthRatio() {
+        return moduleWidthRatio;
+    }
+
+    /**
+     * Select addition of optional Modulo-43 check digit or encoding without
+     * check digit.
+     * @param checkMode Check digit option.
+     */
+    public void setCheckDigit(CheckDigit checkMode) {
+        checkOption = checkMode;
+    }
 
     @Override
     public boolean encode() {
@@ -81,9 +103,9 @@ public class Code3Of9 extends Symbol {
         dest = "1211212111"; // Start
         for (int i = 0; i < l; i++) {
             thischar = content.charAt(i);
-            charval = positionOf(thischar, LookUp);
+            charval = positionOf(thischar, LOOKUP);
             counter += charval;
-            p += Code39[charval];
+            p += CODE_39[charval];
         }
         dest += p;
 
@@ -109,8 +131,8 @@ public class Code3Of9 extends Symbol {
                 }
             }
 
-            charval = positionOf(check_digit, LookUp);
-            p += Code39[charval];
+            charval = positionOf(check_digit, LOOKUP);
+            p += CODE_39[charval];
 
             /* Display a space check digit as _, otherwise it looks like an error */
             if(check_digit == ' ') {
@@ -131,6 +153,16 @@ public class Code3Of9 extends Symbol {
         row_height = new int[] { -1 };
         plotSymbol();
         return true;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected double getModuleWidth(int originalWidth) {
+        if (originalWidth == 1) {
+            return 1;
+        } else {
+            return moduleWidthRatio;
+        }
     }
 
     /** {@inheritDoc} */

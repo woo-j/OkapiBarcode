@@ -1261,7 +1261,7 @@ public class Pdf417 extends Symbol {
 
             /* so now pattern[] holds the string of '1's and '0's. - copy this to the symbol */
             pattern[i] = bin2pat(bin);
-            row_height[i] = 2;
+            row_height[i] = default_height;
 
             /* Set up RAPs and Cluster for next row */
             LeftRAP++;

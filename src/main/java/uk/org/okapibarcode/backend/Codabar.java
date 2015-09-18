@@ -44,6 +44,28 @@ public class Codabar extends Symbol {
         '+', 'A', 'B', 'C', 'D'
     };
 
+    /** Ratio of wide bar width to narrow bar width. */
+    private double moduleWidthRatio = 2;
+
+    /**
+     * Sets the ratio of wide bar width to narrow bar width. Valid values are usually
+     * between {@code 2} and {@code 3}. The default value is {@code 2}.
+     *
+     * @param moduleWidthRatio the ratio of wide bar width to narrow bar width
+     */
+    public void setModuleWidthRatio(double moduleWidthRatio) {
+        this.moduleWidthRatio = moduleWidthRatio;
+    }
+
+    /**
+     * Returns the ratio of wide bar width to narrow bar width.
+     *
+     * @return the ratio of wide bar width to narrow bar width
+     */
+    public double getModuleWidthRatio() {
+        return moduleWidthRatio;
+    }
+
     @Override
     public boolean encode() {
         if (!(content.matches("[A-D]{1}[0-9:/\\$\\.\\+\u002D]+[A-D]{1}"))) {
@@ -64,6 +86,16 @@ public class Codabar extends Symbol {
         row_height = new int[] { -1 };
         plotSymbol();
         return true;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected double getModuleWidth(int originalWidth) {
+        if (originalWidth == 1) {
+            return 1;
+        } else {
+            return moduleWidthRatio;
+        }
     }
 
     /** {@inheritDoc} */

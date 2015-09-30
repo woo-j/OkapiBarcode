@@ -76,7 +76,8 @@ import com.google.zxing.pdf417.PDF417Reader;
  * that we need to generate suitable expectation files for it.
  *
  * <p>
- * A single properties file can contain multiple test configurations, as long as the expected output is the same for all of those tests.
+ * A single properties file can contain multiple test configurations (separated by an empty line), as long as the expected output
+ * is the same for all of those tests.
  */
 @RunWith(Parameterized.class)
 public class SymbolTest {

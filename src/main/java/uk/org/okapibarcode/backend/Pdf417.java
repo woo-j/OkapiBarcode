@@ -1333,7 +1333,7 @@ public class Pdf417 extends Symbol {
                 }
             }
         }
-        throw new OkapiException("Unable to determine MicroPDF417 variant");
+        throw new OkapiException("Unable to determine MicroPDF417 variant for " + codeWordCount + " codewords");
     }
 
     private void pdfSmooth() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Robin Stuart
+ * Copyright 2014 Robin Stuart, Daniel Gredler
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,10 @@ package uk.org.okapibarcode.backend;
  * Implements Code 11 bar code symbology.
  * <p>
  * Code 11 can encode any length string consisting of the digits 0-9 and the
- * dash character (-). One modulo-11 check digit is calculated.
+ * dash character (-). One or two modulo-11 check digits are calculated.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
+ * @author Daniel Gredler
  */
 public class Code11 extends Symbol {
 
@@ -37,6 +38,9 @@ public class Code11 extends Symbol {
 
     /** Ratio of wide bar width to narrow bar width. */
     private double moduleWidthRatio = 2;
+
+    /** The number of check digits to calculate ({@code 1} or {@code 2}). */
+    private int checkDigitCount = 2;
 
     /**
      * Sets the ratio of wide bar width to narrow bar width. Valid values are usually
@@ -57,68 +61,96 @@ public class Code11 extends Symbol {
         return moduleWidthRatio;
     }
 
+    /**
+     * Sets the number of check digits to calculate ({@code 1} or {@code 2}). The default value is {@code 2}.
+     *
+     * @param checkDigitCount the number of check digits to calculate
+     */
+    public void setCheckDigitCount(int checkDigitCount) {
+        if (checkDigitCount < 1 || checkDigitCount > 2) {
+            throw new IllegalArgumentException("Check digit count must be 1 or 2.");
+        }
+        this.checkDigitCount = checkDigitCount;
+    }
+
+    /**
+     * Returns the number of check digits to calculate (1 or 2).
+     *
+     * @return the number of check digits to calculate
+     */
+    public int getCheckDigitCount() {
+        return checkDigitCount;
+    }
+
     /** {@inheritDoc} */
     @Override
     public boolean encode() {
+
         if (!(content.matches("[0-9-]+"))) {
             error_msg = "Invalid characters in input";
             return false;
         }
 
-        String horizontalSpacing;
-        int i;
+        String horizontalSpacing = "112211";
+        String humanReadable = content;
         int length = content.length();
-        int checkDigitC, weightC = 1, countC = 0, checkDigitK, weightK = 1, countK = 0;
-        int[] weight = new int[128];
-        char thisCharacter;
+        int[] weight = new int[length + 1];
 
-        horizontalSpacing = "112211";
-        for (i = 0; i < length; i++) {
-            thisCharacter = content.charAt(i);
-            weight[i] = positionOf(thisCharacter, CHARACTER_SET);
+        for (int i = 0; i < length; i++) {
+            char c = content.charAt(i);
+            weight[i] = positionOf(c, CHARACTER_SET);
             horizontalSpacing += CODE_11_TABLE[weight[i]];
         }
 
-        /* Calculate C checksum */
-        for (i = length - 1; i >= 0; i--) {
+        int checkDigitC = getCheckDigitC(weight, length);
+        horizontalSpacing += CODE_11_TABLE[checkDigitC];
+        humanReadable += CHARACTER_SET[checkDigitC];
+        encodeInfo += "Check Digit C: " + checkDigitC + "\n";
+
+        if (checkDigitCount == 2) {
+            weight[length] = checkDigitC;
+            int checkDigitK = getCheckDigitK(weight, length + 1);
+            horizontalSpacing += CODE_11_TABLE[checkDigitK];
+            humanReadable += CHARACTER_SET[checkDigitK];
+            encodeInfo += "Check Digit K: " + checkDigitK + "\n";
+        }
+
+        horizontalSpacing += "112211";
+
+        readable = humanReadable;
+        pattern = new String[] { horizontalSpacing };
+        row_count = 1;
+        row_height = new int[] { -1 };
+
+        plotSymbol();
+
+        return true;
+    }
+
+    private static int getCheckDigitC(int[] weight, int length) {
+        int countC = 0;
+        int weightC = 1;
+        for (int i = length - 1; i >= 0; i--) {
             countC += (weightC * weight[i]);
             weightC++;
-
             if (weightC > 10) {
                 weightC = 1;
             }
         }
-        checkDigitC = countC % 11;
+        return countC % 11;
+    }
 
-        encodeInfo += "Check Digit C: " + checkDigitC + "\n";
-
-        weight[length] = checkDigitC;
-
-        /* Calculate K checksum */
-        for (i = length; i >= 0; i--) {
+    private static int getCheckDigitK(int[] weight, int length) {
+        int countK = 0;
+        int weightK = 1;
+        for (int i = length - 1; i >= 0; i--) {
             countK += (weightK * weight[i]);
             weightK++;
-
             if (weightK > 9) {
                 weightK = 1;
             }
         }
-        checkDigitK = countK % 11;
-
-        encodeInfo += "Check Digit K: " + checkDigitK + "\n";
-
-        horizontalSpacing += CODE_11_TABLE[checkDigitC];
-        horizontalSpacing += CODE_11_TABLE[checkDigitK];
-        horizontalSpacing += "112211";
-
-        readable = content + CHARACTER_SET[checkDigitC] + CHARACTER_SET[checkDigitK];
-        pattern = new String[1];
-        pattern[0] = horizontalSpacing;
-        row_count = 1;
-        row_height = new int[1];
-        row_height[0] = -1;
-        plotSymbol();
-        return true;
+        return countK % 11;
     }
 
     /** {@inheritDoc} */

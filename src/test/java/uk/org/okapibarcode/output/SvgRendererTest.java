@@ -19,9 +19,11 @@ package uk.org.okapibarcode.output;
 import static org.junit.Assert.assertEquals;
 
 import java.awt.Color;
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 
 import org.junit.Test;
@@ -86,12 +88,22 @@ public class SvgRendererTest {
         SvgRenderer renderer = new SvgRenderer(baos, magnification, margin, paper, ink);
         renderer.render(symbol);
         String actual = new String(baos.toByteArray(), StandardCharsets.UTF_8);
+        BufferedReader actualReader = new BufferedReader(new StringReader(actual));
 
         InputStream is = getClass().getResourceAsStream(expectationFile);
         byte[] expectedBytes = new byte[is.available()];
         is.read(expectedBytes);
         String expected = new String(expectedBytes, StandardCharsets.UTF_8);
+        BufferedReader expectedReader = new BufferedReader(new StringReader(expected));
 
-        assertEquals(expected, actual);
+        int line = 1;
+        String actualLine = actualReader.readLine();
+        String expectedLine = expectedReader.readLine();
+        while (actualLine != null && expectedLine != null) {
+            assertEquals("Line " + line, expectedLine, actualLine);
+            actualLine = actualReader.readLine();
+            expectedLine = expectedReader.readLine();
+            line++;
+        }
     }
 }

@@ -42,6 +42,12 @@ public class Code11 extends Symbol {
     /** The number of check digits to calculate ({@code 1} or {@code 2}). */
     private int checkDigitCount = 2;
 
+    /** Optional start delimiter to be shown in the human-readable text. */
+    private Character startDelimiter;
+
+    /** Optional stop delimiter to be shown in the human-readable text. */
+    private Character stopDelimiter;
+
     /**
      * Sets the ratio of wide bar width to narrow bar width. Valid values are usually
      * between {@code 2} and {@code 3}. The default value is {@code 2}.
@@ -82,6 +88,42 @@ public class Code11 extends Symbol {
         return checkDigitCount;
     }
 
+    /**
+     * Sets an optional start delimiter to be shown in the human-readable text (defaults to <code>null</code>).
+     *
+     * @param startDelimiter an optional start delimiter to be shown in the human-readable text
+     */
+    public void setStartDelimiter(Character startDelimiter) {
+        this.startDelimiter = startDelimiter;
+    }
+
+    /**
+     * Returns the optional start delimiter to be shown in the human-readable text.
+     *
+     * @return the optional start delimiter to be shown in the human-readable text
+     */
+    public Character getStartDelimiter() {
+        return startDelimiter;
+    }
+
+    /**
+     * Sets an optional stop delimiter to be shown in the human-readable text (defaults to <code>null</code>).
+     *
+     * @param stopDelimiter an optional stop delimiter to be shown in the human-readable text
+     */
+    public void setStopDelimiter(Character stopDelimiter) {
+        this.stopDelimiter = stopDelimiter;
+    }
+
+    /**
+     * Returns the optional stop delimiter to be shown in the human-readable text.
+     *
+     * @return the optional stop delimiter to be shown in the human-readable text
+     */
+    public Character getStopDelimiter() {
+        return stopDelimiter;
+    }
+
     /** {@inheritDoc} */
     @Override
     public boolean encode() {
@@ -118,6 +160,13 @@ public class Code11 extends Symbol {
         horizontalSpacing += "112211";
 
         readable = humanReadable;
+        if (startDelimiter != null) {
+            readable = startDelimiter + readable;
+        }
+        if (stopDelimiter != null) {
+            readable = readable + stopDelimiter;
+        }
+
         pattern = new String[] { horizontalSpacing };
         row_count = 1;
         row_height = new int[] { -1 };

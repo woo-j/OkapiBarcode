@@ -49,6 +49,7 @@ import com.google.zxing.oned.EAN8Reader;
 import com.google.zxing.oned.UPCAReader;
 import com.google.zxing.oned.UPCEReader;
 import com.google.zxing.pdf417.PDF417Reader;
+import com.google.zxing.qrcode.QRCodeReader;
 
 /**
  * <p>
@@ -208,6 +209,8 @@ public class SymbolTest {
             return new Code39Reader();
         } else if (symbol instanceof Codabar) {
             return new CodaBarReader();
+        } else if (symbol instanceof QrCode) {
+            return new QRCodeReader();
         } else if (symbol instanceof Ean) {
             Ean ean = (Ean) symbol;
             if (ean.getMode() == Ean.Mode.EAN8) {

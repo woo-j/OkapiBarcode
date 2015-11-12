@@ -597,7 +597,7 @@ public class Pdf417 extends Symbol {
 
         eciProcess();
 
-        int sourceLength = content.length();
+        int sourceLength = inputBytes.length;
         inputData = new int[sourceLength];
         for (int i = 0; i < sourceLength; i++) {
             inputData[i] = inputBytes[i] & 0xFF;
@@ -629,7 +629,7 @@ public class Pdf417 extends Symbol {
         int c1, c2, c3;
         int[] dummy = new int[35];
         String codebarre;
-        int length = content.length();
+        int length = inputData.length;
         EncodingMode currentEncodingMode;
         int selectedECCLevel;
         String bin;
@@ -949,7 +949,7 @@ public class Pdf417 extends Symbol {
         String codebarre;
         int[] dummy = new int[5];
         int[] mccorrection = new int[50];
-        int length = content.length();
+        int length = inputData.length;
         EncodingMode currentEncodingMode;
         String bin;
 
@@ -1674,12 +1674,12 @@ public class Pdf417 extends Symbol {
         mantisa = new BigInteger("0");
         total = new BigInteger("0");
 
-        if (content.length() == 1) {
+        if (inputData.length == 1) {
             codeWords[codeWordCount++] = 913;
             codeWords[codeWordCount++] = inputData[start];
         } else {
             /* select the switch for multiple of 6 bytes */
-            if ((content.length() % 6) == 0) {
+            if (inputData.length % 6 == 0) {
                 codeWords[codeWordCount++] = 924;
             } else {
                 codeWords[codeWordCount++] = 901;
@@ -1717,15 +1717,20 @@ public class Pdf417 extends Symbol {
     }
 
     private void processNumbers(int start, int length) {
-        String t = "1";
+
         BigInteger tVal, dVal;
         int[] d = new int[16];
-        int cw_count, i;
+        int cw_count;
 
         codeWords[codeWordCount++] = 902; /* Latch numeric mode */
 
-        t += content.substring(start, (start + length));
-        tVal = new BigInteger(t);
+        StringBuilder t = new StringBuilder(length + 1);
+        t.append('1');
+        for (int i = 0; i < length; i++) {
+            t.append((char) inputData[start + i]);
+        }
+
+        tVal = new BigInteger(t.toString());
 
         cw_count = 0;
         do {
@@ -1735,7 +1740,7 @@ public class Pdf417 extends Symbol {
             cw_count++;
         } while (tVal.compareTo(BigInteger.ZERO) == 1);
 
-        for (i = cw_count - 1; i >= 0; i--) {
+        for (int i = cw_count - 1; i >= 0; i--) {
             codeWords[codeWordCount++] = d[i];
         }
     }

@@ -414,8 +414,10 @@ public class DataBarExpanded extends Symbol {
                         left_to_right = true;
                         i = 2 + (current_block * 21);
                         for (j = 0; j < 21; j++) {
-                            sub_elements[j + (reader * 21) + 2] = elements[i + j];
-                            elements_in_sub++;
+                            if ((i + j) < pattern_width) {
+                                sub_elements[j + (reader * 21) + 2] = elements[i + j];
+                                elements_in_sub++;
+                            }
                         }
                     } else {
                         /* right to left */
@@ -424,8 +426,10 @@ public class DataBarExpanded extends Symbol {
                             /* a full row */
                             i = 2 + (((current_row * blocksPerRow) - reader - 1) * 21);
                             for (j = 0; j < 21; j++) {
-                                sub_elements[(20 - j) + (reader * 21) + 2] = elements[i + j];
-                                elements_in_sub++;
+                                if ((i + j) < pattern_width) {
+                                    sub_elements[(20 - j) + (reader * 21) + 2] = elements[i + j];
+                                    elements_in_sub++;
+                                }
                             }
                         } else {
                             /* a partial row */
@@ -433,8 +437,10 @@ public class DataBarExpanded extends Symbol {
                             l = (current_row * blocksPerRow) - reader - 1;
                             i = 2 + ((l - k) * 21);
                             for (j = 0; j < 21; j++) {
-                                sub_elements[(20 - j) + (reader * 21) + 2] = elements[i + j];
-                                elements_in_sub++;
+                                if ((i + j) < pattern_width) {
+                                    sub_elements[(20 - j) + (reader * 21) + 2] = elements[i + j];
+                                    elements_in_sub++;
+                                }
                             }
                         }
                     }
@@ -446,7 +452,7 @@ public class DataBarExpanded extends Symbol {
                 sub_elements[elements_in_sub] = 1;
                 sub_elements[elements_in_sub + 1] = 1;
                 elements_in_sub += 2;
-
+                
                 pattern[symbol_row + compositeOffset] = "";
                 black = true;
                 row_height[symbol_row + compositeOffset] = -1;

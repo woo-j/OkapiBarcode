@@ -1217,34 +1217,34 @@ public class MicroQrCode extends Symbol {
         }
 
         if (ecc_mode == EccMode.L) {
-            data_blocks[11] = 0;
+            data_blocks[10] = 0;
             if (binary.charAt(80) == '1') {
-                data_blocks[2] += 0x08;
+                data_blocks[10] += 0x08;
             }
             if (binary.charAt(81) == '1') {
-                data_blocks[2] += 0x04;
+                data_blocks[10] += 0x04;
             }
             if (binary.charAt(82) == '1') {
-                data_blocks[2] += 0x02;
+                data_blocks[10] += 0x02;
             }
             if (binary.charAt(83) == '1') {
-                data_blocks[2] += 0x01;
+                data_blocks[10] += 0x01;
             }
         }
 
         if (ecc_mode == EccMode.M) {
-            data_blocks[9] = 0;
+            data_blocks[8] = 0;
             if (binary.charAt(64) == '1') {
-                data_blocks[2] += 0x08;
+                data_blocks[8] += 0x08;
             }
             if (binary.charAt(65) == '1') {
-                data_blocks[2] += 0x04;
+                data_blocks[8] += 0x04;
             }
             if (binary.charAt(66) == '1') {
-                data_blocks[2] += 0x02;
+                data_blocks[8] += 0x02;
             }
             if (binary.charAt(67) == '1') {
-                data_blocks[2] += 0x01;
+                data_blocks[8] += 0x01;
             }
         }
         

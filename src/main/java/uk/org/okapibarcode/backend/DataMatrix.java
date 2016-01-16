@@ -1174,8 +1174,7 @@ public class DataMatrix extends Symbol {
         /* 'look ahead test' from Annex P */
 
         double ascii_count, c40_count, text_count, x12_count, edf_count, b256_count, best_count;
-        int sp, done;
-        char reduced_char;
+        int sp;
         int sourcelen = content.length();
         dm_mode best_scheme;
 
@@ -1217,92 +1216,69 @@ public class DataMatrix extends Symbol {
         for (sp = position;
                 (sp < sourcelen) && (sp <= (position + 8)); sp++) {
 
-            if (inputData[sp] <= 127) {
-                reduced_char = (char) inputData[sp];
-            } else {
-                reduced_char = (char) (inputData[sp] - 127);
-            }
-
-            /* ascii */
+            /* ascii ... step (l) */
             if ((inputData[sp] >= '0') && (inputData[sp] <= '9')) {
                 ascii_count += 0.5;
             } else {
-                ascii_count += 1.0;
-            }
-            if (inputData[sp] > 127) {
-                ascii_count += 1.0;
-            }
-
-            /* c40 */
-            done = 0;
-            if (reduced_char == ' ') {
-                c40_count += (2.0 / 3.0);
-                done = 1;
-            }
-            if ((reduced_char >= '0') && (reduced_char <= '9')) {
-                c40_count += (2.0 / 3.0);
-                done = 1;
-            }
-            if ((reduced_char >= 'A') && (reduced_char <= 'Z')) {
-                c40_count += (2.0 / 3.0);
-                done = 1;
-            }
-            if (inputData[sp] > 127) {
-                c40_count += (8.0 / 3.0);
-                done = 1;
-            }
-            if (done == 0) {
-                c40_count += (4.0 / 3.0);
+                if (inputData[sp] > 127) {
+                    ascii_count = Math.ceil(ascii_count) + 2.0;
+                } else {
+                    ascii_count = Math.ceil(ascii_count) + 1.0;
+                }
             }
 
-            /* text */
-            done = 0;
-            if (reduced_char == ' ') {
-                text_count += (2.0 / 3.0);
-                done = 1;
-            }
-            if ((reduced_char >= '0') && (reduced_char <= '9')) {
-                text_count += (2.0 / 3.0);
-                done = 1;
-            }
-            if ((reduced_char >= 'a') && (reduced_char <= 'z')) {
-                text_count += (2.0 / 3.0);
-                done = 1;
-            }
-            if (inputData[sp] > 127) {
-                text_count += (8.0 / 3.0);
-                done = 1;
-            }
-            if (done == 0) {
-                text_count += (4.0 / 3.0);
+            /* c40 ... step (m) */
+            if ((inputData[sp] == ' ') ||
+                   (((inputData[sp] >= '0') && (inputData[sp] <= '9')) ||
+                   ((inputData[sp] >= 'A') && (inputData[sp] <= 'Z')))) {
+                c40_count += (2.0 / 3.0);
+            } else {
+                if (inputData[sp] > 127) {
+                    c40_count += (8.0 / 3.0);
+                } else {
+                    c40_count += (4.0 / 3.0);
+                }
             }
 
-            /* x12 */
+            /* text ... step (n) */
+            if ((inputData[sp] == ' ') ||
+                   (((inputData[sp] >= '0') && (inputData[sp] <= '9')) ||
+                   ((inputData[sp] >= 'a') && (inputData[sp] <= 'z')))) {
+                text_count += (2.0 / 3.0);
+            } else {
+                if (inputData[sp] > 127) {
+                    text_count += (8.0 / 3.0);
+                } else {
+                    text_count += (4.0 / 3.0);
+                }
+            }
+
+            /* x12 ... step (o) */
             if (isX12(inputData[sp])) {
                 x12_count += (2.0 / 3.0);
             } else {
-                x12_count += (10.0 / 3.0);
-            }
-            if (inputData[sp] > 128) {
-                x12_count += (3.0 / 4.0);
+                if (inputData[sp] > 127) {
+                    x12_count += (13.0 / 3.0);
+                } else {
+                    x12_count += (10.0 / 3.0);
+                }
             }
 
-            /* edifact */
-            /* step (p) */
+            /* edifact ... step (p) */
             if ((inputData[sp] >= ' ') && (inputData[sp] <= '^')) {
                 edf_count += (3.0 / 4.0);
             } else {
-                edf_count += (13.0 / 4.0);
+                if (inputData[sp] > 127) {
+                    edf_count += (17.0 / 4.0);
+                } else {
+                    edf_count += (13.0 / 4.0);
+                }
             }
             if ((inputDataType == DataType.GS1) && (inputData[sp] == '[')) {
                 edf_count += 6.0;
             }
-            if (inputData[sp] > 128) {
-                edf_count += (4.0 / 3.0);
-            }
 
-            /* base 256 */
-            /* step (q) */
+            /* base 256 ... step (q) */
             if ((inputDataType == DataType.GS1) && (inputData[sp] == '[')) {
                 b256_count += 4.0;
             } else {

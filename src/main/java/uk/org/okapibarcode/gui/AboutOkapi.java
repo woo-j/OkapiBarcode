@@ -29,7 +29,7 @@ public class AboutOkapi extends javax.swing.JFrame {
         initComponents();
         titleLabel.setText("<html><b>Okapi Barcode</b><br><br>"
                 + "A free barcode generator<br>"
-                + "&copy; 2014 Robin Stuart &amp; Robert Elliott<br>"
+                + "&copy; 2006-2016 Robin Stuart &amp; Robert Elliott<br>"
                 + "Licensed under the Apache License, Version 2.0<br><br>"
                 + "&quot;QR Code&quot; is a registerered trademark of Denso Corp.<br>"
                 + "&quot;Telepen&quot; is a registered trademark of SB Electronics.<br></html>");

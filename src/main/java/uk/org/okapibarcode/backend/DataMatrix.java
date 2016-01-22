@@ -106,7 +106,7 @@ public class DataMatrix extends Symbol {
 
     private enum dm_mode {
 
-        DM_ASCII, DM_C40, DM_TEXT, DM_X12, DM_EDIFACT, DM_BASE256
+        NULL, DM_ASCII, DM_C40, DM_TEXT, DM_X12, DM_EDIFACT, DM_BASE256
     }
     private int[] target = new int[2200];
     private int[] binary = new int[2200];
@@ -1176,7 +1176,7 @@ public class DataMatrix extends Symbol {
         double ascii_count, c40_count, text_count, x12_count, edf_count, b256_count, best_count;
         int sp;
         int sourcelen = content.length();
-        dm_mode best_scheme;
+        dm_mode best_scheme = dm_mode.NULL;
 
         /* step (j) */
         if (current_mode == dm_mode.DM_ASCII) {
@@ -1213,107 +1213,218 @@ public class DataMatrix extends Symbol {
                 break;
         }
 
-        for (sp = position;
-                (sp < sourcelen) && (sp <= (position + 8)); sp++) {
+        sp = position;
 
-            /* ascii ... step (l) */
-            if ((inputData[sp] >= '0') && (inputData[sp] <= '9')) {
-                ascii_count += 0.5;
+        do {
+            if(sp == (sourcelen - 1)) {
+                /* At the end of data ... step (k) */
+                ascii_count = Math.ceil(ascii_count);
+                b256_count = Math.ceil(b256_count);
+                edf_count = Math.ceil(edf_count);
+                text_count = Math.ceil(text_count);
+                x12_count = Math.ceil(x12_count);
+                c40_count = Math.ceil(c40_count);
+
+                best_count = c40_count;
+                best_scheme = dm_mode.DM_C40;
+
+                if (x12_count < best_count) {
+                    best_count = x12_count;
+                    best_scheme = dm_mode.DM_X12;
+                }            
+
+                if (text_count < best_count) {
+                    best_count = text_count;
+                    best_scheme = dm_mode.DM_TEXT;
+                }
+
+                if (edf_count < best_count) {
+                    best_count = edf_count;
+                    best_scheme = dm_mode.DM_EDIFACT;
+                }
+
+                if (b256_count < best_count) {
+                    best_count = b256_count;
+                    best_scheme = dm_mode.DM_BASE256;
+                }
+
+                if (ascii_count < best_count) {
+                    best_scheme = dm_mode.DM_ASCII;
+                }
             } else {
-                if (inputData[sp] > 127) {
-                    ascii_count = Math.ceil(ascii_count) + 2.0;
+
+                /* ascii ... step (l) */
+                if ((inputData[sp] >= '0') && (inputData[sp] <= '9')) {
+                    ascii_count += 0.5;
                 } else {
-                    ascii_count = Math.ceil(ascii_count) + 1.0;
+                    if (inputData[sp] > 127) {
+                        ascii_count = Math.ceil(ascii_count) + 2.0;
+                    } else {
+                        ascii_count = Math.ceil(ascii_count) + 1.0;
+                    }
+                }
+
+                /* c40 ... step (m) */
+                if ((inputData[sp] == ' ') ||
+                       (((inputData[sp] >= '0') && (inputData[sp] <= '9')) ||
+                       ((inputData[sp] >= 'A') && (inputData[sp] <= 'Z')))) {
+                    c40_count += (2.0 / 3.0);
+                } else {
+                    if (inputData[sp] > 127) {
+                        c40_count += (8.0 / 3.0);
+                    } else {
+                        c40_count += (4.0 / 3.0);
+                    }
+                }
+
+                /* text ... step (n) */
+                if ((inputData[sp] == ' ') ||
+                       (((inputData[sp] >= '0') && (inputData[sp] <= '9')) ||
+                       ((inputData[sp] >= 'a') && (inputData[sp] <= 'z')))) {
+                    text_count += (2.0 / 3.0);
+                } else {
+                    if (inputData[sp] > 127) {
+                        text_count += (8.0 / 3.0);
+                    } else {
+                        text_count += (4.0 / 3.0);
+                    }
+                }
+
+                /* x12 ... step (o) */
+                if (isX12(inputData[sp])) {
+                    x12_count += (2.0 / 3.0);
+                } else {
+                    if (inputData[sp] > 127) {
+                        x12_count += (13.0 / 3.0);
+                    } else {
+                        x12_count += (10.0 / 3.0);
+                    }
+                }
+
+                /* edifact ... step (p) */
+                if ((inputData[sp] >= ' ') && (inputData[sp] <= '^')) {
+                    edf_count += (3.0 / 4.0);
+                } else {
+                    if (inputData[sp] > 127) {
+                        edf_count += (17.0 / 4.0);
+                    } else {
+                        edf_count += (13.0 / 4.0);
+                    }
+                }
+                if ((inputDataType == DataType.GS1) && (inputData[sp] == '[')) {
+                    edf_count += 6.0;
+                }
+
+                /* base 256 ... step (q) */
+                if ((inputDataType == DataType.GS1) && (inputData[sp] == '[')) {
+                    b256_count += 4.0;
+                } else {
+                    b256_count += 1.0;
                 }
             }
 
-            /* c40 ... step (m) */
-            if ((inputData[sp] == ' ') ||
-                   (((inputData[sp] >= '0') && (inputData[sp] <= '9')) ||
-                   ((inputData[sp] >= 'A') && (inputData[sp] <= 'Z')))) {
-                c40_count += (2.0 / 3.0);
-            } else {
-                if (inputData[sp] > 127) {
-                    c40_count += (8.0 / 3.0);
-                } else {
-                    c40_count += (4.0 / 3.0);
+
+            if (sp > (position + 3)) {
+                /* 4 data characters processed ... step (r) */
+
+                /* step (r)(6) */
+                if (((c40_count + 1.0) < ascii_count) &&
+                        ((c40_count + 1.0) < b256_count) &&
+                        ((c40_count + 1.0) < edf_count) &&
+                        ((c40_count + 1.0) < text_count)) {
+
+                    if (c40_count < x12_count) {
+                        best_scheme = dm_mode.DM_C40;
+                    }
+
+                    if (c40_count == x12_count) {
+                        if (j_r_6_2_1(position, sourcelen)) {
+                            // Test (r)(6)(ii)(i)
+                            best_scheme = dm_mode.DM_X12;
+                        } else {
+                            best_scheme = dm_mode.DM_C40;
+                        }
+                    }
                 }
-            }
 
-            /* text ... step (n) */
-            if ((inputData[sp] == ' ') ||
-                   (((inputData[sp] >= '0') && (inputData[sp] <= '9')) ||
-                   ((inputData[sp] >= 'a') && (inputData[sp] <= 'z')))) {
-                text_count += (2.0 / 3.0);
-            } else {
-                if (inputData[sp] > 127) {
-                    text_count += (8.0 / 3.0);
-                } else {
-                    text_count += (4.0 / 3.0);
+                /* step (r)(5) */
+                if (((x12_count + 1.0) < ascii_count) &&
+                        ((x12_count + 1.0) < b256_count) &&
+                        ((x12_count + 1.0) < edf_count) && 
+                        ((x12_count + 1.0) < text_count) &&
+                        ((x12_count + 1.0) < c40_count)) {
+                    best_scheme = dm_mode.DM_X12;
                 }
-            }
 
-            /* x12 ... step (o) */
-            if (isX12(inputData[sp])) {
-                x12_count += (2.0 / 3.0);
-            } else {
-                if (inputData[sp] > 127) {
-                    x12_count += (13.0 / 3.0);
-                } else {
-                    x12_count += (10.0 / 3.0);
+                /* step (r)(4) */
+                if (((text_count + 1.0) < ascii_count) &&
+                        ((text_count + 1.0) < b256_count) &&
+                        ((text_count + 1.0) < edf_count) && 
+                        ((text_count + 1.0) < x12_count) &&
+                        ((text_count + 1.0) < c40_count)) {
+                    best_scheme = dm_mode.DM_TEXT;
                 }
-            }
 
-            /* edifact ... step (p) */
-            if ((inputData[sp] >= ' ') && (inputData[sp] <= '^')) {
-                edf_count += (3.0 / 4.0);
-            } else {
-                if (inputData[sp] > 127) {
-                    edf_count += (17.0 / 4.0);
-                } else {
-                    edf_count += (13.0 / 4.0);
+                /* step (r)(3) */
+                if (((edf_count + 1.0) < ascii_count) &&
+                        ((edf_count + 1.0) < b256_count) &&
+                        ((edf_count + 1.0) < text_count) && 
+                        ((edf_count + 1.0) < x12_count) &&
+                        ((edf_count + 1.0) < c40_count)) {
+                    best_scheme = dm_mode.DM_EDIFACT;
                 }
+
+                /* step (r)(2) */
+                if (((b256_count + 1.0) <= ascii_count) || 
+                        (((b256_count + 1.0) < edf_count) &&
+                        ((b256_count + 1.0) < text_count) && 
+                        ((b256_count + 1.0) < x12_count) &&
+                        ((b256_count + 1.0) < c40_count))) {
+                    best_scheme = dm_mode.DM_BASE256;
+                }
+
+                /* step (r)(1) */
+                if (((ascii_count + 1.0) <= b256_count) &&
+                        ((ascii_count + 1.0) <= edf_count) &&
+                        ((ascii_count + 1.0) <= text_count) && 
+                        ((ascii_count + 1.0) <= x12_count) &&
+                        ((ascii_count + 1.0) <= c40_count)) {
+                   best_scheme = dm_mode.DM_ASCII;
+               }
             }
-            if ((inputDataType == DataType.GS1) && (inputData[sp] == '[')) {
-                edf_count += 6.0;
-            }
 
-            /* base 256 ... step (q) */
-            if ((inputDataType == DataType.GS1) && (inputData[sp] == '[')) {
-                b256_count += 4.0;
-            } else {
-                b256_count += 1.0;
-            }
-        }
-
-        best_count = ascii_count;
-        best_scheme = dm_mode.DM_ASCII;
-
-        if (b256_count <= best_count) {
-            best_count = b256_count;
-            best_scheme = dm_mode.DM_BASE256;
-        }
-
-        if (edf_count <= best_count) {
-            best_count = edf_count;
-            best_scheme = dm_mode.DM_EDIFACT;
-        }
-
-        if (text_count <= best_count) {
-            best_count = text_count;
-            best_scheme = dm_mode.DM_TEXT;
-        }
-
-        if (x12_count <= best_count) {
-            best_count = x12_count;
-            best_scheme = dm_mode.DM_X12;
-        }
-
-        if (c40_count <= best_count) {
-            best_scheme = dm_mode.DM_C40;
-        }
-
+            sp++;
+        } while (best_scheme == dm_mode.NULL); // step (s)
+        
         return best_scheme;
+    }
+    
+    private boolean j_r_6_2_1(int position, int sourcelen) {
+        /* Annex J section (r)(6)(ii)(I)
+           "If one of the three X12 terminator/separator characters first
+            occurs in the yet to be processed data before a non-X12 character..."
+        */
+        int i;
+        int special = 0;
+        boolean specialFound = false;
+        boolean retVal = false;
+        
+        for (i = position + 3; i >= position; i--) {
+            if ((inputData[i] == (char) 13) ||
+                    (inputData[i] == '*') ||
+                    (inputData[i] == '>')) {
+                special = i;
+                specialFound = true;
+            }
+        }
+        
+        if ((specialFound) && (special != (sourcelen - 1))) {
+            if (!isX12(inputData[special + 1])) {
+                retVal = true;
+            }
+        }
+        
+        return retVal;
     }
 
     private boolean isX12(int source) {

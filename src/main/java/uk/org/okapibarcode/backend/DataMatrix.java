@@ -1338,7 +1338,7 @@ public class DataMatrix extends Symbol {
                     }
 
                     if (c40_count == x12_count) {
-                        if (j_r_6_2_1(position, sourcelen)) {
+                        if (p_r_6_2_1(position, sourcelen)) {
                             // Test (r)(6)(ii)(i)
                             best_scheme = dm_mode.DM_X12;
                         } else {
@@ -1399,8 +1399,8 @@ public class DataMatrix extends Symbol {
         return best_scheme;
     }
     
-    private boolean j_r_6_2_1(int position, int sourcelen) {
-        /* Annex J section (r)(6)(ii)(I)
+    private boolean p_r_6_2_1(int position, int sourcelen) {
+        /* Annex P section (r)(6)(ii)(I)
            "If one of the three X12 terminator/separator characters first
             occurs in the yet to be processed data before a non-X12 character..."
         */

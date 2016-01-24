@@ -40,6 +40,7 @@ public class QrCode extends Symbol {
         L, M, Q, H
     }
     private qrMode[] inputMode;
+    private qrMode[] proposedMode;
     private String binary;
     private int[] datastream;
     private int[] fullstream;
@@ -449,9 +450,16 @@ public class QrCode extends Symbol {
         int size;
         int bitmask;
         String bin;
+        boolean canShrink;
+        
+        /* This code uses modeFirstFix to make an estimate of the symbol size
+           needed to contain the data. It then optimises the encoding and
+           checks to see if the the data will fit in a smaller
+           symbol, recalculating the binary length if necessary.
+        */
         
         inputMode = new qrMode[content.length()];
-        define_mode();
+        modeFirstFix();
         est_binlen = estimate_binary_length();
 
         ecc_level = preferredEccLevel;
@@ -471,11 +479,6 @@ public class QrCode extends Symbol {
             default:
                 max_cw = 2956;
                 break;
-        }
-
-        if (est_binlen > (8 * max_cw)) {
-            error_msg = "Input too long for selected error correction level";
-            return false;
         }
 
         autosize = 40;
@@ -503,11 +506,73 @@ public class QrCode extends Symbol {
                     break;
             }
         }
+        
+        // The first guess of symbol size is in autosize. Use this to optimise.
+        
+        est_binlen = getBinaryLength(autosize);
+        
+        if (est_binlen > (8 * max_cw)) {
+            error_msg = "Input too long for selected error correction level";
+            return false;
+        }
 
+        // Now see if the optimised binary will fit in a smaller symbol.
+        canShrink = true;
+        
+        do {
+            if (autosize == 1) {
+                canShrink = false;
+            } else {
+                if (tribus(autosize - 1, 1, 2, 3) != tribus(autosize, 1, 2, 3)) {
+                    // Length of binary needed to encode the data in the smaller symbol is different, recalculate
+                    est_binlen = getBinaryLength(autosize - 1);
+                }
+
+                switch (ecc_level) {
+                    case L:
+                        if ((8 * qr_data_codewords_L[autosize - 2]) < est_binlen) {
+                            canShrink = false;
+                        }
+                        break;
+                    case M:
+                        if ((8 * qr_data_codewords_M[autosize - 2]) < est_binlen) {
+                            canShrink = false;
+                        }
+                        break;
+                    case Q:
+                        if ((8 * qr_data_codewords_Q[autosize - 2]) < est_binlen) {
+                            canShrink = false;
+                        }
+                        break;
+                    case H:
+                        if ((8 * qr_data_codewords_H[autosize - 2]) < est_binlen) {
+                            canShrink = false;
+                        }
+                        break;
+                }
+
+                if (canShrink) {
+                    // Optimisation worked - data will fit in a smaller symbol
+                    autosize--;
+                } else {
+                    // Data did not fit in the smaller symbol, revert to original size
+                    if (tribus(autosize - 1, 1, 2, 3) != tribus(autosize, 1, 2, 3)) {
+                        est_binlen = getBinaryLength(autosize);
+                    }
+                }
+            }
+        } while (canShrink);
+        
         version = autosize;
+
         if ((preferredVersion >= 1) && (preferredVersion <= 40)) {
-            if (preferredVersion > autosize) {
+            /* If the user has selected a larger symbol than the smallest available,
+               then use the size the user has selected, and re-optimise for this
+               symbol size.
+            */
+            if (preferredVersion > version) {
                 version = preferredVersion;
+                est_binlen = getBinaryLength(preferredVersion);
             }
         }
 
@@ -607,8 +672,8 @@ public class QrCode extends Symbol {
         return true;
     }
 
-    private void define_mode() {
-        int i, mlen, j;
+    private void modeFirstFix() {
+        int i;
 
         eciProcess(); // Get ECI mode
         
@@ -629,66 +694,238 @@ public class QrCode extends Symbol {
         }
 
         inputMode = new qrMode[inputLength];
-
+        
         for (i = 0; i < inputLength; i++) {
             if (inputData[i] > 0xff) {
                 inputMode[i] = qrMode.KANJI;
             } else {
                 inputMode[i] = qrMode.BINARY;
-                if (in_alpha((char) (inputData[i] & 0xFF))) {
+                if (isXAlpha((char) (inputData[i] & 0xFF))) {
                     inputMode[i] = qrMode.ALPHANUM;
                 }
                 if ((inputDataType == DataType.GS1) && (inputData[i] == '[')) {
                     inputMode[i] = qrMode.ALPHANUM;
                 }
-                if ((inputData[i] >= '0') && (inputData[i] <= '9')) {
+                if (isXNumeric((char) (inputData[i] & 0xff))) {
                     inputMode[i] = qrMode.NUMERIC;
                 }
             }
+        }        
+    }
+    
+    private int getBinaryLength(int version) {
+        /* Calculate the actial bitlength of the proposed binary string */
+        qrMode currentMode;
+        int i, j;
+        int count = 0;
+
+        applyOptimisation(version);
+        
+        currentMode = qrMode.NULL;
+        
+        if (eciMode != 3) {
+            count += 12;
+        }
+        
+        if (inputDataType == DataType.GS1) {
+            count += 4;
         }
 
-        /* If less than 6 numeric digits together then don't use numeric mode */
         for (i = 0; i < inputLength; i++) {
-            if (inputMode[i] == qrMode.NUMERIC) {
-                if (((i != 0) && (inputMode[i - 1] != qrMode.NUMERIC)) || (i == 0)) {
-                    mlen = 0;
-                    while (((mlen + i) < inputLength) && (inputMode[mlen + i] == qrMode.NUMERIC)) {
-                        mlen++;
-                    }
-                    if (mlen < 6) {
-                        for (j = 0; j < mlen; j++) {
-                            inputMode[i + j] = qrMode.ALPHANUM;
+            if (inputMode[i] != currentMode) {
+                count += 4;
+                switch (inputMode[i]) {
+                    case KANJI:
+                        count += tribus(version, 8, 10, 12);
+                        count += (blockLength(i) * 13);
+                        break;
+                    case BINARY:
+                        count += tribus(version, 8, 16, 16);
+                        for (j = i; j < (i + blockLength(i)); j++) {
+                            if (inputData[j] > 0xff) {
+                                count += 16;
+                            } else {
+                                count += 8;
+                            }
                         }
+                        break;
+                    case ALPHANUM:
+                        count += tribus(version, 9, 11, 13);
+                        switch (blockLength(i) % 2) {
+                            case 0:
+                                count += (blockLength(i) / 2) * 11;
+                                break;
+                            case 1:
+                                count += ((blockLength(i) - 1) / 2) * 11;
+                                count += 6;
+                                break;
+                        } 
+                        break;
+                    case NUMERIC:
+                        count += tribus(version, 10, 12, 14);
+                        switch (blockLength(i) % 3) {
+                            case 0:
+                                count += (blockLength(i) / 3) * 10;
+                                break;
+                            case 1:
+                                count += ((blockLength(i) - 1) / 3) * 10;
+                                count += 4;
+                                break;
+                            case 2:
+                                count += ((blockLength(i) - 2) / 3) * 10;
+                                count += 7;
+                                break;
+                        }
+                        break;
+                }
+                currentMode = inputMode[i];
+            }
+        }
+
+        return count;
+    }
+    
+    private void applyOptimisation(int version) {
+        /* Implements a custom optimisation algorithm, because implementation
+           of the algorithm shown in Annex J.2 created LONGER binary sequences.
+        */
+        
+        int blockCount = 0;
+        int i, j;
+        qrMode currentMode = qrMode.NULL;
+        
+        for (i = 0; i < inputLength; i++) {
+            if (inputMode[i] != currentMode) {
+                currentMode = inputMode[i];
+                blockCount++;
+            }
+        }
+        
+        
+        int[] blockLength = new int[blockCount];
+        qrMode[] blockMode = new qrMode[blockCount];
+
+        j = -1;
+        currentMode = qrMode.NULL;
+        for (i = 0; i < inputLength; i++) {
+            if (inputMode[i] != currentMode) {
+                j++;
+                blockLength[j] = 1;
+                blockMode[j] = inputMode[i];
+                currentMode = inputMode[i];
+            } else {
+                blockLength[j]++;
+            }
+        }
+
+        if (blockCount > 1) {
+            // Search forward
+            for(i = 0; i <= (blockCount - 2); i++) {
+                if (blockMode[i] == qrMode.BINARY) {
+                    switch (blockMode[i + 1]) {
+                        case KANJI:
+                            if (blockLength[i + 1] < tribus(version, 4, 5, 6)) {
+                                blockMode[i + 1] = qrMode.BINARY;
+                            }
+                            break;
+                        case ALPHANUM:
+                            if (blockLength[i + 1] < tribus(version, 7, 8, 9)) {
+                                blockMode[i + 1] = qrMode.BINARY;
+                            }
+                            break;
+                        case NUMERIC:
+                            if (blockLength[i + 1] < tribus(version, 3, 4, 5)) {
+                                blockMode[i + 1] = qrMode.BINARY;
+                            }
+                            break;
+                    }
+                }
+                
+                if ((blockMode[i] == qrMode.ALPHANUM) &&
+                        (blockMode[i + 1] == qrMode.NUMERIC)) {
+                    if (blockLength[i + 1] < tribus(version, 6, 8, 10)) {
+                        blockMode[i + 1] = qrMode.ALPHANUM;
+                    }
+                }
+            }
+            
+            // Search backward
+            for(i = blockCount - 1; i > 0; i--) {
+                if (blockMode[i] == qrMode.BINARY) {
+                    switch (blockMode[i - 1]) {
+                        case KANJI:
+                            if (blockLength[i - 1] < tribus(version, 4, 5, 6)) {
+                                blockMode[i - 1] = qrMode.BINARY;
+                            }
+                            break;
+                        case ALPHANUM:
+                            if (blockLength[i - 1] < tribus(version, 7, 8, 9)) {
+                                blockMode[i - 1] = qrMode.BINARY;
+                            }
+                            break;
+                        case NUMERIC:
+                            if (blockLength[i - 1] < tribus(version, 3, 4, 5)) {
+                                blockMode[i - 1] = qrMode.BINARY;
+                            }
+                            break;
+                    }
+                }
+                
+                if ((blockMode[i] == qrMode.ALPHANUM) &&
+                        (blockMode[i - 1] == qrMode.NUMERIC)) {
+                    if (blockLength[i - 1] < tribus(version, 6, 8, 10)) {
+                        blockMode[i - 1] = qrMode.ALPHANUM;
                     }
                 }
             }
         }
-
-        /* If less than 4 alphanumeric characters together then don't use alphanumeric mode */
-        for (i = 0; i < inputLength; i++) {
-            if (inputMode[i] == qrMode.ALPHANUM) {
-                if (((i != 0) && (inputMode[i - 1] != qrMode.ALPHANUM)) || (i == 0)) {
-                    mlen = 0;
-                    while (((mlen + i) < inputLength) && (inputMode[mlen + i] == qrMode.ALPHANUM)) {
-                        mlen++;
-                    }
-                    if (mlen < 6) {
-                        for (j = 0; j < mlen; j++) {
-                            inputMode[i + j] = qrMode.BINARY;
-                        }
-                    }
-                }
+        
+        j = 0;
+        for(int block = 0; block < blockCount; block++) {
+            currentMode = blockMode[block];
+            for(i = 0; i < blockLength[block]; i++) {
+                inputMode[j] = currentMode;
+                j++;
             }
         }
     }
+    
+    private int blockLength(int start) {
+        /* Find the length of the block starting from 'start' */
+        int i, count;
+        qrMode mode = inputMode[start];
+        
+        count = 0;
+        i = start;
+        
+        do {
+            count++;
+        } while (((i + count) < inputLength) && (inputMode[i + count] == mode));
+        
+        return count;
+    }
+    
+    private int tribus(int version, int a, int b, int c) {
+        /* Choose from three numbers based on version */
+        int RetVal;
+        
+        RetVal = c;
+        
+        if (version < 10) {
+            RetVal = a;
+        }
+        
+        if ((version >= 10) && (version <= 26)) {
+            RetVal = b;
+        }
+        
+        return RetVal;
+    }
 
-    private boolean in_alpha(char cglyph) {
-        /* Returns true if input glyph is in the Alphanumeric set */
+    private boolean isXAlpha(char cglyph) {
+        /* Returns true if input is in exclusive Alphanumeric set (Table J.1) */
         boolean retval = false;
 
-        if ((cglyph >= '0') && (cglyph <= '9')) {
-            retval = true;
-        }
         if ((cglyph >= 'A') && (cglyph <= 'Z')) {
             retval = true;
         }
@@ -708,6 +945,19 @@ public class QrCode extends Symbol {
 
         return retval;
     }
+    
+    private boolean isXNumeric(char cglyph) {
+        /* Returns true if input is in exclusive Numeric set (Table J.1) */
+        boolean retval;
+        
+        if ((cglyph >= '0') && (cglyph <= '9')) {
+            retval = true;
+        } else {
+            retval = false;
+        }
+        
+        return retval;
+    }
 
     private int estimate_binary_length() {
         /* Make an estimate (worst case scenario) of how long the binary string will be */
@@ -716,6 +966,10 @@ public class QrCode extends Symbol {
         int a_count = 0;
         int n_count = 0;
 
+        if (eciMode != 3) {
+            count += 12;
+        }
+        
         if (inputDataType == DataType.GS1) {
             count += 4;
         }
@@ -795,7 +1049,17 @@ public class QrCode extends Symbol {
 
         binary = "";
 
-        if ((eciMode != 3) && (eciMode != 20)) {
+        /* Note: Shift-JIS characters can be encoded in either Kanji
+           mode or Byte mode. If no ECI code is given, a sequence in Byte
+           mode could be interpreted in two ways - for example 0xE4 0x6E
+           could refer to U+E4 and U+6E (än) or U+8205 (舅). To avoid
+           Mojibake, if using ECI 20 (i.e. if only valid Shift-JIS
+           characters are found in the input data), this code will insert
+           an explicit ECI 20 instruction. Symbols without an ECI can then
+           be assumed to be ECI 3 (ISO 8859-1).
+        */
+        
+        if (eciMode != 3) {
             binary += "0111"; /* ECI */
             
             if ((eciMode >= 0) && (eciMode <= 127)) {
@@ -826,26 +1090,6 @@ public class QrCode extends Symbol {
         } else if (version >= 27) {
             scheme = 3;
         }
-
-//        if (debug) {
-//            for (i = 0; i < inputLength; i++) {
-//                switch (inputMode[i]) {
-//                    case KANJI:
-//                        System.out.print("K");
-//                        break;
-//                    case BINARY:
-//                        System.out.print("B");
-//                        break;
-//                    case ALPHANUM:
-//                        System.out.print("A");
-//                        break;
-//                    case NUMERIC:
-//                        System.out.print("N");
-//                        break;
-//                }
-//            }
-//            System.out.printf("\n");
-//        }
 
         encodeInfo += "Encoding: ";
         
@@ -903,24 +1147,51 @@ public class QrCode extends Symbol {
                     /* Byte mode */
                     /* Mode indicator */
                     binary += "0100";
+                    int kanjiModifiedLength = short_data_block_length;
+                    
+                    for (i = 0; i < short_data_block_length; i++) {
+                        if (inputData[position + i] > 0xff) {
+                            kanjiModifiedLength++;
+                        }
+                    }
 
                     /* Character count indicator */
-                    qr_bscan(short_data_block_length, scheme > 1 ? 0x8000 : 0x80); /* scheme = 1..3 */
+                    qr_bscan(kanjiModifiedLength, scheme > 1 ? 0x8000 : 0x80); /* scheme = 1..3 */
 
                     encodeInfo += "BYTE ";
 
                     /* Character representation */
                     for (i = 0; i < short_data_block_length; i++) {
-                        int lbyte = (int) (inputData[position + i] & 0xFF);
+                        if (inputData[position + i] > 0xff) {
+                            // Convert Kanji character to Shift-JIS
+                            oneChar = "";
+                            oneChar += (char) inputData[position + i];
 
-                        if ((inputDataType == DataType.GS1) && (lbyte == '[')) {
-                            lbyte = 0x1d; /* FNC1 */
+                            /* Convert Unicode input to Shift-JIS */
+                            try {
+                                jisBytes = oneChar.getBytes("SJIS");
+                            } catch (UnsupportedEncodingException e) {
+                                error_msg = "Shift-JIS character conversion error";
+                                return false;
+                            }
+                            
+                            qr_bscan((int) jisBytes[0] & 0xff, 0x80);
+                            qr_bscan((int) jisBytes[1] & 0xff, 0x80);
+                            
+                            encodeInfo += "(" + Integer.toString((int) jisBytes[0] & 0xff) + " ";
+                            encodeInfo += Integer.toString((int) jisBytes[1] & 0xff) + ") ";
+                        } else {
+                            // Process 8-bit byte
+                            int lbyte = (int) (inputData[position + i] & 0xFF);
 
+                            if ((inputDataType == DataType.GS1) && (lbyte == '[')) {
+                                lbyte = 0x1d; /* FNC1 */
+                            }
+
+                            qr_bscan(lbyte, 0x80);
+
+                            encodeInfo += Integer.toString(lbyte) + " ";
                         }
-
-                        qr_bscan(lbyte, 0x80);
-
-                        encodeInfo += Integer.toString(lbyte) + " ";
                     }
 
                     break;
@@ -1053,7 +1324,7 @@ public class QrCode extends Symbol {
         } while (position < inputLength);
         
         encodeInfo += "\n";
-
+        
         /* Terminator */
         binary += "0000";
 

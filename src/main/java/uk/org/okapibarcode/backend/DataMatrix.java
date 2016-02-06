@@ -1196,19 +1196,19 @@ public class DataMatrix extends Symbol {
         }
 
         switch (current_mode) {
-            case DM_C40:
+            case DM_C40: // (j)(2)
                 c40_count = 0.0;
                 break;
-            case DM_TEXT:
+            case DM_TEXT: // (j)(3)
                 text_count = 0.0;
                 break;
-            case DM_X12:
+            case DM_X12: // (j)(4)
                 x12_count = 0.0;
                 break;
-            case DM_EDIFACT:
+            case DM_EDIFACT: // (j)(5)
                 edf_count = 0.0;
                 break;
-            case DM_BASE256:
+            case DM_BASE256: // (j)(6)
                 b256_count = 0.0;
                 break;
         }
@@ -1226,41 +1226,41 @@ public class DataMatrix extends Symbol {
                 c40_count = Math.ceil(c40_count);
 
                 best_count = c40_count;
-                best_scheme = dm_mode.DM_C40;
+                best_scheme = dm_mode.DM_C40; // (k)(7)
 
                 if (x12_count < best_count) {
                     best_count = x12_count;
-                    best_scheme = dm_mode.DM_X12;
+                    best_scheme = dm_mode.DM_X12; // (k)(6)
                 }            
 
                 if (text_count < best_count) {
                     best_count = text_count;
-                    best_scheme = dm_mode.DM_TEXT;
+                    best_scheme = dm_mode.DM_TEXT; // (k)(5)
                 }
 
                 if (edf_count < best_count) {
                     best_count = edf_count;
-                    best_scheme = dm_mode.DM_EDIFACT;
+                    best_scheme = dm_mode.DM_EDIFACT; // (k)(4)
                 }
 
                 if (b256_count < best_count) {
                     best_count = b256_count;
-                    best_scheme = dm_mode.DM_BASE256;
+                    best_scheme = dm_mode.DM_BASE256; // (k)(3)
                 }
 
-                if (ascii_count < best_count) {
-                    best_scheme = dm_mode.DM_ASCII;
+                if (ascii_count <= best_count) {
+                    best_scheme = dm_mode.DM_ASCII; // (k)(2)
                 }
             } else {
 
                 /* ascii ... step (l) */
                 if ((inputData[sp] >= '0') && (inputData[sp] <= '9')) {
-                    ascii_count += 0.5;
+                    ascii_count += 0.5; // (l)(1)
                 } else {
                     if (inputData[sp] > 127) {
-                        ascii_count = Math.ceil(ascii_count) + 2.0;
+                        ascii_count = Math.ceil(ascii_count) + 2.0; // (l)(2)
                     } else {
-                        ascii_count = Math.ceil(ascii_count) + 1.0;
+                        ascii_count = Math.ceil(ascii_count) + 1.0; // (l)(3)
                     }
                 }
 
@@ -1268,12 +1268,12 @@ public class DataMatrix extends Symbol {
                 if ((inputData[sp] == ' ') ||
                        (((inputData[sp] >= '0') && (inputData[sp] <= '9')) ||
                        ((inputData[sp] >= 'A') && (inputData[sp] <= 'Z')))) {
-                    c40_count += (2.0 / 3.0);
+                    c40_count += (2.0 / 3.0); // (m)(1)
                 } else {
                     if (inputData[sp] > 127) {
-                        c40_count += (8.0 / 3.0);
+                        c40_count += (8.0 / 3.0); // (m)(2)
                     } else {
-                        c40_count += (4.0 / 3.0);
+                        c40_count += (4.0 / 3.0); // (m)(3)
                     }
                 }
 
@@ -1281,34 +1281,34 @@ public class DataMatrix extends Symbol {
                 if ((inputData[sp] == ' ') ||
                        (((inputData[sp] >= '0') && (inputData[sp] <= '9')) ||
                        ((inputData[sp] >= 'a') && (inputData[sp] <= 'z')))) {
-                    text_count += (2.0 / 3.0);
+                    text_count += (2.0 / 3.0); // (n)(1)
                 } else {
                     if (inputData[sp] > 127) {
-                        text_count += (8.0 / 3.0);
+                        text_count += (8.0 / 3.0); // (n)(2)
                     } else {
-                        text_count += (4.0 / 3.0);
+                        text_count += (4.0 / 3.0); // (n)(3)
                     }
                 }
 
                 /* x12 ... step (o) */
                 if (isX12(inputData[sp])) {
-                    x12_count += (2.0 / 3.0);
+                    x12_count += (2.0 / 3.0); // (o)(1)
                 } else {
                     if (inputData[sp] > 127) {
-                        x12_count += (13.0 / 3.0);
+                        x12_count += (13.0 / 3.0); // (o)(2)
                     } else {
-                        x12_count += (10.0 / 3.0);
+                        x12_count += (10.0 / 3.0); // (o)(3)
                     }
                 }
 
                 /* edifact ... step (p) */
                 if ((inputData[sp] >= ' ') && (inputData[sp] <= '^')) {
-                    edf_count += (3.0 / 4.0);
+                    edf_count += (3.0 / 4.0); // (p)(1)
                 } else {
                     if (inputData[sp] > 127) {
-                        edf_count += (17.0 / 4.0);
+                        edf_count += (17.0 / 4.0); // (p)(2)
                     } else {
-                        edf_count += (13.0 / 4.0);
+                        edf_count += (13.0 / 4.0); // (p)(3)
                     }
                 }
                 if ((inputDataType == DataType.GS1) && (inputData[sp] == '[')) {
@@ -1317,9 +1317,9 @@ public class DataMatrix extends Symbol {
 
                 /* base 256 ... step (q) */
                 if ((inputDataType == DataType.GS1) && (inputData[sp] == '[')) {
-                    b256_count += 4.0;
+                    b256_count += 4.0; // (q)(1)
                 } else {
-                    b256_count += 1.0;
+                    b256_count += 1.0; // (q)(2)
                 }
             }
 
@@ -1338,7 +1338,7 @@ public class DataMatrix extends Symbol {
                     }
 
                     if (c40_count == x12_count) {
-                        if (p_r_6_2_1(position, sourcelen)) {
+                        if (p_r_6_2_1(sp, sourcelen)) {
                             // Test (r)(6)(ii)(i)
                             best_scheme = dm_mode.DM_X12;
                         } else {
@@ -1404,27 +1404,35 @@ public class DataMatrix extends Symbol {
            "If one of the three X12 terminator/separator characters first
             occurs in the yet to be processed data before a non-X12 character..."
         */
-        int i;
-        int special = 0;
-        boolean specialFound = false;
-        boolean retVal = false;
         
-        for (i = position + 3; i >= position; i--) {
-            if ((inputData[i] == (char) 13) ||
+        int i;
+        int nonX12Position = 0;
+        int specialX12Position = 0;
+        boolean retval = false;
+        
+        for (i = position; i < sourcelen; i++) {
+            if (nonX12Position == 0) {
+                if (!isX12(i)) {
+                    nonX12Position = i;
+                }
+            }
+            
+            if (specialX12Position == 0) {
+                if ((inputData[i] == (char) 13) ||
                     (inputData[i] == '*') ||
                     (inputData[i] == '>')) {
-                special = i;
-                specialFound = true;
+                    specialX12Position = i;
+                }
             }
         }
         
-        if ((specialFound) && (special != (sourcelen - 1))) {
-            if (!isX12(inputData[special + 1])) {
-                retVal = true;
+        if ((nonX12Position != 0) && (specialX12Position != 0)) {
+            if (specialX12Position < nonX12Position) {
+                retval = true;
             }
         }
         
-        return retVal;
+        return retval;
     }
 
     private boolean isX12(int source) {

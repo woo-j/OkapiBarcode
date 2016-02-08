@@ -19,7 +19,22 @@ dependencies {
 
 sourceCompatibility = 7
 targetCompatibility = 7
+
+// When using JDK8+ as the primary JDK, JDK7 should be installed as a secondary JDK to compile
+// against (to make sure that we're not inadvertently using newer APIs), and the JDK7_HOME
+// environment variable should be set to the home directory of this secondary JDK
+// https://blogs.oracle.com/darcy/entry/bootclasspath_older_source
+tasks.withType(JavaCompile) {
+    doFirst {
+        if (System.env.JDK7_HOME != null) {
+            options.fork = true
+            options.bootClasspath = "$System.env.JDK7_HOME/jre/lib/rt.jar"
+        }
+    }
+}
+
 compileJava.options.encoding = 'UTF-8'
+compileTestJava.options.encoding = 'UTF-8'
 javadoc.options.encoding = 'UTF-8'
 
 jar {

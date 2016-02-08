@@ -430,7 +430,7 @@ public class SymbolTest {
     @SuppressWarnings("unchecked")
     private static < E extends Enum< E >> void invoke(Object object, Method setter, Object parameter)
                     throws ReflectiveOperationException, IllegalArgumentException {
-        Class< ? > paramType = setter.getParameters()[0].getType();
+        Class< ? > paramType = setter.getParameterTypes()[0];
         if (String.class.equals(paramType)) {
             setter.invoke(object, parameter.toString());
         } else if (boolean.class.equals(paramType)) {

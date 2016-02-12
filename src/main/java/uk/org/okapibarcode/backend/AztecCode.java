@@ -1908,6 +1908,7 @@ public class AztecCode extends Symbol {
                                     encodeInfo += "UL ";
                                     binary_string += pentbit[31];
                                     encodeInfo += "BS ";
+                                    lasttable = 1;
                                     newtable = 32;
                                     break;
                                 case 16:
@@ -1916,6 +1917,7 @@ public class AztecCode extends Symbol {
                                     encodeInfo += "UL ";
                                     binary_string += pentbit[31];
                                     encodeInfo += "BS ";
+                                    lasttable = 1;
                                     newtable = 32;
                                     break;
                             }

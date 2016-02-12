@@ -667,7 +667,7 @@ public class MaxiCode extends Symbol {
         current_set = 1;
         i = 0;
         do {
-            if (set[i] != current_set) {
+            if ((set[i] != current_set) && (set[i] != 6)) {
                 switch (set[i]) {
                     case 1:
                         if (i + 1 < set.length && set[i + 1] == 1) {
@@ -750,9 +750,6 @@ public class MaxiCode extends Symbol {
                             insert(i, 62);
                             length++;
                         }
-                        break;
-                    case 6:
-                        /* Number compressed, do nothing. */
                         break;
                     default:
                         throw new OkapiException("Unexpected set " + set[i] + " at index " + i + ".");

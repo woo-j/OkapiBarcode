@@ -47,7 +47,7 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="exitButton" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <Component id="mainTabs" max="32767" attributes="0"/>
+                  <Component id="mainTabs" pref="851" max="32767" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -109,7 +109,7 @@
                   <Group type="102" alignment="1" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="compositeLabel" pref="70" max="32767" attributes="0"/>
+                          <Component id="compositeLabel" pref="216" max="32767" attributes="0"/>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="inputLabel" min="-2" max="-2" attributes="0"/>
                               <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
@@ -136,7 +136,7 @@
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
-                  <Component id="topPanel" alignment="0" pref="688" max="32767" attributes="0"/>
+                  <Component id="topPanel" alignment="0" pref="846" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">
@@ -557,7 +557,7 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="attributeScrollPane" alignment="0" pref="688" max="32767" attributes="0"/>
+                  <Component id="attributeScrollPane" alignment="0" pref="846" max="32767" attributes="0"/>
                   <Group type="102" alignment="1" attributes="0">
                       <EmptySpace max="32767" attributes="0"/>
                       <Component id="inkButton" min="-2" pref="130" max="-2" attributes="0"/>
@@ -661,7 +661,6 @@
                           <Component id="code39Panel" alignment="0" max="32767" attributes="0"/>
                           <Component id="codeOnePanel" alignment="0" max="32767" attributes="0"/>
                           <Component id="datamatrixPanel" alignment="0" max="32767" attributes="0"/>
-                          <Component id="gridmatrixPanel" alignment="0" max="32767" attributes="0"/>
                           <Component id="maxicodePanel" alignment="0" max="32767" attributes="0"/>
                           <Component id="microPdfPanel" alignment="0" max="32767" attributes="0"/>
                           <Component id="microQrPanel" alignment="0" max="32767" attributes="0"/>
@@ -669,7 +668,8 @@
                           <Component id="pdfPanel" alignment="0" max="32767" attributes="0"/>
                           <Component id="qrPanel" alignment="0" max="32767" attributes="0"/>
                           <Component id="compositePanel" alignment="0" max="32767" attributes="0"/>
-                          <Component id="databarPanel" alignment="1" max="32767" attributes="0"/>
+                          <Component id="gridmatrixPanel" alignment="0" max="32767" attributes="0"/>
+                          <Component id="databarPanel" alignment="0" max="32767" attributes="0"/>
                       </Group>
                     </DimensionLayout>
                     <DimensionLayout dim="1">
@@ -685,11 +685,11 @@
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="compositePanel" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="databarPanel" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
                               <Component id="datamatrixPanel" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="gridmatrixPanel" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="databarPanel" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="maxicodePanel" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
@@ -702,7 +702,7 @@
                               <Component id="pdfPanel" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="qrPanel" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="112" max="32767" attributes="0"/>
+                              <EmptySpace pref="168" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -1027,10 +1027,13 @@
                       <Properties>
                         <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                           <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                            <TitledBorder title="DataBar Expanded Stacked"/>
+                            <TitledBorder title="GS1 DataBar Expanded Stacked"/>
                           </Border>
                         </Property>
                       </Properties>
+                      <AccessibilityProperties>
+                        <Property name="AccessibleContext.accessibleName" type="java.lang.String" value="GS1 DataBar Expanded Stacked"/>
+                      </AccessibilityProperties>
 
                       <Layout>
                         <DimensionLayout dim="0">
@@ -1200,7 +1203,7 @@
                                   <Group type="103" groupAlignment="0" attributes="0">
                                       <Component id="gridmatrixAutoSize" alignment="0" max="32767" attributes="0"/>
                                       <Component id="gridmatrixUserSize" alignment="0" max="32767" attributes="0"/>
-                                      <Component id="gridmatrixUserEcc" alignment="0" pref="217" max="32767" attributes="0"/>
+                                      <Component id="gridmatrixUserEcc" alignment="0" pref="248" max="32767" attributes="0"/>
                                   </Group>
                                   <EmptySpace min="-2" pref="74" max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="0" attributes="0">

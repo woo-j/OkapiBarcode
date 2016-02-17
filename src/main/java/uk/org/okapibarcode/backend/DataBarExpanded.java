@@ -16,8 +16,9 @@
 package uk.org.okapibarcode.backend;
 
 /**
- * Implements DataBar Expanded (aka RSS Expanded)
- * According to ISO/IEC 24724:2007
+ * Implements GS1 DataBar Expanded Omnidirectional and GS1 Expanded Stacked
+ * Omnidirectional
+ * According to ISO/IEC 24724:2011
  * <p>
  * DataBar expanded encodes GS1 data in either a linear or stacked
  * format.

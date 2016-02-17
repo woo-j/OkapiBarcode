@@ -18,8 +18,8 @@ package uk.org.okapibarcode.backend;
 import java.math.BigInteger;
 
 /**
- * Implements GS-1 DataBar Limited (aka RSS Limited)
- * According to ISO/IEC 24724:2007
+ * Implements GS1 DataBar Limited
+ * According to ISO/IEC 24724:2011
  * <p>
  * Input data should be a 12 digit Global Trade Identification Number
  * without check digit or Application Identifier [01].

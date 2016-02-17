@@ -18,8 +18,8 @@ package uk.org.okapibarcode.backend;
 import java.math.BigInteger;
 
 /**
- * Implements GS1 DataBar-14
- * According to ISO/IEC 24724:2007
+ * Implements GS1 DataBar Omnidirectional and GS1 DataBar Truncated
+ * According to ISO/IEC 24724:2011
  * <p>
  * Input data should be a 13 digit Global Trade Identification Number
  * without check digit or Application Identifier [01].

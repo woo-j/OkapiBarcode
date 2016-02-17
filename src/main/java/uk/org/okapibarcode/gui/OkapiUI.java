@@ -373,7 +373,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, singlePanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(singlePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(compositeLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 70, Short.MAX_VALUE)
+                    .addComponent(compositeLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 216, Short.MAX_VALUE)
                     .addGroup(singlePanelLayout.createSequentialGroup()
                         .addComponent(inputLabel)
                         .addGap(0, 0, Short.MAX_VALUE)))
@@ -392,7 +392,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                             .addComponent(loadDataButton, javax.swing.GroupLayout.DEFAULT_SIZE, 60, Short.MAX_VALUE)
                             .addComponent(addCompositeButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap())
-            .addComponent(topPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 688, Short.MAX_VALUE)
+            .addComponent(topPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 846, Short.MAX_VALUE)
         );
         singlePanelLayout.setVerticalGroup(
             singlePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -530,7 +530,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                             .addComponent(outFormatCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 365, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(batchPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(directoryButton, javax.swing.GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE)
+                            .addComponent(directoryButton, javax.swing.GroupLayout.PREFERRED_SIZE, 131, Short.MAX_VALUE)
                             .addComponent(runBatchButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap())
         );
@@ -768,7 +768,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 .addComponent(codeOneSizeCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
-        databarPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("DataBar Expanded Stacked"));
+        databarPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("GS1 DataBar Expanded Stacked"));
 
         databarColumnsLabel.setText("Number of Columns:");
 
@@ -894,7 +894,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 .addGroup(gridmatrixPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(gridmatrixAutoSize, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(gridmatrixUserSize, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(gridmatrixUserEcc, javax.swing.GroupLayout.DEFAULT_SIZE, 217, Short.MAX_VALUE))
+                    .addComponent(gridmatrixUserEcc, javax.swing.GroupLayout.DEFAULT_SIZE, 248, Short.MAX_VALUE))
                 .addGap(74, 74, 74)
                 .addGroup(gridmatrixPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(gridmatrixUserSizeCombo, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1257,7 +1257,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
             .addComponent(code39Panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(codeOnePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(datamatrixPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(gridmatrixPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(maxicodePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(microPdfPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(microQrPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -1265,7 +1264,8 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
             .addComponent(pdfPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(qrPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(compositePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(databarPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(gridmatrixPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(databarPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         attributeScrollPanelLayout.setVerticalGroup(
             attributeScrollPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1280,11 +1280,11 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(compositePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(databarPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(datamatrixPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(gridmatrixPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(databarPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(maxicodePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1297,8 +1297,10 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 .addComponent(pdfPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(qrPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(112, Short.MAX_VALUE))
+                .addContainerGap(168, Short.MAX_VALUE))
         );
+
+        databarPanel.getAccessibleContext().setAccessibleName("GS1 DataBar Expanded Stacked");
 
         attributeScrollPane.setViewportView(attributeScrollPanel);
 
@@ -1322,7 +1324,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         attributePanel.setLayout(attributePanelLayout);
         attributePanelLayout.setHorizontalGroup(
             attributePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(attributeScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 688, Short.MAX_VALUE)
+            .addComponent(attributeScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 846, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, attributePanelLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(inkButton, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1407,7 +1409,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                         .addComponent(saveButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(exitButton))
-                    .addComponent(mainTabs))
+                    .addComponent(mainTabs, javax.swing.GroupLayout.DEFAULT_SIZE, 851, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -2963,22 +2965,22 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         symbolType = new DefaultMutableTreeNode("GS1 DataBar");
         top.add(symbolType);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("DB-14", SymbolType.Encoding.DB14));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Omnidirectional", SymbolType.Encoding.DB14));
         symbolType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("DB-14 Stacked", SymbolType.Encoding.DB14_STACKED));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Stacked", SymbolType.Encoding.DB14_STACKED));
         symbolType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("DB-14 Stacked Omni", SymbolType.Encoding.DB14_STACKED_OMNIDIRECT));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Stacked Omnidirectional", SymbolType.Encoding.DB14_STACKED_OMNIDIRECT));
         symbolType.add(symbolName);
 
         symbolName = new DefaultMutableTreeNode(new SymbolType("Limited", SymbolType.Encoding.DB_LIMITED));
         symbolType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Expanded", SymbolType.Encoding.DB_EXPANDED));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Expanded Omnidirectional", SymbolType.Encoding.DB_EXPANDED));
         symbolType.add(symbolName);
 
-        symbolName = new DefaultMutableTreeNode(new SymbolType("Expanded Stacked", SymbolType.Encoding.DB_EXPANDED_STACKED));
+        symbolName = new DefaultMutableTreeNode(new SymbolType("Expanded Stacked Omnidirectional", SymbolType.Encoding.DB_EXPANDED_STACKED));
         symbolType.add(symbolName);
 
         symbolType = new DefaultMutableTreeNode("Postal");

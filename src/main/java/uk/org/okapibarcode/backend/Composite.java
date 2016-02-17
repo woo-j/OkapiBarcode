@@ -20,11 +20,11 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 
 /**
- * Implements composite symbology According to ISO/IEC 24723:2006
+ * Implements GS1 Composite symbology According to ISO/IEC 24723:2010
  * <p>
  * Composite symbols comprise a 2D element which encodes GS1 data
  * and a "linear" element which can be UPC, EAN, Code 128 or
- * DataBar symbol.
+ * GS1 DataBar symbol.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */

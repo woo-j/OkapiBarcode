@@ -18,7 +18,7 @@ package uk.org.okapibarcode.backend;
 import java.io.UnsupportedEncodingException;
 
 /**
- * Implements QR Code 2005 bar code symbology According to ISO/IEC 18004:2006
+ * Implements QR Code bar code symbology According to ISO/IEC 18004:2015
  * <br>
  * The maximum capacity of a (version 40) QR Code symbol is 7089 numeric digits,
  * 4296 alphanumeric characters or 2953 bytes of data. QR Code symbols can also
@@ -1754,6 +1754,7 @@ public class QrCode extends Symbol {
         int weight;
         int dark_mods;
         int percentage, k;
+        int a, b, afterCount, beforeCount;
         byte[] local = new byte[size * size];
 
         for (x = 0; x < size; x++) {
@@ -1776,14 +1777,14 @@ public class QrCode extends Symbol {
                     block++;
                 } else {
                     if (block > 5) {
-                        result += (3 + block);
+                        result += (3 + (block - 5));
                     }
                     block = 0;
                     state = local[(y * size) + x];
                 }
             }
             if (block > 5) {
-                result += (3 + block);
+                result += (3 + (block - 5));
             }
         }
 
@@ -1796,18 +1797,27 @@ public class QrCode extends Symbol {
                     block++;
                 } else {
                     if (block > 5) {
-                        result += (3 + block);
+                        result += (3 + (block - 5));
                     }
                     block = 0;
                     state = local[(y * size) + x];
                 }
             }
             if (block > 5) {
-                result += (3 + block);
+                result += (3 + (block - 5));
             }
         }
 
-        /* Test 2 is not implimented */
+        /* Test 2: Block of modules in same color */
+        for (x = 0; x < size - 1; x++) {
+            for (y = 0; y < size - 1; y++) {
+                if (((local[(y * size) + x] == local[((y + 1) * size) + x]) &&
+                        (local[(y * size) + x] == local[(y * size) + (x + 1)])) &&
+                        (local[(y * size) + x] == local[((y + 1) * size) + (x + 1)])) {
+                    result += 3;
+                }
+            }
+        }
 
         /* Test 3: 1:1:3:1:1 ratio pattern in row/column */
         /* Vertical */
@@ -1820,7 +1830,38 @@ public class QrCode extends Symbol {
                     }
                 }
                 if (p == 0x5d) {
-                    result += 40;
+                    /* Pattern found, check before and after */
+                    beforeCount = 0;
+                    for (b = (y - 4); b < y; b++) {
+                        if (b < 0) {
+                            beforeCount++;
+                        } else {
+                            if (local[(b * size) + x] == '0') {
+                                beforeCount++;
+                            } else {
+                                beforeCount = 0;
+                            }
+                        }
+                    }
+                    
+                    afterCount = 0;
+                    for (a = (y + 7); a <= (y + 10); a++) {
+                        if (a >= size) {
+                            afterCount++;
+                        } else {
+                            if (local[(a * size) + x] == '0') {
+                                afterCount++;
+                            } else {
+                                afterCount = 0;
+                            }
+                        }
+                    }
+                    
+                    if ((beforeCount == 4) || (afterCount == 4)) {
+                        /* Pattern is preceeded or followed by light area
+                           4 modules wide */
+                        result += 40;
+                    }
                 }
             }
         }
@@ -1835,7 +1876,38 @@ public class QrCode extends Symbol {
                     }
                 }
                 if (p == 0x5d) {
-                    result += 40;
+                    /* Pattern found, check before and after */
+                    beforeCount = 0;
+                    for (b = (x - 4); b < x; b++) {
+                        if (b < 0) {
+                            beforeCount++;
+                        } else {
+                            if (local[(y * size) + b] == '0') {
+                                beforeCount++;
+                            } else {
+                                beforeCount = 0;
+                            }
+                        }
+                    }
+                    
+                    afterCount = 0;
+                    for (a = (x + 7); a <= (x + 10); a++) {
+                        if (a >= size) {
+                            afterCount++;
+                        } else {
+                            if (local[(y * size) + a] == '0') {
+                                afterCount++;
+                            } else {
+                                afterCount = 0;
+                            }
+                        }
+                    }
+                    
+                    if ((beforeCount == 4) || (afterCount == 4)) {
+                        /* Pattern is preceeded or followed by light area
+                           4 modules wide */
+                        result += 40;
+                    }
                 }
             }
         }

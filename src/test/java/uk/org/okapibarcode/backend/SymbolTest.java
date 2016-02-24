@@ -513,8 +513,9 @@ public class SymbolTest {
     private static List< Map< String, String > > readProperties(File propertiesFile) throws IOException {
 
         byte[] bytes = Files.readAllBytes(propertiesFile.toPath());
-        String content = new String(bytes, UTF_8);
-        String[] lines = content.split("\r\n"); // useful because sometimes we want to use \n or \r in data, but usually not both together
+        String content = replacePlaceholders(new String(bytes, UTF_8));
+        String eol = System.lineSeparator();
+        String[] lines = content.split(eol);
 
         List< Map< String, String > > allProperties = new ArrayList<>();
         Map< String, String > properties = new LinkedHashMap<>();
@@ -532,6 +533,8 @@ public class SymbolTest {
                     String name = line.substring(0, index);
                     String value = line.substring(index + 1);
                     properties.put(name, value);
+                } else {
+                    throw new IOException(propertiesFile.getAbsolutePath() + ": found line without '=' character; unintentional newline?");
                 }
             }
         }
@@ -541,6 +544,17 @@ public class SymbolTest {
         }
 
         return allProperties;
+    }
+
+    /**
+     * Replaces any special placeholders supported in test properties files with their raw values.
+     *
+     * @param s the string to check for placeholders
+     * @return the specified string, with placeholders replaced
+     */
+    private static String replacePlaceholders(String s) {
+        return s.replaceAll("\\\\r", "\r")  // "\r" -> CR
+                .replaceAll("\\\\n", "\n"); // "\n" -> LF
     }
 
     /**

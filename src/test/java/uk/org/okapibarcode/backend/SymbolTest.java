@@ -5,11 +5,15 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 
 import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.Graphics2D;
+import java.awt.GraphicsEnvironment;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -83,6 +87,21 @@ import com.google.zxing.qrcode.QRCodeReader;
 @RunWith(Parameterized.class)
 public class SymbolTest {
 
+    /** The font used to render human-readable text when drawing the symbologies; allows for consistent results across operating systems. */
+    private static final Font DEJA_VU_SANS;
+
+    static {
+        String path = "/uk/org/okapibarcode/fonts/DejaVuSans.ttf";
+        try {
+            InputStream is = SymbolTest.class.getResourceAsStream(path);
+            DEJA_VU_SANS = Font.createFont(Font.TRUETYPE_FONT, is);
+            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            ge.registerFont(DEJA_VU_SANS);
+        } catch (IOException | FontFormatException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
     /** The type of symbology being tested. */
     private final Class< ? extends Symbol > symbolType;
 
@@ -128,6 +147,7 @@ public class SymbolTest {
     public void test() throws Exception {
 
         Symbol symbol = symbolType.newInstance();
+        symbol.setFontName(DEJA_VU_SANS.getFontName());
 
         try {
             setProperties(symbol, properties);

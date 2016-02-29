@@ -1514,6 +1514,7 @@ public class DataBarExpanded extends Symbol {
 
             if (current == encodeMode.ALPHA_OR_ISO) {
                 blockType[i] = encodeMode.ALPHA;
+                current = encodeMode.ALPHA;
             }
 
             if ((current == encodeMode.ALPHA) && (i != (block_count - 1))) {

@@ -3,6 +3,7 @@ package uk.org.okapibarcode.backend;
 import static java.lang.Integer.toHexString;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -91,12 +92,13 @@ public class SymbolTest {
     private static final Font DEJA_VU_SANS;
 
     static {
-        String path = "/uk/org/okapibarcode/fonts/DejaVuSans.ttf";
+        String path = "/uk/org/okapibarcode/fonts/OkapiDejaVuSans.ttf";
         try {
             InputStream is = SymbolTest.class.getResourceAsStream(path);
             DEJA_VU_SANS = Font.createFont(Font.TRUETYPE_FONT, is);
             GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-            ge.registerFont(DEJA_VU_SANS);
+            boolean registered = ge.registerFont(DEJA_VU_SANS);
+            assertTrue("Unable to register test font!", registered);
         } catch (IOException | FontFormatException e) {
             throw new RuntimeException(e.getMessage(), e);
         }

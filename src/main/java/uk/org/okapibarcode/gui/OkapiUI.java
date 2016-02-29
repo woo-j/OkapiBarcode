@@ -2551,8 +2551,12 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 } else if (selectedSymbol.symbology == SymbolType.Encoding.PDF417_TRUNCATED) {
                     pdf417.setMode(Pdf417.Mode.TRUNCATED);
                 }
-                pdf417.setPreferredEccLevel(pdfEccCombo.getSelectedIndex() - 1);
-                pdf417.setDataColumns(pdfColumnsCombo.getSelectedIndex());
+                if (pdfEccCombo.getSelectedIndex() != 0) {
+                    pdf417.setPreferredEccLevel(pdfEccCombo.getSelectedIndex() - 1);
+                }
+                if (pdfColumnsCombo.getSelectedIndex() != 0) {
+                    pdf417.setDataColumns(pdfColumnsCombo.getSelectedIndex());
+                }
                 if (readerInit) {
                     pdf417.setReaderInit();
                 }
@@ -2571,7 +2575,9 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 if (readerInit) {
                     microPdf417.setReaderInit();
                 }
-                microPdf417.setDataColumns(microPdfColumnsCombo.getSelectedIndex());
+                if (microPdfColumnsCombo.getSelectedIndex() != 0) {
+                    microPdf417.setDataColumns(microPdfColumnsCombo.getSelectedIndex());
+                }
                 microPdf417.setContent(dataInput);
                 return microPdf417;
             case AZTEC:

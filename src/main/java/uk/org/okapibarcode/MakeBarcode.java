@@ -82,8 +82,6 @@ public class MakeBarcode {
 
     public void process(Settings settings, String dataInput, String outputFileName) {
         int type = settings.getSymbolType();
-        int magnification = 4;
-        int borderSize = 5 * magnification;
         Symbol symbol;
         String extension = "";
         HumanReadableLocation hrtLocation = settings.getHrtPosition();
@@ -813,17 +811,18 @@ public class MakeBarcode {
                 case "gif":
                 case "jpg":
                 case "bmp":
-                    BufferedImage image = new BufferedImage((symbol.getWidth() * magnification) + (2 * borderSize),
-                            (symbol.getHeight() * magnification) + (2 * borderSize), BufferedImage.TYPE_INT_RGB);
+                    BufferedImage image = new BufferedImage(symbol.getRenderWidth(),
+                            symbol.getRenderHeight(), BufferedImage.TYPE_INT_RGB);
                     Graphics2D g2d = image.createGraphics();
+                    //g2d.setBackground(paper);
                     g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
                     //FIXME: Setting background colour should be done in Java2DRenderer()
                     g2d.setColor(paper);
-                    g2d.fillRect(0, 0, (symbol.getWidth() * magnification) + (2 * borderSize),
-                            (symbol.getHeight() * magnification) + (2 * borderSize));
+                    g2d.fillRect(0, 0, symbol.getRenderWidth(), symbol.getRenderHeight());
 
-                    Java2DRenderer renderer = new Java2DRenderer(g2d, magnification, borderSize, paper, ink);
+                    Java2DRenderer renderer = new Java2DRenderer(g2d, paper, ink);
+                    System.out.printf("MakeBarcode\n");
                     renderer.render(symbol);
 
                     try {
@@ -833,11 +832,11 @@ public class MakeBarcode {
                     }
                     break;
                 case "svg":
-                    SvgRenderer svg = new SvgRenderer(new FileOutputStream(file), magnification, borderSize, paper, ink);
+                    SvgRenderer svg = new SvgRenderer(new FileOutputStream(file), paper, ink);
                     svg.render(symbol);
                     break;
                 case "eps":
-                    PostScriptRenderer eps = new PostScriptRenderer(new FileOutputStream(file), magnification, borderSize, paper, ink);
+                    PostScriptRenderer eps = new PostScriptRenderer(new FileOutputStream(file), paper, ink);
                     eps.render(symbol);
                     break;
                 default:

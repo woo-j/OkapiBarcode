@@ -65,10 +65,17 @@ public class PostScriptRenderer implements SymbolRenderer {
         // All y dimensions are reversed because EPS origin (0,0) is at the bottom left, not top left
 
         double magnification = symbol.getModuleWidth();
+        
+        if (!(symbol.hexagons.isEmpty())) {
+            //Maxicode symbol - ignore magnification;
+            magnification = 1;
+        }
+        
         int margin = symbol.getBorderWidth() * (int)magnification;
+        int whitespace = symbol.getWhitespaceWidth() * (int)magnification;
         
         String content = symbol.getContent();
-        int width = (int) (symbol.getWidth() * magnification) + (2 * margin);
+        int width = (int) (symbol.getWidth() * magnification) + (2 * margin) + (2 * whitespace);
         int height = (int) (symbol.getHeight() * magnification) + (2 * margin);
 
         String title;
@@ -116,7 +123,7 @@ public class PostScriptRenderer implements SymbolRenderer {
                           .append(ink.getBlue() / 255.0).append(" setrgbcolor\n");
                     writer.append(rect.height * magnification).append(" ")
                           .append(height - ((rect.y + rect.height) * magnification) - margin).append(" TB ")
-                          .append((rect.x * magnification) + margin).append(" ")
+                          .append((rect.x * magnification) + margin + whitespace).append(" ")
                           .append(rect.width * magnification).append(" TR\n");
                 } else {
                     Rectangle2D.Double prev = symbol.rectangles.get(i - 1);
@@ -128,7 +135,7 @@ public class PostScriptRenderer implements SymbolRenderer {
                         writer.append(rect.height * magnification).append(" ")
                               .append(height - ((rect.y + rect.height) * magnification) - margin).append(" ");
                     }
-                    writer.append("TB ").append((rect.x * magnification) + margin).append(" ").append(rect.width * magnification).append(" TR\n");
+                    writer.append("TB ").append((rect.x * magnification) + margin + whitespace).append(" ").append(rect.width * magnification).append(" TR\n");
                 }
             }
 
@@ -144,7 +151,7 @@ public class PostScriptRenderer implements SymbolRenderer {
                 writer.append("matrix currentmatrix\n");
                 writer.append("/").append(symbol.getFontName()).append(" findfont\n");
                 writer.append(symbol.getFontSize() * magnification).append(" scalefont setfont\n");
-                writer.append(" 0 0 moveto ").append((text.x * magnification) + margin).append(" ")
+                writer.append(" 0 0 moveto ").append((text.x * magnification) + margin + whitespace).append(" ")
                       .append(height - (text.y * magnification) - margin).append(" translate 0.00 rotate 0 0 moveto\n");
                 writer.append(" (").append(text.text).append(") stringwidth\n");
                 writer.append("pop\n");
@@ -173,13 +180,13 @@ public class PostScriptRenderer implements SymbolRenderer {
                 double y2 = height - ellipse2.y - (ellipse2.width / 2);
                 double r1 = ellipse1.width / 2;
                 double r2 = ellipse2.width / 2;
-                writer.append(x1 + margin)
+                writer.append(x1 + margin + whitespace)
                       .append(" ").append(y1 - margin)
                       .append(" ").append(r1)
-                      .append(" ").append(x2 + margin)
+                      .append(" ").append(x2 + margin + whitespace)
                       .append(" ").append(y2 - margin)
                       .append(" ").append(r2)
-                      .append(" ").append(x2 + r2 + margin)
+                      .append(" ").append(x2 + r2 + margin + whitespace)
                       .append(" ").append(y2 - margin)
                       .append(" TC\n");
             }
@@ -189,7 +196,7 @@ public class PostScriptRenderer implements SymbolRenderer {
             for (int i = 0; i < symbol.hexagons.size(); i++) {
                 Hexagon hexagon = symbol.hexagons.get(i);
                 for (int j = 0; j < 6; j++) {
-                    writer.append(hexagon.pointX[j] + margin).append(" ").append((height - hexagon.pointY[j]) - margin).append(" ");
+                    writer.append(hexagon.pointX[j] + margin + whitespace).append(" ").append((height - hexagon.pointY[j]) - margin).append(" ");
                 }
                 writer.append(" TH\n");
             }

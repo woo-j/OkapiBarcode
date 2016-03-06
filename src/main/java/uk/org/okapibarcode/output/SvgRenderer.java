@@ -62,9 +62,10 @@ public class SvgRenderer implements SymbolRenderer {
         
         double magnification = symbol.getModuleWidth();
         int margin = symbol.getBorderWidth() * (int)magnification;
+        int whitespace = symbol.getWhitespaceWidth() * (int)magnification;
 
         String content = symbol.getContent();
-        int width = (int) (symbol.getWidth() * magnification) + (2 * margin);
+        int width = (int) (symbol.getWidth() * magnification) + (2 * margin) + (2 * whitespace);
         int height = (int) (symbol.getHeight() * magnification) + (2 * margin);
 
         String title;
@@ -101,7 +102,7 @@ public class SvgRenderer implements SymbolRenderer {
             // Rectangles
             for (int i = 0; i < symbol.rectangles.size(); i++) {
                 Rectangle2D.Double rect = symbol.rectangles.get(i);
-                writer.append("      <rect x=\"").append((rect.x * magnification) + margin)
+                writer.append("      <rect x=\"").append((rect.x * magnification) + margin + whitespace)
                       .append("\" y=\"").append((rect.y * magnification) + margin)
                       .append("\" width=\"").append(rect.width * magnification)
                       .append("\" height=\"").append(rect.height * magnification)
@@ -111,7 +112,7 @@ public class SvgRenderer implements SymbolRenderer {
             // Text
             for (int i = 0; i < symbol.texts.size(); i++) {
                 TextBox text = symbol.texts.get(i);
-                writer.append("      <text x=\"").append((text.x * magnification) + margin)
+                writer.append("      <text x=\"").append((text.x * magnification) + margin + whitespace)
                       .append("\" y=\"").append((text.y * magnification) + margin)
                       .append("\" text-anchor=\"middle\"\n");
                 writer.append("         font-family=\"").append(symbol.getFontName())
@@ -130,7 +131,7 @@ public class SvgRenderer implements SymbolRenderer {
                 } else {
                     color = bgColour;
                 }
-                writer.append("      <circle cx=\"").append(((ellipse.x + (ellipse.width / 2)) * magnification) + margin)
+                writer.append("      <circle cx=\"").append(((ellipse.x + (ellipse.width / 2)) * magnification) + margin + whitespace)
                       .append("\" cy=\"").append(((ellipse.y + (ellipse.width / 2)) * magnification) + margin)
                       .append("\" r=\"").append((ellipse.width / 2) * magnification)
                       .append("\" fill=\"#").append(color).append("\" />\n");
@@ -146,7 +147,7 @@ public class SvgRenderer implements SymbolRenderer {
                     } else {
                         writer.append("L ");
                     }
-                    writer.append((hexagon.pointX[j] * magnification) + margin).append(" ")
+                    writer.append((hexagon.pointX[j] * magnification) + margin + whitespace).append(" ")
                           .append((hexagon.pointY[j] * magnification) + margin).append(" ");
                 }
                 writer.append("Z\" />\n");

@@ -625,14 +625,16 @@
                           </Group>
                       </Group>
                       <EmptySpace min="-2" pref="9" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="lblXDimension" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="lblXDimensionPixels" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="lblBorderWidth" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="lblWhitespaceWidth" alignment="0" min="-2" pref="15" max="-2" attributes="0"/>
-                          <Component id="txtXDimension" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="txtBorderWidth" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="txtWhitespaceWidth" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="lblXDimension" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="lblXDimensionPixels" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="lblBorderWidth" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="txtXDimension" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="txtBorderWidth" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="txtWhitespaceWidth" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="attributeScrollPane" min="-2" pref="345" max="-2" attributes="0"/>

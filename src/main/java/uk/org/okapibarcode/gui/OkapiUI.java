@@ -1414,14 +1414,15 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(cmbHrtPosition, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(9, 9, 9)
-                .addGroup(attributePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblXDimension)
-                    .addComponent(lblXDimensionPixels)
-                    .addComponent(lblBorderWidth)
+                .addGroup(attributePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lblWhitespaceWidth, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtXDimension, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtBorderWidth, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtWhitespaceWidth, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(attributePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(lblXDimension)
+                        .addComponent(lblXDimensionPixels)
+                        .addComponent(lblBorderWidth)
+                        .addComponent(txtXDimension, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txtBorderWidth, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txtWhitespaceWidth, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(attributeScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 345, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 38, Short.MAX_VALUE)
@@ -2221,9 +2222,12 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
             factor = (int) bHeight;
         }
 
-        drawSymbol.setSize(drawSymbol.getPreferredSize());
         drawSymbol.setBorder(BorderFactory.createEmptyBorder());
         drawSymbol.setBackground(paperColour);
+        drawSymbol.setBounds((topPanel.getWidth() - drawSymbol.getPreferredSize().width) / 2,
+                (topPanel.getHeight() - drawSymbol.getPreferredSize().height) / 2,
+                drawSymbol.getPreferredSize().width,
+                drawSymbol.getPreferredSize().height);
         topPanel.add(drawSymbol);
         encodeInfoArea.setText(symbol.getEncodeInfo());
         topPanel.updateUI();

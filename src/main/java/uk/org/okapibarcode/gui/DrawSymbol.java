@@ -39,7 +39,7 @@ public class DrawSymbol extends JPanel {
     /** {@inheritDoc} */
     @Override   
     public Dimension getPreferredSize() {
-        final int w = (OkapiUI.symbol.getWidth() * OkapiUI.factor) + (2 * OkapiUI.symbol.getBorderWidth() * OkapiUI.factor);
+        final int w = (OkapiUI.symbol.getWidth() * OkapiUI.factor) + (2 * OkapiUI.symbol.getBorderWidth() * OkapiUI.factor) + (2 * OkapiUI.symbol.getWhitespaceWidth() * OkapiUI.factor);
         final int h = (OkapiUI.symbol.getHeight() * OkapiUI.factor) + (2 * OkapiUI.symbol.getBorderWidth() * OkapiUI.factor) + OkapiUI.symbol.getHumanReadableHeight();
         return new Dimension(w, h);
     }

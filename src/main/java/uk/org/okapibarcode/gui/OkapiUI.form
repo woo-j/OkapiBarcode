@@ -2008,7 +2008,6 @@
             <Component class="javax.swing.JLabel" name="lblWhitespaceWidth">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Whitespace Width:"/>
-                <Property name="enabled" type="boolean" value="false"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JTextField" name="txtXDimension">
@@ -2029,7 +2028,6 @@
             </Component>
             <Component class="javax.swing.JTextField" name="txtWhitespaceWidth">
               <Properties>
-                <Property name="editable" type="boolean" value="false"/>
                 <Property name="text" type="java.lang.String" value="0"/>
               </Properties>
               <Events>

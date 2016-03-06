@@ -185,7 +185,7 @@ public abstract class Symbol {
      * @return the width of the rendered symbol
      */
     public int getRenderWidth() {
-        return (symbol_width * moduleWidth) + (2 * border_width * moduleWidth);
+        return (symbol_width * moduleWidth) + (2 * border_width * moduleWidth) + (2 * whitespaceWidth * moduleWidth);
     }
     
     /**
@@ -194,13 +194,7 @@ public abstract class Symbol {
      * @return the height of the rendered symbol
      */
     public int getRenderHeight() {
-        int retVal;
-        
-        retVal = (symbol_height * moduleWidth) + (2 * border_width * moduleWidth);
-        if(!(readable.isEmpty())) {
-            retVal += getHumanReadableHeight();
-        }
-        return retVal;
+        return (symbol_height * moduleWidth) + (2 * border_width * moduleWidth) + (getHumanReadableHeight() * moduleWidth);
     }
     
     /**

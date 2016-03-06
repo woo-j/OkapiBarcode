@@ -1330,7 +1330,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         lblBorderWidth.setText("Border Width:");
 
         lblWhitespaceWidth.setText("Whitespace Width:");
-        lblWhitespaceWidth.setEnabled(false);
 
         txtXDimension.setText("4");
         txtXDimension.addFocusListener(new java.awt.event.FocusAdapter() {
@@ -1346,7 +1345,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
             }
         });
 
-        txtWhitespaceWidth.setEditable(false);
         txtWhitespaceWidth.setText("0");
         txtWhitespaceWidth.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {

@@ -39,33 +39,23 @@ public class PostScriptRenderer implements SymbolRenderer {
     /** The output stream to render to. */
     private final OutputStream out;
 
-    /** The magnification factor to apply. */
-    private final double magnification;
-
     /** The paper (background) color. */
     private final Color paper;
 
     /** The ink (foreground) color. */
     private final Color ink;
 
-    /** The size of the additional margin to add around the barcode. */
-    private final int margin;
-
     /**
      * Creates a new PostScript renderer.
      *
      * @param out the output stream to render to
-     * @param magnification the magnification factor to apply
-     * @param margin the size of the additional margin to add around the bar code
      * @param paper the paper (background) color
      * @param ink the ink (foreground) color
      */
-    public PostScriptRenderer(OutputStream out, double magnification, int margin, Color paper, Color ink) {
+    public PostScriptRenderer(OutputStream out, Color paper, Color ink) {
         this.out = out;
-        this.magnification = magnification;
         this.paper = paper;
         this.ink = ink;
-        this.margin = margin;
     }
 
     /** {@inheritDoc} */
@@ -74,6 +64,9 @@ public class PostScriptRenderer implements SymbolRenderer {
 
         // All y dimensions are reversed because EPS origin (0,0) is at the bottom left, not top left
 
+        double magnification = symbol.getModuleWidth();
+        int margin = symbol.getBorderWidth() * (int)magnification;
+        
         String content = symbol.getContent();
         int width = (int) (symbol.getWidth() * magnification) + (2 * margin);
         int height = (int) (symbol.getHeight() * magnification) + (2 * margin);

@@ -44,6 +44,8 @@ public abstract class Symbol {
     protected int symbol_height = 0;
     protected int symbol_width = 0;
     protected int default_height = 40;
+    protected int border_width = 1;
+    protected int whitespaceWidth = 0;
     protected int moduleWidth = 1;
     protected String fontName = "Helvetica";
     protected double fontSize = 8;
@@ -140,6 +142,67 @@ public abstract class Symbol {
         return moduleWidth;
     }
 
+    /**
+     * Sets the border width for this symbol (default value is <code>1</code>).
+     *
+     * @param borderWidth the module width for this symbol
+     */
+    public void setBorderWidth(int borderWidth) {
+        this.border_width = borderWidth;
+    }
+
+    /**
+     * Returns the border width for this symbol.
+     *
+     * @return the border width for this symbol
+     */
+    public int getBorderWidth() {
+        return border_width;
+    }
+    
+    /**
+     * Sets the whitespace width for this symbol (default value is <code>0</code>).
+     *
+     * @param whitespaceWidth the module width for this symbol
+     */
+    public void setWhitespaceWidth(int whitespaceWidth) {
+        this.whitespaceWidth = whitespaceWidth;
+    }
+
+    /**
+     * Returns the whitespace width for this symbol.
+     *
+     * @return the whitespace width for this symbol
+     */
+    public int getWhitespaceWidth() {
+        return whitespaceWidth;
+    }
+    
+    
+    /**
+     * Get the width of the rendered symbol (in pixels)
+     * 
+     * @return the width of the rendered symbol
+     */
+    public int getRenderWidth() {
+        return (symbol_width * moduleWidth) + (2 * border_width * moduleWidth);
+    }
+    
+    /**
+     * Get the height of the rendered symbol (in pixels)
+     * 
+     * @return the height of the rendered symbol
+     */
+    public int getRenderHeight() {
+        int retVal;
+        
+        retVal = (symbol_height * moduleWidth) + (2 * border_width * moduleWidth);
+        if(!(readable.isEmpty())) {
+            retVal += getHumanReadableHeight();
+        }
+        return retVal;
+    }
+    
     /**
      * Sets the name of the font to use to render the human-readable text (default value is <code>Helvetica</code>).
      *

@@ -35,22 +35,11 @@ public class SaveSymbol extends JPanel {
     /** Serial version UID. */
     private static final long serialVersionUID = 8948804628452979514L;
 
-    private int magnification = 4;
-    private int margin = 5 * magnification;
-
-    public void setMagnification(int factor) {
-        magnification = factor * 4;
-    }
-
-    public void setMargin(int margin) {
-        this.margin = margin;
-    }
-
     /** {@inheritDoc} */
     @Override
     public Dimension getPreferredSize() {
-        final int w = (OkapiUI.symbol.getWidth() * magnification) + (2 * margin);
-        final int h = (OkapiUI.symbol.getHeight() * magnification) + (2 * margin);
+        final int w = (OkapiUI.symbol.getRenderWidth());
+        final int h = (OkapiUI.symbol.getRenderHeight());
         return new Dimension(w, h);
     }
 
@@ -64,7 +53,7 @@ public class SaveSymbol extends JPanel {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        Java2DRenderer renderer = new Java2DRenderer(g2d, magnification, margin, OkapiUI.paperColour, OkapiUI.inkColour);
+        Java2DRenderer renderer = new Java2DRenderer(g2d, OkapiUI.paperColour, OkapiUI.inkColour);
         renderer.render(OkapiUI.symbol);
     }
 }

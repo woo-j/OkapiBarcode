@@ -33,14 +33,13 @@ import uk.org.okapibarcode.output.SvgRenderer;
  */
 public class SaveImage {
 
-    public void saveImage(File file, JPanel panel) throws IOException {
-        int magnification = 1;
-        int borderSize = 5;
-
-        String extension = "";
+    public void save(File file, JPanel panel) throws IOException {
+        String extension;
         int i = file.getName().lastIndexOf('.');
         if (i > 0) {
-            extension = file.getName().substring(i + 1);
+            extension = file.getName().substring(i + 1).toLowerCase();
+        } else {
+            extension = "png";
         }
 
         switch (extension) {
@@ -48,16 +47,16 @@ public class SaveImage {
             case "gif":
             case "jpg":
             case "bmp":
-                BufferedImage img = new BufferedImage(panel.getWidth(), panel.getHeight(), BufferedImage.TYPE_INT_RGB);
-                panel.paint(img.getGraphics());
-                ImageIO.write(img, extension, file);
+                BufferedImage bi = new BufferedImage(OkapiUI.symbol.getRenderWidth(), OkapiUI.symbol.getRenderHeight(), BufferedImage.TYPE_INT_ARGB);
+                panel.paint(bi.getGraphics());
+                ImageIO.write(bi, extension, file);
                 break;
             case "svg":
-                SvgRenderer svg = new SvgRenderer(new FileOutputStream(file), magnification, borderSize, OkapiUI.paperColour, OkapiUI.inkColour);
+                SvgRenderer svg = new SvgRenderer(new FileOutputStream(file), OkapiUI.paperColour, OkapiUI.inkColour);
                 svg.render(OkapiUI.symbol);
                 break;
             case "eps":
-                PostScriptRenderer eps = new PostScriptRenderer(new FileOutputStream(file), magnification, borderSize, OkapiUI.paperColour, OkapiUI.inkColour);
+                PostScriptRenderer eps = new PostScriptRenderer(new FileOutputStream(file), OkapiUI.paperColour, OkapiUI.inkColour);
                 eps.render(OkapiUI.symbol);
                 break;
             default:

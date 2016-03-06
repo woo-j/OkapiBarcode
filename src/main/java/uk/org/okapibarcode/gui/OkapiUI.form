@@ -47,7 +47,7 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="exitButton" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <Component id="mainTabs" pref="851" max="32767" attributes="0"/>
+                  <Component id="mainTabs" max="32767" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -143,7 +143,7 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="1" attributes="0">
                       <Component id="topPanel" min="-2" pref="459" max="-2" attributes="0"/>
-                      <EmptySpace pref="14" max="32767" attributes="0"/>
+                      <EmptySpace pref="56" max="32767" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="useGS1Check" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="useCompositeCheck" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -582,6 +582,22 @@
                               <Component id="chkReaderInit" min="-2" pref="230" max="-2" attributes="0"/>
                               <EmptySpace min="-2" pref="30" max="-2" attributes="0"/>
                           </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="lblXDimension" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="txtXDimension" min="-2" pref="58" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="3" max="-2" attributes="0"/>
+                              <Component id="lblXDimensionPixels" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="81" max="-2" attributes="0"/>
+                              <Component id="lblBorderWidth" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="txtBorderWidth" min="-2" pref="62" max="-2" attributes="0"/>
+                              <EmptySpace max="32767" attributes="0"/>
+                              <Component id="lblWhitespaceWidth" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="txtWhitespaceWidth" min="-2" pref="57" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="71" max="-2" attributes="0"/>
+                          </Group>
                       </Group>
                   </Group>
               </Group>
@@ -608,9 +624,19 @@
                               <Component id="cmbHrtPosition" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
-                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="9" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="lblXDimension" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="lblXDimensionPixels" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="lblBorderWidth" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="lblWhitespaceWidth" alignment="0" min="-2" pref="15" max="-2" attributes="0"/>
+                          <Component id="txtXDimension" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="txtBorderWidth" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="txtWhitespaceWidth" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
                       <Component id="attributeScrollPane" min="-2" pref="345" max="-2" attributes="0"/>
-                      <EmptySpace max="32767" attributes="0"/>
+                      <EmptySpace pref="38" max="32767" attributes="0"/>
                       <Component id="encodeInfoArea" min="-2" pref="120" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
@@ -1031,9 +1057,6 @@
                           </Border>
                         </Property>
                       </Properties>
-                      <AccessibilityProperties>
-                        <Property name="AccessibleContext.accessibleName" type="java.lang.String" value="GS1 DataBar Expanded Stacked"/>
-                      </AccessibilityProperties>
 
                       <Layout>
                         <DimensionLayout dim="0">
@@ -1907,7 +1930,7 @@
                                   <Component id="compositeModeLabel" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                               </Group>
-                              <Component id="compositeUserMode" alignment="0" max="32767" attributes="0"/>
+                              <Component id="compositeUserMode" alignment="0" pref="30" max="32767" attributes="0"/>
                           </Group>
                         </DimensionLayout>
                       </Layout>
@@ -1964,6 +1987,52 @@
               <Properties>
                 <Property name="text" type="java.lang.String" value="Show human readable text:"/>
               </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="lblXDimension">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="X Dimension:"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="lblXDimensionPixels">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Pixels"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="lblBorderWidth">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Border Width:"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="lblWhitespaceWidth">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Whitespace Width:"/>
+                <Property name="enabled" type="boolean" value="false"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JTextField" name="txtXDimension">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="4"/>
+              </Properties>
+              <Events>
+                <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="txtXDimensionFocusLost"/>
+              </Events>
+            </Component>
+            <Component class="javax.swing.JTextField" name="txtBorderWidth">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="5"/>
+              </Properties>
+              <Events>
+                <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="txtBorderWidthFocusLost"/>
+              </Events>
+            </Component>
+            <Component class="javax.swing.JTextField" name="txtWhitespaceWidth">
+              <Properties>
+                <Property name="editable" type="boolean" value="false"/>
+                <Property name="text" type="java.lang.String" value="0"/>
+              </Properties>
+              <Events>
+                <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="txtWhitespaceWidthFocusLost"/>
+              </Events>
             </Component>
           </SubComponents>
         </Container>

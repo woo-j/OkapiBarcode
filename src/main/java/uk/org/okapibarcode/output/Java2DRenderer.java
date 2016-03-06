@@ -41,38 +41,47 @@ public class Java2DRenderer implements SymbolRenderer {
     private final Graphics2D g2d;
 
     /** The magnification factor to apply. */
-    private final double magnification;
+    private double magnification = 0;
 
     /** The paper (background) color. */
     private final Color paper;
 
     /** The ink (foreground) color. */
     private final Color ink;
-
-    /** The size of the additional margin to add around the barcode. */
-    private final int margin;
-
+    
     /**
      * Creates a new Java 2D renderer.
      *
      * @param g2d the graphics to render to
-     * @param magnification the magnification factor to apply
-     * @param margin the size of the additional margin to add around the bar code
      * @param paper the paper (background) color
      * @param ink the ink (foreground) color
      */
-    public Java2DRenderer(Graphics2D g2d, double magnification, int margin, Color paper, Color ink) {
+    public Java2DRenderer(Graphics2D g2d, Color paper, Color ink) {
         this.g2d = g2d;
-        this.magnification = magnification;
         this.paper = paper;
         this.ink = ink;
-        this.margin = margin;
+    }
+    
+    /**
+     * Set custom magnification (override symbol module width) for UI display
+     * 
+     * @param magnification amount of magnification
+     */
+    public void setUIMagnification(double magnification) {
+        this.magnification = magnification;
     }
 
     /** {@inheritDoc} */
     @Override
     public void render(Symbol symbol) {
+        int margin;
 
+        if (magnification == 0) {
+            magnification = symbol.getModuleWidth();
+        }        
+        
+        margin = symbol.getBorderWidth() * (int)magnification;
+        
         Map< TextAttribute, Object > attributes = new HashMap<>();
         attributes.put(TextAttribute.TRACKING, 0);
         Font f = new Font(symbol.getFontName(), Font.PLAIN, (int) (symbol.getFontSize() * magnification)).deriveFont(attributes);
@@ -81,7 +90,7 @@ public class Java2DRenderer implements SymbolRenderer {
 
         g2d.setFont(f);
         g2d.setColor(ink);
-
+        
         for (Rectangle2D.Double rect : symbol.rectangles) {
             double x = (rect.x * magnification) + margin;
             double y = (rect.y * magnification) + margin;

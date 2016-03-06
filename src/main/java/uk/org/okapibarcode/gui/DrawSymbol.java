@@ -37,9 +37,11 @@ public class DrawSymbol extends JPanel {
     private static final long serialVersionUID = 586946142379393170L;
 
     /** {@inheritDoc} */
-    @Override
+    @Override   
     public Dimension getPreferredSize() {
-        return new Dimension(OkapiUI.symbol.getWidth() * OkapiUI.factor, OkapiUI.symbol.getHeight() * OkapiUI.factor);
+        final int w = (OkapiUI.symbol.getWidth() * OkapiUI.factor) + (2 * OkapiUI.symbol.getBorderWidth() * OkapiUI.factor);
+        final int h = (OkapiUI.symbol.getHeight() * OkapiUI.factor) + (2 * OkapiUI.symbol.getBorderWidth() * OkapiUI.factor) + OkapiUI.symbol.getHumanReadableHeight();
+        return new Dimension(w, h);
     }
 
     /** {@inheritDoc} */
@@ -52,7 +54,8 @@ public class DrawSymbol extends JPanel {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        Java2DRenderer renderer = new Java2DRenderer(g2d, OkapiUI.factor, 0, OkapiUI.paperColour, OkapiUI.inkColour);
+        Java2DRenderer renderer = new Java2DRenderer(g2d, OkapiUI.paperColour, OkapiUI.inkColour);
+        renderer.setUIMagnification(OkapiUI.factor);
         renderer.render(OkapiUI.symbol);
     }
 }

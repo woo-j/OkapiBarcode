@@ -817,10 +817,6 @@ public class MakeBarcode {
                     //g2d.setBackground(paper);
                     g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-                    //FIXME: Setting background colour should be done in Java2DRenderer()
-                    g2d.setColor(paper);
-                    g2d.fillRect(0, 0, symbol.getRenderWidth(), symbol.getRenderHeight());
-
                     Java2DRenderer renderer = new Java2DRenderer(g2d, paper, ink);
                     System.out.printf("MakeBarcode\n");
                     renderer.render(symbol);

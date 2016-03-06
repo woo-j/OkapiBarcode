@@ -91,8 +91,14 @@ public class Java2DRenderer implements SymbolRenderer {
         Color oldColor = g2d.getColor();
 
         g2d.setFont(f);
+        
+        // Set background colour
+        g2d.setColor(paper);
+        g2d.fill(new Rectangle(0, 0, symbol.getRenderWidth(), symbol.getRenderHeight()));
+        
         g2d.setColor(ink);
         
+        // Plot rectangles
         for (Rectangle2D.Double rect : symbol.rectangles) {
             double x = (rect.x * magnification) + margin + whitespace;
             double y = (rect.y * magnification) + margin;
@@ -101,6 +107,7 @@ public class Java2DRenderer implements SymbolRenderer {
             g2d.fill(new Rectangle((int) x, (int) y, (int) w, (int) h));
         }
 
+        // Plot text
         FontMetrics fm = g2d.getFontMetrics();
         for (TextBox text : symbol.texts) {
             Rectangle2D bounds = fm.getStringBounds(text.text, g2d);
@@ -109,6 +116,7 @@ public class Java2DRenderer implements SymbolRenderer {
             g2d.drawString(text.text, x, y);
         }
 
+        // Plot hexagons
         for (Hexagon hexagon : symbol.hexagons) {
             Polygon polygon = new Polygon();
             for (int j = 0; j < 6; j++) {
@@ -118,6 +126,7 @@ public class Java2DRenderer implements SymbolRenderer {
             g2d.fill(polygon);
         }
 
+        // Plot circles
         for (int i = 0; i < symbol.target.size(); i++) {
             Ellipse2D.Double ellipse = symbol.target.get(i);
             double x = (ellipse.x * magnification) + margin + whitespace;

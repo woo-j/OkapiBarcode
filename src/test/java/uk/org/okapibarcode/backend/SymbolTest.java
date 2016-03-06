@@ -393,8 +393,6 @@ public class SymbolTest {
         symbol.setWhitespaceWidth(0);
         BufferedImage img = new BufferedImage(symbol.getRenderWidth(), symbol.getRenderHeight(), BufferedImage.TYPE_BYTE_GRAY);
         Graphics2D g2d = img.createGraphics();
-        g2d.setPaint(Color.WHITE);
-        g2d.fillRect(0, 0, symbol.getRenderWidth(), symbol.getRenderHeight());
 
         Java2DRenderer renderer = new Java2DRenderer(g2d, Color.WHITE, Color.BLACK);
         renderer.render(symbol);

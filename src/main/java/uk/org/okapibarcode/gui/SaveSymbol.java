@@ -46,8 +46,6 @@ public class SaveSymbol extends JPanel {
     /** {@inheritDoc} */
     @Override
     protected void paintComponent(Graphics g) {
-
-        setBackground(OkapiUI.paperColour);
         super.paintComponent(g);
 
         Graphics2D g2d = (Graphics2D) g;

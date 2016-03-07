@@ -24,6 +24,7 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.List;
 /**
  * Generic barcode symbology class.
  *
@@ -61,10 +62,10 @@ public abstract class Symbol {
     }
 
     // TODO: These values to become accessible only to renderer
-    public ArrayList< Rectangle2D.Double > rectangles = new ArrayList<>();
-    public ArrayList< TextBox > texts = new ArrayList<>();
-    public ArrayList< Hexagon > hexagons = new ArrayList<>();
-    public ArrayList< Ellipse2D.Double > target = new ArrayList<>();
+    public List< Rectangle2D.Double > rectangles = new ArrayList<>();
+    public List< TextBox > texts = new ArrayList<>();
+    public List< Hexagon > hexagons = new ArrayList<>();
+    public List< Ellipse2D.Double > target = new ArrayList<>();
 
     public Symbol() {
         unsetReaderInit();

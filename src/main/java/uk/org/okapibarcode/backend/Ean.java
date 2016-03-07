@@ -33,7 +33,7 @@ import java.awt.geom.Rectangle2D;
  */
 public class Ean extends Symbol {
 
-    public static enum Mode {
+    public enum Mode {
         EAN8, EAN13
     };
 

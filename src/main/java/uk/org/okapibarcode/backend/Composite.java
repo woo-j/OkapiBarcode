@@ -433,7 +433,7 @@ public class Composite extends Symbol {
     private String binary_string;
     private int ecc;
 
-    public static enum LinearEncoding {
+    public enum LinearEncoding {
         UPCA, UPCE, EAN, CODE_128, DATABAR_14, DATABAR_14_STACK,
         DATABAR_14_STACK_OMNI, DATABAR_LIMITED, DATABAR_EXPANDED,
         DATABAR_EXPANDED_STACK

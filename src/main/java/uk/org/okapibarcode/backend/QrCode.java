@@ -1546,7 +1546,7 @@ public class QrCode extends Symbol {
     private void place_finder(int size, int x, int y) {
         int xp, yp;
 
-        int finder[] = {
+        int[] finder = {
             1, 1, 1, 1, 1, 1, 1,
             1, 0, 0, 0, 0, 0, 1,
             1, 0, 1, 1, 1, 0, 1,
@@ -1570,7 +1570,7 @@ public class QrCode extends Symbol {
     private void place_align(int size, int x, int y) {
         int xp, yp;
 
-        int alignment[] = {
+        int[] alignment = {
             1, 1, 1, 1, 1,
             1, 0, 0, 0, 1,
             1, 0, 1, 0, 1,

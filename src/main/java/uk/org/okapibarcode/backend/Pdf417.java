@@ -46,8 +46,8 @@ public class Pdf417 extends Symbol {
         FALSE, TEX, BYT, NUM
     };
 
-    private int blockLength[] = new int[1000];
-    private EncodingMode blockType[] = new EncodingMode[1000];
+    private int[] blockLength = new int[1000];
+    private EncodingMode[] blockType = new EncodingMode[1000];
     private int blockIndex;
     private int[] codeWords = new int[2700];
     private int codeWordCount;

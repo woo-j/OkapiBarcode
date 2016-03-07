@@ -138,7 +138,7 @@ public class MicroQrCode extends Symbol {
         0x2a51, 0x34e3, 0x31d4, 0x3e8d, 0x3bba
     };
 
-    private static final int MICRO_QR_SIZES[] = {
+    private static final int[] MICRO_QR_SIZES = {
         11, 13, 15, 17
     };
 
@@ -1404,7 +1404,7 @@ public class MicroQrCode extends Symbol {
     private void placeFinderPattern(int size, int x, int y) {
         int xp, yp;
 
-        int finder[] = {
+        int[] finder = {
             1, 1, 1, 1, 1, 1, 1,
             1, 0, 0, 0, 0, 0, 1,
             1, 0, 1, 1, 1, 0, 1,

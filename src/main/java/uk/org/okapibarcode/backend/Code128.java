@@ -107,7 +107,7 @@ public class Code128 extends Symbol {
         double glyph_count;
         int bar_characters = 0, total_sum = 0;
         FMode f_state = FMode.LATCHN;
-        int values[] = new int[200];
+        int[] values = new int[200];
         int c;
         String dest = "";
         int[] inputData;
@@ -131,8 +131,8 @@ public class Code128 extends Symbol {
             inputData[i] = inputBytes[i] & 0xFF;
         }
 
-        FMode fset[] = new FMode[200];
-        Mode set[] = new Mode[200]; /* set[] = Calculated mode for each character */
+        FMode[] fset = new FMode[200];
+        Mode[] set = new Mode[200]; /* set[] = Calculated mode for each character */
 
         if (sourcelen > 170) {
             error_msg = "Input data too long";

@@ -25,7 +25,7 @@ package uk.org.okapibarcode.backend;
  */
 public class Code3Of9Extended extends Symbol {
 
-    private final String ECode39[] = {
+    private final String[] ECode39 = {
         "%U", "$A", "$B", "$C", "$D", "$E", "$F", "$G", "$H", "$I", "$J", "$K",
         "$L", "$M", "$N", "$O", "$P", "$Q", "$R", "$S", "$T", "$U", "$V", "$W",
         "$X", "$Y", "$Z", "%A", "%B", "%C", "%D", "%E", " ", "/A", "/B", "/C",

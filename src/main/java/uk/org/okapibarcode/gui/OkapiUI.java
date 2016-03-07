@@ -2210,9 +2210,9 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
             return;
         }
 
-        bWidth = topPanel.getWidth() / (symbol.getWidth() + (2 * symbol.getBorderWidth()) + (2 * symbol.getWhitespaceWidth()));
+        bWidth = (double) topPanel.getWidth() / (symbol.getWidth() + (2 * symbol.getBorderWidth()) + (2 * symbol.getWhitespaceWidth()));
 
-        bHeight = topPanel.getHeight() / (symbol.getHeight() + (2 * symbol.getBorderWidth()) + symbol.getHumanReadableHeight());
+        bHeight = (double) topPanel.getHeight() / (symbol.getHeight() + (2 * symbol.getBorderWidth()) + symbol.getHumanReadableHeight());
 
         if (bWidth < bHeight) {
             factor = (int) bWidth;

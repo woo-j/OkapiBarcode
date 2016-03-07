@@ -864,10 +864,8 @@ public abstract class Symbol {
                     || ((ai_value[i] >= 310) && (ai_value[i] <= 369))) {
                 error_latch = 2;
             }
-            if ((ai_value[i] >= 3100) && (ai_value[i] <= 3699)) {
-                if (data_length[i] != 6) {
-                    error_latch = 1;
-                }
+            if ((ai_value[i] >= 3100) && (ai_value[i] <= 3699) && data_length[i] != 6) {
+                error_latch = 1;
             }
             if (
             ((ai_value[i] >= 370) && (ai_value[i] <= 379))

@@ -1411,10 +1411,8 @@ public class DataMatrix extends Symbol {
         boolean retval = false;
         
         for (i = position; i < sourcelen; i++) {
-            if (nonX12Position == 0) {
-                if (!isX12(i)) {
-                    nonX12Position = i;
-                }
+            if (nonX12Position == 0 && !isX12(i)) {
+                nonX12Position = i;
             }
             
             if (specialX12Position == 0) {

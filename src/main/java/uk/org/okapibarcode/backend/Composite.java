@@ -765,10 +765,8 @@ public class Composite extends Symbol {
 
         encodeInfo += "Composite width: " + Integer.toString(cc_width) + "\n";
 
-        if (cc_mode == CompositeMode.CC_A) {
-            if (!(cc_binary_string())) {
-                cc_mode = CompositeMode.CC_B;
-            }
+        if (cc_mode == CompositeMode.CC_A && !cc_binary_string()) {
+            cc_mode = CompositeMode.CC_B;
         }
 
         if (cc_mode == CompositeMode.CC_B) { /* If the data didn't fit into CC-A it is recalculated for CC-B */

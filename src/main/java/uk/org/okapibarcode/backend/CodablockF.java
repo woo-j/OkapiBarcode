@@ -363,14 +363,12 @@ public class CodablockF extends Symbol {
                                 done = true;
                             }
 
-                            if ((source[input_position] >= 128) && (!done)) {
+                            if ((source[input_position] >= 128) && (!done) && c == 1) {
                                 /* Needs two symbols */
-                                if (c == 1) {
-                                    blockmatrix[current_row][column_position] = 100; /* Code B */
-                                    column_position++;
-                                    c--;
-                                    done = true;
-                                }
+                                blockmatrix[current_row][column_position] = 100; /* Code B */
+                                column_position++;
+                                c--;
+                                done = true;
                             }
                             break;
                         case MODEB: /* Table B2 applies */
@@ -404,14 +402,12 @@ public class CodablockF extends Symbol {
                                 done = true;
                             }
 
-                            if ((source[input_position] >= 160) && (!done)) {
+                            if ((source[input_position] >= 160) && (!done) && c == 1) {
                                 /* Needs two symbols */
-                                if (c == 1) {
-                                    blockmatrix[current_row][column_position] = 101; /* Code A */
-                                    column_position++;
-                                    c--;
-                                    done = true;
-                                }
+                                blockmatrix[current_row][column_position] = 101; /* Code A */
+                                column_position++;
+                                c--;
+                                done = true;
                             }
                             break;
                         case MODEC: /* Table B3 applies */

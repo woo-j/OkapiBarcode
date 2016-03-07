@@ -433,7 +433,7 @@ public class Code16k extends Symbol {
                 }
             }
             if (read != 0) {
-                if ((fset[read] == 'F') && (f_state == false)) {
+                if ((fset[read] == 'F') && !f_state) {
                     /* Latch beginning of extended mode */
                     switch (current_set) {
                     case 'A':
@@ -448,7 +448,7 @@ public class Code16k extends Symbol {
                     bar_characters += 2;
                     f_state = true;
                 }
-                if ((fset[read] == ' ') && (f_state == true)) {
+                if ((fset[read] == ' ') && f_state) {
                     /* Latch end of extended mode */
                     switch (current_set) {
                     case 'A':
@@ -759,7 +759,7 @@ public class Code16k extends Symbol {
             black = true;
             x = 15;
             for (xBlock = 0; xBlock < pattern[yBlock].length(); xBlock++) {
-                if (black == true) {
+                if (black) {
                     black = false;
                     w = pattern[yBlock].charAt(xBlock) - '0';
                     if (row_height[yBlock] == -1) {

@@ -129,7 +129,7 @@ public class Upc extends Symbol {
             }
         }
 
-        if (retval == true) {
+        if (retval) {
             plotSymbol();
         }
         return retval;
@@ -364,7 +364,7 @@ public class Upc extends Symbol {
             compositeOffset = 6;
         }
         for (xBlock = 0; xBlock < pattern[0].length(); xBlock++) {
-            if (black == true) {
+            if (black) {
                 y = 0;
                 black = false;
                 w = pattern[0].charAt(xBlock) - '0';

@@ -66,7 +66,7 @@ public class Postnet extends Symbol {
             retval = makePlanet();
         }
 
-        if (retval == true) {
+        if (retval) {
             plotSymbol();
         }
 

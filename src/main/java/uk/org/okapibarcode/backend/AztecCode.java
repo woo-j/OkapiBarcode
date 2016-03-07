@@ -594,7 +594,7 @@ public class AztecCode extends Symbol {
             return false;
         }
 
-        if (generateAztecBinary() == false) {
+        if (!generateAztecBinary()) {
             error_msg = "Input too long or too many extended ASCII characters";
             return false;
         }

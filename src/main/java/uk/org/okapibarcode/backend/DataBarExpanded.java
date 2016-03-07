@@ -190,7 +190,7 @@ public class DataBarExpanded extends Symbol {
             binary_string = "0";
             compositeOffset = 0;
         }
-        if (calculateBinaryString() == false) {
+        if (!calculateBinaryString()) {
             return false;
         }
 

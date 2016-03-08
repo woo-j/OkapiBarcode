@@ -18,6 +18,7 @@ package uk.org.okapibarcode.backend;
 import java.awt.geom.Rectangle2D;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Implements GS1 Composite symbology According to ISO/IEC 24723:2010
@@ -503,10 +504,10 @@ public class Composite extends Symbol {
 
     @Override
     public boolean encode() {
-        ArrayList < Rectangle2D.Double > linear_rect = new ArrayList<>();
-        ArrayList < TextBox > linear_txt = new ArrayList<>();
-        ArrayList < Rectangle2D.Double > combine_rect = new ArrayList<>();
-        ArrayList < TextBox > combine_txt = new ArrayList<>();
+        List < Rectangle2D.Double > linear_rect = new ArrayList<>();
+        List < TextBox > linear_txt = new ArrayList<>();
+        List < Rectangle2D.Double > combine_rect = new ArrayList<>();
+        List < TextBox > combine_txt = new ArrayList<>();
         String linear_encodeInfo = null;
         String linear_error_msg = "";
         int linear_height = 0;

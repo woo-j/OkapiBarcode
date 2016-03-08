@@ -42,7 +42,7 @@ public class OkapiBarcode {
         Settings settings = new Settings();
         new JCommander(settings, args);
 
-        if (settings.isGuiSupressed() == false) {
+        if (!settings.isGuiSupressed()) {
             OkapiUI okapiUi = new OkapiUI();
             okapiUi.setVisible(true);
         } else {

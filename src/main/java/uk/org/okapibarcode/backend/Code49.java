@@ -1326,7 +1326,7 @@ public class Code49 extends Symbol {
             black = true;
             x = 15;
             for (xBlock = 0; xBlock < pattern[yBlock].length(); xBlock++) {
-                if (black == true) {
+                if (black) {
                     black = false;
                     w = pattern[yBlock].charAt(xBlock) - '0';
                     if (row_height[yBlock] == -1) {

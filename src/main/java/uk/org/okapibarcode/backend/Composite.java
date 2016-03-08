@@ -1887,7 +1887,7 @@ public class Composite extends Symbol {
             } while ((i + latchOffset) < general_field.length());
         }
 
-        if (calculateSymbolSize() == false) {
+        if (!calculateSymbolSize()) {
             return false;
         }
 
@@ -1933,7 +1933,7 @@ public class Composite extends Symbol {
         }
 
         /* size of the symbol may have changed when adding data in the above sequence */
-        if (calculateSymbolSize() == false) {
+        if (!calculateSymbolSize()) {
             return false;
         }
 

@@ -287,7 +287,7 @@ public class Ean extends Symbol {
             compositeOffset = 6;
         }
         for (xBlock = 0; xBlock < pattern[0].length(); xBlock++) {
-            if (black == true) {
+            if (black) {
                 y = 0;
                 black = false;
                 w = pattern[0].charAt(xBlock) - '0';

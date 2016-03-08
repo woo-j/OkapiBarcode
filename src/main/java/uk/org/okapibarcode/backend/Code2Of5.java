@@ -27,7 +27,7 @@ import java.awt.geom.Rectangle2D;
  */
 public class Code2Of5 extends Symbol {
 
-    private static enum ToFMode {
+    private enum ToFMode {
         MATRIX, INDUSTRIAL, IATA, DATA_LOGIC, INTERLEAVED, ITF14, DPLEIT, DPIDENT
     }
 

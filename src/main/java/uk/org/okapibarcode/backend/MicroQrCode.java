@@ -28,7 +28,7 @@ import java.io.UnsupportedEncodingException;
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class MicroQrCode extends Symbol {
-    private static enum qrMode {
+    private enum qrMode {
         NULL, KANJI, BINARY, ALPHANUM, NUMERIC
     }
     public enum EccMode {

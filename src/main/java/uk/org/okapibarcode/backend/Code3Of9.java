@@ -28,7 +28,7 @@ package uk.org.okapibarcode.backend;
  */
 public class Code3Of9 extends Symbol {
 
-    public static enum CheckDigit {
+    public enum CheckDigit {
         NONE, MOD43
     }
 

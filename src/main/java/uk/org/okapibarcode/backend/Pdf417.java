@@ -33,7 +33,7 @@ import java.math.BigInteger;
  */
 public class Pdf417 extends Symbol {
 
-    public static enum Mode {
+    public enum Mode {
         /** Normal PDF417. */
         NORMAL,
         /** Truncated PDF417. */
@@ -42,7 +42,7 @@ public class Pdf417 extends Symbol {
         MICRO
     };
 
-    private static enum EncodingMode {
+    private enum EncodingMode {
         FALSE, TEX, BYT, NUM
     };
 

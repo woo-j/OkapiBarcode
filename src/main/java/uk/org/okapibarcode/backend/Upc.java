@@ -34,7 +34,7 @@ import java.awt.geom.Rectangle2D;
  */
 public class Upc extends Symbol {
 
-    public static enum Mode {
+    public enum Mode {
         UPCA, UPCE
     };
 

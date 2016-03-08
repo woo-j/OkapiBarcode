@@ -508,7 +508,7 @@ public class Code2Of5 extends Symbol {
             } else {
                 baseline = getHeight() + fontSize;
             }
-            double centerX = getWidth() / 2;
+            double centerX = getWidth() / 2.0;
             texts.add(new TextBox(centerX, baseline, readable));
         }
     }

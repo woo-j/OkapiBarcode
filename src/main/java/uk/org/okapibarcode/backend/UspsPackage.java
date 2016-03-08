@@ -130,7 +130,7 @@ public class UspsPackage extends Symbol{
         rectangles.add(topBar);
         rectangles.add(bottomBar);
 
-        double centerX = getWidth() / 2;
+        double centerX = getWidth() / 2.0;
         texts.add(new TextBox(centerX, getHeight() - 6.0, readable));
         texts.add(new TextBox(centerX, 12.0, banner));
     }

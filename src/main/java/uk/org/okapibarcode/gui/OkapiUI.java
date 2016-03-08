@@ -1586,14 +1586,12 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         JFileChooser fileChooser = new JFileChooser();
         if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
-            try {
+            try (BufferedReader in = new BufferedReader(
+                    new InputStreamReader(
+                        new FileInputStream(file), "UTF8"))) {
                 String str;
 
-                sequenceArea.setText("");
-
-                BufferedReader in = new BufferedReader(
-                    new InputStreamReader(
-                        new FileInputStream(file), "UTF8"));
+                sequenceArea.setText("");                
 
                 while ((str = in.readLine()) != null) {
                     sequenceArea.setText(sequenceArea.getText() + str + '\n');

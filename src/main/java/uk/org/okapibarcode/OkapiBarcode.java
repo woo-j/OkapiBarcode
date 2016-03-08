@@ -111,16 +111,14 @@ public class OkapiBarcode {
     }
     
     private static void processFile(Settings settings) {
-        File name = new File(settings.getInputFile());
-        FileInputStream fis;
+        File name = new File(settings.getInputFile());        
         byte[] inputBytes;
         String inputData;
         int counter = 0;
         
         if (!(settings.isBatchMode())) {
             // Encode all data from selected file in one symbol
-            try {
-                fis = new FileInputStream(name);
+            try (FileInputStream fis = new FileInputStream(name)) {                
                 inputBytes = new byte[fis.available()];
                 fis.read(inputBytes);
                 inputData = new String(inputBytes, "UTF-8");
@@ -131,10 +129,9 @@ public class OkapiBarcode {
             } 
         } else {
             // Encode each line of input data in a seperate symbol
-            try {
-                BufferedReader in = new BufferedReader(
+            try (BufferedReader in = new BufferedReader(
                     new InputStreamReader(
-                        new FileInputStream(name), "UTF8"));
+                        new FileInputStream(name), "UTF8"))) {                
 
                 while ((inputData = in.readLine()) != null) {
                     counter++;

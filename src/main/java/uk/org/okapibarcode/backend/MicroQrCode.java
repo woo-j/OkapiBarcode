@@ -309,16 +309,12 @@ public class MicroQrCode extends Symbol {
             }
         }
 
-        if (version == 2) {
-            if (binaryCount[2] <= 68) {
-                ecc_level = EccMode.M;
-            }
+        if (version == 2 && binaryCount[2] <= 68) {
+            ecc_level = EccMode.M;
         }
 
-        if (version == 1) {
-            if (binaryCount[1] <= 32) {
-                ecc_level = EccMode.M;
-            }
+        if (version == 1 && binaryCount[1] <= 32) {
+            ecc_level = EccMode.M;
         }
 
         binary = "";

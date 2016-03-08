@@ -382,11 +382,9 @@ public class Upc extends Symbol {
                         h -= 8;
                         y = 8;
                     }
-                    if (linkageFlag) {
-                        if ((x == 0) || (x == 94)) {
-                            h += 2;
-                            y -= 2;
-                        }
+                    if (linkageFlag && (x == 0) || (x == 94)) {
+                        h += 2;
+                        y -= 2;
                     }
                 } else {
                     if ((x < 4) || (x > 45)) {
@@ -397,11 +395,9 @@ public class Upc extends Symbol {
                         h -= 8;
                         y = 8;
                     }
-                    if (linkageFlag) {
-                        if ((x == 0) || (x == 50)) {
-                            h += 2;
-                            y -= 2;
-                        }
+                    if (linkageFlag && (x == 0) || (x == 50)) {
+                        h += 2;
+                        y -= 2;
                     }
                 }
                 Rectangle2D.Double rect = new Rectangle2D.Double(x + 6, y + compositeOffset, w, h);

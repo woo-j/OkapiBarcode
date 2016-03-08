@@ -290,10 +290,8 @@ public class Code16k extends Symbol {
                 if ((set[i] == 'B') && (set[1] == 'C')) {
                     glyph_count = glyph_count - 1.0;
                 }
-                if ((set[i] == 'B') && (set[1] == 'B')) {
-                    if (set[2] == 'C') {
-                        glyph_count = glyph_count - 1.0;
-                    }
+                if ((set[i] == 'B') && (set[1] == 'B') && set[2] == 'C') {
+                    glyph_count = glyph_count - 1.0;
                 }
                 if (fset[i] == 'F') {
                     glyph_count = glyph_count + 2.0;

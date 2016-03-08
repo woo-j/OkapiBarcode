@@ -592,7 +592,7 @@ public class Code16k extends Symbol {
         }
     }
 
-    private void getValueSubsetC(int source_a, int source_b, int values[], int bar_chars) {
+    private void getValueSubsetC(int source_a, int source_b, int[] values, int bar_chars) {
         int weight;
 
         weight = (10 * Character.getNumericValue(source_a)) + Character.getNumericValue(source_b);

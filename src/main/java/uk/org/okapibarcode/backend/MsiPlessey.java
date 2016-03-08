@@ -45,7 +45,7 @@ public class MsiPlessey extends Symbol {
         checkOption = checkMode;
     }
 
-    private final String MSI_PlessTable[] = {
+    private final String[] MSI_PlessTable = {
         "12121212", "12121221", "12122112", "12122121", "12211212", "12211221",
         "12212112", "12212121", "21121212", "21121221"
     };

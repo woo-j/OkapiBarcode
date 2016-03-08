@@ -28,7 +28,7 @@ import java.awt.geom.Rectangle2D;
  */
 public class Code49 extends Symbol {
 
-    private String c49_table7[] = {
+    private String[] c49_table7 = {
         /* Table 7: Code 49 ASCII Chart */
         "! ", "!A", "!B", "!C", "!D", "!E", "!F", "!G", "!H", "!I", "!J", "!K",
         "!L", "!M", "!N", "!O", "!P", "!Q", "!R", "!S", "!T", "!U", "!V", "!W",
@@ -44,27 +44,27 @@ public class Code49 extends Symbol {
     };
 
     /* Table 5: Check Character Weighting Values */
-    private int c49_x_weight[] = {
+    private int[] c49_x_weight = {
         1, 9, 31, 26, 2, 12, 17, 23, 37, 18, 22, 6, 27, 44, 15, 43, 39, 11, 13,
         5, 41, 33, 36, 8, 4, 32, 3, 19, 40, 25, 29, 10
     };
 
-    private int c49_y_weight[] = {
+    private int[] c49_y_weight = {
         9, 31, 26, 2, 12, 17, 23, 37, 18, 22, 6, 27, 44, 15, 43, 39, 11, 13, 5,
         41, 33, 36, 8, 4, 32, 3, 19, 40, 25, 29, 10, 24
     };
 
-    private int c49_z_weight[] = {
+    private int[] c49_z_weight = {
         31, 26, 2, 12, 17, 23, 37, 18, 22, 6, 27, 44, 15, 43, 39, 11, 13, 5, 41,
         33, 36, 8, 4, 32, 3, 19, 40, 25, 29, 10, 24, 30
     };
 
-    private String c49_table4[] = {
+    private String[] c49_table4 = {
         /* Table 4: Row Parity Pattern for Code 49 Symbols */
         "OEEO", "EOEO", "OOEE", "EEOO", "OEOE", "EOOE", "OOOO", "EEEE"
     };
 
-    private String c49_appxe_even[] = {
+    private String[] c49_appxe_even = {
         /* Appendix E - Code 49 Encodation Patterns (Even Symbol Character Parity) */
         /* Column 1 */
         "11521132", "25112131", "14212132", "25121221", "14221222", "12412132",
@@ -524,7 +524,7 @@ public class Code49 extends Symbol {
         "15121132", "24221131", "13321132", "22421131"
     };
 
-    private String c49_appxe_odd[] = {
+    private String[] c49_appxe_odd = {
         /* Appendix E - Code 49 Encodation Patterns (Odd Symbol Character Parity) */
         /* Column 1 */
         "22121116", "42121114", "31221115", "51221113", "32112115", "52112113",
@@ -984,7 +984,7 @@ public class Code49 extends Symbol {
         "11131162", "21122161", "21131251", "11113162"
     };
 
-    private char C49_Set[] = {
+    private char[] C49_Set = {
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D',
         'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R',
         'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '-', '.', ' ', '$', '/', '+',
@@ -998,9 +998,9 @@ public class Code49 extends Symbol {
         int x_count, y_count, z_count, posn_val, local_value;
         String intermediate = "";
         String localpattern = "";
-        int codewords[] = new int[170];
-        int c_grid[][] = new int[8][8];
-        int w_grid[][] = new int[8][4];
+        int[] codewords = new int[170];
+        int[][] c_grid = new int[8][8];
+        int[][] w_grid = new int[8][4];
 
         if (!content.matches("[\u0000-\u007F]+")) {
             error_msg = "Invalid characters in input data";

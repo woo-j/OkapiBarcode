@@ -32,7 +32,7 @@ public class Code3Of9 extends Symbol {
         NONE, MOD43
     }
 
-    private static final String CODE_39[] = {
+    private static final String[] CODE_39 = {
         "1112212111", "2112111121", "1122111121", "2122111111", "1112211121",
         "2112211111", "1122211111", "1112112121", "2112112111", "1122112111",
         "2111121121", "1121121121", "2121121111", "1111221121", "2111221111",
@@ -44,7 +44,7 @@ public class Code3Of9 extends Symbol {
         "1212111211", "1211121211", "1112121211"
     };
 
-    private static final char LOOKUP[] = {
+    private static final char[] LOOKUP = {
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D',
         'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R',
         'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '-', '.', ' ', '$', '/', '+',

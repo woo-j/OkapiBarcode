@@ -99,11 +99,11 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
     /** Serial version UID. */
     private static final long serialVersionUID = -681156299104876221L;
 
-    public static String dataInput = null; //Original User Input
-    public static String compositeInput = null; // User input for composite symbol
-    public static String outputf = null; //file to output to
-    public static int factor = 0;
-    public static int barHeight = 0;
+    public static String dataInput; //Original User Input
+    public static String compositeInput; // User input for composite symbol
+    public static String outputf; //file to output to
+    public static int factor;
+    public static int barHeight;
     public static boolean debug = true;
     public static Object[] bc;
     public static Symbol symbol;
@@ -112,7 +112,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
     public static Color paperColour = new Color(255, 255, 255);
     public static int moduleWidth = 4;
     public static int borderWidth = 5;
-    public static int whitespaceWidth = 0;
+    public static int whitespaceWidth;
     private SymbolType selectedSymbol;
 
     /**

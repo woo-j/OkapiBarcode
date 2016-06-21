@@ -91,7 +91,7 @@ public class DataBarExpanded extends Symbol {
     private int[] widths = new int[8];
     private boolean linkageFlag;
     
-    private int preferredNoOfColumns = 0;
+    private int preferredNoOfColumns;
     
     /**
      * Set the width of a stacked symbol by selecting the number

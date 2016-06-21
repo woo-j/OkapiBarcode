@@ -56,7 +56,7 @@ public class Code128 extends Symbol {
 
     private Mode[] mode_type = new Mode[200];
     private int[] mode_length = new int[200];
-    private int index_point = 0, read = 0;
+    private int index_point, read;
     private boolean modeCSupression;
     private enum Composite { OFF, CCA, CCB, CCC };
     private Composite compositeMode;

@@ -26,10 +26,10 @@ import uk.org.okapibarcode.backend.HumanReadableLocation;
 public class Settings {
     
     @Parameter(names = "-cli", description = "Supress GUI loading", required = false)
-    private boolean supressGui = false;
+    private boolean supressGui;
     
     @Parameter(names = {"-t", "--types"}, description = "Display table of barcode types", required = false)
-    private boolean displayTypes = false;
+    private boolean displayTypes;
     
     @Parameter(names = {"-i", "--input"}, description = "Read data from file", required = false)
     private String inputFile = "";
@@ -44,7 +44,7 @@ public class Settings {
     private int symbolType = 20;
     
     @Parameter(names = "--height", description = "Height of the symbol in multiples of x-dimension", required = false)
-    private int symbolHeight = 0;
+    private int symbolHeight;
     
 //    @Parameter(names = {"-w", "--whitesp"}, description = "Width of whitespace in multiples of x-dimension", required = false)
 //    private int symbolWhiteSpace = 0;
@@ -59,7 +59,7 @@ public class Settings {
 //    private boolean addBinding = false;
     
     @Parameter(names = {"-r", "--reverse"}, description = "Reverse colours (white on black)", required = false)
-    private boolean reverseColour = false;
+    private boolean reverseColour;
     
     @Parameter(names = "--fg", description = "Specify a foreground (ink) colour", required = false)
     private String foregroundColour = "000000";
@@ -68,7 +68,7 @@ public class Settings {
     private String backgroundColour = "FFFFFF";
     
     @Parameter(names = "--scale", description = "Adjust size of output image", required = false)
-    private int symbolScale = 0;
+    private int symbolScale;
     
     // --directpng, --directeps, --directsvg, --dump
     
@@ -76,42 +76,42 @@ public class Settings {
 //    private int rotationAngle = 0;
     
     @Parameter(names = "--cols", description = "Number of columns in PDF417", required = false)
-    private int symbolColumns = 0;
+    private int symbolColumns;
     
     @Parameter(names = "--vers", description = "Set QR Code version number", required = false)
-    private int symbolVersion = 0;
+    private int symbolVersion;
     
     @Parameter(names = "--secure", description = "Set error correction level", required = false)
-    private int symbolECC = 0;
+    private int symbolECC;
     
     @Parameter(names = "--primary", description = "Add structured primary message", required = false)
     private String primaryData = "";
     
     @Parameter(names = "--mode", description = "Set encoding mode", required = false)
-    private int encodeMode = 0;
+    private int encodeMode;
     
     @Parameter(names = "--gs1", description = "Treat input as GS1 data", required = false)
-    private boolean dataGs1Mode = false;
+    private boolean dataGs1Mode;
     
     @Parameter(names = "--binary", description = "Treat input as binary data", required = false)
-    private boolean dataBinaryMode = false;
+    private boolean dataBinaryMode;
     
     @Parameter(names = "--notext", description = "Remove human readable text", required = false)
-    private boolean supressHrt = false;
+    private boolean supressHrt;
     
     @Parameter(names = "--textabove", description = "Place human readable text above symbol", required = false)
-    private boolean superHrt = false;
+    private boolean superHrt;
     
     @Parameter(names = "--square", description = "Force Data Matrix symbols to be square", required = false)
-    private boolean makeSquare = false;
+    private boolean makeSquare;
     
     @Parameter(names = "--init", description = "Add reader initialisation code", required = false)
-    private boolean addReaderInit = false;
+    private boolean addReaderInit;
     
     // --smalltext
     
     @Parameter(names = "--batch", description = "Treat each line of input as a separate data set", required = false)
-    private boolean batchMode = false;
+    private boolean batchMode;
 
     /**
      * @return the supressGui

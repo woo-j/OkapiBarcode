@@ -29,7 +29,7 @@ public class ChannelCode extends Symbol {
     private double currentValue;
     private double targetValue;
     private String horizontalSpacing;
-    private int requestedNumberOfChannels = 0;
+    private int requestedNumberOfChannels;
     
     /**
      * Set the number of channels used to encode data. This setting will be

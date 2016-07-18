@@ -115,7 +115,7 @@ public class DataMatrix extends Symbol {
     private int[] places;
     private boolean isSquare;
     private int[] inputData;
-    private int preferredSize = 0;
+    private int preferredSize;
 
     private int process_p;
     private int[] process_buffer = new int[8];

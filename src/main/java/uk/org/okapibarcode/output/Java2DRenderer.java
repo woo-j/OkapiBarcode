@@ -41,7 +41,7 @@ public class Java2DRenderer implements SymbolRenderer {
     private final Graphics2D g2d;
 
     /** The magnification factor to apply. */
-    private double magnification = 0;
+    private double magnification;
 
     /** The paper (background) color. */
     private final Color paper;

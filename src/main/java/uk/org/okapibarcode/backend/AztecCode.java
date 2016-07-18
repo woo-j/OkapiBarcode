@@ -27,7 +27,7 @@ package uk.org.okapibarcode.backend;
  */
 public class AztecCode extends Symbol {
 
-    private int preferredSize = 0;
+    private int preferredSize;
 
     /**
      * Sets a preferred symbol size. This value may be ignored if data string is

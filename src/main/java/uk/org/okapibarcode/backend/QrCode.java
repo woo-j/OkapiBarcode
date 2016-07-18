@@ -47,7 +47,7 @@ public class QrCode extends Symbol {
     private int[] inputData;
     private byte[] grid;
     private byte[] eval;
-    private int preferredVersion = 0;
+    private int preferredVersion;
     private int inputLength;
 
     /**

@@ -62,7 +62,7 @@ class ExtendedOutputStreamWriter extends OutputStreamWriter {
      * @throws IOException if an I/O error occurs
      */
     public ExtendedOutputStreamWriter append(double d) throws IOException {
-        super.append(String.format(doubleFormat, d));
+        super.append(String.format(Locale.ROOT, doubleFormat, d));
         return this;
     }
 

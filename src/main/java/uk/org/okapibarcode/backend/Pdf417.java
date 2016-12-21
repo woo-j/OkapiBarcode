@@ -736,7 +736,8 @@ public class Pdf417 extends Symbol {
                     break;
                 case BYT:
                     /* octet stream mode */
-                    processBytes(blockCount, blockLength[i]);
+                    EncodingMode lastMode = (i == 0 ? EncodingMode.TEX : blockType[i - 1]);
+                    processBytes(blockCount, blockLength[i], lastMode);
                     break;
                 case NUM:
                     /* numeric mode */
@@ -1055,7 +1056,8 @@ public class Pdf417 extends Symbol {
                     processText(blockCount, blockLength[i], false);
                     break;
                 case BYT: /* 670 - octet stream mode */
-                    processBytes(blockCount, blockLength[i]);
+                    EncodingMode lastMode = (i == 0 ? EncodingMode.TEX : blockType[i - 1]);
+                    processBytes(blockCount, blockLength[i], lastMode);
                     break;
                 case NUM: /* 712 - numeric mode */
                     processNumbers(blockCount, blockLength[i]);
@@ -1664,7 +1666,7 @@ public class Pdf417 extends Symbol {
         }
     }
 
-    private void processBytes(int start, int length) {
+    private void processBytes(int start, int length, EncodingMode lastMode) {
         int len = 0;
         int chunkLen = 0;
         BigInteger mantisa;
@@ -1674,12 +1676,12 @@ public class Pdf417 extends Symbol {
         mantisa = new BigInteger("0");
         total = new BigInteger("0");
 
-        if (inputData.length == 1) {
+        if (length == 1 && lastMode == EncodingMode.TEX) {
             codeWords[codeWordCount++] = 913;
             codeWords[codeWordCount++] = inputData[start];
         } else {
             /* select the switch for multiple of 6 bytes */
-            if (inputData.length % 6 == 0) {
+            if (length % 6 == 0) {
                 codeWords[codeWordCount++] = 924;
             } else {
                 codeWords[codeWordCount++] = 901;

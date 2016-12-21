@@ -46,7 +46,7 @@
       <rect x="234.00" y="10.00" width="8.00" height="80.00" />
       <rect x="244.00" y="10.00" width="2.00" height="80.00" />
       <text x="128.00" y="106.00" text-anchor="middle"
-         font-family="Helvetica" font-size="16.00" fill="000000">
+         font-family="Helvetica" font-size="16.00" fill="#000000">
          123456789Od
       </text>
    </g>

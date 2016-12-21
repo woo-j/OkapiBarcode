@@ -25,7 +25,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import uk.org.okapibarcode.backend.Code93;
@@ -36,6 +39,20 @@ import uk.org.okapibarcode.backend.Symbol;
  * Tests for {@link SvgRenderer}.
  */
 public class SvgRendererTest {
+
+    private Locale originalDefaultLocale;
+
+    @Before
+    public void before() {
+        // ensure use of correct decimal separator (period), regardless of default locale
+        originalDefaultLocale = Locale.getDefault();
+        Locale.setDefault(Locale.GERMANY);
+    }
+
+    @After
+    public void after() {
+        Locale.setDefault(originalDefaultLocale);
+    }
 
     @Test
     public void testCode93Basic() throws IOException {

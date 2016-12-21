@@ -811,13 +811,13 @@ public class MakeBarcode {
                 case "gif":
                 case "jpg":
                 case "bmp":
-                    BufferedImage image = new BufferedImage(symbol.getRenderWidth(),
-                            symbol.getRenderHeight(), BufferedImage.TYPE_INT_RGB);
+                    BufferedImage image = new BufferedImage(symbol.getWidth(),
+                            symbol.getHeight(), BufferedImage.TYPE_INT_RGB);
                     Graphics2D g2d = image.createGraphics();
                     //g2d.setBackground(paper);
                     g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-                    Java2DRenderer renderer = new Java2DRenderer(g2d, paper, ink);
+                    Java2DRenderer renderer = new Java2DRenderer(g2d, 1, paper, ink);
                     System.out.printf("MakeBarcode\n");
                     renderer.render(symbol);
 
@@ -828,11 +828,11 @@ public class MakeBarcode {
                     }
                     break;
                 case "svg":
-                    SvgRenderer svg = new SvgRenderer(new FileOutputStream(file), paper, ink);
+                    SvgRenderer svg = new SvgRenderer(new FileOutputStream(file), 1, paper, ink);
                     svg.render(symbol);
                     break;
                 case "eps":
-                    PostScriptRenderer eps = new PostScriptRenderer(new FileOutputStream(file), paper, ink);
+                    PostScriptRenderer eps = new PostScriptRenderer(new FileOutputStream(file), 1, paper, ink);
                     eps.render(symbol);
                     break;
                 default:

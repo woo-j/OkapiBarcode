@@ -37,6 +37,9 @@ public class SvgRenderer implements SymbolRenderer {
     /** The output stream to render to. */
     private final OutputStream out;
 
+    /** The magnification factor to apply. */
+    private final double magnification;
+
     /** The paper (background) color. */
     private final Color paper;
 
@@ -47,11 +50,13 @@ public class SvgRenderer implements SymbolRenderer {
      * Creates a new SVG renderer.
      *
      * @param out the output stream to render to
+     * @param magnification the magnification factor to apply
      * @param paper the paper (background) color
      * @param ink the ink (foreground) color
      */
-    public SvgRenderer(OutputStream out, Color paper, Color ink) {
+    public SvgRenderer(OutputStream out, double magnification, Color paper, Color ink) {
         this.out = out;
+        this.magnification = magnification;
         this.paper = paper;
         this.ink = ink;
     }
@@ -59,14 +64,12 @@ public class SvgRenderer implements SymbolRenderer {
     /** {@inheritDoc} */
     @Override
     public void render(Symbol symbol) throws IOException {
-        
-        double magnification = symbol.getModuleWidth();
-        int margin = symbol.getBorderWidth() * (int)magnification;
-        int whitespace = symbol.getWhitespaceWidth() * (int)magnification;
 
         String content = symbol.getContent();
-        int width = (int) (symbol.getWidth() * magnification) + (2 * margin) + (2 * whitespace);
-        int height = (int) (symbol.getHeight() * magnification) + (2 * margin);
+        int width = (int) (symbol.getWidth() * magnification);
+        int height = (int) (symbol.getHeight() * magnification);
+        int marginX = (int) (symbol.getQuietZoneHorizontal() * magnification);
+        int marginY = (int) (symbol.getQuietZoneVertical() * magnification);
 
         String title;
         if (content == null || content.isEmpty()) {
@@ -102,8 +105,8 @@ public class SvgRenderer implements SymbolRenderer {
             // Rectangles
             for (int i = 0; i < symbol.rectangles.size(); i++) {
                 Rectangle2D.Double rect = symbol.rectangles.get(i);
-                writer.append("      <rect x=\"").append((rect.x * magnification) + margin + whitespace)
-                      .append("\" y=\"").append((rect.y * magnification) + margin)
+                writer.append("      <rect x=\"").append((rect.x * magnification) + marginX)
+                      .append("\" y=\"").append((rect.y * magnification) + marginY)
                       .append("\" width=\"").append(rect.width * magnification)
                       .append("\" height=\"").append(rect.height * magnification)
                       .append("\" />\n");
@@ -112,8 +115,8 @@ public class SvgRenderer implements SymbolRenderer {
             // Text
             for (int i = 0; i < symbol.texts.size(); i++) {
                 TextBox text = symbol.texts.get(i);
-                writer.append("      <text x=\"").append((text.x * magnification) + margin + whitespace)
-                      .append("\" y=\"").append((text.y * magnification) + margin)
+                writer.append("      <text x=\"").append((text.x * magnification) + marginX)
+                      .append("\" y=\"").append((text.y * magnification) + marginY)
                       .append("\" text-anchor=\"middle\"\n");
                 writer.append("         font-family=\"").append(symbol.getFontName())
                       .append("\" font-size=\"").append(symbol.getFontSize() * magnification)
@@ -131,8 +134,8 @@ public class SvgRenderer implements SymbolRenderer {
                 } else {
                     color = bgColour;
                 }
-                writer.append("      <circle cx=\"").append(((ellipse.x + (ellipse.width / 2)) * magnification) + margin + whitespace)
-                      .append("\" cy=\"").append(((ellipse.y + (ellipse.width / 2)) * magnification) + margin)
+                writer.append("      <circle cx=\"").append(((ellipse.x + (ellipse.width / 2)) * magnification) + marginX)
+                      .append("\" cy=\"").append(((ellipse.y + (ellipse.width / 2)) * magnification) + marginY)
                       .append("\" r=\"").append((ellipse.width / 2) * magnification)
                       .append("\" fill=\"#").append(color).append("\" />\n");
             }
@@ -147,8 +150,8 @@ public class SvgRenderer implements SymbolRenderer {
                     } else {
                         writer.append("L ");
                     }
-                    writer.append((hexagon.pointX[j] * magnification) + margin + whitespace).append(" ")
-                          .append((hexagon.pointY[j] * magnification) + margin).append(" ");
+                    writer.append((hexagon.pointX[j] * magnification) + marginX).append(" ")
+                          .append((hexagon.pointY[j] * magnification) + marginY).append(" ");
                 }
                 writer.append("Z\" />\n");
             }

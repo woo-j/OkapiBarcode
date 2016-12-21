@@ -41,98 +41,77 @@ public class Java2DRenderer implements SymbolRenderer {
     private final Graphics2D g2d;
 
     /** The magnification factor to apply. */
-    private double magnification = 0;
+    private final double magnification;
 
     /** The paper (background) color. */
     private final Color paper;
 
     /** The ink (foreground) color. */
     private final Color ink;
-    
+
     /**
      * Creates a new Java 2D renderer.
      *
      * @param g2d the graphics to render to
+     * @param magnification the magnification factor to apply
      * @param paper the paper (background) color
      * @param ink the ink (foreground) color
      */
-    public Java2DRenderer(Graphics2D g2d, Color paper, Color ink) {
+    public Java2DRenderer(Graphics2D g2d, double magnification, Color paper, Color ink) {
         this.g2d = g2d;
+        this.magnification = magnification;
         this.paper = paper;
         this.ink = ink;
-    }
-    
-    /**
-     * Set custom magnification (override symbol module width) for UI display
-     * 
-     * @param magnification amount of magnification
-     */
-    public void setUIMagnification(double magnification) {
-        this.magnification = magnification;
     }
 
     /** {@inheritDoc} */
     @Override
     public void render(Symbol symbol) {
-        int margin;
-        int whitespace;
 
-        if (magnification == 0) {
-            magnification = symbol.getModuleWidth();
-        }        
-        
-        margin = symbol.getBorderWidth() * (int)magnification;
-        whitespace = symbol.getWhitespaceWidth() * (int)magnification;
-        
+        int marginX = (int) (symbol.getQuietZoneHorizontal() * magnification);
+        int marginY = (int) (symbol.getQuietZoneVertical() * magnification);
+
         Map< TextAttribute, Object > attributes = new HashMap<>();
         attributes.put(TextAttribute.TRACKING, 0);
         Font f = new Font(symbol.getFontName(), Font.PLAIN, (int) (symbol.getFontSize() * magnification)).deriveFont(attributes);
+
         Font oldFont = g2d.getFont();
         Color oldColor = g2d.getColor();
 
         g2d.setFont(f);
-        
-        // Set background colour
-        g2d.setColor(paper);
-        g2d.fill(new Rectangle(0, 0, symbol.getRenderWidth(), symbol.getRenderHeight()));
-        
         g2d.setColor(ink);
-        
-        // Plot rectangles
+
         for (Rectangle2D.Double rect : symbol.rectangles) {
-            double x = (rect.x * magnification) + margin + whitespace;
-            double y = (rect.y * magnification) + margin;
+            double x = (rect.x * magnification) + marginX;
+            double y = (rect.y * magnification) + marginY;
             double w = rect.width * magnification;
             double h = rect.height * magnification;
             g2d.fill(new Rectangle((int) x, (int) y, (int) w, (int) h));
         }
 
-        // Plot text
         FontMetrics fm = g2d.getFontMetrics();
         for (TextBox text : symbol.texts) {
             Rectangle2D bounds = fm.getStringBounds(text.text, g2d);
-            float x = (float) ((text.x * magnification) - (bounds.getWidth() / 2)) + margin + whitespace;
-            float y = (float) (text.y * magnification) + margin;
+            float x = (float) ((text.x * magnification) - (bounds.getWidth() / 2)) + marginX;
+            float y = (float) (text.y * magnification) + marginY;
             g2d.drawString(text.text, x, y);
         }
 
-        // Plot hexagons
         for (Hexagon hexagon : symbol.hexagons) {
             Polygon polygon = new Polygon();
             for (int j = 0; j < 6; j++) {
-                polygon.addPoint((int) ((hexagon.pointX[j] * magnification) + margin + whitespace),
-                        (int) ((hexagon.pointY[j] * magnification) + margin));
+                polygon.addPoint((int) ((hexagon.pointX[j] * magnification) + marginX),
+                        (int) ((hexagon.pointY[j] * magnification) + marginY));
             }
             g2d.fill(polygon);
         }
 
-        // Plot circles
         for (int i = 0; i < symbol.target.size(); i++) {
             Ellipse2D.Double ellipse = symbol.target.get(i);
-            double x = (ellipse.x * magnification) + margin + whitespace;
-            double y = (ellipse.y * magnification) + margin;
-            double w = (ellipse.width * magnification);
-            double h = (ellipse.height * magnification);
+            double x = (ellipse.x * magnification) + marginX;
+            double y = (ellipse.y * magnification) + marginY;
+            double w = (ellipse.width * magnification) + marginX;
+            double h = (ellipse.height * magnification) + marginY;
             if ((i & 1) == 0) {
                 g2d.setColor(ink);
             } else {

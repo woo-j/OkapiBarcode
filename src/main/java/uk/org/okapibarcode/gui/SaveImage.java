@@ -47,16 +47,16 @@ public class SaveImage {
             case "gif":
             case "jpg":
             case "bmp":
-                BufferedImage bi = new BufferedImage(OkapiUI.symbol.getRenderWidth(), OkapiUI.symbol.getRenderHeight(), BufferedImage.TYPE_INT_ARGB);
+                BufferedImage bi = new BufferedImage(OkapiUI.symbol.getWidth(), OkapiUI.symbol.getHeight(), BufferedImage.TYPE_INT_ARGB);
                 panel.paint(bi.getGraphics());
                 ImageIO.write(bi, extension, file);
                 break;
             case "svg":
-                SvgRenderer svg = new SvgRenderer(new FileOutputStream(file), OkapiUI.paperColour, OkapiUI.inkColour);
+                SvgRenderer svg = new SvgRenderer(new FileOutputStream(file), OkapiUI.factor, OkapiUI.paperColour, OkapiUI.inkColour);
                 svg.render(OkapiUI.symbol);
                 break;
             case "eps":
-                PostScriptRenderer eps = new PostScriptRenderer(new FileOutputStream(file), OkapiUI.paperColour, OkapiUI.inkColour);
+                PostScriptRenderer eps = new PostScriptRenderer(new FileOutputStream(file), OkapiUI.factor, OkapiUI.paperColour, OkapiUI.inkColour);
                 eps.render(OkapiUI.symbol);
                 break;
             default:

@@ -25,6 +25,7 @@ import java.awt.geom.Rectangle2D;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+
 /**
  * Generic barcode symbology class.
  *
@@ -45,8 +46,8 @@ public abstract class Symbol {
     protected int symbol_height = 0;
     protected int symbol_width = 0;
     protected int default_height = 40;
-    protected int border_width = 1;
-    protected int whitespaceWidth = 0;
+    protected int quietZoneHorizontal = 0;
+    protected int quietZoneVertical = 0;
     protected int moduleWidth = 1;
     protected String fontName = "Helvetica";
     protected double fontSize = 8;
@@ -144,60 +145,41 @@ public abstract class Symbol {
     }
 
     /**
-     * Sets the border width for this symbol (default value is <code>1</code>).
+     * Sets the horizontal quiet zone (white space) added to the left and to the right of this symbol.
      *
-     * @param borderWidth the module width for this symbol
+     * @param quietZoneHorizontal the horizontal quiet zone (white space) added to the left and to the right of this symbol
      */
-    public void setBorderWidth(int borderWidth) {
-        this.border_width = borderWidth;
+    public void setQuietZoneHorizontal(int quietZoneHorizontal) {
+        this.quietZoneHorizontal = quietZoneHorizontal;
     }
 
     /**
-     * Returns the border width for this symbol.
+     * Returns the horizontal quiet zone (white space) added to the left and to the right of this symbol.
      *
-     * @return the border width for this symbol
+     * @return the horizontal quiet zone (white space) added to the left and to the right of this symbol
      */
-    public int getBorderWidth() {
-        return border_width;
-    }
-    
-    /**
-     * Sets the whitespace width for this symbol (default value is <code>0</code>).
-     *
-     * @param whitespaceWidth the module width for this symbol
-     */
-    public void setWhitespaceWidth(int whitespaceWidth) {
-        this.whitespaceWidth = whitespaceWidth;
+    public int getQuietZoneHorizontal() {
+        return quietZoneHorizontal;
     }
 
     /**
-     * Returns the whitespace width for this symbol.
+     * Sets the vertical quiet zone (white space) added above and below this symbol.
      *
-     * @return the whitespace width for this symbol
+     * @param quietZoneVertical the vertical quiet zone (white space) added above and below this symbol
      */
-    public int getWhitespaceWidth() {
-        return whitespaceWidth;
+    public void setQuietZoneVertical(int quietZoneVertical) {
+        this.quietZoneVertical = quietZoneVertical;
     }
-    
-    
+
     /**
-     * Get the width of the rendered symbol (in pixels)
-     * 
-     * @return the width of the rendered symbol
+     * Returns the vertical quiet zone (white space) added above and below this symbol.
+     *
+     * @return the vertical quiet zone (white space) added above and below this symbol
      */
-    public int getRenderWidth() {
-        return (symbol_width * moduleWidth) + (2 * border_width * moduleWidth) + (2 * whitespaceWidth * moduleWidth);
+    public int getQuietZoneVertical() {
+        return quietZoneVertical;
     }
-    
-    /**
-     * Get the height of the rendered symbol (in pixels)
-     * 
-     * @return the height of the rendered symbol
-     */
-    public int getRenderHeight() {
-        return (symbol_height * moduleWidth) + (2 * border_width * moduleWidth) + (getHumanReadableHeight() * moduleWidth);
-    }
-    
+
     /**
      * Sets the name of the font to use to render the human-readable text (default value is <code>Helvetica</code>).
      *
@@ -235,31 +217,23 @@ public abstract class Symbol {
     }
 
     /**
-     * Gets the width of the encoded symbol as a multiple of the
-     * x-dimension.
-     * @return an <code>integer</code> specifying the width of the symbol
+     * Gets the width of the encoded symbol, including the horizontal quiet zone.
+     *
+     * @return the width of the encoded symbol
      */
     public int getWidth() {
-        return symbol_width;
+        return symbol_width + (2 * quietZoneHorizontal);
     }
 
     /**
-     * Gets a human readable summary of the decisions made by the encoder
-     * when creating a symbol.
-     * @return a <code>String</code> containing encoding information
-     */
-    public String getEncodeInfo() {
-        return encodeInfo;
-    }
-
-    /**
-     * Returns the height of the symbol, including the human-readable text, if any. This height is
-     * an approximation, since it is calculated without access to a font engine.
+     * Returns the height of the symbol, including the human-readable text, if any, as well as the vertical
+     * quiet zone. This height is an approximation, since it is calculated without access to a font engine.
      *
-     * @return the height of the symbol, including the human-readable text, if any
+     * @return the height of the symbol, including the human-readable text, if any, as well as the vertical
+     *         quiet zone
      */
     public int getHeight() {
-        return symbol_height + getHumanReadableHeight();
+        return symbol_height + getHumanReadableHeight() + (2 * quietZoneVertical);
     }
 
     /**
@@ -283,6 +257,15 @@ public abstract class Symbol {
      */
     protected int getTheoreticalHumanReadableHeight() {
         return (int) Math.ceil(fontSize * 1.2); // 0.2 space between bars and text
+    }
+
+    /**
+     * Returns a human readable summary of the decisions made by the encoder when creating a symbol.
+     *
+     * @return a human readable summary of the decisions made by the encoder when creating a symbol
+     */
+    public String getEncodeInfo() {
+        return encodeInfo;
     }
 
     /**

@@ -84,10 +84,11 @@ public class SvgRendererTest {
 
     private void test(Symbol symbol, double magnification, Color paper, Color ink, int margin, String expectationFile) throws IOException {
 
-        symbol.setModuleWidth((int)magnification);
-        symbol.setBorderWidth(margin);
+        symbol.setQuietZoneHorizontal(margin);
+        symbol.setQuietZoneVertical(margin);
+
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        SvgRenderer renderer = new SvgRenderer(baos, paper, ink);
+        SvgRenderer renderer = new SvgRenderer(baos, magnification, paper, ink);
         renderer.render(symbol);
         String actual = new String(baos.toByteArray(), StandardCharsets.UTF_8);
         BufferedReader actualReader = new BufferedReader(new StringReader(actual));

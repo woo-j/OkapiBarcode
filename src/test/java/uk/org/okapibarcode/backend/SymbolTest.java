@@ -388,13 +388,16 @@ public class SymbolTest {
      */
     private static BufferedImage draw(Symbol symbol) {
 
-        symbol.setBorderWidth(0);
-        symbol.setModuleWidth(10);
-        symbol.setWhitespaceWidth(0);
-        BufferedImage img = new BufferedImage(symbol.getRenderWidth(), symbol.getRenderHeight(), BufferedImage.TYPE_BYTE_GRAY);
-        Graphics2D g2d = img.createGraphics();
+        int magnification = 10;
+        int width = symbol.getWidth() * magnification;
+        int height = symbol.getHeight() * magnification;
 
-        Java2DRenderer renderer = new Java2DRenderer(g2d, Color.WHITE, Color.BLACK);
+        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
+        Graphics2D g2d = img.createGraphics();
+        g2d.setPaint(Color.WHITE);
+        g2d.fillRect(0, 0, width, height);
+
+        Java2DRenderer renderer = new Java2DRenderer(g2d, magnification, Color.WHITE, Color.BLACK);
         renderer.render(symbol);
 
         g2d.dispose();

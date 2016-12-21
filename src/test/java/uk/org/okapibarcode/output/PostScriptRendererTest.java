@@ -84,10 +84,11 @@ public class PostScriptRendererTest {
 
     private void test(Symbol symbol, double magnification, Color paper, Color ink, int margin, String expectationFile) throws IOException {
 
-        symbol.setModuleWidth((int)magnification);
-        symbol.setBorderWidth(margin);
+        symbol.setQuietZoneHorizontal(margin);
+        symbol.setQuietZoneVertical(margin);
+
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        PostScriptRenderer renderer = new PostScriptRenderer(baos, paper, ink);
+        PostScriptRenderer renderer = new PostScriptRenderer(baos, magnification, paper, ink);
         renderer.render(symbol);
         String actual = new String(baos.toByteArray(), StandardCharsets.UTF_8);
         BufferedReader actualReader = new BufferedReader(new StringReader(actual));

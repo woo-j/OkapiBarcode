@@ -34,7 +34,6 @@ import javax.swing.BorderFactory;
 import javax.swing.JColorChooser;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
-import javax.swing.JPanel;
 import javax.swing.JTree;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -102,7 +101,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
     public static String dataInput = null; //Original User Input
     public static String compositeInput = null; // User input for composite symbol
     public static String outputf = null; //file to output to
-    public static int factor = 0;
+    public static int factor = 1;
     public static int barHeight = 0;
     public static boolean debug = true;
     public static Object[] bc;
@@ -111,8 +110,8 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
     public static Color inkColour = new Color(0, 0, 0);
     public static Color paperColour = new Color(255, 255, 255);
     public static int moduleWidth = 4;
-    public static int borderWidth = 5;
-    public static int whitespaceWidth = 0;
+    public static int quietZoneHorizontal = 5;
+    public static int quietZoneVertical = 5;
     private SymbolType selectedSymbol;
 
     /**
@@ -1567,9 +1566,9 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
             SaveSymbol saveSymbol = new SaveSymbol();
-            
+
             saveSymbol.removeAll();
-            
+
             saveSymbol.setSize(saveSymbol.getPreferredSize());
             saveSymbol.setBorder(BorderFactory.createEmptyBorder());
             saveSymbol.setBackground(paperColour);
@@ -1644,7 +1643,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                         new FileInputStream(file), "UTF8"))) {
                 String str;
 
-                sequenceArea.setText("");                
+                sequenceArea.setText("");
 
                 while ((str = in.readLine()) != null) {
                     sequenceArea.setText(sequenceArea.getText() + str + '\n');
@@ -1726,9 +1725,9 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                     }
                     File file = new File(fullFileName);
                     SaveSymbol saveSymbol = new SaveSymbol();
-                    
+
                     saveSymbol.removeAll();
-                    
+
                     saveSymbol.setSize(saveSymbol.getPreferredSize());
                     saveSymbol.setBorder(BorderFactory.createEmptyBorder());
                     saveSymbol.setBackground(paperColour);
@@ -2102,11 +2101,12 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
     }//GEN-LAST:event_chkReaderInitActionPerformed
 
     private void txtBorderWidthFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtBorderWidthFocusLost
+        // TODO: the name (and label?) of this text box no longer matches its purpose
         if (txtBorderWidth.getText().matches("[0-9]+")) {
-            borderWidth = Integer.parseInt(txtBorderWidth.getText());
+            quietZoneHorizontal = Integer.parseInt(txtBorderWidth.getText());
             encodeData();
         } else {
-            txtBorderWidth.setText(String.valueOf(borderWidth));
+            txtBorderWidth.setText(String.valueOf(quietZoneHorizontal));
         }
     }//GEN-LAST:event_txtBorderWidthFocusLost
 
@@ -2124,11 +2124,12 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
     }//GEN-LAST:event_txtXDimensionFocusLost
 
     private void txtWhitespaceWidthFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtWhitespaceWidthFocusLost
+        // TODO: the name (and label?) of this text box no longer matches its purpose
         if (txtWhitespaceWidth.getText().matches("[0-9]+")) {
-            whitespaceWidth = Integer.parseInt(txtWhitespaceWidth.getText());
+            quietZoneVertical = Integer.parseInt(txtWhitespaceWidth.getText());
             encodeData();
         } else {
-            txtWhitespaceWidth.setText(String.valueOf(whitespaceWidth));
+            txtWhitespaceWidth.setText(String.valueOf(quietZoneVertical));
         }
     }//GEN-LAST:event_txtWhitespaceWidthFocusLost
 
@@ -2237,7 +2238,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         DrawSymbol drawSymbol = new DrawSymbol();
         topPanel.removeAll();
-        
+
         drawSymbol.removeAll();
         errorLabel.setText("");
 
@@ -2257,9 +2258,8 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
             return;
         }
 
-        bWidth = (double) topPanel.getWidth() / (symbol.getWidth() + (2 * symbol.getBorderWidth()) + (2 * symbol.getWhitespaceWidth()));
-
-        bHeight = (double) topPanel.getHeight() / (symbol.getHeight() + (2 * symbol.getBorderWidth()) + symbol.getHumanReadableHeight());
+        bWidth = (double) topPanel.getWidth() / symbol.getWidth();
+        bHeight = (double) topPanel.getHeight() / symbol.getHeight();
 
         if (bWidth < bHeight) {
             factor = (int) bWidth;
@@ -2349,11 +2349,11 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
 
         return temp;
     }
-    
+
     private void setUniversals(Symbol symbol) {
         symbol.setModuleWidth(moduleWidth);
-        symbol.setBorderWidth(borderWidth);
-        symbol.setWhitespaceWidth(whitespaceWidth);
+        symbol.setQuietZoneHorizontal(quietZoneHorizontal);
+        symbol.setQuietZoneVertical(quietZoneVertical);
     }
 
     private Symbol getNewSymbol() throws OkapiException {

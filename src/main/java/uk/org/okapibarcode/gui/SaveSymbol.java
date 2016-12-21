@@ -38,8 +38,8 @@ public class SaveSymbol extends JPanel {
     /** {@inheritDoc} */
     @Override
     public Dimension getPreferredSize() {
-        final int w = (OkapiUI.symbol.getRenderWidth());
-        final int h = (OkapiUI.symbol.getRenderHeight());
+        int w = OkapiUI.symbol.getWidth();
+        int h = OkapiUI.symbol.getHeight();
         return new Dimension(w, h);
     }
 
@@ -51,7 +51,7 @@ public class SaveSymbol extends JPanel {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        Java2DRenderer renderer = new Java2DRenderer(g2d, OkapiUI.paperColour, OkapiUI.inkColour);
+        Java2DRenderer renderer = new Java2DRenderer(g2d, OkapiUI.factor, OkapiUI.paperColour, OkapiUI.inkColour);
         renderer.render(OkapiUI.symbol);
     }
 }

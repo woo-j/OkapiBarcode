@@ -18,6 +18,12 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CodingErrorAction;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -213,7 +219,7 @@ public class SymbolTest {
             Result result = zxingReader.decode(bitmap, hints);
             String zxingData = removeChecksum(result.getText(), symbol);
             String okapiData = removeStartStopChars(symbol.getContent(), symbol);
-            assertEquals(okapiData, zxingData);
+            assertEquals("checking against ZXing results", okapiData, zxingData);
         }
     }
 
@@ -534,8 +540,14 @@ public class SymbolTest {
      */
     private static List< Map< String, String > > readProperties(File propertiesFile) throws IOException {
 
-        byte[] bytes = Files.readAllBytes(propertiesFile.toPath());
-        String content = replacePlaceholders(new String(bytes, UTF_8));
+        String content;
+        try {
+            byte[] bytes = Files.readAllBytes(propertiesFile.toPath());
+            content = replacePlaceholders(decode(bytes, UTF_8));
+        } catch (CharacterCodingException e) {
+            throw new IOException("Invalid UTF-8 content in file " + propertiesFile.getAbsolutePath(), e);
+        }
+
         String eol = System.lineSeparator();
         String[] lines = content.split(eol);
 
@@ -566,6 +578,23 @@ public class SymbolTest {
         }
 
         return allProperties;
+    }
+
+    /**
+     * Equivalent to {@link String#String(byte[], Charset)}, except that encoding errors result in runtime errors instead of
+     * silent character replacement.
+     *
+     * @param bytes the bytes to decode
+     * @param charset the character set use to decode the bytes
+     * @return the specified bytes, as a string
+     * @throws CharacterCodingException if there is an error decoding the specified bytes
+     */
+    private static String decode(byte[] bytes, Charset charset) throws CharacterCodingException {
+        CharsetDecoder decoder = charset.newDecoder();
+        decoder.onMalformedInput(CodingErrorAction.REPORT);
+        decoder.onUnmappableCharacter(CodingErrorAction.REPORT);
+        CharBuffer chars = decoder.decode(ByteBuffer.wrap(bytes));
+        return chars.toString();
     }
 
     /**

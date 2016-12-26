@@ -1,4 +1,5 @@
 language: java
+install: true
 
 jdk:
   - oraclejdk7

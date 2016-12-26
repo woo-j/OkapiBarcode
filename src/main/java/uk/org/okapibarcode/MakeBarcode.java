@@ -316,7 +316,7 @@ public class MakeBarcode {
                 case 54:
                     // Postnet and Brizillian CepNet
                     Postnet postnet = new Postnet();
-                    postnet.setPostnet();
+                    postnet.setMode(Postnet.Mode.POSTNET);
                     postnet.setContent(dataInput);
                     symbol = postnet;
                     break;
@@ -523,7 +523,7 @@ public class MakeBarcode {
                 case 83: // Legacy
                     // Planet
                     Postnet planet = new Postnet();
-                    planet.setPlanet();
+                    planet.setMode(Postnet.Mode.PLANET);
                     planet.setContent(dataInput);
                     symbol = planet;
                     break;

@@ -2647,13 +2647,13 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
             case USPS_POSTNET:
             case BRAZIL_CEPNET:
                 Postnet postnet = new Postnet();
-                postnet.setPostnet();
+                postnet.setMode(Postnet.Mode.POSTNET);
                 postnet.setContent(dataInput);
                 setUniversals(postnet);
                 return postnet;
             case USPS_PLANET:
                 Postnet planet = new Postnet();
-                planet.setPlanet();
+                planet.setMode(Postnet.Mode.PLANET);
                 planet.setContent(dataInput);
                 setUniversals(planet);
                 return planet;

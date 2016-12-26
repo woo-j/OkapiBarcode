@@ -16,6 +16,9 @@
 
 package uk.org.okapibarcode.backend;
 
+import static uk.org.okapibarcode.backend.HumanReadableLocation.NONE;
+import static uk.org.okapibarcode.backend.HumanReadableLocation.TOP;
+
 import java.awt.geom.Rectangle2D;
 
 /**
@@ -23,12 +26,16 @@ import java.awt.geom.Rectangle2D;
  * <a href="http://en.wikipedia.org/wiki/Postal_Alpha_Numeric_Encoding_Technique">PLANET</a>
  * bar code symbologies.
  * <br>
- * PostNet and PLANET both use numerical input data and include a modulo-10
+ * POSTNET and PLANET both use numerical input data and include a modulo-10
  * check digit.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class Postnet extends Symbol {
+
+    public static enum Mode {
+        PLANET, POSTNET
+    };
 
     private static final String[] PN_TABLE = {
         "LLSSS", "SSSLL", "SSLSL", "SSLLS", "SLSSL", "SLSLS", "SLLSS", "LSSSL", "LSSLS", "LSLSS"
@@ -38,28 +45,35 @@ public class Postnet extends Symbol {
         "SSLLL", "LLLSS", "LLSLS", "LLSSL", "LSLLS", "LSLSL", "LSSLL", "SLLLS", "SLLSL", "SLSLL"
     };
 
-    private enum Mode {
-        PLANET, POSTNET
-    };
-
     private Mode mode;
 
     public Postnet() {
-        mode = Mode.POSTNET;
+        this.mode = Mode.POSTNET;
+        this.humanReadableLocation = HumanReadableLocation.NONE;
     }
 
-    public void setPlanet() {
-        mode = Mode.PLANET;
+    /**
+     * Sets the barcode mode (PLANET or POSTNET). The default mode is POSTNET.
+     *
+     * @param mode the barcode mode (PLANET or POSTNET)
+     */
+    public void setMode(Mode mode) {
+        this.mode = mode;
     }
 
-    public void setPostnet() {
-        mode = Mode.POSTNET;
+    /**
+     * Returns the barcode mode (PLANET or POSTNET). The default mode is POSTNET.
+     *
+     * @return the barcode mode (PLANET or POSTNET)
+     */
+    public Mode getMode() {
+        return mode;
     }
 
     @Override
     public boolean encode() {
-        boolean retval;
 
+        boolean retval;
         if (mode == Mode.POSTNET) {
             retval = makePostnet();
         } else {
@@ -99,15 +113,14 @@ public class Postnet extends Symbol {
         encodeInfo += "Check Digit: " + check_digit + "\n";
 
         dest += PN_TABLE[check_digit];
-
         dest += "L";
+
         encodeInfo += "Encoding: " + dest + "\n";
-        readable = "";
-        pattern = new String[1];
-        pattern[0] = dest;
+        readable = content;
+        pattern = new String[] { dest };
         row_count = 1;
-        row_height = new int[1];
-        row_height[0] = -1;
+        row_height = new int[] { -1 };
+
         return true;
     }
 
@@ -137,15 +150,14 @@ public class Postnet extends Symbol {
         encodeInfo += "Check Digit: " + check_digit + "\n";
 
         dest += PL_TABLE[check_digit];
-
         dest += "L";
+
         encodeInfo += "Encoding: " + dest + "\n";
-        readable = "";
-        pattern = new String[1];
-        pattern[0] = dest;
+        readable = content;
+        pattern = new String[] { dest };
         row_count = 1;
-        row_height = new int[1];
-        row_height[0] = -1;
+        row_height = new int[] { -1 };
+
         return true;
     }
 
@@ -155,23 +167,41 @@ public class Postnet extends Symbol {
         int x, y, w, h;
 
         rectangles.clear();
+        texts.clear();
+
+        int baseY;
+        if (humanReadableLocation == TOP) {
+            baseY = getTheoreticalHumanReadableHeight();
+        } else {
+            baseY = 0;
+        }
+
         x = 0;
-        w = 1;
+        w = moduleWidth;
         for (xBlock = 0; xBlock < pattern[0].length(); xBlock++) {
             if (pattern[0].charAt(xBlock) == 'L') {
-                y = 0;
+                y = baseY;
                 h = 12;
             } else {
-                y = 6;
+                y = baseY + 6;
                 h = 6;
             }
-
-            Rectangle2D.Double rect = new Rectangle2D.Double(x, y, w, h);
-            rectangles.add(rect);
-
-            x += 3;
+            rectangles.add(new Rectangle2D.Double(x, y, w, h));
+            x += (3 * moduleWidth);
         }
-        symbol_width = pattern[0].length() * 4;
+
+        symbol_width = ((pattern[0].length() - 1) * 3 * moduleWidth) + moduleWidth; // final bar doesn't need extra whitespace
         symbol_height = 12;
+
+        if (humanReadableLocation != NONE && !readable.isEmpty()) {
+            double baseline;
+            if (humanReadableLocation == TOP) {
+                baseline = fontSize;
+            } else {
+                baseline = getHeight() + fontSize;
+            }
+            double centerX = getWidth() / 2.0;
+            texts.add(new TextBox(centerX, baseline, readable));
+        }
     }
 }

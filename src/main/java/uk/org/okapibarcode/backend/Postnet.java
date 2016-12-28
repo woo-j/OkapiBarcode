@@ -189,10 +189,10 @@ public class Postnet extends Symbol {
                 h = shortHeight;
             }
             rectangles.add(new Rectangle2D.Double(x, y, w, h));
-            x += (2.5 * moduleWidth);
+            x += (2.5 * w);
         }
 
-        symbol_width = (int) Math.ceil(((pattern[0].length() - 1) * 2.5 * moduleWidth) + moduleWidth); // final bar doesn't need extra whitespace
+        symbol_width = (int) Math.ceil(((pattern[0].length() - 1) * 2.5 * w) + w); // final bar doesn't need extra whitespace
         symbol_height = default_height;
 
         if (humanReadableLocation != NONE && !readable.isEmpty()) {

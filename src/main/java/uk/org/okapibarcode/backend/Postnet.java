@@ -49,6 +49,7 @@ public class Postnet extends Symbol {
 
     public Postnet() {
         this.mode = Mode.POSTNET;
+        this.default_height = 12;
         this.humanReadableLocation = HumanReadableLocation.NONE;
     }
 
@@ -163,8 +164,8 @@ public class Postnet extends Symbol {
 
     @Override
     protected void plotSymbol() {
-        int xBlock;
-        int x, y, w, h;
+        int xBlock, shortHeight;
+        double x, y, w, h;
 
         rectangles.clear();
         texts.clear();
@@ -178,20 +179,21 @@ public class Postnet extends Symbol {
 
         x = 0;
         w = moduleWidth;
+        shortHeight = (int) (0.4 * default_height);
         for (xBlock = 0; xBlock < pattern[0].length(); xBlock++) {
             if (pattern[0].charAt(xBlock) == 'L') {
                 y = baseY;
-                h = 12;
+                h = default_height;
             } else {
-                y = baseY + 6;
-                h = 6;
+                y = baseY + default_height - shortHeight;
+                h = shortHeight;
             }
             rectangles.add(new Rectangle2D.Double(x, y, w, h));
-            x += (3 * moduleWidth);
+            x += (2.5 * moduleWidth);
         }
 
-        symbol_width = ((pattern[0].length() - 1) * 3 * moduleWidth) + moduleWidth; // final bar doesn't need extra whitespace
-        symbol_height = 12;
+        symbol_width = (int) Math.ceil(((pattern[0].length() - 1) * 2.5 * moduleWidth) + moduleWidth); // final bar doesn't need extra whitespace
+        symbol_height = default_height;
 
         if (humanReadableLocation != NONE && !readable.isEmpty()) {
             double baseline;

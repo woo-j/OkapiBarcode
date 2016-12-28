@@ -15,6 +15,9 @@
  */
 package uk.org.okapibarcode.backend;
 
+import static uk.org.okapibarcode.backend.HumanReadableLocation.NONE;
+import static uk.org.okapibarcode.backend.HumanReadableLocation.TOP;
+
 import java.awt.geom.Rectangle2D;
 import java.math.BigInteger;
 
@@ -187,6 +190,11 @@ public class UspsOneCode extends Symbol {
     };
 
     int[] byte_array = new int[13];
+
+    public UspsOneCode() {
+        this.default_height = 8;
+        this.humanReadableLocation = HumanReadableLocation.NONE;
+    }
 
     @Override
     public boolean encode() {
@@ -377,7 +385,7 @@ public class UspsOneCode extends Symbol {
             }
         }
 
-        readable = "";
+        readable = content;
         pattern = new String[1];
         row_count = 1;
         row_height = new int[1];
@@ -441,40 +449,64 @@ public class UspsOneCode extends Symbol {
 
     @Override
     protected void plotSymbol() {
-        int xBlock;
-        int x, y, w, h;
+        int xBlock, shortHeight, longHeight;
+        double x, y, w, h;
 
         rectangles.clear();
+        texts.clear();
+
+        int baseY;
+        if (humanReadableLocation == TOP) {
+            baseY = getTheoreticalHumanReadableHeight();
+        } else {
+            baseY = 0;
+        }
+
         x = 0;
-        w = 1;
+        w = moduleWidth;
         y = 0;
         h = 0;
+        shortHeight = (int) (0.25 * default_height);
+        longHeight = (int) (0.625 * default_height);
         for (xBlock = 0; xBlock < pattern[0].length(); xBlock++) {
+
             switch (pattern[0].charAt(xBlock)) {
             case 'A':
-                y = 0;
-                h = 5;
+                y = baseY;
+                h = longHeight;
                 break;
             case 'D':
-                y = 3;
-                h = 5;
+                y = baseY + default_height - longHeight;
+                h = longHeight;
                 break;
             case 'F':
-                y = 0;
-                h = 8;
+                y = baseY;
+                h = default_height;
                 break;
             case 'T':
-                y = 3;
-                h = 2;
+                y = baseY + default_height - longHeight;
+                h = shortHeight;
                 break;
             }
 
             Rectangle2D.Double rect = new Rectangle2D.Double(x, y, w, h);
             rectangles.add(rect);
 
-            x += 2;
+            x += (2.43 * w);
         }
-        symbol_width = pattern[0].length() * 3;
-        symbol_height = 8;
+
+        symbol_width = (int) Math.ceil(((pattern[0].length() - 1) * 2.43 * w) + w); // final bar doesn't need extra whitespace
+        symbol_height = default_height;
+
+        if (humanReadableLocation != NONE && !readable.isEmpty()) {
+            double baseline;
+            if (humanReadableLocation == TOP) {
+                baseline = fontSize;
+            } else {
+                baseline = getHeight() + fontSize;
+            }
+            double centerX = getWidth() / 2.0;
+            texts.add(new TextBox(centerX, baseline, readable));
+        }
     }
 }

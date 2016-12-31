@@ -1,4 +1,6 @@
-# Okapi Barcode [![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.html) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/uk.org.okapibarcode/okapibarcode/badge.svg)](https://maven-badges.herokuapp.com/maven-central/uk.org.okapibarcode/okapibarcode)
+# Okapi Barcode [![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
+                [![Maven Central](https://maven-badges.herokuapp.com/maven-central/uk.org.okapibarcode/okapibarcode/badge.svg)](https://maven-badges.herokuapp.com/maven-central/uk.org.okapibarcode/okapibarcode)
+                [![Build Status](https://travis-ci.org/woo-j/OkapiBarcode.svg?branch=master)](https://travis-ci.org/woo-j/OkapiBarcode)
 
 Okapi Barcode is an open-source barcode generator written entirely in Java,
 supporting over 50 encoding standards, including all ISO standards. Okapi

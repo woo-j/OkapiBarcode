@@ -17,15 +17,17 @@ package uk.org.okapibarcode.backend;
 
 /**
  * Implements the LOGMARS (Logistics Applications of Automated Marking
- * and Reading Symbols) standard used by the US Department of Defence.
- * Input data can be of any length and supports the characters 0-9, AZ, dash 
- * (-), full stop (.), space, asterisk (*), dollar ($), slash (/), plus (+) 
- * and percent (%). A Modulo-43 check digit is calculated and added, and
- * should not form part of the input data.
+ * and Reading Symbols) standard used by the US Department of Defense.
+ * Input data can be of any length and supports the characters 0-9, A-Z, dash
+ * (-), full stop (.), space, dollar ($), slash (/), plus (+) and percent (%).
+ * A Modulo-43 check digit is calculated and added, and should not form part
+ * of the input data.
+ *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class Logmars extends Symbol {
-    private String[] Code39LM = {
+
+    private static final String[] CODE39LM = {
         "1113313111", "3113111131", "1133111131", "3133111111", "1113311131",
         "3113311111", "1133311111", "1113113131", "3113113111", "1133113111",
         "3111131131", "1131131131", "3131131111", "1111331131", "3111331111",
@@ -37,13 +39,46 @@ public class Logmars extends Symbol {
         "1313111311", "1311131311", "1113131311"
     };
 
-    private char[] LookUp = {
+    private static final char[] LOOKUP = {
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D',
         'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R',
         'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '-', '.', ' ', '$', '/', '+',
         '%'
     };
 
+    /** Ratio of wide bar width to narrow bar width. */
+    private double moduleWidthRatio = 3;
+
+    /**
+     * Sets the ratio of wide bar width to narrow bar width. Valid values are usually
+     * between {@code 2} and {@code 3}. The default value is {@code 3}.
+     *
+     * @param moduleWidthRatio the ratio of wide bar width to narrow bar width
+     */
+    public void setModuleWidthRatio(double moduleWidthRatio) {
+        this.moduleWidthRatio = moduleWidthRatio;
+    }
+
+    /**
+     * Returns the ratio of wide bar width to narrow bar width.
+     *
+     * @return the ratio of wide bar width to narrow bar width
+     */
+    public double getModuleWidthRatio() {
+        return moduleWidthRatio;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected double getModuleWidth(int originalWidth) {
+        if (originalWidth == 1) {
+            return 1;
+        } else {
+            return moduleWidthRatio;
+        }
+    }
+
+    /** {@inheritDoc} */
     @Override
     public boolean encode() {
 
@@ -51,29 +86,28 @@ public class Logmars extends Symbol {
             error_msg = "Invalid characters in input";
             return false;
         }
+
         String p = "";
         int l = content.length();
         int charval, counter = 0;
         char thischar;
-        char check_digit;
+        char checkDigit;
         for (int i = 0; i < l; i++) {
             thischar = content.charAt(i);
-            charval = positionOf(thischar, LookUp);
+            charval = positionOf(thischar, LOOKUP);
             counter += charval;
-            p += Code39LM[charval];
+            p += CODE39LM[charval];
         }
 
         counter = counter % 43;
-        check_digit = LookUp[counter];
-        encodeInfo += "Check Digit: " + check_digit + "\n";
-        p += Code39LM[counter];
+        checkDigit = LOOKUP[counter];
+        encodeInfo += "Check Digit: " + checkDigit + "\n";
+        p += CODE39LM[counter];
 
-        readable = content + LookUp[counter];
-        pattern = new String[1];
-        pattern[0] = "1311313111" + p + "131131311";
+        readable = content + checkDigit;
+        pattern = new String[] { "1311313111" + p + "131131311" };
         row_count = 1;
-        row_height = new int[1];
-        row_height[0] = -1;
+        row_height = new int[] { -1 };
         plotSymbol();
         return true;
     }

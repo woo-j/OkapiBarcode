@@ -16,15 +16,15 @@
 
 package uk.org.okapibarcode.output;
 
-import java.awt.Color;
+import uk.org.okapibarcode.backend.Hexagon;
+import uk.org.okapibarcode.backend.Symbol;
+import uk.org.okapibarcode.backend.TextBox;
+
+import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.io.OutputStream;
-
-import uk.org.okapibarcode.backend.Hexagon;
-import uk.org.okapibarcode.backend.Symbol;
-import uk.org.okapibarcode.backend.TextBox;
 
 /**
  * Renders symbologies to SVG (Scalable Vector Graphics).
@@ -75,7 +75,7 @@ public class SvgRenderer implements SymbolRenderer {
         if (content == null || content.isEmpty()) {
             title = "OkapiBarcode Generated Symbol";
         } else {
-            title = content;
+            title = content.replaceAll("[\u0000-\u001f]", "");
         }
 
         String fgColour = String.format("%02X", ink.getRed())

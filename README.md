@@ -6,7 +6,7 @@ Barcode is based on [Zint](https://sourceforge.net/projects/zint/), an
 open-source barcode encoding library developed in C, and builds on the years
 of work that have been invested in that project.
 
-###Supported Symbologies
+### Supported Symbologies
 
 * [Australia Post](src/main/java/uk/org/okapibarcode/backend/AustraliaPost.java) variants:
   * Standard Customer
@@ -73,7 +73,7 @@ of work that have been invested in that project.
   * UPC-E
 * [USPS OneCode](src/main/java/uk/org/okapibarcode/backend/UspsOneCode.java) (Intelligent Mail)
 
-###Building
+### Building
 
 `gradlew check`: Compiles and runs all quality checks, including the unit tests.  
 `gradlew jar`: Builds the JAR file.  

@@ -99,6 +99,8 @@ public class Code128 extends Symbol {
     
     @Override
     public boolean encode() {
+        read = 0;
+        index_point = 0;
         int sourcelen = content.length();
         int i, j, k;
         int input_point = 0;

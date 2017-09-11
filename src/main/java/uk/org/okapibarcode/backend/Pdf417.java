@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Robin Stuart
+ * Copyright 2014-2017 Robin Stuart, Daniel Gredler
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
 package uk.org.okapibarcode.backend;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <p>
@@ -30,6 +32,7 @@ import java.math.BigInteger;
  * can hold 250 alphanumeric characters or 366 digits.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
+ * @author Daniel Gredler
  */
 public class Pdf417 extends Symbol {
 
@@ -46,9 +49,6 @@ public class Pdf417 extends Symbol {
         FALSE, TEX, BYT, NUM
     };
 
-    private int[] blockLength = new int[1000];
-    private EncodingMode[] blockType = new EncodingMode[1000];
-    private int blockIndex;
     private int[] codeWords = new int[2700];
     private int codeWordCount;
     private Mode symbolMode = Mode.NORMAL;
@@ -56,6 +56,8 @@ public class Pdf417 extends Symbol {
     private Integer columns;
     private Integer rows;
     private int preferredEccLevel = -1;
+
+    private static final int MAX_NUMERIC_COMPACTION_BLOCK_SIZE = 44;
 
     private static final int[] COEFRS = {
         /* k = 2 */
@@ -623,77 +625,18 @@ public class Pdf417 extends Symbol {
     }
 
     private boolean processPdf417() {
-        int i, j, blockCount, loop, offset;
+        int j, loop, offset;
         int[] mccorrection = new int[520];
         int total;
         int c1, c2, c3;
         int[] dummy = new int[35];
         String codebarre;
-        int length = inputData.length;
-        EncodingMode currentEncodingMode;
         int selectedECCLevel;
         String bin;
 
-        blockIndex = 0;
-        blockCount = 0;
-
-        currentEncodingMode = chooseMode(inputData[blockCount]);
-
-        for (i = 0; i < 1000; i++) {
-            blockLength[i] = 0;
-        }
-
-        do {
-            blockType[blockIndex] = currentEncodingMode;
-            while ((blockType[blockIndex] == currentEncodingMode) && (blockCount < length)) {
-                blockLength[blockIndex]++;
-                blockCount++;
-                if(blockCount < length) {
-                    currentEncodingMode = chooseMode(inputData[blockCount]);
-                }
-            }
-            blockIndex++;
-        } while (blockCount < length);
-
-        /* Watch for numeric blocks longer than 44 characters */
-        for (i = 0; i < blockIndex; i++) {
-            if ((blockType[i] == EncodingMode.NUM) && (blockLength[i] > 44)) {
-                for(j = blockIndex + 1; j > (i + 1); j--) {
-                    blockType[j] = blockType[j - 1];
-                    blockLength[j] = blockLength[j - 1];
-                }
-                blockType[i + 1] = blockType[i];
-                blockLength[i + 1] = blockLength[i] - 44;
-                blockLength[i] = 44;
-                blockIndex++;
-            }
-        }
-
-        pdfSmooth();
-
-//        if (debug) {
-//            System.out.printf("Initial block pattern:\n");
-//            for (i = 0; i < blockIndex; i++) {
-//                System.out.printf("Len: %d  Type: ", blockLength[i]);
-//                switch (blockType[i]) {
-//                case TEX:
-//                    System.out.printf("Text\n");
-//                    break;
-//                case BYT:
-//                    System.out.printf("Byte\n");
-//                    break;
-//                case NUM:
-//                    System.out.printf("Number\n");
-//                    break;
-//                default:
-//                    System.out.printf("ERROR\n");
-//                    break;
-//                }
-//            }
-//        }
+        List< Block > blocks = createBlocks(inputData, debug);
 
         /* now compress the data */
-        blockCount = 0;
         codeWordCount = 0;
 
         if (readerInit) {
@@ -727,50 +670,52 @@ public class Pdf417 extends Symbol {
             }
         }
 
-        for (i = 0; i < blockIndex; i++) {
-            switch (blockType[i]) {
+        int blockCount = 0;
+        for (int i = 0; i < blocks.size(); i++) {
+            Block block = blocks.get(i);
+            switch (block.mode) {
                 case TEX:
                     /* text mode */
                     boolean firstBlock = (i == 0);
-                    processText(blockCount, blockLength[i], firstBlock);
+                    processText(blockCount, block.length, firstBlock);
                     break;
                 case BYT:
                     /* octet stream mode */
-                    EncodingMode lastMode = (i == 0 ? EncodingMode.TEX : blockType[i - 1]);
-                    processBytes(blockCount, blockLength[i], lastMode);
+                    EncodingMode lastMode = (i == 0 ? EncodingMode.TEX : blocks.get(i - 1).mode);
+                    processBytes(blockCount, block.length, lastMode);
                     break;
                 case NUM:
                     /* numeric mode */
-                    processNumbers(blockCount, blockLength[i]);
+                    processNumbers(inputData, blockCount, block.length, false);
                     break;
                 default:
-                    throw new OkapiException("Unknown block type: " + blockType[i]);
+                    throw new OkapiException("Unknown block type: " + block.mode);
             }
-            blockCount = blockCount + blockLength[i];
+            blockCount += block.length;
         }
 
         encodeInfo += "Codewords: ";
-        for (i = 0; i < codeWordCount; i++) {
+        for (int i = 0; i < codeWordCount; i++) {
             encodeInfo += Integer.toString(codeWords[i]) + " ";
         }
         encodeInfo += "\n";
 
         /* Now take care of the number of CWs per row */
 
+        // if we have to default the ECC level, do so per the
+        // recommendations in the specification (Table E.1)
         selectedECCLevel = preferredEccLevel;
         if (selectedECCLevel < 0) {
-            selectedECCLevel = 6;
-            if (codeWordCount <= 863) {
-                selectedECCLevel = 5;
-            }
-            if (codeWordCount <= 320) {
-                selectedECCLevel = 4;
-            }
-            if (codeWordCount <= 160) {
-                selectedECCLevel = 3;
-            }
             if (codeWordCount <= 40) {
                 selectedECCLevel = 2;
+            } else if (codeWordCount <= 160) {
+                selectedECCLevel = 3;
+            } else if (codeWordCount <= 320) {
+                selectedECCLevel = 4;
+            } else if (codeWordCount <= 863) {
+                selectedECCLevel = 5;
+            } else {
+                selectedECCLevel = 6;
             }
         }
 
@@ -816,7 +761,7 @@ public class Pdf417 extends Symbol {
         }
 
         /* add the length descriptor */
-        for (i = codeWordCount; i > 0; i--) {
+        for (int i = codeWordCount; i > 0; i--) {
             codeWords[i] = codeWords[i - 1];
         }
         codeWordCount++;
@@ -857,7 +802,7 @@ public class Pdf417 extends Symbol {
             mccorrection[loop] = 0;
         }
 
-        for (i = 0; i < codeWordCount; i++) {
+        for (int i = 0; i < codeWordCount; i++) {
             total = (codeWords[i] + mccorrection[k - 1]) % 929;
             for (j = k - 1; j > 0; j--) {
                 mccorrection[j] = (mccorrection[j - 1] + 929 - (total * COEFRS[offset + j]) % 929) % 929;
@@ -869,7 +814,7 @@ public class Pdf417 extends Symbol {
         encodeInfo += "ECC Codewords: " + k + "\n";
 
         /* we add these codes to the string */
-        for (i = k - 1; i >= 0; i--) {
+        for (int i = k - 1; i >= 0; i--) {
             codeWords[codeWordCount++] = mccorrection[i] != 0 ? 929 - mccorrection[i] : 0;
         }
 
@@ -899,7 +844,7 @@ public class Pdf417 extends Symbol {
         encodeInfo += "Grid Size: " + columns + " X " + rows + "\n";
 
         /* we now encode each row */
-        for (i = 0; i < rows; i++) {
+        for (int i = 0; i < rows; i++) {
             for (j = 0; j < columns; j++) {
                 dummy[j + 1] = codeWords[i * columns + j];
             }
@@ -943,81 +888,20 @@ public class Pdf417 extends Symbol {
 
     private boolean processMicroPdf417() { /* like PDF417 only much smaller! */
 
-        int i, k, j, blockCount, longueur, offset;
+        int k, j, longueur, offset;
         int total;
         int LeftRAPStart, CentreRAPStart, RightRAPStart, StartCluster;
         int LeftRAP, CentreRAP, RightRAP, Cluster, flip, loop;
         String codebarre;
         int[] dummy = new int[5];
         int[] mccorrection = new int[50];
-        int length = inputData.length;
-        EncodingMode currentEncodingMode;
         String bin;
 
         /* Encoding starts out the same as PDF417, so use the same code */
 
-        /* 456 */
-        blockIndex = 0;
-        blockCount = 0;
-
-        currentEncodingMode = chooseMode(inputData[blockCount]);
-
-        for (i = 0; i < 1000; i++) {
-            blockLength[i] = 0;
-        }
-
-        /* 463 */
-        do {
-            blockType[blockIndex] = currentEncodingMode;
-            while ((blockType[blockIndex] == currentEncodingMode) && (blockCount < length)) {
-                blockLength[blockIndex]++;
-                blockCount++;
-                if (blockCount != length) {
-                    currentEncodingMode = chooseMode(inputData[blockCount]);
-                }
-            }
-            blockIndex++;
-        } while (blockCount < length);
-
-        /* Watch for numeric blocks longer than 44 characters */
-        for (i = 0; i < blockIndex; i++) {
-            if ((blockType[i] == EncodingMode.NUM) && (blockLength[i] > 44)) {
-                for (j = blockIndex + 1; j > (i + 1); j--) {
-                    blockType[j] = blockType[j - 1];
-                    blockLength[j] = blockLength[j - 1];
-                }
-                blockType[i + 1] = blockType[i];
-                blockLength[i + 1] = blockLength[i] - 44;
-                blockLength[i] = 44;
-                blockIndex++;
-            }
-        }
-
-        pdfSmooth();
-
-//        if (debug) {
-//            System.out.printf("Initial mapping:\n");
-//            for (i = 0; i < blockIndex; i++) {
-//                System.out.printf("len: %d   type: ", blockLength[i]);
-//                switch (blockType[i]) {
-//                    case TEX:
-//                        System.out.printf("TEXT\n");
-//                        break;
-//                    case BYT:
-//                        System.out.printf("BYTE\n");
-//                        break;
-//                    case NUM:
-//                        System.out.printf("NUMBER\n");
-//                        break;
-//                    default:
-//                        System.out.printf("*ERROR*\n");
-//                        break;
-//                }
-//            }
-//        }
+        List< Block > blocks = createBlocks(inputData, debug);
 
         /* 541 - now compress the data */
-        blockCount = 0;
         codeWordCount = 0;
         if (readerInit) {
             codeWords[codeWordCount] = 921; /* Reader Initialisation */
@@ -1050,28 +934,33 @@ public class Pdf417 extends Symbol {
             }
         }
 
-        for (i = 0; i < blockIndex; i++) {
-            switch (blockType[i]) {
-                case TEX: /* 547 - text mode */
-                    processText(blockCount, blockLength[i], false);
+        int blockCount = 0;
+        for (int i = 0; i < blocks.size(); i++) {
+            Block block = blocks.get(i);
+            switch (block.mode) {
+                case TEX:
+                    /* text mode */
+                    processText(blockCount, block.length, false); // TODO: this shouldn't always be false?
                     break;
-                case BYT: /* 670 - octet stream mode */
-                    EncodingMode lastMode = (i == 0 ? EncodingMode.TEX : blockType[i - 1]);
-                    processBytes(blockCount, blockLength[i], lastMode);
+                case BYT:
+                    /* octet stream mode */
+                    EncodingMode lastMode = (i == 0 ? EncodingMode.TEX : blocks.get(i - 1).mode);
+                    processBytes(blockCount, block.length, lastMode);
                     break;
-                case NUM: /* 712 - numeric mode */
-                    processNumbers(blockCount, blockLength[i]);
+                case NUM:
+                    /* numeric mode */
+                    processNumbers(inputData, blockCount, block.length, false);
                     break;
                 default:
-                    throw new OkapiException("Unknown block type: " + blockType[i]);
+                    throw new OkapiException("Unknown block type: " + block.mode);
             }
-            blockCount = blockCount + blockLength[i];
+            blockCount += block.length;
         }
 
         /* This is where it all changes! */
 
         encodeInfo += "Codewords: ";
-        for (i = 0; i < codeWordCount; i++) {
+        for (int i = 0; i < codeWordCount; i++) {
             encodeInfo += Integer.toString(codeWords[i]) + " ";
         }
         encodeInfo += "\n";
@@ -1115,7 +1004,7 @@ public class Pdf417 extends Symbol {
         rows = MICRO_VARIANTS[variant + 34]; /* rows */
         k = MICRO_VARIANTS[variant + 68]; /* number of EC CWs */
         longueur = (columns * rows) - k; /* number of non-EC CWs */
-        i = longueur - codeWordCount; /* amount of padding required */
+        int padding = longueur - codeWordCount; /* amount of padding required */
         offset = MICRO_VARIANTS[variant + 102]; /* coefficient offset */
 
 //        if (debug) {
@@ -1129,10 +1018,10 @@ public class Pdf417 extends Symbol {
         encodeInfo += "ECC Codewords: " + k + "\n";
 
         /* We add the padding */
-        while (i > 0) {
+        while (padding > 0) {
             codeWords[codeWordCount] = 900;
             codeWordCount++;
-            i--;
+            padding--;
         }
 
         /* Reed-Solomon error correction */
@@ -1141,7 +1030,7 @@ public class Pdf417 extends Symbol {
             mccorrection[loop] = 0;
         }
 
-        for (i = 0; i < longueur; i++) {
+        for (int i = 0; i < longueur; i++) {
             total = (codeWords[i] + mccorrection[k - 1]) % 929;
             for (j = k - 1; j >= 0; j--) {
                 if (j == 0) {
@@ -1158,7 +1047,7 @@ public class Pdf417 extends Symbol {
             }
         }
         /* we add these codes to the string */
-        for (i = k - 1; i >= 0; i--) {
+        for (int i = k - 1; i >= 0; i--) {
             codeWords[codeWordCount] = mccorrection[i];
             codeWordCount++;
         }
@@ -1193,7 +1082,7 @@ public class Pdf417 extends Symbol {
 
 //        if (debug)
 //            System.out.printf("\nInternal row representation:\n");
-        for (i = 0; i < rows; i++) {
+        for (int i = 0; i < rows; i++) {
 //            if (debug)
 //                System.out.printf("row %d: ", i);
             codebarre = "";
@@ -1338,121 +1227,108 @@ public class Pdf417 extends Symbol {
         throw new OkapiException("Unable to determine MicroPDF417 variant for " + codeWordCount + " codewords");
     }
 
-    private void pdfSmooth() {
-        int i, length;
-        EncodingMode crnt, last, next;
+    /** Determines the encoding block groups for the specified data. */
+    private static List< Block > createBlocks(int[] data, boolean debug) {
 
-        for (i = 0; i < blockIndex; i++) {
-            crnt = blockType[i];
-            length = blockLength[i];
-            if (i != 0) {
-                /* This is the first block */
-                last = blockType[i - 1];
-            } else {
-                last = EncodingMode.FALSE;
-            }
-            if (i != blockIndex - 1) {
-                /* This is the last block */
-                next = blockType[i + 1];
-            } else {
-                next = EncodingMode.FALSE;
-            }
+        List< Block > blocks = new ArrayList<>();
+        Block current = null;
 
-            if (crnt == EncodingMode.NUM) {
-                if (i == 0) { /* first block */
-                    if (blockIndex > 1) { /* and there are others */
-                        if ((next == EncodingMode.TEX) && (length < 8)) {
-                            blockType[i] = EncodingMode.TEX;
-                        }
-                        if ((next == EncodingMode.BYT) && (length == 1)) {
-                            blockType[i] = EncodingMode.BYT;
-                        }
-                    }
-                } else {
-                    if (i == blockIndex - 1) { /* last block */
-                        if ((last == EncodingMode.TEX) && (length < 7)) {
-                            blockType[i] = EncodingMode.TEX;
-                        }
-                        if ((last == EncodingMode.BYT) && (length == 1)) {
-                            blockType[i] = EncodingMode.BYT;
-                        }
-                    } else { /* not first or last block */
-                        if (((last == EncodingMode.BYT) && (next == EncodingMode.BYT)) && (length < 4)) {
-                            blockType[i] = EncodingMode.BYT;
-                        }
-                        if (((last == EncodingMode.BYT) && (next == EncodingMode.TEX)) && (length < 4)) {
-                            blockType[i] = EncodingMode.TEX;
-                        }
-                        if (((last == EncodingMode.TEX) && (next == EncodingMode.BYT)) && (length < 5)) {
-                            blockType[i] = EncodingMode.TEX;
-                        }
-                        if (((last == EncodingMode.TEX) && (next == EncodingMode.TEX)) && (length < 8)) {
-                            blockType[i] = EncodingMode.TEX;
-                        }
-                        if (((last == EncodingMode.NUM) && (next == EncodingMode.TEX)) && (length < 8)) {
-                            blockType[i] = EncodingMode.TEX;
-                        }
-                    }
-                }
+        for (int i = 0; i < data.length; i++) {
+            EncodingMode mode = chooseMode(data[i]);
+            if ((current != null && current.mode == mode) &&
+                (mode != EncodingMode.NUM || current.length < MAX_NUMERIC_COMPACTION_BLOCK_SIZE)) {
+                current.length++;
+            } else {
+                current = new Block(mode);
+                blocks.add(current);
             }
         }
-        regroupe();
-        for (i = 0; i < blockIndex; i++) {
-            crnt = blockType[i];
-            length = blockLength[i];
-            if (i != 0) {
-                last = blockType[i - 1];
-            } else {
-                last = EncodingMode.FALSE;
-            }
-            if (i != blockIndex - 1) {
-                next = blockType[i + 1];
-            } else {
-                next = EncodingMode.FALSE;
-            }
 
-            if ((crnt == EncodingMode.TEX) && (i > 0)) { /* not the first */
-                if (i == blockIndex - 1) { /* the last one */
-                    if ((last == EncodingMode.BYT) && (length == 1)) {
-                        blockType[i] = EncodingMode.BYT;
-                    }
-                } else { /* not the last one */
-                    if (((last == EncodingMode.BYT) && (next == EncodingMode.BYT)) && (length < 5)) {
-                        blockType[i] = EncodingMode.BYT;
-                    }
-                    if ((((last == EncodingMode.BYT) && (next != EncodingMode.BYT)) || ((last != EncodingMode.BYT) && (next == EncodingMode.BYT))) && (length < 3)) {
-                        blockType[i] = EncodingMode.BYT;
-                    }
-                }
-            }
+        if (debug) {
+            System.out.println("Initial block pattern: " + blocks);
         }
-        regroupe();
+
+        smoothBlocks(blocks);
+
+        if (debug) {
+            System.out.println("Final block pattern: " + blocks);
+        }
+
+        return blocks;
     }
 
-    private void regroupe() {
-        int i, j;
+    /** Combines adjacent blocks of different types in very specific scenarios. */
+    private static void smoothBlocks(List< Block > blocks) {
 
-        /* bring together same type blocks */
-        if (blockIndex > 1) {
-            i = 1;
-            while (i < blockIndex) {
-                if (!((blockType[i - 1] == EncodingMode.NUM) && (blockLength[i - 1] == 44))) {
-                    if (blockType[i - 1] == blockType[i]) {
-                        /* bring together */
-                        blockLength[i - 1] = blockLength[i - 1] + blockLength[i];
-                        j = i + 1;
-
-                        /* decrease the list */
-                        while (j < blockIndex) {
-                            blockLength[j - 1] = blockLength[j];
-                            blockType[j - 1] = blockType[j];
-                            j++;
-                        }
-                        blockIndex = blockIndex - 1;
-                        i--;
+        for (int i = 0; i < blocks.size(); i++) {
+            Block block = blocks.get(i);
+            EncodingMode last = (i > 0 ? blocks.get(i - 1).mode : EncodingMode.FALSE);
+            EncodingMode next = (i < blocks.size() - 1 ? blocks.get(i + 1).mode : EncodingMode.FALSE);
+            if (block.mode == EncodingMode.NUM) {
+                if (i == 0) { /* first block */
+                    if (next == EncodingMode.TEX && block.length < 8) {
+                        block.mode = EncodingMode.TEX;
+                    } else if (next == EncodingMode.BYT && block.length == 1) {
+                        block.mode = EncodingMode.BYT;
+                    }
+                } else if (i == blocks.size() - 1) { /* last block */
+                    if (last == EncodingMode.TEX && block.length < 7) {
+                        block.mode = EncodingMode.TEX;
+                    } else if (last == EncodingMode.BYT && block.length == 1) {
+                        block.mode = EncodingMode.BYT;
+                    }
+                } else { /* not first or last block */
+                    if (last == EncodingMode.BYT && next == EncodingMode.BYT && block.length < 4) {
+                        block.mode = EncodingMode.BYT;
+                    } else if (last == EncodingMode.BYT && next == EncodingMode.TEX && block.length < 4) {
+                        block.mode = EncodingMode.TEX;
+                    } else if (last == EncodingMode.TEX && next == EncodingMode.BYT && block.length < 5) {
+                        block.mode = EncodingMode.TEX;
+                    } else if (last == EncodingMode.TEX && next == EncodingMode.TEX && block.length < 8) {
+                        block.mode = EncodingMode.TEX;
+                    } else if (last == EncodingMode.NUM && next == EncodingMode.TEX && block.length < 8) {
+                        block.mode = EncodingMode.TEX;
                     }
                 }
-                i++;
+            }
+        }
+
+        mergeBlocks(blocks);
+
+        for (int i = 0; i < blocks.size(); i++) {
+            Block block = blocks.get(i);
+            EncodingMode last = (i > 0 ? blocks.get(i - 1).mode : EncodingMode.FALSE);
+            EncodingMode next = (i < blocks.size() - 1 ? blocks.get(i + 1).mode : EncodingMode.FALSE);
+            if (block.mode == EncodingMode.TEX && i > 0) { /* not the first */
+                if (i == blocks.size() - 1) { /* the last one */
+                    if (last == EncodingMode.BYT && block.length == 1) {
+                        block.mode = EncodingMode.BYT;
+                    }
+                } else { /* not the last one */
+                    if (last == EncodingMode.BYT && next == EncodingMode.BYT && block.length < 5) {
+                        block.mode = EncodingMode.BYT;
+                    }
+                    if (((last == EncodingMode.BYT && next != EncodingMode.BYT) ||
+                         (last != EncodingMode.BYT && next == EncodingMode.BYT)) && (block.length < 3)) {
+                        block.mode = EncodingMode.BYT;
+                    }
+                }
+            }
+        }
+
+        mergeBlocks(blocks);
+    }
+
+    /** Combines adjacent blocks of the same type. */
+    private static void mergeBlocks(List< Block > blocks) {
+        for (int i = 1; i < blocks.size(); i++) {
+            Block b1 = blocks.get(i - 1);
+            Block b2 = blocks.get(i);
+            if ((b1.mode == b2.mode) &&
+                (b1.mode != EncodingMode.NUM || b1.length + b2.length <= MAX_NUMERIC_COMPACTION_BLOCK_SIZE)) {
+                b1.length += b2.length;
+                blocks.remove(i);
+                i--;
             }
         }
     }
@@ -1718,18 +1594,22 @@ public class Pdf417 extends Symbol {
         }
     }
 
-    private void processNumbers(int start, int length) {
+    private void processNumbers(int[] data, int start, int length, boolean skipLatch) {
 
         BigInteger tVal, dVal;
         int[] d = new int[16];
         int cw_count;
 
-        codeWords[codeWordCount++] = 902; /* Latch numeric mode */
+        if (!skipLatch) {
+            // we don't need to latch to numeric mode in some cases, e.g.
+            // during numeric compaction of the Macro PDF417 segment index
+            codeWords[codeWordCount++] = 902;
+        }
 
         StringBuilder t = new StringBuilder(length + 1);
         t.append('1');
         for (int i = 0; i < length; i++) {
-            t.append((char) inputData[start + i]);
+            t.append((char) data[start + i]);
         }
 
         tVal = new BigInteger(t.toString());
@@ -1744,6 +1624,22 @@ public class Pdf417 extends Symbol {
 
         for (int i = cw_count - 1; i >= 0; i--) {
             codeWords[codeWordCount++] = d[i];
+        }
+    }
+
+    private static class Block {
+
+        public EncodingMode mode;
+        public int length;
+
+        public Block(EncodingMode mode) {
+            this.mode = mode;
+            this.length = 1;
+        }
+
+        @Override
+        public String toString() {
+            return mode + "x" + length;
         }
     }
 }

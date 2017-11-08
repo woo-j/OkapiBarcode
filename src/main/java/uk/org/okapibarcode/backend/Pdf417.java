@@ -769,33 +769,33 @@ public class Pdf417 extends Symbol {
 
         /* 796 - we now take care of the Reed Solomon codes */
         switch (selectedECCLevel) {
-        case 1:
-            offset = 2;
-            break;
-        case 2:
-            offset = 6;
-            break;
-        case 3:
-            offset = 14;
-            break;
-        case 4:
-            offset = 30;
-            break;
-        case 5:
-            offset = 62;
-            break;
-        case 6:
-            offset = 126;
-            break;
-        case 7:
-            offset = 254;
-            break;
-        case 8:
-            offset = 510;
-            break;
-        default:
-            offset = 0;
-            break;
+            case 1:
+                offset = 2;
+                break;
+            case 2:
+                offset = 6;
+                break;
+            case 3:
+                offset = 14;
+                break;
+            case 4:
+                offset = 30;
+                break;
+            case 5:
+                offset = 62;
+                break;
+            case 6:
+                offset = 126;
+                break;
+            case 7:
+                offset = 254;
+                break;
+            case 8:
+                offset = 510;
+                break;
+            default:
+                offset = 0;
+                break;
         }
 
         for (loop = 0; loop < 520; loop++) {

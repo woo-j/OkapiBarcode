@@ -17,25 +17,27 @@ package uk.org.okapibarcode.backend;
 
 import java.awt.geom.Rectangle2D;
 import java.util.Locale;
+
 /**
- * Implements the Japanese Postal Code symbology as used to encode adress
+ * Implements the Japanese Postal Code symbology as used to encode address
  * data for mail items in Japan. Valid input characters are digits 0-9,
  * characters A-Z and the dash (-) character. A modulo-19 check digit is
  * added and should not be included in the input data.
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class JapanPost extends Symbol {
-    private String[] JapanTable = {
+
+    private static final String[] JAPAN_TABLE = {
         "FFT", "FDA", "DFA", "FAD", "FTF", "DAF", "AFD", "ADF", "TFF", "FTT",
         "TFT", "DAT", "DTA", "ADT", "TDA", "ATD", "TAD", "TTF", "FFF"
     };
 
-    private char[] kasutSet = {
+    private static final char[] KASUT_SET = {
         '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', 'a', 'b', 'c',
         'd', 'e', 'f', 'g', 'h'
     };
 
-    private char[] chKasutSet = {
+    private static final char[] CH_KASUT_SET = {
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', 'a', 'b', 'c',
         'd', 'e', 'f', 'g', 'h'
     };
@@ -48,7 +50,7 @@ public class JapanPost extends Symbol {
         char c;
 
         content = content.toUpperCase(Locale.ENGLISH);
-        if(!(content.matches("[0-9A-Z]+"))) {
+        if(!(content.matches("[0-9A-Z\\-]+"))) {
             error_msg = "Invalid characters in data";
             return false;
         }
@@ -67,17 +69,17 @@ public class JapanPost extends Symbol {
             }
             if ((c >= 'A') && (c <= 'J')) {
                 inter += 'a';
-                inter += chKasutSet[(c - 'A')];
+                inter += CH_KASUT_SET[(c - 'A')];
             }
 
             if ((c >= 'K') && (c <= 'O')) {
                 inter += 'b';
-                inter += chKasutSet[(c - 'K')];
+                inter += CH_KASUT_SET[(c - 'K')];
             }
 
             if ((c >= 'U') && (c <= 'Z')) {
                 inter += 'c';
-                inter += chKasutSet[(c - 'U')];
+                inter += CH_KASUT_SET[(c - 'U')];
             }
         }
 
@@ -89,28 +91,30 @@ public class JapanPost extends Symbol {
 
         sum = 0;
         for (i = 0; i < 20; i++) {
-            dest += JapanTable[positionOf(inter.charAt(i), kasutSet)];
-            sum += positionOf(inter.charAt(i), chKasutSet);
+            dest += JAPAN_TABLE[positionOf(inter.charAt(i), KASUT_SET)];
+            sum += positionOf(inter.charAt(i), CH_KASUT_SET);
         }
 
         /* Calculate check digit */
         check = 19 - (sum % 19);
-        dest += JapanTable[positionOf(chKasutSet[check], kasutSet)];
+        if (check == 19) {
+            check = 0;
+        }
+        dest += JAPAN_TABLE[positionOf(CH_KASUT_SET[check], KASUT_SET)];
         dest += "DF";
 
         encodeInfo += "Encoding: " + dest + "\n";
         encodeInfo += "Check Digit: " + check + "\n";
 
         readable = "";
-        pattern = new String[1];
-        pattern[0] = dest;
+        pattern = new String[] { dest };
         row_count = 1;
-        row_height = new int[1];
-        row_height[0] = -1;
+        row_height = new int[] { -1 };
+
         plotSymbol();
+
         return true;
     }
-
 
     @Override
     protected void plotSymbol() {

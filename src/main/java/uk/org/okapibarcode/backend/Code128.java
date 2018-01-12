@@ -808,6 +808,14 @@ public class Code128 extends Symbol {
                     mode_type[i] = Mode.LATCHB;
                     current = Mode.LATCHB;
                 }
+                if ((current == Mode.SHIFTA) && (next == Mode.AORB)) {
+                    mode_type[i] = Mode.LATCHA;
+                    current = Mode.LATCHA;
+                }
+                if ((current == Mode.SHIFTB) && (next == Mode.AORB)) {
+                    mode_type[i] = Mode.LATCHB;
+                    current = Mode.LATCHB;
+                }
                 if ((current == Mode.SHIFTA) && (last == Mode.LATCHC)) {
                     mode_type[i] = Mode.LATCHA;
                     current = Mode.LATCHA;

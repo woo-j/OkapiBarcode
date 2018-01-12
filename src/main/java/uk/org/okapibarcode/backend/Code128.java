@@ -844,4 +844,10 @@ public class Code128 extends Symbol {
             }
         }
     }
+
+    /** {@inheritDoc} */
+    @Override
+    protected int[] getCodewords() {
+        return getPatternAsCodewords(6);
+    }
 }

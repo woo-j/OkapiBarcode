@@ -113,6 +113,17 @@ public class Code128 extends Symbol {
         int c_count;
         int linkage_flag = 0;
 
+        index_point = 0;
+        read = 0;
+
+        for (i = 0; i < mode_type.length; i++) {
+            mode_type[i] = null;
+        }
+
+        for (i = 0; i < mode_length.length; i++) {
+            mode_length[i] = 0;
+        }
+
         if (!ISO_8859_1.newEncoder().canEncode(content)) {
             error_msg = "Invalid characters in input data";
             return false;

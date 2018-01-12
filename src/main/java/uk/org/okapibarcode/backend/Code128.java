@@ -15,7 +15,7 @@
  */
 package uk.org.okapibarcode.backend;
 
-import java.io.UnsupportedEncodingException;
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
 
 /**
  * Implements Code 128 bar code symbology
@@ -113,17 +113,12 @@ public class Code128 extends Symbol {
         int c_count;
         int linkage_flag = 0;
 
-        if (!content.matches("[\u0000-\u00FF]+")) {
+        if (!ISO_8859_1.newEncoder().canEncode(content)) {
             error_msg = "Invalid characters in input data";
             return false;
         }
 
-        try {
-            inputBytes = content.getBytes("ISO8859_1");
-        } catch (UnsupportedEncodingException e) {
-            error_msg = "Character encoding error";
-            return false;
-        }
+        inputBytes = content.getBytes(ISO_8859_1);
 
         inputData = new int[sourcelen];
         for (i = 0; i < sourcelen; i++) {

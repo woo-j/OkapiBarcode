@@ -740,10 +740,12 @@ public class Code128 extends Symbol {
             if (i == 0) { /* first block */
                 if ((index_point == 1) && ((length == 2) && (current == Mode.ABORC))) { /* Rule 1a */
                     mode_type[i] = Mode.LATCHC;
+                    current = Mode.LATCHC;
                 }
                 if (current == Mode.ABORC) {
                     if (length >= 4) { /* Rule 1b */
                         mode_type[i] = Mode.LATCHC;
+                        current = Mode.LATCHC;
                     } else {
                         mode_type[i] = Mode.AORB;
                         current = Mode.AORB;
@@ -751,6 +753,7 @@ public class Code128 extends Symbol {
                 }
                 if (current == Mode.SHIFTA) { /* Rule 1c */
                     mode_type[i] = Mode.LATCHA;
+                    current = Mode.LATCHA;
                 }
                 if ((current == Mode.AORB) && (next == Mode.SHIFTA)) { /* Rule 1c */
                     mode_type[i] = Mode.LATCHA;
@@ -758,6 +761,7 @@ public class Code128 extends Symbol {
                 }
                 if (current == Mode.AORB) { /* Rule 1d */
                     mode_type[i] = Mode.LATCHB;
+                    current = Mode.LATCHB;
                 }
             } else {
                 if ((current == Mode.ABORC) && (length >= 4)) { /* Rule 3 */

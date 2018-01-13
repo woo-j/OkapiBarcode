@@ -79,12 +79,16 @@ To use the Swing GUI, just run the [OkapiUI](src/main/java/uk/org/okapibarcode/g
 The GUI allows you to explore the supported barcode symbologies and test them with different configurations
 and data.
 
-To generate barcode images in your own code using the Okapi library, use one of the symbology
-classes linked above: instantiate the class, customize any relevant settings, invoke `setContent(String)`,
-and then pass the symbol instance to one of the available symbol renderers
+To generate barcode images in your own code using the Okapi Barcode library, use one of the symbology
+classes linked above:
+
+1. instantiate the class,
+2. customize any relevant settings,
+3. invoke `setContent(String)`, and then
+4. pass the symbol instance to one of the available symbol renderers
 ([Java 2D](src/main/java/uk/org/okapibarcode/output/Java2DRenderer.java),
 [PostScript](src/main/java/uk/org/okapibarcode/output/PostScriptRenderer.java),
-[SVG](src/main/java/uk/org/okapibarcode/output/SvgRenderer.java)):
+[SVG](src/main/java/uk/org/okapibarcode/output/SvgRenderer.java))
 
 ```
 Code128 barcode = new Code128();
@@ -98,15 +102,15 @@ barcode.setContent("123456789");
 int width = barcode.getWidth();
 int height = barcode.getHeight();
 
-BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
-Graphics2D g2d = img.createGraphics();
+BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
+Graphics2D g2d = image.createGraphics();
 g2d.setPaint(Color.WHITE);
 g2d.fillRect(0, 0, width, height);
 
 Java2DRenderer renderer = new Java2DRenderer(g2d, 1, Color.WHITE, Color.BLACK);
 renderer.render(barcode);
 
-ImageIO.write(img, "png", new File("code128.png"));
+ImageIO.write(image, "png", new File("code128.png"));
 ```
 
 Okapi Barcode JARs are available for download from [Maven Central](http://search.maven.org/#search|ga|1|uk.org.okapibarcode).

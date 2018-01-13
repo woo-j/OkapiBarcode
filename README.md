@@ -73,6 +73,44 @@ of work that have been invested in that project.
   * UPC-E
 * [USPS OneCode](src/main/java/uk/org/okapibarcode/backend/UspsOneCode.java) (Intelligent Mail)
 
+### Usage
+
+To use the Swing GUI, just run the [OkapiUI](src/main/java/uk/org/okapibarcode/gui/OkapiUI.java) class.
+The GUI allows you to explore the supported barcode symbologies and test them with different configurations
+and data.
+
+To generate barcode images in your own code using the Okapi library, use one of the symbology
+classes linked above: instantiate the class, customize any relevant settings, invoke `setContent(String)`,
+and then pass the symbol instance to one of the available symbol renderers
+([Java 2D](src/main/java/uk/org/okapibarcode/output/Java2DRenderer.java),
+[PostScript](src/main/java/uk/org/okapibarcode/output/PostScriptRenderer.java),
+[SVG](src/main/java/uk/org/okapibarcode/output/SvgRenderer.java)):
+
+```
+Code128 barcode = new Code128();
+barcode.setFontName("Monospaced");
+barcode.setFontSize(16);
+barcode.setModuleWidth(2);
+barcode.setBarHeight(50);
+barcode.setHumanReadableLocation(HumanReadableLocation.BOTTOM);
+barcode.setContent("123456789");
+
+int width = barcode.getWidth();
+int height = barcode.getHeight();
+
+BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
+Graphics2D g2d = img.createGraphics();
+g2d.setPaint(Color.WHITE);
+g2d.fillRect(0, 0, width, height);
+
+Java2DRenderer renderer = new Java2DRenderer(g2d, 1, Color.WHITE, Color.BLACK);
+renderer.render(barcode);
+
+ImageIO.write(img, "png", new File("code128.png"));
+```
+
+Okapi Barcode JARs are available for download from [Maven Central](http://search.maven.org/#search|ga|1|uk.org.okapibarcode).
+
 ### Building
 
 `gradlew check`: Compiles and runs all quality checks, including the unit tests.  

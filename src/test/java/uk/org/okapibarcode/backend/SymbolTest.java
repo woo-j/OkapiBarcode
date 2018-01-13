@@ -543,7 +543,7 @@ public class SymbolTest {
         String content;
         try {
             byte[] bytes = Files.readAllBytes(propertiesFile.toPath());
-            content = replacePlaceholders(decode(bytes, UTF_8));
+            content = decode(bytes, UTF_8);
         } catch (CharacterCodingException e) {
             throw new IOException("Invalid UTF-8 content in file " + propertiesFile.getAbsolutePath(), e);
         }
@@ -565,10 +565,11 @@ public class SymbolTest {
                 int index = line.indexOf('=');
                 if (index != -1) {
                     String name = line.substring(0, index);
-                    String value = line.substring(index + 1);
+                    String value = replacePlaceholders(line.substring(index + 1));
                     properties.put(name, value);
                 } else {
-                    throw new IOException(propertiesFile.getAbsolutePath() + ": found line without '=' character; unintentional newline?");
+                    String path = propertiesFile.getAbsolutePath();
+                    throw new IOException(path + ": found line '" + line + "' without '=' character; unintentional newline?");
                 }
             }
         }

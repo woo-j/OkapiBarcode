@@ -161,13 +161,11 @@ public class Code128 extends Symbol {
             } else {
                 j = 0;
             }
-
             if (j >= 5) {
                 for (k = i; k > (i - 5); k--) {
                     fset[k] = FMode.LATCHF;
                 }
             }
-
             if ((j >= 3) && (i == (sourcelen - 1))) {
                 for (k = i; k > (i - 3); k--) {
                     fset[k] = FMode.LATCHF;
@@ -224,8 +222,8 @@ public class Code128 extends Symbol {
 
         reduceSubsetChanges();
 
-
         if (inputDataType == DataType.GS1) {
+
             /* Put set data into set[] */
             read = 0;
             for(i = 0; i < index_point; i++) {
@@ -237,11 +235,11 @@ public class Code128 extends Symbol {
 
             /* Resolve odd length LATCHC blocks */
             c_count = 0;
-            for(i = 0; i < read; i++) {
-		if(set[i] == Mode.LATCHC) {
-                    if(inputData[i] == '[') {
-                        if((c_count & 1) != 0) {
-                            if((i - c_count) != 0) {
+            for (i = 0; i < read; i++) {
+                if (set[i] == Mode.LATCHC) {
+                    if (inputData[i] == '[') {
+                        if ((c_count & 1) != 0) {
+                            if ((i - c_count) != 0) {
                                 set[i - c_count] = Mode.LATCHB;
                             } else {
                                 set[i - 1] = Mode.LATCHB;
@@ -251,33 +249,33 @@ public class Code128 extends Symbol {
                     } else {
                         c_count++;
                     }
-		} else {
-                    if((c_count & 1) != 0) {
-                        if((i - c_count) != 0) {
+                } else {
+                    if ((c_count & 1) != 0) {
+                        if ((i - c_count) != 0) {
                             set[i - c_count] = Mode.LATCHB;
                         } else {
                             set[i - 1] = Mode.LATCHB;
                         }
                     }
                     c_count = 0;
-		}
+                }
             }
-            if((c_count & 1) != 0) {
-		if((i - c_count) != 0) {
+            if ((c_count & 1) != 0) {
+                if ((i - c_count) != 0) {
                     set[i - c_count] = Mode.LATCHB;
-		} else {
+                } else {
                     set[i - 1] = Mode.LATCHB;
-		}
+                }
             }
-            for(i = 1; i < read - 1; i++) {
-                if((set[i] == Mode.LATCHC) && ((set[i - 1] == Mode.LATCHB)
-                        && (set[i + 1] == Mode.LATCHB))) {
+            for (i = 1; i < read - 1; i++) {
+                if ((set[i] == Mode.LATCHC) && ((set[i - 1] == Mode.LATCHB) && (set[i + 1] == Mode.LATCHB))) {
                     set[i] = Mode.LATCHB;
                 }
             }
-	} else {
-            /* Resolve odd length LATCHC blocks */
 
+        } else {
+
+            /* Resolve odd length LATCHC blocks */
             if ((mode_type[0] == Mode.LATCHC) && ((mode_length[0] & 1) != 0)) {
                 /* Rule 2 */
                 mode_length[1]++;
@@ -324,8 +322,7 @@ public class Code128 extends Symbol {
             } while (set[i] == Mode.SHIFTB);
         }
 
-        /* Now we can calculate how long the barcode is going to be - and stop it from
-	   being too long */
+        /* Now we can calculate how long the barcode is going to be - and stop it from being too long */
         last_set = Mode.NULL;
         glyph_count = 0.0;
         for (i = 0; i < sourcelen; i++) {
@@ -353,7 +350,6 @@ public class Code128 extends Symbol {
                     glyph_count += 2.0;
                 }
             }
-
             if (set[i] == Mode.LATCHC) {
                 if ((inputDataType == DataType.GS1) && (inputData[i] == '[')) {
                     glyph_count += 1.0;
@@ -373,7 +369,7 @@ public class Code128 extends Symbol {
 
         /* So now we know what start character to use - we can get on with it! */
         if(readerInit) {
-        /* Reader Initialisation mode */
+            /* Reader Initialisation mode */
             switch(set[0]) {
                 case LATCHA: /* Start A */
                     dest += CODE128_TABLE[103];
@@ -408,27 +404,27 @@ public class Code128 extends Symbol {
         } else {
             /* Normal mode */
             switch (set[0]) {
-            case LATCHA:
-                /* Start A */
-                dest += CODE128_TABLE[103];
-                values[0] = 103;
-                current_set = Mode.LATCHA;
-                encodeInfo += "STARTA ";
-                break;
-            case LATCHB:
-                /* Start B */
-                dest += CODE128_TABLE[104];
-                values[0] = 104;
-                current_set = Mode.LATCHB;
-                encodeInfo += "STARTB ";
-                break;
-            default:
-                /* Start C */
-                dest += CODE128_TABLE[105];
-                values[0] = 105;
-                current_set = Mode.LATCHC;
-                encodeInfo += "STARTC ";
-                break;
+                case LATCHA:
+                    /* Start A */
+                    dest += CODE128_TABLE[103];
+                    values[0] = 103;
+                    current_set = Mode.LATCHA;
+                    encodeInfo += "STARTA ";
+                    break;
+                case LATCHB:
+                    /* Start B */
+                    dest += CODE128_TABLE[104];
+                    values[0] = 104;
+                    current_set = Mode.LATCHB;
+                    encodeInfo += "STARTB ";
+                    break;
+                default:
+                    /* Start C */
+                    dest += CODE128_TABLE[105];
+                    values[0] = 105;
+                    current_set = Mode.LATCHC;
+                    encodeInfo += "STARTC ";
+                    break;
             }
         }
         bar_characters++;
@@ -442,20 +438,20 @@ public class Code128 extends Symbol {
 
         if (fset[0] == FMode.LATCHF) {
             switch (current_set) {
-            case LATCHA:
-                dest += CODE128_TABLE[101];
-                dest += CODE128_TABLE[101];
-                values[bar_characters] = 101;
-                values[bar_characters + 1] = 101;
-                encodeInfo += "FNC4 FNC4 ";
-                break;
-            case LATCHB:
-                dest += CODE128_TABLE[100];
-                dest += CODE128_TABLE[100];
-                values[bar_characters] = 100;
-                values[bar_characters + 1] = 100;
-                encodeInfo += "FNC4 FNC4 ";
-                break;
+                case LATCHA:
+                    dest += CODE128_TABLE[101];
+                    dest += CODE128_TABLE[101];
+                    values[bar_characters] = 101;
+                    values[bar_characters + 1] = 101;
+                    encodeInfo += "FNC4 FNC4 ";
+                    break;
+                case LATCHB:
+                    dest += CODE128_TABLE[100];
+                    dest += CODE128_TABLE[100];
+                    values[bar_characters] = 100;
+                    values[bar_characters + 1] = 100;
+                    encodeInfo += "FNC4 FNC4 ";
+                    break;
             }
             bar_characters += 2;
             f_state = FMode.LATCHF;
@@ -467,27 +463,27 @@ public class Code128 extends Symbol {
 
             if ((read != 0) && (set[read] != current_set)) { /* Latch different code set */
                 switch (set[read]) {
-                case LATCHA:
-                    dest += CODE128_TABLE[101];
-                    values[bar_characters] = 101;
-                    bar_characters++;
-                    current_set = Mode.LATCHA;
-                    encodeInfo += "CODEA ";
-                    break;
-                case LATCHB:
-                    dest += CODE128_TABLE[100];
-                    values[bar_characters] = 100;
-                    bar_characters++;
-                    current_set = Mode.LATCHB;
-                    encodeInfo += "CODEB ";
-                    break;
-                case LATCHC:
-                    dest += CODE128_TABLE[99];
-                    values[bar_characters] = 99;
-                    bar_characters++;
-                    current_set = Mode.LATCHC;
-                    encodeInfo += "CODEC ";
-                    break;
+                    case LATCHA:
+                        dest += CODE128_TABLE[101];
+                        values[bar_characters] = 101;
+                        bar_characters++;
+                        current_set = Mode.LATCHA;
+                        encodeInfo += "CODEA ";
+                        break;
+                    case LATCHB:
+                        dest += CODE128_TABLE[100];
+                        values[bar_characters] = 100;
+                        bar_characters++;
+                        current_set = Mode.LATCHB;
+                        encodeInfo += "CODEB ";
+                        break;
+                    case LATCHC:
+                        dest += CODE128_TABLE[99];
+                        values[bar_characters] = 99;
+                        bar_characters++;
+                        current_set = Mode.LATCHC;
+                        encodeInfo += "CODEC ";
+                        break;
                 }
             }
 
@@ -495,20 +491,20 @@ public class Code128 extends Symbol {
                 if ((fset[read] == FMode.LATCHF) && (f_state == FMode.LATCHN)) {
                     /* Latch beginning of extended mode */
                     switch (current_set) {
-                    case LATCHA:
-                        dest += CODE128_TABLE[101];
-                        dest += CODE128_TABLE[101];
-                        values[bar_characters] = 101;
-                        values[bar_characters + 1] = 101;
-                        encodeInfo += "FNC4 FNC4 ";
-                        break;
-                    case LATCHB:
-                        dest += CODE128_TABLE[100];
-                        dest += CODE128_TABLE[100];
-                        values[bar_characters] = 100;
-                        values[bar_characters + 1] = 100;
-                        encodeInfo += "FNC4 FNC4 ";
-                        break;
+                        case LATCHA:
+                            dest += CODE128_TABLE[101];
+                            dest += CODE128_TABLE[101];
+                            values[bar_characters] = 101;
+                            values[bar_characters + 1] = 101;
+                            encodeInfo += "FNC4 FNC4 ";
+                            break;
+                        case LATCHB:
+                            dest += CODE128_TABLE[100];
+                            dest += CODE128_TABLE[100];
+                            values[bar_characters] = 100;
+                            values[bar_characters + 1] = 100;
+                            encodeInfo += "FNC4 FNC4 ";
+                            break;
                     }
                     bar_characters += 2;
                     f_state = FMode.LATCHN;
@@ -516,20 +512,20 @@ public class Code128 extends Symbol {
                 if ((fset[read] == FMode.LATCHN) && (f_state == FMode.LATCHF)) {
                     /* Latch end of extended mode */
                     switch (current_set) {
-                    case LATCHA:
-                        dest += CODE128_TABLE[101];
-                        dest += CODE128_TABLE[101];
-                        values[bar_characters] = 101;
-                        values[bar_characters + 1] = 101;
-                        encodeInfo += "FNC4 FNC4 ";
-                        break;
-                    case LATCHB:
-                        dest += CODE128_TABLE[100];
-                        dest += CODE128_TABLE[100];
-                        values[bar_characters] = 100;
-                        values[bar_characters + 1] = 100;
-                        encodeInfo += "FNC4 FNC4 ";
-                        break;
+                        case LATCHA:
+                            dest += CODE128_TABLE[101];
+                            dest += CODE128_TABLE[101];
+                            values[bar_characters] = 101;
+                            values[bar_characters + 1] = 101;
+                            encodeInfo += "FNC4 FNC4 ";
+                            break;
+                        case LATCHB:
+                            dest += CODE128_TABLE[100];
+                            dest += CODE128_TABLE[100];
+                            values[bar_characters] = 100;
+                            values[bar_characters + 1] = 100;
+                            encodeInfo += "FNC4 FNC4 ";
+                            break;
                     }
                     bar_characters += 2;
                     f_state = FMode.LATCHN;
@@ -539,16 +535,16 @@ public class Code128 extends Symbol {
             if ((fset[read] == FMode.SHIFTF) || (fset[read] == FMode.SHIFTN)) {
                 /* Shift to or from extended mode */
                 switch (current_set) {
-                case LATCHA:
-                    dest += CODE128_TABLE[101]; /* FNC 4 */
-                    values[bar_characters] = 101;
-                    encodeInfo += "FNC4 ";
-                    break;
-                case LATCHB:
-                    dest += CODE128_TABLE[100]; /* FNC 4 */
-                    values[bar_characters] = 100;
-                    encodeInfo += "FNC4 ";
-                    break;
+                    case LATCHA:
+                        dest += CODE128_TABLE[101]; /* FNC 4 */
+                        values[bar_characters] = 101;
+                        encodeInfo += "FNC4 ";
+                        break;
+                    case LATCHB:
+                        dest += CODE128_TABLE[100]; /* FNC 4 */
+                        values[bar_characters] = 100;
+                        encodeInfo += "FNC4 ";
+                        break;
                 }
                 bar_characters++;
             }
@@ -565,53 +561,53 @@ public class Code128 extends Symbol {
                 /* Encode data characters */
                 c = inputData[read];
                 switch (set[read]) {
-                case SHIFTA:
-                case LATCHA:
-                    if (c > 127) {
-                        if (c < 160) {
-                            dest += CODE128_TABLE[(c - 128) + 64];
-                            values[bar_characters] = (c - 128) + 64;
+                    case SHIFTA:
+                    case LATCHA:
+                        if (c > 127) {
+                            if (c < 160) {
+                                dest += CODE128_TABLE[(c - 128) + 64];
+                                values[bar_characters] = (c - 128) + 64;
+                            } else {
+                                dest += CODE128_TABLE[(c - 128) - 32];
+                                values[bar_characters] = (c - 128) - 32;
+                            }
                         } else {
-                            dest += CODE128_TABLE[(c - 128) - 32];
-                            values[bar_characters] = (c - 128) - 32;
+                            if (c < 32) {
+                                dest += CODE128_TABLE[c + 64];
+                                values[bar_characters] = c + 64;
+                            } else {
+                                dest += CODE128_TABLE[c - 32];
+                                values[bar_characters] = c - 32;
+                            }
                         }
-                    } else {
-                        if (c < 32) {
-                            dest += CODE128_TABLE[c + 64];
-                            values[bar_characters] = c + 64;
+                        encodeInfo += Integer.toString(values[bar_characters]) + " ";
+                        bar_characters++;
+                        read++;
+                        break;
+                    case SHIFTB:
+                    case LATCHB:
+                        if (c > 127) {
+                            dest += CODE128_TABLE[c - 32 - 128];
+                            values[bar_characters] = c - 32 - 128;
                         } else {
                             dest += CODE128_TABLE[c - 32];
                             values[bar_characters] = c - 32;
                         }
-                    }
-                    encodeInfo += Integer.toString(values[bar_characters]) + " ";
-                    bar_characters++;
-                    read++;
-                    break;
-                case SHIFTB:
-                case LATCHB:
-                    if (c > 127) {
-                        dest += CODE128_TABLE[c - 32 - 128];
-                        values[bar_characters] = c - 32 - 128;
-                    } else {
-                        dest += CODE128_TABLE[c - 32];
-                        values[bar_characters] = c - 32;
-                    }
-                    encodeInfo += Integer.toString(values[bar_characters]) + " ";
-                    bar_characters++;
-                    read++;
-                    break;
-                case LATCHC:
-                    int weight;
-                    int d = inputData[read + 1];
+                        encodeInfo += Integer.toString(values[bar_characters]) + " ";
+                        bar_characters++;
+                        read++;
+                        break;
+                    case LATCHC:
+                        int weight;
+                        int d = inputData[read + 1];
 
-                    weight = (10 * (c - '0')) + (d - '0');
-                    dest += CODE128_TABLE[weight];
-                    values[bar_characters] = weight;
-                    encodeInfo += Integer.toString(values[bar_characters]) + " ";
-                    bar_characters++;
-                    read += 2;
-                    break;
+                        weight = (10 * (c - '0')) + (d - '0');
+                        dest += CODE128_TABLE[weight];
+                        values[bar_characters] = weight;
+                        encodeInfo += Integer.toString(values[bar_characters]) + " ";
+                        bar_characters++;
+                        read += 2;
+                        break;
                 }
             } else {
                 // FNC1
@@ -627,11 +623,11 @@ public class Code128 extends Symbol {
         encodeInfo += "\n";
 
         /* "...note that the linkage flag is an extra code set character between
-	the last data character and the Symbol Check Character" (GS1 Specification) */
+	    the last data character and the Symbol Check Character" (GS1 Specification) */
 
-	/* Linkage flags in GS1-128 are determined by ISO/IEC 24723 section 7.4 */
+        /* Linkage flags in GS1-128 are determined by ISO/IEC 24723 section 7.4 */
 
-	switch(compositeMode) {
+        switch (compositeMode) {
             case CCA:
             case CCB:
                 /* CC-A or CC-B 2D component */
@@ -653,15 +649,15 @@ public class Code128 extends Symbol {
                 break;
             default:
                 break;
-	}
+        }
 
-	if(linkage_flag != 0) {
+        if (linkage_flag != 0) {
             dest += CODE128_TABLE[linkage_flag];
             values[bar_characters] = linkage_flag;
             bar_characters++;
-	}
+        }
 
-        /* check digit calculation */
+        /* Check digit calculation */
         for (i = 0; i < bar_characters; i++) {
             if (i > 0) {
                 values[i] *= i;
@@ -699,7 +695,9 @@ public class Code128 extends Symbol {
             row_height[0] = 1;
             row_height[1] = -1;
         }
+
         plotSymbol();
+
         return true;
     }
 

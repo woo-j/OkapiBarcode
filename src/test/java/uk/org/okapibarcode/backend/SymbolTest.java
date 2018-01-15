@@ -53,6 +53,7 @@ import com.google.zxing.Result;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.oned.CodaBarReader;
+import com.google.zxing.oned.Code128Reader;
 import com.google.zxing.oned.Code39Reader;
 import com.google.zxing.oned.Code93Reader;
 import com.google.zxing.oned.EAN13Reader;
@@ -217,8 +218,8 @@ public class SymbolTest {
             BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
             Map< DecodeHintType, Boolean > hints = Collections.singletonMap(DecodeHintType.PURE_BARCODE, Boolean.TRUE);
             Result result = zxingReader.decode(bitmap, hints);
-            String zxingData = removeChecksum(result.getText(), symbol);
-            String okapiData = removeStartStopChars(symbol.getContent(), symbol);
+            String zxingData = massageZXingData(result.getText(), symbol);
+            String okapiData = massageOkapiData(symbol.getContent(), symbol);
             assertEquals("checking against ZXing results", okapiData, zxingData);
         }
     }
@@ -235,6 +236,8 @@ public class SymbolTest {
             return new Code93Reader();
         } else if (symbol instanceof Code3Of9) {
             return new Code39Reader();
+        } else if (symbol instanceof Code128) {
+            return new Code128Reader();
         } else if (symbol instanceof Codabar) {
             return new CodaBarReader();
         } else if (symbol instanceof QrCode) {
@@ -265,32 +268,35 @@ public class SymbolTest {
     }
 
     /**
-     * Removes the checksum from the specified barcode content, according to the type of symbol that encoded the content.
+     * Massages ZXing barcode reading results to make them easier to check against Okapi data.
      *
      * @param s the barcode content
      * @param symbol the symbol which encoded the content
-     * @return the barcode content, without the checksum
+     * @return the massaged barcode content
      */
-    private static String removeChecksum(String s, Symbol symbol) {
+    private static String massageZXingData(String s, Symbol symbol) {
         if (symbol instanceof Ean || symbol instanceof Upc) {
+            // remove the checksum from the barcode content
             return s.substring(0, s.length() - 1);
         } else {
+            // no massaging
             return s;
         }
     }
 
     /**
-     * Removes the start/stop characters from the specified barcode content, according to the type of symbol that encoded the
-     * content.
+     * Massages Okapi barcode content to make it easier to check against ZXing output.
      *
      * @param s the barcode content
      * @param symbol the symbol which encoded the content
-     * @return the barcode content, without the start/stop characters
+     * @return the massaged barcode content
      */
-    private static String removeStartStopChars(String s, Symbol symbol) {
+    private static String massageOkapiData(String s, Symbol symbol) {
         if (symbol instanceof Codabar) {
+            // remove the start/stop characters from the specified barcode content
             return s.substring(1, s.length() - 1);
         } else {
+            // no massaging
             return s;
         }
     }

@@ -295,6 +295,12 @@ public class SymbolTest {
         if (symbol instanceof Codabar) {
             // remove the start/stop characters from the specified barcode content
             return s.substring(1, s.length() - 1);
+        } else if (symbol instanceof Code128) {
+            // remove function characters, since ZXing mostly ignores them during read
+            return s.replaceAll("[" + Code128.FNC1 + "]", "")
+                    .replaceAll("[" + Code128.FNC2 + "]", "")
+                    .replaceAll("[" + Code128.FNC3 + "]", "")
+                    .replaceAll("[" + Code128.FNC4 + "]", "");
         } else {
             // no massaging
             return s;

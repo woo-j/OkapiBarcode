@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Robin Stuart
+ * Copyright 2014-2018 Robin Stuart, Daniel Gredler
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,11 @@ package uk.org.okapibarcode.backend;
 
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.CharsetEncoder;
+import java.nio.charset.CoderResult;
+
 /**
  * Implements Code 128 bar code symbology
  * According to ISO/IEC 15417:2007
@@ -25,8 +30,37 @@ import static java.nio.charset.StandardCharsets.ISO_8859_1;
  * Setting GS1 mode allows encoding in GS1-128 (also known as UPC/EAN-128).
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
+ * @author Daniel Gredler
  */
 public class Code128 extends Symbol {
+
+    /**
+     * The function 1 command character. This character can be used in data sent to {@link #setContent(String)} in
+     * order to insert a function 1 command. This placeholder is not a valid ISO-8859-1 character, so it does not
+     * conflict with other valid Code128 data characters.
+     */
+    public static final char FNC1 = '\u0101';
+
+    /**
+     * The function 2 command character. This character can be used in data sent to {@link #setContent(String)} in
+     * order to insert a function 2 command. This placeholder is not a valid ISO-8859-1 character, so it does not
+     * conflict with other valid Code128 data characters.
+     */
+    public static final char FNC2 = '\u0113';
+
+    /**
+     * The function 3 command character. This character can be used in data sent to {@link #setContent(String)} in
+     * order to insert a function 3 command. This placeholder is not a valid ISO-8859-1 character, so it does not
+     * conflict with other valid Code128 data characters.
+     */
+    public static final char FNC3 = '\u012B';
+
+    /**
+     * The function 4 command character. This character can be used in data sent to {@link #setContent(String)} in
+     * order to insert a function 4 command. This placeholder is not a valid ISO-8859-1 character, so it does not
+     * conflict with other valid Code128 data characters.
+     */
+    public static final char FNC4 = '\u014D';
 
     private enum Mode {
         NULL, SHIFTA, LATCHA, SHIFTB, LATCHB, SHIFTC, LATCHC, AORB, ABORC
@@ -110,7 +144,6 @@ public class Code128 extends Symbol {
         int c;
         String dest = "";
         int[] inputData;
-        int c_count;
         int linkage_flag = 0;
 
         index_point = 0;
@@ -124,16 +157,10 @@ public class Code128 extends Symbol {
             mode_length[i] = 0;
         }
 
-        if (!ISO_8859_1.newEncoder().canEncode(content)) {
+        inputData = encode(content, inputDataType);
+        if (inputData == null) {
             error_msg = "Invalid characters in input data";
             return false;
-        }
-
-        inputBytes = content.getBytes(ISO_8859_1);
-
-        inputData = new int[sourcelen];
-        for (i = 0; i < sourcelen; i++) {
-            inputData[i] = inputBytes[i] & 0xFF;
         }
 
         FMode[] fset = new FMode[200];
@@ -146,7 +173,8 @@ public class Code128 extends Symbol {
 
         /* Detect extended ASCII characters */
         for (i = 0; i < sourcelen; i++) {
-            if (inputData[i] >= 128) {
+            int ch = inputData[i];
+            if (ch >= 128 && ch != FNC1 && ch != FNC2 && ch != FNC3 && ch != FNC4) {
                 fset[i] = FMode.SHIFTF;
             } else {
                 fset[i] = FMode.LATCHN;
@@ -192,24 +220,9 @@ public class Code128 extends Symbol {
         mode = findSubset(inputData[input_point]);
         mode_type[0] = mode;
         mode_length[0] = 1;
-
-        if(inputDataType == DataType.GS1) {
-            mode = Mode.ABORC;
-        }
-
-        if((modeCSupression) && (mode == Mode.ABORC)) {
-            mode = Mode.AORB;
-        }
-
         for (i = 1; i < sourcelen; i++) {
             last_mode = mode;
             mode = findSubset(inputData[i]);
-            if((inputDataType == DataType.GS1) && inputData[i] == '[') {
-                mode = Mode.ABORC;
-            }
-            if((modeCSupression) && (mode == Mode.ABORC)) {
-                mode = Mode.AORB;
-            }
             if (mode == last_mode) {
                 mode_length[index_point]++;
             } else {
@@ -219,91 +232,32 @@ public class Code128 extends Symbol {
             }
         }
         index_point++;
-
         reduceSubsetChanges();
 
-        if (inputDataType == DataType.GS1) {
-
-            /* Put set data into set[] */
-            read = 0;
-            for(i = 0; i < index_point; i++) {
-                for(j = 0; j < mode_length[i]; j++) {
-                        set[read] = mode_type[i];
-                    read++;
-                }
-            }
-
-            /* Resolve odd length LATCHC blocks */
-            c_count = 0;
-            for (i = 0; i < read; i++) {
-                if (set[i] == Mode.LATCHC) {
-                    if (inputData[i] == '[') {
-                        if ((c_count & 1) != 0) {
-                            if ((i - c_count) != 0) {
-                                set[i - c_count] = Mode.LATCHB;
-                            } else {
-                                set[i - 1] = Mode.LATCHB;
-                            }
-                        }
-                        c_count = 0;
-                    } else {
-                        c_count++;
-                    }
-                } else {
-                    if ((c_count & 1) != 0) {
-                        if ((i - c_count) != 0) {
-                            set[i - c_count] = Mode.LATCHB;
-                        } else {
-                            set[i - 1] = Mode.LATCHB;
-                        }
-                    }
-                    c_count = 0;
-                }
-            }
-            if ((c_count & 1) != 0) {
-                if ((i - c_count) != 0) {
-                    set[i - c_count] = Mode.LATCHB;
-                } else {
-                    set[i - 1] = Mode.LATCHB;
-                }
-            }
-            for (i = 1; i < read - 1; i++) {
-                if ((set[i] == Mode.LATCHC) && ((set[i - 1] == Mode.LATCHB) && (set[i + 1] == Mode.LATCHB))) {
-                    set[i] = Mode.LATCHB;
-                }
-            }
-
-        } else {
-
-            /* Resolve odd length LATCHC blocks */
-            if ((mode_type[0] == Mode.LATCHC) && ((mode_length[0] & 1) != 0)) {
-                /* Rule 2 */
-                mode_length[1]++;
-                mode_length[0]--;
-                if (index_point == 1) {
-                    mode_length[1] = 1;
-                    mode_type[1] = Mode.LATCHB;
-                    index_point = 2;
-                }
-            }
-            if (index_point > 1) {
-                for (i = 1; i < index_point; i++) {
-                    if ((mode_type[i] == Mode.LATCHC) && ((mode_length[i] & 1) != 0)) {
-                        /* Rule 3b */
-                        mode_length[i - 1]++;
-                        mode_length[i]--;
-                    }
-                }
-            }
-
-            /* Put set data into set[] */
-            for (i = 0; i < index_point; i++) {
-                for (j = 0; j < mode_length[i]; j++) {
-                    set[read] = mode_type[i];
-                    read++;
-                }
+        /* Put set data into set[] */
+        read = 0;
+        for (i = 0; i < index_point; i++) {
+            for (j = 0; j < mode_length[i]; j++) {
+                set[read] = mode_type[i];
+                read++;
             }
         }
+
+        /* Resolve odd length LATCHC blocks */
+        int cs = 0, nums = 0;
+        for (i = 0; i < read; i++) {
+            if (set[i] == Mode.LATCHC) {
+                cs++;
+                if (inputData[i] >= '0' && inputData[i] <= '9') {
+                    nums++;
+                }
+            } else {
+                resolveOddCs(set, i, cs, nums);
+                cs = 0;
+                nums = 0;
+            }
+        }
+        resolveOddCs(set, i, cs, nums);
 
         /* Adjust for strings which start with shift characters - make them latch instead */
         if (set[0] == Mode.SHIFTA) {
@@ -313,7 +267,6 @@ public class Code128 extends Symbol {
                 i++;
             } while (set[i] == Mode.SHIFTA);
         }
-
         if (set[0] == Mode.SHIFTB) {
             i = 0;
             do {
@@ -351,7 +304,7 @@ public class Code128 extends Symbol {
                 }
             }
             if (set[i] == Mode.LATCHC) {
-                if ((inputDataType == DataType.GS1) && (inputData[i] == '[')) {
+                if (inputData[i] == FNC1) {
                     glyph_count += 1.0;
                 } else {
                     glyph_count += 0.5;
@@ -557,20 +510,31 @@ public class Code128 extends Symbol {
                 bar_characters++;
             }
 
-            if (!((inputDataType == DataType.GS1) && (inputData[read] == '['))) {
-                /* Encode data characters */
-                c = inputData[read];
-                switch (set[read]) {
-                    case SHIFTA:
-                    case LATCHA:
-                        if (c > 127) {
-                            if (c < 160) {
-                                dest += CODE128_TABLE[(c - 128) + 64];
-                                values[bar_characters] = (c - 128) + 64;
-                            } else {
-                                dest += CODE128_TABLE[(c - 128) - 32];
-                                values[bar_characters] = (c - 128) - 32;
-                            }
+            /* Encode data characters */
+            c = inputData[read];
+            switch (set[read]) {
+                case SHIFTA:
+                case LATCHA:
+                    if (c == FNC1) {
+                        dest += CODE128_TABLE[102];
+                        values[bar_characters] = 102;
+                        encodeInfo += "FNC1 ";
+                    } else if (c == FNC2) {
+                        dest += CODE128_TABLE[97];
+                        values[bar_characters] = 97;
+                        encodeInfo += "FNC2 ";
+                    } else if (c == FNC3) {
+                        dest += CODE128_TABLE[96];
+                        values[bar_characters] = 96;
+                        encodeInfo += "FNC3 ";
+                    } else if (c == FNC4) {
+                        dest += CODE128_TABLE[101];
+                        values[bar_characters] = 101;
+                        encodeInfo += "FNC4 ";
+                    } else if (c > 127) {
+                        if (c < 160) {
+                            dest += CODE128_TABLE[(c - 128) + 64];
+                            values[bar_characters] = (c - 128) + 64;
                         } else {
                             if (c < 32) {
                                 dest += CODE128_TABLE[c + 64];
@@ -581,41 +545,66 @@ public class Code128 extends Symbol {
                             }
                         }
                         encodeInfo += Integer.toString(values[bar_characters]) + " ";
-                        bar_characters++;
-                        read++;
-                        break;
-                    case SHIFTB:
-                    case LATCHB:
-                        if (c > 127) {
-                            dest += CODE128_TABLE[c - 32 - 128];
-                            values[bar_characters] = c - 32 - 128;
+                    } else {
+                        if (c < 32) {
+                            dest += CODE128_TABLE[c + 64];
+                            values[bar_characters] = c + 64;
                         } else {
                             dest += CODE128_TABLE[c - 32];
                             values[bar_characters] = c - 32;
                         }
                         encodeInfo += Integer.toString(values[bar_characters]) + " ";
+                    }
+                    bar_characters++;
+                    read++;
+                    break;
+                case SHIFTB:
+                case LATCHB:
+                    if (c == FNC1) {
+                        dest += CODE128_TABLE[102];
+                        values[bar_characters] = 102;
+                        encodeInfo += "FNC1 ";
+                    } else if (c == FNC2) {
+                        dest += CODE128_TABLE[97];
+                        values[bar_characters] = 97;
+                        encodeInfo += "FNC2 ";
+                    } else if (c == FNC3) {
+                        dest += CODE128_TABLE[96];
+                        values[bar_characters] = 96;
+                        encodeInfo += "FNC3 ";
+                    } else if (c == FNC4) {
+                        dest += CODE128_TABLE[100];
+                        values[bar_characters] = 100;
+                        encodeInfo += "FNC4 ";
+                    } else if (c > 127) {
+                        dest += CODE128_TABLE[c - 32 - 128];
+                        values[bar_characters] = c - 32 - 128;
+                        encodeInfo += Integer.toString(values[bar_characters]) + " ";
+                    } else {
+                        dest += CODE128_TABLE[c - 32];
+                        values[bar_characters] = c - 32;
+                        encodeInfo += Integer.toString(values[bar_characters]) + " ";
+                    }
+                    bar_characters++;
+                    read++;
+                    break;
+                case LATCHC:
+                    if (c == FNC1) {
+                        dest += CODE128_TABLE[102];
+                        values[bar_characters] = 102;
+                        encodeInfo += "FNC1 ";
                         bar_characters++;
                         read++;
-                        break;
-                    case LATCHC:
-                        int weight;
+                    } else {
                         int d = inputData[read + 1];
-
-                        weight = (10 * (c - '0')) + (d - '0');
+                        int weight = (10 * (c - '0')) + (d - '0');
                         dest += CODE128_TABLE[weight];
                         values[bar_characters] = weight;
                         encodeInfo += Integer.toString(values[bar_characters]) + " ";
                         bar_characters++;
                         read += 2;
-                        break;
-                }
-            } else {
-                // FNC1
-                dest += CODE128_TABLE[102];
-                values[bar_characters] = 102;
-                bar_characters++;
-                read++;
-                encodeInfo += "FNC1 ";
+                    }
+                    break;
             }
 
         } while (read < sourcelen);
@@ -671,12 +660,12 @@ public class Code128 extends Symbol {
         /* Stop character */
         dest += CODE128_TABLE[106];
 
-        if (!(inputDataType == DataType.GS1)) {
-            readable = content;
-        }
-
-        if (inputDataType == DataType.HIBC) {
-            readable = "*" + content + "*";
+        /* Readable text */
+        if (inputDataType != DataType.GS1) {
+            readable = content.replaceAll("[" + FNC1 + FNC2 + FNC3 + FNC4 + "]", "");
+            if (inputDataType == DataType.HIBC) {
+                readable = "*" + readable + "*";
+            }
         }
 
         if (compositeMode == Composite.OFF) {
@@ -701,7 +690,37 @@ public class Code128 extends Symbol {
         return true;
     }
 
+    private void resolveOddCs(Mode[] set, int i, int cs, int nums) {
+        if ((nums & 1) != 0) {
+            int index;
+            Mode m;
+            if (i - cs == 0) {
+                // Rule 2: first block -> swap last digit to A or B
+                index = i - 1;
+                if (index + 1 < set.length && set[index + 1] != null && set[index + 1] != Mode.LATCHC) {
+                    // next block is either A or B -- match it
+                    m = set[index + 1];
+                } else {
+                    // next block is C, or there is no next block -- just latch to B
+                    m = Mode.LATCHB;
+                }
+            } else {
+                // Rule 3b: subsequent block -> swap first digit to A or B
+                index = i - nums;
+                if (index - 1 >= 0 && set[index - 1] != null && set[index - 1] != Mode.LATCHC) {
+                    // previous block is either A or B -- match it
+                    m = set[index - 1];
+                } else {
+                    // previous block is C, or there is no previous block -- just latch to B
+                    m = Mode.LATCHB;
+                }
+            }
+            set[index] = m;
+        }
+    }
+
     private Mode findSubset(int letter) {
+
         Mode mode;
 
         if (letter <= 31) {
@@ -716,11 +735,59 @@ public class Code128 extends Symbol {
             mode = Mode.SHIFTA;
         } else if (letter <= 223) {
             mode = Mode.AORB;
+        } else if (letter == FNC1) {
+            mode = Mode.ABORC;
+        } else if (letter == FNC2 || letter == FNC3 || letter == FNC4) {
+            mode = Mode.AORB;
         } else {
             mode = Mode.SHIFTB;
         }
 
+        if (modeCSupression && mode == Mode.ABORC) {
+            mode = Mode.AORB;
+        }
+
         return mode;
+    }
+
+    private static int[] encode(String s, DataType dataType) {
+
+        int[] data = new int[s.length()];
+
+        byte[] ba = new byte[1];
+        ByteBuffer bb = ByteBuffer.wrap(ba);
+
+        char[] ca = new char[1];
+        CharBuffer cb = CharBuffer.wrap(ca);
+
+        CharsetEncoder encoder = ISO_8859_1.newEncoder();
+
+        for (int i = 0; i < data.length; i++) {
+            char c = s.charAt(i);
+            if (c == '[' && dataType == DataType.GS1) {
+                // treat GS1 '[' FNC1s the same as raw FNC1s
+                data[i] = FNC1;
+            } else if (c == FNC1 || c == FNC2 || c == FNC3 || c == FNC4) {
+                // a raw FNC command
+                data[i] = c;
+            } else if (encoder.canEncode(c)) {
+                // a valid ISO-8859-1 character (probably)
+                ca[0] = c;
+                CoderResult result = encoder.encode(cb, bb, false);
+                if (!result.isError()) {
+                    data[i] = ba[0] & 0xFF;
+                    cb.rewind();
+                    bb.rewind();
+                } else {
+                    return null;
+                }
+            } else {
+                // unrecognized / invalid character, abort
+                return null;
+            }
+        }
+
+        return data;
     }
 
     private void reduceSubsetChanges() { /* Implements rules from ISO 15417 Annex E */

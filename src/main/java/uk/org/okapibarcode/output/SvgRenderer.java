@@ -16,15 +16,29 @@
 
 package uk.org.okapibarcode.output;
 
-import uk.org.okapibarcode.backend.Hexagon;
-import uk.org.okapibarcode.backend.Symbol;
-import uk.org.okapibarcode.backend.TextBox;
-
-import java.awt.*;
+import java.awt.Color;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.StringWriter;
+
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Text;
+
+import uk.org.okapibarcode.backend.Hexagon;
+import uk.org.okapibarcode.backend.Symbol;
+import uk.org.okapibarcode.backend.TextBox;
 
 /**
  * Renders symbologies to SVG (Scalable Vector Graphics).
@@ -75,7 +89,7 @@ public class SvgRenderer implements SymbolRenderer {
         if (content == null || content.isEmpty()) {
             title = "OkapiBarcode Generated Symbol";
         } else {
-            title = content.replaceAll("[\u0000-\u001f]", "");
+            title = content;
         }
 
         String fgColour = String.format("%02X", ink.getRed())
@@ -96,7 +110,7 @@ public class SvgRenderer implements SymbolRenderer {
                   .append("\" height=\"").appendInt(height)
                   .append("\" version=\"1.1")
                   .append("\" xmlns=\"http://www.w3.org/2000/svg\">\n");
-            writer.append("   <desc>").append(title).append("</desc>\n");
+            writer.append("   <desc>").append(clean(title)).append("</desc>\n");
             writer.append("   <g id=\"barcode\" fill=\"#").append(fgColour).append("\">\n");
             writer.append("      <rect x=\"0\" y=\"0\" width=\"").appendInt(width)
                   .append("\" height=\"").appendInt(height)
@@ -118,10 +132,10 @@ public class SvgRenderer implements SymbolRenderer {
                 writer.append("      <text x=\"").append((text.x * magnification) + marginX)
                       .append("\" y=\"").append((text.y * magnification) + marginY)
                       .append("\" text-anchor=\"middle\"\n");
-                writer.append("         font-family=\"").append(symbol.getFontName())
+                writer.append("         font-family=\"").append(clean(symbol.getFontName()))
                       .append("\" font-size=\"").append(symbol.getFontSize() * magnification)
                       .append("\" fill=\"#").append(fgColour).append("\">\n");
-                writer.append("         ").append(text.text).append("\n");
+                writer.append("         ").append(clean(text.text)).append("\n");
                 writer.append("      </text>\n");
             }
 
@@ -159,6 +173,28 @@ public class SvgRenderer implements SymbolRenderer {
             // Footer
             writer.append("   </g>\n");
             writer.append("</svg>\n");
+        }
+    }
+
+    /** A bit convoluted, but we're trying to do it without adding an external dependency just for this... */
+    protected String clean(String s) {
+
+        // remove control characters
+        s = s.replaceAll("[\u0000-\u001f]", "");
+
+        // escape XML characters
+        try {
+            Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+            Text text = document.createTextNode(s);
+            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            DOMSource source = new DOMSource(text);
+            StringWriter writer = new StringWriter();
+            StreamResult result = new StreamResult(writer);
+            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+            transformer.transform(source, result);
+            return writer.toString();
+        } catch (ParserConfigurationException | TransformerException | TransformerFactoryConfigurationError e) {
+            return s;
         }
     }
 }

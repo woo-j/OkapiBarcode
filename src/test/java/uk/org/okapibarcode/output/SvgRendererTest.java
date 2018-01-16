@@ -99,6 +99,14 @@ public class SvgRendererTest {
         test(maxicode, 1, Color.WHITE, Color.BLACK, 5, "maxicode-basic.svg");
     }
 
+    @Test
+    public void testMaxiCodeWithNastyChars() throws IOException {
+        MaxiCode maxicode = new MaxiCode();
+        maxicode.setMode(4);
+        maxicode.setContent("x\u001dx>x<x/x&x");
+        test(maxicode, 1, Color.WHITE, Color.BLACK, 5, "maxicode-nasty-chars.svg");
+    }
+
     private void test(Symbol symbol, double magnification, Color paper, Color ink, int margin, String expectationFile) throws IOException {
 
         symbol.setQuietZoneHorizontal(margin);

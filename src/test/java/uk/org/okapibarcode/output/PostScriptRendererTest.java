@@ -32,6 +32,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import uk.org.okapibarcode.backend.Code93;
+import uk.org.okapibarcode.backend.HumanReadableAlignment;
 import uk.org.okapibarcode.backend.MaxiCode;
 import uk.org.okapibarcode.backend.Symbol;
 
@@ -59,6 +60,22 @@ public class PostScriptRendererTest {
         Code93 code93 = new Code93();
         code93.setContent("123456789");
         test(code93, 1, Color.WHITE, Color.BLACK, 5, "code93-basic.eps");
+    }
+
+    @Test
+    public void testCode93AlignmentLeft() throws IOException {
+        Code93 code93 = new Code93();
+        code93.setHumanReadableAlignment(HumanReadableAlignment.LEFT);
+        code93.setContent("123456789");
+        test(code93, 1, Color.WHITE, Color.BLACK, 5, "code93-alignment-left.eps");
+    }
+
+    @Test
+    public void testCode93AlignmentRight() throws IOException {
+        Code93 code93 = new Code93();
+        code93.setHumanReadableAlignment(HumanReadableAlignment.RIGHT);
+        code93.setContent("123456789");
+        test(code93, 1, Color.WHITE, Color.BLACK, 5, "code93-alignment-right.eps");
     }
 
     @Test

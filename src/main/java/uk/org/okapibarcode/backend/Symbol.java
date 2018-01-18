@@ -15,6 +15,7 @@
  */
 package uk.org.okapibarcode.backend;
 
+import static uk.org.okapibarcode.backend.HumanReadableAlignment.CENTER;
 import static uk.org.okapibarcode.backend.HumanReadableLocation.BOTTOM;
 import static uk.org.okapibarcode.backend.HumanReadableLocation.NONE;
 import static uk.org.okapibarcode.backend.HumanReadableLocation.TOP;
@@ -52,6 +53,7 @@ public abstract class Symbol {
     protected String fontName = "Helvetica";
     protected double fontSize = 8;
     protected HumanReadableLocation humanReadableLocation = BOTTOM;
+    protected HumanReadableAlignment humanReadableAlignment = CENTER;
     protected boolean readerInit;
     protected String encodeInfo = "";
     protected int eciMode = 3;
@@ -284,6 +286,24 @@ public abstract class Symbol {
      */
     public HumanReadableLocation getHumanReadableLocation() {
         return humanReadableLocation;
+    }
+
+    /**
+     * Sets the text alignment of the human-readable text (default value is {@link HumanReadableAlignment#CENTER}).
+     *
+     * @param humanReadableAlignment the text alignment of the human-readable text
+     */
+    public void setHumanReadableAlignment(HumanReadableAlignment humanReadableAlignment) {
+        this.humanReadableAlignment = humanReadableAlignment;
+    }
+
+    /**
+     * Returns the text alignment of the human-readable text.
+     *
+     * @return the text alignment of the human-readable text
+     */
+    public HumanReadableAlignment getHumanReadableAlignment() {
+        return humanReadableAlignment;
     }
 
     protected int positionOf(char thischar, char[] LookUp) {
@@ -611,8 +631,8 @@ public abstract class Symbol {
             } else {
                 baseline = getHeight() + fontSize;
             }
-            double centerX = getWidth() / 2.0;
-            texts.add(new TextBox(centerX, baseline, readable));
+            int width = getWidth();
+            texts.add(new TextBox(0, baseline, width, readable));
         }
     }
 

@@ -129,9 +129,27 @@ public class SvgRenderer implements SymbolRenderer {
             // Text
             for (int i = 0; i < symbol.texts.size(); i++) {
                 TextBox text = symbol.texts.get(i);
-                writer.append("      <text x=\"").append((text.x * magnification) + marginX)
+                double x;
+                String anchor;
+                switch (symbol.getHumanReadableAlignment()) {
+                    case LEFT:
+                        x = (magnification * text.x) + marginX;
+                        anchor = "start";
+                        break;
+                    case RIGHT:
+                        x = (magnification * text.x) + (magnification * text.width) + marginX;
+                        anchor = "end";
+                        break;
+                    case CENTER:
+                        x = (magnification * text.x) + (magnification * text.width / 2) + marginX;
+                        anchor = "middle";
+                        break;
+                    default:
+                        throw new IllegalStateException("Unknown alignment: " + symbol.getHumanReadableAlignment());
+                }
+                writer.append("      <text x=\"").append(x)
                       .append("\" y=\"").append((text.y * magnification) + marginY)
-                      .append("\" text-anchor=\"middle\"\n");
+                      .append("\" text-anchor=\"").append(anchor).append("\"\n");
                 writer.append("         font-family=\"").append(clean(symbol.getFontName()))
                       .append("\" font-size=\"").append(symbol.getFontSize() * magnification)
                       .append("\" fill=\"#").append(fgColour).append("\">\n");

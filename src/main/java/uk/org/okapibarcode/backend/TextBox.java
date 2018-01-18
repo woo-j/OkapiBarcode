@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2015 Robin Stuart, Daniel Gredler
+ * Copyright 2014-2018 Robin Stuart, Daniel Gredler
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,31 +24,36 @@ package uk.org.okapibarcode.backend;
  */
 public class TextBox {
 
-    /** X position that the text should be centered on horizontally. */
+    /** The X position of the text's left boundary. */
     public final double x;
 
-    /** Y position of the text baseline. */
+    /** The Y position of the text baseline. */
     public final double y;
 
-    /** Text value. */
+    /** The width of the text box. */
+    public final double width;
+
+    /** The text value. */
     public final String text;
 
     /**
      * Creates a new instance.
      *
-     * @param x the X position that the text should be centered on horizontally
+     * @param x the X position of the text's left boundary
      * @param y the Y position of the text baseline
+     * @param width the width of the text box
      * @param text the text value
      */
-    public TextBox(double x, double y, String text) {
+    public TextBox(double x, double y, double width, String text) {
         this.x = x;
         this.y = y;
+        this.width = width;
         this.text = text;
     }
 
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return "TextBox[x=" + x + ", y=" + y + ", text=" + text + "]";
+        return "TextBox[x=" + x + ", y=" + y + ", width=" + width + ", text=" + text + "]";
     }
 }

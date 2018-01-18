@@ -92,7 +92,20 @@ public class Java2DRenderer implements SymbolRenderer {
         FontMetrics fm = g2d.getFontMetrics();
         for (TextBox text : symbol.texts) {
             Rectangle2D bounds = fm.getStringBounds(text.text, g2d);
-            float x = (float) ((text.x * magnification) - (bounds.getWidth() / 2)) + marginX;
+            float x;
+            switch (symbol.getHumanReadableAlignment()) {
+                case LEFT:
+                    x = (float) ((magnification * text.x) + marginX);
+                    break;
+                case RIGHT:
+                    x = (float) ((magnification * text.x) + (magnification * text.width) - bounds.getWidth() + marginX);
+                    break;
+                case CENTER:
+                    x = (float) ((magnification * text.x) + (magnification * text.width / 2) - (bounds.getWidth() / 2) + marginX);
+                    break;
+                default:
+                    throw new IllegalStateException("Unknown alignment: " + symbol.getHumanReadableAlignment());
+            }
             float y = (float) (text.y * magnification) + marginY;
             g2d.drawString(text.text, x, y);
         }

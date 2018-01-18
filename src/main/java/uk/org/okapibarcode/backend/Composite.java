@@ -707,8 +707,9 @@ public class Composite extends Symbol {
         for (i = 0; i < linear_txt.size(); i++) {
             double x = linear_txt.get(i).x + bottom_shift;
             double y = linear_txt.get(i).y + symbol_height;
+            double width = linear_txt.get(i).width;
             String text = linear_txt.get(i).text;
-            TextBox lintxt = new TextBox(x, y, text);
+            TextBox lintxt = new TextBox(x, y, width, text);
             combine_txt.add(lintxt);
         }
 

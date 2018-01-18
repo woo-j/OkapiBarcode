@@ -505,8 +505,8 @@ public class UspsOneCode extends Symbol {
             } else {
                 baseline = getHeight() + fontSize;
             }
-            double centerX = getWidth() / 2.0;
-            texts.add(new TextBox(centerX, baseline, readable));
+            int width = getWidth();
+            texts.add(new TextBox(0, baseline, width, readable));
         }
     }
 }

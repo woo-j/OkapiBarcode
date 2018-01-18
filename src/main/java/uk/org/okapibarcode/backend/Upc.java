@@ -82,6 +82,11 @@ public class Upc extends Symbol {
     }
 
     @Override
+    public void setHumanReadableAlignment(HumanReadableAlignment humanReadableAlignment) {
+        throw new UnsupportedOperationException("UPC human-readable text alignment cannot be changed.");
+    }
+
+    @Override
     public void setHumanReadableLocation(HumanReadableLocation humanReadableLocation) {
         if (humanReadableLocation == TOP) {
             throw new IllegalArgumentException("Cannot display human-readable text above UPC bar codes.");
@@ -426,34 +431,28 @@ public class Upc extends Symbol {
             }
         }
 
-        symbol_height = default_height + 5;
+        symbol_height = default_height + 5; // TODO: wonky, images are taller than necessary
 
         /* Now add the text */
         if (humanReadableLocation != NONE) {
             double baseline = getHeight() + fontSize - shortLongDiff + compositeOffset;
             double addOnBaseline = 6.0 + compositeOffset;
             if (mode == Mode.UPCA) {
-                texts.add(new TextBox(3, baseline, readable.substring(0, 1)));
-                texts.add(new TextBox(34, baseline, readable.substring(1, 6)));
-                texts.add(new TextBox(73, baseline, readable.substring(6, 11)));
-                texts.add(new TextBox(104, baseline, readable.substring(11, 12)));
+                texts.add(new TextBox(0, baseline, 6, readable.substring(0, 1)));
+                texts.add(new TextBox(16, baseline, 36, readable.substring(1, 6)));
+                texts.add(new TextBox(55, baseline, 36, readable.substring(6, 11)));
+                texts.add(new TextBox(101, baseline, 6, readable.substring(11, 12)));
                 if (useAddOn) {
-                    if (addOnContent.length() == 2) {
-                        texts.add(new TextBox(118, addOnBaseline, addOnContent));
-                    } else {
-                        texts.add(new TextBox(133, addOnBaseline, addOnContent));
-                    }
+                    int width = (addOnContent.length() == 2 ? 20 : 47);
+                    texts.add(new TextBox(110, addOnBaseline, width, addOnContent));
                 }
             } else { // UPCE
-                texts.add(new TextBox(3, baseline, readable.substring(0, 1)));
-                texts.add(new TextBox(30, baseline, readable.substring(1, 7)));
-                texts.add(new TextBox(61, baseline, readable.substring(7, 8)));
+                texts.add(new TextBox(0, baseline, 6, readable.substring(0, 1)));
+                texts.add(new TextBox(9, baseline, 43, readable.substring(1, 7)));
+                texts.add(new TextBox(57, baseline, 6, readable.substring(7, 8)));
                 if (useAddOn) {
-                    if (addOnContent.length() == 2) {
-                        texts.add(new TextBox(75, addOnBaseline, addOnContent));
-                    } else {
-                        texts.add(new TextBox(90, addOnBaseline, addOnContent));
-                    }
+                    int width = (addOnContent.length() == 2 ? 20 : 47);
+                    texts.add(new TextBox(66, addOnBaseline, width, addOnContent));
                 }
             }
         }

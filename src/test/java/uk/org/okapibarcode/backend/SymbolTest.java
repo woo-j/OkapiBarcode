@@ -95,6 +95,9 @@ import com.google.zxing.qrcode.QRCodeReader;
 @RunWith(Parameterized.class)
 public class SymbolTest {
 
+    /** The directory to which barcode images (expected and actual) are saved when an image check fails. */
+    private static final File TEST_FAILURE_IMAGES_DIR = new File("build", "test-failure-images");
+
     /** The font used to render human-readable text when drawing the symbologies; allows for consistent results across operating systems. */
     private static final Font DEJA_VU_SANS;
 
@@ -207,9 +210,11 @@ public class SymbolTest {
         }
 
         // make sure the barcode images match
+        String dirName = pngFile.getName().substring(0, pngFile.getName().lastIndexOf('.'));
+        File failureDirectory = new File(TEST_FAILURE_IMAGES_DIR, dirName);
         BufferedImage expected = ImageIO.read(pngFile);
         BufferedImage actual = draw(symbol);
-        assertEqual(expected, actual);
+        assertEqual(expected, actual, failureDirectory);
 
         // if possible, ensure an independent third party (ZXing) can read the generated barcode and agrees on what it represents
         Reader zxingReader = findReader(symbol);
@@ -516,8 +521,10 @@ public class SymbolTest {
      *
      * @param expected the expected image to check against
      * @param actual the actual image
+     * @param failureDirectory the directory to save images to if the assertion fails
+     * @throws IOException if there is any I/O error
      */
-    private static void assertEqual(BufferedImage expected, BufferedImage actual) {
+    private static void assertEqual(BufferedImage expected, BufferedImage actual, File failureDirectory) throws IOException {
 
         int w = expected.getWidth();
         int h = expected.getHeight();
@@ -535,6 +542,9 @@ public class SymbolTest {
             int expectedPixel = expectedPixels[i];
             int actualPixel = actualPixels[i];
             if (expectedPixel != actualPixel) {
+                mkdirs(failureDirectory);
+                ImageIO.write(actual, "png", new File(failureDirectory, "actual.png"));
+                ImageIO.write(expected, "png", new File(failureDirectory, "expected.png"));
                 int x = i % w;
                 int y = i / w;
                 throw new ComparisonFailure("pixel at " + x + ", " + y, toHexString(expectedPixel), toHexString(actualPixel));
@@ -630,6 +640,9 @@ public class SymbolTest {
     @Parameters(name = "test {index}: {5}: {6}")
     public static List< Object[] > data() throws IOException {
 
+        clear(TEST_FAILURE_IMAGES_DIR);
+        mkdirs(TEST_FAILURE_IMAGES_DIR);
+
         String filter = System.getProperty("okapi.symbol.test");
 
         String backend = "uk.org.okapibarcode.backend";
@@ -654,5 +667,24 @@ public class SymbolTest {
         }
 
         return data;
+    }
+
+    private static void clear(File dir) {
+        if (dir.exists()) {
+            for (File file : dir.listFiles()) {
+                if (file.isDirectory()) {
+                    clear(file);
+                }
+                if (!file.delete()) {
+                    throw new OkapiException("Unable to delete file: " + file);
+                }
+            }
+        }
+    }
+
+    private static void mkdirs(File dir) {
+        if (!dir.exists() && !dir.mkdirs()) {
+            throw new OkapiException("Unable to create directory: " + dir);
+        }
     }
 }

@@ -34,7 +34,6 @@ import java.util.Set;
 
 import javax.imageio.ImageIO;
 
-import org.junit.Assert;
 import org.junit.ComparisonFailure;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -210,7 +209,9 @@ public class SymbolTest {
         }
 
         // make sure the barcode images match
-        String dirName = pngFile.getName().substring(0, pngFile.getName().lastIndexOf('.'));
+        String parentName = pngFile.getParentFile().getName();
+        String pngName = pngFile.getName();
+        String dirName = parentName + "-" + pngName.substring(0, pngName.lastIndexOf('.'));
         File failureDirectory = new File(TEST_FAILURE_IMAGES_DIR, dirName);
         BufferedImage expected = ImageIO.read(pngFile);
         BufferedImage actual = draw(symbol);
@@ -529,8 +530,15 @@ public class SymbolTest {
         int w = expected.getWidth();
         int h = expected.getHeight();
 
-        Assert.assertEquals("width", w, actual.getWidth());
-        Assert.assertEquals("height", h, actual.getHeight());
+        if (w != actual.getWidth()) {
+            writeImageFilesToFailureDirectory(expected, actual, failureDirectory);
+            throw new ComparisonFailure("image width", String.valueOf(w), String.valueOf(actual.getWidth()));
+        }
+
+        if (h != actual.getHeight()) {
+            writeImageFilesToFailureDirectory(expected, actual, failureDirectory);
+            throw new ComparisonFailure("image height", String.valueOf(h), String.valueOf(actual.getHeight()));
+        }
 
         int[] expectedPixels = new int[w * h];
         expected.getRGB(0, 0, w, h, expectedPixels, 0, w);
@@ -542,14 +550,19 @@ public class SymbolTest {
             int expectedPixel = expectedPixels[i];
             int actualPixel = actualPixels[i];
             if (expectedPixel != actualPixel) {
-                mkdirs(failureDirectory);
-                ImageIO.write(actual, "png", new File(failureDirectory, "actual.png"));
-                ImageIO.write(expected, "png", new File(failureDirectory, "expected.png"));
+                writeImageFilesToFailureDirectory(expected, actual, failureDirectory);
                 int x = i % w;
                 int y = i / w;
                 throw new ComparisonFailure("pixel at " + x + ", " + y, toHexString(expectedPixel), toHexString(actualPixel));
             }
         }
+    }
+
+    private static void writeImageFilesToFailureDirectory(BufferedImage expected, BufferedImage actual, File failureDirectory)
+        throws IOException {
+        mkdirs(failureDirectory);
+        ImageIO.write(actual, "png", new File(failureDirectory, "actual.png"));
+        ImageIO.write(expected, "png", new File(failureDirectory, "expected.png"));
     }
 
     /**

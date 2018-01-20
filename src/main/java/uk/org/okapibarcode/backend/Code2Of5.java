@@ -508,8 +508,7 @@ public class Code2Of5 extends Symbol {
             } else {
                 baseline = getHeight() + fontSize;
             }
-            int width = getWidth();
-            texts.add(new TextBox(0, baseline, width, readable));
+            texts.add(new TextBox(0, baseline, symbol_width, readable));
         }
     }
 

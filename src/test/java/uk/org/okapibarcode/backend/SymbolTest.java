@@ -238,12 +238,12 @@ public class SymbolTest {
      */
     private static Reader findReader(Symbol symbol) {
 
-        if (symbol instanceof Code93) {
+        if (symbol instanceof Code128 || symbol instanceof UspsPackage) {
+            return new Code128Reader();
+        } else if (symbol instanceof Code93) {
             return new Code93Reader();
         } else if (symbol instanceof Code3Of9) {
             return new Code39Reader();
-        } else if (symbol instanceof Code128) {
-            return new Code128Reader();
         } else if (symbol instanceof Codabar) {
             return new CodaBarReader();
         } else if (symbol instanceof QrCode) {
@@ -307,6 +307,9 @@ public class SymbolTest {
                     .replaceAll("[" + Code128.FNC2 + "]", "")
                     .replaceAll("[" + Code128.FNC3 + "]", "")
                     .replaceAll("[" + Code128.FNC4 + "]", "");
+        } else if (symbol instanceof UspsPackage) {
+            // remove AI brackets, since ZXing doesn't include them
+            return s.replaceAll("[\\[\\]]", "");
         } else {
             // no massaging
             return s;

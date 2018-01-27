@@ -24,7 +24,7 @@ import java.awt.geom.Rectangle2D;
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
-public class UspsPackage extends Symbol{
+public class UspsPackage extends Symbol {
 
     @Override
     public boolean encode() {
@@ -39,13 +39,13 @@ public class UspsPackage extends Symbol{
 
         if (!(content.matches("[0-9\\[\\]]+"))) {
             /* Input must be numeric only */
-            error_msg = "Invalid IMpd data";
+            error_msg = "Invalid IMpb data";
             return false;
         }
 
         if ((content.length() % 2) != 0) {
             /* Input must be even length */
-            error_msg = "Invalid IMpd data";
+            error_msg = "Invalid IMpb data";
             return false;
         }
 
@@ -132,5 +132,11 @@ public class UspsPackage extends Symbol{
 
         texts.add(new TextBox(0, getHeight() - 6.0, symbol_width, readable));
         texts.add(new TextBox(0, 12.0, symbol_width, banner));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected int[] getCodewords() {
+        return getPatternAsCodewords(6);
     }
 }

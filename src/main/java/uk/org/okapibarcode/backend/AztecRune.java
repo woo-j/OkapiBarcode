@@ -26,7 +26,7 @@ package uk.org.okapibarcode.backend;
  */
 public class AztecRune extends Symbol {
 
-    private int[] bitPlacementMap = {
+    private static final int[] BIT_PLACEMENT_MAP = {
          1, 1, 2, 3, 4, 5, 6, 7, 8, 0, 1,
          1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
         29, 1, 0, 0, 0, 0, 0, 0, 0, 1, 9,
@@ -163,14 +163,14 @@ public class AztecRune extends Symbol {
         row_height = new int[11];
         for (row = 0; row < 11; row++) {
             for (column = 0; column < 11; column++) {
-                if (bitPlacementMap[(row * 11) + column] == 1) {
+                if (BIT_PLACEMENT_MAP[(row * 11) + column] == 1) {
                     rowBinary += "1";
                 }
-                if (bitPlacementMap[(row * 11) + column] == 0) {
+                if (BIT_PLACEMENT_MAP[(row * 11) + column] == 0) {
                     rowBinary += "0";
                 }
-                if (bitPlacementMap[(row * 11) + column] >= 2) {
-                    rowBinary += reversedBinaryDataStream.charAt(bitPlacementMap[(row * 11) + column] - 2);
+                if (BIT_PLACEMENT_MAP[(row * 11) + column] >= 2) {
+                    rowBinary += reversedBinaryDataStream.charAt(BIT_PLACEMENT_MAP[(row * 11) + column] - 2);
                 }
             }
             pattern[row] = bin2pat(rowBinary);

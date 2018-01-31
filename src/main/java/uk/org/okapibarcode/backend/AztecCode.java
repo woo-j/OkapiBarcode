@@ -561,9 +561,6 @@ public class AztecCode extends Symbol {
         return output;
     }
 
-    int inputByteLength;
-    String binary_string;
-
     @Override
     public boolean encode() {
         int i, ecc_level, data_length, layers, data_maxsize;
@@ -582,11 +579,11 @@ public class AztecCode extends Symbol {
         String bin;
         int t;
         boolean done;
-        
+
         if (readerInit) {
             comp_loop = 1;
         }
-        
+
         eciProcess(); // Get ECI mode
 
         if ((inputDataType == DataType.GS1) && (readerInit)) {
@@ -594,7 +591,8 @@ public class AztecCode extends Symbol {
             return false;
         }
 
-        if (!generateAztecBinary()) {
+        String binaryString = generateAztecBinary();
+        if (binaryString == null) {
             error_msg = "Input too long or too many extended ASCII characters";
             return false;
         }
@@ -606,7 +604,7 @@ public class AztecCode extends Symbol {
             ecc_level = preferredEccLevel;
         }
 
-        data_length = binary_string.length();
+        data_length = binaryString.length();
 
         layers = 0; /* Keep compiler happy! */
 
@@ -725,7 +723,7 @@ public class AztecCode extends Symbol {
 
                         /* Discover how many '1's in current codeword */
                         for (t = 0; t < (codeword_size - 1); t++) {
-                            if (binary_string.charAt((i - (codeword_size - 1)) + t) == '1') {
+                            if (binaryString.charAt((i - (codeword_size - 1)) + t) == '1') {
                                 count++;
                             }
                         }
@@ -743,12 +741,12 @@ public class AztecCode extends Symbol {
                         }
 
                         if (!done) {
-                            adjusted_string += binary_string.charAt(i);
+                            adjusted_string += binaryString.charAt(i);
                             j++;
                             i++;
                         }
                     } else {
-                        adjusted_string += binary_string.charAt(i);
+                        adjusted_string += binaryString.charAt(i);
                         j++;
                         i++;
                     }
@@ -832,7 +830,7 @@ public class AztecCode extends Symbol {
 
                     /* Discover how many '1's in current codeword */
                     for (t = 0; t < (codeword_size - 1); t++) {
-                        if (binary_string.charAt((i - (codeword_size - 1)) + t) == '1') {
+                        if (binaryString.charAt((i - (codeword_size - 1)) + t) == '1') {
                             count++;
                         }
                     }
@@ -850,16 +848,16 @@ public class AztecCode extends Symbol {
                     }
 
                     if (!done) {
-                        adjusted_string += binary_string.charAt(i);
+                        adjusted_string += binaryString.charAt(i);
                         j++;
                         i++;
                     }
                 } else {
-                    adjusted_string += binary_string.charAt(i);
+                    adjusted_string += binaryString.charAt(i);
                     j++;
                     i++;
                 }
-            } while (i < binary_string.length());
+            } while (i < binaryString.length());
 
             adjusted_length = adjusted_string.length();
             remainder = adjusted_length % codeword_size;
@@ -1226,7 +1224,8 @@ public class AztecCode extends Symbol {
         return true;
     }
 
-    private boolean generateAztecBinary() {
+    private String generateAztecBinary() {
+
         /* Encode input data into a binary string */
         int i, j, k, bytes;
         int curtable, newtable, lasttable, chartype, maplength, blocks;
@@ -1249,32 +1248,32 @@ public class AztecCode extends Symbol {
 
         if (eciMode != 3) {
             int flagNumber;
-            
+
             charmap[maplength] = 0; // FLG
             typemap[maplength++] = 8; // PUNC
-            
+
             flagNumber = 6;
-            
+
             if (eciMode < 100000) {
                 flagNumber = 5;
             }
-            
+
             if (eciMode < 10000) {
                 flagNumber = 4;
             }
-            
+
             if (eciMode < 1000) {
                 flagNumber = 3;
             }
-            
+
             if (eciMode < 100) {
                 flagNumber = 2;
             }
-            
+
             if (eciMode < 10) {
                 flagNumber = 1;
             }
-            
+
             charmap[maplength] = 400 + flagNumber;
             typemap[maplength++] = 8; // PUNC
         }
@@ -1296,7 +1295,7 @@ public class AztecCode extends Symbol {
                 }
             }
         }
-        
+
         /* Look for double character encoding possibilities */
         i = 0;
         do {
@@ -1426,11 +1425,11 @@ public class AztecCode extends Symbol {
                     blockType[i] = 1;
                 }
             }
-            
+
             /* if less than 4 characters are preceeded and followed by binary blocks
                then it is more efficient to also encode these in binary
             */
-            
+
 //            for (i = 1; i < blocks - 1; i++) {
 //                if ((blockType[i - 1] == 32) && (blockLength[i] < 4)) {
 //                    int nonBinaryLength = blockLength[i];
@@ -1525,24 +1524,25 @@ public class AztecCode extends Symbol {
                 }
             }
         }
-        
+
 //        if (debug) {
 //            System.out.printf("Charmap: ");
 //            for (i = 0; i < maplength; i++) {
 //                System.out.printf("%d ", charmap[i]);
 //            }
 //            System.out.printf("\n");
-//            
+//
 //            System.out.printf("Typemap: ");
 //            for (i = 0; i < maplength; i++) {
 //                System.out.printf("%d ", typemap[i]);
 //            }
 //            System.out.printf("\n");
 //        }
-        binary_string = "";
+
+        StringBuilder binaryString = new StringBuilder();
 
         encodeInfo += "Encoding: ";
-        
+
         curtable = 1; /* start with 1 table */
 
         lasttable = 1;
@@ -1563,24 +1563,24 @@ public class AztecCode extends Symbol {
                             switch (curtable) {
                                 case 2:
                                     /* US */
-                                    binary_string += pentbit[28];
+                                    binaryString.append(pentbit[28]);
                                     encodeInfo += "US ";
                                     break;
                                 case 4:
                                     /* UL */
-                                    binary_string += pentbit[29];
+                                    binaryString.append(pentbit[29]);
                                     encodeInfo += "UL ";
                                     newtable = 1;
                                     break;
                                 case 8:
                                     /* UL */
-                                    binary_string += pentbit[31];
+                                    binaryString.append(pentbit[31]);
                                     encodeInfo += "UL ";
                                     newtable = 1;
                                     break;
                                 case 16:
                                     /* US */
-                                    binary_string += quadbit[15];
+                                    binaryString.append(quadbit[15]);
                                     encodeInfo += "US ";
                                     break;
                             }
@@ -1590,29 +1590,29 @@ public class AztecCode extends Symbol {
                             switch (curtable) {
                                 case 1:
                                     /* LL */
-                                    binary_string += pentbit[28];
+                                    binaryString.append(pentbit[28]);
                                     encodeInfo += "LL ";
                                     newtable = 2;
                                     break;
                                 case 4:
                                     /* LL */
-                                    binary_string += pentbit[28];
+                                    binaryString.append(pentbit[28]);
                                     encodeInfo += "LL ";
                                     newtable = 2;
                                     break;
                                 case 8:
                                     /* UL LL */
-                                    binary_string += pentbit[31];
+                                    binaryString.append(pentbit[31]);
                                     encodeInfo += "UL ";
-                                    binary_string += pentbit[28];
+                                    binaryString.append(pentbit[28]);
                                     encodeInfo += "LL ";
                                     newtable = 2;
                                     break;
                                 case 16:
                                     /* UL LL */
-                                    binary_string += quadbit[14];
+                                    binaryString.append(quadbit[14]);
                                     encodeInfo += "UL ";
-                                    binary_string += pentbit[28];
+                                    binaryString.append(pentbit[28]);
                                     encodeInfo += "LL ";
                                     newtable = 2;
                                     break;
@@ -1623,29 +1623,29 @@ public class AztecCode extends Symbol {
                             switch (curtable) {
                                 case 1:
                                     /* ML */
-                                    binary_string += pentbit[29];
+                                    binaryString.append(pentbit[29]);
                                     encodeInfo += "ML ";
                                     newtable = 4;
                                     break;
                                 case 2:
                                     /* ML */
-                                    binary_string += pentbit[29];
+                                    binaryString.append(pentbit[29]);
                                     encodeInfo += "ML ";
                                     newtable = 4;
                                     break;
                                 case 8:
                                     /* UL ML */
-                                    binary_string += pentbit[31];
+                                    binaryString.append(pentbit[31]);
                                     encodeInfo += "UL ";
-                                    binary_string += pentbit[29];
+                                    binaryString.append(pentbit[29]);
                                     encodeInfo += "ML ";
                                     newtable = 4;
                                     break;
                                 case 16:
                                     /* UL ML */
-                                    binary_string += quadbit[14];
+                                    binaryString.append(quadbit[14]);
                                     encodeInfo += "UL ";
-                                    binary_string += pentbit[29];
+                                    binaryString.append(pentbit[29]);
                                     encodeInfo += "ML ";
                                     newtable = 4;
                                     break;
@@ -1656,22 +1656,22 @@ public class AztecCode extends Symbol {
                             switch (curtable) {
                                 case 1:
                                     /* PS */
-                                    binary_string += pentbit[0];
+                                    binaryString.append(pentbit[0]);
                                     encodeInfo += "PS ";
                                     break;
                                 case 2:
                                     /* PS */
-                                    binary_string += pentbit[0];
+                                    binaryString.append(pentbit[0]);
                                     encodeInfo += "PS ";
                                     break;
                                 case 4:
                                     /* PS */
-                                    binary_string += pentbit[0];
+                                    binaryString.append(pentbit[0]);
                                     encodeInfo += "PS ";
                                     break;
                                 case 16:
                                     /* PS */
-                                    binary_string += quadbit[0];
+                                    binaryString.append(quadbit[0]);
                                     encodeInfo += "PS ";
                                     break;
                             }
@@ -1681,29 +1681,29 @@ public class AztecCode extends Symbol {
                             switch (curtable) {
                                 case 1:
                                     /* DL */
-                                    binary_string += pentbit[30];
+                                    binaryString.append(pentbit[30]);
                                     encodeInfo += "DL ";
                                     newtable = 16;
                                     break;
                                 case 2:
                                     /* DL */
-                                    binary_string += pentbit[30];
+                                    binaryString.append(pentbit[30]);
                                     encodeInfo += "DL ";
                                     newtable = 16;
                                     break;
                                 case 4:
                                     /* UL DL */
-                                    binary_string += pentbit[29];
+                                    binaryString.append(pentbit[29]);
                                     encodeInfo += "UL ";
-                                    binary_string += pentbit[30];
+                                    binaryString.append(pentbit[30]);
                                     encodeInfo += "DL ";
                                     newtable = 16;
                                     break;
                                 case 8:
                                     /* UL DL */
-                                    binary_string += pentbit[31];
+                                    binaryString.append(pentbit[31]);
                                     encodeInfo += "UL ";
-                                    binary_string += pentbit[30];
+                                    binaryString.append(pentbit[30]);
                                     encodeInfo += "DL ";
                                     newtable = 16;
                                     break;
@@ -1718,27 +1718,27 @@ public class AztecCode extends Symbol {
                             switch (curtable) {
                                 case 2:
                                     /* ML UL */
-                                    binary_string += pentbit[29];
+                                    binaryString.append(pentbit[29]);
                                     encodeInfo += "ML ";
-                                    binary_string += pentbit[29];
+                                    binaryString.append(pentbit[29]);
                                     encodeInfo += "UL ";
                                     newtable = 1;
                                     break;
                                 case 4:
                                     /* UL */
-                                    binary_string += pentbit[29];
+                                    binaryString.append(pentbit[29]);
                                     encodeInfo += "UL ";
                                     newtable = 1;
                                     break;
                                 case 8:
                                     /* UL */
-                                    binary_string += pentbit[31];
+                                    binaryString.append(pentbit[31]);
                                     encodeInfo += "UL ";
                                     newtable = 1;
                                     break;
                                 case 16:
                                     /* UL */
-                                    binary_string += quadbit[14];
+                                    binaryString.append(quadbit[14]);
                                     encodeInfo += "UL ";
                                     newtable = 1;
                                     break;
@@ -1749,29 +1749,29 @@ public class AztecCode extends Symbol {
                             switch (curtable) {
                                 case 1:
                                     /* LL */
-                                    binary_string += pentbit[28];
+                                    binaryString.append(pentbit[28]);
                                     encodeInfo += "LL ";
                                     newtable = 2;
                                     break;
                                 case 4:
                                     /* LL */
-                                    binary_string += pentbit[28];
+                                    binaryString.append(pentbit[28]);
                                     encodeInfo += "LL ";
                                     newtable = 2;
                                     break;
                                 case 8:
                                     /* UL LL */
-                                    binary_string += pentbit[31];
+                                    binaryString.append(pentbit[31]);
                                     encodeInfo += "UL ";
-                                    binary_string += pentbit[28];
+                                    binaryString.append(pentbit[28]);
                                     encodeInfo += "LL ";
                                     newtable = 2;
                                     break;
                                 case 16:
                                     /* UL LL */
-                                    binary_string += quadbit[14];
+                                    binaryString.append(quadbit[14]);
                                     encodeInfo += "UL ";
-                                    binary_string += pentbit[28];
+                                    binaryString.append(pentbit[28]);
                                     encodeInfo += "LL ";
                                     newtable = 2;
                                     break;
@@ -1782,29 +1782,29 @@ public class AztecCode extends Symbol {
                             switch (curtable) {
                                 case 1:
                                     /* ML */
-                                    binary_string += pentbit[29];
+                                    binaryString.append(pentbit[29]);
                                     encodeInfo += "ML ";
                                     newtable = 4;
                                     break;
                                 case 2:
                                     /* ML */
-                                    binary_string += pentbit[29];
+                                    binaryString.append(pentbit[29]);
                                     encodeInfo += "ML ";
                                     newtable = 4;
                                     break;
                                 case 8:
                                     /* UL ML */
-                                    binary_string += pentbit[31];
+                                    binaryString.append(pentbit[31]);
                                     encodeInfo += "UL ";
-                                    binary_string += pentbit[29];
+                                    binaryString.append(pentbit[29]);
                                     encodeInfo += "ML ";
                                     newtable = 4;
                                     break;
                                 case 16:
                                     /* UL ML */
-                                    binary_string += quadbit[14];
+                                    binaryString.append(quadbit[14]);
                                     encodeInfo += "UL ";
-                                    binary_string += pentbit[29];
+                                    binaryString.append(pentbit[29]);
                                     encodeInfo += "ML ";
                                     newtable = 4;
                                     break;
@@ -1815,33 +1815,33 @@ public class AztecCode extends Symbol {
                             switch (curtable) {
                                 case 1:
                                     /* ML PL */
-                                    binary_string += pentbit[29];
+                                    binaryString.append(pentbit[29]);
                                     encodeInfo += "ML ";
-                                    binary_string += pentbit[30];
+                                    binaryString.append(pentbit[30]);
                                     encodeInfo += "PL ";
                                     newtable = 8;
                                     break;
                                 case 2:
                                     /* ML PL */
-                                    binary_string += pentbit[29];
+                                    binaryString.append(pentbit[29]);
                                     encodeInfo += "ML ";
-                                    binary_string += pentbit[30];
+                                    binaryString.append(pentbit[30]);
                                     encodeInfo += "PL ";
                                     newtable = 8;
                                     break;
                                 case 4:
                                     /* PL */
-                                    binary_string += pentbit[30];
+                                    binaryString.append(pentbit[30]);
                                     encodeInfo += "PL ";
                                     newtable = 8;
                                     break;
                                 case 16:
                                     /* UL ML PL */
-                                    binary_string += quadbit[14];
+                                    binaryString.append(quadbit[14]);
                                     encodeInfo += "UL ";
-                                    binary_string += pentbit[29];
+                                    binaryString.append(pentbit[29]);
                                     encodeInfo += "ML ";
-                                    binary_string += pentbit[30];
+                                    binaryString.append(pentbit[30]);
                                     encodeInfo += "PL ";
                                     newtable = 8;
                                     break;
@@ -1852,29 +1852,29 @@ public class AztecCode extends Symbol {
                             switch (curtable) {
                                 case 1:
                                     /* DL */
-                                    binary_string += pentbit[30];
+                                    binaryString.append(pentbit[30]);
                                     encodeInfo += "DL ";
                                     newtable = 16;
                                     break;
                                 case 2:
                                     /* DL */
-                                    binary_string += pentbit[30];
+                                    binaryString.append(pentbit[30]);
                                     encodeInfo += "DL ";
                                     newtable = 16;
                                     break;
                                 case 4:
                                     /* UL DL */
-                                    binary_string += pentbit[29];
+                                    binaryString.append(pentbit[29]);
                                     encodeInfo += "UL ";
-                                    binary_string += pentbit[30];
+                                    binaryString.append(pentbit[30]);
                                     encodeInfo += "DL ";
                                     newtable = 16;
                                     break;
                                 case 8:
                                     /* UL DL */
-                                    binary_string += pentbit[31];
+                                    binaryString.append(pentbit[31]);
                                     encodeInfo += "UL ";
-                                    binary_string += pentbit[30];
+                                    binaryString.append(pentbit[30]);
                                     encodeInfo += "DL ";
                                     newtable = 16;
                                     break;
@@ -1886,36 +1886,36 @@ public class AztecCode extends Symbol {
                             switch (curtable) {
                                 case 1:
                                     /* BS */
-                                    binary_string += pentbit[31];
+                                    binaryString.append(pentbit[31]);
                                     encodeInfo += "BS ";
                                     newtable = 32;
                                     break;
                                 case 2:
                                     /* BS */
-                                    binary_string += pentbit[31];
+                                    binaryString.append(pentbit[31]);
                                     encodeInfo += "BS ";
                                     newtable = 32;
                                     break;
                                 case 4:
                                     /* BS */
-                                    binary_string += pentbit[31];
+                                    binaryString.append(pentbit[31]);
                                     encodeInfo += "BS ";
                                     newtable = 32;
                                     break;
                                 case 8:
                                     /* UL BS */
-                                    binary_string += pentbit[31];
+                                    binaryString.append(pentbit[31]);
                                     encodeInfo += "UL ";
-                                    binary_string += pentbit[31];
+                                    binaryString.append(pentbit[31]);
                                     encodeInfo += "BS ";
                                     lasttable = 1;
                                     newtable = 32;
                                     break;
                                 case 16:
                                     /* UL BS */
-                                    binary_string += quadbit[14];
+                                    binaryString.append(quadbit[14]);
                                     encodeInfo += "UL ";
-                                    binary_string += pentbit[31];
+                                    binaryString.append(pentbit[31]);
                                     encodeInfo += "BS ";
                                     lasttable = 1;
                                     newtable = 32;
@@ -1930,26 +1930,26 @@ public class AztecCode extends Symbol {
 
                             if (bytes > 2079) {
                                 error_msg = "Input too long";
-                                return false;
+                                return null;
                             }
 
                             if (bytes > 31) { /* Put 00000 followed by 11-bit number of bytes less 31 */
 
-                                binary_string += "00000";
+                                binaryString.append("00000");
                                 for (weight = 0x400; weight > 0; weight = weight >> 1) {
                                     if (((bytes - 31) & weight) != 0) {
-                                        binary_string += "1";
+                                        binaryString.append("1");
                                     } else {
-                                        binary_string += "0";
+                                        binaryString.append("0");
                                     }
                                 }
                             } else { /* Put 5-bit number of bytes */
 
                                 for (weight = 0x10; weight > 0; weight = weight >> 1) {
                                     if ((bytes & weight) != 0) {
-                                        binary_string += "1";
+                                        binaryString.append("1");
                                     } else {
-                                        binary_string += "0";
+                                        binaryString.append("0");
                                     }
                                 }
                             }
@@ -1971,26 +1971,26 @@ public class AztecCode extends Symbol {
                 case 8:
                     if (charmap[i] >= 400) {
                         encodeInfo += "FLG(" + Integer.toString(charmap[i] - 400) + ") ";
-                        binary_string += tribit[charmap[i] - 400];
+                        binaryString.append(tribit[charmap[i] - 400]);
                         if (charmap[i] != 400) {
                             /* ECI */
-                            binary_string += eciToBinary();
+                            binaryString.append(eciToBinary());
                         }
                     } else {
-                        binary_string += pentbit[charmap[i]];
+                        binaryString.append(pentbit[charmap[i]]);
                         encodeInfo += Integer.toString(charmap[i]) + " ";
                     }
                     break;
                 case 16:
-                    binary_string += quadbit[charmap[i]];
+                    binaryString.append(quadbit[charmap[i]]);
                     encodeInfo += Integer.toString(charmap[i]);
                     break;
                 case 32:
                     for (weight = 0x80; weight > 0; weight = weight >> 1) {
                         if ((charmap[i] & weight) != 0) {
-                            binary_string += "1";
+                            binaryString.append("1");
                         } else {
-                            binary_string += "0";
+                            binaryString.append("0");
                         }
                     }
                     encodeInfo += Integer.toString(charmap[i]);
@@ -1998,20 +1998,22 @@ public class AztecCode extends Symbol {
             }
 
         }
+
         encodeInfo += "\n";
-        return true;
+
+        return binaryString.toString();
     }
-    
+
     private String eciToBinary() {
         String binary = "";
         String eciNumber = Integer.toString(eciMode);
         int i;
-        
+
         for (i = 0; i < eciNumber.length(); i++) {
             binary += quadbit[(eciNumber.charAt(i) - '0') + 2];
             encodeInfo += Character.toString(eciNumber.charAt(i)) + " ";
         }
-        
+
         return binary;
     }
 }

@@ -23,7 +23,7 @@ import java.awt.geom.Rectangle2D;
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
-public class AustraliaPost extends Symbol{
+public class AustraliaPost extends Symbol {
 
     private static final char[] CHARACTER_SET = {
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D',
@@ -371,7 +371,8 @@ public class AustraliaPost extends Symbol{
 
             x += 2;
         }
-        symbol_width = pattern[0].length() * 3;
+
+        symbol_width = ((pattern[0].length() - 1) * 2) + 1; // no whitespace needed after the final bar
         symbol_height = 8;
     }
 }

@@ -49,6 +49,7 @@ import com.google.zxing.LuminanceSource;
 import com.google.zxing.Reader;
 import com.google.zxing.ReaderException;
 import com.google.zxing.Result;
+import com.google.zxing.aztec.AztecReader;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.oned.CodaBarReader;
@@ -246,6 +247,8 @@ public class SymbolTest {
             return new Code39Reader();
         } else if (symbol instanceof Codabar) {
             return new CodaBarReader();
+        } else if (symbol instanceof AztecCode) {
+            return new AztecReader();
         } else if (symbol instanceof QrCode) {
             return new QRCodeReader();
         } else if (symbol instanceof Ean) {

@@ -16,95 +16,89 @@
 package uk.org.okapibarcode.backend;
 
 /**
- * Implements Channel Code
- * According to ANSI/AIM BC12-1998
- * <p>
- * Channel code encodes whole integer values between 0 and 7,742,862.
+ * Implements Channel Code according to ANSI/AIM BC12-1998. Channel code encodes whole integer values
+ * between 0 and 7,742,862.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class ChannelCode extends Symbol {
+
     private int[] space = new int[11];
     private int[] bar = new int[11];
     private double currentValue;
     private double targetValue;
-    private String horizontalSpacing;
-    private int requestedNumberOfChannels = 0;
-    
+    private int requestedNumberOfChannels;
+
     /**
-     * Set the number of channels used to encode data. This setting will be
-     * ignored if the value to be encoded requires more channels.
-     * @param channels Number of channels in range 3 - 8
+     * Sets the number of channels used to encode data. This setting will be ignored if the value to be
+     * encoded requires more channels.
+     *
+     * @param channels number of channels (between 3 and 8, inclusive)
      */
     public void setNumberOfChannels(int channels) {
-        if ((channels >= 3) && (channels <= 7)) {
+        if (channels >= 3 && channels <= 8) {
             requestedNumberOfChannels = channels;
         }
     }
-    
+
     @Override
     public boolean encode() {
-        int numberOfChannels;
+
+        int channels;
         int i;
         int leadingZeroCount;
-
-        targetValue = 0;
-        horizontalSpacing = "";
 
         if (content.length() > 7) {
             error_msg = "Input too long";
             return false;
         }
 
-        if (!(content.matches("[0-9]+"))) {
+        if (!content.matches("[0-9]+")) {
             error_msg = "Invalid characters in input";
             return false;
         }
 
-        if ((requestedNumberOfChannels <= 2) || (requestedNumberOfChannels > 8)) {
-            numberOfChannels = 3;
+        if (requestedNumberOfChannels <= 2 || requestedNumberOfChannels > 8) {
+            channels = 3;
         } else {
-            numberOfChannels = requestedNumberOfChannels;
+            channels = requestedNumberOfChannels;
         }
 
-        for (i = 0; i < content.length(); i++) {
-            targetValue *= 10;
-            targetValue += Character.getNumericValue(content.charAt(i));
+        targetValue = Integer.parseInt(content);
+
+        switch (channels) {
+            case 3:
+                if (targetValue > 26) {
+                    channels++;
+                }
+            case 4:
+                if (targetValue > 292) {
+                    channels++;
+                }
+            case 5:
+                if (targetValue > 3493) {
+                    channels++;
+                }
+            case 6:
+                if (targetValue > 44072) {
+                    channels++;
+                }
+            case 7:
+                if (targetValue > 576688) {
+                    channels++;
+                }
+            case 8:
+                if (targetValue > 7742862) {
+                    channels++;
+                }
         }
 
-        switch (numberOfChannels) {
-        case 3:
-            if (targetValue > 26) {
-                numberOfChannels++;
-            }
-        case 4:
-            if (targetValue > 292) {
-                numberOfChannels++;
-            }
-        case 5:
-            if (targetValue > 3493) {
-                numberOfChannels++;
-            }
-        case 6:
-            if (targetValue > 44072) {
-                numberOfChannels++;
-            }
-        case 7:
-            if (targetValue > 576688) {
-                numberOfChannels++;
-            }
-        case 8:
-            if (targetValue > 7742862) {
-                numberOfChannels++;
-            }
-        }
-
-        if (numberOfChannels == 9) {
+        if (channels == 9) {
             error_msg = "Value out of range";
             return false;
         }
 
-        encodeInfo += "Channels Used: " + numberOfChannels + '\n';
+        encodeInfo += "Channels Used: " + channels + '\n';
 
         for (i = 0; i < 11; i++) {
             bar[i] = 0;
@@ -113,9 +107,10 @@ public class ChannelCode extends Symbol {
 
         bar[0] = space[1] = bar[1] = space[2] = bar[2] = 1;
         currentValue = 0;
-        nextSpace(numberOfChannels, 3, numberOfChannels, numberOfChannels);
+        pattern = new String[1];
+        nextSpace(channels, 3, channels, channels);
 
-        leadingZeroCount = numberOfChannels - 1 - content.length();
+        leadingZeroCount = channels - 1 - content.length();
 
         readable = "";
         for (i = 0; i < leadingZeroCount; i++) {
@@ -123,28 +118,23 @@ public class ChannelCode extends Symbol {
         }
         readable += content;
 
-        pattern = new String[1];
-        pattern[0] = horizontalSpacing;
         row_count = 1;
-        row_height = new int[1];
-        row_height[0] = -1;
+        row_height = new int[] { -1 };
+
         plotSymbol();
+
         return true;
     }
 
     private void nextSpace(int channels, int i, int maxSpace, int maxBar) {
-        int s;
-
-        for (s = (i < channels + 2) ? 1 : maxSpace; s <= maxSpace; s++) {
+        for (int s = (i < channels + 2) ? 1 : maxSpace; s <= maxSpace; s++) {
             space[i] = s;
             nextBar(channels, i, maxBar, maxSpace + 1 - s);
         }
     }
 
     private void nextBar(int channels, int i, int maxBar, int maxSpace) {
-        int b;
-
-        b = (space[i] + bar[i - 1] + space[i - 1] + bar[i - 2] > 4) ? 1 : 2;
+        int b = (space[i] + bar[i - 1] + space[i - 1] + bar[i - 2] > 4) ? 1 : 2;
         if (i < channels + 2) {
             for (; b <= maxBar; b++) {
                 bar[i] = b;
@@ -158,15 +148,15 @@ public class ChannelCode extends Symbol {
     }
 
     private void checkIfDone() {
-        int i;
-
         if (currentValue == targetValue) {
             /* Target reached - save the generated pattern */
-            horizontalSpacing = "11110";
-            for (i = 0; i < 11; i++) {
-                horizontalSpacing += (char)(space[i] + '0');
-                horizontalSpacing += (char)(bar[i] + '0');
+            StringBuilder sb = new StringBuilder();
+            sb.append("11110");
+            for (int i = 0; i < 11; i++) {
+                sb.append((char) (space[i] + '0'));
+                sb.append((char) (bar[i] + '0'));
             }
+            pattern[0] = sb.toString();
         }
     }
 }

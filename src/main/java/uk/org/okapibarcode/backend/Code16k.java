@@ -34,7 +34,7 @@ public class Code16k extends Symbol {
     }
 
     /* EN 12323 Table 1 - "Code 16K" character encodations */
-    private String[] C16KTable = {
+    private static final String[] C16K_TABLE = {
         "212222", "222122", "222221", "121223", "121322", "131222", "122213",
         "122312", "132212", "221213", "221312", "231212", "112232", "122132",
         "122231", "113222", "123122", "123221", "223211", "221132", "221231",
@@ -54,15 +54,15 @@ public class Code16k extends Symbol {
     };
 
     /* EN 12323 Table 3 and Table 4 - Start patterns and stop patterns */
-    private String[] C16KStartStop = {
+    private static final String[] C16K_START_STOP = {
         "3211", "2221", "2122", "1411", "1132", "1231", "1114", "3112"
     };
 
     /* EN 12323 Table 5 - Start and stop values defining row numbers */
-    private int[] C16KStartValues = {
+    private static final int[] C16K_START_VALUES = {
         0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7
     };
-    private int[] C16KStopValues = {
+    private static final int[] C16K_STOP_VALUES = {
         0, 1, 2, 3, 4, 5, 6, 7, 4, 5, 6, 7, 0, 1, 2, 3
     };
 
@@ -549,13 +549,13 @@ public class Code16k extends Symbol {
         for (current_row = 0; current_row < rows_needed; current_row++) {
 
             width_pattern = "";
-            width_pattern += C16KStartStop[C16KStartValues[current_row]];
+            width_pattern += C16K_START_STOP[C16K_START_VALUES[current_row]];
             width_pattern += "1";
             for (i = 0; i < 5; i++) {
-                width_pattern += C16KTable[values[(current_row * 5) + i]];
+                width_pattern += C16K_TABLE[values[(current_row * 5) + i]];
                 encodeInfo += Integer.toString(values[(current_row * 5) + i]) + " ";
             }
-            width_pattern += C16KStartStop[C16KStopValues[current_row]];
+            width_pattern += C16K_START_STOP[C16K_STOP_VALUES[current_row]];
 
             pattern[current_row] = width_pattern;
             row_height[current_row] = 10;

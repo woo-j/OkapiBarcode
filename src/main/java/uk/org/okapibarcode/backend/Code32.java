@@ -16,16 +16,17 @@
 package uk.org.okapibarcode.backend;
 
 /**
- * Implements Code 32, also known as Italian Pharmacode, A variation of Code 
+ * <p>Implements Code 32, also known as Italian Pharmacode, A variation of Code
  * 39 used by the Italian Ministry of Health ("Ministero della Sanità")
- * <p>
- * Requires a numeric input up to 8 digits in length. Check digit is
+ *
+ * <p>Requires a numeric input up to 8 digits in length. Check digit is
  * calculated.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class Code32 extends Symbol {
-    private char[] tabella = {
+
+    private static final char[] TABLE = {
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'B', 'C', 'D', 'F',
         'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V',
         'W', 'X', 'Y', 'Z'
@@ -95,7 +96,7 @@ public class Code32 extends Symbol {
         /* Look up values in 'Tabella di conversione' */
         risultante = "";
         for (i = 5; i >= 0; i--) {
-            risultante += tabella[codeword[i]];
+            risultante += TABLE[codeword[i]];
         }
 
         /* Plot the barcode using Code 39 */
@@ -112,7 +113,7 @@ public class Code32 extends Symbol {
             error_msg = e.getMessage();
             return false;
         }
-        
+
         this.pattern[0] = c39.pattern[0];
         this.plotSymbol();
         return true;

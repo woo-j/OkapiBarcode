@@ -18,17 +18,16 @@ package uk.org.okapibarcode.backend;
 import java.awt.geom.Rectangle2D;
 
 /**
- * Implements Code 49
- * According to ANSI/AIM-BC6-2000
- * <p>
- * Encoding supports full 7-bit ASCII input up to a maximum of 49 characters
+ * <p>Implements Code 49 according to ANSI/AIM-BC6-2000.
+ *
+ * <p>Supports full 7-bit ASCII input up to a maximum of 49 characters
  * or 81 numeric digits. GS1 data encoding is also supported.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class Code49 extends Symbol {
 
-    private String[] c49_table7 = {
+    private static final String[] C49_TABLE7 = {
         /* Table 7: Code 49 ASCII Chart */
         "! ", "!A", "!B", "!C", "!D", "!E", "!F", "!G", "!H", "!I", "!J", "!K",
         "!L", "!M", "!N", "!O", "!P", "!Q", "!R", "!S", "!T", "!U", "!V", "!W",
@@ -44,27 +43,27 @@ public class Code49 extends Symbol {
     };
 
     /* Table 5: Check Character Weighting Values */
-    private int[] c49_x_weight = {
+    private static final int[] C49_X_WEIGHT = {
         1, 9, 31, 26, 2, 12, 17, 23, 37, 18, 22, 6, 27, 44, 15, 43, 39, 11, 13,
         5, 41, 33, 36, 8, 4, 32, 3, 19, 40, 25, 29, 10
     };
 
-    private int[] c49_y_weight = {
+    private static final int[] C49_Y_WEIGHT = {
         9, 31, 26, 2, 12, 17, 23, 37, 18, 22, 6, 27, 44, 15, 43, 39, 11, 13, 5,
         41, 33, 36, 8, 4, 32, 3, 19, 40, 25, 29, 10, 24
     };
 
-    private int[] c49_z_weight = {
+    private static final int[] C49_Z_WEIGHT = {
         31, 26, 2, 12, 17, 23, 37, 18, 22, 6, 27, 44, 15, 43, 39, 11, 13, 5, 41,
         33, 36, 8, 4, 32, 3, 19, 40, 25, 29, 10, 24, 30
     };
 
-    private String[] c49_table4 = {
+    private static final String[] C49_TABLE4 = {
         /* Table 4: Row Parity Pattern for Code 49 Symbols */
         "OEEO", "EOEO", "OOEE", "EEOO", "OEOE", "EOOE", "OOOO", "EEEE"
     };
 
-    private String[] c49_appxe_even = {
+    private static final String[] C49_APPXE_EVEN = {
         /* Appendix E - Code 49 Encodation Patterns (Even Symbol Character Parity) */
         /* Column 1 */
         "11521132", "25112131", "14212132", "25121221", "14221222", "12412132",
@@ -524,7 +523,7 @@ public class Code49 extends Symbol {
         "15121132", "24221131", "13321132", "22421131"
     };
 
-    private String[] c49_appxe_odd = {
+    private static final String[] C49_APPXE_ODD = {
         /* Appendix E - Code 49 Encodation Patterns (Odd Symbol Character Parity) */
         /* Column 1 */
         "22121116", "42121114", "31221115", "51221113", "32112115", "52112113",
@@ -984,7 +983,7 @@ public class Code49 extends Symbol {
         "11131162", "21122161", "21131251", "11113162"
     };
 
-    private char[] C49_Set = {
+    private static final char[] C49_SET = {
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D',
         'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R',
         'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '-', '.', ' ', '$', '/', '+',
@@ -1018,7 +1017,7 @@ public class Code49 extends Symbol {
             if ((inputDataType == DataType.GS1) && (content.charAt(i) == '[')) {
                 intermediate += "*"; // FNC1
             } else {
-                intermediate += c49_table7[content.charAt(i)];
+                intermediate += C49_TABLE7[content.charAt(i)];
             }
         }
 
@@ -1104,7 +1103,7 @@ public class Code49 extends Symbol {
                     switch (block_remain) {
                     case 1:
                         /* Rule (a) */
-                        codewords[codeword_count] = positionOf(intermediate.charAt(i), C49_Set);
+                        codewords[codeword_count] = positionOf(intermediate.charAt(i), C49_SET);
                         codeword_count++;
                         i++;
                         break;
@@ -1146,12 +1145,12 @@ public class Code49 extends Symbol {
                         codeword_count++;
                     }
                 } else {
-                    codewords[codeword_count] = positionOf(intermediate.charAt(i), C49_Set);
+                    codewords[codeword_count] = positionOf(intermediate.charAt(i), C49_SET);
                     codeword_count++;
                     i++;
                 }
             } else {
-                codewords[codeword_count] = positionOf(intermediate.charAt(i), C49_Set);
+                codewords[codeword_count] = positionOf(intermediate.charAt(i), C49_SET);
                 codeword_count++;
                 i++;
             }
@@ -1229,9 +1228,9 @@ public class Code49 extends Symbol {
         for (i = 0; i < rows - 1; i++) {
             for (j = 0; j < 4; j++) {
                 local_value = (c_grid[i][2 * j] * 49) + c_grid[i][(2 * j) + 1];
-                x_count += c49_x_weight[posn_val] * local_value;
-                y_count += c49_y_weight[posn_val] * local_value;
-                z_count += c49_z_weight[posn_val] * local_value;
+                x_count += C49_X_WEIGHT[posn_val] * local_value;
+                y_count += C49_Y_WEIGHT[posn_val] * local_value;
+                z_count += C49_Z_WEIGHT[posn_val] * local_value;
                 posn_val++;
             }
         }
@@ -1243,8 +1242,8 @@ public class Code49 extends Symbol {
         }
 
         local_value = (c_grid[rows - 1][0] * 49) + c_grid[rows - 1][1];
-        x_count += c49_x_weight[posn_val] * local_value;
-        y_count += c49_y_weight[posn_val] * local_value;
+        x_count += C49_X_WEIGHT[posn_val] * local_value;
+        y_count += C49_Y_WEIGHT[posn_val] * local_value;
         posn_val++;
 
         /* Add Y Symbol Check */
@@ -1252,7 +1251,7 @@ public class Code49 extends Symbol {
         c_grid[rows - 1][3] = (y_count % 2401) % 49;
 
         local_value = (c_grid[rows - 1][2] * 49) + c_grid[rows - 1][3];
-        x_count += c49_x_weight[posn_val] * local_value;
+        x_count += C49_X_WEIGHT[posn_val] * local_value;
 
         /* Add X Symbol Check */
         c_grid[rows - 1][4] = (x_count % 2401) / 49;
@@ -1290,16 +1289,16 @@ public class Code49 extends Symbol {
             for (j = 0; j < 4; j++) {
                 encodeInfo += Integer.toString(w_grid[i][j]) + " ";
                 if (i != (rows - 1)) {
-                    if (c49_table4[i].charAt(j) == 'E') {
+                    if (C49_TABLE4[i].charAt(j) == 'E') {
                         /* Even Parity */
-                        localpattern += c49_appxe_even[w_grid[i][j]];
+                        localpattern += C49_APPXE_EVEN[w_grid[i][j]];
                     } else {
                         /* Odd Parity */
-                        localpattern += c49_appxe_odd[w_grid[i][j]];
+                        localpattern += C49_APPXE_ODD[w_grid[i][j]];
                     }
                 } else {
                     /* Last row uses all even parity */
-                    localpattern += c49_appxe_even[w_grid[i][j]];
+                    localpattern += C49_APPXE_EVEN[w_grid[i][j]];
                 }
             }
             localpattern += "4"; /* Stop character */

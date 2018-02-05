@@ -18,19 +18,20 @@ package uk.org.okapibarcode.backend;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 /**
- * Implements Code One
- * <p>
- * Code One is able to encode the ISO 8859-1 (Latin-1) character set or GS1
- * data. There are two types of Code One symbol - variable height symbols
+ * <p>Implements Code One.
+ *
+ * <p>Code One is able to encode the ISO 8859-1 (Latin-1) character set or GS1
+ * data. There are two types of Code One symbol: variable height symbols
  * which are roughly square (versions A thought to H) and fixed-height
- * versions (version S and T). Version S symbols can only encode numeric data. 
- * The width of version S and version T symbols is determined by the length 
+ * versions (version S and T). Version S symbols can only encode numeric data.
+ * The width of version S and version T symbols is determined by the length
  * of the input data.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class CodeOne extends Symbol {
-    private final int[] c40_shift = {
+
+    private static final int[] C40_SHIFT = {
         1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
         1, 1, 1, 1, 1, 1, 1, 1, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0,
@@ -39,7 +40,7 @@ public class CodeOne extends Symbol {
         3, 3, 3, 3, 3, 3, 3, 3
     };
 
-    private final int[] c40_value = {
+    private static final int[] C40_VALUE = {
         0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
         20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 3, 0, 1, 2, 3, 4, 5, 6,
         7, 8, 9, 10, 11, 12, 13, 14, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16,
@@ -49,7 +50,7 @@ public class CodeOne extends Symbol {
         20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31
     };
 
-    private final int[] text_shift = {
+    private static final int[] TEXT_SHIFT = {
         1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
         1, 1, 1, 1, 1, 1, 1, 1, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3,
@@ -58,7 +59,7 @@ public class CodeOne extends Symbol {
         0, 0, 0, 3, 3, 3, 3, 3
     };
 
-    private final int[] text_value = {
+    private static final int[] TEXT_VALUE = {
         0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
         20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 3, 0, 1, 2, 3, 4, 5, 6,
         7, 8, 9, 10, 11, 12, 13, 14, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16,
@@ -68,48 +69,49 @@ public class CodeOne extends Symbol {
         33, 34, 35, 36, 37, 38, 39, 27, 28, 29, 30, 31
     };
 
-    private final int[] c1_height = {
+    private static final int[] C1_HEIGHT = {
         16, 22, 28, 40, 52, 70, 104, 148
     };
-    private final int[] c1_width = {
+    private static final int[] C1_WIDTH = {
         18, 22, 32, 42, 54, 76, 98, 134
     };
-    private final int[] c1_data_length = {
+    private static final int[] C1_DATA_LENGTH = {
         10, 19, 44, 91, 182, 370, 732, 1480
     };
-    private final int[] c1_ecc_length = {
+    private static final int[] C1_ECC_LENGTH = {
         10, 16, 26, 44, 70, 140, 280, 560
     };
-    private final int[] c1_blocks = {
+    private static final int[] C1_BLOCKS = {
         1, 1, 1, 1, 1, 2, 4, 8
     };
-    private final int[] c1_data_blocks = {
+    private static final int[] C1_DATA_BLOCKS = {
         10, 19, 44, 91, 182, 185, 183, 185
     };
-    private final int[] c1_ecc_blocks = {
+    private static final int[] C1_ECC_BLOCKS = {
         10, 16, 26, 44, 70, 70, 70, 70
     };
-    private final int[] c1_grid_width = {
+    private static final int[] C1_GRID_WIDTH = {
         4, 5, 7, 9, 12, 17, 22, 30
     };
-    private final int[] c1_grid_height = {
+    private static final int[] C1_GRID_HEIGHT = {
         5, 7, 10, 15, 21, 30, 46, 68
     };
 
-    private enum c1Mode {
+    private enum Mode {
         C1_ASCII, C1_C40, C1_DECIMAL, C1_TEXT, C1_EDI, C1_BYTE
     };
+
     private int[] data = new int[1500];
     private byte[] source;
     private int[][] datagrid = new int[136][120];
     private boolean[][] outputGrid = new boolean[148][134];
-    
+
     public enum Version {
         NONE, A, B, C, D, E, F, G, H, S, T
     }
-    
+
     private Version preferredVersion = Version.NONE;
-    
+
     /**
      * Set symbol size by "version". Versions A to H are square symbols.
      * This value may be ignored if the input data does not fit in the
@@ -119,7 +121,7 @@ public class CodeOne extends Symbol {
     public void setPreferredVersion (Version version) {
         preferredVersion = version;
     }
-    
+
     @Override
     public boolean encode() {
         int size = 1, i, j, data_blocks;
@@ -137,11 +139,11 @@ public class CodeOne extends Symbol {
         int data_cw, ecc_cw;
         int[] sub_data = new int[190];
         String bin;
-        
+
         if (!content.matches("[\u0000-\u00FF]+")) {
             error_msg = "Invalid characters in input data";
             return false;
-        }        
+        }
 
         if (preferredVersion == Version.S) {
             /* Version S */
@@ -346,7 +348,7 @@ public class CodeOne extends Symbol {
             }
 
             for (i = 7; i >= 0; i--) {
-                if (c1_data_length[i] >= data_length) {
+                if (C1_DATA_LENGTH[i] >= data_length) {
                     size = i + 1;
                 }
             }
@@ -356,43 +358,43 @@ public class CodeOne extends Symbol {
             }
 
             encodeInfo += "Version:  " + (char)((size - 1) + 'A') + "\n";
-            
+
             encodeInfo += "Codewords: ";
             for(i = 0; i < data_length; i++) {
                 encodeInfo += Integer.toString(data[i]) + " ";
             }
             encodeInfo += "\n";
 
-            for (i = data_length; i < c1_data_length[size - 1]; i++) {
+            for (i = data_length; i < C1_DATA_LENGTH[size - 1]; i++) {
                 data[i] = 129; /* Pad */
             }
 
             /* Calculate error correction data */
-            data_length = c1_data_length[size - 1];
+            data_length = C1_DATA_LENGTH[size - 1];
 
-            data_blocks = c1_blocks[size - 1];
+            data_blocks = C1_BLOCKS[size - 1];
 
             rs.init_gf(0x12d);
-            rs.init_code(c1_ecc_blocks[size - 1], 0);
+            rs.init_code(C1_ECC_BLOCKS[size - 1], 0);
             for (i = 0; i < data_blocks; i++) {
-                for (j = 0; j < c1_data_blocks[size - 1]; j++) {
+                for (j = 0; j < C1_DATA_BLOCKS[size - 1]; j++) {
 
                     sub_data[j] = data[j * data_blocks + i];
                 }
-                rs.encode(c1_data_blocks[size - 1], sub_data);
-                for (j = 0; j < c1_ecc_blocks[size - 1]; j++) {
-                    ecc[c1_ecc_length[size - 1] - (j * data_blocks + i) - 1]
+                rs.encode(C1_DATA_BLOCKS[size - 1], sub_data);
+                for (j = 0; j < C1_ECC_BLOCKS[size - 1]; j++) {
+                    ecc[C1_ECC_LENGTH[size - 1] - (j * data_blocks + i) - 1]
                             = rs.getResult(j);
                 }
             }
 
-            encodeInfo += "ECC Codeword Count: " + c1_ecc_length[size - 1] + "\n";
+            encodeInfo += "ECC Codeword Count: " + C1_ECC_LENGTH[size - 1] + "\n";
 
             /* "Stream" combines data and error correction data */
             for (i = 0; i < data_length; i++) {
                 stream[i] = data[i];
             }
-            for (i = 0; i < c1_ecc_length[size - 1]; i++) {
+            for (i = 0; i < C1_ECC_LENGTH[size - 1]; i++) {
                 stream[data_length + i] = ecc[i];
             }
 
@@ -403,8 +405,8 @@ public class CodeOne extends Symbol {
             }
 
             i = 0;
-            for (row = 0; row < c1_grid_height[size - 1]; row++) {
-                for (col = 0; col < c1_grid_width[size - 1]; col++) {
+            for (row = 0; row < C1_GRID_HEIGHT[size - 1]; row++) {
+                for (col = 0; col < C1_GRID_WIDTH[size - 1]; col++) {
                     if ((stream[i] & 0x80) != 0) {
                         datagrid[row * 2][col * 4] = '1';
                     }
@@ -433,11 +435,11 @@ public class CodeOne extends Symbol {
                 }
             }
 
-            encodeInfo += "Grid Size: " + c1_grid_width[size - 1] + " X " +
-                    c1_grid_height[size - 1] + "\n";
+            encodeInfo += "Grid Size: " + C1_GRID_WIDTH[size - 1] + " X " +
+                    C1_GRID_HEIGHT[size - 1] + "\n";
 
-            row_count = c1_height[size - 1];
-            symbol_width = c1_width[size - 1];
+            row_count = C1_HEIGHT[size - 1];
+            symbol_width = C1_WIDTH[size - 1];
         }
 
         for (i = 0; i < 148; i++) {
@@ -735,7 +737,7 @@ public class CodeOne extends Symbol {
     }
 
     private int encodeAsCode1Data() {
-        c1Mode current_mode, next_mode;
+        Mode current_mode, next_mode;
         boolean latch;
         boolean done;
         int sourcePoint, targetPoint, i, j;
@@ -773,8 +775,8 @@ public class CodeOne extends Symbol {
         } /* FNC1 */
 
         /* Step A */
-        current_mode = c1Mode.C1_ASCII;
-        next_mode = c1Mode.C1_ASCII;
+        current_mode = Mode.C1_ASCII;
+        next_mode = Mode.C1_ASCII;
 
         do {
             if (current_mode != next_mode) {
@@ -799,13 +801,13 @@ public class CodeOne extends Symbol {
                 }
             }
 
-            if ((current_mode != c1Mode.C1_BYTE) && (next_mode == c1Mode.C1_BYTE)) {
+            if ((current_mode != Mode.C1_BYTE) && (next_mode == Mode.C1_BYTE)) {
                 byte_start = targetPoint;
             }
             current_mode = next_mode;
 
-            if (current_mode == c1Mode.C1_ASCII) { /* Step B - ASCII encodation */
-                next_mode = c1Mode.C1_ASCII;
+            if (current_mode == Mode.C1_ASCII) { /* Step B - ASCII encodation */
+                next_mode = Mode.C1_ASCII;
 
                 if ((length - sourcePoint) >= 21) { /* Step B1 */
                     j = 0;
@@ -817,12 +819,12 @@ public class CodeOne extends Symbol {
                     }
 
                     if (j == 21) {
-                        next_mode = c1Mode.C1_DECIMAL;
+                        next_mode = Mode.C1_DECIMAL;
                         decimal_binary += "1111";
                     }
                 }
 
-                if ((next_mode == c1Mode.C1_ASCII) && ((length - sourcePoint) >= 13)) { /* Step B2 */
+                if ((next_mode == Mode.C1_ASCII) && ((length - sourcePoint) >= 13)) { /* Step B2 */
                     j = 0;
 
                     for (i = 0; i < 13; i++) {
@@ -841,13 +843,13 @@ public class CodeOne extends Symbol {
                         }
 
                         if (!(latch)) {
-                            next_mode = c1Mode.C1_DECIMAL;
+                            next_mode = Mode.C1_DECIMAL;
                             decimal_binary += "1111";
                         }
                     }
                 }
 
-                if (next_mode == c1Mode.C1_ASCII) { /* Step B3 */
+                if (next_mode == Mode.C1_ASCII) { /* Step B3 */
                     isTwoDigits = false;
                     if ((sourcePoint + 1) != length) {
                         if ((source[sourcePoint] >= '0') && (source[sourcePoint] <= '9')) {
@@ -878,7 +880,7 @@ public class CodeOne extends Symbol {
                                     data[targetPoint] = 236; /* FNC1 and change to Decimal */
                                     targetPoint++;
                                     sourcePoint++;
-                                    next_mode = c1Mode.C1_DECIMAL;
+                                    next_mode = Mode.C1_DECIMAL;
                                 }
                             }
 
@@ -905,18 +907,18 @@ public class CodeOne extends Symbol {
                                         data[targetPoint] = 236; /* FNC1 and change to Decimal */
                                         targetPoint++;
                                         sourcePoint++;
-                                        next_mode = c1Mode.C1_DECIMAL;
+                                        next_mode = Mode.C1_DECIMAL;
                                     }
                                 }
                             }
                         }
 
-                        if (next_mode == c1Mode.C1_ASCII) {
+                        if (next_mode == Mode.C1_ASCII) {
 
                             /* Step B6 */
                             next_mode = lookAheadTest(length, sourcePoint, current_mode);
 
-                            if (next_mode == c1Mode.C1_ASCII) {
+                            if (next_mode == Mode.C1_ASCII) {
                                 if (source[sourcePoint] > 127) {
                                     /* Step B7 */
                                     data[targetPoint] = 235;
@@ -942,9 +944,9 @@ public class CodeOne extends Symbol {
                 }
             }
 
-            if (current_mode == c1Mode.C1_C40) { /* Step C - C40 encodation */
+            if (current_mode == Mode.C1_C40) { /* Step C - C40 encodation */
                 done = false;
-                next_mode = c1Mode.C1_C40;
+                next_mode = Mode.C1_C40;
                 if (c40_p == 0) {
                     if ((length - sourcePoint) >= 12) {
                         j = 0;
@@ -957,7 +959,7 @@ public class CodeOne extends Symbol {
                         }
 
                         if (j == 12) {
-                            next_mode = c1Mode.C1_ASCII;
+                            next_mode = Mode.C1_ASCII;
                             done = true;
                         }
                     }
@@ -984,7 +986,7 @@ public class CodeOne extends Symbol {
                         }
 
                         if ((j == 8) && latch) {
-                            next_mode = c1Mode.C1_ASCII;
+                            next_mode = Mode.C1_ASCII;
                             done = true;
                         }
                     }
@@ -994,7 +996,7 @@ public class CodeOne extends Symbol {
                     }
                 }
 
-                if (next_mode != c1Mode.C1_C40) {
+                if (next_mode != Mode.C1_C40) {
                     data[targetPoint] = 255;
                     targetPoint++; /* Unlatch */
                 } else {
@@ -1003,11 +1005,11 @@ public class CodeOne extends Symbol {
                         c40_p++;
                         c40_buffer[c40_p] = 30;
                         c40_p++; /* Upper Shift */
-                        shift_set = c40_shift[source[sourcePoint] - 128];
-                        value = c40_value[source[sourcePoint] - 128];
+                        shift_set = C40_SHIFT[source[sourcePoint] - 128];
+                        value = C40_VALUE[source[sourcePoint] - 128];
                     } else {
-                        shift_set = c40_shift[source[sourcePoint]];
-                        value = c40_value[source[sourcePoint]];
+                        shift_set = C40_SHIFT[source[sourcePoint]];
+                        value = C40_VALUE[source[sourcePoint]];
                     }
 
                     if ((inputDataType == DataType.GS1) && (source[sourcePoint] == '[')) {
@@ -1044,9 +1046,9 @@ public class CodeOne extends Symbol {
                 }
             }
 
-            if (current_mode == c1Mode.C1_TEXT) { /* Step D - Text encodation */
+            if (current_mode == Mode.C1_TEXT) { /* Step D - Text encodation */
                 done = false;
-                next_mode = c1Mode.C1_TEXT;
+                next_mode = Mode.C1_TEXT;
                 if (text_p == 0) {
                     if ((length - sourcePoint) >= 12) {
                         j = 0;
@@ -1059,7 +1061,7 @@ public class CodeOne extends Symbol {
                         }
 
                         if (j == 12) {
-                            next_mode = c1Mode.C1_ASCII;
+                            next_mode = Mode.C1_ASCII;
                             done = true;
                         }
                     }
@@ -1086,7 +1088,7 @@ public class CodeOne extends Symbol {
                         }
 
                         if ((j == 8) && latch) {
-                            next_mode = c1Mode.C1_ASCII;
+                            next_mode = Mode.C1_ASCII;
                             done = true;
                         }
                     }
@@ -1096,7 +1098,7 @@ public class CodeOne extends Symbol {
                     }
                 }
 
-                if (next_mode != c1Mode.C1_TEXT) {
+                if (next_mode != Mode.C1_TEXT) {
                     data[targetPoint] = 255;
                     targetPoint++; /* Unlatch */
                 } else {
@@ -1105,11 +1107,11 @@ public class CodeOne extends Symbol {
                         text_p++;
                         text_buffer[text_p] = 30;
                         text_p++; /* Upper Shift */
-                        shift_set = text_shift[source[sourcePoint] - 128];
-                        value = text_value[source[sourcePoint] - 128];
+                        shift_set = TEXT_SHIFT[source[sourcePoint] - 128];
+                        value = TEXT_VALUE[source[sourcePoint] - 128];
                     } else {
-                        shift_set = text_shift[source[sourcePoint]];
-                        value = text_value[source[sourcePoint]];
+                        shift_set = TEXT_SHIFT[source[sourcePoint]];
+                        value = TEXT_VALUE[source[sourcePoint]];
                     }
 
                     if ((inputDataType == DataType.GS1) && (source[sourcePoint] == '[')) {
@@ -1146,10 +1148,10 @@ public class CodeOne extends Symbol {
                 }
             }
 
-            if (current_mode == c1Mode.C1_EDI) { /* Step E - EDI Encodation */
+            if (current_mode == Mode.C1_EDI) { /* Step E - EDI Encodation */
 
                 value = 0;
-                next_mode = c1Mode.C1_EDI;
+                next_mode = Mode.C1_EDI;
                 if (edi_p == 0) {
                     if ((length - sourcePoint) >= 12) {
                         j = 0;
@@ -1162,7 +1164,7 @@ public class CodeOne extends Symbol {
                         }
 
                         if (j == 12) {
-                            next_mode = c1Mode.C1_ASCII;
+                            next_mode = Mode.C1_ASCII;
                         }
                     }
 
@@ -1188,18 +1190,18 @@ public class CodeOne extends Symbol {
                         }
 
                         if ((j == 8) && latch) {
-                            next_mode = c1Mode.C1_ASCII;
+                            next_mode = Mode.C1_ASCII;
                         }
                     }
 
                     if (!((isEdiEncodable(source[sourcePoint])
                             && isEdiEncodable(source[sourcePoint + 1]))
                             && isEdiEncodable(source[sourcePoint + 2]))) {
-                        next_mode = c1Mode.C1_ASCII;
+                        next_mode = Mode.C1_ASCII;
                     }
                 }
 
-                if (next_mode != c1Mode.C1_EDI) {
+                if (next_mode != Mode.C1_EDI) {
                     data[targetPoint] = 255;
                     targetPoint++; /* Unlatch */
                 } else {
@@ -1247,9 +1249,9 @@ public class CodeOne extends Symbol {
                 }
             }
 
-            if (current_mode == c1Mode.C1_DECIMAL) { /* Step F - Decimal encodation */
+            if (current_mode == Mode.C1_DECIMAL) { /* Step F - Decimal encodation */
 
-                next_mode = c1Mode.C1_DECIMAL;
+                next_mode = Mode.C1_DECIMAL;
 
                 data_left = length - sourcePoint;
                 decimal_count = 0;
@@ -1343,7 +1345,7 @@ public class CodeOne extends Symbol {
                         targetPoint++;
                     }
 
-                    next_mode = c1Mode.C1_ASCII;
+                    next_mode = Mode.C1_ASCII;
                 } else {
                     /* There are three digits - convert the value to binary */
                     value = (100 * (source[sourcePoint] - '0'))
@@ -1384,18 +1386,18 @@ public class CodeOne extends Symbol {
                 }
             }
 
-            if (current_mode == c1Mode.C1_BYTE) {
-                next_mode = c1Mode.C1_BYTE;
+            if (current_mode == Mode.C1_BYTE) {
+                next_mode = Mode.C1_BYTE;
 
                 if ((inputDataType == DataType.GS1) && (source[sourcePoint] == '[')) {
-                    next_mode = c1Mode.C1_ASCII;
+                    next_mode = Mode.C1_ASCII;
                 } else {
                     if (source[sourcePoint] <= 127) {
                         next_mode = lookAheadTest(length, sourcePoint, current_mode);
                     }
                 }
 
-                if (next_mode != c1Mode.C1_BYTE) {
+                if (next_mode != Mode.C1_BYTE) {
                     /* Insert byte field length */
                     if ((targetPoint - byte_start) <= 249) {
                         for (i = targetPoint; i >= byte_start; i--) {
@@ -1481,7 +1483,7 @@ public class CodeOne extends Symbol {
             targetPoint++; /* Unlatch */
         }
 
-        if (current_mode == c1Mode.C1_DECIMAL) {
+        if (current_mode == Mode.C1_DECIMAL) {
             /* Finish Decimal mode and go back to ASCII */
 
             decimal_binary += "111111"; /* Unlatch */
@@ -1537,7 +1539,7 @@ public class CodeOne extends Symbol {
             }
         }
 
-        if (current_mode == c1Mode.C1_BYTE) {
+        if (current_mode == Mode.C1_BYTE) {
             /* Insert byte field length */
             if ((targetPoint - byte_start) <= 249) {
                 for (i = targetPoint; i >= byte_start; i--) {
@@ -1565,15 +1567,15 @@ public class CodeOne extends Symbol {
         return targetPoint;
     }
 
-    private c1Mode lookAheadTest(int sourcelen, int position,
-            c1Mode current_mode) {
+    private Mode lookAheadTest(int sourcelen, int position,
+            Mode current_mode) {
         double ascii_count, c40_count, text_count, edi_count, byte_count;
         int reduced_char;
         int done, best_count, sp;
-        c1Mode best_scheme;
+        Mode best_scheme;
 
         /* Step J */
-        if (current_mode == c1Mode.C1_ASCII) {
+        if (current_mode == Mode.C1_ASCII) {
             ascii_count = 0.0;
             c40_count = 1.0;
             text_count = 1.0;
@@ -1713,7 +1715,7 @@ public class CodeOne extends Symbol {
         text_count = roundUpToNextInteger(text_count);
         edi_count = roundUpToNextInteger(edi_count);
         byte_count = roundUpToNextInteger(byte_count);
-        best_scheme = c1Mode.C1_ASCII;
+        best_scheme = Mode.C1_ASCII;
 
         if (sp == sourcelen) {
             /* Step K */
@@ -1721,21 +1723,21 @@ public class CodeOne extends Symbol {
 
             if (text_count <= best_count) {
                 best_count = (int) text_count;
-                best_scheme = c1Mode.C1_TEXT;
+                best_scheme = Mode.C1_TEXT;
             }
 
             if (c40_count <= best_count) {
                 best_count = (int) c40_count;
-                best_scheme = c1Mode.C1_C40;
+                best_scheme = Mode.C1_C40;
             }
 
             if (ascii_count <= best_count) {
                 best_count = (int) ascii_count;
-                best_scheme = c1Mode.C1_ASCII;
+                best_scheme = Mode.C1_ASCII;
             }
 
             if (byte_count <= best_count) {
-                best_scheme = c1Mode.C1_BYTE;
+                best_scheme = Mode.C1_BYTE;
             }
         } else {
             /* Step Q */
@@ -1744,20 +1746,20 @@ public class CodeOne extends Symbol {
                     && (edi_count + 1.0 <= c40_count))
                     && ((edi_count + 1.0 <= byte_count)
                     && (edi_count + 1.0 <= text_count))) {
-                best_scheme = c1Mode.C1_EDI;
+                best_scheme = Mode.C1_EDI;
             }
 
             if ((c40_count + 1.0 <= ascii_count)
                     && (c40_count + 1.0 <= text_count)) {
 
                 if (c40_count < edi_count) {
-                    best_scheme = c1Mode.C1_C40;
+                    best_scheme = Mode.C1_C40;
                 } else {
                     if (c40_count == edi_count) {
                         if (preferEdi(sourcelen, position)) {
-                            best_scheme = c1Mode.C1_EDI;
+                            best_scheme = Mode.C1_EDI;
                         } else {
-                            best_scheme = c1Mode.C1_C40;
+                            best_scheme = Mode.C1_C40;
                         }
                     }
                 }
@@ -1767,21 +1769,21 @@ public class CodeOne extends Symbol {
                     && (text_count + 1.0 <= c40_count))
                     && ((text_count + 1.0 <= byte_count)
                     && (text_count + 1.0 <= edi_count))) {
-                best_scheme = c1Mode.C1_TEXT;
+                best_scheme = Mode.C1_TEXT;
             }
 
             if (((ascii_count + 1.0 <= byte_count)
                     && (ascii_count + 1.0 <= c40_count))
                     && ((ascii_count + 1.0 <= text_count)
                     && (ascii_count + 1.0 <= edi_count))) {
-                best_scheme = c1Mode.C1_ASCII;
+                best_scheme = Mode.C1_ASCII;
             }
 
             if (((byte_count + 1.0 <= ascii_count)
                     && (byte_count + 1.0 <= c40_count))
                     && ((byte_count + 1.0 <= text_count)
                     && (byte_count + 1.0 <= edi_count))) {
-                best_scheme = c1Mode.C1_BYTE;
+                best_scheme = Mode.C1_BYTE;
             }
         }
 
@@ -1928,10 +1930,10 @@ public class CodeOne extends Symbol {
     private void resetGridModule(int row, int column) {
         outputGrid[row][column] = false;
     }
-    
+
     private int getSize(Version version) {
         int size = 0;
-        
+
         switch(version) {
             case A:
                 size = 1;
@@ -1956,9 +1958,9 @@ public class CodeOne extends Symbol {
                 break;
             case H:
                 size = 8;
-                break;                
+                break;
         }
-        
+
         return size;
     }
 }

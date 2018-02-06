@@ -2581,14 +2581,14 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 return code3of9ext;
             case TELEPEN:
                 Telepen telepen = new Telepen();
-                telepen.setNormalMode();
+                telepen.setMode(Telepen.Mode.NORMAL);
                 telepen.setHumanReadableLocation(hrtLoc);
                 telepen.setContent(dataInput);
                 setUniversals(telepen);
                 return telepen;
             case TELEPEN_NUMERIC:
                 Telepen telepenNum = new Telepen();
-                telepenNum.setNumericMode();
+                telepenNum.setMode(Telepen.Mode.NUMERIC);
                 telepenNum.setHumanReadableLocation(hrtLoc);
                 telepenNum.setContent(dataInput);
                 setUniversals(telepenNum);

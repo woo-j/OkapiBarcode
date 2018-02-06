@@ -282,7 +282,7 @@ public class MakeBarcode {
                 case 32:
                     // Telepen Alpha
                     Telepen telepen = new Telepen();
-                    telepen.setNormalMode();
+                    telepen.setMode(Telepen.Mode.NORMAL);
                     telepen.setHumanReadableLocation(hrtLocation);
                     telepen.setContent(dataInput);
                     symbol = telepen;
@@ -555,7 +555,7 @@ public class MakeBarcode {
                 case 87:
                     // Telepen Numeric
                     Telepen telepenNum = new Telepen();
-                    telepenNum.setNumericMode();
+                    telepenNum.setMode(Telepen.Mode.NUMERIC);
                     telepenNum.setHumanReadableLocation(hrtLocation);
                     telepenNum.setContent(dataInput);
                     symbol = telepenNum;

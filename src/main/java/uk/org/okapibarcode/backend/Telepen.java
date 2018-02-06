@@ -16,22 +16,22 @@
 package uk.org.okapibarcode.backend;
 
 /**
- * Telepen (also known as Telepen Alpha) can encode ASCII text input and
- * includes a modulo-127 check digit. Telepen Numeric allows compression of 
- * numeric data into a Telepen symbol. Data can consist of pairs of numbers 
- * or pairs consisting of a numerical digit followed an X character.
- * Telepen Numeric also includes a modulo-127 check digit.
+ * <p>Implements Telepen (also known as Telepen Alpha).
+ *
+ * <p>Telepen can encode ASCII text input and includes a modulo-127 check digit.
+ * Telepen Numeric allows compression of numeric data into a Telepen symbol. Data
+ * can consist of pairs of numbers or pairs consisting of a numerical digit followed
+ * by an X character. Telepen Numeric also includes a modulo-127 check digit.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class Telepen extends Symbol {
 
-    public enum tp_mode {
+    public static enum Mode {
         NORMAL, NUMERIC
     }
-    public tp_mode mode;
 
-    private String[] TeleTable = {
+    private static final String[] TELE_TABLE = {
         "1111111111111111", "1131313111", "33313111", "1111313131",
         "3111313111", "11333131", "13133131", "111111313111", "31333111",
         "1131113131", "33113131", "1111333111", "3111113131", "1113133111",
@@ -62,21 +62,19 @@ public class Telepen extends Symbol {
         "131111111113"
     };
 
-    public Telepen() {
-        mode = tp_mode.NORMAL;
+    private Mode mode = Mode.NORMAL;
+
+    public void setMode(Mode mode) {
+        this.mode = mode;
     }
 
-    public void setNormalMode() {
-        mode = tp_mode.NORMAL;
-    }
-
-    public void setNumericMode() {
-        mode = tp_mode.NUMERIC;
+    public Mode getMode() {
+        return mode;
     }
 
     @Override
     public boolean encode() {
-        if (mode == tp_mode.NORMAL) {
+        if (mode == Mode.NORMAL) {
             return normal_mode();
         } else {
             return numeric_mode();
@@ -94,11 +92,11 @@ public class Telepen extends Symbol {
             error_msg = "Invalid characters in input data";
             return false;
         }
-        
-        dest = TeleTable['_']; // Start
+
+        dest = TELE_TABLE['_']; // Start
         for (int i = 0; i < l; i++) {
             asciicode = content.charAt(i);
-            p += TeleTable[asciicode];
+            p += TELE_TABLE[asciicode];
             count += asciicode;
         }
 
@@ -107,12 +105,12 @@ public class Telepen extends Symbol {
             check_digit = 0;
         }
 
-        p += TeleTable[check_digit];
+        p += TELE_TABLE[check_digit];
 
         encodeInfo += "Check Digit: " + check_digit + "\n";
 
         dest += p;
-        dest += TeleTable['z']; // Stop
+        dest += TELE_TABLE['z']; // Stop
 
         readable = content;
         pattern = new String[1];
@@ -124,7 +122,7 @@ public class Telepen extends Symbol {
         return true;
     }
 
-    public boolean numeric_mode() {
+    private boolean numeric_mode() {
         int count = 0, check_digit;
         String p = "";
         String t;
@@ -148,7 +146,7 @@ public class Telepen extends Symbol {
             tl = l;
         }
 
-        dest = TeleTable['_']; // Start
+        dest = TELE_TABLE['_']; // Start
         for (int i = 0; i < tl; i += 2) {
 
             c1 = t.charAt(i);
@@ -168,7 +166,7 @@ public class Telepen extends Symbol {
                 count += glyph;
             }
 
-            p += TeleTable[glyph];
+            p += TELE_TABLE[glyph];
         }
 
         check_digit = 127 - (count % 127);
@@ -176,12 +174,12 @@ public class Telepen extends Symbol {
             check_digit = 0;
         }
 
-        p += TeleTable[check_digit];
+        p += TELE_TABLE[check_digit];
 
         encodeInfo += "Check Digit: " + check_digit + "\n";
 
         dest += p;
-        dest += TeleTable['z']; // Stop
+        dest += TELE_TABLE['z']; // Stop
         readable = content;
         pattern = new String[1];
         pattern[0] = dest;

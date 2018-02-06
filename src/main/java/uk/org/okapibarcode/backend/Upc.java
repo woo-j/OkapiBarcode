@@ -19,51 +19,49 @@ import static uk.org.okapibarcode.backend.HumanReadableLocation.NONE;
 import static uk.org.okapibarcode.backend.HumanReadableLocation.TOP;
 
 import java.awt.geom.Rectangle2D;
+
 /**
- * Implements UPC bar code symbology
- * According to BS EN 797:1996
- * <br>
- * UPC-A requires an 11 digit article number. The check digit is calculated.
+ * <p>Implements UPC bar code symbology according to BS EN 797:1996.
+ *
+ * <p>UPC-A requires an 11 digit article number. The check digit is calculated.
  * UPC-E is a zero-compressed version of UPC-A developed for smaller packages.
  * The code requires a 6 digit article number (digits 0-9). The check digit
  * is calculated. Also supports Number System 1 encoding by entering a 7-digit
  * article number stating with the digit 1. In addition EAN-2 and EAN-5 add-on
- * symbols can be added using the + character followed by the add-on data.
+ * symbols can be added using the '+' character followed by the add-on data.
  *
  * @author <a href="mailto:jakel2006@me.com">Robert Elliott</a>
  */
 public class Upc extends Symbol {
 
-    public enum Mode {
+    public static enum Mode {
         UPCA, UPCE
     };
 
-    private boolean useAddOn;
-    private String addOnContent;
-    private Mode mode;
-    private boolean linkageFlag;
-
-    private String[] setAC = {
+    private static final String[] SET_AC = {
         "3211", "2221", "2122", "1411", "1132", "1231", "1114", "1312",
         "1213", "3112"
     };
-    private String[] setB = {
+
+    private static final String[] SET_B = {
         "1123", "1222", "2212", "1141", "2311", "1321", "4111", "2131",
         "3121", "2113"
     };
-    private String[] UPCParity0 = {
+
+    private static final String[] UPC_PARITY_0 = {
         "BBBAAA", "BBABAA", "BBAABA", "BBAAAB", "BABBAA", "BAABBA", "BAAABB",
         "BABABA", "BABAAB", "BAABAB"
     }; /* Number set for UPC-E symbol (EN Table 4) */
-    private String[] UPCParity1 = {
+
+    private static final String[] UPC_PARITY_1 = {
         "AAABBB", "AABABB", "AABBAB", "AABBBA", "ABAABB", "ABBAAB", "ABBBAA",
         "ABABAB", "ABABBA", "ABBABA"
     }; /* Not covered by BS EN 797 */
 
-    public Upc() {
-        mode = Mode.UPCA;
-        linkageFlag = false;
-    }
+    private boolean useAddOn;
+    private String addOnContent;
+    private Mode mode = Mode.UPCA;
+    private boolean linkageFlag;
 
     public void setMode(Mode mode) {
         this.mode = mode;
@@ -184,7 +182,7 @@ public class Upc extends Symbol {
             if (i == 6) {
                 dest += "11111";
             }
-            dest += setAC[Character.getNumericValue(accumulator.charAt(i))];
+            dest += SET_AC[Character.getNumericValue(accumulator.charAt(i))];
         }
         dest += "111";
 
@@ -302,9 +300,9 @@ public class Upc extends Symbol {
 
         /* Use the number system and check digit information to choose a parity scheme */
         if (num_system == 1) {
-            parity = UPCParity1[check - '0'];
+            parity = UPC_PARITY_1[check - '0'];
         } else {
-            parity = UPCParity0[check - '0'];
+            parity = UPC_PARITY_0[check - '0'];
         }
 
         /* Take all this information and make the barcode pattern */
@@ -315,10 +313,10 @@ public class Upc extends Symbol {
         for (i = 0; i <= 5; i++) {
             switch (parity.charAt(i)) {
             case 'A':
-                dest += setAC[source.charAt(i + 1) - '0'];
+                dest += SET_AC[source.charAt(i + 1) - '0'];
                 break;
             case 'B':
-                dest += setB[source.charAt(i + 1) - '0'];
+                dest += SET_B[source.charAt(i + 1) - '0'];
                 break;
             }
         }

@@ -21,17 +21,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Implements GS1 Composite symbology According to ISO/IEC 24723:2010
- * <p>
- * Composite symbols comprise a 2D element which encodes GS1 data
- * and a "linear" element which can be UPC, EAN, Code 128 or
- * GS1 DataBar symbol.
+ * <p>Implements GS1 Composite symbology according to ISO/IEC 24723:2010.
+ *
+ * <p>Composite symbols comprise a 2D element which encodes GS1 data and a
+ * "linear" element which can be UPC, EAN, Code 128 or GS1 DataBar symbol.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class Composite extends Symbol {
+
     /* CC-A component coefficients from ISO/IEC 24728:2006 Annex F */
-    private int[] ccaCoeffs = {
+    private static final int[] CCA_COEFFS = {
         /* k = 4 */
         522, 568, 723, 809,
         /* k = 5 */
@@ -43,7 +43,8 @@ public class Composite extends Symbol {
         /* k = 8 */
         237, 308, 436, 284, 646, 653, 428, 379
     };
-    private int[] coefrs = {
+
+    private static final int[] COEFRS = {
         /* k = 2 */
         27, 917,
         /* k = 4 */
@@ -122,15 +123,16 @@ public class Composite extends Symbol {
     };
 
     /* rows, error codewords, k-offset of valid CC-A sizes from ISO/IEC 24723:2006 Table 9 */
-    private int[] ccaVariants = {
+    private static final int[] CCA_VARIANTS = {
         5, 6, 7, 8, 9, 10, 12, 4, 5, 6, 7, 8, 3, 4, 5, 6, 7, 4, 4, 5, 5, 6, 6, 7, 4, 5, 6, 7, 7, 4, 5, 6, 7, 8, 0, 0, 4, 4, 9, 9, 15, 0, 4, 9, 15, 15, 0, 4, 9, 15, 22
     };
 
     /* following is Left RAP, Centre RAP, Right RAP and Start Cluster from ISO/IEC 24723:2006 tables 10 and 11 */
-    private int[] aRAPTable = {
+    private static final int[] A_RAP_TABLE = {
         39, 1, 32, 8, 14, 43, 20, 11, 1, 5, 15, 21, 40, 43, 46, 34, 29, 0, 0, 0, 0, 0, 0, 0, 43, 33, 37, 47, 1, 20, 23, 26, 14, 9, 19, 33, 12, 40, 46, 23, 52, 23, 13, 17, 27, 33, 52, 3, 6, 46, 41, 6, 0, 3, 3, 3, 0, 3, 3, 0, 3, 6, 6, 0, 0, 0, 0, 3
     };
-    private String[] codagemc = {
+
+    private static final String[] CODAGEMC = {
         "urA", "xfs", "ypy", "unk", "xdw", "yoz", "pDA", "uls", "pBk", "eBA",
         "pAs", "eAk", "prA", "uvs", "xhy", "pnk", "utw", "xgz", "fDA", "pls", "fBk", "frA", "pvs",
         "uxy", "fnk", "ptw", "uwz", "fls", "psy", "fvs", "pxy", "ftw", "pwz", "fxy", "yrx", "ufk",
@@ -347,38 +349,49 @@ public class Composite extends Symbol {
         "tzF", "lyF", "nyh", "BwF", "Dwh", "bwx", "Aiq", "Ain", "Ayo", "kjf", "Aym", "Ayl", "Aif",
         "Ayv", "kze", "kzd", "Aye", "Byu", "Ayd", "Byt", "szp"
     };
-    private char[] brSet = {
+
+    private static final char[] BR_SET = {
         'A', 'B', 'C', 'D', 'E', 'F', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
         'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '*', '+', '-'
     };
-    private String[] PDFttf = {
+
+    private static final String[] PDF_TTF = {
         "00000", "00001", "00010", "00011", "00100", "00101", "00110", "00111",
         "01000", "01001", "01010", "01011", "01100", "01101", "01110", "01111", "10000", "10001",
         "10010", "10011", "10100", "10101", "10110", "10111", "11000", "11001", "11010",
         "11011", "11100", "11101", "11110", "11111", "01", "1111111101010100", "11111101000101001"
     };
+
     /* Left and Right Row Address Pattern from Table 2 */
-    private String[] RAPLR = {"", "221311", "311311", "312211", "222211", "213211", "214111", "223111",
+    private static final String[] RAPLR = {
+        "", "221311", "311311", "312211", "222211", "213211", "214111", "223111",
         "313111", "322111", "412111", "421111", "331111", "241111", "232111", "231211", "321211",
         "411211", "411121", "411112", "321112", "312112", "311212", "311221", "311131", "311122",
         "311113", "221113", "221122", "221131", "221221", "222121", "312121", "321121", "231121",
         "231112", "222112", "213112", "212212", "212221", "212131", "212122", "212113", "211213",
-        "211123", "211132", "211141", "211231", "211222", "211312", "211321", "211411", "212311"};
+        "211123", "211132", "211141", "211231", "211222", "211312", "211321", "211411", "212311"
+    };
 
     /* Centre Row Address Pattern from Table 2 */
-    private String[] RAPC = {"", "112231", "121231", "122131", "131131", "131221", "132121", "141121",
+    private static final String[] RAPC = {
+        "", "112231", "121231", "122131", "131131", "131221", "132121", "141121",
         "141211", "142111", "133111", "132211", "131311", "122311", "123211", "124111", "115111",
         "114211", "114121", "123121", "123112", "122212", "122221", "121321", "121411", "112411",
         "113311", "113221", "113212", "113122", "122122", "131122", "131113", "122113", "113113",
         "112213", "112222", "112312", "112321", "111421", "111331", "111322", "111232", "111223",
-        "111133", "111124", "111214", "112114", "121114", "121123", "121132", "112132", "112141"};
-    private int[] MicroVariants = {1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
+        "111133", "111124", "111214", "112114", "121114", "121123", "121132", "112132", "112141"
+    };
+
+    private static final int[] MICRO_VARIANTS = {
+        1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
         11, 14, 17, 20, 24, 28, 8, 11, 14, 17, 20, 23, 26, 6, 8, 10, 12, 15, 20, 26, 32, 38, 44, 4, 6, 8, 10, 12, 15, 20, 26, 32, 38, 44,
         7, 7, 7, 8, 8, 8, 8, 9, 9, 10, 11, 13, 15, 12, 14, 16, 18, 21, 26, 32, 38, 44, 50, 8, 12, 14, 16, 18, 21, 26, 32, 38, 44, 50,
-        0, 0, 0, 7, 7, 7, 7, 15, 15, 24, 34, 57, 84, 45, 70, 99, 115, 133, 154, 180, 212, 250, 294, 7, 45, 70, 99, 115, 133, 154, 180, 212, 250, 294};
+        0, 0, 0, 7, 7, 7, 7, 15, 15, 24, 34, 57, 84, 45, 70, 99, 115, 133, 154, 180, 212, 250, 294, 7, 45, 70, 99, 115, 133, 154, 180, 212, 250, 294
+    };
+
     /* rows, columns, error codewords, k-offset */
     /* MicroPDF417 coefficients from ISO/IEC 24728:2006 Annex F */
-    private int[] Microcoeffs = {
+    private static final int[] MICROCOEFFS = {
         /* k = 7 */
         76, 925, 537, 597, 784, 691, 437,
         /* k = 8 */
@@ -423,34 +436,36 @@ public class Composite extends Symbol {
         923, 797, 576, 875, 156, 706, 63, 81, 257, 874, 411, 416, 778, 50, 205, 303,
         188, 535, 909, 155, 637, 230, 534, 96, 575, 102, 264, 233, 919, 593, 865, 26,
         579, 623, 766, 146, 10, 739, 246, 127, 71, 244, 211, 477, 920, 876, 427, 820,
-        718, 435};
+        718, 435
+    };
 
     /* following is Left RAP, Centre RAP, Right RAP and Start Cluster from ISO/IEC 24728:2006 tables 10, 11 and 12 */
-    private int[] RAPTable = {1, 8, 36, 19, 9, 25, 1, 1, 8, 36, 19, 9, 27, 1, 7, 15, 25, 37, 1, 1, 21, 15, 1, 47, 1, 7, 15, 25, 37, 1, 1, 21, 15, 1,
+    private static final int[] RAP_TABLE = {
+        1, 8, 36, 19, 9, 25, 1, 1, 8, 36, 19, 9, 27, 1, 7, 15, 25, 37, 1, 1, 21, 15, 1, 47, 1, 7, 15, 25, 37, 1, 1, 21, 15, 1,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 7, 15, 25, 37, 17, 9, 29, 31, 25, 19, 1, 7, 15, 25, 37, 17, 9, 29, 31, 25,
         9, 8, 36, 19, 17, 33, 1, 9, 8, 36, 19, 17, 35, 1, 7, 15, 25, 37, 33, 17, 37, 47, 49, 43, 1, 7, 15, 25, 37, 33, 17, 37, 47, 49,
-        0, 3, 6, 0, 6, 0, 0, 0, 3, 6, 0, 6, 6, 0, 0, 6, 0, 0, 0, 0, 6, 6, 0, 3, 0, 0, 6, 0, 0, 0, 0, 6, 6, 0};
+        0, 3, 6, 0, 6, 0, 0, 0, 3, 6, 0, 6, 6, 0, 0, 6, 0, 0, 0, 0, 6, 6, 0, 3, 0, 0, 6, 0, 0, 0, 0, 6, 6, 0
+    };
 
-    private String binary_string;
-    private int ecc;
-
-    public enum LinearEncoding {
+    public static enum LinearEncoding {
         UPCA, UPCE, EAN, CODE_128, DATABAR_14, DATABAR_14_STACK,
         DATABAR_14_STACK_OMNI, DATABAR_LIMITED, DATABAR_EXPANDED,
         DATABAR_EXPANDED_STACK
     }
-    private LinearEncoding symbology = LinearEncoding.CODE_128;
 
-    private enum gfMode {
+    private static enum GeneralFieldMode {
         NUMERIC, ALPHA, ISOIEC, INVALID_CHAR, ANY_ENC, ALPHA_OR_ISO
     };
 
-    public enum CompositeMode {
+    public static enum CompositeMode {
         CC_A, CC_B, CC_C
     }
 
+    private String binary_string;
+    private int ecc;
+    private LinearEncoding symbology = LinearEncoding.CODE_128;
     private String general_field;
-    private gfMode[] general_field_type;
+    private GeneralFieldMode[] general_field_type;
     private int cc_width;
     private int[][] pwr928 = new int[69][7];
     private int[] codeWords = new int[180];
@@ -469,13 +484,19 @@ public class Composite extends Symbol {
     }
 
     @Override
-    public void setDataType(DataType dummy) {
-        // Do nothing!
+    public void setDataType(DataType dataType) {
+
+        if (dataType != Symbol.DataType.GS1) {
+            throw new IllegalArgumentException("Only GS1 data type is supported for composite symbology.");
+        }
+
+        super.setDataType(dataType);
     }
 
     /**
      * Set the type of linear component included in the composite symbol,
      * this will determine how the lower part of the symbol is encoded.
+     *
      * @param linearSymbology The symbology of the linear component
      */
     public void setSymbology(LinearEncoding linearSymbology) {
@@ -483,8 +504,8 @@ public class Composite extends Symbol {
     }
 
     /**
-     * Set the data to be encoded in the linear component of the composite
-     * symbol.
+     * Set the data to be encoded in the linear component of the composite symbol.
+     *
      * @param input The linear data in GS1 format
      */
     public void setLinear(String input) {
@@ -496,6 +517,7 @@ public class Composite extends Symbol {
      * composite symbol. This value may be ignored if the amount of data
      * supplied is too big for the selected encoding. Mode CC-C can only be
      * used with a Code 128 linear component.
+     *
      * @param userMode Preferred mode
      */
     public void setPreferredMode(CompositeMode userMode) {
@@ -1570,69 +1592,69 @@ public class Composite extends Symbol {
             alpha_pad = 0;
 
 
-            general_field_type = new gfMode[general_field.length()];
+            general_field_type = new GeneralFieldMode[general_field.length()];
 
             for (i = 0; i < general_field.length(); i++) {
                 /* Table 13 - ISO/IEC 646 encodation */
                 if ((general_field.charAt(i) < ' ') || (general_field.charAt(i) > 'z')) {
-                    general_field_type[i] = gfMode.INVALID_CHAR;
+                    general_field_type[i] = GeneralFieldMode.INVALID_CHAR;
                     latch = true;
                 } else {
-                    general_field_type[i] = gfMode.ISOIEC;
+                    general_field_type[i] = GeneralFieldMode.ISOIEC;
                 }
 
                 if (general_field.charAt(i) == '#') {
-                    general_field_type[i] = gfMode.INVALID_CHAR;
+                    general_field_type[i] = GeneralFieldMode.INVALID_CHAR;
                     latch = true;
                 }
                 if (general_field.charAt(i) == '$') {
-                    general_field_type[i] = gfMode.INVALID_CHAR;
+                    general_field_type[i] = GeneralFieldMode.INVALID_CHAR;
                     latch = true;
                 }
                 if (general_field.charAt(i) == '@') {
-                    general_field_type[i] = gfMode.INVALID_CHAR;
+                    general_field_type[i] = GeneralFieldMode.INVALID_CHAR;
                     latch = true;
                 }
                 if (general_field.charAt(i) == 92) {
-                    general_field_type[i] = gfMode.INVALID_CHAR;
+                    general_field_type[i] = GeneralFieldMode.INVALID_CHAR;
                     latch = true;
                 }
                 if (general_field.charAt(i) == '^') {
-                    general_field_type[i] = gfMode.INVALID_CHAR;
+                    general_field_type[i] = GeneralFieldMode.INVALID_CHAR;
                     latch = true;
                 }
                 if (general_field.charAt(i) == 96) {
-                    general_field_type[i] = gfMode.INVALID_CHAR;
+                    general_field_type[i] = GeneralFieldMode.INVALID_CHAR;
                     latch = true;
                 }
 
                 /* Table 12 - Alphanumeric encodation */
                 if ((general_field.charAt(i) >= 'A') && (general_field.charAt(i) <= 'Z')) {
-                    general_field_type[i] = gfMode.ALPHA_OR_ISO;
+                    general_field_type[i] = GeneralFieldMode.ALPHA_OR_ISO;
                 }
                 if (general_field.charAt(i) == '*') {
-                    general_field_type[i] = gfMode.ALPHA_OR_ISO;
+                    general_field_type[i] = GeneralFieldMode.ALPHA_OR_ISO;
                 }
                 if (general_field.charAt(i) == ',') {
-                    general_field_type[i] = gfMode.ALPHA_OR_ISO;
+                    general_field_type[i] = GeneralFieldMode.ALPHA_OR_ISO;
                 }
                 if (general_field.charAt(i) == '-') {
-                    general_field_type[i] = gfMode.ALPHA_OR_ISO;
+                    general_field_type[i] = GeneralFieldMode.ALPHA_OR_ISO;
                 }
                 if (general_field.charAt(i) == '.') {
-                    general_field_type[i] = gfMode.ALPHA_OR_ISO;
+                    general_field_type[i] = GeneralFieldMode.ALPHA_OR_ISO;
                 }
                 if (general_field.charAt(i) == '/') {
-                    general_field_type[i] = gfMode.ALPHA_OR_ISO;
+                    general_field_type[i] = GeneralFieldMode.ALPHA_OR_ISO;
                 }
 
                 /* Numeric encodation */
                 if ((general_field.charAt(i) >= '0') && (general_field.charAt(i) <= '9')) {
-                    general_field_type[i] = gfMode.ANY_ENC;
+                    general_field_type[i] = GeneralFieldMode.ANY_ENC;
                 }
                 if (general_field.charAt(i) == '[') {
                     /* FNC1 can be encoded in any system */
-                    general_field_type[i] = gfMode.ANY_ENC;
+                    general_field_type[i] = GeneralFieldMode.ANY_ENC;
                 }
 
             }
@@ -1644,14 +1666,14 @@ public class Composite extends Symbol {
             }
 
             for (i = 0; i < general_field.length() - 1; i++) {
-                if ((general_field_type[i] == gfMode.ISOIEC) && (general_field.charAt(i + 1) == '[')) {
-                    general_field_type[i + 1] = gfMode.ISOIEC;
+                if ((general_field_type[i] == GeneralFieldMode.ISOIEC) && (general_field.charAt(i + 1) == '[')) {
+                    general_field_type[i + 1] = GeneralFieldMode.ISOIEC;
                 }
             }
 
             for (i = 0; i < general_field.length() - 1; i++) {
-                if ((general_field_type[i] == gfMode.ALPHA_OR_ISO) && (general_field.charAt(i + 1) == '[')) {
-                    general_field_type[i + 1] = gfMode.ALPHA_OR_ISO;
+                if ((general_field_type[i] == GeneralFieldMode.ALPHA_OR_ISO) && (general_field.charAt(i + 1) == '[')) {
+                    general_field_type[i + 1] = GeneralFieldMode.ALPHA_OR_ISO;
                 }
             }
 
@@ -1662,7 +1684,7 @@ public class Composite extends Symbol {
                 switch (general_field_type[i]) {
                     case NUMERIC:
                         if (i != 0) {
-                            if ((general_field_type[i - 1] != gfMode.NUMERIC) && (general_field.charAt(i - 1) != '[')) {
+                            if ((general_field_type[i - 1] != GeneralFieldMode.NUMERIC) && (general_field.charAt(i - 1) != '[')) {
                                 binary_string += "000"; /* Numeric latch */
                             }
                         }
@@ -1701,10 +1723,10 @@ public class Composite extends Symbol {
 
                     case ALPHA:
                         if (i != 0) {
-                            if ((general_field_type[i - 1] == gfMode.NUMERIC) || (general_field.charAt(i - 1) == '[')) {
+                            if ((general_field_type[i - 1] == GeneralFieldMode.NUMERIC) || (general_field.charAt(i - 1) == '[')) {
                                 binary_string += "0000"; /* Alphanumeric latch */
                             }
-                            if (general_field_type[i - 1] == gfMode.ISOIEC) {
+                            if (general_field_type[i - 1] == GeneralFieldMode.ISOIEC) {
                                 binary_string += "00100"; /* ISO/IEC 646 latch */
                             }
                         }
@@ -1759,11 +1781,11 @@ public class Composite extends Symbol {
 
                     case ISOIEC:
                         if (i != 0) {
-                            if ((general_field_type[i - 1] == gfMode.NUMERIC) || (general_field.charAt(i - 1) == '[')) {
+                            if ((general_field_type[i - 1] == GeneralFieldMode.NUMERIC) || (general_field.charAt(i - 1) == '[')) {
                                 binary_string += "0000"; /* Alphanumeric latch */
                                 binary_string += "00100"; /* ISO/IEC 646 latch */
                             }
-                            if (general_field_type[i - 1] == gfMode.ALPHA) {
+                            if (general_field_type[i - 1] == GeneralFieldMode.ALPHA) {
                                 binary_string += "00100"; /* ISO/IEC 646 latch */
                             }
                         }
@@ -1947,7 +1969,7 @@ public class Composite extends Symbol {
                 /* Extra FNC1 character required after Alpha encodation (section 5.2.3) */
             }
 
-            if ((general_field.length() != 0) && (general_field_type[general_field.length() - 1] == gfMode.NUMERIC)) {
+            if ((general_field.length() != 0) && (general_field_type[general_field.length() - 1] == GeneralFieldMode.NUMERIC)) {
                 binary_string += "0000";
             }
 
@@ -2005,9 +2027,9 @@ public class Composite extends Symbol {
          of ISO/IEC 24724:2006 */
 
         int block_count, i, j, k;
-        gfMode current, next, last;
+        GeneralFieldMode current, next, last;
         int[] blockLength = new int[200];
-        gfMode[] blockType = new gfMode[200];
+        GeneralFieldMode[] blockType = new GeneralFieldMode[200];
 
         block_count = 0;
 
@@ -2033,40 +2055,40 @@ public class Composite extends Symbol {
             current = blockType[i];
             next = blockType[i + 1];
 
-            if ((current == gfMode.ISOIEC) && (i != (block_count - 1))) {
-                if ((next == gfMode.ANY_ENC) && (blockLength[i + 1] >= 4)) {
-                    blockType[i + 1] = gfMode.NUMERIC;
+            if ((current == GeneralFieldMode.ISOIEC) && (i != (block_count - 1))) {
+                if ((next == GeneralFieldMode.ANY_ENC) && (blockLength[i + 1] >= 4)) {
+                    blockType[i + 1] = GeneralFieldMode.NUMERIC;
                 }
-                if ((next == gfMode.ANY_ENC) && (blockLength[i + 1] < 4)) {
-                    blockType[i + 1] = gfMode.ISOIEC;
+                if ((next == GeneralFieldMode.ANY_ENC) && (blockLength[i + 1] < 4)) {
+                    blockType[i + 1] = GeneralFieldMode.ISOIEC;
                 }
-                if ((next == gfMode.ALPHA_OR_ISO) && (blockLength[i + 1] >= 5)) {
-                    blockType[i + 1] = gfMode.ALPHA;
+                if ((next == GeneralFieldMode.ALPHA_OR_ISO) && (blockLength[i + 1] >= 5)) {
+                    blockType[i + 1] = GeneralFieldMode.ALPHA;
                 }
-                if ((next == gfMode.ALPHA_OR_ISO) && (blockLength[i + 1] < 5)) {
-                    blockType[i + 1] = gfMode.ISOIEC;
+                if ((next == GeneralFieldMode.ALPHA_OR_ISO) && (blockLength[i + 1] < 5)) {
+                    blockType[i + 1] = GeneralFieldMode.ISOIEC;
                 }
             }
 
-            if (current == gfMode.ALPHA_OR_ISO) {
-                blockType[i] = gfMode.ALPHA;
+            if (current == GeneralFieldMode.ALPHA_OR_ISO) {
+                blockType[i] = GeneralFieldMode.ALPHA;
             }
 
-            if ((current == gfMode.ALPHA) && (i != (block_count - 1))) {
-                if ((next == gfMode.ANY_ENC) && (blockLength[i + 1] >= 6)) {
-                    blockType[i + 1] = gfMode.NUMERIC;
+            if ((current == GeneralFieldMode.ALPHA) && (i != (block_count - 1))) {
+                if ((next == GeneralFieldMode.ANY_ENC) && (blockLength[i + 1] >= 6)) {
+                    blockType[i + 1] = GeneralFieldMode.NUMERIC;
                 }
-                if ((next == gfMode.ANY_ENC) && (blockLength[i + 1] < 6)) {
+                if ((next == GeneralFieldMode.ANY_ENC) && (blockLength[i + 1] < 6)) {
                     if ((i == block_count - 2) && (blockLength[i + 1] >= 4)) {
-                        blockType[i + 1] = gfMode.NUMERIC;
+                        blockType[i + 1] = GeneralFieldMode.NUMERIC;
                     } else {
-                        blockType[i + 1] = gfMode.ALPHA;
+                        blockType[i + 1] = GeneralFieldMode.ALPHA;
                     }
                 }
             }
 
-            if (current == gfMode.ANY_ENC) {
-                blockType[i] = gfMode.NUMERIC;
+            if (current == GeneralFieldMode.ANY_ENC) {
+                blockType[i] = GeneralFieldMode.NUMERIC;
             }
         }
 
@@ -2092,7 +2114,7 @@ public class Composite extends Symbol {
         }
 
         for (i = 0; i < block_count - 1; i++) {
-            if ((blockType[i] == gfMode.NUMERIC) && ((blockLength[i] & 1) != 0)) {
+            if ((blockType[i] == GeneralFieldMode.NUMERIC) && ((blockLength[i] & 1) != 0)) {
                 /* Odd size numeric block */
                 blockLength[i] = blockLength[i] - 1;
                 blockLength[i + 1] = blockLength[i + 1] + 1;
@@ -2107,7 +2129,7 @@ public class Composite extends Symbol {
             }
         }
 
-        if ((blockType[block_count - 1] == gfMode.NUMERIC) && ((blockLength[block_count - 1] & 1) != 0)) {
+        if ((blockType[block_count - 1] == GeneralFieldMode.NUMERIC) && ((blockLength[block_count - 1] & 1) != 0)) {
             /* If the last block is numeric and an odd size, further
              processing needs to be done outside this procedure */
             return true;
@@ -2223,9 +2245,9 @@ public class Composite extends Symbol {
                 break;
         }
 
-        rows = ccaVariants[variant];
-        k = ccaVariants[17 + variant];
-        offset = ccaVariants[34 + variant];
+        rows = CCA_VARIANTS[variant];
+        k = CCA_VARIANTS[17 + variant];
+        offset = CCA_VARIANTS[34 + variant];
 
         /* Reed-Solomon error correction */
 
@@ -2238,9 +2260,9 @@ public class Composite extends Symbol {
             total = (codeWords[i] + rsCodeWords[k - 1]) % 929;
             for (j = k - 1; j >= 0; j--) {
                 if (j == 0) {
-                    rsCodeWords[j] = (929 - (total * ccaCoeffs[offset + j]) % 929) % 929;
+                    rsCodeWords[j] = (929 - (total * CCA_COEFFS[offset + j]) % 929) % 929;
                 } else {
-                    rsCodeWords[j] = (rsCodeWords[j - 1] + 929 - (total * ccaCoeffs[offset + j]) % 929) % 929;
+                    rsCodeWords[j] = (rsCodeWords[j - 1] + 929 - (total * CCA_COEFFS[offset + j]) % 929) % 929;
                 }
             }
             encodeInfo += Integer.toString(codeWords[i]) + " ";
@@ -2259,10 +2281,10 @@ public class Composite extends Symbol {
         }
 
         /* Place data into table */
-        LeftRAPStart = aRAPTable[variant];
-        CentreRAPStart = aRAPTable[variant + 17];
-        RightRAPStart = aRAPTable[variant + 34];
-        StartCluster = aRAPTable[variant + 51] / 3;
+        LeftRAPStart = A_RAP_TABLE[variant];
+        CentreRAPStart = A_RAP_TABLE[variant + 17];
+        RightRAPStart = A_RAP_TABLE[variant + 34];
+        StartCluster = A_RAP_TABLE[variant + 51] / 3;
 
         LeftRAP = LeftRAPStart;
         CentreRAP = CentreRAPStart;
@@ -2286,14 +2308,14 @@ public class Composite extends Symbol {
             /* Copy the data into codebarre */
             codebarre += RAPLR[LeftRAP];
             codebarre += "1";
-            codebarre += codagemc[offset + dummy[1]];
+            codebarre += CODAGEMC[offset + dummy[1]];
             codebarre += "1";
             if (cc_width == 3) {
                 codebarre += RAPC[CentreRAP];
             }
             if (cc_width >= 2) {
                 codebarre += "1";
-                codebarre += codagemc[offset + dummy[2]];
+                codebarre += CODAGEMC[offset + dummy[2]];
                 codebarre += "1";
             }
             if (cc_width == 4) {
@@ -2301,12 +2323,12 @@ public class Composite extends Symbol {
             }
             if (cc_width >= 3) {
                 codebarre += "1";
-                codebarre += codagemc[offset + dummy[3]];
+                codebarre += CODAGEMC[offset + dummy[3]];
                 codebarre += "1";
             }
             if (cc_width == 4) {
                 codebarre += "1";
-                codebarre += codagemc[offset + dummy[4]];
+                codebarre += CODAGEMC[offset + dummy[4]];
                 codebarre += "1";
             }
             codebarre += RAPLR[RightRAP];
@@ -2331,7 +2353,7 @@ public class Composite extends Symbol {
                         flip = 0;
                     }
                 } else {
-                    bin += PDFttf[positionOf(codebarre.charAt(loop), brSet)];
+                    bin += PDF_TTF[positionOf(codebarre.charAt(loop), BR_SET)];
                 }
             }
 
@@ -2381,7 +2403,7 @@ public class Composite extends Symbol {
     }
 
     /* converts bit string to base 928 values, codeWords[0] is highest order */
-    int encode928(int bitLng) {
+    private int encode928(int bitLng) {
         int i, j, b, bitCnt, cwNdx, cwCnt, cwLng;
         for (cwNdx = cwLng = b = 0; b < bitLng; b += 69, cwNdx += 7) {
             bitCnt = min(bitLng - b, 69);
@@ -2550,12 +2572,12 @@ public class Composite extends Symbol {
 
         /* Now we have the variant we can load the data - from here on the same as MicroPDF417 code */
         variant--;
-        option_2 = MicroVariants[variant]; /* columns */
-        rows = MicroVariants[variant + 34]; /* rows */
-        k = MicroVariants[variant + 68]; /* number of EC CWs */
+        option_2 = MICRO_VARIANTS[variant]; /* columns */
+        rows = MICRO_VARIANTS[variant + 34]; /* rows */
+        k = MICRO_VARIANTS[variant + 68]; /* number of EC CWs */
         longueur = (option_2 * rows) - k; /* number of non-EC CWs */
         i = longueur - codeWordCount; /* amount of padding required */
-        offset = MicroVariants[variant + 102]; /* coefficient offset */
+        offset = MICRO_VARIANTS[variant + 102]; /* coefficient offset */
 
         /* We add the padding */
         while (i > 0) {
@@ -2575,9 +2597,9 @@ public class Composite extends Symbol {
             total = (codeWords[i] + mccorrection[k - 1]) % 929;
             for (j = k - 1; j >= 0; j--) {
                 if (j == 0) {
-                    mccorrection[j] = (929 - (total * Microcoeffs[offset + j]) % 929) % 929;
+                    mccorrection[j] = (929 - (total * MICROCOEFFS[offset + j]) % 929) % 929;
                 } else {
-                    mccorrection[j] = (mccorrection[j - 1] + 929 - (total * Microcoeffs[offset + j]) % 929) % 929;
+                    mccorrection[j] = (mccorrection[j - 1] + 929 - (total * MICROCOEFFS[offset + j]) % 929) % 929;
                 }
             }
             encodeInfo += Integer.toString(codeWords[i]) + " ";
@@ -2596,10 +2618,10 @@ public class Composite extends Symbol {
         }
 
         /* Now get the RAP (Row Address Pattern) start values */
-        LeftRAPStart = RAPTable[variant];
-        CentreRAPStart = RAPTable[variant + 34];
-        RightRAPStart = RAPTable[variant + 68];
-        StartCluster = RAPTable[variant + 102] / 3;
+        LeftRAPStart = RAP_TABLE[variant];
+        CentreRAPStart = RAP_TABLE[variant + 34];
+        RightRAPStart = RAP_TABLE[variant + 68];
+        StartCluster = RAP_TABLE[variant + 102] / 3;
 
         /* That's all values loaded, get on with the encoding */
 
@@ -2625,14 +2647,14 @@ public class Composite extends Symbol {
             /* Copy the data into codebarre */
             codebarre += RAPLR[LeftRAP];
             codebarre += "1";
-            codebarre += codagemc[offset + dummy[1]];
+            codebarre += CODAGEMC[offset + dummy[1]];
             codebarre += "1";
             if (cc_width == 3) {
                 codebarre += RAPC[CentreRAP];
             }
             if (cc_width >= 2) {
                 codebarre += "1";
-                codebarre += codagemc[offset + dummy[2]];
+                codebarre += CODAGEMC[offset + dummy[2]];
                 codebarre += "1";
             }
             if (cc_width == 4) {
@@ -2640,12 +2662,12 @@ public class Composite extends Symbol {
             }
             if (cc_width >= 3) {
                 codebarre += "1";
-                codebarre += codagemc[offset + dummy[3]];
+                codebarre += CODAGEMC[offset + dummy[3]];
                 codebarre += "1";
             }
             if (cc_width == 4) {
                 codebarre += "1";
-                codebarre += codagemc[offset + dummy[4]];
+                codebarre += CODAGEMC[offset + dummy[4]];
                 codebarre += "1";
             }
             codebarre += RAPLR[RightRAP];
@@ -2670,7 +2692,7 @@ public class Composite extends Symbol {
                         flip = 0;
                     }
                 } else {
-                    bin += PDFttf[positionOf(codebarre.charAt(loop), brSet)];
+                    bin += PDF_TTF[positionOf(codebarre.charAt(loop), BR_SET)];
                 }
             }
 
@@ -2784,9 +2806,9 @@ public class Composite extends Symbol {
             total = (codeWords[i] + mccorrection[k - 1]) % 929;
             for (j = k - 1; j >= 0; j--) {
                 if (j == 0) {
-                    mccorrection[j] = (929 - (total * coefrs[offset + j]) % 929) % 929;
+                    mccorrection[j] = (929 - (total * COEFRS[offset + j]) % 929) % 929;
                 } else {
-                    mccorrection[j] = (mccorrection[j - 1] + 929 - (total * coefrs[offset + j]) % 929) % 929;
+                    mccorrection[j] = (mccorrection[j - 1] + 929 - (total * COEFRS[offset + j]) % 929) % 929;
                 }
             }
             encodeInfo += Integer.toString(codeWords[i]) + " ";
@@ -2851,14 +2873,14 @@ public class Composite extends Symbol {
                     default:
                         offset = 0; /* cluster(0) */ break;
                 }
-                codebarre += codagemc[offset + dummy[j]];
+                codebarre += CODAGEMC[offset + dummy[j]];
                 codebarre += "*";
             }
             codebarre += "-";
 
             bin = "";
             for (loop = 0; loop < codebarre.length(); loop++) {
-                bin += PDFttf[positionOf(codebarre.charAt(loop), brSet)];
+                bin += PDF_TTF[positionOf(codebarre.charAt(loop), BR_SET)];
             }
             pattern[i] = bin2pat(bin);
             row_height[i] = 3;

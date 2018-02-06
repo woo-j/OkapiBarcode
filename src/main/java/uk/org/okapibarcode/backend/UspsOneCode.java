@@ -22,22 +22,20 @@ import java.awt.geom.Rectangle2D;
 import java.math.BigInteger;
 
 /**
- * USPS OneCode (also known as Intelligent Mail Barcode)
- * According to USPS-B-3200F
- * Specification at https://ribbs.usps.gov/intelligentmail_mailpieces/documents/tech_guides/SPUSPSG.pdf
- * <br>
- * OneCode is a fixed length (65-bar) symbol which combines routing and
- * customer information in a single symbol. Input data consists of a 20 digit
- * tracking code, followed by a dash (-), followed by a delivery point
- * zip-code which can be 0, 5, 9 or 11 digits in length.
+ * <p>Implements USPS OneCode (also known as Intelligent Mail Barcode) according to USPS-B-3200F.
+ *
+ * <p>OneCode is a fixed length (65-bar) symbol which combines routing and customer information
+ * in a single symbol. Input data consists of a 20 digit tracking code, followed by a dash (-),
+ * followed by a delivery point ZIP code which can be 0, 5, 9 or 11 digits in length.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
+ * @see <a href="https://ribbs.usps.gov/intelligentmail_mailpieces/documents/tech_guides/SPUSPSG.pdf">USPS OneCode Specification</a>
  */
 public class UspsOneCode extends Symbol {
 
     /* The following lookup tables were generated using the code in Appendix C */
 
-    private int[] AppxD_I = { /* Appendix D Table 1 - 5 of 13 characters */
+    private static final int[] APPX_D_I = { /* Appendix D Table 1 - 5 of 13 characters */
         0x001F, 0x1F00, 0x002F, 0x1E80, 0x0037, 0x1D80, 0x003B, 0x1B80, 0x003D, 0x1780,
         0x003E, 0x0F80, 0x004F, 0x1E40, 0x0057, 0x1D40, 0x005B, 0x1B40, 0x005D, 0x1740,
         0x005E, 0x0F40, 0x0067, 0x1CC0, 0x006B, 0x1AC0, 0x006D, 0x16C0, 0x006E, 0x0EC0,
@@ -169,7 +167,7 @@ public class UspsOneCode extends Symbol {
         0x08E2, 0x064C, 0x0554, 0x04E4, 0x0358, 0x02E8, 0x01F0
     };
 
-    private int[] AppxD_II = { /* Appendix D Table II - 2 of 13 characters */
+    private static final int[] APPX_D_II = { /* Appendix D Table II - 2 of 13 characters */
         0x0003, 0x1800, 0x0005, 0x1400, 0x0006, 0x0C00, 0x0009, 0x1200, 0x000A, 0x0A00,
         0x000C, 0x0600, 0x0011, 0x1100, 0x0012, 0x0900, 0x0014, 0x0500, 0x0018, 0x0300,
         0x0021, 0x1080, 0x0022, 0x0880, 0x0024, 0x0480, 0x0028, 0x0280, 0x0030, 0x0180,
@@ -180,7 +178,7 @@ public class UspsOneCode extends Symbol {
         0x0801, 0x1002, 0x1001, 0x0802, 0x0404, 0x0208, 0x0110, 0x00A0
     };
 
-    private int[] AppxD_IV = { /* Appendix D Table IV - Bar-to-Character Mapping (reverse lookup) */
+    private static final int[] APPX_D_IV = { /* Appendix D Table IV - Bar-to-Character Mapping (reverse lookup) */
         67, 6, 78, 16, 86, 95, 34, 40, 45, 113, 117, 121, 62, 87, 18, 104, 41, 76, 57, 119, 115, 72, 97,
         2, 127, 26, 105, 35, 122, 52, 114, 7, 24, 82, 68, 63, 94, 44, 77, 112, 70, 100, 39, 30, 107,
         15, 125, 85, 10, 65, 54, 88, 20, 106, 46, 66, 8, 116, 29, 61, 99, 80, 90, 37, 123, 51, 25, 84,
@@ -188,8 +186,6 @@ public class UspsOneCode extends Symbol {
         60, 14, 1, 27, 103, 126, 75, 89, 50, 120, 19, 32, 110, 92, 111, 130, 59, 31, 12, 81, 43, 55,
         5, 74, 22, 101, 128, 58, 118, 48, 108, 38, 98, 93, 23, 83, 13, 73, 3
     };
-
-    int[] byte_array = new int[13];
 
     public UspsOneCode() {
         this.default_height = 8;
@@ -288,13 +284,14 @@ public class UspsOneCode extends Symbol {
 
         /* *** Step 2 - Generation of 11-bit CRC on Binary Data *** */
 
-        for (i = 0; i < 13; i++) {
+        int[] byte_array = new int[13];
+        for (i = 0; i < byte_array.length; i++) {
             mask = accum.shiftRight(96 - (8 * i));
             mask = mask.and(new BigInteger("255"));
             byte_array[i] = mask.intValue();
         }
 
-        usps_crc = USPS_MSB_Math_CRC11GenerateFrameCheckSequence();
+        usps_crc = USPS_MSB_Math_CRC11GenerateFrameCheckSequence(byte_array);
 //        if (debug) {
 //            System.out.printf("FCS 2: %d\n", usps_crc);
 //        }
@@ -345,9 +342,9 @@ public class UspsOneCode extends Symbol {
 
         for (i = 0; i < 10; i++) {
             if (codeword[i] < 1287) {
-                characters[i] = AppxD_I[codeword[i]];
+                characters[i] = APPX_D_I[codeword[i]];
             } else {
-                characters[i] = AppxD_II[codeword[i] - 1287];
+                characters[i] = APPX_D_II[codeword[i] - 1287];
             }
         }
 
@@ -378,9 +375,9 @@ public class UspsOneCode extends Symbol {
         for (i = 0; i < 10; i++) {
             for (j = 0; j < 13; j++) {
                 if ((characters[i] & (1 << j)) == 0) {
-                    bar_map[AppxD_IV[(13 * i) + j] - 1] = false;
+                    bar_map[APPX_D_IV[(13 * i) + j] - 1] = false;
                 } else {
-                    bar_map[AppxD_IV[(13 * i) + j] - 1] = true;
+                    bar_map[APPX_D_IV[(13 * i) + j] - 1] = true;
                 }
             }
         }
@@ -412,39 +409,42 @@ public class UspsOneCode extends Symbol {
         return true;
     }
 
-    private int USPS_MSB_Math_CRC11GenerateFrameCheckSequence() {
-        int GeneratorPolynomial = 0x0F35;
-        int FrameCheckSequence = 0x07FF;
-        int Data;
-        int ByteIndex, Bit;
-        int ByteArrayPtr = 0;
+    private int USPS_MSB_Math_CRC11GenerateFrameCheckSequence(int[] bytes) {
+
+        int generatorPolynomial = 0x0F35;
+        int frameCheckSequence = 0x07FF;
+        int data;
+        int byteIndex, bit;
+        int byteArrayPtr = 0;
 
         /* Do most significant byte skipping the 2 most significant bits */
-        Data = byte_array[ByteArrayPtr] << 5;
-        ByteArrayPtr++;
-        for (Bit = 2; Bit < 8; Bit++) {
-            if (((FrameCheckSequence ^ Data) & 0x400) != 0)
-                FrameCheckSequence = (FrameCheckSequence << 1) ^ GeneratorPolynomial;
+        data = bytes[byteArrayPtr] << 5;
+        byteArrayPtr++;
+        for (bit = 2; bit < 8; bit++) {
+            if (((frameCheckSequence ^ data) & 0x400) != 0)
+                frameCheckSequence = (frameCheckSequence << 1) ^ generatorPolynomial;
             else
-                FrameCheckSequence = (FrameCheckSequence << 1);
-            FrameCheckSequence &= 0x7FF;
-            Data <<= 1;
+                frameCheckSequence = (frameCheckSequence << 1);
+            frameCheckSequence &= 0x7FF;
+            data <<= 1;
         }
+
         /* Do rest of the bytes */
-        for (ByteIndex = 1; ByteIndex < 13; ByteIndex++) {
-            Data = byte_array[ByteArrayPtr] << 3;
-            ByteArrayPtr++;
-            for (Bit = 0; Bit < 8; Bit++) {
-                if (((FrameCheckSequence ^ Data) & 0x0400) != 0) {
-                    FrameCheckSequence = (FrameCheckSequence << 1) ^ GeneratorPolynomial;
+        for (byteIndex = 1; byteIndex < 13; byteIndex++) {
+            data = bytes[byteArrayPtr] << 3;
+            byteArrayPtr++;
+            for (bit = 0; bit < 8; bit++) {
+                if (((frameCheckSequence ^ data) & 0x0400) != 0) {
+                    frameCheckSequence = (frameCheckSequence << 1) ^ generatorPolynomial;
                 } else {
-                    FrameCheckSequence = (FrameCheckSequence << 1);
+                    frameCheckSequence = (frameCheckSequence << 1);
                 }
-                FrameCheckSequence &= 0x7FF;
-                Data <<= 1;
+                frameCheckSequence &= 0x7FF;
+                data <<= 1;
             }
         }
-        return FrameCheckSequence;
+
+        return frameCheckSequence;
     }
 
     @Override

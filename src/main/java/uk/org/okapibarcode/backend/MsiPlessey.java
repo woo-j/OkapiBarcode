@@ -17,10 +17,9 @@
 package uk.org.okapibarcode.backend;
 
 /**
- * Implements the MSI (Modified Plessey) bar code symbology.
- * <br>
- * MSI Plessey can encode a string of numeric digits and has a range
- * of check digit options.
+ * <p>Implements the MSI (Modified Plessey) bar code symbology.
+ *
+ * <p>MSI Plessey can encode a string of numeric digits and has a range of check digit options.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
@@ -30,25 +29,31 @@ public class MsiPlessey extends Symbol {
         NONE, MOD10, MOD10_MOD10, MOD11, MOD11_MOD10
     }
 
-    private CheckDigit checkOption;
+    private final static String[] MSI_PLESS_TABLE = {
+        "12121212", "12121221", "12122112", "12122121", "12211212", "12211221",
+        "12212112", "12212121", "21121212", "21121221"
+    };
 
-    public MsiPlessey() {
-        checkOption = CheckDigit.NONE;
-    }
+    private CheckDigit checkDigit = CheckDigit.NONE;
 
     /**
      * Set the check digit scheme to use. Options are: None, Modulo-10,
      * 2 x Modulo-10, Modulo-11 and Modulo-11 &amp; 10.
-     * @param checkMode Type of check digit to add to symbol
+     *
+     * @param checkDigit the type of check digit to add to symbol
      */
-    public void setCheckDigit(CheckDigit checkMode) {
-        checkOption = checkMode;
+    public void setCheckDigit(CheckDigit checkDigit) {
+        this.checkDigit = checkDigit;
     }
 
-    private final String[] MSI_PlessTable = {
-        "12121212", "12121221", "12122112", "12122121", "12211212", "12211221",
-        "12212112", "12212121", "21121212", "21121221"
-    };
+    /**
+     * Returns the check digit scheme being used.
+     *
+     * @return the check digit scheme being used
+     */
+    public CheckDigit getCheckDigit() {
+        return checkDigit;
+    }
 
     @Override
     public boolean encode() {
@@ -64,19 +69,19 @@ public class MsiPlessey extends Symbol {
         int checkDigit1;
         int checkDigit2;
 
-        if (!(content.matches("[0-9]+"))) {
+        if (!content.matches("[0-9]+")) {
             error_msg = "Invalid characters in input";
             return false;
         }
 
         intermediate = "21"; // Start
         for (i = 0; i < length; i++) {
-            intermediate += MSI_PlessTable[Character.getNumericValue(content.charAt(i))];
+            intermediate += MSI_PLESS_TABLE[Character.getNumericValue(content.charAt(i))];
         }
 
         readable = content;
 
-        if ((checkOption == CheckDigit.MOD10) || (checkOption == CheckDigit.MOD10_MOD10)) {
+        if (checkDigit == CheckDigit.MOD10 || checkDigit == CheckDigit.MOD10_MOD10) {
             /* Add Modulo-10 check digit */
             evenString = "";
             oddString = "";
@@ -117,11 +122,11 @@ public class MsiPlessey extends Symbol {
                 checkDigit1 = 0;
             }
 
-            intermediate += MSI_PlessTable[checkDigit1];
+            intermediate += MSI_PLESS_TABLE[checkDigit1];
             readable += checkDigit1;
         }
 
-        if ((checkOption == CheckDigit.MOD11) || (checkOption == CheckDigit.MOD11_MOD10)) {
+        if (checkDigit == CheckDigit.MOD11 || checkDigit == CheckDigit.MOD11_MOD10) {
             /* Add a Modulo-11 check digit */
             weight = 2;
             addup = 0;
@@ -142,14 +147,14 @@ public class MsiPlessey extends Symbol {
 
             readable += checkDigit1;
             if (checkDigit1 == 10) {
-                intermediate += MSI_PlessTable[1];
-                intermediate += MSI_PlessTable[0];
+                intermediate += MSI_PLESS_TABLE[1];
+                intermediate += MSI_PLESS_TABLE[0];
             } else {
-                intermediate += MSI_PlessTable[checkDigit1];
+                intermediate += MSI_PLESS_TABLE[checkDigit1];
             }
         }
 
-        if ((checkOption == CheckDigit.MOD10_MOD10) || (checkOption == CheckDigit.MOD11_MOD10)) {
+        if (checkDigit == CheckDigit.MOD10_MOD10 || checkDigit == CheckDigit.MOD11_MOD10) {
             /* Add a second Modulo-10 check digit */
             evenString = "";
             oddString = "";
@@ -190,17 +195,15 @@ public class MsiPlessey extends Symbol {
                 checkDigit2 = 0;
             }
 
-            intermediate += MSI_PlessTable[checkDigit2];
+            intermediate += MSI_PLESS_TABLE[checkDigit2];
             readable += checkDigit2;
         }
 
         intermediate += "121"; // Stop
 
-        pattern = new String[1];
-        pattern[0] = intermediate;
+        pattern = new String[] { intermediate };
         row_count = 1;
-        row_height = new int[1];
-        row_height[0] = -1;
+        row_height = new int[] { -1 };
         plotSymbol();
         return true;
     }

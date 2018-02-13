@@ -22,12 +22,11 @@ import static uk.org.okapibarcode.backend.HumanReadableLocation.TOP;
 import java.awt.geom.Rectangle2D;
 
 /**
- * Implements <a href="http://en.wikipedia.org/wiki/POSTNET">POSTNET</a> and
+ * <p>Implements <a href="http://en.wikipedia.org/wiki/POSTNET">POSTNET</a> and
  * <a href="http://en.wikipedia.org/wiki/Postal_Alpha_Numeric_Encoding_Technique">PLANET</a>
  * bar code symbologies.
- * <br>
- * POSTNET and PLANET both use numerical input data and include a modulo-10
- * check digit.
+ *
+ * <p>POSTNET and PLANET both use numerical input data and include a modulo-10 check digit.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
@@ -74,12 +73,8 @@ public class Postnet extends Symbol {
     @Override
     public boolean encode() {
 
-        boolean retval;
-        if (mode == Mode.POSTNET) {
-            retval = makePostnet();
-        } else {
-            retval = makePlanet();
-        }
+        String[] table = (mode == Mode.POSTNET ? PN_TABLE : PL_TABLE);
+        boolean retval = encode(table);
 
         if (retval) {
             plotSymbol();
@@ -88,7 +83,7 @@ public class Postnet extends Symbol {
         return retval;
     }
 
-    private boolean makePostnet() {
+    private boolean encode(String[] table) {
         int i, sum, check_digit;
         String dest;
 
@@ -106,51 +101,14 @@ public class Postnet extends Symbol {
         dest = "L";
 
         for (i = 0; i < content.length(); i++) {
-            dest += PN_TABLE[content.charAt(i) - '0'];
+            dest += table[content.charAt(i) - '0'];
             sum += content.charAt(i) - '0';
         }
 
         check_digit = (10 - (sum % 10)) % 10;
         encodeInfo += "Check Digit: " + check_digit + "\n";
 
-        dest += PN_TABLE[check_digit];
-        dest += "L";
-
-        encodeInfo += "Encoding: " + dest + "\n";
-        readable = content;
-        pattern = new String[] { dest };
-        row_count = 1;
-        row_height = new int[] { -1 };
-
-        return true;
-    }
-
-    private boolean makePlanet() {
-        int i, sum, check_digit;
-        String dest;
-
-        if (content.length() > 38) {
-            error_msg = "Input too long";
-            return false;
-        }
-
-        if (!(content.matches("[0-9]+"))) {
-            error_msg = "Invalid characters in data";
-            return false;
-        }
-
-        sum = 0;
-        dest = "L";
-
-        for (i = 0; i < content.length(); i++) {
-            dest += PL_TABLE[content.charAt(i) - '0'];
-            sum += content.charAt(i) - '0';
-        }
-
-        check_digit = (10 - (sum % 10)) % 10;
-        encodeInfo += "Check Digit: " + check_digit + "\n";
-
-        dest += PL_TABLE[check_digit];
+        dest += table[check_digit];
         dest += "L";
 
         encodeInfo += "Encoding: " + dest + "\n";

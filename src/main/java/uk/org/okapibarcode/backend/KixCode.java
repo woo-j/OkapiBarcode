@@ -84,7 +84,8 @@ public class KixCode extends Symbol {
         y = 0;
         h = 0;
         for (xBlock = 0; xBlock < pattern[0].length(); xBlock++) {
-            switch (pattern[0].charAt(xBlock)) {
+            char c = pattern[0].charAt(xBlock);
+            switch (c) {
                 case 'A':
                     y = 0;
                     h = 5;
@@ -101,11 +102,13 @@ public class KixCode extends Symbol {
                     y = 3;
                     h = 2;
                     break;
+                default:
+                    throw new IllegalStateException("Unknown pattern character: " + c);
             }
             rectangles.add(new Rectangle2D.Double(x, y, w, h));
             x += 2;
         }
-        symbol_width = pattern[0].length() * 3;
+        symbol_width = ((pattern[0].length() - 1) * 2) + 1; // final bar doesn't need extra whitespace
         symbol_height = 8;
     }
 }

@@ -16,23 +16,22 @@
 package uk.org.okapibarcode.backend;
 
 /**
- * Implements Korea Post Barcode. Input should consist of of a six-digit
- * number. A Modulo-10 check digit is calculated and added, and should not form
- * part of the input data.
+ * <p>Implements Korea Post Barcode. Input should consist of of a six-digit number. A Modulo-10
+ * check digit is calculated and added, and should not form part of the input data.
+ *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class KoreaPost extends Symbol {
 
-    String[] KoreaTable = {
+    private static final String[] KOREA_TABLE = {
         "1313150613", "0713131313", "0417131313", "1506131313", "0413171313",
         "17171313", "1315061313", "0413131713", "17131713", "13171713"
     };
 
     @Override
     public boolean encode() {
-        String accumulator = "";
 
-        if (!(content.matches("[0-9]+"))) {
+        if (!content.matches("[0-9]+")) {
             error_msg = "Invalid characters in input";
             return false;
         }
@@ -42,42 +41,34 @@ public class KoreaPost extends Symbol {
             return false;
         }
 
-        String add_zero = "";
-        int i, j, total = 0, checkd;
-
-        for (i = 0; i < (6 - content.length()); i++) {
-            add_zero += "0";
+        String padded = "";
+        for (int i = 0; i < (6 - content.length()); i++) {
+            padded += "0";
         }
-        add_zero += content;
+        padded += content;
 
-//        if (debug) {
-//            System.out.print("Data: " + add_zero + "\t");
-//        }
-
-        for (i = 0; i < add_zero.length(); i++) {
-            j = Character.getNumericValue(add_zero.charAt(i));
-            accumulator += KoreaTable[j];
+        int total = 0;
+        String accumulator = "";
+        for (int i = 0; i < padded.length(); i++) {
+            int j = Character.getNumericValue(padded.charAt(i));
+            accumulator += KOREA_TABLE[j];
             total += j;
         }
 
-        checkd = 10 - (total % 10);
+        int checkd = 10 - (total % 10);
         if (checkd == 10) {
             checkd = 0;
         }
-//        if (debug) {
-//            System.out.println("Check: " + checkd);
-//        }
         encodeInfo += "Check Digit: " + checkd + "\n";
+        accumulator += KOREA_TABLE[checkd];
 
-        accumulator += KoreaTable[checkd];
-
-        readable = add_zero + checkd;
-        pattern = new String[1];
-        pattern[0] = accumulator;
+        readable = padded + checkd;
+        pattern = new String[] { accumulator };
         row_count = 1;
-        row_height = new int[1];
-        row_height[0] = -1;
+        row_height = new int[] { -1 };
+
         plotSymbol();
+
         return true;
     }
 }

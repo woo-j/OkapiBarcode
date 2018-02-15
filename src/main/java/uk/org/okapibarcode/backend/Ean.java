@@ -20,13 +20,11 @@ import static uk.org.okapibarcode.backend.HumanReadableLocation.TOP;
 
 import java.awt.geom.Rectangle2D;
 /**
- * Implements EAN bar code symbology
- * According to BS EN 797:1996
- * <br>
- * European Article Number data can be encoded in EAN-8 or EAN-13 format
- * requiring a 7-digit or 12-digit input respectively. EAN-13 numbers map to
- * Global Trade Identification Numbers (GTIN) whereas EAN-8 symbols are
- * generally for internal use only. Check digit is calculated and should not
+ * <p>Implements EAN bar code symbology according to BS EN 797:1996.
+ *
+ * <p>European Article Number data can be encoded in EAN-8 or EAN-13 format requiring a 7-digit
+ * or 12-digit input respectively. EAN-13 numbers map to Global Trade Identification Numbers (GTIN)
+ * whereas EAN-8 symbols are generally for internal use only. Check digit is calculated and should not
  * be in input data. Leading zeroes are added as required.
  *
  * @author <a href="mailto:jakel2006@me.com">Robert Elliott</a>
@@ -37,30 +35,23 @@ public class Ean extends Symbol {
         EAN8, EAN13
     };
 
-    private boolean useAddOn;
-    private String addOnContent;
-    private Mode mode;
-    private boolean linkageFlag;
-
-    private String[] EAN13Parity = {
+    private static final String[] EAN13_PARITY = {
         "AAAAAA", "AABABB", "AABBAB", "AABBBA", "ABAABB", "ABBAAB", "ABBBAA",
         "ABABAB", "ABABBA", "ABBABA"
     };
-    private String[] EANsetA = {
-        "3211", "2221", "2122", "1411", "1132", "1231", "1114", "1312", "1213",
-        "3112"
-    };
-    private String[] EANsetB = {
-        "1123", "1222", "2212", "1141", "2311", "1321", "4111", "2131", "3121",
-        "2113"
+
+    private static final String[] EAN_SET_A = {
+        "3211", "2221", "2122", "1411", "1132", "1231", "1114", "1312", "1213", "3112"
     };
 
-    public Ean() {
-        mode = Mode.EAN13;
-        useAddOn = false;
-        addOnContent = "";
-        linkageFlag = false;
-    }
+    private static final String[] EAN_SET_B = {
+        "1123", "1222", "2212", "1141", "2311", "1321", "4111", "2131", "3121", "2113"
+    };
+
+    private boolean useAddOn;
+    private String addOnContent = "";
+    private Mode mode = Mode.EAN13;
+    private boolean linkageFlag;
 
     public void setMode(Mode mode) {
         this.mode = mode;
@@ -180,7 +171,7 @@ public class Ean extends Symbol {
 
         accumulator += calcDigit(accumulator);
 
-        parity = EAN13Parity[accumulator.charAt(0) - '0'];
+        parity = EAN13_PARITY[accumulator.charAt(0) - '0'];
 
         encodeInfo += "Parity Digit: " + accumulator.charAt(0) + "\n";
 
@@ -194,12 +185,12 @@ public class Ean extends Symbol {
 
             if ((i >= 1) && (i <= 6)) {
                 if (parity.charAt(i - 1) == 'B') {
-                    dest += EANsetB[accumulator.charAt(i) - '0'];
+                    dest += EAN_SET_B[accumulator.charAt(i) - '0'];
                 } else {
-                    dest += EANsetA[accumulator.charAt(i) - '0'];
+                    dest += EAN_SET_A[accumulator.charAt(i) - '0'];
                 }
             } else {
-                dest += EANsetA[accumulator.charAt(i) - '0'];
+                dest += EAN_SET_A[accumulator.charAt(i) - '0'];
             }
         }
 
@@ -241,7 +232,7 @@ public class Ean extends Symbol {
             if (i == 4) {
                 dest += "11111";
             }
-            dest += EANsetA[Character.getNumericValue(accumulator.charAt(i))];
+            dest += EAN_SET_A[Character.getNumericValue(accumulator.charAt(i))];
         }
         dest += "111";
 

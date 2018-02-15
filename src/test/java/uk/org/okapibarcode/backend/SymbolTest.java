@@ -251,6 +251,12 @@ public class SymbolTest {
             return new AztecReader();
         } else if (symbol instanceof QrCode) {
             return new QRCodeReader();
+        } else if (symbol instanceof DataMatrix) {
+            // TODO: something is probably wrong with DataMatrix, because the reader fails...
+            // TODO: it looks like zint may have more recent (correct?) code in encodeRemainder() / dm200encode_remainder()
+            // TODO: https://github.com/woo-j/zint/blame/master/backend/dmatrix.c#L999
+            // return new DataMatrixReader();
+            return null;
         } else if (symbol instanceof Ean) {
             Ean ean = (Ean) symbol;
             if (ean.getMode() == Ean.Mode.EAN8) {

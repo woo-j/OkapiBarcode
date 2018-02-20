@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Robin Stuart
+ * Copyright 2014-2018 Robin Stuart, Daniel Gredler
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,139 +18,139 @@ package uk.org.okapibarcode.backend;
 import java.math.BigInteger;
 
 /**
- * Implements GS1 DataBar Limited
- * According to ISO/IEC 24724:2011
- * <p>
- * Input data should be a 12 digit Global Trade Identification Number
- * without check digit or Application Identifier [01].
+ * <p>Implements GS1 DataBar Limited according to ISO/IEC 24724:2011.
+ *
+ * <p>Input data should be a 12-digit or 13-digit Global Trade Identification Number (GTIN) without
+ * check digit or Application Identifier [01].
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class DataBarLimited extends Symbol {
 
-    private int[] t_even_ltd = {
+    private static final int[] T_EVEN_LTD = {
         28, 728, 6454, 203, 2408, 1, 16632
     };
-    private int[] modules_odd_ltd = {
+
+    private static final int[] MODULES_ODD_LTD = {
         17, 13, 9, 15, 11, 19, 7
     };
-    private int[] modules_even_ltd = {
+
+    private static final int[] MODULES_EVEN_LTD = {
         9, 13, 17, 11, 15, 7, 19
     };
-    private int[] widest_odd_ltd = {
+
+    private static final int[] WIDEST_ODD_LTD = {
         6, 5, 3, 5, 4, 8, 1
     };
-    private int[] widest_even_ltd = {
+
+    private static final int[] WIDEST_EVEN_LTD = {
         3, 4, 6, 4, 5, 1, 8
     };
-    private int[] checksum_weight_ltd = { /* Table 7 */
-	1, 3, 9, 27, 81, 65, 17, 51, 64, 14, 42, 37, 22, 66,
-	20, 60, 2, 6, 18, 54, 73, 41, 34, 13, 39, 28, 84, 74
+
+    private static final int[] CHECKSUM_WEIGHT_LTD = { /* Table 7 */
+        1, 3, 9, 27, 81, 65, 17, 51, 64, 14, 42, 37, 22, 66,
+        20, 60, 2, 6, 18, 54, 73, 41, 34, 13, 39, 28, 84, 74
     };
-    private int[] finder_pattern_ltd = {
-	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 1, 1,
-	1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 2, 1, 1,
-	1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 1, 1, 1,
-	1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 3, 2, 1, 1,
-	1, 1, 1, 1, 1, 1, 1, 2, 1, 2, 3, 1, 1, 1,
-	1, 1, 1, 1, 1, 1, 1, 3, 1, 1, 3, 1, 1, 1,
-	1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 3, 2, 1, 1,
-	1, 1, 1, 1, 1, 2, 1, 1, 1, 2, 3, 1, 1, 1,
-	1, 1, 1, 1, 1, 2, 1, 2, 1, 1, 3, 1, 1, 1,
-	1, 1, 1, 1, 1, 3, 1, 1, 1, 1, 3, 1, 1, 1,
-	1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 3, 2, 1, 1,
-	1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 3, 1, 1, 1,
-	1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 3, 1, 1, 1,
-	1, 1, 1, 2, 1, 2, 1, 1, 1, 1, 3, 1, 1, 1,
-	1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1,
-	1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 3, 2, 1, 1,
-	1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 3, 1, 1, 1,
-	1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 3, 1, 1, 1,
-	1, 2, 1, 1, 1, 2, 1, 1, 1, 1, 3, 1, 1, 1,
-	1, 2, 1, 2, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1,
-	1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1,
-	1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 2, 3, 1, 1,
-	1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 1, 1,
-	1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 2, 1, 1, 1,
-	1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 2, 2, 1, 1,
-	1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1,
-	1, 1, 1, 1, 1, 1, 1, 3, 2, 1, 2, 1, 1, 1,
-	1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 2, 2, 1, 1,
-	1, 1, 1, 1, 1, 2, 1, 1, 2, 2, 2, 1, 1, 1,
-	1, 1, 1, 1, 1, 2, 1, 2, 2, 1, 2, 1, 1, 1,
-	1, 1, 1, 1, 1, 3, 1, 1, 2, 1, 2, 1, 1, 1,
-	1, 1, 1, 2, 1, 1, 1, 1, 2, 1, 2, 2, 1, 1,
-	1, 1, 1, 2, 1, 1, 1, 1, 2, 2, 2, 1, 1, 1,
-	1, 1, 1, 2, 1, 1, 1, 2, 2, 1, 2, 1, 1, 1,
-	1, 1, 1, 2, 1, 2, 1, 1, 2, 1, 2, 1, 1, 1,
-	1, 1, 1, 3, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1,
-	1, 2, 1, 1, 1, 1, 1, 1, 2, 1, 2, 2, 1, 1,
-	1, 2, 1, 1, 1, 1, 1, 1, 2, 2, 2, 1, 1, 1,
-	1, 2, 1, 1, 1, 1, 1, 2, 2, 1, 2, 1, 1, 1,
-	1, 2, 1, 1, 1, 2, 1, 1, 2, 1, 2, 1, 1, 1,
-	1, 2, 1, 2, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1,
-	1, 3, 1, 1, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1,
-	1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 1, 3, 1, 1,
-	1, 1, 1, 1, 1, 1, 1, 1, 3, 2, 1, 2, 1, 1,
-	1, 1, 1, 1, 1, 1, 1, 2, 3, 1, 1, 2, 1, 1,
-	1, 1, 1, 2, 1, 1, 1, 1, 3, 1, 1, 2, 1, 1,
-	1, 2, 1, 1, 1, 1, 1, 1, 3, 1, 1, 2, 1, 1,
-	1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 2, 3, 1, 1,
-	1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 2, 2, 1, 1,
-	1, 1, 1, 1, 1, 1, 2, 1, 1, 3, 2, 1, 1, 1,
-	1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 2, 2, 1, 1,
-	1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 2, 2, 1, 1,
-	1, 1, 1, 2, 1, 1, 2, 1, 1, 2, 2, 1, 1, 1,
-	1, 1, 1, 2, 1, 1, 2, 2, 1, 1, 2, 1, 1, 1,
-	1, 1, 1, 2, 1, 2, 2, 1, 1, 1, 2, 1, 1, 1,
-	1, 1, 1, 3, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1,
-	1, 2, 1, 1, 1, 1, 2, 1, 1, 1, 2, 2, 1, 1,
-	1, 2, 1, 1, 1, 1, 2, 1, 1, 2, 2, 1, 1, 1,
-	1, 2, 1, 2, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1,
-	1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 3, 1, 1,
-	1, 1, 1, 1, 2, 1, 1, 1, 1, 2, 2, 2, 1, 1,
-	1, 1, 1, 1, 2, 1, 1, 1, 1, 3, 2, 1, 1, 1,
-	1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 2, 2, 1, 1,
-	1, 1, 1, 1, 2, 1, 1, 2, 1, 2, 2, 1, 1, 1,
-	1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 2, 2, 1, 1,
-	1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 2, 2, 1, 1,
-	1, 2, 1, 1, 2, 1, 1, 1, 1, 2, 2, 1, 1, 1,
-	1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 1,
-	1, 2, 1, 1, 2, 2, 1, 1, 1, 1, 2, 1, 1, 1,
-	1, 2, 1, 2, 2, 1, 1, 1, 1, 1, 2, 1, 1, 1,
-	1, 3, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 1,
-	1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 3, 1, 1,
-	1, 1, 2, 1, 1, 1, 1, 1, 1, 2, 2, 2, 1, 1,
-	1, 1, 2, 1, 1, 1, 1, 1, 1, 3, 2, 1, 1, 1,
-	1, 1, 2, 1, 1, 1, 1, 2, 1, 1, 2, 2, 1, 1,
-	1, 1, 2, 1, 1, 1, 1, 2, 1, 2, 2, 1, 1, 1,
-	1, 1, 2, 1, 1, 1, 1, 3, 1, 1, 2, 1, 1, 1,
-	1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 2, 2, 1, 1,
-	1, 1, 2, 1, 1, 2, 1, 1, 1, 2, 2, 1, 1, 1,
-	1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1,
-	2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 1, 1,
-	2, 1, 1, 1, 1, 1, 1, 1, 1, 3, 2, 1, 1, 1,
-	2, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 2, 1, 1,
-	2, 1, 1, 1, 1, 1, 1, 2, 1, 2, 2, 1, 1, 1,
-	2, 1, 1, 1, 1, 1, 1, 3, 1, 1, 2, 1, 1, 1,
-	2, 1, 1, 1, 1, 2, 1, 1, 1, 2, 2, 1, 1, 1,
-	2, 1, 1, 1, 1, 2, 1, 2, 1, 1, 2, 1, 1, 1,
-	2, 1, 1, 2, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1,
-        2, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 2, 1, 1 /* ГОСТ ISO/IEC 24724-2011 страница 57 */
+
+    private static final int[] FINDER_PATTERN_LTD = {
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 2, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 1, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 3, 2, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 2, 1, 2, 3, 1, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 3, 1, 1, 3, 1, 1, 1,
+        1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 3, 2, 1, 1,
+        1, 1, 1, 1, 1, 2, 1, 1, 1, 2, 3, 1, 1, 1,
+        1, 1, 1, 1, 1, 2, 1, 2, 1, 1, 3, 1, 1, 1,
+        1, 1, 1, 1, 1, 3, 1, 1, 1, 1, 3, 1, 1, 1,
+        1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 3, 2, 1, 1,
+        1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 3, 1, 1, 1,
+        1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 3, 1, 1, 1,
+        1, 1, 1, 2, 1, 2, 1, 1, 1, 1, 3, 1, 1, 1,
+        1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1,
+        1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 3, 2, 1, 1,
+        1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 3, 1, 1, 1,
+        1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 3, 1, 1, 1,
+        1, 2, 1, 1, 1, 2, 1, 1, 1, 1, 3, 1, 1, 1,
+        1, 2, 1, 2, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1,
+        1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 2, 3, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 2, 1, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 2, 2, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 3, 2, 1, 2, 1, 1, 1,
+        1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 2, 2, 1, 1,
+        1, 1, 1, 1, 1, 2, 1, 1, 2, 2, 2, 1, 1, 1,
+        1, 1, 1, 1, 1, 2, 1, 2, 2, 1, 2, 1, 1, 1,
+        1, 1, 1, 1, 1, 3, 1, 1, 2, 1, 2, 1, 1, 1,
+        1, 1, 1, 2, 1, 1, 1, 1, 2, 1, 2, 2, 1, 1,
+        1, 1, 1, 2, 1, 1, 1, 1, 2, 2, 2, 1, 1, 1,
+        1, 1, 1, 2, 1, 1, 1, 2, 2, 1, 2, 1, 1, 1,
+        1, 1, 1, 2, 1, 2, 1, 1, 2, 1, 2, 1, 1, 1,
+        1, 1, 1, 3, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1,
+        1, 2, 1, 1, 1, 1, 1, 1, 2, 1, 2, 2, 1, 1,
+        1, 2, 1, 1, 1, 1, 1, 1, 2, 2, 2, 1, 1, 1,
+        1, 2, 1, 1, 1, 1, 1, 2, 2, 1, 2, 1, 1, 1,
+        1, 2, 1, 1, 1, 2, 1, 1, 2, 1, 2, 1, 1, 1,
+        1, 2, 1, 2, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1,
+        1, 3, 1, 1, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 1, 3, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 3, 2, 1, 2, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 2, 3, 1, 1, 2, 1, 1,
+        1, 1, 1, 2, 1, 1, 1, 1, 3, 1, 1, 2, 1, 1,
+        1, 2, 1, 1, 1, 1, 1, 1, 3, 1, 1, 2, 1, 1,
+        1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 2, 3, 1, 1,
+        1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 2, 2, 1, 1,
+        1, 1, 1, 1, 1, 1, 2, 1, 1, 3, 2, 1, 1, 1,
+        1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 2, 2, 1, 1,
+        1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 2, 2, 1, 1,
+        1, 1, 1, 2, 1, 1, 2, 1, 1, 2, 2, 1, 1, 1,
+        1, 1, 1, 2, 1, 1, 2, 2, 1, 1, 2, 1, 1, 1,
+        1, 1, 1, 2, 1, 2, 2, 1, 1, 1, 2, 1, 1, 1,
+        1, 1, 1, 3, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1,
+        1, 2, 1, 1, 1, 1, 2, 1, 1, 1, 2, 2, 1, 1,
+        1, 2, 1, 1, 1, 1, 2, 1, 1, 2, 2, 1, 1, 1,
+        1, 2, 1, 2, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1,
+        1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 3, 1, 1,
+        1, 1, 1, 1, 2, 1, 1, 1, 1, 2, 2, 2, 1, 1,
+        1, 1, 1, 1, 2, 1, 1, 1, 1, 3, 2, 1, 1, 1,
+        1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 2, 2, 1, 1,
+        1, 1, 1, 1, 2, 1, 1, 2, 1, 2, 2, 1, 1, 1,
+        1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 2, 2, 1, 1,
+        1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 2, 2, 1, 1,
+        1, 2, 1, 1, 2, 1, 1, 1, 1, 2, 2, 1, 1, 1,
+        1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 1,
+        1, 2, 1, 1, 2, 2, 1, 1, 1, 1, 2, 1, 1, 1,
+        1, 2, 1, 2, 2, 1, 1, 1, 1, 1, 2, 1, 1, 1,
+        1, 3, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 1,
+        1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 3, 1, 1,
+        1, 1, 2, 1, 1, 1, 1, 1, 1, 2, 2, 2, 1, 1,
+        1, 1, 2, 1, 1, 1, 1, 1, 1, 3, 2, 1, 1, 1,
+        1, 1, 2, 1, 1, 1, 1, 2, 1, 1, 2, 2, 1, 1,
+        1, 1, 2, 1, 1, 1, 1, 2, 1, 2, 2, 1, 1, 1,
+        1, 1, 2, 1, 1, 1, 1, 3, 1, 1, 2, 1, 1, 1,
+        1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 2, 2, 1, 1,
+        1, 1, 2, 1, 1, 2, 1, 1, 1, 2, 2, 1, 1, 1,
+        1, 1, 2, 2, 1, 1, 1, 1, 1, 1, 2, 2, 1, 1,
+        2, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 1, 1,
+        2, 1, 1, 1, 1, 1, 1, 1, 1, 3, 2, 1, 1, 1,
+        2, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 2, 1, 1,
+        2, 1, 1, 1, 1, 1, 1, 2, 1, 2, 2, 1, 1, 1,
+        2, 1, 1, 1, 1, 1, 1, 3, 1, 1, 2, 1, 1, 1,
+        2, 1, 1, 1, 1, 2, 1, 1, 1, 2, 2, 1, 1, 1,
+        2, 1, 1, 1, 1, 2, 1, 2, 1, 1, 2, 1, 1, 1,
+        2, 1, 1, 2, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1,
+        2, 1, 1, 1, 1, 1, 1, 1, 2, 2, 1, 2, 1, 1 /* ISO/IEC 24724-2011 57 */
     };
 
     private boolean linkageFlag;
-    private int[] widths = new int[8];
-
-    public DataBarLimited() {
-        linkageFlag = false;
-    }
 
     @Override
     public void setDataType(DataType dummy) {
         // Do nothing!
     }
-    
+
     protected void setLinkageFlag() {
         linkageFlag = true;
     }
@@ -259,7 +259,7 @@ public class DataBarLimited extends Symbol {
         if (right_reg.compareTo(new BigInteger("1996938")) == 1) {
             right_group = 6;
         }
-        
+
         encodeInfo += "Data Characters: " + Integer.toString(left_group + 1) +
                 " " + Integer.toString(right_group + 1) + "\n";
 
@@ -313,10 +313,10 @@ public class DataBarLimited extends Symbol {
         left_character = left_reg.intValue();
         right_character = right_reg.intValue();
 
-        left_odd = left_character / t_even_ltd[left_group];
-	left_even = left_character % t_even_ltd[left_group];
-	right_odd = right_character / t_even_ltd[right_group];
-	right_even = right_character % t_even_ltd[right_group];
+        left_odd = left_character / T_EVEN_LTD[left_group];
+        left_even = left_character % T_EVEN_LTD[left_group];
+        right_odd = right_character / T_EVEN_LTD[right_group];
+        right_even = right_character % T_EVEN_LTD[right_group];
 
 //        if (debug) {
 //            System.out.println("left char " + left_character);
@@ -327,66 +327,69 @@ public class DataBarLimited extends Symbol {
 //            System.out.println("right odd " + right_odd);
 //        }
 
-        getWidths(left_odd, modules_odd_ltd[left_group], 7, widest_odd_ltd[left_group], 1);
-	left_widths[0] = widths[0];
-	left_widths[2] = widths[1];
-	left_widths[4] = widths[2];
-	left_widths[6] = widths[3];
-	left_widths[8] = widths[4];
-	left_widths[10] = widths[5];
-	left_widths[12] = widths[6];
-	getWidths(left_even, modules_even_ltd[left_group], 7, widest_even_ltd[left_group], 0);
-	left_widths[1] = widths[0];
-	left_widths[3] = widths[1];
-	left_widths[5] = widths[2];
-	left_widths[7] = widths[3];
-	left_widths[9] = widths[4];
-	left_widths[11] = widths[5];
-	left_widths[13] = widths[6];
-	getWidths(right_odd, modules_odd_ltd[right_group], 7, widest_odd_ltd[right_group], 1);
-	right_widths[0] = widths[0];
-	right_widths[2] = widths[1];
-	right_widths[4] = widths[2];
-	right_widths[6] = widths[3];
-	right_widths[8] = widths[4];
-	right_widths[10] = widths[5];
-	right_widths[12] = widths[6];
-	getWidths(right_even, modules_even_ltd[right_group], 7, widest_even_ltd[right_group], 0);
-	right_widths[1] = widths[0];
-	right_widths[3] = widths[1];
-	right_widths[5] = widths[2];
-	right_widths[7] = widths[3];
-	right_widths[9] = widths[4];
-	right_widths[11] = widths[5];
-	right_widths[13] = widths[6];
+        int[] widths = getWidths(left_odd, MODULES_ODD_LTD[left_group], 7, WIDEST_ODD_LTD[left_group], 1);
+        left_widths[0] = widths[0];
+        left_widths[2] = widths[1];
+        left_widths[4] = widths[2];
+        left_widths[6] = widths[3];
+        left_widths[8] = widths[4];
+        left_widths[10] = widths[5];
+        left_widths[12] = widths[6];
+
+        widths = getWidths(left_even, MODULES_EVEN_LTD[left_group], 7, WIDEST_EVEN_LTD[left_group], 0);
+        left_widths[1] = widths[0];
+        left_widths[3] = widths[1];
+        left_widths[5] = widths[2];
+        left_widths[7] = widths[3];
+        left_widths[9] = widths[4];
+        left_widths[11] = widths[5];
+        left_widths[13] = widths[6];
+
+        widths = getWidths(right_odd, MODULES_ODD_LTD[right_group], 7, WIDEST_ODD_LTD[right_group], 1);
+        right_widths[0] = widths[0];
+        right_widths[2] = widths[1];
+        right_widths[4] = widths[2];
+        right_widths[6] = widths[3];
+        right_widths[8] = widths[4];
+        right_widths[10] = widths[5];
+        right_widths[12] = widths[6];
+
+        widths = getWidths(right_even, MODULES_EVEN_LTD[right_group], 7, WIDEST_EVEN_LTD[right_group], 0);
+        right_widths[1] = widths[0];
+        right_widths[3] = widths[1];
+        right_widths[5] = widths[2];
+        right_widths[7] = widths[3];
+        right_widths[9] = widths[4];
+        right_widths[11] = widths[5];
+        right_widths[13] = widths[6];
 
         checksum = 0;
-	/* Calculate the checksum */
-	for(i = 0; i < 14; i++) {
-            checksum += checksum_weight_ltd[i] * left_widths[i];
-            checksum += checksum_weight_ltd[i + 14] * right_widths[i];
-	}
-	checksum %= 89;
+        /* Calculate the checksum */
+        for(i = 0; i < 14; i++) {
+                checksum += CHECKSUM_WEIGHT_LTD[i] * left_widths[i];
+                checksum += CHECKSUM_WEIGHT_LTD[i + 14] * right_widths[i];
+        }
+        checksum %= 89;
 
         encodeInfo += "Checksum: " + Integer.toString(checksum) + "\n";
-        
+
 //        if (debug) {
 //            System.out.println("checksum " + checksum);
 //        }
 
-	for(i = 0; i < 14; i++) {
-            check_elements[i] = finder_pattern_ltd[i + (checksum * 14)];
-	}
+        for(i = 0; i < 14; i++) {
+                check_elements[i] = FINDER_PATTERN_LTD[i + (checksum * 14)];
+        }
 
-	total_widths[0] = 1;
-	total_widths[1] = 1;
-	total_widths[44] = 1;
-	total_widths[45] = 1;
-	for(i = 0; i < 14; i++) {
-            total_widths[i + 2] = left_widths[i];
-            total_widths[i + 16] = check_elements[i];
-            total_widths[i + 30] = right_widths[i];
-	}
+        total_widths[0] = 1;
+        total_widths[1] = 1;
+        total_widths[44] = 1;
+        total_widths[45] = 1;
+        for(i = 0; i < 14; i++) {
+                total_widths[i + 2] = left_widths[i];
+                total_widths[i + 16] = check_elements[i];
+                total_widths[i + 30] = right_widths[i];
+        }
 
         bin = "";
         notbin = "";
@@ -414,14 +417,14 @@ public class DataBarLimited extends Symbol {
             symbol_width = writer + 20;
         }
 
-//        	/* add separator pattern if composite symbol */
-//	if(symbol->symbology == BARCODE_RSS_LTD_CC) {
-//		for(i = 4; i < 70; i++) {
-//				if(!(module_is_set(symbol, separator_row + 1, i))) {
-//					set_module(symbol, separator_row, i);
-//				}
-//			}
-//	}
+//    /* add separator pattern if composite symbol */
+//    if(symbol->symbology == BARCODE_RSS_LTD_CC) {
+//        for(i = 4; i < 70; i++) {
+//                if(!(module_is_set(symbol, separator_row + 1, i))) {
+//                    set_module(symbol, separator_row, i);
+//                }
+//            }
+//    }
 
         /* Calculate check digit from Annex A and place human readable text */
 
@@ -434,7 +437,6 @@ public class DataBarLimited extends Symbol {
 
         for (i = 0; i < 13; i++) {
             count += (hrt.charAt(i) - '0');
-
             if ((i & 1) == 0) {
                 count += 2 * (hrt.charAt(i) - '0');
             }
@@ -459,7 +461,7 @@ public class DataBarLimited extends Symbol {
         pattern[0 + compositeOffset] = "0:" + bin2pat(bin);
 
         if (linkageFlag) {
-            // Add composite symbol seperator
+            // Add composite symbol separator
             notbin = notbin.substring(4, 70);
             row_height[0] = 1;
             pattern[0] = "0:04" + bin2pat(notbin);
@@ -469,7 +471,8 @@ public class DataBarLimited extends Symbol {
         return true;
     }
 
-    private int getCombinations(int n, int r) {
+    private static int getCombinations(int n, int r) {
+
         int i, j;
         int maxDenom, minDenom;
         int val;
@@ -481,8 +484,10 @@ public class DataBarLimited extends Symbol {
             minDenom = n - r;
             maxDenom = r;
         }
+
         val = 1;
         j = 1;
+
         for (i = n; i > maxDenom; i--) {
             val *= i;
             if (j <= minDenom) {
@@ -490,18 +495,23 @@ public class DataBarLimited extends Symbol {
                 j++;
             }
         }
+
         for (; j <= minDenom; j++) {
             val /= j;
         }
-        return (val);
+
+        return val;
     }
 
-    private void getWidths(int val, int n, int elements, int maxWidth, int noNarrow) {
+    private static int[] getWidths(int val, int n, int elements, int maxWidth, int noNarrow) {
+
         int bar;
         int elmWidth;
         int mxwElement;
         int subVal, lessVal;
         int narrowMask = 0;
+        int[] widths = new int[elements];
+
         for (bar = 0; bar < elements - 1; bar++) {
             for (elmWidth = 1, narrowMask |= (1 << bar); ;
                     elmWidth++, narrowMask &= ~ (1 << bar)) {
@@ -531,6 +541,9 @@ public class DataBarLimited extends Symbol {
             n -= elmWidth;
             widths[bar] = elmWidth;
         }
+
         widths[bar] = n;
+
+        return widths;
     }
 }

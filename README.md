@@ -73,11 +73,15 @@ of work that have been invested in that project.
   * UPC-E
 * [USPS OneCode](src/main/java/uk/org/okapibarcode/backend/UspsOneCode.java) (Intelligent Mail)
 
-### Usage
+### GUI Usage
 
 To use the Swing GUI, just run the [OkapiUI](src/main/java/uk/org/okapibarcode/gui/OkapiUI.java) class.
 The GUI allows you to explore the supported barcode symbologies and test them with different configurations
 and data.
+
+![Okapi GUI Screenshot](okapi-gui-screenshot.png)
+
+### Library Usage
 
 To generate barcode images in your own code using the Okapi Barcode library, use one of the symbology
 classes linked above:

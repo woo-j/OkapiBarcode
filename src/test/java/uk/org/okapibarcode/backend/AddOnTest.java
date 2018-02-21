@@ -25,14 +25,13 @@ public class AddOnTest {
 
     @Test
     public void testCalcAddOn() {
-        AddOn addOn = new AddOn();
-        Assert.assertEquals("",                                addOn.calcAddOn(""));
-        Assert.assertEquals("1123211111222",                   addOn.calcAddOn("1"));
-        Assert.assertEquals("1122221112122",                   addOn.calcAddOn("12"));
-        Assert.assertEquals("1121123111123112221112122111411", addOn.calcAddOn("123"));
-        Assert.assertEquals("1123211111222112212111411111132", addOn.calcAddOn("1234"));
-        Assert.assertEquals("1121222112122111141111132111231", addOn.calcAddOn("12345"));
-        Assert.assertEquals("",                                addOn.calcAddOn("123456"));
-        Assert.assertEquals("",                                addOn.calcAddOn("1234567"));
+        Assert.assertEquals("",                                AddOn.calcAddOn(""));
+        Assert.assertEquals("1123211111222",                   AddOn.calcAddOn("1"));
+        Assert.assertEquals("1122221112122",                   AddOn.calcAddOn("12"));
+        Assert.assertEquals("1121123111123112221112122111411", AddOn.calcAddOn("123"));
+        Assert.assertEquals("1123211111222112212111411111132", AddOn.calcAddOn("1234"));
+        Assert.assertEquals("1121222112122111141111132111231", AddOn.calcAddOn("12345"));
+        Assert.assertEquals("",                                AddOn.calcAddOn("123456"));
+        Assert.assertEquals("",                                AddOn.calcAddOn("1234567"));
     }
 }

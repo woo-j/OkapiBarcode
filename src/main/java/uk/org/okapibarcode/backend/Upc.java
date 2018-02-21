@@ -96,7 +96,6 @@ public class Upc extends Symbol {
     @Override
     public boolean encode() {
         boolean retval;
-        AddOn addOn = new AddOn();
         String addOnData = "";
 
         separateContent();
@@ -112,7 +111,7 @@ public class Upc extends Symbol {
         }
 
         if (useAddOn) {
-            addOnData = addOn.calcAddOn(addOnContent);
+            addOnData = AddOn.calcAddOn(addOnContent);
             if (addOnData.length() == 0) {
                 error_msg = "Invalid Add-On data";
                 retval = false;

@@ -17,56 +17,53 @@
 package uk.org.okapibarcode.backend;
 
 /**
- * Encode Add-On barcodes from UPC/EAN
+ * Encodes add-on barcodes for UPC/EAN.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
-public class AddOn{
-    private String content;
-    private String dest;
+public final class AddOn {
 
-    private String[] EANsetA = {
+    private static final String[] EAN_SET_A = {
         "3211", "2221", "2122", "1411", "1132", "1231", "1114", "1312", "1213",
         "3112"
     };
-    private String[] EANsetB = {
+
+    private static final String[] EAN_SET_B = {
         "1123", "1222", "2212", "1141", "2311", "1321", "4111", "2131", "3121",
         "2113"
     };
 
-    private String[] EAN2Parity = {
+    private static final String[] EAN2_PARITY = {
         "AA", "AB", "BA", "BB"
     };
-    private String[] EAN5Parity = {
+
+    private static final String[] EAN5_PARITY = {
         "BBAAA", "BABAA", "BAABA", "BAAAB", "ABBAA", "AABBA", "AAABB", "ABABA",
         "ABAAB", "AABAB"
     };
 
-    public String calcAddOn(String input) {
-        dest = "";
-        content = input;
+    private AddOn() {
+        // utility class, cannot instantiate
+    }
 
-        if (!(content.matches("[0-9]{1,5}"))) {
+    public static String calcAddOn(String content) {
+
+        if (!content.matches("[0-9]{1,5}")) {
             return "";
         }
 
         if (content.length() > 2) {
-            ean5();
+            return ean5(content);
         } else {
-            ean2();
+            return ean2(content);
         }
-
-        return dest;
     }
 
-    private void ean2() {
+    private static String ean2(String content) {
+
         String parity;
         String accumulator = "";
         int i, code_value;
-
-        if (!(content.matches("[0-9]+?"))) {
-            return;
-        }
 
         for (i = content.length(); i < 2; i++) {
             accumulator += "0";
@@ -75,29 +72,29 @@ public class AddOn{
 
         code_value = ((accumulator.charAt(0) - '0') * 10)
                 + (accumulator.charAt(1) - '0');
-        parity = EAN2Parity[code_value % 4];
+        parity = EAN2_PARITY[code_value % 4];
 
-        dest = "112"; /* Start */
+        StringBuilder sb = new StringBuilder();
+        sb.append("112"); /* Start */
         for (i = 0; i < 2; i++) {
             if ((parity.charAt(i) == 'B')) {
-                dest += EANsetB[Character.getNumericValue(accumulator.charAt(i))];
+                sb.append(EAN_SET_B[Character.getNumericValue(accumulator.charAt(i))]);
             } else {
-                dest += EANsetA[Character.getNumericValue(accumulator.charAt(i))];
+                sb.append(EAN_SET_A[Character.getNumericValue(accumulator.charAt(i))]);
             }
             if (i != 1) { /* Glyph separator */
-                dest += "11";
+                sb.append("11");
             }
         }
+
+        return sb.toString();
     }
 
-    private void ean5() {
+    private static String ean5(String content) {
+
         String parity;
         String accumulator = "";
         int i, parity_sum;
-
-        if (!(content.matches("[0-9]+?"))) {
-            return;
-        }
 
         for (i = content.length(); i < 5; i++) {
             accumulator += "0";
@@ -112,19 +109,21 @@ public class AddOn{
                 parity_sum += 9 * (accumulator.charAt(i) - '0');
             }
         }
+        parity = EAN5_PARITY[parity_sum % 10];
 
-        parity = EAN5Parity[parity_sum % 10];
-
-        dest = "112"; /* Start */
+        StringBuilder sb = new StringBuilder();
+        sb.append("112"); /* Start */
         for (i = 0; i < 5; i++) {
             if ((parity.charAt(i) == 'B')) {
-                dest += EANsetB[Character.getNumericValue(accumulator.charAt(i))];
+                sb.append(EAN_SET_B[Character.getNumericValue(accumulator.charAt(i))]);
             } else {
-                dest += EANsetA[Character.getNumericValue(accumulator.charAt(i))];
+                sb.append(EAN_SET_A[Character.getNumericValue(accumulator.charAt(i))]);
             }
             if (i != 4) { /* Glyph separator */
-                dest += "11";
+                sb.append("11");
             }
         }
+
+        return sb.toString();
     }
 }

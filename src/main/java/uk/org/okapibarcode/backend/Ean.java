@@ -86,7 +86,6 @@ public class Ean extends Symbol {
     @Override
     public boolean encode() {
         boolean retval = false;
-        AddOn addOn = new AddOn();
         String addOnData = "";
 
         separateContent();
@@ -106,7 +105,7 @@ public class Ean extends Symbol {
         }
 
         if ((retval) && (useAddOn)) {
-            addOnData = addOn.calcAddOn(addOnContent);
+            addOnData = AddOn.calcAddOn(addOnContent);
             if (addOnData.length() == 0) {
                 error_msg = "Invalid Add-On data";
                 retval = false;

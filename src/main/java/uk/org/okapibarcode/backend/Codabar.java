@@ -15,12 +15,10 @@
  */
 package uk.org.okapibarcode.backend;
 
-
 /**
- * Implements Codabar barcode symbology
- * According to BS EN 798:1996
- * <p>
- * Also known as NW-7, Monarch, ABC Codabar, USD-4, Ames Code and Code 27.
+ * <p>Implements Codabar barcode symbology according to BS EN 798:1996.
+ *
+ * <p>Also known as NW-7, Monarch, ABC Codabar, USD-4, Ames Code and Code 27.
  * Codabar can encode any length string starting and ending with the letters
  * A-D and containing between these letters the numbers 0-9, dash (-), dollar
  * ($), colon (:), slash (/), full stop (.) or plus (+). No check digit is
@@ -66,9 +64,11 @@ public class Codabar extends Symbol {
         return moduleWidthRatio;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean encode() {
-        if (!(content.matches("[A-D]{1}[0-9:/\\$\\.\\+\u002D]+[A-D]{1}"))) {
+
+        if (!content.matches("[A-D]{1}[0-9:/\\$\\.\\+\u002D]+[A-D]{1}")) {
             error_msg = "Invalid characters in input";
             return false;
         }

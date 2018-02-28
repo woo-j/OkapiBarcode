@@ -58,10 +58,9 @@ public class Upc extends Symbol {
         "ABABAB", "ABABBA", "ABBABA"
     }; /* Not covered by BS EN 797 */
 
-    private boolean useAddOn;
-    private String addOnContent;
     private Mode mode = Mode.UPCA;
     private boolean linkageFlag;
+    private String addOnContent;
 
     public void setMode(Mode mode) {
         this.mode = mode;
@@ -110,7 +109,7 @@ public class Upc extends Symbol {
             }
         }
 
-        if (useAddOn) {
+        if (retval && addOnContent != null) {
             addOnData = AddOn.calcAddOn(addOnContent);
             if (addOnData.length() == 0) {
                 error_msg = "Invalid Add-On data";
@@ -138,18 +137,13 @@ public class Upc extends Symbol {
     }
 
     private void separateContent() {
-        int splitPoint;
-
-        splitPoint = content.indexOf('+');
-        if(splitPoint != -1) {
+        int splitPoint = content.indexOf('+');
+        if (splitPoint != -1) {
             // There is a '+' in the input data, use an add-on EAN2 or EAN5
-            useAddOn = true;
             addOnContent = content.substring(splitPoint + 1);
             content = content.substring(0, splitPoint);
-            if(debug) {
-                System.out.println("Content: " + content);
-                System.out.println("Addon:   " + addOnContent);
-            }
+        } else {
+            addOnContent = null;
         }
     }
 
@@ -159,7 +153,7 @@ public class Upc extends Symbol {
         int i;
         char check;
 
-        if (!(content.matches("[0-9]+"))) {
+        if (!content.matches("[0-9]+")) {
             error_msg = "Invalid characters in input";
             return false;
         }
@@ -203,7 +197,7 @@ public class Upc extends Symbol {
         char[] equivalent = new char[12];
         String equiv = "";
 
-        if (!(content.matches("[0-9]+"))) {
+        if (!content.matches("[0-9]+")) {
             error_msg = "Invalid characters in input";
             return false;
         }
@@ -439,7 +433,7 @@ public class Upc extends Symbol {
                 texts.add(new TextBox(16, baseline, 36, readable.substring(1, 6)));
                 texts.add(new TextBox(55, baseline, 36, readable.substring(6, 11)));
                 texts.add(new TextBox(101, baseline, 6, readable.substring(11, 12)));
-                if (useAddOn) {
+                if (addOnContent != null) {
                     int width = (addOnContent.length() == 2 ? 20 : 47);
                     texts.add(new TextBox(110, addOnBaseline, width, addOnContent));
                 }
@@ -447,7 +441,7 @@ public class Upc extends Symbol {
                 texts.add(new TextBox(0, baseline, 6, readable.substring(0, 1)));
                 texts.add(new TextBox(9, baseline, 43, readable.substring(1, 7)));
                 texts.add(new TextBox(57, baseline, 6, readable.substring(7, 8)));
-                if (useAddOn) {
+                if (addOnContent != null) {
                     int width = (addOnContent.length() == 2 ? 20 : 47);
                     texts.add(new TextBox(66, addOnBaseline, width, addOnContent));
                 }

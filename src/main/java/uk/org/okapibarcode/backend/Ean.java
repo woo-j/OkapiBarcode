@@ -48,10 +48,9 @@ public class Ean extends Symbol {
         "1123", "1222", "2212", "1141", "2311", "1321", "4111", "2131", "3121", "2113"
     };
 
-    private boolean useAddOn;
-    private String addOnContent = "";
     private Mode mode = Mode.EAN13;
     private boolean linkageFlag;
+    private String addOnContent;
 
     public void setMode(Mode mode) {
         this.mode = mode;
@@ -104,7 +103,7 @@ public class Ean extends Symbol {
             }
         }
 
-        if ((retval) && (useAddOn)) {
+        if (retval && addOnContent != null) {
             addOnData = AddOn.calcAddOn(addOnContent);
             if (addOnData.length() == 0) {
                 error_msg = "Invalid Add-On data";
@@ -133,18 +132,13 @@ public class Ean extends Symbol {
     }
 
     private void separateContent() {
-        int splitPoint;
-
-        splitPoint = content.indexOf('+');
-        if(splitPoint != -1) {
+        int splitPoint = content.indexOf('+');
+        if (splitPoint != -1) {
             // There is a '+' in the input data, use an add-on EAN2 or EAN5
-            useAddOn = true;
             addOnContent = content.substring(splitPoint + 1);
             content = content.substring(0, splitPoint);
-            if(debug) {
-                System.out.println("Content: " + content);
-                System.out.println("Addon:   " + addOnContent);
-            }
+        } else {
+            addOnContent = null;
         }
     }
 
@@ -153,7 +147,7 @@ public class Ean extends Symbol {
         String dest, parity;
         int i;
 
-        if (!(content.matches("[0-9]+"))) {
+        if (!content.matches("[0-9]+")) {
             error_msg = "Invalid characters in input";
             return false;
         }
@@ -209,7 +203,7 @@ public class Ean extends Symbol {
         int i;
         String dest;
 
-        if (!(content.matches("[0-9]+"))) {
+        if (!content.matches("[0-9]+")) {
             error_msg = "Invalid characters in input";
             return false;
         }
@@ -363,14 +357,14 @@ public class Ean extends Symbol {
                 texts.add(new TextBox(0, baseline, 6, readable.substring(0, 1)));
                 texts.add(new TextBox(9, baseline, 43, readable.substring(1, 7)));
                 texts.add(new TextBox(55, baseline, 43, readable.substring(7, 13)));
-                if (useAddOn) {
+                if (addOnContent != null) {
                     int width = (addOnContent.length() == 2 ? 20 : 47);
                     texts.add(new TextBox(110, addOnBaseline, width, addOnContent));
                 }
             } else { // EAN8
                 texts.add(new TextBox(9, baseline, 29, readable.substring(0, 4)));
                 texts.add(new TextBox(41, baseline, 29, readable.substring(4, 8)));
-                if (useAddOn) {
+                if (addOnContent != null) {
                     int width = (addOnContent.length() == 2 ? 20 : 47);
                     texts.add(new TextBox(82, addOnBaseline, width, addOnContent));
                 }

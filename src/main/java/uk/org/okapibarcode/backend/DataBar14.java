@@ -15,60 +15,62 @@
  */
 package uk.org.okapibarcode.backend;
 
+import static uk.org.okapibarcode.backend.DataBarLimited.getWidths;
+
 import java.math.BigInteger;
 
 /**
- * Implements GS1 DataBar Omnidirectional and GS1 DataBar Truncated
- * According to ISO/IEC 24724:2011
- * <p>
- * Input data should be a 13 digit Global Trade Identification Number
- * without check digit or Application Identifier [01].
+ * <p>Implements GS1 DataBar Omnidirectional and GS1 DataBar Truncated according to ISO/IEC 24724:2011.
+ *
+ * <p>Input data should be a 13-digit Global Trade Identification Number (GTIN) without check digit or
+ * Application Identifier [01].
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class DataBar14 extends Symbol {
 
-    private int[] g_sum_table = {
+    private static final int[] G_SUM_TABLE = {
         0, 161, 961, 2015, 2715, 0, 336, 1036, 1516
     };
-    private int[] t_table = {
+
+    private static final int[] T_TABLE = {
         1, 10, 34, 70, 126, 4, 20, 48, 81
     };
-    private int[] widths = new int[8];
-    private int[] modules_odd = {
+
+    private static final int[] MODULES_ODD = {
         12, 10, 8, 6, 4, 5, 7, 9, 11
     };
-    private int[] modules_even = {
+
+    private static final int[] MODULES_EVEN = {
         4, 6, 8, 10, 12, 10, 8, 6, 4
     };
-    private int[] widest_odd = {
+
+    private static final int[] WIDEST_ODD = {
         8, 6, 4, 3, 1, 2, 4, 6, 8
     };
-    private int[] widest_even = {
+
+    private static final int[] WIDEST_EVEN = {
         1, 3, 5, 6, 8, 7, 5, 3, 1
     };
-    private int[] checksum_weight = { /* Table 5 */
+
+    private static final int[] CHECKSUM_WEIGHT = { /* Table 5 */
         1, 3, 9, 27, 2, 6, 18, 54, 4, 12, 36, 29, 8, 24, 72, 58, 16, 48, 65,
         37, 32, 17, 51, 74, 64, 34, 23, 69, 49, 68, 46, 59
     };
-    private int[] finder_pattern = {
+
+    private static final int[] FINDER_PATTERN = {
         3, 8, 2, 1, 1, 3, 5, 5, 1, 1, 3, 3, 7, 1, 1, 3, 1, 9, 1, 1, 2, 7, 4,
         1, 1, 2, 5, 6, 1, 1, 2, 3, 8, 1, 1, 1, 5, 7, 1, 1, 1, 3, 9, 1, 1
     };
 
-    private boolean linkageFlag;
-    private enum gb14Mode {
+    private enum Mode {
         LINEAR, OMNI, STACKED
     };
-    private gb14Mode symbolType;
-    private boolean[][] grid = new boolean[5][100];
-    private boolean[] seperator = new boolean[100];
 
-    public DataBar14() {
-        linkageFlag = false;
-        symbolType = gb14Mode.LINEAR;
-    }
-    
+    private boolean linkageFlag;
+    private Mode symbolType = Mode.LINEAR;
+    private boolean[][] grid = new boolean[5][100];
+
     @Override
     public void setDataType(DataType dummy) {
         // Do nothing!
@@ -86,21 +88,21 @@ public class DataBar14 extends Symbol {
      * Set symbol type to DataBar-14
      */
     public void setLinearMode() {
-        symbolType = gb14Mode.LINEAR;
+        symbolType = Mode.LINEAR;
     }
 
     /**
-     * Set symbol type to DataBar-14 Omnidirectional 
+     * Set symbol type to DataBar-14 Omnidirectional
      */
     public void setOmnidirectionalMode() {
-        symbolType = gb14Mode.OMNI;
+        symbolType = Mode.OMNI;
     }
 
     /**
      * Set symbol type to DataBar-14 Omnidirectional Stacked
      */
     public void setStackedMode() {
-        symbolType = gb14Mode.STACKED;
+        symbolType = Mode.STACKED;
     }
 
     @Override
@@ -132,7 +134,7 @@ public class DataBar14 extends Symbol {
             return false;
         }
 
-        if (!(content.matches("[0-9]+?"))) {
+        if (!content.matches("[0-9]+?")) {
             error_msg = "Invalid characters in input";
             return false;
         }
@@ -228,14 +230,14 @@ public class DataBar14 extends Symbol {
             data_group[2] = 4;
         }
 
-        v_odd[0] = (data_character[0] - g_sum_table[data_group[0]]) / t_table[data_group[0]];
-        v_even[0] = (data_character[0] - g_sum_table[data_group[0]]) % t_table[data_group[0]];
-        v_odd[1] = (data_character[1] - g_sum_table[data_group[1]]) % t_table[data_group[1]];
-        v_even[1] = (data_character[1] - g_sum_table[data_group[1]]) / t_table[data_group[1]];
-        v_odd[3] = (data_character[3] - g_sum_table[data_group[3]]) % t_table[data_group[3]];
-        v_even[3] = (data_character[3] - g_sum_table[data_group[3]]) / t_table[data_group[3]];
-        v_odd[2] = (data_character[2] - g_sum_table[data_group[2]]) / t_table[data_group[2]];
-        v_even[2] = (data_character[2] - g_sum_table[data_group[2]]) % t_table[data_group[2]];
+        v_odd[0] = (data_character[0] - G_SUM_TABLE[data_group[0]]) / T_TABLE[data_group[0]];
+        v_even[0] = (data_character[0] - G_SUM_TABLE[data_group[0]]) % T_TABLE[data_group[0]];
+        v_odd[1] = (data_character[1] - G_SUM_TABLE[data_group[1]]) % T_TABLE[data_group[1]];
+        v_even[1] = (data_character[1] - G_SUM_TABLE[data_group[1]]) / T_TABLE[data_group[1]];
+        v_odd[3] = (data_character[3] - G_SUM_TABLE[data_group[3]]) % T_TABLE[data_group[3]];
+        v_even[3] = (data_character[3] - G_SUM_TABLE[data_group[3]]) / T_TABLE[data_group[3]];
+        v_odd[2] = (data_character[2] - G_SUM_TABLE[data_group[2]]) / T_TABLE[data_group[2]];
+        v_even[2] = (data_character[2] - G_SUM_TABLE[data_group[2]]) % T_TABLE[data_group[2]];
 
 //        if (debug) {
 //            for (i = 0; i < 4; i++) {
@@ -246,23 +248,23 @@ public class DataBar14 extends Symbol {
         /* Use RSS subset width algorithm */
         for (i = 0; i < 4; i++) {
             if ((i == 0) || (i == 2)) {
-                getWidths(v_odd[i], modules_odd[data_group[i]], 4, widest_odd[data_group[i]], 1);
+                int[] widths = getWidths(v_odd[i], MODULES_ODD[data_group[i]], 4, WIDEST_ODD[data_group[i]], 1);
                 data_widths[0][i] = widths[0];
                 data_widths[2][i] = widths[1];
                 data_widths[4][i] = widths[2];
                 data_widths[6][i] = widths[3];
-                getWidths(v_even[i], modules_even[data_group[i]], 4, widest_even[data_group[i]], 0);
+                widths = getWidths(v_even[i], MODULES_EVEN[data_group[i]], 4, WIDEST_EVEN[data_group[i]], 0);
                 data_widths[1][i] = widths[0];
                 data_widths[3][i] = widths[1];
                 data_widths[5][i] = widths[2];
                 data_widths[7][i] = widths[3];
             } else {
-                getWidths(v_odd[i], modules_odd[data_group[i]], 4, widest_odd[data_group[i]], 0);
+                int[] widths = getWidths(v_odd[i], MODULES_ODD[data_group[i]], 4, WIDEST_ODD[data_group[i]], 0);
                 data_widths[0][i] = widths[0];
                 data_widths[2][i] = widths[1];
                 data_widths[4][i] = widths[2];
                 data_widths[6][i] = widths[3];
-                getWidths(v_even[i], modules_even[data_group[i]], 4, widest_even[data_group[i]], 1);
+                widths = getWidths(v_even[i], MODULES_EVEN[data_group[i]], 4, WIDEST_EVEN[data_group[i]], 1);
                 data_widths[1][i] = widths[0];
                 data_widths[3][i] = widths[1];
                 data_widths[5][i] = widths[2];
@@ -283,10 +285,10 @@ public class DataBar14 extends Symbol {
         checksum = 0;
         /* Calculate the checksum */
         for (i = 0; i < 8; i++) {
-            checksum += checksum_weight[i] * data_widths[i][0];
-            checksum += checksum_weight[i + 8] * data_widths[i][1];
-            checksum += checksum_weight[i + 16] * data_widths[i][2];
-            checksum += checksum_weight[i + 24] * data_widths[i][3];
+            checksum += CHECKSUM_WEIGHT[i] * data_widths[i][0];
+            checksum += CHECKSUM_WEIGHT[i + 8] * data_widths[i][1];
+            checksum += CHECKSUM_WEIGHT[i + 16] * data_widths[i][2];
+            checksum += CHECKSUM_WEIGHT[i + 24] * data_widths[i][3];
         }
         checksum %= 79;
 
@@ -301,7 +303,7 @@ public class DataBar14 extends Symbol {
         c_right = checksum % 9;
 
         encodeInfo += "Checksum: " + Integer.toString(checksum) + "\n";
-        
+
 //        if (debug) {
 //            System.out.println("checksum " + checksum);
 //            System.out.println("left check " + c_left);
@@ -320,16 +322,19 @@ public class DataBar14 extends Symbol {
             total_widths[i + 36] = data_widths[7 - i][2];
         }
         for (i = 0; i < 5; i++) {
-            total_widths[i + 10] = finder_pattern[i + (5 * c_left)];
-            total_widths[i + 31] = finder_pattern[(4 - i) + (5 * c_right)];
+            total_widths[i + 10] = FINDER_PATTERN[i + (5 * c_left)];
+            total_widths[i + 31] = FINDER_PATTERN[(4 - i) + (5 * c_right)];
         }
 
         row_count = 0;
-        for(i = 0; i < 100; i++) {
-            seperator[i] = false;
+
+        boolean[] separator = new boolean[100];
+        for(i = 0; i < separator.length; i++) {
+            separator[i] = false;
         }
+
         /* Put this data into the symbol */
-        if (symbolType == gb14Mode.LINEAR) {
+        if (symbolType == Mode.LINEAR) {
             writer = 0;
             latch = '0';
             for (i = 0; i < 46; i++) {
@@ -352,20 +357,20 @@ public class DataBar14 extends Symbol {
             if(linkageFlag) {
                 /* separator pattern for composite symbol */
                 for(i = 4; i < 92; i++) {
-                    seperator[i] = (!(grid[0][i]));
+                    separator[i] = (!(grid[0][i]));
                 }
                 latch = '1';
                 for(i = 16; i < 32; i++) {
                     if (!(grid[0][i])) {
                         if (latch == '1') {
-                            seperator[i] = true;
+                            separator[i] = true;
                             latch = '0';
                         } else {
-                            seperator[i] = false;
+                            separator[i] = false;
                             latch = '1';
                         }
                     } else {
-                        seperator[i] = false;
+                        separator[i] = false;
                         latch = '1';
                     }
                 }
@@ -373,14 +378,14 @@ public class DataBar14 extends Symbol {
                 for(i = 63; i < 78; i++) {
                     if (!(grid[0][i])) {
                         if (latch == '1') {
-                            seperator[i] = true;
+                            separator[i] = true;
                             latch = '0';
                         } else {
-                            seperator[i] = false;
+                            separator[i] = false;
                             latch = '1';
                         }
                     } else {
-                        seperator[i] = false;
+                        separator[i] = false;
                         latch = '1';
                     }
                 }
@@ -415,7 +420,7 @@ public class DataBar14 extends Symbol {
             readable += hrt;
         }
 
-        if (symbolType == gb14Mode.STACKED) {
+        if (symbolType == Mode.STACKED) {
             /* top row */
             writer = 0;
             latch = '0';
@@ -475,20 +480,20 @@ public class DataBar14 extends Symbol {
             if(linkageFlag) {
                 /* separator pattern for composite symbol */
                 for(i = 4; i < 46; i++) {
-                    seperator[i] = (!(grid[0][i]));
+                    separator[i] = (!(grid[0][i]));
                 }
                 latch = '1';
                 for(i = 16; i < 32; i++) {
                     if (!(grid[0][i])) {
                         if (latch == '1') {
-                            seperator[i] = true;
+                            separator[i] = true;
                             latch = '0';
                         } else {
-                            seperator[i] = false;
+                            separator[i] = false;
                             latch = '1';
                         }
                     } else {
-                        seperator[i] = false;
+                        separator[i] = false;
                         latch = '1';
                     }
                 }
@@ -499,7 +504,7 @@ public class DataBar14 extends Symbol {
             }
         }
 
-        if (symbolType == gb14Mode.OMNI) {
+        if (symbolType == Mode.OMNI) {
             /* top row */
             writer = 0;
             latch = '0';
@@ -594,20 +599,20 @@ public class DataBar14 extends Symbol {
             if(linkageFlag) {
                 /* separator pattern for composite symbol */
                 for(i = 4; i < 46; i++) {
-                    seperator[i] = (!(grid[0][i]));
+                    separator[i] = (!(grid[0][i]));
                 }
                 latch = '1';
                 for(i = 16; i < 32; i++) {
                     if (!(grid[0][i])) {
                         if (latch == '1') {
-                            seperator[i] = true;
+                            separator[i] = true;
                             latch = '0';
                         } else {
-                            seperator[i] = false;
+                            separator[i] = false;
                             latch = '1';
                         }
                     } else {
-                        seperator[i] = false;
+                        separator[i] = false;
                         latch = '1';
                     }
                 }
@@ -621,7 +626,7 @@ public class DataBar14 extends Symbol {
         if (linkageFlag) {
             bin = "";
             for (j = 0; j < symbol_width; j++) {
-                if (seperator[j]) {
+                if (separator[j]) {
                     bin += "1";
                 } else {
                     bin += "0";
@@ -643,15 +648,15 @@ public class DataBar14 extends Symbol {
             pattern[i + compositeOffset] = bin2pat(bin);
         }
 
-        if (symbolType == gb14Mode.LINEAR) {
+        if (symbolType == Mode.LINEAR) {
             row_height[0 + compositeOffset] = -1;
         }
-        if (symbolType == gb14Mode.STACKED) {
+        if (symbolType == Mode.STACKED) {
             row_height[0 + compositeOffset] = 5;
             row_height[1 + compositeOffset] = 1;
             row_height[2 + compositeOffset] = 7;
         }
-        if (symbolType == gb14Mode.OMNI) {
+        if (symbolType == Mode.OMNI) {
             row_height[0 + compositeOffset] = -1;
             row_height[1 + compositeOffset] = 1;
             row_height[2 + compositeOffset] = 1;
@@ -665,71 +670,6 @@ public class DataBar14 extends Symbol {
 
         plotSymbol();
         return true;
-    }
-
-    private int getCombinations(int n, int r) {
-        int i, j;
-        int maxDenom, minDenom;
-        int val;
-
-        if (n - r > r) {
-            minDenom = r;
-            maxDenom = n - r;
-        } else {
-            minDenom = n - r;
-            maxDenom = r;
-        }
-        val = 1;
-        j = 1;
-        for (i = n; i > maxDenom; i--) {
-            val *= i;
-            if (j <= minDenom) {
-                val /= j;
-                j++;
-            }
-        }
-        for (; j <= minDenom; j++) {
-            val /= j;
-        }
-        return (val);
-    }
-
-    private void getWidths(int val, int n, int elements, int maxWidth, int noNarrow) {
-        int bar;
-        int elmWidth;
-        int mxwElement;
-        int subVal, lessVal;
-        int narrowMask = 0;
-        for (bar = 0; bar < elements - 1; bar++) {
-            for (elmWidth = 1, narrowMask |= (1 << bar); ;
-                    elmWidth++, narrowMask &= ~ (1 << bar)) {
-                /* get all combinations */
-                subVal = getCombinations(n - elmWidth - 1, elements - bar - 2);
-                /* less combinations with no single-module element */
-                if ((noNarrow == 0) && (narrowMask == 0)
-                        && (n - elmWidth - (elements - bar - 1) >= elements - bar - 1)) {
-                    subVal -= getCombinations(n - elmWidth - (elements - bar), elements - bar - 2);
-                }
-                /* less combinations with elements > maxVal */
-                if (elements - bar - 1 > 1) {
-                    lessVal = 0;
-                    for (mxwElement = n - elmWidth - (elements - bar - 2);
-                    mxwElement > maxWidth;
-                    mxwElement--) {
-                        lessVal += getCombinations(n - elmWidth - mxwElement - 1, elements - bar - 3);
-                    }
-                    subVal -= lessVal * (elements - 1 - bar);
-                } else if (n - elmWidth > maxWidth) {
-                    subVal--;
-                }
-                val -= subVal;
-                if (val < 0) break;
-            }
-            val += subVal;
-            n -= elmWidth;
-            widths[bar] = elmWidth;
-        }
-        widths[bar] = n;
     }
 
     private void setGridModule(int row, int column) {

@@ -503,7 +503,7 @@ public class DataBarLimited extends Symbol {
         return val;
     }
 
-    private static int[] getWidths(int val, int n, int elements, int maxWidth, int noNarrow) {
+    static int[] getWidths(int val, int n, int elements, int maxWidth, int noNarrow) {
 
         int bar;
         int elmWidth;

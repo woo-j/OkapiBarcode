@@ -18,11 +18,11 @@ package uk.org.okapibarcode.backend;
 import java.awt.geom.Rectangle2D;
 
 /**
- * USPS Intelligent Mail Package Barcode (IMpb)<br>
- * A linear barcode based on GS1-128. Includes additional data checks.
- * Specification at https://ribbs.usps.gov/intelligentmail_package/documents/tech_guides/BarcodePackageIMSpec.pdf
+ * <p>Implements USPS Intelligent Mail Package Barcode (IMpb), a linear barcode based on GS1-128.
+ * Includes additional data checks.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
+ * @see <a href="https://ribbs.usps.gov/intelligentmail_package/documents/tech_guides/BarcodePackageIMSpec.pdf">IMpb Specification</a>
  */
 public class UspsPackage extends Symbol {
 

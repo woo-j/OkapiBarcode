@@ -19,12 +19,12 @@ import java.awt.geom.Rectangle2D;
 import java.io.UnsupportedEncodingException;
 
 /**
- * Implements Code 16K symbology
- * According to BS EN 12323:2005
- * <p>
- * Encodes using a stacked symbology based on Code 128. Supports encoding
+ * <p>Implements Code 16K symbology according to BS EN 12323:2005.
+ *
+ * <p>Encodes using a stacked symbology based on Code 128. Supports encoding
  * of any 8-bit ISO 8859-1 (Latin-1) data with a maximum data capacity of 77
  * alpha-numeric characters or 154 numerical digits.
+ *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class Code16k extends Symbol {
@@ -72,6 +72,9 @@ public class Code16k extends Symbol {
 
     @Override
     public boolean encode() {
+
+        // TODO: is it possible to share any of this code with Code128, which is more up to date?
+
         String width_pattern;
         int current_row, rows_needed, first_check, second_check;
         int indexchaine, pads_needed;
@@ -798,5 +801,4 @@ public class Code16k extends Symbol {
 
         mergeVerticalBlocks();
     }
-
 }

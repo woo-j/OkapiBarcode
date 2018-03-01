@@ -19,12 +19,10 @@ import java.awt.geom.Rectangle2D;
 import java.io.UnsupportedEncodingException;
 
 /**
- * Implements Codablock-F according to AIM Europe "Uniform Symbology
- * Specification - Codablock F", 1995
- * <p>
- * Codablock F is a multi-row symbology using Code 128 encoding. It can
- * encode any 8-bit ISO 8859-1 (Latin-1) data up to approximately 1000
- * alpha-numeric characters or 2000 numeric digits in length.
+ * <p>Implements Codablock-F according to AIM Europe "Uniform Symbology Specification - Codablock F", 1995.
+ *
+ * <p>Codablock-F is a multi-row symbology using Code 128 encoding. It can encode any 8-bit ISO 8859-1 (Latin-1)
+ * data up to approximately 1000 alpha-numeric characters or 2000 numeric digits in length.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */

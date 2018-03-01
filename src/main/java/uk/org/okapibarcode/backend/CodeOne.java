@@ -118,7 +118,7 @@ public class CodeOne extends Symbol {
      * specified version. Version S and T are fixed height symbols.
      * @param version Symbol version
      */
-    public void setPreferredVersion (Version version) {
+    public void setPreferredVersion(Version version) {
         preferredVersion = version;
     }
 

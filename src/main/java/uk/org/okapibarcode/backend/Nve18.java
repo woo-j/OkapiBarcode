@@ -16,42 +16,41 @@
 package uk.org.okapibarcode.backend;
 
 /**
- * Calculate NVE-18 (Nummer der Versandeinheit)
- * Also SSCC-18 (Serial Shipping Container Code)
- * <br>
- * Encodes a 17 digit number, adding a Modulo-10 check digit.
+ * <p>Calculate NVE-18 (Nummer der Versandeinheit), also known as SSCC-18 (Serial Shipping Container Code).
+ *
+ * <p>Encodes a 17-digit number, adding a modulo-10 check digit.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class Nve18 extends Symbol {
-        
+
     @Override
     public boolean encode() {
+
         String gs1Equivalent = "";
         int zeroes;
         int count = 0;
         int c, cdigit;
-        int p = 0;       
-        Code128 code128 = new Code128();
-        
+        int p = 0;
+
         if (content.length() > 17) {
             error_msg = "Input data too long";
             return false;
         }
-        
-        if (!(content.matches("[0-9]+"))) {
+
+        if (!content.matches("[0-9]+")) {
             error_msg = "Invalid characters in input";
             return false;
         }
-    
+
         // Add leading zeroes
         zeroes = 17 - content.length();
         for(int i = 0; i < zeroes; i++) {
             gs1Equivalent += "0";
         }
-        
+
         gs1Equivalent += content;
-        
+
         // Add Modulus-10 check digit
         for (int i = gs1Equivalent.length() - 1; i >= 0; i--) {
             c = Character.getNumericValue(gs1Equivalent.charAt(i));
@@ -67,13 +66,14 @@ public class Nve18 extends Symbol {
         }
 
         encodeInfo += "NVE Check Digit: " + cdigit + "\n";
-        
+
         content = "[00]" + gs1Equivalent + cdigit;
-        
+
         // Defer to Code 128
+        Code128 code128 = new Code128();
         code128.setDataType(DataType.GS1);
         code128.setHumanReadableLocation(humanReadableLocation);
-        
+
         try {
             code128.setContent(content);
         } catch (OkapiException e) {
@@ -81,12 +81,17 @@ public class Nve18 extends Symbol {
             return false;
         }
 
-        rectangles = code128.rectangles;
-        texts = code128.texts;
+        readable = code128.readable;
+        pattern = code128.pattern;
+        row_count = code128.row_count;
+        row_height = code128.row_height;
         symbol_height = code128.symbol_height;
         symbol_width = code128.symbol_width;
         encodeInfo += code128.encodeInfo;
-        
-        return true;
+        error_msg = code128.error_msg;
+        rectangles = code128.rectangles;
+        texts = code128.texts;
+
+        return (error_msg == null);
     }
 }

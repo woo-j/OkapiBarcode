@@ -16,7 +16,7 @@
 package uk.org.okapibarcode.backend;
 
 import java.awt.geom.Rectangle2D;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 /**
  * <p>Implements Code 16K symbology according to BS EN 12323:2005.
@@ -96,12 +96,7 @@ public class Code16k extends Symbol {
             return false;
         }
 
-        try {
-            inputBytes = content.getBytes("ISO8859_1");
-        } catch (UnsupportedEncodingException e) {
-            error_msg = "Character encoding error";
-            return false;
-        }
+        inputBytes = content.getBytes(StandardCharsets.ISO_8859_1);
 
         input_length = content.length();
         inputData = new int[input_length];

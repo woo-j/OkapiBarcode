@@ -16,7 +16,7 @@
 package uk.org.okapibarcode.backend;
 
 import java.awt.geom.Rectangle2D;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 /**
  * <p>Implements Codablock-F according to AIM Europe "Uniform Symbology Specification - Codablock F", 1995.
@@ -83,12 +83,7 @@ public class CodablockF extends Symbol {
             return false;
         }
 
-        try {
-            inputBytes = content.getBytes("ISO8859_1");
-        } catch (UnsupportedEncodingException e) {
-            error_msg = "Character encoding error";
-            return false;
-        }
+        inputBytes = content.getBytes(StandardCharsets.ISO_8859_1);
 
         source = new int[input_length + 1];
         for (i = 0; i < input_length; i++) {

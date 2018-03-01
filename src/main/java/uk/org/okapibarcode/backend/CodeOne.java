@@ -15,8 +15,8 @@
  */
 package uk.org.okapibarcode.backend;
 
-import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 /**
  * <p>Implements Code One.
  *
@@ -756,12 +756,7 @@ public class CodeOne extends Symbol {
         int bits_left_in_byte, target_count;
         boolean isTwoDigits;
 
-        try {
-            source = content.getBytes("ISO8859_1");
-        } catch (UnsupportedEncodingException e) {
-            error_msg = "Invalid character in input data";
-            return 0;
-        }
+        source = content.getBytes(StandardCharsets.ISO_8859_1);
 
         sourcePoint = 0;
         targetPoint = 0;

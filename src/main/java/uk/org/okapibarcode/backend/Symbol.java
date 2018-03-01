@@ -37,15 +37,10 @@ import java.util.List;
  */
 public abstract class Symbol {
 
-    protected String content;
-    protected String readable = "";
-    protected String[] pattern;
-    protected int row_count = 0;
-    protected int[] row_height;
-    protected boolean debug = false;
-    protected String error_msg = "";
-    protected int symbol_height = 0;
-    protected int symbol_width = 0;
+    // user-specified values and settings
+
+    protected DataType inputDataType = DataType.ECI;
+    protected boolean readerInit;
     protected int default_height = 40;
     protected int quietZoneHorizontal = 0;
     protected int quietZoneVertical = 0;
@@ -54,21 +49,29 @@ public abstract class Symbol {
     protected double fontSize = 8;
     protected HumanReadableLocation humanReadableLocation = BOTTOM;
     protected HumanReadableAlignment humanReadableAlignment = CENTER;
-    protected boolean readerInit;
-    protected String encodeInfo = "";
+    protected boolean debug = false;
+
+    // internal state calculated when setContent() is called
+
+    protected String content;
     protected int eciMode = 3;
     protected byte[] inputBytes;
-    protected DataType inputDataType = DataType.ECI;
+    protected String readable = "";
+    protected String[] pattern;
+    protected int row_count = 0;
+    protected int[] row_height;
+    protected int symbol_height = 0;
+    protected int symbol_width = 0;
+    protected String encodeInfo = "";
+    protected String error_msg = "";
+    public List< Rectangle2D.Double > rectangles = new ArrayList<>(); // TODO: should not be public
+    public List< TextBox > texts = new ArrayList<>();                 // TODO: should not be public
+    public List< Hexagon > hexagons = new ArrayList<>();              // TODO: should not be public
+    public List< Ellipse2D.Double > target = new ArrayList<>();       // TODO: should not be public
 
-    public enum DataType {
+    public static enum DataType {
         UTF8, LATIN1, BINARY, GS1, HIBC, ECI
     }
-
-    // TODO: These values to become accessible only to renderer
-    public List< Rectangle2D.Double > rectangles = new ArrayList<>();
-    public List< TextBox > texts = new ArrayList<>();
-    public List< Hexagon > hexagons = new ArrayList<>();
-    public List< Ellipse2D.Double > target = new ArrayList<>();
 
     public Symbol() {
         unsetReaderInit();
@@ -88,7 +91,7 @@ public abstract class Symbol {
      * <li><code>HIBC</code> Health Industry Bar Code number (without check digit)
      * <li><code>ECI</code> Extended Channel Interpretations
      * </ul>
-     * @param dataType A <code>DataType</code> value which specifies the type of data
+     * @param dataType the type of input data
      */
     public void setDataType(DataType dataType) {
         inputDataType = dataType;

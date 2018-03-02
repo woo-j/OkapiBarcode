@@ -16,16 +16,16 @@
 package uk.org.okapibarcode.backend;
 
 /**
- * Implements Code 3 of 9 Extended, also known as Code 39e and Code39+
- * <p>
- * Supports encoding of all characters in the 7-bit ASCII table. A
- * modulo-43 check digit can be added if required.
+ * <p>Implements Code 3 of 9 Extended, also known as Code 39e and Code39+.
+ *
+ * <p>Supports encoding of all characters in the 7-bit ASCII table. A modulo-43
+ * check digit can be added if required.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class Code3Of9Extended extends Symbol {
 
-    private final String[] ECode39 = {
+    private static final String[] E_CODE_39 = {
         "%U", "$A", "$B", "$C", "$D", "$E", "$F", "$G", "$H", "$I", "$J", "$K",
         "$L", "$M", "$N", "$O", "$P", "$Q", "$R", "$S", "$T", "$U", "$V", "$W",
         "$X", "$Y", "$Z", "%A", "%B", "%C", "%D", "%E", " ", "/A", "/B", "/C",
@@ -42,29 +42,25 @@ public class Code3Of9Extended extends Symbol {
     public enum CheckDigit {
         NONE, MOD43
     }
-    
-    private CheckDigit checkOption;
-    
-    public Code3Of9Extended() {
-        checkOption = CheckDigit.NONE;
-    }
-    
+
+    private CheckDigit checkOption = CheckDigit.NONE;
+
     /**
-     * Select addition of optional Modulo-43 check digit or encoding without
-     * check digit.
-     * @param checkMode Check digit option
+     * Select addition of optional Modulo-43 check digit or encoding without check digit.
+     *
+     * @param checkMode check digit option
      */
     public void setCheckDigit(CheckDigit checkMode) {
         checkOption = checkMode;
     }
-    
+
     @Override
     public boolean encode() {
         String buffer = "";
         int l = content.length();
         int asciicode;
         Code3Of9 c = new Code3Of9();
-        
+
         if (checkOption == CheckDigit.MOD43) {
             c.setCheckDigit(Code3Of9.CheckDigit.MOD43);
         }
@@ -76,7 +72,7 @@ public class Code3Of9Extended extends Symbol {
 
         for (int i = 0; i < l; i++) {
             asciicode = content.charAt(i);
-            buffer += ECode39[asciicode];
+            buffer += E_CODE_39[asciicode];
         }
 
         try {
@@ -93,5 +89,11 @@ public class Code3Of9Extended extends Symbol {
         row_height[0] = -1;
         plotSymbol();
         return true;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected int[] getCodewords() {
+        return getPatternAsCodewords(10);
     }
 }

@@ -46,7 +46,7 @@ public abstract class Symbol {
     protected int quietZoneVertical = 0;
     protected int moduleWidth = 1;
     protected String fontName = "Helvetica";
-    protected double fontSize = 8;
+    protected int fontSize = 8;
     protected HumanReadableLocation humanReadableLocation = BOTTOM;
     protected HumanReadableAlignment humanReadableAlignment = CENTER;
     protected boolean debug = false;
@@ -208,7 +208,7 @@ public abstract class Symbol {
      *
      * @param fontSize the size of the font to use to render the human-readable text
      */
-    public void setFontSize(double fontSize) {
+    public void setFontSize(int fontSize) {
         this.fontSize = fontSize;
     }
 
@@ -217,7 +217,7 @@ public abstract class Symbol {
      *
      * @return the size of the font to use to render the human-readable text
      */
-    public double getFontSize() {
+    public int getFontSize() {
         return fontSize;
     }
 

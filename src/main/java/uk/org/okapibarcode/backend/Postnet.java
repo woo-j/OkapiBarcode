@@ -72,15 +72,8 @@ public class Postnet extends Symbol {
 
     @Override
     public boolean encode() {
-
         String[] table = (mode == Mode.POSTNET ? PN_TABLE : PL_TABLE);
-        boolean retval = encode(table);
-
-        if (retval) {
-            plotSymbol();
-        }
-
-        return retval;
+        return encode(table);
     }
 
     private boolean encode(String[] table) {

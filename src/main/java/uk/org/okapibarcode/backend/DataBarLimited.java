@@ -467,7 +467,6 @@ public class DataBarLimited extends Symbol {
             pattern[0] = "0:04" + bin2pat(notbin);
         }
 
-        plotSymbol();
         return true;
     }
 

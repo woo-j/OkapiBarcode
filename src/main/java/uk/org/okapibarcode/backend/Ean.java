@@ -124,10 +124,6 @@ public class Ean extends Symbol {
             }
         }
 
-        if (retval) {
-            plotSymbol();
-        }
-
         return retval;
     }
 

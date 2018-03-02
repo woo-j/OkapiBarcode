@@ -405,7 +405,6 @@ public class UspsOneCode extends Symbol {
 
         encodeInfo += "Encoding: " + pattern[0] + "\n";
 
-        plotSymbol();
         return true;
     }
 

@@ -446,7 +446,6 @@ public class DataMatrix extends Symbol {
         encodeInfo += "Data Codewords: " + datablock + "\n";
         encodeInfo += "ECC Codewords: " + rsblock + "\n";
 
-        plotSymbol();
         return true;
     }
 

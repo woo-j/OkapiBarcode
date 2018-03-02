@@ -111,8 +111,6 @@ public class JapanPost extends Symbol {
         row_count = 1;
         row_height = new int[] { -1 };
 
-        plotSymbol();
-
         return true;
     }
 

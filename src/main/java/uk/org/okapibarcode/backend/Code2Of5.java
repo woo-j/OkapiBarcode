@@ -166,10 +166,6 @@ public class Code2Of5 extends Symbol {
             break;
         }
 
-        if (retval) {
-            plotSymbol();
-        }
-
         return retval;
     }
 

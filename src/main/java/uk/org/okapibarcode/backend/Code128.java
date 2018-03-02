@@ -685,8 +685,6 @@ public class Code128 extends Symbol {
             row_height[1] = -1;
         }
 
-        plotSymbol();
-
         return true;
     }
 

@@ -559,7 +559,7 @@ public class Code16k extends Symbol {
             row_height[current_row] = 10;
         }
         encodeInfo += "\n";
-        plotSymbol();
+
         return true;
 
     }

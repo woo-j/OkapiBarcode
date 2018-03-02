@@ -695,10 +695,6 @@ public class Pdf417 extends Symbol {
                 break;
         }
 
-        if (ok) {
-            plotSymbol();
-        }
-
         return ok;
     }
 

@@ -257,7 +257,7 @@ public class CodablockF extends Symbol {
         encodeInfo += "\n";
 
         symbol_height = rows_needed * 15;
-        plotSymbol();
+
         return true;
     }
 

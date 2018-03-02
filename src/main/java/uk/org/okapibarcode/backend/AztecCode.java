@@ -1220,7 +1220,6 @@ public class AztecCode extends Symbol {
             }
         }
 
-        plotSymbol();
         return true;
     }
 

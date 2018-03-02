@@ -1308,7 +1308,7 @@ public class Code49 extends Symbol {
 
         }
         encodeInfo += "\n";
-        plotSymbol();
+
         return true;
     }
 

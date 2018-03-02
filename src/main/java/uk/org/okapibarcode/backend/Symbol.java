@@ -385,7 +385,9 @@ public abstract class Symbol {
         }
 
         if (!content.isEmpty()) {
-            if (!encode()) {
+            if (encode()) {
+                plotSymbol();
+            } else {
                 throw new OkapiException(error_msg);
             }
         } else {

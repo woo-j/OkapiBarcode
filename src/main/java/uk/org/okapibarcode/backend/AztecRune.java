@@ -178,7 +178,6 @@ public class AztecRune extends Symbol {
             rowBinary = "";
         }
 
-        plotSymbol();
         return true;
     }
 }

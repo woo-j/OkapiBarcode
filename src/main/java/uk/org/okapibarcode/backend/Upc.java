@@ -130,9 +130,6 @@ public class Upc extends Symbol {
             }
         }
 
-        if (retval) {
-            plotSymbol();
-        }
         return retval;
     }
 

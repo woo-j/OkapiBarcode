@@ -16,7 +16,7 @@
 package uk.org.okapibarcode.backend;
 
 /**
- * PZN8 is a Code 39 based symbology used by the pharmaceutical industry in 
+ * PZN8 is a Code 39 based symbology used by the pharmaceutical industry in
  * Germany. PZN8 encodes a 7 digit number and includes a modulo-10 check digit.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
@@ -67,7 +67,7 @@ public class Pharmazentralnummer extends Symbol {
         encodeInfo += "Check Digit: " + check_digit + "\n";
 
         localstr += (char)(check_digit + '0');
-        
+
         try {
             c.setContent(localstr);
         } catch (OkapiException e) {
@@ -81,7 +81,7 @@ public class Pharmazentralnummer extends Symbol {
         row_count = 1;
         row_height = new int[1];
         row_height[0] = -1;
-        plotSymbol();
+
         return true;
     }
 }

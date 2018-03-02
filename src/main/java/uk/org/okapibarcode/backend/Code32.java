@@ -115,7 +115,7 @@ public class Code32 extends Symbol {
         }
 
         this.pattern[0] = c39.pattern[0];
-        this.plotSymbol();
+
         return true;
     }
 }

@@ -108,7 +108,7 @@ public class Logmars extends Symbol {
         pattern = new String[] { "1311313111" + p + "131131311" };
         row_count = 1;
         row_height = new int[] { -1 };
-        plotSymbol();
+
         return true;
     }
 }

@@ -732,7 +732,7 @@ public class CodeOne extends Symbol {
             pattern[i] = bin2pat(bin);
             row_height[i] = 1;
         }
-        plotSymbol();
+
         return true;
     }
 

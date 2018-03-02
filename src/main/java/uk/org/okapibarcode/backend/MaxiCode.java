@@ -391,8 +391,6 @@ public class MaxiCode extends Symbol {
         symbol_height = 72;
         symbol_width = 74;
 
-        plotSymbol();
-
         return true;
     }
 

@@ -21,8 +21,8 @@ import java.io.UnsupportedEncodingException;
  * Implements Micro QR Code
  * According to ISO/IEC 18004:2006
  * <br>
- * A miniature version of the QR Code symbol for short messages. 
- * QR Code symbols can encode characters in the Latin-1 set and Kanji 
+ * A miniature version of the QR Code symbol for short messages.
+ * QR Code symbols can encode characters in the Latin-1 set and Kanji
  * characters which are members of the Shift-JIS encoding scheme.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
@@ -41,7 +41,7 @@ public class MicroQrCode extends Symbol {
     private int[] grid;
     private int[] eval;
     private int preferredVersion;
-    
+
     /**
      * Sets the preferred symbol size. This value may be ignored if the
      * data string is too large to fit into the specified symbol. Input
@@ -75,15 +75,15 @@ public class MicroQrCode extends Symbol {
      * </tr>
      * </tbody>
      * </table>
-     * 
+     *
      * @param version Symbol size
      */
     public void setPreferredVersion(int version) {
         preferredVersion = version;
     }
-    
+
     private EccMode preferredEccLevel = EccMode.L;
-    
+
     /**
      * Set the amount of symbol space allocated to error correction.
      * Levels are predefined according to the following table:
@@ -160,12 +160,12 @@ public class MicroQrCode extends Symbol {
             error_msg = "Input data too long";
             return false;
         }
-        
+
         if (!inputCharCheck()) {
             error_msg = "Invalid characters in input data";
             return false;
         }
-             
+
         for (i = 0; i < 4; i++) {
             version_valid[i] = true;
         }
@@ -197,20 +197,20 @@ public class MicroQrCode extends Symbol {
                 inputMode[i] = qrMode.NUMERIC;
             }
         }
-        
+
         byteModeUsed = false;
         alphanumModeUsed = false;
         kanjiModeUsed = false;
-        
+
         for (i = 0; i < content.length(); i++) {
             if (inputMode[i] == qrMode.BINARY) {
                 byteModeUsed = true;
             }
-            
+
             if (inputMode[i] == qrMode.ALPHANUM) {
                 alphanumModeUsed = true;
             }
-            
+
             if (inputMode[i] == qrMode.KANJI) {
                 kanjiModeUsed = true;
             }
@@ -465,22 +465,21 @@ public class MicroQrCode extends Symbol {
             row_height[i] = 1;
         }
 
-        plotSymbol();
         return true;
     }
-    
+
     private boolean inputCharCheck() {
         int qmarkBefore, qmarkAfter;
         int i;
         byte[] temp;
-        
+
         /* Check that input includes valid characters */
-        
+
         if (content.matches("[\u0000-\u00FF]+")) {
             /* All characters in ISO 8859-1 */
             return true;
         }
-        
+
         /* Otherwise check for Shift-JIS characters */
         qmarkBefore = 0;
         for (i = 0; i < content.length(); i++) {
@@ -488,21 +487,21 @@ public class MicroQrCode extends Symbol {
                 qmarkBefore++;
             }
         }
-        
+
         try {
             temp = content.getBytes("SJIS");
         } catch (UnsupportedEncodingException e) {
             error_msg = "Character encoding error";
             return false;
         }
-        
+
         qmarkAfter = 0;
         for (i = 0; i < temp.length; i++) {
             if (temp[i] == '?')  {
                 qmarkAfter++;
             }
         }
-        
+
         /* If these values are the same, conversion was sucessful */
         return (qmarkBefore == qmarkAfter);
     }
@@ -629,21 +628,21 @@ public class MicroQrCode extends Symbol {
         for (i = 0; i < 4; i++) {
             binaryCount[i] = 0;
         }
-        
+
         for (i = 0; i < content.length(); i++) {
             if(currentMode != inputMode[i]) {
-                
+
                 blockLength = 0;
                 do {
                     blockLength++;
                 } while (((i + blockLength) < content.length())
                     && (inputMode[i + blockLength] == inputMode[i]));
-                
+
                 switch (inputMode[i]) {
                     case KANJI:
                         binaryCount[2] += 5 + (blockLength * 13);
                         binaryCount[3] += 7 + (blockLength * 13);
-                        
+
                         break;
                     case BINARY:
                         binaryCount[2] += 6 + (blockLength * 8);
@@ -651,7 +650,7 @@ public class MicroQrCode extends Symbol {
                         break;
                     case ALPHANUM:
                         int alphaLength;
-                        
+
                         if ((blockLength % 2) == 1) {
                             /* Odd length block */
                             alphaLength = ((blockLength - 1) / 2) * 11;
@@ -660,14 +659,14 @@ public class MicroQrCode extends Symbol {
                             /* Even length block */
                             alphaLength = (blockLength / 2) * 11;
                         }
-                        
+
                         binaryCount[1] += 4 + alphaLength;
                         binaryCount[2] += 6 + alphaLength;
                         binaryCount[3] += 8 + alphaLength;
                         break;
                     case NUMERIC:
                         int numLength;
-                        
+
                         switch(blockLength % 3) {
                             case 1:
                                 /* one digit left over */
@@ -684,7 +683,7 @@ public class MicroQrCode extends Symbol {
                                 numLength = (blockLength / 3) * 10;
                                 break;
                         }
-                        
+
                         binaryCount[0] += 3 + numLength;
                         binaryCount[1] += 5 + numLength;
                         binaryCount[2] += 7 + numLength;
@@ -694,16 +693,16 @@ public class MicroQrCode extends Symbol {
                 currentMode = inputMode[i];
             }
         }
-        
+
         /* Add terminator */
         if (binaryCount[1] < 37) {
             binaryCount[1] += 5;
         }
-        
+
         if (binaryCount[2] < 81) {
             binaryCount[2] += 7;
         }
-        
+
         if (binaryCount[3] < 125) {
             binaryCount[3] += 9;
         }
@@ -716,10 +715,10 @@ public class MicroQrCode extends Symbol {
         int msb, lsb, prod, jis;
         String oneChar;
         byte[] jisBytes;
-        int count, first, second, third;        
-        
+        int count, first, second, third;
+
         encodeInfo += "Encoding: ";
-        
+
         do {
             data_block = inputMode[position];
             blockLength = 0;
@@ -900,7 +899,7 @@ public class MicroQrCode extends Symbol {
 
             position += blockLength;
         } while (position < content.length() - 1);
-        
+
         /* Add terminator */
         switch(version) {
             case 0:
@@ -922,7 +921,7 @@ public class MicroQrCode extends Symbol {
                 }
                 break;
         }
-        
+
         encodeInfo += "\n";
     }
 
@@ -1015,7 +1014,7 @@ public class MicroQrCode extends Symbol {
         if (binary.charAt(19) == '1') {
             data_blocks[2] += 0x01;
         }
-        
+
         encodeInfo += "Codewords: ";
 
         for (i = 0; i < data_codewords; i++) {
@@ -1105,7 +1104,7 @@ public class MicroQrCode extends Symbol {
                 data_blocks[i] += 0x01;
             }
         }
-        
+
         encodeInfo += "Codewords: ";
         System.out.printf("\tCodewords: ");
         for (i = 0; i < data_codewords; i++) {
@@ -1243,7 +1242,7 @@ public class MicroQrCode extends Symbol {
                 data_blocks[8] += 0x01;
             }
         }
-        
+
         encodeInfo += "Codewords: ";
         System.out.printf("\tCodewords: ");
         for (i = 0; i < data_codewords; i++) {
@@ -1340,7 +1339,7 @@ public class MicroQrCode extends Symbol {
                 data_blocks[i] += 0x01;
             }
         }
-        
+
         encodeInfo += "Codewords: ";
         System.out.printf("\tCodewords: ");
         for (i = 0; i < data_codewords; i++) {

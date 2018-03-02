@@ -668,7 +668,6 @@ public class DataBar14 extends Symbol {
             row_count++;
         }
 
-        plotSymbol();
         return true;
     }
 

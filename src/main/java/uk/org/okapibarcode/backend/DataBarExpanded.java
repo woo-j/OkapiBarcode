@@ -549,7 +549,6 @@ public class DataBarExpanded extends Symbol {
             row_count += compositeOffset;
         }
 
-        plotSymbol();
         return true;
     }
 

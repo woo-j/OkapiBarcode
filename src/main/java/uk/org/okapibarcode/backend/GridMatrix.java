@@ -558,7 +558,6 @@ public class GridMatrix extends Symbol {
             pattern[x] = bin2pat(bin);
         }
 
-        plotSymbol();
         return true;
     }
 

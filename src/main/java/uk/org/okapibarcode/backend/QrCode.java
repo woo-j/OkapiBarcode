@@ -666,7 +666,6 @@ public class QrCode extends Symbol {
             row_height[i] = 1;
         }
 
-        plotSymbol();
         return true;
     }
 
@@ -680,7 +679,7 @@ public class QrCode extends Symbol {
             inputLength = content.length();
             inputData = new int[inputLength];
             for (i = 0; i < inputLength; i++) {
-                inputData[i] = (int) content.charAt(i);
+                inputData[i] = content.charAt(i);
             }
         } else {
             /* Any other encoding method */
@@ -1171,14 +1170,14 @@ public class QrCode extends Symbol {
                                 return false;
                             }
 
-                            qr_bscan((int) jisBytes[0] & 0xff, 0x80);
-                            qr_bscan((int) jisBytes[1] & 0xff, 0x80);
+                            qr_bscan(jisBytes[0] & 0xff, 0x80);
+                            qr_bscan(jisBytes[1] & 0xff, 0x80);
 
-                            encodeInfo += "(" + Integer.toString((int) jisBytes[0] & 0xff) + " ";
-                            encodeInfo += Integer.toString((int) jisBytes[1] & 0xff) + ") ";
+                            encodeInfo += "(" + Integer.toString(jisBytes[0] & 0xff) + " ";
+                            encodeInfo += Integer.toString(jisBytes[1] & 0xff) + ") ";
                         } else {
                             // Process 8-bit byte
-                            int lbyte = (int) (inputData[position + i] & 0xFF);
+                            int lbyte = inputData[position + i] & 0xFF;
 
                             if ((inputDataType == DataType.GS1) && (lbyte == '[')) {
                                 lbyte = 0x1d; /* FNC1 */
@@ -1718,7 +1717,7 @@ public class QrCode extends Symbol {
         /* Evaluate result */
         for (local_pattern = 0; local_pattern < 8; local_pattern++) {
             add_format_info_eval(size, ecc_level, local_pattern);
-            penalty[local_pattern] = evaluate(size, local_pattern);         
+            penalty[local_pattern] = evaluate(size, local_pattern);
         }
 
         best_pattern = 0;
@@ -1745,7 +1744,7 @@ public class QrCode extends Symbol {
 
         return best_pattern;
     }
-    
+
     private void add_format_info_eval(int size, EccMode ecc_level, int pattern) {
 	/* Add format information to grid */
 
@@ -1760,7 +1759,7 @@ public class QrCode extends Symbol {
 	}
 
 	seq = qr_annex_c[format];
-	
+
         for (i = 0; i < 6; i++) {
             if (((seq >> i) & 0x01) != 0) {
                 eval[(i * size) + 8] = (byte)(0x01 >> pattern);
@@ -1798,13 +1797,13 @@ public class QrCode extends Symbol {
         } else {
             eval[(7 * size) + 8] = 0;
         }
-        
+
         if (((seq >> 7) & 0x01) != 0) {
             eval[(8 * size) + 8] = (byte)(0x01 >> pattern);
         } else {
             eval[(8 * size) + 8] = 0;
         }
-        
+
         if (((seq >> 8) & 0x01) != 0) {
             eval[(8 * size) + 7] = (byte)(0x01 >> pattern);
         } else {

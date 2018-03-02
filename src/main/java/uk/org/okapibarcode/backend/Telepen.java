@@ -118,7 +118,7 @@ public class Telepen extends Symbol {
         row_count = 1;
         row_height = new int[1];
         row_height[0] = -1;
-        plotSymbol();
+
         return true;
     }
 
@@ -131,7 +131,7 @@ public class Telepen extends Symbol {
         int tl, glyph;
         char c1, c2;
 
-        //FIXME: Ensure no extended ASCII or Unicode charcters are entered
+        //FIXME: Ensure no extended ASCII or Unicode characters are entered
         if (!(content.matches("[0-9X]+"))) {
             error_msg = "Invalid characters in input";
             return false;
@@ -186,7 +186,7 @@ public class Telepen extends Symbol {
         row_count = 1;
         row_height = new int[1];
         row_height[0] = -1;
-        plotSymbol();
+
         return true;
     }
 }

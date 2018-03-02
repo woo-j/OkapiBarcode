@@ -545,7 +545,7 @@ public class Composite extends Symbol {
         }
 
         // Manage composite component encoding first
-        if (!(encodeComposite())) {
+        if (!encodeComposite()) {
             return false;
         }
 
@@ -690,7 +690,7 @@ public class Composite extends Symbol {
             return false;
         }
 
-        if ((cc_mode == CompositeMode.CC_C) && (symbology == LinearEncoding.CODE_128)) {
+        if (cc_mode == CompositeMode.CC_C && symbology == LinearEncoding.CODE_128) {
             /* Width of composite component depends on width of linear component,
                so recalculate. */
             row_count = 0;
@@ -698,12 +698,12 @@ public class Composite extends Symbol {
             symbol_height = 0;
             symbol_width = 0;
             encodeInfo = "";
-            if (!(encodeComposite())) {
+            if (!encodeComposite()) {
                 return false;
             }
         }
 
-        if ((cc_mode != CompositeMode.CC_C) && (symbology == LinearEncoding.CODE_128)) {
+        if (cc_mode != CompositeMode.CC_C && symbology == LinearEncoding.CODE_128) {
             if (linearWidth > symbol_width) {
                 top_shift = (linearWidth - symbol_width) / 2;
             }
@@ -828,8 +828,18 @@ public class Composite extends Symbol {
                 break;
         }
 
-        plotSymbol();
+        plotSymbolInternal();
+
         return true;
+    }
+
+    private void plotSymbolInternal() {
+        super.plotSymbol();
+    }
+
+    @Override
+    protected void plotSymbol() {
+        // empty
     }
 
     private int eanCalculateVersion() {

@@ -352,36 +352,25 @@ public abstract class Symbol {
     }
 
     /**
-     * Set the data to be encoded. Input data will be assumed to be of
-     * the type set by <code>setDataType</code>.
-     * @param input_data A <code>String</code> containing the data to encode
-     * @throws OkapiException If no data or data is invalid
+     * Sets the data to be encoded. Input data will be assumed to be of the type set
+     * by {@link #setDataType(DataType)}.
+     *
+     * @param data the data to encode
+     * @throws OkapiException if no data or data is invalid
      */
-    public void setContent(String input_data) {
-        int i;
+    public void setContent(String data) {
 
-        content = input_data; // default action
-
-        if (inputDataType == DataType.GS1) {
-            content = gs1SanityCheck(input_data);
-        }
-
-        if (inputDataType == DataType.GS1) {
-            readable = "";
-            for (i = 0; i < input_data.length(); i++) {
-                switch(input_data.charAt(i)) {
-                    case '[': readable += '(';
-                        break;
-                    case ']': readable += ')';
-                        break;
-                    default: readable += input_data.charAt(i);
-                        break;
-                }
-            }
-        }
-
-        if (inputDataType == DataType.HIBC) {
-            content = hibcProcess(input_data);
+        switch (inputDataType) {
+            case GS1:
+                content = gs1SanityCheck(data);
+                readable = data.replace('[', '(').replace(']', ')');
+                break;
+            case HIBC:
+                content = hibcProcess(data);
+                break;
+            default:
+                content = data;
+                break;
         }
 
         if (!content.isEmpty()) {
@@ -578,7 +567,7 @@ public abstract class Symbol {
         return qmarksAfter;
     }
 
-    abstract boolean encode();
+    protected abstract boolean encode();
 
     protected void plotSymbol() {
         int xBlock, yBlock;

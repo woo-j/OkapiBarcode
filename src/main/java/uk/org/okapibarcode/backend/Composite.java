@@ -828,13 +828,9 @@ public class Composite extends Symbol {
                 break;
         }
 
-        plotSymbolInternal();
+        super.plotSymbol();
 
         return true;
-    }
-
-    private void plotSymbolInternal() {
-        super.plotSymbol();
     }
 
     @Override

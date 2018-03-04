@@ -309,46 +309,45 @@ public abstract class Symbol {
         return humanReadableAlignment;
     }
 
-    protected int positionOf(char thischar, char[] LookUp) {
-        int i, outval = 0;
+    protected int positionOf(char c, char[] chars) {
 
-        for (i = 0; i < LookUp.length; i++) {
-            if (thischar == LookUp[i]) {
-                outval = i;
+        for (int i = 0; i < chars.length; i++) {
+            if (c == chars[i]) {
+                return i;
             }
         }
-        return outval;
+
+        throw new OkapiException("Unable to find character '" + c + "' in character array.");
     }
 
     protected String bin2pat(String bin) {
-        boolean black;
-        int i, l;
-        String pat = "";
 
-        black = true;
-        l = 0;
-        for (i = 0; i < bin.length(); i++) {
+        int len = 0;
+        boolean black = true;
+        StringBuilder pattern = new StringBuilder(bin.length());
+
+        for (int i = 0; i < bin.length(); i++) {
             if (black) {
                 if (bin.charAt(i) == '1') {
-                    l++;
+                    len++;
                 } else {
                     black = false;
-                    pat += (char)(l + '0');
-                    l = 1;
+                    pattern.append((char) (len + '0'));
+                    len = 1;
                 }
             } else {
                 if (bin.charAt(i) == '0') {
-                    l++;
+                    len++;
                 } else {
                     black = true;
-                    pat += (char)(l + '0');
-                    l = 1;
+                    pattern.append((char) (len + '0'));
+                    len = 1;
                 }
             }
         }
-        pat += (char)(l + '0');
 
-        return pat;
+        pattern.append((char) (len + '0'));
+        return pattern.toString();
     }
 
     /**

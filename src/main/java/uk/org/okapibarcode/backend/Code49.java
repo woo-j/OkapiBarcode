@@ -1309,6 +1309,7 @@ public class Code49 extends Symbol {
 
     @Override
     protected void plotSymbol() {
+
         int xBlock, yBlock;
         int x, y, w, h;
         boolean black;
@@ -1332,32 +1333,32 @@ public class Code49 extends Symbol {
                         Rectangle2D.Double rect = new Rectangle2D.Double(x, y, w, h);
                         rectangles.add(rect);
                     }
-                    if ((x + w) > symbol_width) {
+                    if (x + w > symbol_width) {
                         symbol_width = x + w;
                     }
                 } else {
                     black = true;
                 }
-                x += (double)(pattern[yBlock].charAt(xBlock) - '0');
+                x += (double) (pattern[yBlock].charAt(xBlock) - '0');
             }
             y += h;
-            if ((y + h) > symbol_height) {
-                symbol_height = y + h;
+            if (y > symbol_height) {
+                symbol_height = y;
             }
             /* Add bars between rows */
-            if (yBlock != (row_count - 1)) {
-                Rectangle2D.Double rect = new Rectangle2D.Double(15, y - 1, (symbol_width - 15), 2);
+            if (yBlock != row_count - 1) {
+                Rectangle2D.Double rect = new Rectangle2D.Double(15, y - 1, symbol_width - 15, 2);
                 rectangles.add(rect);
             }
         }
 
         /* Add top and bottom binding bars */
-        Rectangle2D.Double top = new Rectangle2D.Double(0, 0, (symbol_width + 15), 2);
+        Rectangle2D.Double top = new Rectangle2D.Double(0, 0, symbol_width + 15, 2);
         rectangles.add(top);
-        Rectangle2D.Double bottom = new Rectangle2D.Double(0, y - 1, (symbol_width + 15), 2);
+        Rectangle2D.Double bottom = new Rectangle2D.Double(0, y - 1, symbol_width + 15, 2);
         rectangles.add(bottom);
-        symbol_width += 30;
-        symbol_height += 2;
+        symbol_width += 15;
+        symbol_height += 1;
 
         mergeVerticalBlocks();
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Robin Stuart
+ * Copyright 2014-2018 Robin Stuart, Daniel Gredler
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,8 @@ import static uk.org.okapibarcode.util.Doubles.roughlyEqual;
 
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.UnsupportedCharsetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -385,182 +386,83 @@ public abstract class Symbol {
     }
 
     protected void eciProcess() {
-        int qmarksBefore, qmarksAfter;
-        int i;
 
-        qmarksBefore = 0;
-        for (i = 0; i < content.length(); i++) {
-            if (content.charAt(i) == '?') {
-                qmarksBefore++;
-            }
+        EciMode eci = determineEciMode(content);
+        if (EciMode.NONE.equals(eci)) {
+            throw new OkapiException("Unable to determine ECI mode.");
         }
 
-        qmarksAfter = eciEncode("ISO8859_1");
-        if (qmarksAfter == qmarksBefore) {
-            eciMode = 3;
-            encodeInfo += "Encoding in ISO 8859-1 character set\n";
-            return;
-        }
-
-        qmarksAfter = eciEncode("ISO8859_2");
-        if (qmarksAfter == qmarksBefore) {
-            eciMode = 4;
-            encodeInfo += "Encoding in ISO 8859-2 character set\n";
-            return;
-        }
-
-        qmarksAfter = eciEncode("ISO8859_3");
-        if (qmarksAfter == qmarksBefore) {
-            eciMode = 5;
-            encodeInfo += "Encoding in ISO 8859-3 character set\n";
-            return;
-        }
-
-        qmarksAfter = eciEncode("ISO8859_4");
-        if (qmarksAfter == qmarksBefore) {
-            eciMode = 6;
-            encodeInfo += "Encoding in ISO 8859-4 character set\n";
-            return;
-        }
-
-        qmarksAfter = eciEncode("ISO8859_5");
-        if (qmarksAfter == qmarksBefore) {
-            eciMode = 7;
-            encodeInfo += "Encoding in ISO 8859-5 character set\n";
-            return;
-        }
-
-        qmarksAfter = eciEncode("ISO8859_6");
-        if (qmarksAfter == qmarksBefore) {
-            eciMode = 8;
-            encodeInfo += "Encoding in ISO 8859-6 character set\n";
-            return;
-        }
-
-        qmarksAfter = eciEncode("ISO8859_7");
-        if (qmarksAfter == qmarksBefore) {
-            eciMode = 9;
-            encodeInfo += "Encoding in ISO 8859-7 character set\n";
-            return;
-        }
-
-        qmarksAfter = eciEncode("ISO8859_8");
-        if (qmarksAfter == qmarksBefore) {
-            eciMode = 10;
-            encodeInfo += "Encoding in ISO 8859-8 character set\n";
-            return;
-        }
-
-        qmarksAfter = eciEncode("ISO8859_9");
-        if (qmarksAfter == qmarksBefore) {
-            eciMode = 11;
-            encodeInfo += "Encoding in ISO 8859-9 character set\n";
-            return;
-        }
-
-        qmarksAfter = eciEncode("ISO8859_10");
-        if (qmarksAfter == qmarksBefore) {
-            eciMode = 12;
-            encodeInfo += "Encoding in ISO 8859-10 character set\n";
-            return;
-        }
-
-        qmarksAfter = eciEncode("ISO8859_11");
-        if (qmarksAfter == qmarksBefore) {
-            eciMode = 13;
-            encodeInfo += "Encoding in ISO 8859-11 character set\n";
-            return;
-        }
-
-        qmarksAfter = eciEncode("ISO8859_13");
-        if (qmarksAfter == qmarksBefore) {
-            eciMode = 15;
-            encodeInfo += "Encoding in ISO 8859-13 character set\n";
-            return;
-        }
-
-        qmarksAfter = eciEncode("ISO8859_14");
-        if (qmarksAfter == qmarksBefore) {
-            eciMode = 16;
-            encodeInfo += "Encoding in ISO 8859-14 character set\n";
-            return;
-        }
-
-        qmarksAfter = eciEncode("ISO8859_15");
-        if (qmarksAfter == qmarksBefore) {
-            eciMode = 17;
-            encodeInfo += "Encoding in ISO 8859-15 character set\n";
-            return;
-        }
-
-        qmarksAfter = eciEncode("ISO8859_16");
-        if (qmarksAfter == qmarksBefore) {
-            eciMode = 18;
-            encodeInfo += "Encoding in ISO 8859-16 character set\n";
-            return;
-        }
-
-        qmarksAfter = eciEncode("Windows_1250");
-        if (qmarksAfter == qmarksBefore) {
-            eciMode = 21;
-            encodeInfo += "Encoding in Windows-1250 character set\n";
-            return;
-        }
-
-        qmarksAfter = eciEncode("Windows_1251");
-        if (qmarksAfter == qmarksBefore) {
-            eciMode = 22;
-            encodeInfo += "Encoding in Windows-1251 character set\n";
-            return;
-        }
-
-        qmarksAfter = eciEncode("Windows_1252");
-        if (qmarksAfter == qmarksBefore) {
-            eciMode = 23;
-            encodeInfo += "Encoding in Windows-1252 character set\n";
-            return;
-        }
-
-        qmarksAfter = eciEncode("Windows_1256");
-        if (qmarksAfter == qmarksBefore) {
-            eciMode = 24;
-            encodeInfo += "Encoding in Windows-1256 character set\n";
-            return;
-        }
-
-        qmarksAfter = eciEncode("SJIS");
-        if (qmarksAfter == qmarksBefore) {
-            eciMode = 20;
-            encodeInfo += "Encoding in Shift-JIS character set\n";
-            return;
-        }
-
-        /* default */
-        qmarksAfter = eciEncode("UTF8");
-        eciMode = 26;
-        encodeInfo += "Encoding in UTF-8 character set\n";
+        eciMode = eci.mode;
+        inputBytes = content.getBytes(eci.charset);
+        encodeInfo += "Encoding in " + eci.charset.name() + " character set\n";
     }
 
-    protected int eciEncode(String charset) {
-        /* getBytes replaces unconverted characters to '?', so count
-           the number of question marks to find if conversion was sucessful.
-        */
-        int i, qmarksAfter;
+    private static EciMode determineEciMode(String data) {
+        return EciMode.of(data, "ISO8859_1",    3)
+                      .or(data, "ISO8859_2",    4)
+                      .or(data, "ISO8859_3",    5)
+                      .or(data, "ISO8859_4",    6)
+                      .or(data, "ISO8859_5",    7)
+                      .or(data, "ISO8859_6",    8)
+                      .or(data, "ISO8859_7",    9)
+                      .or(data, "ISO8859_8",    10)
+                      .or(data, "ISO8859_9",    11)
+                      .or(data, "ISO8859_10",   12)
+                      .or(data, "ISO8859_11",   13)
+                      .or(data, "ISO8859_13",   15)
+                      .or(data, "ISO8859_14",   16)
+                      .or(data, "ISO8859_15",   17)
+                      .or(data, "ISO8859_16",   18)
+                      .or(data, "Windows_1250", 21)
+                      .or(data, "Windows_1251", 22)
+                      .or(data, "Windows_1252", 23)
+                      .or(data, "Windows_1256", 24)
+                      .or(data, "SJIS",         20)
+                      .or(data, "UTF8",         26);
+    }
 
-        try {
-            inputBytes = content.getBytes(charset);
-        } catch (UnsupportedEncodingException e) {
-            return -1;
+    private static class EciMode {
+
+        public static final EciMode NONE = new EciMode(-1, null);
+
+        public final int mode;
+        public final Charset charset;
+
+        private EciMode(int mode, Charset charset) {
+            this.mode = mode;
+            this.charset = charset;
         }
 
-        qmarksAfter = 0;
-        for (i = 0; i < inputBytes.length; i++) {
-            if (inputBytes[i] == '?') {
-                qmarksAfter++;
+        public static EciMode of(String data, String charsetName, int mode) {
+            try {
+                Charset charset = Charset.forName(charsetName);
+                if (charset.canEncode() && charset.newEncoder().canEncode(data)) {
+                    return new EciMode(mode, charset);
+                } else {
+                    return NONE;
+                }
+            } catch (UnsupportedCharsetException e) {
+                return NONE;
             }
         }
 
-        return qmarksAfter;
+        public EciMode or(String data, String charsetName, int mode) {
+            if (!this.equals(NONE)) {
+                return this;
+            } else {
+                return of(data, charsetName, mode);
+            }
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            return other instanceof EciMode && ((EciMode) other).mode == this.mode;
+        }
+
+        @Override
+        public int hashCode() {
+            return Integer.valueOf(mode).hashCode();
+        }
     }
 
     protected abstract void encode();

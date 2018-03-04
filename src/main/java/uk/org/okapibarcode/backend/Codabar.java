@@ -66,11 +66,10 @@ public class Codabar extends Symbol {
 
     /** {@inheritDoc} */
     @Override
-    public boolean encode() {
+    protected void encode() {
 
         if (!content.matches("[A-D]{1}[0-9:/\\$\\.\\+\u002D]+[A-D]{1}")) {
-            error_msg = "Invalid characters in input";
-            return false;
+            throw new OkapiException("Invalid characters in input");
         }
 
         String horizontalSpacing = "";
@@ -84,8 +83,6 @@ public class Codabar extends Symbol {
         pattern = new String[] { horizontalSpacing };
         row_count = 1;
         row_height = new int[] { -1 };
-
-        return true;
     }
 
     /** {@inheritDoc} */

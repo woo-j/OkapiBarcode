@@ -43,16 +43,15 @@ public class JapanPost extends Symbol {
     };
 
     @Override
-    public boolean encode() {
+    protected void encode() {
         String dest;
         String inter;
         int i, sum, check;
         char c;
 
         content = content.toUpperCase(Locale.ENGLISH);
-        if(!(content.matches("[0-9A-Z\\-]+"))) {
-            error_msg = "Invalid characters in data";
-            return false;
+        if(!content.matches("[0-9A-Z\\-]+")) {
+            throw new OkapiException("Invalid characters in data");
         }
 
         inter = "";
@@ -110,8 +109,6 @@ public class JapanPost extends Symbol {
         pattern = new String[] { dest };
         row_count = 1;
         row_height = new int[] { -1 };
-
-        return true;
     }
 
     @Override

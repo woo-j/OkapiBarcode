@@ -440,7 +440,7 @@ public class QrCode extends Symbol {
     };
 
     @Override
-    public boolean encode() {
+    protected void encode() {
         int i, j;
         int est_binlen;
         EccMode ecc_level;
@@ -506,15 +506,14 @@ public class QrCode extends Symbol {
             }
         }
 
-        // The first guess of symbol size is in autosize. Use this to optimise.
+        // The first guess of symbol size is in autosize. Use this to optimize.
         est_binlen = getBinaryLength(autosize);
 
         if (est_binlen > (8 * max_cw)) {
-            error_msg = "Input too long for selected error correction level";
-            return false;
+            throw new OkapiException("Input too long for selected error correction level");
         }
 
-        // Now see if the optimised binary will fit in a smaller symbol.
+        // Now see if the optimized binary will fit in a smaller symbol.
         canShrink = true;
 
         do {
@@ -605,11 +604,7 @@ public class QrCode extends Symbol {
         datastream = new int[targetCwCount + 1];
         fullstream = new int[qr_total_codewords[version - 1] + 1];
 
-        if (!(qr_binary(version, targetCwCount))) {
-            /* Invalid characters used - stop encoding */
-            return false;
-        }
-
+        qr_binary(version, targetCwCount);
         add_ecc(version, targetCwCount, blocks);
 
         size = qr_sizes[version - 1];
@@ -665,8 +660,6 @@ public class QrCode extends Symbol {
             pattern[i] = bin2pat(bin);
             row_height[i] = 1;
         }
-
-        return true;
     }
 
     private void modeFirstFix() {
@@ -1027,7 +1020,7 @@ public class QrCode extends Symbol {
         return count;
     }
 
-    private boolean qr_binary(int version, int target_binlen) {
+    private void qr_binary(int version, int target_binlen) {
         /* Convert input data to a binary stream and add padding */
         int position = 0;
         int short_data_block_length, i, scheme = 1;
@@ -1118,8 +1111,7 @@ public class QrCode extends Symbol {
                         try {
                             jisBytes = oneChar.getBytes("SJIS");
                         } catch (UnsupportedEncodingException e) {
-                            error_msg = "Shift-JIS character conversion error";
-                            return false;
+                            throw new OkapiException("Shift-JIS character conversion error");
                         }
 
                         jis = ((jisBytes[0] & 0xFF) << 8) + (jisBytes[1] & 0xFF);
@@ -1166,8 +1158,7 @@ public class QrCode extends Symbol {
                             try {
                                 jisBytes = oneChar.getBytes("SJIS");
                             } catch (UnsupportedEncodingException e) {
-                                error_msg = "Shift-JIS character conversion error";
-                                return false;
+                                throw new OkapiException("Shift-JIS character conversion error");
                             }
 
                             qr_bscan(jisBytes[0] & 0xff, 0x80);
@@ -1365,8 +1356,6 @@ public class QrCode extends Symbol {
             encodeInfo += Integer.toString(datastream[i]) + " ";
         }
         encodeInfo += "\n";
-
-        return true;
     }
 
     private void qr_bscan(int data, int h) {

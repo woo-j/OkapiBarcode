@@ -63,7 +63,6 @@ public abstract class Symbol {
     protected int symbol_height = 0;
     protected int symbol_width = 0;
     protected String encodeInfo = "";
-    protected String error_msg = "";
     public List< Rectangle2D.Double > rectangles = new ArrayList<>(); // TODO: should not be public
     public List< TextBox > texts = new ArrayList<>();                 // TODO: should not be public
     public List< Hexagon > hexagons = new ArrayList<>();              // TODO: should not be public
@@ -373,15 +372,12 @@ public abstract class Symbol {
                 break;
         }
 
-        if (!content.isEmpty()) {
-            if (encode()) {
-                plotSymbol();
-            } else {
-                throw new OkapiException(error_msg);
-            }
-        } else {
+        if (content.isEmpty()) {
             throw new OkapiException("No input data");
         }
+
+        encode();
+        plotSymbol();
     }
 
     public String getContent() {
@@ -567,7 +563,7 @@ public abstract class Symbol {
         return qmarksAfter;
     }
 
-    protected abstract boolean encode();
+    protected abstract void encode();
 
     protected void plotSymbol() {
         int xBlock, yBlock;
@@ -682,18 +678,15 @@ public abstract class Symbol {
         /* Detect extended ASCII characters */
         for (i = 0; i < src_len; i++) {
             if (source.charAt(i) >= 128) {
-                error_msg += "Extended ASCII characters are not supported by GS1";
-                return "";
+                throw new OkapiException("Extended ASCII characters are not supported by GS1");
             }
             if (source.charAt(i) < 32) {
-                error_msg += "Control characters are not supported by GS1";
-                return "";
+                throw new OkapiException("Control characters are not supported by GS1");
             }
         }
 
         if (source.charAt(0) != '[') {
-            error_msg += "Data does not start with an AI";
-            return "";
+            throw new OkapiException("Data does not start with an AI");
         }
 
         /* Check the position of the brackets */
@@ -733,32 +726,27 @@ public abstract class Symbol {
 
         if (bracket_level != 0) {
             /* Not all brackets are closed */
-            error_msg += "Malformed AI in input data (brackets don't match)";
-            return "";
+            throw new OkapiException("Malformed AI in input data (brackets don't match)");
         }
 
         if (max_bracket_level > 1) {
             /* Nested brackets */
-            error_msg += "Found nested brackets in input data";
-            return "";
+            throw new OkapiException("Found nested brackets in input data");
         }
 
         if (max_ai_length > 4) {
             /* AI is too long */
-            error_msg += "Invalid AI in input data (AI too long)";
-            return "";
+            throw new OkapiException("Invalid AI in input data (AI too long)");
         }
 
         if (min_ai_length <= 1) {
             /* AI is too short */
-            error_msg += "Invalid AI in input data (AI too short)";
-            return "";
+            throw new OkapiException("Invalid AI in input data (AI too short)");
         }
 
         if (ai_latch) {
             /* Non-numeric data in AI */
-            error_msg += "Invalid AI in input data (non-numeric characters in AI)";
-            return "";
+            throw new OkapiException("Invalid AI in input data (non-numeric characters in AI)");
         }
 
         ai_count = 0;
@@ -793,8 +781,7 @@ public abstract class Symbol {
         for (i = 0; i < ai_count; i++) {
             if (data_length[i] == 0) {
                 /* No data for given AI */
-                error_msg += "Empty data field in input data";
-                return "";
+                throw new OkapiException("Empty data field in input data");
             }
         }
 
@@ -884,13 +871,11 @@ public abstract class Symbol {
             }
 
             if (error_latch == 1) {
-                error_msg = "Invalid data length for AI";
-                return "";
+                throw new OkapiException("Invalid data length for AI");
             }
 
             if (error_latch == 2) {
-                error_msg = "Invalid AI value";
-                return "";
+                throw new OkapiException("Invalid AI value");
             }
         }
 
@@ -929,6 +914,7 @@ public abstract class Symbol {
     }
 
     protected String hibcProcess(String source) {
+
         char[] hibcCharTable = {
             '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
             'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
@@ -936,48 +922,47 @@ public abstract class Symbol {
             'U', 'V', 'W', 'X', 'Y', 'Z', '-', '.', ' ', '$',
             '/', '+', '%' };
 
-	int counter, i;
+        int counter, i;
         String to_process;
         char check_digit;
 
-	if(source.length() > 36) {
-		error_msg = "Data too long for HIBC LIC";
-		return "";
-	}
-	source = source.toUpperCase();
-        if (!(source.matches("[A-Z0-9-\\. \\$/+\\%]+?"))) {
-            error_msg = "Invalid characters in input";
-            return "";
+        if(source.length() > 36) {
+            throw new OkapiException("Data too long for HIBC LIC");
         }
 
-	counter = 41;
-	for(i = 0; i < source.length(); i++) {
-            counter += positionOf(source.charAt(i), hibcCharTable);
-	}
-	counter = counter % 43;
+        source = source.toUpperCase();
+        if (!source.matches("[A-Z0-9-\\. \\$/+\\%]+?")) {
+            throw new OkapiException("Invalid characters in input");
+        }
 
-	if(counter < 10) {
-		check_digit = (char) (counter + '0');
-	} else {
-		if(counter < 36) {
-			check_digit = (char) ((counter - 10) + 'A');
-		} else {
-			switch(counter) {
-				case 36: check_digit = '-'; break;
-				case 37: check_digit = '.'; break;
-				case 38: check_digit = ' '; break;
-				case 39: check_digit = '$'; break;
-				case 40: check_digit = '/'; break;
-				case 41: check_digit = '+'; break;
-				case 42: check_digit = '%'; break;
-				default: check_digit = ' '; break; /* Keep compiler happy */
-			}
-		}
-	}
+        counter = 41;
+        for (i = 0; i < source.length(); i++) {
+            counter += positionOf(source.charAt(i), hibcCharTable);
+        }
+        counter = counter % 43;
+
+        if (counter < 10) {
+            check_digit = (char) (counter + '0');
+        } else {
+            if (counter < 36) {
+                check_digit = (char) ((counter - 10) + 'A');
+            } else {
+                switch (counter) {
+                    case 36: check_digit = '-'; break;
+                    case 37: check_digit = '.'; break;
+                    case 38: check_digit = ' '; break;
+                    case 39: check_digit = '$'; break;
+                    case 40: check_digit = '/'; break;
+                    case 41: check_digit = '+'; break;
+                    case 42: check_digit = '%'; break;
+                    default: check_digit = ' '; break; /* Keep compiler happy */
+                }
+            }
+        }
 
         encodeInfo += "HIBC Check Digit: " + counter + " (" + check_digit + ")\n";
 
-	to_process = "+" + source + check_digit;
+        to_process = "+" + source + check_digit;
         return to_process;
     }
 

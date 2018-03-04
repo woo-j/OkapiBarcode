@@ -71,23 +71,21 @@ public class Postnet extends Symbol {
     }
 
     @Override
-    public boolean encode() {
+    protected void encode() {
         String[] table = (mode == Mode.POSTNET ? PN_TABLE : PL_TABLE);
-        return encode(table);
+        encode(table);
     }
 
-    private boolean encode(String[] table) {
+    private void encode(String[] table) {
         int i, sum, check_digit;
         String dest;
 
         if (content.length() > 38) {
-            error_msg = "Input too long";
-            return false;
+            throw new OkapiException("Input too long");
         }
 
-        if (!(content.matches("[0-9]+"))) {
-            error_msg = "Invalid characters in data";
-            return false;
+        if (!content.matches("[0-9]+")) {
+            throw new OkapiException("Invalid characters in data");
         }
 
         sum = 0;
@@ -109,8 +107,6 @@ public class Postnet extends Symbol {
         pattern = new String[] { dest };
         row_count = 1;
         row_height = new int[] { -1 };
-
-        return true;
     }
 
     @Override

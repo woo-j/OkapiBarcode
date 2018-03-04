@@ -339,7 +339,7 @@ public class GridMatrix extends Symbol {
     }
 
     @Override
-    public boolean encode() {
+    protected void encode() {
         int size, modules, dark, error_number;
         int auto_layers, min_layers, layers, auto_ecc_level, min_ecc_level, ecc_level;
         int x, y, i;
@@ -396,14 +396,12 @@ public class GridMatrix extends Symbol {
                 }
             }
         } catch (UnsupportedEncodingException e) {
-            error_msg = "Byte conversion encoding error";
-            return false;
+            throw new OkapiException("Byte conversion encoding error");
         }
 
         error_number = encodeGridMatrixBinary(length, readerInit);
         if (error_number != 0) {
-            error_msg = "Input data too long";
-            return false;
+            throw new OkapiException("Input data too long");
         }
 
         /* Determine the size of the symbol */
@@ -494,8 +492,7 @@ public class GridMatrix extends Symbol {
         }
 
         if (data_cw > data_max) {
-            error_msg = "Input data too long";
-            return false;
+            throw new OkapiException("Input data too long");
         }
 
         addErrorCorrection(data_cw, layers, ecc_level);
@@ -557,14 +554,12 @@ public class GridMatrix extends Symbol {
             row_height[x] = 1;
             pattern[x] = bin2pat(bin);
         }
-
-        return true;
     }
 
     private int encodeGridMatrixBinary(int length, boolean reader) {
         /* Create a binary stream representation of the input data.
          7 sets are defined - Chinese characters, Numerals, Lower case letters, Upper case letters,
-         Mixed numerals and latters, Control characters and 8-bit binary data */
+         Mixed numerals and letters, Control characters and 8-bit binary data */
         int sp, glyph = 0;
         Mode current_mode, next_mode, last_mode;
         int c1, c2;

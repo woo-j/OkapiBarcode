@@ -45,13 +45,12 @@ public class KixCode extends Symbol {
     };
 
     @Override
-    public boolean encode() {
+    protected void encode() {
 
         content = content.toUpperCase(Locale.ENGLISH);
 
         if(!content.matches("[0-9A-Z]+")) {
-            error_msg = "Invalid characters in data";
-            return false;
+            throw new OkapiException("Invalid characters in data");
         }
 
         StringBuilder sb = new StringBuilder(content.length());
@@ -67,8 +66,6 @@ public class KixCode extends Symbol {
         pattern = new String[] { dest };
         row_count = 1;
         row_height = new int[] { -1 };
-
-        return true;
     }
 
     @Override

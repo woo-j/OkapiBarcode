@@ -306,7 +306,8 @@ public class DataMatrix extends Symbol {
     }
 
     @Override
-    public boolean encode() {
+    protected void encode() {
+
         int i, binlen, skew = 0;
         int symbolsize, optionsize, calcsize;
         int taillength;
@@ -324,12 +325,7 @@ public class DataMatrix extends Symbol {
 
         binlen = generateCodewords();
 
-        if (binlen == 0) {
-            error_msg = "Data too long to fit in symbol";
-            return false;
-        }
-
-        if ((preferredSize >= 1) && (preferredSize <= 30)) {
+        if (preferredSize >= 1 && preferredSize <= 30) {
             optionsize = INT_SYMBOL[preferredSize - 1];
         } else {
             optionsize = -1;
@@ -363,8 +359,7 @@ public class DataMatrix extends Symbol {
             symbolsize = calcsize;
             if (optionsize != -1) {
                 /* flag an error */
-                error_msg = "Data does not fit in selected symbol size";
-                return false;
+                throw new OkapiException("Data does not fit in selected symbol size");
             }
         }
 
@@ -445,8 +440,6 @@ public class DataMatrix extends Symbol {
         encodeInfo += "Grid Size: " + W + " X " + H + "\n";
         encodeInfo += "Data Codewords: " + datablock + "\n";
         encodeInfo += "ECC Codewords: " + rsblock + "\n";
-
-        return true;
     }
 
     private int generateCodewords() {
@@ -510,8 +503,7 @@ public class DataMatrix extends Symbol {
 
         if (readerInit) {
             if (inputDataType == DataType.GS1) {
-                error_msg = "Cannot encode in GS1 mode and Reader Initialisation at the same time";
-                return 0;
+                throw new OkapiException("Cannot encode in GS1 mode and Reader Initialisation at the same time");
             } else {
                 target[tp] = 234;
                 tp++; /* Reader Programming */
@@ -932,7 +924,7 @@ public class DataMatrix extends Symbol {
             }
 
             if (tp > 1558) {
-                return 0;
+                throw new OkapiException("Data too long to fit in symbol");
             }
 
         } /* while */

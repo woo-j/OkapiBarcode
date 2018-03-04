@@ -93,27 +93,24 @@ public class Upc extends Symbol {
     }
 
     @Override
-    public boolean encode() {
-        boolean retval;
-        String addOnData = "";
+    protected void encode() {
 
         separateContent();
-        if(content.length() == 0) {
-            error_msg = "Missing UPC data";
-            retval = false;
+
+        if (content.length() == 0) {
+            throw new OkapiException("Missing UPC data");
         } else {
             if (mode == Mode.UPCA) {
-                retval = upca();
+                upca();
             } else {
-                retval = upce();
+                upce();
             }
         }
 
-        if (retval && addOnContent != null) {
-            addOnData = AddOn.calcAddOn(addOnContent);
+        if (addOnContent != null) {
+            String addOnData = AddOn.calcAddOn(addOnContent);
             if (addOnData.length() == 0) {
-                error_msg = "Invalid Add-On data";
-                retval = false;
+                throw new OkapiException("Invalid Add-On data");
             } else {
                 pattern[0] = pattern[0] + "9" + addOnData;
 
@@ -129,8 +126,6 @@ public class Upc extends Symbol {
                 }
             }
         }
-
-        return retval;
     }
 
     private void separateContent() {
@@ -144,20 +139,18 @@ public class Upc extends Symbol {
         }
     }
 
-    private boolean upca() {
+    private void upca() {
         String accumulator;
         String dest;
         int i;
         char check;
 
         if (!content.matches("[0-9]+")) {
-            error_msg = "Invalid characters in input";
-            return false;
+            throw new OkapiException("Invalid characters in input");
         }
 
         if (content.length() > 11) {
-            error_msg = "Input data too long";
-            return false;
+            throw new OkapiException("Input data too long");
         }
 
         accumulator = "";
@@ -184,10 +177,9 @@ public class Upc extends Symbol {
         row_count = 1;
         row_height = new int[1];
         row_height[0] = -1;
-        return true;
     }
 
-    private boolean upce() {
+    private void upce() {
         int i, num_system;
         char emode, check;
         String source, parity, dest;
@@ -195,13 +187,11 @@ public class Upc extends Symbol {
         String equiv = "";
 
         if (!content.matches("[0-9]+")) {
-            error_msg = "Invalid characters in input";
-            return false;
+            throw new OkapiException("Invalid characters in input");
         }
 
         if (content.length() > 7) {
-            error_msg = "Input data too long";
-            return false;
+            throw new OkapiException("Input data too long");
         }
 
         source = "";
@@ -219,8 +209,7 @@ public class Upc extends Symbol {
             num_system = 1;
             break;
         default:
-            error_msg = "Invalid input data";
-            return false;
+            throw new OkapiException("Invalid input data");
         }
 
         /* Expand the zero-compressed UPCE code to make a UPCA equivalent (EN Table 5) */
@@ -248,8 +237,7 @@ public class Upc extends Symbol {
             if (((source.charAt(3) == '0') || (source.charAt(3) == '1'))
                     || (source.charAt(3) == '2')) {
                 /* Note 1 - "X3 shall not be equal to 0, 1 or 2" */
-                error_msg = "Invalid UPC-E data";
-                return false;
+                throw new OkapiException("Invalid UPC-E data");
             }
             break;
         case '4':
@@ -258,8 +246,7 @@ public class Upc extends Symbol {
             equivalent[10] = source.charAt(5);
             if (source.charAt(4) == '0') {
                 /* Note 2 - "X4 shall not be equal to 0" */
-                error_msg = "Invalid UPC-E data";
-                return false;
+                throw new OkapiException("Invalid UPC-E data");
             }
             break;
         case '5':
@@ -273,8 +260,7 @@ public class Upc extends Symbol {
             equivalent[10] = emode;
             if (source.charAt(5) == '0') {
                 /* Note 3 - "X5 shall not be equal to 0" */
-                error_msg = "Invalid UPC-E data";
-                return false;
+                throw new OkapiException("Invalid UPC-E data");
             }
             break;
         }
@@ -320,7 +306,6 @@ public class Upc extends Symbol {
         row_count = 1;
         row_height = new int[1];
         row_height[0] = -1;
-        return true;
     }
 
     private char calcDigit(String x) {

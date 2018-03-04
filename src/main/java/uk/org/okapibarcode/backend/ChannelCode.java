@@ -42,20 +42,18 @@ public class ChannelCode extends Symbol {
     }
 
     @Override
-    public boolean encode() {
+    protected void encode() {
 
         int channels;
         int i;
         int leadingZeroCount;
 
         if (content.length() > 7) {
-            error_msg = "Input too long";
-            return false;
+            throw new OkapiException("Input too long");
         }
 
         if (!content.matches("[0-9]+")) {
-            error_msg = "Invalid characters in input";
-            return false;
+            throw new OkapiException("Invalid characters in input");
         }
 
         if (requestedNumberOfChannels <= 2 || requestedNumberOfChannels > 8) {
@@ -94,8 +92,7 @@ public class ChannelCode extends Symbol {
         }
 
         if (channels == 9) {
-            error_msg = "Value out of range";
-            return false;
+            throw new OkapiException("Value out of range");
         }
 
         encodeInfo += "Channels Used: " + channels + '\n';
@@ -120,8 +117,6 @@ public class ChannelCode extends Symbol {
 
         row_count = 1;
         row_height = new int[] { -1 };
-
-        return true;
     }
 
     private void nextSpace(int channels, int i, int maxSpace, int maxBar) {

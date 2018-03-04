@@ -143,7 +143,7 @@ public class MicroQrCode extends Symbol {
     };
 
     @Override
-    public boolean encode() {
+    protected void encode() {
         int i, j, size;
         boolean[] version_valid = new boolean[4];
         int n_count, a_count;
@@ -157,14 +157,10 @@ public class MicroQrCode extends Symbol {
         boolean kanjiModeUsed;
 
         if (content.length() > 35) {
-            error_msg = "Input data too long";
-            return false;
+            throw new OkapiException("Input data too long");
         }
 
-        if (!inputCharCheck()) {
-            error_msg = "Invalid characters in input data";
-            return false;
-        }
+        inputCharCheck();
 
         for (i = 0; i < 4; i++) {
             version_valid[i] = true;
@@ -244,16 +240,14 @@ public class MicroQrCode extends Symbol {
             version_valid[2] = false;
         }
         if (binaryCount[3] > 128) {
-            error_msg = "Input data too long";
-            return false;
+            throw new OkapiException("Input data too long");
         }
 
         /* Eliminate possible versions depending on error correction level specified */
         ecc_level = preferredEccLevel;
 
         if (ecc_level == EccMode.H) {
-            error_msg = "Error correction level H not available";
-            return false;
+            throw new OkapiException("Error correction level H not available");
         }
 
         if (ecc_level == EccMode.Q) {
@@ -261,8 +255,7 @@ public class MicroQrCode extends Symbol {
             version_valid[1] = false;
             version_valid[2] = false;
             if (binaryCount[3] > 80) {
-                error_msg = "Input data too long";
-                return false;
+                throw new OkapiException("Input data too long");
             }
         }
 
@@ -275,8 +268,7 @@ public class MicroQrCode extends Symbol {
                 version_valid[2] = false;
             }
             if (binaryCount[3] > 112) {
-                error_msg = "Input data too long";
-                return false;
+                throw new OkapiException("Input data too long");
             }
         }
 
@@ -320,8 +312,7 @@ public class MicroQrCode extends Symbol {
         binary = "";
         generateBinary(version);
         if (binary.length() > 128) {
-            error_msg = "Input data too long";
-            return false;
+            throw new OkapiException("Input data too long");
         }
 
         switch (version) {
@@ -464,11 +455,9 @@ public class MicroQrCode extends Symbol {
             pattern[i] = bin2pat(bin);
             row_height[i] = 1;
         }
-
-        return true;
     }
 
-    private boolean inputCharCheck() {
+    private void inputCharCheck() {
         int qmarkBefore, qmarkAfter;
         int i;
         byte[] temp;
@@ -477,7 +466,7 @@ public class MicroQrCode extends Symbol {
 
         if (content.matches("[\u0000-\u00FF]+")) {
             /* All characters in ISO 8859-1 */
-            return true;
+            return;
         }
 
         /* Otherwise check for Shift-JIS characters */
@@ -491,8 +480,7 @@ public class MicroQrCode extends Symbol {
         try {
             temp = content.getBytes("SJIS");
         } catch (UnsupportedEncodingException e) {
-            error_msg = "Character encoding error";
-            return false;
+            throw new OkapiException("Character encoding error");
         }
 
         qmarkAfter = 0;
@@ -502,8 +490,10 @@ public class MicroQrCode extends Symbol {
             }
         }
 
-        /* If these values are the same, conversion was sucessful */
-        return (qmarkBefore == qmarkAfter);
+        /* If these values are the same, conversion was successful */
+        if (qmarkBefore != qmarkAfter) {
+            throw new OkapiException("Invalid characters in input data");
+        }
     }
 
     private char levelToLetter(EccMode ecc_mode) {
@@ -754,8 +744,7 @@ public class MicroQrCode extends Symbol {
                     try {
                         jisBytes = oneChar.getBytes("SJIS");
                     } catch (UnsupportedEncodingException e) {
-                        error_msg = "Character encoding error";
-                        return;
+                        throw new OkapiException("Character encoding error");
                     }
 
                     jis = ((jisBytes[0] & 0xFF) << 8) + (jisBytes[1] & 0xFF);

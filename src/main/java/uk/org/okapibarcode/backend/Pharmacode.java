@@ -28,7 +28,7 @@ package uk.org.okapibarcode.backend;
 public class Pharmacode extends Symbol {
 
     @Override
-    public boolean encode() {
+    protected void encode() {
         int tester = 0;
         int i;
 
@@ -36,13 +36,11 @@ public class Pharmacode extends Symbol {
         String dest = "";
 
         if (content.length() > 6) {
-            error_msg = "Input too long";
-            return false;
+            throw new OkapiException("Input too long");
         }
 
-        if (!(content.matches("[0-9]+"))) {
-            error_msg = "Invalid characters in data";
-            return false;
+        if (!content.matches("[0-9]+")) {
+            throw new OkapiException("Invalid characters in data");
         }
 
         for (i = 0; i < content.length(); i++) {
@@ -50,9 +48,8 @@ public class Pharmacode extends Symbol {
             tester += Character.getNumericValue(content.charAt(i));
         }
 
-        if ((tester < 3) || (tester > 131070)) {
-            error_msg = "Data out of range";
-            return false;
+        if (tester < 3 || tester > 131070) {
+            throw new OkapiException("Data out of range");
         }
 
         do {
@@ -79,7 +76,5 @@ public class Pharmacode extends Symbol {
         row_count = 1;
         row_height = new int[1];
         row_height[0] = -1;
-
-        return true;
     }
 }

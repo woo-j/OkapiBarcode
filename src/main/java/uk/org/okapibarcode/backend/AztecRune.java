@@ -41,7 +41,7 @@ public class AztecRune extends Symbol {
     };
 
     @Override
-    public boolean encode() {
+    protected void encode() {
         int decimalValue = 0;
         int i;
         int row;
@@ -54,13 +54,11 @@ public class AztecRune extends Symbol {
         String rowBinary;
 
         if (content.length() > 3) {
-            error_msg = "Input too large";
-            return false;
+            throw new OkapiException("Input too large");
         }
 
-        if (!(content.matches("[0-9]+"))) {
-            error_msg = "Invalid input data";
-            return false;
+        if (!content.matches("[0-9]+")) {
+            throw new OkapiException("Invalid input data");
         }
 
         switch (content.length()) {
@@ -79,8 +77,7 @@ public class AztecRune extends Symbol {
         }
 
         if (decimalValue > 255) {
-            error_msg = "Input too large";
-            return false;
+            throw new OkapiException("Input too large");
         }
 
         binaryDataStream = "";
@@ -177,7 +174,5 @@ public class AztecRune extends Symbol {
             row_height[row] = 1;
             rowBinary = "";
         }
-
-        return true;
     }
 }

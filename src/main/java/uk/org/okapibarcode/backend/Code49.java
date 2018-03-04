@@ -991,7 +991,7 @@ public class Code49 extends Symbol {
     };
 
     @Override
-    public boolean encode() {
+    protected void encode() {
         int length = content.length();
         int i, codeword_count = 0, h, j, M, rows, pad_count = 0;
         int x_count, y_count, z_count, posn_val, local_value;
@@ -1002,8 +1002,7 @@ public class Code49 extends Symbol {
         int[][] w_grid = new int[8][4];
 
         if (!content.matches("[\u0000-\u007F]+")) {
-            error_msg = "Invalid characters in input data";
-            return false;
+            throw new OkapiException("Invalid characters in input data");
         }
 
         if (inputDataType == DataType.GS1) {
@@ -1011,8 +1010,7 @@ public class Code49 extends Symbol {
         }
         for (i = 0; i < length; i++) {
             if (content.charAt(i) > 127) {
-                error_msg = "Invalid characters in input";
-                return false;
+                throw new OkapiException("Invalid characters in input");
             }
             if ((inputDataType == DataType.GS1) && (content.charAt(i) == '[')) {
                 intermediate += "*"; // FNC1
@@ -1179,8 +1177,7 @@ public class Code49 extends Symbol {
         }
 
         if (codeword_count > 49) {
-            error_msg = "Input too long";
-            return false;
+            throw new OkapiException("Input too long");
         }
 
         encodeInfo += "Starting Mode (M): " + M + "\n";
@@ -1308,8 +1305,6 @@ public class Code49 extends Symbol {
 
         }
         encodeInfo += "\n";
-
-        return true;
     }
 
     @Override

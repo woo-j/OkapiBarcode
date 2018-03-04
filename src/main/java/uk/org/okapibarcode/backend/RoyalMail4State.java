@@ -44,16 +44,15 @@ public class RoyalMail4State extends Symbol {
     };
 
     @Override
-    public boolean encode() {
+    protected void encode() {
         String dest;
         int i, top = 0, bottom = 0;
         int row, column;
         int index;
 
         content = content.toUpperCase(Locale.ENGLISH);
-        if(!(content.matches("[0-9A-Z]+"))) {
-            error_msg = "Invalid characters in data";
-            return false;
+        if(!content.matches("[0-9A-Z]+")) {
+            throw new OkapiException("Invalid characters in data");
         }
         dest = "A";
 
@@ -88,8 +87,6 @@ public class RoyalMail4State extends Symbol {
         row_count = 1;
         row_height = new int[1];
         row_height[0] = -1;
-
-        return true;
     }
 
     @Override

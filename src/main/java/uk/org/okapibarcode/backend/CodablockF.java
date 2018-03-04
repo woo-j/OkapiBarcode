@@ -59,7 +59,8 @@ public class CodablockF extends Symbol {
     private cfMode[] subset_selector = new cfMode[44];
 
     @Override
-    public boolean encode() {
+    protected void encode() {
+
         int input_length, i, j, k, h;
         int min_module_height;
         Mode last_mode, this_mode;
@@ -74,13 +75,11 @@ public class CodablockF extends Symbol {
         final_mode = cfMode.MODEA;
 
         if (input_length > 5450) {
-            error_msg = "Input data too long";
-            return false;
+            throw new OkapiException("Input data too long");
         }
 
         if (!content.matches("[\u0000-\u00FF]+")) {
-            error_msg = "Invalid characters in input data";
-            return false;
+            throw new OkapiException("Invalid characters in input data");
         }
 
         inputBytes = content.getBytes(StandardCharsets.ISO_8859_1);
@@ -123,87 +122,84 @@ public class CodablockF extends Symbol {
             columns_needed = 4;
         }
         if (columns_needed > 62) {
-            error_msg = "Input data too long";
-            return false;
+            throw new OkapiException("Input data too long");
         }
 
         /* Encode the data */
-        if (!(data_encode_blockf())) {
-            return false;
+        data_encode_blockf();
+
+        /* Add check digits - Annex F */
+        k1_sum = 0;
+        k2_sum = 0;
+        for(i = 0; i < input_length; i++) {
+            if((inputDataType == DataType.GS1) && source[i] == '[') {
+                k1_sum += (i + 1) * 29; /* GS */
+                k2_sum += i * 29;
+            } else {
+                k1_sum += (i + 1) * source[i];
+                k2_sum += i * source[i];
+            }
+        }
+        k1_check = k1_sum % 86;
+        k2_check = k2_sum % 86;
+        if((final_mode == cfMode.MODEA) || (final_mode == cfMode.MODEB)) {
+            k1_check = k1_check + 64;
+            if(k1_check > 95) { k1_check -= 96; }
+            k2_check = k2_check + 64;
+            if(k2_check > 95) { k2_check -= 96; }
+        }
+        blockmatrix[rows_needed - 1][columns_needed - 2] = k1_check;
+        blockmatrix[rows_needed - 1][columns_needed - 1] = k2_check;
+
+        /* Calculate row height (4.6.1.a) */
+        min_module_height = (int) (0.55 * (columns_needed + 3)) + 3;
+        if(min_module_height < 8) { min_module_height = 8; }
+
+        /* Encode the Row Indicator in the First Row of the Symbol - Table D2 */
+        if(subset_selector[0] == cfMode.MODEC) {
+            /* Code C */
+            row_indicator[0] = rows_needed - 2;
+        } else {
+            /* Code A or B */
+            row_indicator[0] = rows_needed + 62;
+
+            if(row_indicator[0] > 95) {
+                row_indicator[0] -= 95;
+            }
         }
 
-	/* Add check digits - Annex F */
-	k1_sum = 0;
-	k2_sum = 0;
-	for(i = 0; i < input_length; i++) {
-		if((inputDataType == DataType.GS1) && source[i] == '[') {
-			k1_sum += (i + 1) * 29; /* GS */
-			k2_sum += i * 29;
-		} else {
-			k1_sum += (i + 1) * source[i];
-			k2_sum += i * source[i];
-		}
-	}
-	k1_check = k1_sum % 86;
-	k2_check = k2_sum % 86;
-	if((final_mode == cfMode.MODEA) || (final_mode == cfMode.MODEB)) {
-		k1_check = k1_check + 64;
-		if(k1_check > 95) { k1_check -= 96; }
-		k2_check = k2_check + 64;
-		if(k2_check > 95) { k2_check -= 96; }
-	}
-	blockmatrix[rows_needed - 1][columns_needed - 2] = k1_check;
-	blockmatrix[rows_needed - 1][columns_needed - 1] = k2_check;
+        /* Encode the Row Indicator in the Second and Subsequent Rows of the Symbol - Table D3 */
+        for(i = 1; i < rows_needed; i++) {
+            /* Note that the second row is row number 1 because counting starts from 0 */
+            if(subset_selector[i] == cfMode.MODEC) {
+                /* Code C */
+                row_indicator[i] = i + 42;
+            } else {
+                /* Code A or B */
+                if( i < 6 )
+                    row_indicator[i] = i + 10;
+                else
+                    row_indicator[i] = i + 20;
+            }
+        }
 
-	/* Calculate row height (4.6.1.a) */
-	min_module_height = (int) (0.55 * (columns_needed + 3)) + 3;
-	if(min_module_height < 8) { min_module_height = 8; }
-
-	/* Encode the Row Indicator in the First Row of the Symbol - Table D2 */
-	if(subset_selector[0] == cfMode.MODEC) {
-		/* Code C */
-		row_indicator[0] = rows_needed - 2;
-	} else {
-		/* Code A or B */
-		row_indicator[0] = rows_needed + 62;
-
-		if(row_indicator[0] > 95) {
-			row_indicator[0] -= 95;
-		}
-	}
-
-	/* Encode the Row Indicator in the Second and Subsequent Rows of the Symbol - Table D3 */
-	for(i = 1; i < rows_needed; i++) {
-		/* Note that the second row is row number 1 because counting starts from 0 */
-		if(subset_selector[i] == cfMode.MODEC) {
-			/* Code C */
-			row_indicator[i] = i + 42;
-		} else {
-			/* Code A or B */
-			if( i < 6 )
-				row_indicator[i] = i + 10;
-			else
-				row_indicator[i] = i + 20;
-		}
-	}
-
-	/* Calculate row check digits - Annex E */
-	for(i = 0; i < rows_needed; i++) {
-		k = 103;
-                switch (subset_selector[i]) {
-                    case MODEA: k += 98;
-                        break;
-                    case MODEB: k += 100;
-                        break;
-                    case MODEC: k += 99;
-                        break;
-                }
-		k += 2 * row_indicator[i];
-		for(j = 0; j < columns_needed; j++) {
-			k+= (j + 3) * blockmatrix[i][j];
-		}
-		row_check[i] = k % 103;
-	}
+        /* Calculate row check digits - Annex E */
+        for(i = 0; i < rows_needed; i++) {
+            k = 103;
+                    switch (subset_selector[i]) {
+                        case MODEA: k += 98;
+                            break;
+                        case MODEB: k += 100;
+                            break;
+                        case MODEC: k += 99;
+                            break;
+                    }
+            k += 2 * row_indicator[i];
+            for(j = 0; j < columns_needed; j++) {
+                k+= (j + 3) * blockmatrix[i][j];
+            }
+            row_check[i] = k % 103;
+        }
 
         readable = "";
         row_count = rows_needed;
@@ -214,9 +210,9 @@ public class CodablockF extends Symbol {
         encodeInfo += "K1 Check Digit: " + k1_check + "\n";
         encodeInfo += "K2 Check Digit: " + k2_check + "\n";
 
-	/* Resolve the data into patterns and place in symbol structure */
+        /* Resolve the data into patterns and place in symbol structure */
         encodeInfo += "Encoding: ";
-	for(i = 0; i < rows_needed; i++) {
+        for(i = 0; i < rows_needed; i++) {
 
             row_pattern = "";
             /* Start character */
@@ -253,12 +249,10 @@ public class CodablockF extends Symbol {
             /* Write the information into the symbol */
             pattern[i] = row_pattern;
             row_height[i] = 15;
-	}
+        }
         encodeInfo += "\n";
 
         symbol_height = rows_needed * 15;
-
-        return true;
     }
 
     private Mode findSubset(int letter) {
@@ -283,7 +277,8 @@ public class CodablockF extends Symbol {
         return mode;
     }
 
-    private boolean data_encode_blockf() {
+    private void data_encode_blockf() {
+
         int i, j, input_position, current_row;
         int column_position, c;
         cfMode current_mode;
@@ -724,79 +719,79 @@ public class CodablockF extends Symbol {
                 /* If (c == 2) { do nothing } */
 
                 exit_status = true;
-                 final_mode = current_mode;
+                final_mode = current_mode;
             } else {
                 if (c <= 0) {
                     /* Start new row - Annex B rule 5b */
                     column_position = 0;
                     current_row++;
                     if (current_row > 43) {
-                        return false;
+                        throw new OkapiException("Too many rows.");
                     }
                 }
             }
 
         } while (!exit_status);
 
-	if(current_row == 0) {
-		/* fill up the first row */
-		for(c = column_position; c <= columns_needed; c++) {
-			if(current_mode == cfMode.MODEA) {
-				blockmatrix[current_row][c] = 100; /* Code B */
-				current_mode = cfMode.MODEB;
-			} else {
-				blockmatrix[current_row][c] = 101; /* Code A */
-				current_mode = cfMode.MODEA;
-			}
-		}
-		current_row++;
-		/* add a second row */
-		subset_selector[current_row] = cfMode.MODEA;
-		current_mode = cfMode.MODEA;
-		for(c = 0; c <= columns_needed - 2; c++) {
-			if(current_mode == cfMode.MODEA) {
-				blockmatrix[current_row][c] = 100; /* Code B */
-				current_mode = cfMode.MODEB;
-			} else {
-				blockmatrix[current_row][c] = 101; /* Code A */
-				current_mode = cfMode.MODEA;
-			}
-		}
-	}
-        rows_needed = current_row + 1;
+        if (current_row == 0) {
+            /* fill up the first row */
+            for(c = column_position; c <= columns_needed; c++) {
+                if(current_mode == cfMode.MODEA) {
+                    blockmatrix[current_row][c] = 100; /* Code B */
+                    current_mode = cfMode.MODEB;
+                } else {
+                    blockmatrix[current_row][c] = 101; /* Code A */
+                    current_mode = cfMode.MODEA;
+                }
+            }
+            current_row++;
+            /* add a second row */
+            subset_selector[current_row] = cfMode.MODEA;
+            current_mode = cfMode.MODEA;
+            for(c = 0; c <= columns_needed - 2; c++) {
+                if(current_mode == cfMode.MODEA) {
+                    blockmatrix[current_row][c] = 100; /* Code B */
+                    current_mode = cfMode.MODEB;
+                } else {
+                    blockmatrix[current_row][c] = 101; /* Code A */
+                    current_mode = cfMode.MODEA;
+                }
+            }
+        }
 
-        return true;
+        rows_needed = current_row + 1;
     }
 
     private cfMode character_subset_select(int input_position) {
+
         /* Section 4.5.2 - Determining the Character Subset Selector in a Row */
 
-	if((source[input_position] >= '0') && (source[input_position + 1] <= '9')) {
-		/* Rule 1 */
-		return cfMode.MODEC;
-	}
+        if((source[input_position] >= '0') && (source[input_position + 1] <= '9')) {
+            /* Rule 1 */
+            return cfMode.MODEC;
+        }
 
-	if((source[input_position] >= 128) && (source[input_position] <= 160)) {
-		/* Rule 2 (i) */
-		return cfMode.MODEA;
-	}
+        if((source[input_position] >= 128) && (source[input_position] <= 160)) {
+            /* Rule 2 (i) */
+            return cfMode.MODEA;
+        }
 
-	if((source[input_position] >= 0) && (source[input_position] <= 31)) {
-		/* Rule 3 */
-		return cfMode.MODEA;
-	}
+        if((source[input_position] >= 0) && (source[input_position] <= 31)) {
+            /* Rule 3 */
+            return cfMode.MODEA;
+        }
 
-	/* Rule 4 */
-	return cfMode.MODEB;
+        /* Rule 4 */
+        return cfMode.MODEB;
     }
 
     private int a3_convert(int source) {
         /* Annex A section 3 */
-	if(source < 32) { return source + 64; }
-	if((source >= 32) && (source <= 127)) { return source - 32; }
-	if((source >= 128) && (source <= 159)) { return (source - 128) + 64; }
-	/* if source >= 160 */
-	return (source - 128) - 32;
+        if(source < 32) { return source + 64; }
+        if((source >= 32) && (source <= 127)) { return source - 32; }
+        if((source >= 128) && (source <= 159)) { return (source - 128) + 64; }
+        /* if source >= 160 */
+        return (source - 128) - 32;
     }
 
     @Override

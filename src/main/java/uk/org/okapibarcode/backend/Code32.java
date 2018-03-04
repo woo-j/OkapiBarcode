@@ -33,7 +33,7 @@ public class Code32 extends Symbol {
     };
 
     @Override
-    public boolean encode() {
+    protected void encode() {
         int i, checksum, checkpart, checkdigit;
         int pharmacode, remainder, devisor;
         String localstr, risultante;
@@ -41,13 +41,11 @@ public class Code32 extends Symbol {
         Code3Of9 c39 = new Code3Of9();
 
         if (content.length() > 8) {
-            error_msg = "Input too long";
-            return false;
+            throw new OkapiException("Input too long");
         }
 
-        if (!(content.matches("[0-9]+"))) {
-            error_msg = "Invalid characters in input";
-            return false;
+        if (!content.matches("[0-9]+")) {
+            throw new OkapiException("Invalid characters in input");
         }
 
         /* Add leading zeros as required */
@@ -104,18 +102,10 @@ public class Code32 extends Symbol {
         readable = "A" + localstr;
         pattern = new String[1];
         row_count = 1;
-        row_height = new int[1];
-        row_height[0] = -1;
+        row_height = new int[] { -1 };
         encodeInfo += "Code 39 Equivalent: " + risultante + '\n';
-        try {
-            c39.setContent(risultante);
-        } catch (OkapiException e) {
-            error_msg = e.getMessage();
-            return false;
-        }
 
-        this.pattern[0] = c39.pattern[0];
-
-        return true;
+        c39.setContent(risultante);
+        pattern[0] = c39.pattern[0];
     }
 }

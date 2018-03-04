@@ -160,7 +160,7 @@ public class DataBarLimited extends Symbol {
     }
 
     @Override
-    public boolean encode() {
+    protected void encode() {
         BigInteger accum;
         BigInteger left_reg;
         BigInteger right_reg;
@@ -188,20 +188,15 @@ public class DataBarLimited extends Symbol {
         int compositeOffset = 0;
 
         if (content.length() > 13) {
-            error_msg = "Input too long";
-            return false;
+            throw new OkapiException("Input too long");
         }
 
-        if (!(content.matches("[0-9]+?"))) {
-            error_msg = "Invalid characters in input";
-            return false;
+        if (!content.matches("[0-9]+?")) {
+            throw new OkapiException("Invalid characters in input");
         }
 
-        if (content.length() == 13) {
-            if ((content.charAt(0) != '0') && (content.charAt(0) != '1')) {
-                error_msg = "Input out of range";
-                return false;
-            }
+        if (content.length() == 13 && content.charAt(0) != '0' && content.charAt(0) != '1') {
+            throw new OkapiException("Input out of range");
         }
 
         accum = new BigInteger(content);
@@ -466,8 +461,6 @@ public class DataBarLimited extends Symbol {
             row_height[0] = 1;
             pattern[0] = "0:04" + bin2pat(notbin);
         }
-
-        return true;
     }
 
     private static int getCombinations(int n, int r) {

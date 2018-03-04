@@ -126,11 +126,10 @@ public class Code11 extends Symbol {
 
     /** {@inheritDoc} */
     @Override
-    public boolean encode() {
+    protected void encode() {
 
-        if (!(content.matches("[0-9-]+"))) {
-            error_msg = "Invalid characters in input";
-            return false;
+        if (!content.matches("[0-9-]+")) {
+            throw new OkapiException("Invalid characters in input");
         }
 
         String horizontalSpacing = "112211";
@@ -170,8 +169,6 @@ public class Code11 extends Symbol {
         pattern = new String[] { horizontalSpacing };
         row_count = 1;
         row_height = new int[] { -1 };
-
-        return true;
     }
 
     private static int getCheckDigitC(int[] weight, int length) {

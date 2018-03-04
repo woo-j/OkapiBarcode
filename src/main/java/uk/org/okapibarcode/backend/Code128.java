@@ -131,7 +131,7 @@ public class Code128 extends Symbol {
     }
 
     @Override
-    public boolean encode() {
+    protected void encode() {
         int sourcelen = content.length();
         int i, j, k;
         int input_point = 0;
@@ -159,16 +159,14 @@ public class Code128 extends Symbol {
 
         inputData = encode(content, inputDataType);
         if (inputData == null) {
-            error_msg = "Invalid characters in input data";
-            return false;
+            throw new OkapiException("Invalid characters in input data");
         }
 
         FMode[] fset = new FMode[200];
         Mode[] set = new Mode[200]; /* set[] = Calculated mode for each character */
 
         if (sourcelen > 170) {
-            error_msg = "Input data too long";
-            return false;
+            throw new OkapiException("Input data too long");
         }
 
         /* Detect extended ASCII characters */
@@ -314,8 +312,7 @@ public class Code128 extends Symbol {
             }
         }
         if (glyph_count > 80.0) {
-            error_msg = "Input data too long";
-            return false;
+            throw new OkapiException("Input data too long");
         }
 
         encodeInfo += "Encoding: ";
@@ -684,8 +681,6 @@ public class Code128 extends Symbol {
             row_height[0] = 1;
             row_height[1] = -1;
         }
-
-        return true;
     }
 
     private void resolveOddCs(Mode[] set, int i, int cs, int nums) {

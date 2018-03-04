@@ -73,15 +73,15 @@ public class Telepen extends Symbol {
     }
 
     @Override
-    public boolean encode() {
+    protected void encode() {
         if (mode == Mode.NORMAL) {
-            return normal_mode();
+            normal_mode();
         } else {
-            return numeric_mode();
+            numeric_mode();
         }
     }
 
-    private boolean normal_mode() {
+    private void normal_mode() {
         int count = 0, asciicode, check_digit;
         String p = "";
         String dest;
@@ -89,8 +89,7 @@ public class Telepen extends Symbol {
         int l = content.length();
 
         if (!content.matches("[\u0000-\u007F]+")) {
-            error_msg = "Invalid characters in input data";
-            return false;
+            throw new OkapiException("Invalid characters in input data");
         }
 
         dest = TELE_TABLE['_']; // Start
@@ -118,11 +117,9 @@ public class Telepen extends Symbol {
         row_count = 1;
         row_height = new int[1];
         row_height[0] = -1;
-
-        return true;
     }
 
-    private boolean numeric_mode() {
+    private void numeric_mode() {
         int count = 0, check_digit;
         String p = "";
         String t;
@@ -132,9 +129,8 @@ public class Telepen extends Symbol {
         char c1, c2;
 
         //FIXME: Ensure no extended ASCII or Unicode characters are entered
-        if (!(content.matches("[0-9X]+"))) {
-            error_msg = "Invalid characters in input";
-            return false;
+        if (!content.matches("[0-9X]+")) {
+            throw new OkapiException("Invalid characters in input");
         }
 
         /* If input is an odd length, add a leading zero */
@@ -154,8 +150,7 @@ public class Telepen extends Symbol {
 
             /* Input nX is allowed, but Xn is not */
             if (c1 == 'X') {
-                error_msg = "Invalid position of X in data";
-                return false;
+                throw new OkapiException("Invalid position of X in data");
             }
 
             if (c2 == 'X') {
@@ -186,7 +181,5 @@ public class Telepen extends Symbol {
         row_count = 1;
         row_height = new int[1];
         row_height[0] = -1;
-
-        return true;
     }
 }

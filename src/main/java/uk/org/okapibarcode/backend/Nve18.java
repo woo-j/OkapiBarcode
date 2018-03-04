@@ -25,7 +25,7 @@ package uk.org.okapibarcode.backend;
 public class Nve18 extends Symbol {
 
     @Override
-    public boolean encode() {
+    protected void encode() {
 
         String gs1Equivalent = "";
         int zeroes;
@@ -34,13 +34,11 @@ public class Nve18 extends Symbol {
         int p = 0;
 
         if (content.length() > 17) {
-            error_msg = "Input data too long";
-            return false;
+            throw new OkapiException("Input data too long");
         }
 
         if (!content.matches("[0-9]+")) {
-            error_msg = "Invalid characters in input";
-            return false;
+            throw new OkapiException("Invalid characters in input");
         }
 
         // Add leading zeroes
@@ -73,13 +71,7 @@ public class Nve18 extends Symbol {
         Code128 code128 = new Code128();
         code128.setDataType(DataType.GS1);
         code128.setHumanReadableLocation(humanReadableLocation);
-
-        try {
-            code128.setContent(content);
-        } catch (OkapiException e) {
-            error_msg = e.getMessage();
-            return false;
-        }
+        code128.setContent(content);
 
         readable = code128.readable;
         pattern = code128.pattern;
@@ -88,10 +80,7 @@ public class Nve18 extends Symbol {
         symbol_height = code128.symbol_height;
         symbol_width = code128.symbol_width;
         encodeInfo += code128.encodeInfo;
-        error_msg = code128.error_msg;
         rectangles = code128.rectangles;
         texts = code128.texts;
-
-        return (error_msg == null);
     }
 }

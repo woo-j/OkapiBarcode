@@ -562,7 +562,7 @@ public class AztecCode extends Symbol {
     }
 
     @Override
-    public boolean encode() {
+    protected void encode() {
         int i, ecc_level, data_length, layers, data_maxsize;
         int adjustment_size, codeword_size;
         int j, count, adjusted_length, padbits, remainder;
@@ -586,15 +586,13 @@ public class AztecCode extends Symbol {
 
         eciProcess(); // Get ECI mode
 
-        if ((inputDataType == DataType.GS1) && (readerInit)) {
-            error_msg = "Cannot encode in GS1 and Reader Initialisation mode at the same time";
-            return false;
+        if (inputDataType == DataType.GS1 && readerInit) {
+            throw new OkapiException("Cannot encode in GS1 and Reader Initialisation mode at the same time");
         }
 
         String binaryString = generateAztecBinary();
         if (binaryString == null) {
-            error_msg = "Input too long or too many extended ASCII characters";
-            return false;
+            throw new OkapiException("Input too long or too many extended ASCII characters");
         }
 
         // Set the error correction level
@@ -694,12 +692,10 @@ public class AztecCode extends Symbol {
                 }
 
                 if (layers == 0) { /* Couldn't find a symbol which fits the data */
-
-                    error_msg = "Input too long (too many bits for selected ECC)";
-                    return false;
+                    throw new OkapiException("Input too long (too many bits for selected ECC)");
                 }
 
-                /* Determine codeword bitlength - Table 3 */
+                /* Determine codeword bit length - Table 3 */
                 codeword_size = 6; /* if (layers <= 2) */
 
                 if ((layers >= 3) && (layers <= 8)) {
@@ -891,8 +887,7 @@ public class AztecCode extends Symbol {
             }
 
             if (adjusted_length > data_maxsize) {
-                error_msg = "Data too long for specified Aztec Code symbol size";
-                return false;
+                throw new OkapiException("Data too long for specified Aztec Code symbol size");
             }
 
             encodeInfo += "Codewords: ";
@@ -909,9 +904,8 @@ public class AztecCode extends Symbol {
             encodeInfo += "\n";
         }
 
-        if (readerInit && (layers > 22)) {
-            error_msg = "Data too long for reader initialisation symbol";
-            return false;
+        if (readerInit && layers > 22) {
+            throw new OkapiException("Data too long for reader initialisation symbol");
         }
 
         data_blocks = adjusted_length / codeword_size;
@@ -1219,8 +1213,6 @@ public class AztecCode extends Symbol {
                 bin = "";
             }
         }
-
-        return true;
     }
 
     private String generateAztecBinary() {
@@ -1928,8 +1920,7 @@ public class AztecCode extends Symbol {
                             bytes--;
 
                             if (bytes > 2079) {
-                                error_msg = "Input too long";
-                                return null;
+                                throw new OkapiException("Input too long");
                             }
 
                             if (bytes > 31) { /* Put 00000 followed by 11-bit number of bytes less 31 */

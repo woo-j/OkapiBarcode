@@ -27,7 +27,7 @@ import java.awt.geom.Rectangle2D;
 public class UspsPackage extends Symbol {
 
     @Override
-    public boolean encode() {
+    protected void encode() {
         String hrt;
         String spacedHrt;
         boolean fourTwenty = false;
@@ -37,16 +37,14 @@ public class UspsPackage extends Symbol {
             System.out.printf("IM Package Data Content = \"%s\"\n", content);
         }
 
-        if (!(content.matches("[0-9\\[\\]]+"))) {
+        if (!content.matches("[0-9\\[\\]]+")) {
             /* Input must be numeric only */
-            error_msg = "Invalid IMpb data";
-            return false;
+            throw new OkapiException("Invalid IMpb data");
         }
 
         if ((content.length() % 2) != 0) {
             /* Input must be even length */
-            error_msg = "Invalid IMpb data";
-            return false;
+            throw new OkapiException("Invalid IMpb data");
         }
 
         Code128 code128 = new Code128();
@@ -85,8 +83,6 @@ public class UspsPackage extends Symbol {
         row_count = 1;
         row_height = new int[1];
         row_height[0] = -1;
-
-        return true;
     }
 
     @Override

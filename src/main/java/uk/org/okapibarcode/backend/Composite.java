@@ -525,13 +525,13 @@ public class Composite extends Symbol {
     }
 
     @Override
-    public boolean encode() {
+    protected void encode() {
+
         List < Rectangle2D.Double > linear_rect = new ArrayList<>();
         List < TextBox > linear_txt = new ArrayList<>();
         List < Rectangle2D.Double > combine_rect = new ArrayList<>();
         List < TextBox > combine_txt = new ArrayList<>();
         String linear_encodeInfo = null;
-        String linear_error_msg = "";
         int linear_height = 0;
         int top_shift = 0;
         int bottom_shift = 0;
@@ -540,154 +540,141 @@ public class Composite extends Symbol {
         linearWidth = 0;
 
         if (linearContent.isEmpty()) {
-            error_msg = "No linear data set";
-            return false;
+            throw new OkapiException("No linear data set");
         }
 
         // Manage composite component encoding first
-        if (!encodeComposite()) {
-            return false;
-        }
+        encodeComposite();
 
         // Then encode linear component
-        try {
-            switch (symbology) {
-                case UPCA:
-                    Upc upca = new Upc();
-                    upca.setMode(Upc.Mode.UPCA);
-                    upca.setLinkageFlag();
-                    upca.setContent(linearContent);
-                    linear_rect = upca.rectangles;
-                    linear_txt = upca.texts;
-                    linear_height = upca.symbol_height;
-                    linear_encodeInfo = upca.encodeInfo;
+        switch (symbology) {
+            case UPCA:
+                Upc upca = new Upc();
+                upca.setMode(Upc.Mode.UPCA);
+                upca.setLinkageFlag();
+                upca.setContent(linearContent);
+                linear_rect = upca.rectangles;
+                linear_txt = upca.texts;
+                linear_height = upca.symbol_height;
+                linear_encodeInfo = upca.encodeInfo;
+                top_shift = 3;
+                break;
+            case UPCE:
+                Upc upce = new Upc();
+                upce.setMode(Upc.Mode.UPCE);
+                upce.setLinkageFlag();
+                upce.setContent(linearContent);
+                linear_rect = upce.rectangles;
+                linear_txt = upce.texts;
+                linear_height = upce.symbol_height;
+                linear_encodeInfo = upce.encodeInfo;
+                top_shift = 3;
+                break;
+            case EAN:
+                Ean ean = new Ean();
+                if (eanCalculateVersion() == 8) {
+                    ean.setMode(Ean.Mode.EAN8);
+                    bottom_shift = 8;
+                } else {
+                    ean.setMode(Ean.Mode.EAN13);
                     top_shift = 3;
-                    break;
-                case UPCE:
-                    Upc upce = new Upc();
-                    upce.setMode(Upc.Mode.UPCE);
-                    upce.setLinkageFlag();
-                    upce.setContent(linearContent);
-                    linear_rect = upce.rectangles;
-                    linear_txt = upce.texts;
-                    linear_height = upce.symbol_height;
-                    linear_encodeInfo = upce.encodeInfo;
-                    top_shift = 3;
-                    break;
-                case EAN:
-                    Ean ean = new Ean();
-                    if (eanCalculateVersion() == 8) {
-                        ean.setMode(Ean.Mode.EAN8);
-                        bottom_shift = 8;
-                    } else {
-                        ean.setMode(Ean.Mode.EAN13);
-                        top_shift = 3;
-                    }
-                    ean.setLinkageFlag();
-                    ean.setContent(linearContent);
-                    linear_rect = ean.rectangles;
-                    linear_txt = ean.texts;
-                    linear_height = ean.symbol_height;
-                    linear_encodeInfo = ean.encodeInfo;
-                    break;
-                case CODE_128:
-                    Code128 code128 = new Code128();
-                    switch (cc_mode) {
-                        case CC_A:
-                            code128.setCca();
-                            break;
-                        case CC_B:
-                            code128.setCcb();
-                            break;
-                        case CC_C:
-                            code128.setCcc();
-                            bottom_shift = 7;
-                            break;
-                    }
-                    code128.setDataType(Symbol.DataType.GS1);
-                    code128.setContent(linearContent);
-                    linearWidth = code128.symbol_width;
-                    linear_rect = code128.rectangles;
-                    linear_txt = code128.texts;
-                    linear_height = code128.symbol_height;
-                    linear_encodeInfo = code128.encodeInfo;
-                    break;
-                case DATABAR_14:
-                    DataBar14 dataBar14 = new DataBar14();
-                    dataBar14.setLinkageFlag();
-                    dataBar14.setLinearMode();
-                    dataBar14.setContent(linearContent);
-                    linear_rect = dataBar14.rectangles;
-                    linear_txt = dataBar14.texts;
-                    linear_height = dataBar14.symbol_height;
-                    linear_encodeInfo = dataBar14.encodeInfo;
-                    bottom_shift = 4;
-                    break;
-                case DATABAR_14_STACK_OMNI:
-                    DataBar14 dataBar14SO = new DataBar14();
-                    dataBar14SO.setLinkageFlag();
-                    dataBar14SO.setOmnidirectionalMode();
-                    dataBar14SO.setContent(linearContent);
-                    linear_rect = dataBar14SO.rectangles;
-                    linear_txt = dataBar14SO.texts;
-                    linear_height = dataBar14SO.symbol_height;
-                    linear_encodeInfo = dataBar14SO.encodeInfo;
-                    top_shift = 1;
-                    break;
-                case DATABAR_14_STACK:
-                    DataBar14 dataBar14S = new DataBar14();
-                    dataBar14S.setLinkageFlag();
-                    dataBar14S.setStackedMode();
-                    dataBar14S.setContent(linearContent);
-                    linear_rect = dataBar14S.rectangles;
-                    linear_txt = dataBar14S.texts;
-                    linear_height = dataBar14S.symbol_height;
-                    linear_encodeInfo = dataBar14S.encodeInfo;
-                    top_shift = 1;
-                    break;
-                case DATABAR_LIMITED:
-                    DataBarLimited dataBarLimited = new DataBarLimited();
-                    dataBarLimited.setLinkageFlag();
-                    dataBarLimited.setContent(linearContent);
-                    linear_rect = dataBarLimited.rectangles;
-                    linear_txt = dataBarLimited.texts;
-                    linear_height = dataBarLimited.symbol_height;
-                    linear_encodeInfo = dataBarLimited.encodeInfo;
-                    top_shift = 1;
-                    break;
-                case DATABAR_EXPANDED:
-                    DataBarExpanded dataBarExpanded = new DataBarExpanded();
-                    dataBarExpanded.setLinkageFlag();
-                    dataBarExpanded.setNotStacked();
-                    dataBarExpanded.setContent(linearContent);
-                    linear_rect = dataBarExpanded.rectangles;
-                    linear_txt = dataBarExpanded.texts;
-                    linear_height = dataBarExpanded.symbol_height;
-                    linear_encodeInfo = dataBarExpanded.encodeInfo;
-                    top_shift = 2;
-                    break;
-                case DATABAR_EXPANDED_STACK:
-                    DataBarExpanded dataBarExpandedS = new DataBarExpanded();
-                    dataBarExpandedS.setLinkageFlag();
-                    dataBarExpandedS.setStacked();
-                    dataBarExpandedS.setContent(linearContent);
-                    linear_rect = dataBarExpandedS.rectangles;
-                    linear_txt = dataBarExpandedS.texts;
-                    linear_height = dataBarExpandedS.symbol_height;
-                    linear_encodeInfo = dataBarExpandedS.encodeInfo;
-                    top_shift = 2;
-                    break;
-                default:
-                    linear_error_msg = "Linear symbol not recognised";
-                    break;
-            }
-        } catch (OkapiException e) {
-            linear_error_msg = e.getMessage();
-        }
-
-        if (!linear_error_msg.isEmpty()) {
-            error_msg = linear_error_msg;
-            return false;
+                }
+                ean.setLinkageFlag();
+                ean.setContent(linearContent);
+                linear_rect = ean.rectangles;
+                linear_txt = ean.texts;
+                linear_height = ean.symbol_height;
+                linear_encodeInfo = ean.encodeInfo;
+                break;
+            case CODE_128:
+                Code128 code128 = new Code128();
+                switch (cc_mode) {
+                    case CC_A:
+                        code128.setCca();
+                        break;
+                    case CC_B:
+                        code128.setCcb();
+                        break;
+                    case CC_C:
+                        code128.setCcc();
+                        bottom_shift = 7;
+                        break;
+                }
+                code128.setDataType(Symbol.DataType.GS1);
+                code128.setContent(linearContent);
+                linearWidth = code128.symbol_width;
+                linear_rect = code128.rectangles;
+                linear_txt = code128.texts;
+                linear_height = code128.symbol_height;
+                linear_encodeInfo = code128.encodeInfo;
+                break;
+            case DATABAR_14:
+                DataBar14 dataBar14 = new DataBar14();
+                dataBar14.setLinkageFlag();
+                dataBar14.setLinearMode();
+                dataBar14.setContent(linearContent);
+                linear_rect = dataBar14.rectangles;
+                linear_txt = dataBar14.texts;
+                linear_height = dataBar14.symbol_height;
+                linear_encodeInfo = dataBar14.encodeInfo;
+                bottom_shift = 4;
+                break;
+            case DATABAR_14_STACK_OMNI:
+                DataBar14 dataBar14SO = new DataBar14();
+                dataBar14SO.setLinkageFlag();
+                dataBar14SO.setOmnidirectionalMode();
+                dataBar14SO.setContent(linearContent);
+                linear_rect = dataBar14SO.rectangles;
+                linear_txt = dataBar14SO.texts;
+                linear_height = dataBar14SO.symbol_height;
+                linear_encodeInfo = dataBar14SO.encodeInfo;
+                top_shift = 1;
+                break;
+            case DATABAR_14_STACK:
+                DataBar14 dataBar14S = new DataBar14();
+                dataBar14S.setLinkageFlag();
+                dataBar14S.setStackedMode();
+                dataBar14S.setContent(linearContent);
+                linear_rect = dataBar14S.rectangles;
+                linear_txt = dataBar14S.texts;
+                linear_height = dataBar14S.symbol_height;
+                linear_encodeInfo = dataBar14S.encodeInfo;
+                top_shift = 1;
+                break;
+            case DATABAR_LIMITED:
+                DataBarLimited dataBarLimited = new DataBarLimited();
+                dataBarLimited.setLinkageFlag();
+                dataBarLimited.setContent(linearContent);
+                linear_rect = dataBarLimited.rectangles;
+                linear_txt = dataBarLimited.texts;
+                linear_height = dataBarLimited.symbol_height;
+                linear_encodeInfo = dataBarLimited.encodeInfo;
+                top_shift = 1;
+                break;
+            case DATABAR_EXPANDED:
+                DataBarExpanded dataBarExpanded = new DataBarExpanded();
+                dataBarExpanded.setLinkageFlag();
+                dataBarExpanded.setNotStacked();
+                dataBarExpanded.setContent(linearContent);
+                linear_rect = dataBarExpanded.rectangles;
+                linear_txt = dataBarExpanded.texts;
+                linear_height = dataBarExpanded.symbol_height;
+                linear_encodeInfo = dataBarExpanded.encodeInfo;
+                top_shift = 2;
+                break;
+            case DATABAR_EXPANDED_STACK:
+                DataBarExpanded dataBarExpandedS = new DataBarExpanded();
+                dataBarExpandedS.setLinkageFlag();
+                dataBarExpandedS.setStacked();
+                dataBarExpandedS.setContent(linearContent);
+                linear_rect = dataBarExpandedS.rectangles;
+                linear_txt = dataBarExpandedS.texts;
+                linear_height = dataBarExpandedS.symbol_height;
+                linear_encodeInfo = dataBarExpandedS.encodeInfo;
+                top_shift = 2;
+                break;
+            default:
+                throw new OkapiException("Linear symbol not recognised");
         }
 
         if (cc_mode == CompositeMode.CC_C && symbology == LinearEncoding.CODE_128) {
@@ -698,9 +685,7 @@ public class Composite extends Symbol {
             symbol_height = 0;
             symbol_width = 0;
             encodeInfo = "";
-            if (!encodeComposite()) {
-                return false;
-            }
+            encodeComposite();
         }
 
         if (cc_mode != CompositeMode.CC_C && symbology == LinearEncoding.CODE_128) {
@@ -739,26 +724,20 @@ public class Composite extends Symbol {
         texts = combine_txt;
         symbol_height += linear_height;
         symbol_width = max_x;
-
         encodeInfo += linear_encodeInfo;
-
-        return true;
     }
 
-
-    private boolean encodeComposite() {
+    private void encodeComposite() {
 
         if (content.length() > 2990) {
-            error_msg = "2D component input data too long";
-            return false;
+            throw new OkapiException("2D component input data too long");
         }
 
         cc_mode = userPreferredMode;
 
-        if ((cc_mode == CompositeMode.CC_C) && (symbology != LinearEncoding.CODE_128)) {
+        if (cc_mode == CompositeMode.CC_C && symbology != LinearEncoding.CODE_128) {
             /* CC-C can only be used with a GS1-128 linear part */
-            error_msg = "Invalid mode (CC-C only valid with GS1-128 linear component)";
-            return false;
+            throw new OkapiException("Invalid mode (CC-C only valid with GS1-128 linear component)");
         }
 
         switch (symbology) {
@@ -794,10 +773,9 @@ public class Composite extends Symbol {
         }
 
         if (cc_mode == CompositeMode.CC_B) { /* If the data didn't fit into CC-A it is recalculated for CC-B */
-            if (!(cc_binary_string())) {
+            if (!cc_binary_string()) {
                 if (symbology != LinearEncoding.CODE_128) {
-                    error_msg = "Input too long";
-                    return false;
+                    throw new OkapiException("Input too long");
                 } else {
                     cc_mode = CompositeMode.CC_C;
                 }
@@ -807,9 +785,8 @@ public class Composite extends Symbol {
         if (cc_mode == CompositeMode.CC_C) {
             /* If the data didn't fit in CC-B (and linear
              * part is GS1-128) it is recalculated for CC-C */
-            if (!(cc_binary_string())) {
-                error_msg = "Input too long";
-                return false;
+            if (!cc_binary_string()) {
+                throw new OkapiException("Input too long");
             }
         }
 
@@ -829,8 +806,6 @@ public class Composite extends Symbol {
         }
 
         super.plotSymbol();
-
-        return true;
     }
 
     @Override
@@ -1148,12 +1123,12 @@ public class Composite extends Symbol {
         value = 0;
         target_bitsize = 0;
 
-        if ((content.charAt(0) == '1') && ((content.charAt(1) == '0') || (content.charAt(1) == '1') || (content.charAt(1) == '7')) && (content.length() >= 8)) {
+        if (content.charAt(0) == '1' && (content.charAt(1) == '0' || content.charAt(1) == '1' || content.charAt(1) == '7') && content.length() >= 8) {
             /* Source starts (10), (11) or (17) */
             encoding_method = 2;
         }
 
-        if ((content.charAt(0) == '9') && (content.charAt(1) == '0')) {
+        if (content.charAt(0) == '9' && content.charAt(1) == '0') {
             /* Source starts (90) */
             encoding_method = 3;
         }
@@ -1274,8 +1249,7 @@ public class Composite extends Symbol {
                 if (!(((ninety.charAt(i) >= '0') && (ninety.charAt(i) <= '9')) || ((ninety.charAt(i) >= 'A') && (ninety.charAt(i) <= 'Z')))) {
                     if ((ninety.charAt(i) != '*') && (ninety.charAt(i) != ',') && (ninety.charAt(i) != '-') && (ninety.charAt(i) != '.') && (ninety.charAt(i) != '/')) {
                         /* An Invalid AI 90 character */
-                        error_msg = "Invalid AI 90 data";
-                        return false;
+                        throw new OkapiException("Invalid AI 90 data");
                     }
                 }
             }
@@ -1667,8 +1641,7 @@ public class Composite extends Symbol {
 
             if (latch) {
                 /* Invalid characters in input data */
-                error_msg = "Invalid characters in input data";
-                return false;
+                throw new OkapiException("Invalid characters in input data");
             }
 
             for (i = 0; i < general_field.length() - 1; i++) {
@@ -1955,8 +1928,7 @@ public class Composite extends Symbol {
         }
 
         if (binary_string.length() > 11805) { /* (2361 * 5) */
-            error_msg = "Input too long";
-            return false;
+            throw new OkapiException("Input too long");
         }
 
         /* size of the symbol may have changed when adding data in the above sequence */

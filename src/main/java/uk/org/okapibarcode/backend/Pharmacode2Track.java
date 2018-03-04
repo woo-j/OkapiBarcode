@@ -30,18 +30,16 @@ import java.awt.geom.Rectangle2D;
 public class Pharmacode2Track extends Symbol {
 
     @Override
-    public boolean encode() {
+    protected void encode() {
         int i, tester = 0;
         String inter, dest;
 
         if (content.length() > 8) {
-            error_msg = "Input too long";
-            return false;
+            throw new OkapiException("Input too long");
         }
 
-        if (!(content.matches("[0-9]+"))) {
-            error_msg = "Invalid characters in data";
-            return false;
+        if (!content.matches("[0-9]+")) {
+            throw new OkapiException("Invalid characters in data");
         }
 
         for (i = 0; i < content.length(); i++) {
@@ -49,9 +47,8 @@ public class Pharmacode2Track extends Symbol {
             tester += Character.getNumericValue(content.charAt(i));
         }
 
-        if ((tester < 4) || (tester > 64570080)) {
-            error_msg = "Data out of range";
-            return false;
+        if (tester < 4 || tester > 64570080) {
+            throw new OkapiException("Data out of range");
         }
 
         inter = "";
@@ -86,8 +83,6 @@ public class Pharmacode2Track extends Symbol {
         row_count = 1;
         row_height = new int[1];
         row_height[0] = -1;
-
-        return true;
     }
 
     @Override

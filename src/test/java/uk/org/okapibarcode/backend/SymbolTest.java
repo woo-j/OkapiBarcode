@@ -161,18 +161,21 @@ public class SymbolTest {
         Symbol symbol = symbolType.newInstance();
         symbol.setFontName(DEJA_VU_SANS.getFontName());
 
+        String actualError;
+
         try {
             setProperties(symbol, properties);
+            actualError = null;
         } catch (InvocationTargetException e) {
-            symbol.error_msg = e.getCause().getMessage(); // TODO: migrate completely to exceptions?
+            actualError = e.getCause().getMessage();
         }
 
         if (codewordsFile.exists() && pngFile.exists()) {
             verifySuccess(symbol);
         } else if (errorFile.exists()) {
-            verifyError(symbol);
+            verifyError(actualError);
         } else {
-            generateExpectationFiles(symbol);
+            generateExpectationFiles(symbol, actualError);
         }
     }
 
@@ -184,8 +187,6 @@ public class SymbolTest {
      * @throws ReaderException if ZXing has an issue decoding the barcode image
      */
     private void verifySuccess(Symbol symbol) throws IOException, ReaderException {
-
-        assertEquals("error message", "", symbol.error_msg);
 
         List< String > expectedList = Files.readAllLines(codewordsFile.toPath(), UTF_8);
 
@@ -328,23 +329,24 @@ public class SymbolTest {
     /**
      * Verifies that the specified symbol encountered the expected error during encoding.
      *
-     * @param symbol the symbol to check
+     * @param actualError the actual error message
      * @throws IOException if there is any I/O error
      */
-    private void verifyError(Symbol symbol) throws IOException {
+    private void verifyError(String actualError) throws IOException {
         String expectedError = Files.readAllLines(errorFile.toPath(), UTF_8).get(0);
-        assertEquals(expectedError, symbol.error_msg);
+        assertEquals(expectedError, actualError);
     }
 
     /**
      * Generates the expectation files for the specified symbol.
      *
      * @param symbol the symbol to generate expectation files for
+     * @param actualError the actual error message (may be <tt>null</tt> if there was no error)
      * @throws IOException if there is any I/O error
      */
-    private void generateExpectationFiles(Symbol symbol) throws IOException {
-        if (symbol.error_msg != null && !symbol.error_msg.isEmpty()) {
-            generateErrorExpectationFile(symbol);
+    private void generateExpectationFiles(Symbol symbol, String actualError) throws IOException {
+        if (actualError != null && !actualError.isEmpty()) {
+            generateErrorExpectationFile(actualError);
         } else {
             generateCodewordsExpectationFile(symbol);
             generatePngExpectationFile(symbol);
@@ -354,13 +356,13 @@ public class SymbolTest {
     /**
      * Generates the error expectation file for the specified symbol.
      *
-     * @param symbol the symbol to generate the error expectation file for
+     * @param error the error message
      * @throws IOException if there is any I/O error
      */
-    private void generateErrorExpectationFile(Symbol symbol) throws IOException {
+    private void generateErrorExpectationFile(String error) throws IOException {
         if (!errorFile.exists()) {
             PrintWriter writer = new PrintWriter(errorFile);
-            writer.println(symbol.error_msg);
+            writer.println(error);
             writer.close();
         }
     }

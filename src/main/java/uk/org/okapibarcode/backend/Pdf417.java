@@ -673,7 +673,7 @@ public class Pdf417 extends Symbol {
     }
 
     @Override
-    public boolean encode() {
+    protected void encode() {
 
         eciProcess();
 
@@ -683,22 +683,19 @@ public class Pdf417 extends Symbol {
             inputData[i] = inputBytes[i] & 0xFF;
         }
 
-        boolean ok;
         switch (symbolMode) {
             case MICRO:
-                ok = processMicroPdf417();
+                processMicroPdf417();
                 break;
             case NORMAL:
             case TRUNCATED:
             default:
-                ok = processPdf417();
+                processPdf417();
                 break;
         }
-
-        return ok;
     }
 
-    private boolean processPdf417() {
+    private void processPdf417() {
         int j, loop, offset;
         int[] mccorrection = new int[520];
         int total;
@@ -798,16 +795,14 @@ public class Pdf417 extends Symbol {
         int k = 1 << (selectedECCLevel + 1); // error correction codeword count
         int dataCodeWordCount = codeWordCount + k + 1; // not including padding
 
-        if (!validateRows(3, 90) || !validateColumns(1, 30)) {
-            return false;
-        }
+        validateRows(3, 90);
+        validateColumns(1, 30);
 
         if (columns != null) {
             if (rows != null) {
                 // user specified both columns and rows; make sure the data fits
                 if (columns * rows < dataCodeWordCount) {
-                    error_msg = "Too few rows (" + rows + ") and columns (" + columns + ") to hold codewords (" + dataCodeWordCount + ")";
-                    return false;
+                    throw new OkapiException("Too few rows (" + rows + ") and columns (" + columns + ") to hold codewords (" + dataCodeWordCount + ")");
                 }
             } else {
                 // user only specified column count; figure out row count
@@ -824,9 +819,8 @@ public class Pdf417 extends Symbol {
             }
         }
 
-        if (!validateRows(3, 90) || !validateColumns(1, 30)) {
-            return false;
-        }
+        validateRows(3, 90);
+        validateColumns(1, 30);
 
         /* add the padding */
         int paddingCount = (columns * rows) - codeWordCount - k - 1;
@@ -896,8 +890,7 @@ public class Pdf417 extends Symbol {
 
         /* make sure total codeword count isn't too high */
         if (codeWordCount > 929) {
-            error_msg = "Too many codewords required (" + codeWordCount + ", but max is 929)";
-            return false;
+            throw new OkapiException("Too many codewords required (" + codeWordCount + ", but max is 929)");
         }
 
 //        if (debug) {
@@ -959,10 +952,9 @@ public class Pdf417 extends Symbol {
             pattern[i] = bin2pat(bin);
             row_height[i] = default_height;
         }
-        return true;
     }
 
-    private boolean processMicroPdf417() { /* like PDF417 only much smaller! */
+    private void processMicroPdf417() { /* like PDF417 only much smaller! */
 
         int k, j, longueur, offset;
         int total;
@@ -1043,9 +1035,8 @@ public class Pdf417 extends Symbol {
 
         /* This is where it all changes! */
 
-        if (!validateRows(4, 44) || !validateColumns(1, 4)) {
-            return false;
-        }
+        validateRows(4, 44);
+        validateColumns(1, 4);
 
         if (columns != null) {
             int max;
@@ -1066,8 +1057,7 @@ public class Pdf417 extends Symbol {
                     throw new OkapiException("Invalid column count: " + columns);
             }
             if (codeWordCount > max) {
-                error_msg = "Too few columns (" + columns + ") to hold data codewords (" + codeWordCount + ")";
-                return false;
+                throw new OkapiException("Too few columns (" + columns + ") to hold data codewords (" + codeWordCount + ")");
             }
         }
 
@@ -1251,33 +1241,26 @@ public class Pdf417 extends Symbol {
                 Cluster = 0;
             }
         }
-        return true;
     }
 
-    private boolean validateRows(int min, int max) {
+    private void validateRows(int min, int max) {
         if (rows != null) {
             if (rows < min) {
-                error_msg = "Too few rows (" + rows + ")";
-                return false;
+                throw new OkapiException("Too few rows (" + rows + ")");
             } else if (rows > max) {
-                error_msg = "Too many rows (" + rows + ")";
-                return false;
+                throw new OkapiException("Too many rows (" + rows + ")");
             }
         }
-        return true;
     }
 
-    private boolean validateColumns(int min, int max) {
+    private void validateColumns(int min, int max) {
         if (columns != null) {
             if (columns < min) {
-                error_msg = "Too few columns (" + columns + ")";
-                return false;
+                throw new OkapiException("Too few columns (" + columns + ")");
             } else if (columns > max) {
-                error_msg = "Too many columns (" + columns + ")";
-                return false;
+                throw new OkapiException("Too many columns (" + columns + ")");
             }
         }
-        return true;
     }
 
     private static EncodingMode chooseMode(int codeascii) {

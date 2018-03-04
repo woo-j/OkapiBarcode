@@ -56,7 +56,8 @@ public class MsiPlessey extends Symbol {
     }
 
     @Override
-    public boolean encode() {
+    protected void encode() {
+
         String intermediate;
         int length = content.length();
         int i;
@@ -70,8 +71,7 @@ public class MsiPlessey extends Symbol {
         int checkDigit2;
 
         if (!content.matches("[0-9]+")) {
-            error_msg = "Invalid characters in input";
-            return false;
+            throw new OkapiException("Invalid characters in input");
         }
 
         intermediate = "21"; // Start
@@ -204,7 +204,5 @@ public class MsiPlessey extends Symbol {
         pattern = new String[] { intermediate };
         row_count = 1;
         row_height = new int[] { -1 };
-
-        return true;
     }
 }

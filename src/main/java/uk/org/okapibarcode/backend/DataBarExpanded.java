@@ -150,7 +150,7 @@ public class DataBarExpanded extends Symbol {
     }
 
     @Override
-    public boolean encode() {
+    protected void encode() {
         int i;
         int j;
         int k;
@@ -196,9 +196,8 @@ public class DataBarExpanded extends Symbol {
             binaryString = "0";
             compositeOffset = 0;
         }
-        if (!calculateBinaryString()) {
-            return false;
-        }
+
+        calculateBinaryString();
 
         data_chars = binaryString.length() / 12;
 
@@ -548,11 +547,9 @@ public class DataBarExpanded extends Symbol {
             readable = "";
             row_count += compositeOffset;
         }
-
-        return true;
     }
 
-    private boolean calculateBinaryString() {
+    private void calculateBinaryString() {
         /* Handles all data encodation from section 7.2.5 of ISO/IEC 24724 */
         EncodeMode last_mode = EncodeMode.NUMERIC;
         int encoding_method, i, j, read_posn;
@@ -782,8 +779,7 @@ public class DataBarExpanded extends Symbol {
             if ((source.charAt(i) < '0') || (source.charAt(i) > '9')) {
                 if ((source.charAt(i) != '[') && (source.charAt(i) != ']')) {
                     /* Something is wrong */
-                    error_msg = "Invalid characters in input data";
-                    return false;
+                    throw new OkapiException("Invalid characters in input data");
                 }
             }
         }
@@ -1098,8 +1094,7 @@ public class DataBarExpanded extends Symbol {
             }
 
             if (latch) {
-                error_msg = "Invalid characters in input data";
-                return false;
+                throw new OkapiException("Invalid characters in input data");
             }
 
             for (i = 0; i < generalField.length() - 1; i++) {
@@ -1368,8 +1363,7 @@ public class DataBarExpanded extends Symbol {
         }
 
         if (binaryString.length() > 252) {
-            error_msg = "Input too long";
-            return false;
+            throw new OkapiException("Input too long");
         }
 
         remainder = calculateRemainder (binaryString.length());
@@ -1418,7 +1412,6 @@ public class DataBarExpanded extends Symbol {
         displayBinaryString();
 //        if (debug) System.out.printf("Resultant binary = %s\n", binary_string);
 //        if (debug) System.out.printf("\tLength: %d\n", binary_string.length());
-        return true;
     }
 
     private static int calculateRemainder ( int binaryStringLength ) {

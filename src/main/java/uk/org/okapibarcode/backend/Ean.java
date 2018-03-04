@@ -83,31 +83,24 @@ public class Ean extends Symbol {
     }
 
     @Override
-    public boolean encode() {
-        boolean retval = false;
-        String addOnData = "";
+    protected void encode() {
 
         separateContent();
 
-        if(content.length() == 0) {
-            error_msg = "Missing EAN data";
-            retval = false;
+        if (content.length() == 0) {
+            throw new OkapiException("Missing EAN data");
         } else {
-            switch (mode) {
-            case EAN8:
-                retval = ean8();
-                break;
-            case EAN13:
-                retval = ean13();
-                break;
+            if (mode == Mode.EAN8) {
+                ean8();
+            } else {
+                ean13();
             }
         }
 
-        if (retval && addOnContent != null) {
-            addOnData = AddOn.calcAddOn(addOnContent);
+        if (addOnContent != null) {
+            String addOnData = AddOn.calcAddOn(addOnContent);
             if (addOnData.length() == 0) {
-                error_msg = "Invalid Add-On data";
-                retval = false;
+                throw new OkapiException("Invalid Add-On data");
             } else {
                 pattern[0] = pattern[0] + "9" + addOnData;
 
@@ -123,8 +116,6 @@ public class Ean extends Symbol {
                 }
             }
         }
-
-        return retval;
     }
 
     private void separateContent() {
@@ -138,19 +129,17 @@ public class Ean extends Symbol {
         }
     }
 
-    private boolean ean13() {
+    private void ean13() {
         String accumulator = "";
         String dest, parity;
         int i;
 
         if (!content.matches("[0-9]+")) {
-            error_msg = "Invalid characters in input";
-            return false;
+            throw new OkapiException("Invalid characters in input");
         }
 
         if (content.length() > 12) {
-            error_msg = "Input data too long";
-            return false;
+            throw new OkapiException("Input data too long");
         }
 
         for (i = content.length(); i < 12; i++) {
@@ -191,22 +180,19 @@ public class Ean extends Symbol {
         row_count = 1;
         row_height = new int[1];
         row_height[0] = -1;
-        return true;
     }
 
-    private boolean ean8() {
+    private void ean8() {
         String accumulator = "";
         int i;
         String dest;
 
         if (!content.matches("[0-9]+")) {
-            error_msg = "Invalid characters in input";
-            return false;
+            throw new OkapiException("Invalid characters in input");
         }
 
         if (content.length() > 7) {
-            error_msg = "Input data too long";
-            return false;
+            throw new OkapiException("Input data too long");
         }
 
         for (i = content.length(); i < 7; i++) {
@@ -231,7 +217,6 @@ public class Ean extends Symbol {
         row_count = 1;
         row_height = new int[1];
         row_height[0] = -1;
-        return true;
     }
 
     private char calcDigit(String x) {

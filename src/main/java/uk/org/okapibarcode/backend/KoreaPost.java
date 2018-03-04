@@ -29,16 +29,14 @@ public class KoreaPost extends Symbol {
     };
 
     @Override
-    public boolean encode() {
+    protected void encode() {
 
         if (!content.matches("[0-9]+")) {
-            error_msg = "Invalid characters in input";
-            return false;
+            throw new OkapiException("Invalid characters in input");
         }
 
         if (content.length() > 6) {
-            error_msg = "Input data too long";
-            return false;
+            throw new OkapiException("Input data too long");
         }
 
         String padded = "";
@@ -66,7 +64,5 @@ public class KoreaPost extends Symbol {
         pattern = new String[] { accumulator };
         row_count = 1;
         row_height = new int[] { -1 };
-
-        return true;
     }
 }

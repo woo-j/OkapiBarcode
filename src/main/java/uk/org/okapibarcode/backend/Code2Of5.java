@@ -136,44 +136,39 @@ public class Code2Of5 extends Symbol {
     }
 
     @Override
-    public boolean encode() {
-        boolean retval = false;
-
+    protected void encode() {
         switch (mode) {
-        case MATRIX:
-            retval = dataMatrixTof();
-            break;
-        case INDUSTRIAL:
-            retval = industrialTof();
-            break;
-        case IATA:
-            retval = iataTof();
-            break;
-        case INTERLEAVED:
-            retval = interleavedTof();
-            break;
-        case DATA_LOGIC:
-            retval = dataLogic();
-            break;
-        case ITF14:
-            retval = itf14();
-            break;
-        case DPLEIT:
-            retval = deutschePostLeitcode();
-            break;
-        case DPIDENT:
-            retval = deutschePostIdentcode();
-            break;
+            case MATRIX:
+                dataMatrixTof();
+                break;
+            case INDUSTRIAL:
+                industrialTof();
+                break;
+            case IATA:
+                iataTof();
+                break;
+            case INTERLEAVED:
+                interleavedTof();
+                break;
+            case DATA_LOGIC:
+                dataLogic();
+                break;
+            case ITF14:
+                itf14();
+                break;
+            case DPLEIT:
+                deutschePostLeitcode();
+                break;
+            case DPIDENT:
+                deutschePostIdentcode();
+                break;
         }
-
-        return retval;
     }
 
-    private boolean dataMatrixTof() {
+    private void dataMatrixTof() {
 
-        if (!(content.matches("[0-9]+"))) {
-            error_msg = "Invalid characters in input";
-            return false;
+        if (!content.matches("[0-9]+")) {
+            throw new OkapiException("Invalid characters in input");
         }
 
         String dest = "311111";
@@ -187,13 +182,12 @@ public class Code2Of5 extends Symbol {
         pattern = new String[] { dest };
         row_count = 1;
         row_height = new int[] { -1 };
-        return true;
     }
 
-    private boolean industrialTof() {
-        if (!(content.matches("[0-9]+"))) {
-            error_msg = "Invalid characters in input";
-            return false;
+    private void industrialTof() {
+
+        if (!content.matches("[0-9]+")) {
+            throw new OkapiException("Invalid characters in input");
         }
 
         String dest = "313111";
@@ -208,13 +202,12 @@ public class Code2Of5 extends Symbol {
         pattern = new String[] { dest };
         row_count = 1;
         row_height = new int[] { -1 };
-        return true;
     }
 
-    private boolean iataTof() {
-        if (!(content.matches("[0-9]+"))) {
-            error_msg = "Invalid characters in input";
-            return false;
+    private void iataTof() {
+
+        if (!content.matches("[0-9]+")) {
+            throw new OkapiException("Invalid characters in input");
         }
 
         String dest = "1111";
@@ -229,13 +222,12 @@ public class Code2Of5 extends Symbol {
         pattern = new String[] { dest };
         row_count = 1;
         row_height = new int[] { -1 };
-        return true;
     }
 
-    private boolean dataLogic() {
-        if (!(content.matches("[0-9]+"))) {
-            error_msg = "Invalid characters in input";
-            return false;
+    private void dataLogic() {
+
+        if (!content.matches("[0-9]+")) {
+            throw new OkapiException("Invalid characters in input");
         }
 
         String dest = "1111";
@@ -250,10 +242,9 @@ public class Code2Of5 extends Symbol {
         pattern = new String[] { dest };
         row_count = 1;
         row_height = new int[] { -1 };
-        return true;
     }
 
-    private boolean interleavedTof() {
+    private void interleavedTof() {
         int i;
         String dest;
 
@@ -262,9 +253,8 @@ public class Code2Of5 extends Symbol {
         } else {
             readable = "0" + content;
         }
-        if (!(readable.matches("[0-9]+"))) {
-            error_msg = "Invalid characters in input";
-            return false;
+        if (!readable.matches("[0-9]+")) {
+            throw new OkapiException("Invalid characters in input");
         }
 
         dest = "1111";
@@ -278,7 +268,6 @@ public class Code2Of5 extends Symbol {
         pattern = new String[] { dest };
         row_count = 1;
         row_height = new int[] { -1 };
-        return true;
     }
 
     private String interlace(int x, int y) {
@@ -297,19 +286,17 @@ public class Code2Of5 extends Symbol {
         return f;
     }
 
-    private boolean itf14() {
+    private void itf14() {
         int i, count = 0;
         int input_length = content.length();
         String dest;
 
-        if (!(content.matches("[0-9]+"))) {
-            error_msg = "Invalid characters in input";
-            return false;
+        if (!content.matches("[0-9]+")) {
+            throw new OkapiException("Invalid characters in input");
         }
 
         if (input_length > 13) {
-            error_msg = "Input data too long";
-            return false;
+            throw new OkapiException("Input data too long");
         }
 
         readable = "";
@@ -341,22 +328,19 @@ public class Code2Of5 extends Symbol {
         pattern = new String[] { dest };
         row_count = 1;
         row_height = new int[] { -1 };
-        return true;
     }
 
-    private boolean deutschePostLeitcode() {
+    private void deutschePostLeitcode() {
         int i, count = 0;
         int input_length = content.length();
         String dest;
 
-        if (!(content.matches("[0-9]+"))) {
-            error_msg = "Invalid characters in input";
-            return false;
+        if (!content.matches("[0-9]+")) {
+            throw new OkapiException("Invalid characters in input");
         }
 
         if (input_length > 13) {
-            error_msg = "Input data too long";
-            return false;
+            throw new OkapiException("Input data too long");
         }
 
         readable = "";
@@ -389,22 +373,19 @@ public class Code2Of5 extends Symbol {
         pattern = new String[] { dest };
         row_count = 1;
         row_height = new int[] { -1 };
-        return true;
     }
 
-    private boolean deutschePostIdentcode() {
+    private void deutschePostIdentcode() {
         int i, count = 0;
         int input_length = content.length();
         String dest;
 
-        if (!(content.matches("[0-9]+"))) {
-            error_msg = "Invalid characters in input";
-            return false;
+        if (!content.matches("[0-9]+")) {
+            throw new OkapiException("Invalid characters in input");
         }
 
         if (input_length > 11) {
-            error_msg = "Input data too long";
-            return false;
+            throw new OkapiException("Input data too long");
         }
 
         readable = "";
@@ -436,7 +417,6 @@ public class Code2Of5 extends Symbol {
         pattern = new String[] { dest };
         row_count = 1;
         row_height = new int[] { -1 };
-        return true;
     }
 
     @Override

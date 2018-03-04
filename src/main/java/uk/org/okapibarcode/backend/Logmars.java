@@ -80,11 +80,10 @@ public class Logmars extends Symbol {
 
     /** {@inheritDoc} */
     @Override
-    public boolean encode() {
+    protected void encode() {
 
-        if (!(content.matches("[0-9A-Z\\. \\-$/+%]+"))) {
-            error_msg = "Invalid characters in input";
-            return false;
+        if (!content.matches("[0-9A-Z\\. \\-$/+%]+")) {
+            throw new OkapiException("Invalid characters in input");
         }
 
         String p = "";
@@ -108,7 +107,5 @@ public class Logmars extends Symbol {
         pattern = new String[] { "1311313111" + p + "131131311" };
         row_count = 1;
         row_height = new int[] { -1 };
-
-        return true;
     }
 }

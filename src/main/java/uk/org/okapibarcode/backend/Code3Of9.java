@@ -85,11 +85,10 @@ public class Code3Of9 extends Symbol {
     }
 
     @Override
-    public boolean encode() {
+    protected void encode() {
 
-        if (!(content.matches("[0-9A-Z\\. \\-$/+%]+"))) {
-            error_msg = "Invalid characters in input";
-            return false;
+        if (!content.matches("[0-9A-Z\\. \\-$/+%]+")) {
+            throw new OkapiException("Invalid characters in input");
         }
 
         String p = "";
@@ -151,8 +150,6 @@ public class Code3Of9 extends Symbol {
         pattern = new String[] { dest };
         row_count = 1;
         row_height = new int[] { -1 };
-
-        return true;
     }
 
     /** {@inheritDoc} */

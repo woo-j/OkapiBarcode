@@ -219,7 +219,7 @@ public class MaxiCode extends Symbol {
 
     /** {@inheritDoc} */
     @Override
-    public boolean encode() {
+    protected void encode() {
 
         // copy input data over into source
         int sourcelen = content.length();
@@ -242,19 +242,13 @@ public class MaxiCode extends Symbol {
         }
 
         // initialize the set and character arrays
-        if (!processText()) {
-            error_msg = "Input data too long";
-            return false;
-        }
+        processText();
 
         // start building the codeword array, starting with a copy of the character data
         // insert primary message if this is a structured carrier message; insert mode otherwise
         codewords = Arrays.copyOf(character, character.length);
         if (mode == 2 || mode == 3) {
             int[] primary = getPrimaryCodewords();
-            if (primary == null) {
-                return false;
-            }
             codewords = insert(codewords, 0, primary);
         } else {
             codewords = insert(codewords, 0, new int[] { mode });
@@ -390,8 +384,6 @@ public class MaxiCode extends Symbol {
         }
         symbol_height = 72;
         symbol_width = 74;
-
-        return true;
     }
 
     /**
@@ -405,14 +397,12 @@ public class MaxiCode extends Symbol {
         assert mode == 2 || mode == 3;
 
         if (primaryData.length() != 15) {
-            error_msg = "Invalid Primary String";
-            return null;
+            throw new OkapiException("Invalid Primary String");
         }
 
         for (int i = 9; i < 15; i++) { /* check that country code and service are numeric */
-            if ((primaryData.charAt(i) < '0') || (primaryData.charAt(i) > '9')) {
-                error_msg = "Invalid Primary String";
-                return null;
+            if (primaryData.charAt(i) < '0' || primaryData.charAt(i) > '9') {
+                throw new OkapiException("Invalid Primary String");
             }
         }
 
@@ -526,13 +516,13 @@ public class MaxiCode extends Symbol {
      *
      * @return true if the content fits in this symbol and was formatted; false otherwise
      */
-    private boolean processText() {
+    private void processText() {
 
         int length = content.length();
         int i, j, count, current_set;
 
         if (length > 138) {
-            return false;
+            throw new OkapiException("Input data too long");
         }
 
         for (i = 0; i < 144; i++) {
@@ -816,17 +806,19 @@ public class MaxiCode extends Symbol {
         }
 
         /* Make sure we haven't exceeded the maximum data length. */
-        if ((mode == 2 || mode == 3) && length > 84) {
-            return false;
+        int maxLength;
+        if (mode == 2 || mode == 3) {
+            maxLength = 84;
+        } else if (mode == 4 || mode == 6) {
+            maxLength = 93;
+        } else if (mode == 5) {
+            maxLength = 77;
+        } else {
+            maxLength = 0; // impossible
         }
-        if ((mode == 4 || mode == 6) && length > 93) {
-            return false;
+        if (length > maxLength) {
+            throw new OkapiException("Input data too long");
         }
-        if (mode == 5 && length > 77) {
-            return false;
-        }
-
-        return true;
     }
 
     /**

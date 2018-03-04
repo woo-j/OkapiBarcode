@@ -55,7 +55,7 @@ public class Code3Of9Extended extends Symbol {
     }
 
     @Override
-    public boolean encode() {
+    protected void encode() {
         String buffer = "";
         int l = content.length();
         int asciicode;
@@ -66,8 +66,7 @@ public class Code3Of9Extended extends Symbol {
         }
 
         if (!content.matches("[\u0000-\u007F]+")) {
-            error_msg = "Invalid characters in input data";
-            return false;
+            throw new OkapiException("Invalid characters in input data");
         }
 
         for (int i = 0; i < l; i++) {
@@ -75,20 +74,14 @@ public class Code3Of9Extended extends Symbol {
             buffer += E_CODE_39[asciicode];
         }
 
-        try {
-            c.setContent(buffer);
-        } catch (OkapiException e) {
-            error_msg = e.getMessage();
-            return false;
-        }
+        c.setContent(buffer);
+
         readable = content;
         pattern = new String[1];
         pattern[0] = c.pattern[0];
         row_count = 1;
         row_height = new int[1];
         row_height[0] = -1;
-
-        return true;
     }
 
     /** {@inheritDoc} */

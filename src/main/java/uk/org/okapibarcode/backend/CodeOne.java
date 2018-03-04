@@ -123,7 +123,7 @@ public class CodeOne extends Symbol {
     }
 
     @Override
-    public boolean encode() {
+    protected void encode() {
         int size = 1, i, j, data_blocks;
         int row, col;
         int sub_version = 0;
@@ -141,8 +141,7 @@ public class CodeOne extends Symbol {
         String bin;
 
         if (!content.matches("[\u0000-\u00FF]+")) {
-            error_msg = "Invalid characters in input data";
-            return false;
+            throw new OkapiException("Invalid characters in input data");
         }
 
         if (preferredVersion == Version.S) {
@@ -151,13 +150,11 @@ public class CodeOne extends Symbol {
             encodeInfo += "Version: S";
 
             if (length > 18) {
-                error_msg = "Input data too long";
-                return false;
+                throw new OkapiException("Input data too long");
             }
 
-            if (!(content.matches("[0-9]+?"))) {
-                error_msg = "Invalid characters in input";
-                return false;
+            if (!content.matches("[0-9]+?")) {
+                throw new OkapiException("Invalid characters in input");
             }
 
             sub_version = 3;
@@ -249,14 +246,8 @@ public class CodeOne extends Symbol {
             }
             data_length = encodeAsCode1Data();
 
-            if (data_length == 0) {
-                error_msg = "Input data too long";
-                return false;
-            }
-
             if (data_length > 38) {
-                error_msg = "Input data too long";
-                return false;
+                throw new OkapiException("Input data too long");
             }
 
             size = 10;
@@ -341,11 +332,6 @@ public class CodeOne extends Symbol {
                 data[i] = 0;
             }
             data_length = encodeAsCode1Data();
-
-            if (data_length == 0) {
-                error_msg = "Input data too long";
-                return false;
-            }
 
             for (i = 7; i >= 0; i--) {
                 if (C1_DATA_LENGTH[i] >= data_length) {
@@ -732,8 +718,6 @@ public class CodeOne extends Symbol {
             pattern[i] = bin2pat(bin);
             row_height[i] = 1;
         }
-
-        return true;
     }
 
     private int encodeAsCode1Data() {
@@ -1417,9 +1401,9 @@ public class CodeOne extends Symbol {
 
             if (targetPoint > 1480) {
                 /* Data is too large for symbol */
-                error_msg = "Input data too long";
-                return 0;
+                throw new OkapiException("Input data too long");
             }
+
         } while (sourcePoint < length);
 
         /* Empty buffers */
@@ -1555,8 +1539,7 @@ public class CodeOne extends Symbol {
         /* Re-check length of data */
         if (targetPoint > 1480) {
             /* Data is too large for symbol */
-            error_msg = "Input data too long";
-            return 0;
+            throw new OkapiException("Input data too long");
         }
 
         return targetPoint;

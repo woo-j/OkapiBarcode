@@ -193,7 +193,7 @@ public class UspsOneCode extends Symbol {
     }
 
     @Override
-    public boolean encode() {
+    protected void encode() {
         String zip = "";
         String zip_adder;
         String tracker = "";
@@ -209,13 +209,11 @@ public class UspsOneCode extends Symbol {
         char c;
 
         if (!content.matches("[0-9\u002D]+")) {
-            error_msg = "Invalid characters in input data";
-            return false;
+            throw new OkapiException("Invalid characters in input data");
         }
 
         if (length > 32) {
-            error_msg = "Input too long";
-            return false;
+            throw new OkapiException("Input too long");
         }
 
         /* separate the tracking code from the routing code */
@@ -235,13 +233,11 @@ public class UspsOneCode extends Symbol {
         }
 
         if (tracker.length() != 20) {
-            error_msg = "Invalid length tracking code";
-            return false;
+            throw new OkapiException("Invalid length tracking code");
         }
 
         if (zip.length() > 11) {
-            error_msg = "Invalid ZIP code";
-            return false;
+            throw new OkapiException("Invalid ZIP code");
         }
 
         /* *** Step 1 - Conversion of Data Fields into Binary Data *** */
@@ -404,8 +400,6 @@ public class UspsOneCode extends Symbol {
         }
 
         encodeInfo += "Encoding: " + pattern[0] + "\n";
-
-        return true;
     }
 
     private int USPS_MSB_Math_CRC11GenerateFrameCheckSequence(int[] bytes) {

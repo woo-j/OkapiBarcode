@@ -148,7 +148,7 @@ public class AustraliaPost extends Symbol {
 
     /** {@inheritDoc} */
     @Override
-    public boolean encode() {
+    protected void encode() {
         String formatControlCode = "00";
         String deliveryPointId;
         String barStateValues;
@@ -163,43 +163,37 @@ public class AustraliaPost extends Symbol {
                     case 13: formatControlCode = "59";
                         break;
                     case 16: formatControlCode = "59";
-                        if (!(content.matches("[0-9]+"))) {
-                            error_msg = "Invalid characters in data";
-                            return false;
+                        if (!content.matches("[0-9]+")) {
+                            throw new OkapiException("Invalid characters in data");
                         }
                         break;
                     case 18: formatControlCode = "62";
                         break;
                     case 23: formatControlCode = "62";
-                        if (!(content.matches("[0-9]+"))) {
-                            error_msg = "Invalid characters in data";
-                            return false;
+                        if (!content.matches("[0-9]+")) {
+                            throw new OkapiException("Invalid characters in data");
                         }
                         break;
-                    default: error_msg = "Auspost input is wrong length";
-                        return false;
+                    default: throw new OkapiException("Auspost input is wrong length");
                 }
                 break;
             case AUSREPLY:
                 if (content.length() > 8) {
-                    error_msg = "Auspost input is too long";
-                    return false;
+                    throw new OkapiException("Auspost input is too long");
                 } else {
                     formatControlCode = "45";
                 }
                 break;
             case AUSROUTE:
                 if (content.length() > 8) {
-                    error_msg = "Auspost input is too long";
-                    return false;
+                    throw new OkapiException("Auspost input is too long");
                 } else {
                     formatControlCode = "87";
                 }
                 break;
             case AUSREDIRECT:
                 if (content.length() > 8) {
-                    error_msg = "Auspost input is too long";
-                    return false;
+                    throw new OkapiException("Auspost input is too long");
                 } else {
                     formatControlCode = "92";
                 }
@@ -215,17 +209,15 @@ public class AustraliaPost extends Symbol {
         }
         zeroPaddedInput += content;
 
-        if (!(content.matches("[0-9A-Za-z #]+"))) {
-            error_msg = "Invalid characters in data";
-            return false;
+        if (!content.matches("[0-9A-Za-z #]+")) {
+            throw new OkapiException("Invalid characters in data");
         }
 
         /* Verify that the first 8 characters are numbers */
         deliveryPointId = zeroPaddedInput.substring(0, 8);
 
-        if (!(deliveryPointId.matches("[0-9]+"))) {
-            error_msg = "Invalid characters in DPID";
-            return false;
+        if (!deliveryPointId.matches("[0-9]+")) {
+            throw new OkapiException("Invalid characters in DPID");
         }
 
         encodeInfo += "DPID: " + deliveryPointId + '\n';
@@ -300,8 +292,6 @@ public class AustraliaPost extends Symbol {
         row_count = 1;
         row_height = new int[1];
         row_height[0] = -1;
-
-        return true;
     }
 
     private String calcReedSolomon(String oldBarStateValues) {

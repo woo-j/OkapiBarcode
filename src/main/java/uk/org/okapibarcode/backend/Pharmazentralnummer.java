@@ -28,20 +28,18 @@ public class Pharmazentralnummer extends Symbol {
      */
 
     @Override
-    public boolean encode() {
+    protected void encode() {
         int l = content.length();
         String localstr;
         int zeroes, count = 0, check_digit;
         Code3Of9 c = new Code3Of9();
 
         if (l > 7) {
-            error_msg = "Input data too long";
-            return false;
+            throw new OkapiException("Input data too long");
         }
 
-        if (!(content.matches("[0-9]+"))) {
-            error_msg = "Invalid characters in input";
-            return false;
+        if (!content.matches("[0-9]+")) {
+            throw new OkapiException("Invalid characters in input");
         }
 
         localstr = "-";
@@ -60,20 +58,14 @@ public class Pharmazentralnummer extends Symbol {
             check_digit = 0;
         }
         if (check_digit == 10) {
-            error_msg = "Not a valid PZN identifier";
-            return false;
+            throw new OkapiException("Not a valid PZN identifier");
         }
 
         encodeInfo += "Check Digit: " + check_digit + "\n";
 
         localstr += (char)(check_digit + '0');
 
-        try {
-            c.setContent(localstr);
-        } catch (OkapiException e) {
-            error_msg = e.getMessage();
-            return false;
-        }
+        c.setContent(localstr);
 
         readable = "PZN" + localstr;
         pattern = new String[1];
@@ -81,7 +73,5 @@ public class Pharmazentralnummer extends Symbol {
         row_count = 1;
         row_height = new int[1];
         row_height[0] = -1;
-
-        return true;
     }
 }

@@ -113,14 +113,13 @@ public class Code93 extends Symbol {
 
     /** {@inheritDoc} */
     @Override
-    public boolean encode() {
+    protected void encode() {
 
         char[] controlChars = toControlChars(content);
         int l = controlChars.length;
 
         if (!content.matches("[\u0000-\u007F]+")) {
-            error_msg = "Invalid characters in input data";
-            return false;
+            throw new OkapiException("Invalid characters in input data");
         }
 
         int[] values = new int[controlChars.length + 2];
@@ -149,8 +148,6 @@ public class Code93 extends Symbol {
         pattern = new String[] { toPattern(values) };
         row_count = 1;
         row_height = new int[] { -1 };
-
-        return true;
     }
 
     private static char[] toControlChars(String s) {

@@ -71,7 +71,7 @@ public class Code16k extends Symbol {
     private int block_count;
 
     @Override
-    public boolean encode() {
+    protected void encode() {
 
         // TODO: is it possible to share any of this code with Code128, which is more up to date?
 
@@ -92,8 +92,7 @@ public class Code16k extends Symbol {
         int[] inputData;
 
         if (!content.matches("[\u0000-\u00FF]+")) {
-            error_msg = "Invalid characters in input data";
-            return false;
+            throw new OkapiException("Invalid characters in input data");
         }
 
         inputBytes = content.getBytes(StandardCharsets.ISO_8859_1);
@@ -110,8 +109,7 @@ public class Code16k extends Symbol {
         values = new int[160];
 
         if (input_length > 157) {
-            error_msg = "Input too long";
-            return false;
+            throw new OkapiException("Input too long");
         }
 
         /* Detect extended ASCII characters */
@@ -316,8 +314,7 @@ public class Code16k extends Symbol {
         }
 
         if (glyph_count > 77.0) {
-            error_msg = "Input too long";
-            return false;
+            throw new OkapiException("Input too long");
         }
 
         /* Calculate how tall the symbol will be */
@@ -349,8 +346,7 @@ public class Code16k extends Symbol {
         if(readerInit) {
         	if(m == 2) { m = 5; }
         	if (inputDataType == DataType.GS1) {
-        		error_msg = "Cannot use both GS1 mode and Reader Initialisation";
-        		return false;
+        		throw new OkapiException("Cannot use both GS1 mode and Reader Initialisation");
         	} else {
         		if((set[0] == 'B') && (set[1] == 'C')) { m = 6; }
         	}
@@ -559,9 +555,6 @@ public class Code16k extends Symbol {
             row_height[current_row] = 10;
         }
         encodeInfo += "\n";
-
-        return true;
-
     }
 
     private void getValueSubsetA(int source, int[] values, int bar_chars) {

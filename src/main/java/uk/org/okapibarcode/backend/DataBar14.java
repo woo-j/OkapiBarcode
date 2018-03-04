@@ -106,7 +106,7 @@ public class DataBar14 extends Symbol {
     }
 
     @Override
-    public boolean encode() {
+    protected void encode() {
         BigInteger accum;
         BigInteger left_reg;
         BigInteger right_reg;
@@ -130,13 +130,11 @@ public class DataBar14 extends Symbol {
         int compositeOffset = 0;
 
         if (content.length() > 13) {
-            error_msg = "Input too long";
-            return false;
+            throw new OkapiException("Input too long");
         }
 
         if (!content.matches("[0-9]+?")) {
-            error_msg = "Invalid characters in input";
-            return false;
+            throw new OkapiException("Invalid characters in input");
         }
 
         accum = new BigInteger(content);
@@ -667,8 +665,6 @@ public class DataBar14 extends Symbol {
         if (linkageFlag) {
             row_count++;
         }
-
-        return true;
     }
 
     private void setGridModule(int row, int column) {

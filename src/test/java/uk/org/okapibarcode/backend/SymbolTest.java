@@ -171,7 +171,7 @@ public class SymbolTest {
         }
 
         if (codewordsFile.exists() && pngFile.exists()) {
-            verifySuccess(symbol);
+            verifySuccess(symbol, actualError);
         } else if (errorFile.exists()) {
             verifyError(actualError);
         } else {
@@ -183,10 +183,13 @@ public class SymbolTest {
      * Verifies that the specified symbol was encoded and rendered in a way that matches expectations.
      *
      * @param symbol the symbol to check
+     * @param actualError the actual error message
      * @throws IOException if there is any I/O error
      * @throws ReaderException if ZXing has an issue decoding the barcode image
      */
-    private void verifySuccess(Symbol symbol) throws IOException, ReaderException {
+    private void verifySuccess(Symbol symbol, String actualError) throws IOException, ReaderException {
+
+        assertEquals("Error message", null, actualError);
 
         List< String > expectedList = Files.readAllLines(codewordsFile.toPath(), UTF_8);
 

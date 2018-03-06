@@ -23,10 +23,10 @@ import static uk.org.okapibarcode.util.Doubles.roughlyEqual;
 
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
-import java.nio.charset.Charset;
-import java.nio.charset.UnsupportedCharsetException;
 import java.util.ArrayList;
 import java.util.List;
+
+import uk.org.okapibarcode.util.EciMode;
 
 /**
  * Generic barcode symbology class.
@@ -386,7 +386,28 @@ public abstract class Symbol {
 
     protected void eciProcess() {
 
-        EciMode eci = determineEciMode(content);
+        EciMode eci = EciMode.of(content, "ISO8859_1",    3)
+                             .or(content, "ISO8859_2",    4)
+                             .or(content, "ISO8859_3",    5)
+                             .or(content, "ISO8859_4",    6)
+                             .or(content, "ISO8859_5",    7)
+                             .or(content, "ISO8859_6",    8)
+                             .or(content, "ISO8859_7",    9)
+                             .or(content, "ISO8859_8",    10)
+                             .or(content, "ISO8859_9",    11)
+                             .or(content, "ISO8859_10",   12)
+                             .or(content, "ISO8859_11",   13)
+                             .or(content, "ISO8859_13",   15)
+                             .or(content, "ISO8859_14",   16)
+                             .or(content, "ISO8859_15",   17)
+                             .or(content, "ISO8859_16",   18)
+                             .or(content, "Windows_1250", 21)
+                             .or(content, "Windows_1251", 22)
+                             .or(content, "Windows_1252", 23)
+                             .or(content, "Windows_1256", 24)
+                             .or(content, "SJIS",         20)
+                             .or(content, "UTF8",         26);
+
         if (EciMode.NONE.equals(eci)) {
             throw new OkapiException("Unable to determine ECI mode.");
         }
@@ -394,74 +415,6 @@ public abstract class Symbol {
         eciMode = eci.mode;
         inputBytes = content.getBytes(eci.charset);
         encodeInfo += "Encoding in " + eci.charset.name() + " character set\n";
-    }
-
-    private static EciMode determineEciMode(String data) {
-        return EciMode.of(data, "ISO8859_1",    3)
-                      .or(data, "ISO8859_2",    4)
-                      .or(data, "ISO8859_3",    5)
-                      .or(data, "ISO8859_4",    6)
-                      .or(data, "ISO8859_5",    7)
-                      .or(data, "ISO8859_6",    8)
-                      .or(data, "ISO8859_7",    9)
-                      .or(data, "ISO8859_8",    10)
-                      .or(data, "ISO8859_9",    11)
-                      .or(data, "ISO8859_10",   12)
-                      .or(data, "ISO8859_11",   13)
-                      .or(data, "ISO8859_13",   15)
-                      .or(data, "ISO8859_14",   16)
-                      .or(data, "ISO8859_15",   17)
-                      .or(data, "ISO8859_16",   18)
-                      .or(data, "Windows_1250", 21)
-                      .or(data, "Windows_1251", 22)
-                      .or(data, "Windows_1252", 23)
-                      .or(data, "Windows_1256", 24)
-                      .or(data, "SJIS",         20)
-                      .or(data, "UTF8",         26);
-    }
-
-    private static class EciMode {
-
-        public static final EciMode NONE = new EciMode(-1, null);
-
-        public final int mode;
-        public final Charset charset;
-
-        private EciMode(int mode, Charset charset) {
-            this.mode = mode;
-            this.charset = charset;
-        }
-
-        public static EciMode of(String data, String charsetName, int mode) {
-            try {
-                Charset charset = Charset.forName(charsetName);
-                if (charset.canEncode() && charset.newEncoder().canEncode(data)) {
-                    return new EciMode(mode, charset);
-                } else {
-                    return NONE;
-                }
-            } catch (UnsupportedCharsetException e) {
-                return NONE;
-            }
-        }
-
-        public EciMode or(String data, String charsetName, int mode) {
-            if (!this.equals(NONE)) {
-                return this;
-            } else {
-                return of(data, charsetName, mode);
-            }
-        }
-
-        @Override
-        public boolean equals(Object other) {
-            return other instanceof EciMode && ((EciMode) other).mode == this.mode;
-        }
-
-        @Override
-        public int hashCode() {
-            return Integer.valueOf(mode).hashCode();
-        }
     }
 
     protected abstract void encode();

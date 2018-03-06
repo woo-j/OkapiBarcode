@@ -81,7 +81,7 @@ public class Java2DRenderer implements SymbolRenderer {
         g2d.setFont(f);
         g2d.setColor(ink);
 
-        for (Rectangle2D.Double rect : symbol.rectangles) {
+        for (Rectangle2D.Double rect : symbol.getRectangles()) {
             double x = (rect.x * magnification) + marginX;
             double y = (rect.y * magnification) + marginY;
             double w = rect.width * magnification;
@@ -90,7 +90,7 @@ public class Java2DRenderer implements SymbolRenderer {
         }
 
         FontMetrics fm = g2d.getFontMetrics();
-        for (TextBox text : symbol.texts) {
+        for (TextBox text : symbol.getTexts()) {
             Rectangle2D bounds = fm.getStringBounds(text.text, g2d);
             float x;
             switch (symbol.getHumanReadableAlignment()) {
@@ -110,7 +110,7 @@ public class Java2DRenderer implements SymbolRenderer {
             g2d.drawString(text.text, x, y);
         }
 
-        for (Hexagon hexagon : symbol.hexagons) {
+        for (Hexagon hexagon : symbol.getHexagons()) {
             Polygon polygon = new Polygon();
             for (int j = 0; j < 6; j++) {
                 polygon.addPoint((int) ((hexagon.pointX[j] * magnification) + marginX),
@@ -119,8 +119,8 @@ public class Java2DRenderer implements SymbolRenderer {
             g2d.fill(polygon);
         }
 
-        for (int i = 0; i < symbol.target.size(); i++) {
-            Ellipse2D.Double ellipse = symbol.target.get(i);
+        for (int i = 0; i < symbol.getTarget().size(); i++) {
+            Ellipse2D.Double ellipse = symbol.getTarget().get(i);
             double x = (ellipse.x * magnification) + marginX;
             double y = (ellipse.y * magnification) + marginY;
             double w = (ellipse.width * magnification) + marginX;

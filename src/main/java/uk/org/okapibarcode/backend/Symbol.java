@@ -24,6 +24,7 @@ import static uk.org.okapibarcode.util.Doubles.roughlyEqual;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import uk.org.okapibarcode.util.EciMode;
@@ -37,6 +38,10 @@ import uk.org.okapibarcode.util.EciMode;
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public abstract class Symbol {
+
+    public static enum DataType {
+        UTF8, LATIN1, BINARY, GS1, HIBC, ECI
+    }
 
     // user-specified values and settings
 
@@ -64,18 +69,10 @@ public abstract class Symbol {
     protected int symbol_height = 0;
     protected int symbol_width = 0;
     protected String encodeInfo = "";
-    public List< Rectangle2D.Double > rectangles = new ArrayList<>(); // TODO: should not be public
-    public List< TextBox > texts = new ArrayList<>();                 // TODO: should not be public
-    public List< Hexagon > hexagons = new ArrayList<>();              // TODO: should not be public
-    public List< Ellipse2D.Double > target = new ArrayList<>();       // TODO: should not be public
-
-    public static enum DataType {
-        UTF8, LATIN1, BINARY, GS1, HIBC, ECI
-    }
-
-    public Symbol() {
-        unsetReaderInit();
-    }
+    protected List< Rectangle2D.Double > rectangles = new ArrayList<>();
+    protected List< TextBox > texts = new ArrayList<>();
+    protected List< Hexagon > hexagons = new ArrayList<>();
+    protected List< Ellipse2D.Double > target = new ArrayList<>();
 
     /**
      * Sets the type of input data. This setting influences what
@@ -307,6 +304,42 @@ public abstract class Symbol {
      */
     public HumanReadableAlignment getHumanReadableAlignment() {
         return humanReadableAlignment;
+    }
+
+    /**
+     * Returns render information about the rectangles in this symbol.
+     *
+     * @return render information about the rectangles in this symbol
+     */
+    public List< Rectangle2D.Double > getRectangles() {
+        return Collections.unmodifiableList(rectangles);
+    }
+
+    /**
+     * Returns render information about the text elements in this symbol.
+     *
+     * @return render information about the text elements in this symbol
+     */
+    public List< TextBox > getTexts() {
+        return Collections.unmodifiableList(texts);
+    }
+
+    /**
+     * Returns render information about the hexagons in this symbol.
+     *
+     * @return render information about the hexagons in this symbol
+     */
+    public List< Hexagon > getHexagons() {
+        return Collections.unmodifiableList(hexagons);
+    }
+
+    /**
+     * Returns render information about the target circles in this symbol.
+     *
+     * @return render information about the target circles in this symbol
+     */
+    public List< Ellipse2D.Double > getTarget() {
+        return Collections.unmodifiableList(target);
     }
 
     protected int positionOf(char c, char[] chars) {

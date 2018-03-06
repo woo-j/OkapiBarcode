@@ -117,8 +117,8 @@ public class SvgRenderer implements SymbolRenderer {
                   .append("\" fill=\"#").append(bgColour).append("\" />\n");
 
             // Rectangles
-            for (int i = 0; i < symbol.rectangles.size(); i++) {
-                Rectangle2D.Double rect = symbol.rectangles.get(i);
+            for (int i = 0; i < symbol.getRectangles().size(); i++) {
+                Rectangle2D.Double rect = symbol.getRectangles().get(i);
                 writer.append("      <rect x=\"").append((rect.x * magnification) + marginX)
                       .append("\" y=\"").append((rect.y * magnification) + marginY)
                       .append("\" width=\"").append(rect.width * magnification)
@@ -127,8 +127,8 @@ public class SvgRenderer implements SymbolRenderer {
             }
 
             // Text
-            for (int i = 0; i < symbol.texts.size(); i++) {
-                TextBox text = symbol.texts.get(i);
+            for (int i = 0; i < symbol.getTexts().size(); i++) {
+                TextBox text = symbol.getTexts().get(i);
                 double x;
                 String anchor;
                 switch (symbol.getHumanReadableAlignment()) {
@@ -158,8 +158,8 @@ public class SvgRenderer implements SymbolRenderer {
             }
 
             // Circles
-            for (int i = 0; i < symbol.target.size(); i++) {
-                Ellipse2D.Double ellipse = symbol.target.get(i);
+            for (int i = 0; i < symbol.getTarget().size(); i++) {
+                Ellipse2D.Double ellipse = symbol.getTarget().get(i);
                 String color;
                 if ((i & 1) == 0) {
                     color = fgColour;
@@ -173,8 +173,8 @@ public class SvgRenderer implements SymbolRenderer {
             }
 
             // Hexagons
-            for (int i = 0; i < symbol.hexagons.size(); i++) {
-                Hexagon hexagon = symbol.hexagons.get(i);
+            for (int i = 0; i < symbol.getHexagons().size(); i++) {
+                Hexagon hexagon = symbol.getHexagons().get(i);
                 writer.append("      <path d=\"");
                 for (int j = 0; j < 6; j++) {
                     if (j == 0) {

@@ -111,8 +111,8 @@ public class PostScriptRenderer implements SymbolRenderer {
             writer.append(height).append(" 0.00 TB 0.00 ").append(width).append(" TR\n");
 
             // Rectangles
-            for (int i = 0; i < symbol.rectangles.size(); i++) {
-                Rectangle2D.Double rect = symbol.rectangles.get(i);
+            for (int i = 0; i < symbol.getRectangles().size(); i++) {
+                Rectangle2D.Double rect = symbol.getRectangles().get(i);
                 if (i == 0) {
                     writer.append("TE\n");
                     writer.append(ink.getRed() / 255.0).append(" ")
@@ -123,7 +123,7 @@ public class PostScriptRenderer implements SymbolRenderer {
                           .append((rect.x * magnification) + marginX).append(" ")
                           .append(rect.width * magnification).append(" TR\n");
                 } else {
-                    Rectangle2D.Double prev = symbol.rectangles.get(i - 1);
+                    Rectangle2D.Double prev = symbol.getRectangles().get(i - 1);
                     if (!roughlyEqual(rect.height, prev.height) || !roughlyEqual(rect.y, prev.y)) {
                         writer.append("TE\n");
                         writer.append(ink.getRed() / 255.0).append(" ")
@@ -137,8 +137,8 @@ public class PostScriptRenderer implements SymbolRenderer {
             }
 
             // Text
-            for (int i = 0; i < symbol.texts.size(); i++) {
-                TextBox text = symbol.texts.get(i);
+            for (int i = 0; i < symbol.getTexts().size(); i++) {
+                TextBox text = symbol.getTexts().get(i);
                 if (i == 0) {
                     writer.append("TE\n");;
                     writer.append(ink.getRed() / 255.0).append(" ")
@@ -180,9 +180,9 @@ public class PostScriptRenderer implements SymbolRenderer {
 
             // Circles
             // Because MaxiCode size is fixed, this ignores magnification
-            for (int i = 0; i < symbol.target.size(); i += 2) {
-                Ellipse2D.Double ellipse1 = symbol.target.get(i);
-                Ellipse2D.Double ellipse2 = symbol.target.get(i + 1);
+            for (int i = 0; i < symbol.getTarget().size(); i += 2) {
+                Ellipse2D.Double ellipse1 = symbol.getTarget().get(i);
+                Ellipse2D.Double ellipse2 = symbol.getTarget().get(i + 1);
                 if (i == 0) {
                     writer.append("TE\n");
                     writer.append(ink.getRed() / 255.0).append(" ")
@@ -211,8 +211,8 @@ public class PostScriptRenderer implements SymbolRenderer {
 
             // Hexagons
             // Because MaxiCode size is fixed, this ignores magnification
-            for (int i = 0; i < symbol.hexagons.size(); i++) {
-                Hexagon hexagon = symbol.hexagons.get(i);
+            for (int i = 0; i < symbol.getHexagons().size(); i++) {
+                Hexagon hexagon = symbol.getHexagons().get(i);
                 for (int j = 0; j < 6; j++) {
                     writer.append(hexagon.pointX[j] + marginX).append(" ").append((height - hexagon.pointY[j]) - marginY).append(" ");
                 }

@@ -828,8 +828,8 @@ public class CodablockF extends Symbol {
                 x += (double)(pattern[yBlock].charAt(xBlock) - '0');
             }
             y += h;
-            if ((y + h) > symbol_height) {
-                symbol_height = y + h;
+            if (y > symbol_height) {
+                symbol_height = y;
             }
             /* Add bars between rows */
             if (yBlock != (row_count - 1)) {
@@ -843,7 +843,7 @@ public class CodablockF extends Symbol {
         rectangles.add(top);
         Rectangle2D.Double bottom = new Rectangle2D.Double(0, y - 1, symbol_width, 2);
         rectangles.add(bottom);
-        symbol_height += 2;
+        symbol_height += 1;
 
         mergeVerticalBlocks();
     }

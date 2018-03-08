@@ -411,6 +411,7 @@ public abstract class Symbol {
 
         encode();
         plotSymbol();
+        mergeVerticalBlocks();
     }
 
     public String getContent() {
@@ -498,8 +499,6 @@ public abstract class Symbol {
             }
             y += h;
         }
-
-        mergeVerticalBlocks();
 
         if (humanReadableLocation != NONE && !readable.isEmpty()) {
             double baseline;

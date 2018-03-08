@@ -845,7 +845,5 @@ public class CodablockF extends Symbol {
         Rectangle2D.Double bottom = new Rectangle2D.Double(0, y - 1, symbol_width, 2);
         rectangles.add(bottom);
         symbol_height += 1;
-
-        mergeVerticalBlocks();
     }
 }

@@ -786,7 +786,5 @@ public class Code16k extends Symbol {
         rectangles.add(bottom);
         symbol_width += 15;
         symbol_height += 1;
-
-        mergeVerticalBlocks();
     }
 }

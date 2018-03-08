@@ -682,7 +682,7 @@ public class SymbolTest {
         List< Object[] > data = new ArrayList<>();
         for (Class< ? extends Symbol > symbol : symbols) {
             String symbolName = symbol.getSimpleName().toLowerCase();
-            if (filter == null || filter.equals(symbolName)) {
+            if (filter == null || filter.equalsIgnoreCase(symbolName)) {
                 String dir = "src/test/resources/" + backend.replace('.', '/') + "/" + symbolName;
                 for (File file : getPropertiesFiles(dir)) {
                     String fileBaseName = file.getName().replaceAll(".properties", "");

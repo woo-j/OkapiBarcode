@@ -118,6 +118,7 @@ public class DataMatrix extends Symbol {
     private int preferredSize = 0;
     private int process_p;
     private int[] process_buffer = new int[8];
+    private int codewordCount;
 
     /**
      * Override selection of symbol size. When set as <code>false</code> the
@@ -376,6 +377,8 @@ public class DataMatrix extends Symbol {
         datablock = MATRIX_DATA_BLOCK[symbolsize];
         rsblock = MATRIX_RS_BLOCK[symbolsize];
 
+        codewordCount = datablock + rsblock; // data codewords + error correction codewords
+
         taillength = bytes - binlen;
 
         if (taillength != 0) {
@@ -440,6 +443,11 @@ public class DataMatrix extends Symbol {
         encodeInfo += "Grid Size: " + W + " X " + H + "\n";
         encodeInfo += "Data Codewords: " + datablock + "\n";
         encodeInfo += "ECC Codewords: " + rsblock + "\n";
+    }
+
+    @Override
+    protected int[] getCodewords() {
+        return Arrays.copyOf(target, codewordCount);
     }
 
     private int generateCodewords() {

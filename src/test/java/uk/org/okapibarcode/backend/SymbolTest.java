@@ -670,7 +670,8 @@ public class SymbolTest {
         clear(TEST_FAILURE_IMAGES_DIR);
         mkdirs(TEST_FAILURE_IMAGES_DIR);
 
-        String filter = System.getProperty("okapi.symbol.test");
+        String symbolFilter = System.getProperty("okapi.test.symbol");
+        String testNameFilter = System.getProperty("okapi.test.name");
 
         String backend = "uk.org.okapibarcode.backend";
         Reflections reflections = new Reflections(backend);
@@ -679,15 +680,17 @@ public class SymbolTest {
         List< Object[] > data = new ArrayList<>();
         for (Class< ? extends Symbol > symbol : symbols) {
             String symbolName = symbol.getSimpleName().toLowerCase();
-            if (filter == null || filter.equalsIgnoreCase(symbolName)) {
+            if (symbolFilter == null || symbolFilter.isEmpty() || symbolFilter.equalsIgnoreCase(symbolName)) {
                 String dir = "src/test/resources/" + backend.replace('.', '/') + "/" + symbolName;
                 for (File file : getPropertiesFiles(dir)) {
                     String fileBaseName = file.getName().replaceAll(".properties", "");
-                    File codewordsFile = new File(file.getParentFile(), fileBaseName + ".codewords");
-                    File pngFile = new File(file.getParentFile(), fileBaseName + ".png");
-                    File errorFile = new File(file.getParentFile(), fileBaseName + ".error");
-                    for (Map< String, String > properties : readProperties(file)) {
-                        data.add(new Object[] { symbol, properties, codewordsFile, pngFile, errorFile, symbolName, fileBaseName });
+                    if (testNameFilter == null || testNameFilter.isEmpty() || testNameFilter.equalsIgnoreCase(fileBaseName)) {
+                        File codewordsFile = new File(file.getParentFile(), fileBaseName + ".codewords");
+                        File pngFile = new File(file.getParentFile(), fileBaseName + ".png");
+                        File errorFile = new File(file.getParentFile(), fileBaseName + ".error");
+                        for (Map< String, String > properties : readProperties(file)) {
+                            data.add(new Object[] { symbol, properties, codewordsFile, pngFile, errorFile, symbolName, fileBaseName });
+                        }
                     }
                 }
             }

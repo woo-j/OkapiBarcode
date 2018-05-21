@@ -52,6 +52,7 @@ import com.google.zxing.Result;
 import com.google.zxing.aztec.AztecReader;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.HybridBinarizer;
+import com.google.zxing.datamatrix.DataMatrixReader;
 import com.google.zxing.oned.CodaBarReader;
 import com.google.zxing.oned.Code128Reader;
 import com.google.zxing.oned.Code39Reader;
@@ -256,11 +257,7 @@ public class SymbolTest {
         } else if (symbol instanceof QrCode) {
             return new QRCodeReader();
         } else if (symbol instanceof DataMatrix) {
-            // TODO: something is probably wrong with DataMatrix, because the reader fails...
-            // TODO: it looks like zint may have more recent (correct?) code in encodeRemainder() / dm200encode_remainder()
-            // TODO: https://github.com/woo-j/zint/blame/master/backend/dmatrix.c#L999
-            // return new DataMatrixReader();
-            return null;
+            return new DataMatrixReader();
         } else if (symbol instanceof Ean) {
             Ean ean = (Ean) symbol;
             if (ean.getMode() == Ean.Mode.EAN8) {

@@ -15,11 +15,12 @@
  */
 package uk.org.okapibarcode.backend;
 
+import java.util.Arrays;
+
 /**
- * Implements Data Matrix ECC 200 bar code symbology According to ISO/IEC
- * 16022:2006
- * <p>
- * Data Matrix is a 2D matrix symbology capable of encoding characters in the
+ * <p>Implements Data Matrix ECC 200 bar code symbology According to ISO/IEC 16022:2006.
+ *
+ * <p>Data Matrix is a 2D matrix symbology capable of encoding characters in the
  * ISO/IEC 8859-1 (Latin-1) character set.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
@@ -1006,61 +1007,42 @@ public class DataMatrix extends Symbol {
         switch (last_mode) {
             case DM_C40:
             case DM_TEXT:
-                if (symbols_left == process_p) { // No unlatch required!
-
-                    if (process_p == 1) {   // 1 data character left to encode.
-                        target[target_length] = inputData[inputlen - 1] + 1;
+                if (process_p == 1) // 1 data character left to encode.
+                {
+                    if (symbols_left > 1) {
+                        target[target_length] = 254;
+                        target_length++; // Unlatch and encode remaining data in ascii.
+                    }
+                    target[target_length] = inputData[inputlen - 1] + 1;
+                    target_length++;
+                } else if (process_p == 2) // 2 data characters left to encode.
+                {
+                    // Pad with shift 1 value (0) and encode as double.
+                    int intValue = (1600 * process_buffer[0]) + (40 * process_buffer[1]) + 1; // ie (0 + 1).
+                    target[target_length] = (intValue / 256);
+                    target_length++;
+                    target[target_length] = (intValue % 256);
+                    target_length++;
+                    if (symbols_left > 2) {
+                        target[target_length] = 254; // Unlatch
                         target_length++;
                     }
-
-                    if (process_p == 2) {   // 2 data characters left to encode.
-
-                        // Pad with shift 1 value (0) and encode as double.
-                        int intValue = (1600 * process_buffer[0]) + (40 * process_buffer[1]) + 1;	// ie (0 + 1).
-                        target[target_length] = intValue / 256;
-                        target_length++;
-                        target[target_length] = intValue % 256;
-                        target_length++;
-                    }
-                }
-
-                if (symbols_left > process_p) {
-                    target[target_length] = (254);
-                    target_length++;    // Unlatch and encode remaining data in ascii.
-                    if (process_p == 1 || (process_p == 2 && process_buffer[0] < 3)) {	// Check for a shift value.
-
-                        target[target_length] = inputData[inputlen - 1] + 1;
-                        target_length++;
-                    } else if (process_p == 2) {
-                        target[target_length] = inputData[inputlen - 2] + 1;
-                        target_length++;
-                        target[target_length] = inputData[inputlen - 1] + 1;
+                } else {
+                    if (symbols_left > 0) {
+                        target[target_length] = 254; // Unlatch
                         target_length++;
                     }
                 }
                 break;
 
             case DM_X12:
-                if (symbols_left == process_p) {	// Unlatch not required!
-
-                    if (process_p == 1) {   // 1 data character left to encode.
-                        target[target_length] = inputData[inputlen - 1] + 1;
-                        target_length++;
-                    }
-
-                    if (process_p == 2) {
-                        // Encode last 2 bytes as ascii.
-                        target[target_length] = inputData[inputlen - 2] + 1;
-                        target_length++;
-                        target[target_length] = inputData[inputlen - 1] + 1;
-                        target_length++;
-                    }
-                }
-
-                if (symbols_left > process_p) {	// Unlatch and encode remaining data in ascii.
-
+                if ((symbols_left == process_p) && (process_p == 1)) {
+                    // Unlatch not required!
+                    target[target_length] = inputData[inputlen - 1] + 1;
+                    target_length++;
+                } else {
                     target[target_length] = (254);
-                    target_length++;   // Unlatch.
+                    target_length++; // Unlatch.
 
                     if (process_p == 1) {
                         target[target_length] = inputData[inputlen - 1] + 1;
@@ -1077,7 +1059,7 @@ public class DataMatrix extends Symbol {
                 break;
 
             case DM_EDIFACT:
-                if (symbols_left == process_p) // Unlatch not required!
+                if (symbols_left <= 2) // Unlatch not required!
                 {
                     if (process_p == 1) {
                         target[target_length] = inputData[inputlen - 1] + 1;
@@ -1090,49 +1072,35 @@ public class DataMatrix extends Symbol {
                         target[target_length] = inputData[inputlen - 1] + 1;
                         target_length++;
                     }
-
-                    if (process_p == 3) { // Append edifact unlatch value (31) and encode as triple.
-                        target[target_length] = (process_buffer[0] << 2)
-                                + ((process_buffer[1] & 0x30) >> 4);
-                        target_length++;
-                        target[target_length] = ((process_buffer[1] & 0x0f) << 4)
-                                + ((process_buffer[2] & 0x3c) >> 2);
-                        target_length++;
-                        target[target_length] = ((process_buffer[2] & 0x03) << 6)
-                                + 31;
-                        target_length++;
-                    }
-                }
-
-                if (symbols_left > process_p) // Unlatch and encode remaining data in ascii.
-                {
-                    // Edifact unlatch.
-                    if (symbols_left < 3) {
-                        target[target_length] = 31;
-                        target_length++;
-                    } else {
+                } else {
+                    // Append edifact unlatch value (31) and empty buffer
+                    if (process_p == 0) {
                         target[target_length] = (31 << 2);
                         target_length++;
                     }
 
                     if (process_p == 1) {
-                        target[target_length] = inputData[inputlen - 1] + 1;
+                        target[target_length] = ((process_buffer[0] << 2) + ((31 & 0x30) >> 4));
+                        target_length++;
+                        target[target_length] = ((31 & 0x0f) << 4);
                         target_length++;
                     }
 
                     if (process_p == 2) {
-                        target[target_length] = inputData[inputlen - 2] + 1;
+                        target[target_length] = ((process_buffer[0] << 2) + ((process_buffer[1] & 0x30) >> 4));
                         target_length++;
-                        target[target_length] = inputData[inputlen - 1] + 1;
+                        target[target_length] = (((process_buffer[1] & 0x0f) << 4) + ((31 & 0x3c) >> 2));
+                        target_length++;
+                        target[target_length] = (((31 & 0x03) << 6));
                         target_length++;
                     }
 
                     if (process_p == 3) {
-                        target[target_length] = inputData[inputlen - 3] + 1;
+                        target[target_length] = ((process_buffer[0] << 2) + ((process_buffer[1] & 0x30) >> 4));
                         target_length++;
-                        target[target_length] = inputData[inputlen - 2] + 1;
+                        target[target_length] = (((process_buffer[1] & 0x0f) << 4) + ((process_buffer[2] & 0x3c) >> 2));
                         target_length++;
-                        target[target_length] = inputData[inputlen - 1] + 1;
+                        target[target_length] = (((process_buffer[2] & 0x03) << 6) + 31);
                         target_length++;
                     }
                 }
@@ -1140,12 +1108,12 @@ public class DataMatrix extends Symbol {
         }
 
 //        if (debug) {
-//            System.out.printf("+Buffer=: ");
-//            for (int i = 0; i < target_length; i++) {
-//                System.out.printf("%02X ", target[i]);
-//            }
+//            int i;
+//            System.out.println("\n\n");
+//            for (i = 0; i < target_length; i++)
+//                System.out.printf("%03d ", target[i]);
 //
-//            System.out.printf("\n\n");
+//            System.out.println("\n");
 //        }
 
         return target_length;
@@ -1508,24 +1476,12 @@ public class DataMatrix extends Symbol {
     }
 
     private void addPadBits(int tp, int tail_length) {
-        /* adds unlatch and pad bits */
         int i, prn, temp;
-
-        switch (last_mode) {
-            case DM_C40:
-            case DM_TEXT:
-            case DM_X12:
-                target[tp] = 254;
-                tp++; /* Unlatch */
-
-                tail_length--;
-        }
 
         for (i = tail_length; i > 0; i--) {
             if (i == tail_length) {
                 target[tp] = 129;
                 tp++; /* Pad */
-
             } else {
                 prn = ((149 * (tp + 1)) % 253) + 1;
                 temp = 129 + prn;

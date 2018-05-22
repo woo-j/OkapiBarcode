@@ -974,29 +974,13 @@ public class DataMatrix extends Symbol {
                 break;
         }
 
-//        if (debug) {
-//            int i;
-//            System.out.println("\n\n");
-//            for (i = 0; i < target_length; i++)
-//                System.out.printf("%03d ", target[i]);
-//
-//            System.out.println("\n");
-//        }
-
         return target_length;
     }
 
     private boolean isTwoDigits(int pos) {
-        if (Character.isDigit((char) inputData[pos])) {
-            if (pos + 1 >= inputData.length) {
-                return false;
-            }
-            if (Character.isDigit((char) inputData[pos + 1])) {
-                return true;
-            }
-            return false;
-        }
-        return false;
+        return pos + 1 < inputData.length &&
+               Character.isDigit((char) inputData[pos]) &&
+               Character.isDigit((char) inputData[pos + 1]);
     }
 
     private Mode lookAheadTest(int position, Mode current_mode) {

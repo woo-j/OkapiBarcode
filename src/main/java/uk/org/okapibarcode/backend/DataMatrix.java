@@ -109,27 +109,38 @@ public class DataMatrix extends Symbol {
         NULL, DM_ASCII, DM_C40, DM_TEXT, DM_X12, DM_EDIFACT, DM_BASE256
     }
 
+    public enum ForceMode {
+        NONE, SQUARE, RECTANGULAR
+    }
+
     private int[] target = new int[2200];
     private int[] binary = new int[2200];
     private int binary_length;
     private Mode last_mode;
     private int[] places;
-    private boolean isSquare = true;
+    private ForceMode forceMode = ForceMode.NONE;
     private int[] inputData;
-    private int preferredSize = 0;
+    private int preferredSize;
     private int process_p;
     private int[] process_buffer = new int[8];
     private int codewordCount;
 
     /**
-     * Override selection of symbol size. When set as <code>false</code> the
-     * symbol will be the smallest available for the amount of data given. When
-     * set as <code>true</code> the encoding will not use rectangular symbols.
+     * Forces the symbol to be either square or rectangular (non-square).
      *
-     * @param input Forces a square symbol when set to <code>true</code>
+     * @param forceMode the force mode to use
      */
-    public void forceSquare(boolean input) {
-        isSquare = input;
+    public void setForceMode(ForceMode forceMode) {
+        this.forceMode = forceMode;
+    }
+
+    /**
+     * Returns the force mode used by this symbol.
+     *
+     * @return the force mode used by this symbol
+     */
+    public ForceMode getForceMode() {
+        return forceMode;
     }
 
     /**
@@ -340,29 +351,28 @@ public class DataMatrix extends Symbol {
             }
         }
 
-        if (isSquare) {
-            // Force to use square symbol
-            switch (calcsize) {
-                case 2:
-                case 4:
-                case 6:
-                case 9:
-                case 11:
-                case 14:
+        if (optionsize == -1) {
+            // We are in automatic size mode as the exact symbol size was not given
+            // Now check the detailed search options square only or rectangular only
+            if (forceMode == ForceMode.SQUARE) {
+                /* Skip rectangular symbols in square only mode */
+                while (MATRIX_H[calcsize] != MATRIX_W[calcsize]) {
                     calcsize++;
-                    break;
-                default:
-                    break;
+                }
+            } else if (forceMode == ForceMode.RECTANGULAR) {
+                /* Skip square symbols in rectangular only mode */
+                while (MATRIX_H[calcsize] == MATRIX_W[calcsize]) {
+                    calcsize++;
+                }
             }
-        }
-
-        symbolsize = optionsize;
-        if (calcsize > optionsize) {
             symbolsize = calcsize;
-            if (optionsize != -1) {
-                /* flag an error */
+        } else {
+            // The symbol size was specified by the user
+            // Thus check if the data fits into this symbol size and use this size
+            if (calcsize > optionsize) {
                 throw new OkapiException("Data does not fit in selected symbol size");
             }
+            symbolsize = optionsize;
         }
 
         // Now we know the symbol size we can handle the remaining data in the process buffer.

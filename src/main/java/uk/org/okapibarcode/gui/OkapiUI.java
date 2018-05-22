@@ -63,6 +63,7 @@ import uk.org.okapibarcode.backend.DataBar14;
 import uk.org.okapibarcode.backend.DataBarExpanded;
 import uk.org.okapibarcode.backend.DataBarLimited;
 import uk.org.okapibarcode.backend.DataMatrix;
+import uk.org.okapibarcode.backend.DataMatrix.ForceMode;
 import uk.org.okapibarcode.backend.Ean;
 import uk.org.okapibarcode.backend.GridMatrix;
 import uk.org.okapibarcode.backend.HumanReadableLocation;
@@ -2802,7 +2803,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                     dataMatrix.setReaderInit();
                 }
                 dataMatrix.setPreferredSize(dataMatrixSizeCombo.getSelectedIndex());
-                dataMatrix.forceSquare(dataMatrixSquareOnlyCheck.isSelected());
+                dataMatrix.setForceMode(dataMatrixSquareOnlyCheck.isSelected() ? ForceMode.SQUARE : ForceMode.NONE);
                 dataMatrix.setContent(dataInput);
                 setUniversals(dataMatrix);
                 return dataMatrix;

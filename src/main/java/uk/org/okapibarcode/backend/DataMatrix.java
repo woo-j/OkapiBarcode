@@ -366,9 +366,8 @@ public class DataMatrix extends Symbol {
         }
 
         // Now we know the symbol size we can handle the remaining data in the process buffer.
-        if (process_p != 0) {
-            binlen = encodeRemainder(MATRIX_BYTES[symbolsize] - binlen, binlen);
-        }
+        int symbolsLeft = MATRIX_BYTES[symbolsize] - binlen;
+        binlen = encodeRemainder(symbolsLeft, binlen);
 
         H = MATRIX_H[symbolsize];
         W = MATRIX_W[symbolsize];

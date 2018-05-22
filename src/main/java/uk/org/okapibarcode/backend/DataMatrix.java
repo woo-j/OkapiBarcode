@@ -458,7 +458,7 @@ public class DataMatrix extends Symbol {
         encodeInfo += "Encoding: ";
         int sp, tp, i;
         Mode current_mode, next_mode;
-        int inputlen = content.length();
+        int inputlen = inputData.length;
 
         sp = 0;
         tp = 0;
@@ -546,6 +546,7 @@ public class DataMatrix extends Symbol {
                 /* Remove macro characters from input string */
                 sp = 7;
                 inputlen -= 2;
+                inputData = Arrays.copyOf(inputData, inputData.length - 2);
             }
         }
 
@@ -1001,7 +1002,7 @@ public class DataMatrix extends Symbol {
 
     private int encodeRemainder(int symbols_left, int target_length) {
 
-        int inputlen = content.length();
+        int inputlen = inputData.length;
 
         switch (last_mode) {
             case DM_C40:
@@ -1120,7 +1121,7 @@ public class DataMatrix extends Symbol {
 
     private boolean isTwoDigits(int pos) {
         if (Character.isDigit((char) inputData[pos])) {
-            if (pos + 1 >= content.length()) {
+            if (pos + 1 >= inputData.length) {
                 return false;
             }
             if (Character.isDigit((char) inputData[pos + 1])) {
@@ -1136,7 +1137,7 @@ public class DataMatrix extends Symbol {
 
         double ascii_count, c40_count, text_count, x12_count, edf_count, b256_count, best_count;
         int sp;
-        int sourcelen = content.length();
+        int sourcelen = inputData.length;
         Mode best_scheme = Mode.NULL;
 
         /* step (j) */

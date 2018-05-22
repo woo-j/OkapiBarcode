@@ -95,6 +95,15 @@ public abstract class Symbol {
     }
 
     /**
+     * Returns the type of input data in this symbol.
+     *
+     * @return the type of input data in this symbol
+     */
+    public DataType getDataType() {
+        return inputDataType;
+    }
+
+    /**
      * Prefixes symbol data with a "Reader Initialisation" or "Reader
      * Programming" instruction.
      */

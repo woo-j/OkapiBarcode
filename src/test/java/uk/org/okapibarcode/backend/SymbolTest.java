@@ -41,6 +41,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.reflections.Reflections;
 
+import uk.org.okapibarcode.backend.Symbol.DataType;
 import uk.org.okapibarcode.output.Java2DRenderer;
 
 import com.google.zxing.BinaryBitmap;
@@ -294,6 +295,10 @@ public class SymbolTest {
         if (symbol instanceof Ean || symbol instanceof Upc) {
             // remove the checksum from the barcode content
             return s.substring(0, s.length() - 1);
+        } else if (symbol instanceof DataMatrix &&
+                   symbol.getDataType() == DataType.GS1) {
+            // remove initial GS + transform subsequent GS -> '[' (Okapi internal representation of FNC1)
+            return s.substring(1).replace('\u001d', '[');
         } else {
             // no massaging
             return s;

@@ -144,175 +144,32 @@ public class DataMatrix extends Symbol {
     }
 
     /**
-     * Set the prefereed symbol size according to the values in the following
+     * Sets the preferred symbol size according to the values in the following
      * table. Values may be ignored if the data is too big to fit in the
-     * specified symbol, or if <code>forceSquare</code> mode has been invoked.
+     * specified symbol, or if {@link #setForceMode(ForceMode)} has been invoked.
+     *
      * <table summary="Available Data Matrix symbol sizes">
      * <tbody>
-     * <tr>
-     * <th><p>
-     * Input</p></th>
-     * <th><p>
-     * Symbol Size</p></th>
-     * <th><p>
-     * Input</p></th>
-     * <th><p>
-     * Symbol Size</p></th>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 1</p></td>
-     * <td><p>
-     * 10 x 10</p></td>
-     * <td><p>
-     * 16</p></td>
-     * <td><p>
-     * 64 x 64</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 2</p></td>
-     * <td><p>
-     * 12 x 12</p></td>
-     * <td><p>
-     * 17</p></td>
-     * <td><p>
-     * 72 x 72</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 3</p></td>
-     * <td><p>
-     * 14 x 14</p></td>
-     * <td><p>
-     * 18</p></td>
-     * <td><p>
-     * 80 x 80</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 4</p></td>
-     * <td><p>
-     * 16 x 16</p></td>
-     * <td><p>
-     * 19</p></td>
-     * <td><p>
-     * 88 x 88</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 5</p></td>
-     * <td><p>
-     * 18 x 18</p></td>
-     * <td><p>
-     * 20</p></td>
-     * <td><p>
-     * 96 x 96</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 6</p></td>
-     * <td><p>
-     * 20 x 20</p></td>
-     * <td><p>
-     * 21</p></td>
-     * <td><p>
-     * 104 x 104</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 7</p></td>
-     * <td><p>
-     * 22 x 22</p></td>
-     * <td><p>
-     * 22</p></td>
-     * <td><p>
-     * 120 x 120</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 8</p></td>
-     * <td><p>
-     * 24 x 24</p></td>
-     * <td><p>
-     * 23</p></td>
-     * <td><p>
-     * 132 x 132</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 9</p></td>
-     * <td><p>
-     * 26 x 26</p></td>
-     * <td><p>
-     * 24</p></td>
-     * <td><p>
-     * 144 x 144</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 10</p></td>
-     * <td><p>
-     * 32 x 32</p></td>
-     * <td><p>
-     * 25</p></td>
-     * <td><p>
-     * 8 x 18</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 11</p></td>
-     * <td><p>
-     * 36 x 36</p></td>
-     * <td><p>
-     * 26</p></td>
-     * <td><p>
-     * 8 x 32</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 12</p></td>
-     * <td><p>
-     * 40 x 40</p></td>
-     * <td><p>
-     * 27</p></td>
-     * <td><p>
-     * 12 x 26</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 13</p></td>
-     * <td><p>
-     * 44 x 44</p></td>
-     * <td><p>
-     * 28</p></td>
-     * <td><p>
-     * 12 x 36</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 14</p></td>
-     * <td><p>
-     * 48 x 48</p></td>
-     * <td><p>
-     * 29</p></td>
-     * <td><p>
-     * 16 x 36</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 15</p></td>
-     * <td><p>
-     * 52 x 52</p></td>
-     * <td><p>
-     * 30</p></td>
-     * <td><p>
-     * 16 x 48</p></td>
-     * </tr>
+     * <tr><th>Input</th><th>Symbol Size</th><th>Input</th><th>Symbol Size</th></tr>
+     * <tr><td>1    </td><td>10 x 10    </td><td>16</td><td>64 x 64       </td></tr>
+     * <tr><td>2    </td><td>12 x 12    </td><td>17</td><td>72 x 72       </td></tr>
+     * <tr><td>3    </td><td>14 x 14    </td><td>18</td><td>80 x 80       </td></tr>
+     * <tr><td>4    </td><td>16 x 16    </td><td>19</td><td>88 x 88       </td></tr>
+     * <tr><td>5    </td><td>18 x 18    </td><td>20</td><td>96 x 96       </td></tr>
+     * <tr><td>6    </td><td>20 x 20    </td><td>21</td><td>104 x 104     </td></tr>
+     * <tr><td>7    </td><td>22 x 22    </td><td>22</td><td>120 x 120     </td></tr>
+     * <tr><td>8    </td><td>24 x 24    </td><td>23</td><td>132 x 132     </td></tr>
+     * <tr><td>9    </td><td>26 x 26    </td><td>24</td><td>144 x 144     </td></tr>
+     * <tr><td>10   </td><td>32 x 32    </td><td>25</td><td>8 x 18        </td></tr>
+     * <tr><td>11   </td><td>36 x 36    </td><td>26</td><td>8 x 32        </td></tr>
+     * <tr><td>12   </td><td>40 x 40    </td><td>27</td><td>12 x 26       </td></tr>
+     * <tr><td>13   </td><td>44 x 44    </td><td>28</td><td>12 x 36       </td></tr>
+     * <tr><td>14   </td><td>48 x 48    </td><td>29</td><td>16 x 36       </td></tr>
+     * <tr><td>15   </td><td>52 x 52    </td><td>30</td><td>16 x 48       </td></tr>
      * </tbody>
      * </table>
      *
-     * @param size Symbol size
+     * @param size the symbol size to use (1 - 30 inclusive)
      */
     public void setPreferredSize(int size) {
         preferredSize = size;

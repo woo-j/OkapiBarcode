@@ -1373,7 +1373,7 @@ public class DataMatrix extends Symbol {
         boolean retval = false;
 
         for (i = position; i < sourcelen; i++) {
-            if (nonX12Position == 0 && !isX12(i)) {
+            if (nonX12Position == 0 && !isX12(inputData[i])) {
                 nonX12Position = i;
             }
 

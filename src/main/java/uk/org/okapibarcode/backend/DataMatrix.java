@@ -941,11 +941,11 @@ public class DataMatrix extends Symbol {
         i = 0;
         while (i < tp) {
             if (binary[i] == 'b') {
-                if ((i == 0) || ((i != 0) && (binary[i - 1] != 'b'))) {
+                if ((i == 0) || (binary[i - 1] != 'b')) {
                     /* start of binary data */
                     int binary_count; /* length of b256 data */
 
-                    for (binary_count = 0; binary[binary_count + i] == 'b';
+                    for (binary_count = 0; binary_count + i < tp && binary[binary_count + i] == 'b';
                             binary_count++);
 
                     if (binary_count <= 249) {
@@ -1457,12 +1457,11 @@ public class DataMatrix extends Symbol {
 
     private void insertAt(int pos, char newbit) {
         /* Insert a character into the middle of a string at position posn */
-        int i;
-
-        for (i = binary_length; i > pos; i--) {
+        for (int i = binary_length; i > pos; i--) {
             binary[i] = binary[i - 1];
         }
         binary[pos] = newbit;
+        binary_length++;
     }
 
     private void insertValueAt(int posn, int streamlen, char newbit) {

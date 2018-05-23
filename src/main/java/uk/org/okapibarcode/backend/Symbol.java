@@ -75,11 +75,12 @@ public abstract class Symbol {
     protected List< Ellipse2D.Double > target = new ArrayList<>();
 
     /**
-     * Sets the type of input data. This setting influences what
-     * pre-processing is done on data before encoding in the symbol.
-     * For example: for <code>GS1</code> mode the AI data will be used to
-     * calculate the position of 'FNC1' characters.
-     * Valid values are:
+     * <p>Sets the type of input data. This setting influences what pre-processing is done on
+     * data before encoding in the symbol. For example: for <code>GS1</code> mode the AI
+     * data will be used to calculate the position of 'FNC1' characters.
+     *
+     * <p>Valid values are:
+     *
      * <ul>
      * <li><code>UTF8</code> (default) Unicode encoding
      * <li><code>LATIN1</code> ISO 8859-1 (Latin-1) encoding
@@ -88,6 +89,7 @@ public abstract class Symbol {
      * <li><code>HIBC</code> Health Industry Bar Code number (without check digit)
      * <li><code>ECI</code> Extended Channel Interpretations
      * </ul>
+     *
      * @param dataType the type of input data
      */
     public void setDataType(DataType dataType) {
@@ -393,8 +395,8 @@ public abstract class Symbol {
     }
 
     /**
-     * Sets the data to be encoded. Input data will be assumed to be of the type set
-     * by {@link #setDataType(DataType)}.
+     * Sets the data to be encoded and triggers encoding. Input data will be assumed
+     * to be of the type set by {@link #setDataType(DataType)}.
      *
      * @param data the data to encode
      * @throws OkapiException if no data or data is invalid

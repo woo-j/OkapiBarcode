@@ -366,38 +366,33 @@ public class DataMatrix extends Symbol {
         if (eciMode != 3) {
             target[tp] = 241; // ECI
             tp++;
-
             if (eciMode <= 126) {
                 target[tp] = eciMode + 1;
                 tp++;
             }
-
             if ((eciMode >= 127) && (eciMode <= 16382)) {
                 target[tp] = ((eciMode - 127) / 254) + 128;
                 tp++;
                 target[tp] = ((eciMode - 127) % 254) + 1;
                 tp++;
             }
-
             if (eciMode >= 16383) {
                 target[tp] = ((eciMode - 16383) / 64516) + 192;
                 tp++;
                 target[tp] = (((eciMode - 16383) / 254) % 254) + 1;
                 tp++;
-                target[tp] = ((eciMode - 16383) & 254) + 1;
+                target[tp] = ((eciMode - 16383) % 254) + 1;
                 tp++;
             }
-
-            encodeInfo += "ECI ";
+            encodeInfo += "ECI " + eciMode + " ";
         }
 
         if (readerInit) {
             if (inputDataType == DataType.GS1) {
                 throw new OkapiException("Cannot encode in GS1 mode and Reader Initialisation at the same time");
             } else {
-                target[tp] = 234;
+                target[tp] = 234; /* FNC3 */
                 tp++; /* Reader Programming */
-
                 binary[binary_length] = ' ';
                 binary_length++;
                 encodeInfo += "RP ";

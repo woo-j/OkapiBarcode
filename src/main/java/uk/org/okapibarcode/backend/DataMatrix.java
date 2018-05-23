@@ -27,6 +27,14 @@ import java.util.Arrays;
  */
 public class DataMatrix extends Symbol {
 
+    public enum ForceMode {
+        NONE, SQUARE, RECTANGULAR
+    }
+
+    private enum Mode {
+        NULL, DM_ASCII, DM_C40, DM_TEXT, DM_X12, DM_EDIFACT, DM_BASE256
+    }
+
     private static final int[] C40_SHIFT = {
         1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
         1, 1, 1, 1, 1, 1, 1, 1, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
@@ -105,22 +113,19 @@ public class DataMatrix extends Symbol {
         68, 42, 56, 36, 48, 56, 68, 56, 68, 62, 62
     };
 
-    private enum Mode {
-        NULL, DM_ASCII, DM_C40, DM_TEXT, DM_X12, DM_EDIFACT, DM_BASE256
-    }
+    // user-specified values and settings
 
-    public enum ForceMode {
-        NONE, SQUARE, RECTANGULAR
-    }
+    private ForceMode forceMode = ForceMode.NONE;
+    private int preferredSize;
+
+    // internal state calculated when setContent() is called
 
     private int[] target = new int[2200];
     private int[] binary = new int[2200];
     private int binary_length;
     private Mode last_mode;
     private int[] places;
-    private ForceMode forceMode = ForceMode.NONE;
     private int[] inputData;
-    private int preferredSize;
     private int process_p;
     private int[] process_buffer = new int[8];
     private int codewordCount;
@@ -173,6 +178,16 @@ public class DataMatrix extends Symbol {
      */
     public void setPreferredSize(int size) {
         preferredSize = size;
+    }
+
+    /**
+     * Returns the preferred symbol size.
+     *
+     * @return the preferred symbol size
+     * @see #setPreferredSize(int)
+     */
+    public int getPreferredSize() {
+        return preferredSize;
     }
 
     @Override

@@ -363,6 +363,18 @@ public class DataMatrix extends Symbol {
             encodeInfo += "FNC1 ";
         } /* FNC1 */
 
+        if (readerInit) {
+            if (inputDataType == DataType.GS1) {
+                throw new OkapiException("Cannot encode in GS1 mode and Reader Initialisation at the same time");
+            } else {
+                target[tp] = 234; /* FNC3 */
+                tp++; /* Reader Programming */
+                binary[binary_length] = ' ';
+                binary_length++;
+                encodeInfo += "RP ";
+            }
+        }
+
         if (eciMode != 3) {
             target[tp] = 241; // ECI
             tp++;
@@ -385,18 +397,6 @@ public class DataMatrix extends Symbol {
                 tp++;
             }
             encodeInfo += "ECI " + eciMode + " ";
-        }
-
-        if (readerInit) {
-            if (inputDataType == DataType.GS1) {
-                throw new OkapiException("Cannot encode in GS1 mode and Reader Initialisation at the same time");
-            } else {
-                target[tp] = 234; /* FNC3 */
-                tp++; /* Reader Programming */
-                binary[binary_length] = ' ';
-                binary_length++;
-                encodeInfo += "RP ";
-            }
         }
 
         /* Check for Macro05/Macro06 */

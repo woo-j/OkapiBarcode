@@ -17,6 +17,7 @@
 package uk.org.okapibarcode.backend;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
@@ -27,11 +28,21 @@ public class Code128Test {
 
     @Test
     public void testCanReuse() {
+
         Code128 code128 = new Code128();
         code128.setContent("11");
         assertArrayEquals(new int[] { 211232, 231212, 122132, 233111, 2 }, code128.getCodewords());
+        assertEquals("Encoding: STARTC 11 \n" +
+                     "Data Codewords: 2\n" +
+                     "Check Digit: 13\n",
+                     code128.getEncodeInfo());
+
         code128.setContent("12");
         assertArrayEquals(new int[] { 211232, 112232, 122231, 233111, 2 }, code128.getCodewords());
+        assertEquals("Encoding: STARTC 12 \n" +
+                        "Data Codewords: 2\n" +
+                        "Check Digit: 14\n",
+                        code128.getEncodeInfo());
     }
 
 }

@@ -403,6 +403,8 @@ public abstract class Symbol {
      */
     public void setContent(String data) {
 
+        encodeInfo = "";
+
         switch (inputDataType) {
             case GS1:
                 content = gs1SanityCheck(data);

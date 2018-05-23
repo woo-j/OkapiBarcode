@@ -616,7 +616,6 @@ public class DataMatrix extends Symbol {
                     if ((inputDataType == DataType.GS1) && (inputData[sp] == '[')) {
                         shift_set = 2;
                         value = 27; /* FNC1 */
-
                     }
 
                     if (shift_set != 0) {

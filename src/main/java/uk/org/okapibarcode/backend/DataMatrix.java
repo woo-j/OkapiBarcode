@@ -203,8 +203,8 @@ public class DataMatrix extends Symbol {
 
         eciProcess(); // Get ECI mode
 
-        inputData = new int[content.length()];
-        for (i = 0; i < content.length(); i++) {
+        inputData = new int[inputBytes.length];
+        for (i = 0; i < inputBytes.length; i++) {
             inputData[i] = inputBytes[i] & 0xFF;
         }
 
@@ -378,23 +378,37 @@ public class DataMatrix extends Symbol {
         if (eciMode != 3) {
             target[tp] = 241; // ECI
             tp++;
+            binary[binary_length] = ' ';
+            binary_length++;
             if (eciMode <= 126) {
                 target[tp] = eciMode + 1;
                 tp++;
+                binary[binary_length] = ' ';
+                binary_length++;
             }
             if ((eciMode >= 127) && (eciMode <= 16382)) {
                 target[tp] = ((eciMode - 127) / 254) + 128;
                 tp++;
+                binary[binary_length] = ' ';
+                binary_length++;
                 target[tp] = ((eciMode - 127) % 254) + 1;
                 tp++;
+                binary[binary_length] = ' ';
+                binary_length++;
             }
             if (eciMode >= 16383) {
                 target[tp] = ((eciMode - 16383) / 64516) + 192;
                 tp++;
+                binary[binary_length] = ' ';
+                binary_length++;
                 target[tp] = (((eciMode - 16383) / 254) % 254) + 1;
                 tp++;
+                binary[binary_length] = ' ';
+                binary_length++;
                 target[tp] = ((eciMode - 16383) % 254) + 1;
                 tp++;
+                binary[binary_length] = ' ';
+                binary_length++;
             }
             encodeInfo += "ECI " + eciMode + " ";
         }

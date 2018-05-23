@@ -23,11 +23,11 @@ import java.nio.charset.CharsetEncoder;
 import java.nio.charset.CoderResult;
 
 /**
- * Implements Code 128 bar code symbology
- * According to ISO/IEC 15417:2007
- * <p>
- * Code 128 supports encoding of 8-bit ISO 8859-1 (Latin-1) characters.
- * Setting GS1 mode allows encoding in GS1-128 (also known as UPC/EAN-128).
+ * <p>Implements Code 128 bar code symbology according to ISO/IEC 15417:2007.
+ *
+ * <p>Code 128 supports encoding of 8-bit ISO 8859-1 (Latin-1) characters.
+ *
+ * <p>Setting GS1 mode allows encoding in GS1-128 (also known as UPC/EAN-128).
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  * @author Daniel Gredler

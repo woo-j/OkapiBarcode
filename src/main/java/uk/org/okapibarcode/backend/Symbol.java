@@ -60,7 +60,7 @@ public abstract class Symbol {
     // internal state calculated when setContent() is called
 
     protected String content;
-    protected int eciMode = 3;
+    protected int eciMode = -1;
     protected byte[] inputBytes;
     protected String readable = "";
     protected String[] pattern;
@@ -279,6 +279,18 @@ public abstract class Symbol {
      */
     public String getEncodeInfo() {
         return encodeInfo;
+    }
+
+    /**
+     * Returns the ECI mode used by this symbol. The ECI mode is chosen automatically during encoding
+     * if the symbol data type has been set to {@link DataType#ECI}. If this symbol does not use ECI,
+     * this method will return <code>-1</code>.
+     *
+     * @return the ECI mode used by this symbol
+     * @see #eciProcess()
+     */
+    public int getEciMode() {
+        return eciMode;
     }
 
     /**

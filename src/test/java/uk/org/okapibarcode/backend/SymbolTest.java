@@ -257,7 +257,8 @@ public class SymbolTest {
             return new AztecReader();
         } else if (symbol instanceof QrCode) {
             return new QRCodeReader();
-        } else if (symbol instanceof DataMatrix) {
+        } else if (symbol instanceof DataMatrix && symbol.getEciMode() == -1) {
+            // ZXing does not currently support ECI in Data Matrix symbols
             return new DataMatrixReader();
         } else if (symbol instanceof Ean) {
             Ean ean = (Ean) symbol;

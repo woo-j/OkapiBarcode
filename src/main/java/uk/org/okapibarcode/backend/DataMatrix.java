@@ -1007,12 +1007,14 @@ public class DataMatrix extends Symbol {
     }
 
     private Mode lookAheadTest(int position, Mode current_mode) {
+
         /* 'look ahead test' from Annex P */
 
         double ascii_count, c40_count, text_count, x12_count, edf_count, b256_count, best_count;
         int sp;
         int sourcelen = inputData.length;
         Mode best_scheme = Mode.NULL;
+        double stiction = (1.0F / 24.0F); // smallest change to act on, to get around floating point inaccuracies
 
         /* step (j) */
         if (current_mode == Mode.DM_ASCII) {
@@ -1052,7 +1054,7 @@ public class DataMatrix extends Symbol {
         sp = position;
 
         do {
-            if(sp == (sourcelen - 1)) {
+            if (sp == sourcelen) {
                 /* At the end of data ... step (k) */
                 ascii_count = Math.ceil(ascii_count);
                 b256_count = Math.ceil(b256_count);
@@ -1064,27 +1066,27 @@ public class DataMatrix extends Symbol {
                 best_count = c40_count;
                 best_scheme = Mode.DM_C40; // (k)(7)
 
-                if (x12_count < best_count) {
+                if (x12_count < (best_count - stiction)) {
                     best_count = x12_count;
                     best_scheme = Mode.DM_X12; // (k)(6)
                 }
 
-                if (text_count < best_count) {
+                if (text_count < (best_count - stiction)) {
                     best_count = text_count;
                     best_scheme = Mode.DM_TEXT; // (k)(5)
                 }
 
-                if (edf_count < best_count) {
+                if (edf_count < (best_count - stiction)) {
                     best_count = edf_count;
                     best_scheme = Mode.DM_EDIFACT; // (k)(4)
                 }
 
-                if (b256_count < best_count) {
+                if (b256_count < (best_count - stiction)) {
                     best_count = b256_count;
                     best_scheme = Mode.DM_BASE256; // (k)(3)
                 }
 
-                if (ascii_count <= best_count) {
+                if (ascii_count <= (best_count + stiction)) {
                     best_scheme = Mode.DM_ASCII; // (k)(2)
                 }
             } else {
@@ -1142,13 +1144,13 @@ public class DataMatrix extends Symbol {
                     edf_count += (3.0 / 4.0); // (p)(1)
                 } else {
                     if (inputData[sp] > 127) {
-                        edf_count += (17.0 / 4.0); // (p)(2)
+                        edf_count += 17.0; // (p)(2) > Value changed from ISO
                     } else {
-                        edf_count += (13.0 / 4.0); // (p)(3)
+                        edf_count += 13.0; // (p)(3) > Value changed from ISO
                     }
                 }
                 if ((inputDataType == DataType.GS1) && (inputData[sp] == '[')) {
-                    edf_count += 6.0;
+                    edf_count += 13.0; //  > Value changed from ISO
                 }
 
                 /* base 256 ... step (q) */
@@ -1164,16 +1166,17 @@ public class DataMatrix extends Symbol {
                 /* 4 data characters processed ... step (r) */
 
                 /* step (r)(6) */
-                if (((c40_count + 1.0) < ascii_count) &&
-                        ((c40_count + 1.0) < b256_count) &&
-                        ((c40_count + 1.0) < edf_count) &&
-                        ((c40_count + 1.0) < text_count)) {
+                if (((c40_count + 1.0) < (ascii_count - stiction)) &&
+                        ((c40_count + 1.0) < (b256_count - stiction)) &&
+                        ((c40_count + 1.0) < (edf_count - stiction)) &&
+                        ((c40_count + 1.0) < (text_count - stiction))) {
 
-                    if (c40_count < x12_count) {
+                    if (c40_count < (x12_count - stiction)) {
                         best_scheme = Mode.DM_C40;
                     }
 
-                    if (c40_count == x12_count) {
+                    if ((c40_count >= (x12_count - stiction))
+                            && (c40_count <= (x12_count + stiction))) {
                         if (p_r_6_2_1(sp, sourcelen)) {
                             // Test (r)(6)(ii)(i)
                             best_scheme = Mode.DM_X12;
@@ -1184,52 +1187,53 @@ public class DataMatrix extends Symbol {
                 }
 
                 /* step (r)(5) */
-                if (((x12_count + 1.0) < ascii_count) &&
-                        ((x12_count + 1.0) < b256_count) &&
-                        ((x12_count + 1.0) < edf_count) &&
-                        ((x12_count + 1.0) < text_count) &&
-                        ((x12_count + 1.0) < c40_count)) {
+                if (((x12_count + 1.0) < (ascii_count - stiction)) &&
+                        ((x12_count + 1.0) < (b256_count - stiction)) &&
+                        ((x12_count + 1.0) < (edf_count - stiction)) &&
+                        ((x12_count + 1.0) < (text_count - stiction)) &&
+                        ((x12_count + 1.0) < (c40_count - stiction))) {
                     best_scheme = Mode.DM_X12;
                 }
 
                 /* step (r)(4) */
-                if (((text_count + 1.0) < ascii_count) &&
-                        ((text_count + 1.0) < b256_count) &&
-                        ((text_count + 1.0) < edf_count) &&
-                        ((text_count + 1.0) < x12_count) &&
-                        ((text_count + 1.0) < c40_count)) {
+                if (((text_count + 1.0) < (ascii_count - stiction)) &&
+                        ((text_count + 1.0) < (b256_count - stiction)) &&
+                        ((text_count + 1.0) < (edf_count - stiction)) &&
+                        ((text_count + 1.0) < (x12_count - stiction)) &&
+                        ((text_count + 1.0) < (c40_count - stiction))) {
                     best_scheme = Mode.DM_TEXT;
                 }
 
                 /* step (r)(3) */
-                if (((edf_count + 1.0) < ascii_count) &&
-                        ((edf_count + 1.0) < b256_count) &&
-                        ((edf_count + 1.0) < text_count) &&
-                        ((edf_count + 1.0) < x12_count) &&
-                        ((edf_count + 1.0) < c40_count)) {
+                if (((edf_count + 1.0) < (ascii_count - stiction)) &&
+                        ((edf_count + 1.0) < (b256_count - stiction)) &&
+                        ((edf_count + 1.0) < (text_count - stiction)) &&
+                        ((edf_count + 1.0) < (x12_count - stiction)) &&
+                        ((edf_count + 1.0) < (c40_count - stiction))) {
                     best_scheme = Mode.DM_EDIFACT;
                 }
 
                 /* step (r)(2) */
-                if (((b256_count + 1.0) <= ascii_count) ||
-                        (((b256_count + 1.0) < edf_count) &&
-                        ((b256_count + 1.0) < text_count) &&
-                        ((b256_count + 1.0) < x12_count) &&
-                        ((b256_count + 1.0) < c40_count))) {
+                if (((b256_count + 1.0) <= (ascii_count + stiction)) ||
+                        (((b256_count + 1.0) < (edf_count - stiction)) &&
+                        ((b256_count + 1.0) < (text_count - stiction)) &&
+                        ((b256_count + 1.0) < (x12_count - stiction)) &&
+                        ((b256_count + 1.0) < (c40_count - stiction)))) {
                     best_scheme = Mode.DM_BASE256;
                 }
 
                 /* step (r)(1) */
-                if (((ascii_count + 1.0) <= b256_count) &&
-                        ((ascii_count + 1.0) <= edf_count) &&
-                        ((ascii_count + 1.0) <= text_count) &&
-                        ((ascii_count + 1.0) <= x12_count) &&
-                        ((ascii_count + 1.0) <= c40_count)) {
-                   best_scheme = Mode.DM_ASCII;
-               }
+                if (((ascii_count + 1.0) <= (b256_count + stiction)) &&
+                        ((ascii_count + 1.0) <= (edf_count + stiction)) &&
+                        ((ascii_count + 1.0) <= (text_count + stiction)) &&
+                        ((ascii_count + 1.0) <= (x12_count + stiction)) &&
+                        ((ascii_count + 1.0) <= (c40_count + stiction))) {
+                    best_scheme = Mode.DM_ASCII;
+                }
             }
 
             sp++;
+
         } while (best_scheme == Mode.NULL); // step (s)
 
         return best_scheme;

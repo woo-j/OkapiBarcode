@@ -208,9 +208,7 @@ public class MakeBarcode {
                     if (type == 60) {
                         code128.stopModeC();
                     }
-                    if (settings.isReaderInit()) {
-                        code128.setReaderInit();
-                    }
+                    code128.setReaderInit(settings.isReaderInit());
                     code128.setHumanReadableLocation(hrtLocation);
                     code128.setContent(dataInput);
                     symbol = code128;
@@ -237,9 +235,7 @@ public class MakeBarcode {
                     if (settings.isDataGs1Mode()) {
                         code16k.setDataType(Symbol.DataType.GS1);
                     }
-                    if (settings.isReaderInit()) {
-                        code16k.setReaderInit();
-                    }
+                    code16k.setReaderInit(settings.isReaderInit());
                     code16k.setContent(dataInput);
                     symbol = code16k;
                     break;
@@ -363,9 +359,7 @@ public class MakeBarcode {
                     }
                     pdf417.setPreferredEccLevel(settings.getSymbolECC() - 1);
                     pdf417.setDataColumns(settings.getSymbolColumns());
-                    if (settings.isReaderInit()) {
-                        pdf417.setReaderInit();
-                    }
+                    pdf417.setReaderInit(settings.isReaderInit());
                     pdf417.setContent(dataInput);
                     symbol = pdf417;
                     break;
@@ -403,9 +397,7 @@ public class MakeBarcode {
                             break;
                     }
                     qrCode.setPreferredVersion(settings.getSymbolVersion());
-                    if (settings.isReaderInit()) {
-                        qrCode.setReaderInit();
-                    }
+                    qrCode.setReaderInit(settings.isReaderInit());
                     qrCode.setContent(dataInput);
                     symbol = qrCode;
                     break;
@@ -456,9 +448,7 @@ public class MakeBarcode {
                     if ((type == 102) || (type == 103)) {
                         dataMatrix.setDataType(Symbol.DataType.HIBC);
                     }
-                    if (settings.isReaderInit()) {
-                        dataMatrix.setReaderInit();
-                    }
+                    dataMatrix.setReaderInit(settings.isReaderInit());
                     dataMatrix.setPreferredSize(settings.getSymbolVersion());
                     dataMatrix.setForceMode(settings.isMakeSquare() ? ForceMode.SQUARE : ForceMode.NONE);
                     dataMatrix.setContent(dataInput);
@@ -540,9 +530,7 @@ public class MakeBarcode {
                     if ((type == 108) || (type == 109)) {
                         microPdf417.setDataType(Symbol.DataType.HIBC);
                     }
-                    if (settings.isReaderInit()) {
-                        microPdf417.setReaderInit();
-                    }
+                    microPdf417.setReaderInit(settings.isReaderInit());
                     microPdf417.setDataColumns(settings.getSymbolColumns());
                     microPdf417.setContent(dataInput);
                     symbol = microPdf417;
@@ -585,9 +573,7 @@ public class MakeBarcode {
                     if (type == 112) {
                         aztecCode.setDataType(Symbol.DataType.HIBC);
                     }
-                    if (settings.isReaderInit()) {
-                        aztecCode.setReaderInit();
-                    }
+                    aztecCode.setReaderInit(settings.isReaderInit());
                     aztecCode.setPreferredEccLevel(settings.getSymbolECC());
                     aztecCode.setPreferredSize(settings.getSymbolVersion());
                     aztecCode.setContent(dataInput);
@@ -734,9 +720,7 @@ public class MakeBarcode {
                     if (settings.isDataGs1Mode()) {
                         codeOne.setDataType(Symbol.DataType.GS1);
                     }
-                    if (settings.isReaderInit()) {
-                        codeOne.setReaderInit();
-                    }
+                    codeOne.setReaderInit(settings.isReaderInit());
                     switch(settings.getSymbolVersion()) {
                         case 0:
                             codeOne.setPreferredVersion(CodeOne.Version.NONE);
@@ -781,9 +765,7 @@ public class MakeBarcode {
                     if (settings.isDataGs1Mode()) {
                         gridMatrix.setDataType(Symbol.DataType.GS1);
                     }
-                    if (settings.isReaderInit()) {
-                        gridMatrix.setReaderInit();
-                    }
+                    gridMatrix.setReaderInit(settings.isReaderInit());
                     gridMatrix.setPreferredEccLevel(settings.getSymbolECC());
                     gridMatrix.setPreferredVersion(settings.getSymbolVersion());
                     gridMatrix.setContent(dataInput);

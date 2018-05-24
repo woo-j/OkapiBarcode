@@ -106,19 +106,22 @@ public abstract class Symbol {
     }
 
     /**
-     * Prefixes symbol data with a "Reader Initialisation" or "Reader
-     * Programming" instruction.
+     * If set to <code>true</code>, the symbol is prefixed with a "Reader Initialization"
+     * or "Reader Programming" instruction.
+     *
+     * @param readerInit whether or not to enable reader initialization
      */
-    public final void setReaderInit() {
-        readerInit = true;
+    public void setReaderInit(boolean readerInit) {
+        this.readerInit = readerInit;
     }
 
     /**
-     * Removes "Reader Initialisation" or "Reader Programming" instruction
-     * from symbol data.
+     * Returns whether or not reader initialization is enabled.
+     *
+     * @return whether or not reader initialization is enabled
      */
-    public final void unsetReaderInit() {
-        readerInit = false;
+    public boolean getReaderInit() {
+        return readerInit;
     }
 
     /**

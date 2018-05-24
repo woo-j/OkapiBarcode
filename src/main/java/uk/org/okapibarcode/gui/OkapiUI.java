@@ -2461,9 +2461,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 if (selectedSymbol.symbology == SymbolType.Encoding.CODE_128_HIBC) {
                     code128.setDataType(Symbol.DataType.HIBC);
                 }
-                if (readerInit) {
-                    code128.setReaderInit();
-                }
+                code128.setReaderInit(readerInit);
                 code128.setHumanReadableLocation(hrtLoc);
                 code128.setContent(dataInput);
                 setUniversals(code128);
@@ -2611,9 +2609,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 if (useGS1Check.isSelected()) {
                     code16k.setDataType(Symbol.DataType.GS1);
                 }
-                if (readerInit) {
-                    code16k.setReaderInit();
-                }
+                code16k.setReaderInit(readerInit);
                 code16k.setContent(dataInput);
                 setUniversals(code16k);
                 return code16k;
@@ -2739,9 +2735,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 if (pdfColumnsCombo.getSelectedIndex() != 0) {
                     pdf417.setDataColumns(pdfColumnsCombo.getSelectedIndex());
                 }
-                if (readerInit) {
-                    pdf417.setReaderInit();
-                }
+                pdf417.setReaderInit(readerInit);
                 pdf417.setContent(dataInput);
                 setUniversals(pdf417);
                 return pdf417;
@@ -2755,9 +2749,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 if (selectedSymbol.symbology == SymbolType.Encoding.PDF417_MICRO_HIBC) {
                     microPdf417.setDataType(Symbol.DataType.HIBC);
                 }
-                if (readerInit) {
-                    microPdf417.setReaderInit();
-                }
+                microPdf417.setReaderInit(readerInit);
                 if (microPdfColumnsCombo.getSelectedIndex() != 0) {
                     microPdf417.setDataColumns(microPdfColumnsCombo.getSelectedIndex());
                 }
@@ -2773,9 +2765,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 if (selectedSymbol.symbology == SymbolType.Encoding.AZTEC_HIBC) {
                     aztecCode.setDataType(Symbol.DataType.HIBC);
                 }
-                if (readerInit) {
-                    aztecCode.setReaderInit();
-                }
+                aztecCode.setReaderInit(readerInit);
                 if (aztecUserEcc.isSelected()) {
                     aztecCode.setPreferredEccLevel(aztecUserEccCombo.getSelectedIndex() + 1);
                 }
@@ -2799,9 +2789,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 if (selectedSymbol.symbology == SymbolType.Encoding.DATAMATRIX_HIBC) {
                     dataMatrix.setDataType(Symbol.DataType.HIBC);
                 }
-                if (readerInit) {
-                    dataMatrix.setReaderInit();
-                }
+                dataMatrix.setReaderInit(readerInit);
                 dataMatrix.setPreferredSize(dataMatrixSizeCombo.getSelectedIndex());
                 dataMatrix.setForceMode(dataMatrixSquareOnlyCheck.isSelected() ? ForceMode.SQUARE : ForceMode.NONE);
                 dataMatrix.setContent(dataInput);
@@ -2845,9 +2833,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 if (qrUserSize.isSelected()) {
                     qrCode.setPreferredVersion(qrUserSizeCombo.getSelectedIndex() + 1);
                 }
-                if (readerInit) {
-                    qrCode.setReaderInit();
-                }
+                qrCode.setReaderInit(readerInit);
                 qrCode.setContent(dataInput);
                 setUniversals(qrCode);
                 return qrCode;
@@ -2880,9 +2866,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 if (useGS1Check.isSelected()) {
                     codeOne.setDataType(Symbol.DataType.GS1);
                 }
-                if (readerInit) {
-                    codeOne.setReaderInit();
-                }
+                codeOne.setReaderInit(readerInit);
                 switch(codeOneSizeCombo.getSelectedIndex()) {
                     case 0:
                         codeOne.setPreferredVersion(CodeOne.Version.NONE);
@@ -2926,9 +2910,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 if (useGS1Check.isSelected()) {
                     gridMatrix.setDataType(Symbol.DataType.GS1);
                 }
-                if (readerInit) {
-                    gridMatrix.setReaderInit();
-                }
+                gridMatrix.setReaderInit(readerInit);
                 if (gridmatrixUserEcc.isSelected()) {
                     gridMatrix.setPreferredEccLevel(gridmatrixUserEccCombo.getSelectedIndex() + 1);
                 }

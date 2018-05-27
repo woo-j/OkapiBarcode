@@ -117,7 +117,7 @@ public class MaxiCode extends Symbol {
     private int structuredAppendTotal = 1;
     private String primaryData = "";
     private int[] codewords;
-    private int[] source;
+    private int[] inputData;
     private int[] set = new int[144];
     private int[] character = new int[144];
     private boolean[][] grid = new boolean[33][30];
@@ -223,12 +223,12 @@ public class MaxiCode extends Symbol {
 
         // copy input data over into source
         int sourcelen = content.length();
-        source = new int[sourcelen];
+        inputData = new int[sourcelen];
 
         eciProcess();
 
         for (int i = 0; i < sourcelen; i++) {
-            source[i] = inputBytes[i] & 0xFF;
+            inputData[i] = inputBytes[i] & 0xFF;
         }
 
         // mode 2 -> mode 3 if postal code isn't strictly numeric
@@ -533,8 +533,8 @@ public class MaxiCode extends Symbol {
         for (i = 0; i < length; i++) {
             /* Look up characters in table from Appendix A - this gives
              value and code set for most characters */
-            set[i] = MAXICODE_SET[source[i]];
-            character[i] = MAXICODE_SYMBOL_CHAR[source[i]];
+            set[i] = MAXICODE_SET[inputData[i]];
+            character[i] = MAXICODE_SYMBOL_CHAR[inputData[i]];
         }
 
         // If a character can be represented in more than one code set, pick which version to use.

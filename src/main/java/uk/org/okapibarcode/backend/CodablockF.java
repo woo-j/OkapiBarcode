@@ -54,7 +54,7 @@ public class CodablockF extends Symbol {
 
     private int[][] blockmatrix = new int[44][62];
     private int columns_needed;
-    private int[] source;
+    private int[] inputData;
     private int rows_needed;
     private CfMode final_mode;
     private CfMode[] subset_selector = new CfMode[44];
@@ -85,17 +85,17 @@ public class CodablockF extends Symbol {
 
         inputBytes = content.getBytes(StandardCharsets.ISO_8859_1);
 
-        source = new int[input_length + 1];
+        inputData = new int[input_length + 1];
         for (i = 0; i < input_length; i++) {
-            source[i] = inputBytes[i] & 0xFF;
+            inputData[i] = inputBytes[i] & 0xFF;
         }
-        source[input_length] = 0x00;
+        inputData[input_length] = 0x00;
 
         /* Make a guess at how many characters will be needed to encode the data */
         estimate_codelength = 0.0;
         last_mode = Mode.AORB; /* Codablock always starts with Code A */
         for (i = 0; i < input_length; i++) {
-            this_mode = findSubset(source[i]);
+            this_mode = findSubset(inputData[i]);
             if (this_mode != last_mode) {
                 estimate_codelength += 1.0;
             }
@@ -104,7 +104,7 @@ public class CodablockF extends Symbol {
             } else {
                 estimate_codelength += 0.5;
             }
-            if (source[i] > 127) {
+            if (inputData[i] > 127) {
                 estimate_codelength += 1.0;
             }
             last_mode = this_mode;
@@ -133,12 +133,12 @@ public class CodablockF extends Symbol {
         k1_sum = 0;
         k2_sum = 0;
         for(i = 0; i < input_length; i++) {
-            if((inputDataType == DataType.GS1) && source[i] == '[') {
+            if((inputDataType == DataType.GS1) && inputData[i] == '[') {
                 k1_sum += (i + 1) * 29; /* GS */
                 k2_sum += i * 29;
             } else {
-                k1_sum += (i + 1) * source[i];
-                k2_sum += i * source[i];
+                k1_sum += (i + 1) * inputData[i];
+                k2_sum += i * inputData[i];
             }
         }
         k1_check = k1_sum % 86;
@@ -309,7 +309,7 @@ public class CodablockF extends Symbol {
                 }
             }
 
-            if ((inputDataType == DataType.GS1) && (source[input_position] == '[')) {
+            if ((inputDataType == DataType.GS1) && (inputData[input_position] == '[')) {
                 blockmatrix[current_row][column_position] = 102; /* FNC1 */
                 column_position++;
                 c--;
@@ -323,15 +323,15 @@ public class CodablockF extends Symbol {
                     /* Ensure that there is sufficient encodation capacity to continue (using the rules of Annex B.2). */
                     switch (current_mode) {
                         case MODEA: /* Table B1 applies */
-                            if (findSubset(source[input_position]) == Mode.ABORC) {
-                                blockmatrix[current_row][column_position] = a3_convert(source[input_position]);
+                            if (findSubset(inputData[input_position]) == Mode.ABORC) {
+                                blockmatrix[current_row][column_position] = a3_convert(inputData[input_position]);
                                 column_position++;
                                 c--;
                                 input_position++;
                                 done = true;
                             }
 
-                            if ((findSubset(source[input_position]) == Mode.SHIFTB) && (c == 1)) {
+                            if ((findSubset(inputData[input_position]) == Mode.SHIFTB) && (c == 1)) {
                                 /* Needs two symbols */
                                 blockmatrix[current_row][column_position] = 100; /* Code B */
                                 column_position++;
@@ -339,7 +339,7 @@ public class CodablockF extends Symbol {
                                 done = true;
                             }
 
-                            if ((source[input_position] >= 244) && (!done)) {
+                            if ((inputData[input_position] >= 244) && (!done)) {
                                 /* Needs three symbols */
                                 blockmatrix[current_row][column_position] = 100; /* Code B */
                                 column_position++;
@@ -352,7 +352,7 @@ public class CodablockF extends Symbol {
                                 done = true;
                             }
 
-                            if ((source[input_position] >= 128) && (!done) && c == 1) {
+                            if ((inputData[input_position] >= 128) && (!done) && c == 1) {
                                 /* Needs two symbols */
                                 blockmatrix[current_row][column_position] = 100; /* Code B */
                                 column_position++;
@@ -361,15 +361,15 @@ public class CodablockF extends Symbol {
                             }
                             break;
                         case MODEB: /* Table B2 applies */
-                            if (findSubset(source[input_position]) == Mode.ABORC) {
-                                blockmatrix[current_row][column_position] = a3_convert(source[input_position]);
+                            if (findSubset(inputData[input_position]) == Mode.ABORC) {
+                                blockmatrix[current_row][column_position] = a3_convert(inputData[input_position]);
                                 column_position++;
                                 c--;
                                 input_position++;
                                 done = true;
                             }
 
-                            if ((findSubset(source[input_position]) == Mode.SHIFTA) && (c == 1)) {
+                            if ((findSubset(inputData[input_position]) == Mode.SHIFTA) && (c == 1)) {
                                 /* Needs two symbols */
                                 blockmatrix[current_row][column_position] = 101; /* Code A */
                                 column_position++;
@@ -377,8 +377,8 @@ public class CodablockF extends Symbol {
                                 done = true;
                             }
 
-                            if (((source[input_position] >= 128)
-                                    && (source[input_position] <= 159)) && (!done)) {
+                            if (((inputData[input_position] >= 128)
+                                    && (inputData[input_position] <= 159)) && (!done)) {
                                 /* Needs three symbols */
                                 blockmatrix[current_row][column_position] = 101; /* Code A */
                                 column_position++;
@@ -391,7 +391,7 @@ public class CodablockF extends Symbol {
                                 done = true;
                             }
 
-                            if ((source[input_position] >= 160) && (!done) && c == 1) {
+                            if ((inputData[input_position] >= 160) && (!done) && c == 1) {
                                 /* Needs two symbols */
                                 blockmatrix[current_row][column_position] = 101; /* Code A */
                                 column_position++;
@@ -400,7 +400,7 @@ public class CodablockF extends Symbol {
                             }
                             break;
                         case MODEC: /* Table B3 applies */
-                            if ((findSubset(source[input_position]) != Mode.ABORC) && (c == 1)) {
+                            if ((findSubset(inputData[input_position]) != Mode.ABORC) && (c == 1)) {
                                 /* Needs two symbols */
                                 blockmatrix[current_row][column_position] = 101; /* Code A */
                                 column_position++;
@@ -408,8 +408,8 @@ public class CodablockF extends Symbol {
                                 done = true;
                             }
 
-                            if (((findSubset(source[input_position]) == Mode.ABORC)
-                                    && (findSubset(source[input_position + 1]) != Mode.ABORC))
+                            if (((findSubset(inputData[input_position]) == Mode.ABORC)
+                                    && (findSubset(inputData[input_position + 1]) != Mode.ABORC))
                                     && (c == 1)) {
                                 /* Needs two symbols */
                                 blockmatrix[current_row][column_position] = 101; /* Code A */
@@ -418,7 +418,7 @@ public class CodablockF extends Symbol {
                                 done = true;
                             }
 
-                            if (source[input_position] >= 128) {
+                            if (inputData[input_position] >= 128) {
                                 /* Needs three symbols */
                                 blockmatrix[current_row][column_position] = 101; /* Code A */
                                 column_position++;
@@ -435,19 +435,19 @@ public class CodablockF extends Symbol {
             }
 
             if (!done) {
-                if (((findSubset(source[input_position]) == Mode.AORB)
-                        || (findSubset(source[input_position]) == Mode.SHIFTA))
+                if (((findSubset(inputData[input_position]) == Mode.AORB)
+                        || (findSubset(inputData[input_position]) == Mode.SHIFTA))
                         && (current_mode == CfMode.MODEA)) {
                     /* Annex B section 1 rule 2 */
                     /* If in Code Subset A and the next data character can be encoded in Subset A encode the next
                      character. */
-                    if (source[input_position] >= 128) {
+                    if (inputData[input_position] >= 128) {
                         /* Extended ASCII character */
                         blockmatrix[current_row][column_position] = 101; /* FNC4 */
                         column_position++;
                         c--;
                     }
-                    blockmatrix[current_row][column_position] = a3_convert(source[input_position]);
+                    blockmatrix[current_row][column_position] = a3_convert(inputData[input_position]);
                     column_position++;
                     c--;
                     input_position++;
@@ -456,19 +456,19 @@ public class CodablockF extends Symbol {
             }
 
             if (!done) {
-                if (((findSubset(source[input_position]) == Mode.AORB)
-                        || (findSubset(source[input_position]) == Mode.SHIFTB))
+                if (((findSubset(inputData[input_position]) == Mode.AORB)
+                        || (findSubset(inputData[input_position]) == Mode.SHIFTB))
                         && (current_mode == CfMode.MODEB)) {
                     /* Annex B section 1 rule 3 */
                     /* If in Code Subset B and the next data character can be encoded in subset B, encode the next
                      character. */
-                    if (source[input_position] >= 128) {
+                    if (inputData[input_position] >= 128) {
                         /* Extended ASCII character */
                         blockmatrix[current_row][column_position] = 100; /* FNC4 */
                         column_position++;
                         c--;
                     }
-                    blockmatrix[current_row][column_position] = a3_convert(source[input_position]);
+                    blockmatrix[current_row][column_position] = a3_convert(inputData[input_position]);
                     column_position++;
                     c--;
                     input_position++;
@@ -477,14 +477,14 @@ public class CodablockF extends Symbol {
             }
 
             if (!done) {
-                if (((findSubset(source[input_position]) == Mode.ABORC)
-                        && (findSubset(source[input_position + 1]) == Mode.ABORC))
+                if (((findSubset(inputData[input_position]) == Mode.ABORC)
+                        && (findSubset(inputData[input_position + 1]) == Mode.ABORC))
                         && (current_mode == CfMode.MODEC)) {
                     /* Annex B section 1 rule 4 */
                     /* If in Code Subset C and the next data are 2 digits, encode them. */
                     blockmatrix[current_row][column_position]
-                            = ((source[input_position] - '0') * 10)
-                            + (source[input_position + 1] - '0');
+                            = ((inputData[input_position] - '0') * 10)
+                            + (inputData[input_position + 1] - '0');
                     column_position++;
                     c--;
                     input_position += 2;
@@ -494,8 +494,8 @@ public class CodablockF extends Symbol {
 
             if (!done) {
                 if (((current_mode == CfMode.MODEA) || (current_mode == CfMode.MODEB))
-                        && ((findSubset(source[input_position]) == Mode.ABORC)
-                        || ((inputDataType == DataType.GS1) && (source[input_position] == '[')))) {
+                        && ((findSubset(inputData[input_position]) == Mode.ABORC)
+                        || ((inputDataType == DataType.GS1) && (inputData[input_position] == '[')))) {
                     /* Count the number of numeric digits */
                     /*  If 4 or more numeric data characters occur together when in subsets A or B:
                      a.      If there is an even number of numeric data characters, insert a Code C character before the
@@ -506,12 +506,12 @@ public class CodablockF extends Symbol {
                     j = 0;
                     do {
                         i++;
-                        if ((inputDataType == DataType.GS1) && (source[input_position + j] == '[')) {
+                        if ((inputDataType == DataType.GS1) && (inputData[input_position + j] == '[')) {
                             i++;
                         }
                         j++;
-                    } while ((findSubset(source[input_position + j]) == Mode.ABORC)
-                            || ((inputDataType == DataType.GS1) && (source[input_position + j] == '[')));
+                    } while ((findSubset(inputData[input_position + j]) == Mode.ABORC)
+                            || ((inputDataType == DataType.GS1) && (inputData[input_position + j] == '[')));
                     i--;
 
                     if (i >= 4) {
@@ -521,22 +521,22 @@ public class CodablockF extends Symbol {
                             blockmatrix[current_row][column_position] = 99; /* Code C */
                             column_position++;
                             c--;
-                            blockmatrix[current_row][column_position] = ((source[input_position] - '0') * 10)
-                                    + (source[input_position + 1] - '0');
+                            blockmatrix[current_row][column_position] = ((inputData[input_position] - '0') * 10)
+                                    + (inputData[input_position + 1] - '0');
                             column_position++;
                             c--;
                             input_position += 2;
                             current_mode = CfMode.MODEC;
                         } else {
                             /* Annex B section 1 rule 5b */
-                            blockmatrix[current_row][column_position] = a3_convert(source[input_position]);
+                            blockmatrix[current_row][column_position] = a3_convert(inputData[input_position]);
                             column_position++;
                             c--;
                             input_position++;
                         }
                         done = true;
                     } else {
-                        blockmatrix[current_row][column_position] = a3_convert(source[input_position]);
+                        blockmatrix[current_row][column_position] = a3_convert(inputData[input_position]);
                         column_position++;
                         c--;
                         input_position++;
@@ -546,24 +546,24 @@ public class CodablockF extends Symbol {
             }
 
             if (!done) {
-                if ((current_mode == CfMode.MODEB) && (findSubset(source[input_position]) == Mode.SHIFTA)) {
+                if ((current_mode == CfMode.MODEB) && (findSubset(inputData[input_position]) == Mode.SHIFTA)) {
                     /* Annex B section 1 rule 6 */
                     /*  When in subset B and an ASCII control character occurs in the data:
                      a.   If there is a lower case character immediately following the control character, insert a Shift
                      character before the control character.
                      b.   Otherwise, insert a Code A character before the control character to change to subset A. */
-                    if ((source[input_position + 1] >= 96) && (source[input_position + 1] <= 127)) {
+                    if ((inputData[input_position + 1] >= 96) && (inputData[input_position + 1] <= 127)) {
                         /* Annex B section 1 rule 6a */
                         blockmatrix[current_row][column_position] = 98; /* Shift */
                         column_position++;
                         c--;
-                        if (source[input_position] >= 128) {
+                        if (inputData[input_position] >= 128) {
                             /* Extended ASCII character */
                             blockmatrix[current_row][column_position] = 100; /* FNC4 */
                             column_position++;
                             c--;
                         }
-                        blockmatrix[current_row][column_position] = a3_convert(source[input_position]);
+                        blockmatrix[current_row][column_position] = a3_convert(inputData[input_position]);
                         column_position++;
                         c--;
                         input_position++;
@@ -572,13 +572,13 @@ public class CodablockF extends Symbol {
                         blockmatrix[current_row][column_position] = 101; /* Code A */
                         column_position++;
                         c--;
-                        if (source[input_position] >= 128) {
+                        if (inputData[input_position] >= 128) {
                             /* Extended ASCII character */
                             blockmatrix[current_row][column_position] = 100; /* FNC4 */
                             column_position++;
                             c--;
                         }
-                        blockmatrix[current_row][column_position] = a3_convert(source[input_position]);
+                        blockmatrix[current_row][column_position] = a3_convert(inputData[input_position]);
                         column_position++;
                         c--;
                         input_position++;
@@ -589,25 +589,25 @@ public class CodablockF extends Symbol {
             }
 
             if (!done) {
-                if ((current_mode == CfMode.MODEA) && (findSubset(source[input_position]) == Mode.SHIFTB)) {
+                if ((current_mode == CfMode.MODEA) && (findSubset(inputData[input_position]) == Mode.SHIFTB)) {
                     /* Annex B section 1 rule 7 */
                     /* When in subset A and a lower case character occurs in the data:
                      a.   If following that character, a control character occurs in the data before the occurrence of
                      another lower case character, insert a Shift character before the lower case character.
                      b.   Otherwise, insert a Code B character before the lower case character to change to subset B. */
-                    if ((findSubset(source[input_position + 1]) == Mode.SHIFTA)
-                            && (findSubset(source[input_position + 2]) == Mode.SHIFTB)) {
+                    if ((findSubset(inputData[input_position + 1]) == Mode.SHIFTA)
+                            && (findSubset(inputData[input_position + 2]) == Mode.SHIFTB)) {
                         /* Annex B section 1 rule 7a */
                         blockmatrix[current_row][column_position] = 98; /* Shift */
                         column_position++;
                         c--;
-                        if (source[input_position] >= 128) {
+                        if (inputData[input_position] >= 128) {
                             /* Extended ASCII character */
                             blockmatrix[current_row][column_position] = 101; /* FNC4 */
                             column_position++;
                             c--;
                         }
-                        blockmatrix[current_row][column_position] = a3_convert(source[input_position]);
+                        blockmatrix[current_row][column_position] = a3_convert(inputData[input_position]);
                         column_position++;
                         c--;
                         input_position++;
@@ -616,13 +616,13 @@ public class CodablockF extends Symbol {
                         blockmatrix[current_row][column_position] = 100; /* Code B */
                         column_position++;
                         c--;
-                        if (source[input_position] >= 128) {
+                        if (inputData[input_position] >= 128) {
                             /* Extended ASCII character */
                             blockmatrix[current_row][column_position] = 101; /* FNC4 */
                             column_position++;
                             c--;
                         }
-                        blockmatrix[current_row][column_position] = a3_convert(source[input_position]);
+                        blockmatrix[current_row][column_position] = a3_convert(inputData[input_position]);
                         column_position++;
                         c--;
                         input_position++;
@@ -633,8 +633,8 @@ public class CodablockF extends Symbol {
             }
 
             if (!done) {
-                if ((current_mode == CfMode.MODEC) && ((findSubset(source[input_position]) != Mode.ABORC)
-                        || (findSubset(source[input_position + 1]) != Mode.ABORC))) {
+                if ((current_mode == CfMode.MODEC) && ((findSubset(inputData[input_position]) != Mode.ABORC)
+                        || (findSubset(inputData[input_position + 1]) != Mode.ABORC))) {
                     /* Annex B section 1 rule 8 */
                     /*  When in subset C and a non-numeric character (or a single digit) occurs in the data, insert a Code
                      A or Code B character before that character, following rules 8a and 8b to determine between code
@@ -642,18 +642,18 @@ public class CodablockF extends Symbol {
                      a.    If an ASCII control character (eg NUL) occurs in the data before any lower case character, use
                      Code A.
                      b.    Otherwise use Code B. */
-                    if (findSubset(source[input_position]) == Mode.SHIFTA) {
+                    if (findSubset(inputData[input_position]) == Mode.SHIFTA) {
                         /* Annex B section 1 rule 8a */
                         blockmatrix[current_row][column_position] = 101; /* Code A */
                         column_position++;
                         c--;
-                        if (source[input_position] >= 128) {
+                        if (inputData[input_position] >= 128) {
                             /* Extended ASCII character */
                             blockmatrix[current_row][column_position] = 101; /* FNC4 */
                             column_position++;
                             c--;
                         }
-                        blockmatrix[current_row][column_position] = a3_convert(source[input_position]);
+                        blockmatrix[current_row][column_position] = a3_convert(inputData[input_position]);
                         column_position++;
                         c--;
                         input_position++;
@@ -663,13 +663,13 @@ public class CodablockF extends Symbol {
                         blockmatrix[current_row][column_position] = 100; /* Code B */
                         column_position++;
                         c--;
-                        if (source[input_position] >= 128) {
+                        if (inputData[input_position] >= 128) {
                             /* Extended ASCII character */
                             blockmatrix[current_row][column_position] = 100; /* FNC4 */
                             column_position++;
                             c--;
                         }
-                        blockmatrix[current_row][column_position] = a3_convert(source[input_position]);
+                        blockmatrix[current_row][column_position] = a3_convert(inputData[input_position]);
                         column_position++;
                         c--;
                         input_position++;
@@ -767,17 +767,17 @@ public class CodablockF extends Symbol {
 
         /* Section 4.5.2 - Determining the Character Subset Selector in a Row */
 
-        if((source[input_position] >= '0') && (source[input_position + 1] <= '9')) {
+        if((inputData[input_position] >= '0') && (inputData[input_position + 1] <= '9')) {
             /* Rule 1 */
             return CfMode.MODEC;
         }
 
-        if((source[input_position] >= 128) && (source[input_position] <= 160)) {
+        if((inputData[input_position] >= 128) && (inputData[input_position] <= 160)) {
             /* Rule 2 (i) */
             return CfMode.MODEA;
         }
 
-        if((source[input_position] >= 0) && (source[input_position] <= 31)) {
+        if((inputData[input_position] >= 0) && (inputData[input_position] <= 31)) {
             /* Rule 3 */
             return CfMode.MODEA;
         }

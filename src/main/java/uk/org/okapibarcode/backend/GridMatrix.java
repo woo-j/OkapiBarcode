@@ -181,7 +181,7 @@ public class GridMatrix extends Symbol {
         NULL, GM_NUMBER, GM_LOWER, GM_UPPER, GM_MIXED, GM_CONTROL, GM_BYTE, GM_CHINESE
     };
 
-    private int[] inputIntArray;
+    private int[] inputData;
     private String binary;
     private int[] word = new int[1460];
     private boolean[] grid;
@@ -358,17 +358,17 @@ public class GridMatrix extends Symbol {
             if (gb2312.newEncoder().canEncode(content)) {
                 /* GB2312 will work, use Chinese compaction */
                 inputBytes = content.getBytes(gb2312);
-                inputIntArray = new int[inputBytes.length];
+                inputData = new int[inputBytes.length];
                 length = 0;
                 for (i = 0; i < inputBytes.length; i++) {
                     if (((inputBytes[i] & 0xFF) >= 0xA1) && ((inputBytes[i] & 0xFF) <= 0xF7)) {
                         /* Double byte character */
-                        inputIntArray[length] = ((inputBytes[i] & 0xFF) * 256) + (inputBytes[i + 1] & 0xFF);
+                        inputData[length] = ((inputBytes[i] & 0xFF) * 256) + (inputBytes[i + 1] & 0xFF);
                         i++;
                         length++;
                     } else {
                         /* Single byte character */
-                        inputIntArray[length] = inputBytes[i] & 0xFF;
+                        inputData[length] = inputBytes[i] & 0xFF;
                         length++;
                     }
                 }
@@ -378,9 +378,9 @@ public class GridMatrix extends Symbol {
                 /* GB2312 encoding won't work, use other ECI mode */
                 eciProcess(); // Get ECI mode
                 length = inputBytes.length;
-                inputIntArray = new int[length];
+                inputData = new int[length];
                 for (i = 0; i < length; i++) {
-                    inputIntArray[i] = inputBytes[i] & 0xFF;
+                    inputData[i] = inputBytes[i] & 0xFF;
                 }
             }
         } catch (UnsupportedCharsetException e) {
@@ -786,10 +786,10 @@ public class GridMatrix extends Symbol {
             switch (current_mode) {
                 case GM_CHINESE:
                     done = false;
-                    if (inputIntArray[sp] > 0xff) {
+                    if (inputData[sp] > 0xff) {
                         /* GB2312 character */
-                        c1 = (inputIntArray[sp] & 0xff00) >> 8;
-                        c2 = inputIntArray[sp] & 0xff;
+                        c1 = (inputData[sp] & 0xff00) >> 8;
+                        c2 = inputData[sp] & 0xff;
 
                         if ((c1 >= 0xa0) && (c1 <= 0xa9)) {
                             glyph = (0x60 * (c1 - 0xa1)) + (c2 - 0xa0);
@@ -801,7 +801,7 @@ public class GridMatrix extends Symbol {
                     }
                     if (!(done)) {
                         if (sp != (length - 1)) {
-                            if ((inputIntArray[sp] == 13) && (inputIntArray[sp + 1] == 10)) {
+                            if ((inputData[sp] == 13) && (inputData[sp + 1] == 10)) {
                                 /* End of Line */
                                 glyph = 7776;
                                 sp++;
@@ -811,16 +811,16 @@ public class GridMatrix extends Symbol {
                     }
                     if (!(done)) {
                         if (sp != (length - 1)) {
-                            if (((inputIntArray[sp] >= '0') && (inputIntArray[sp] <= '9')) && ((inputIntArray[sp + 1] >= '0') && (inputIntArray[sp + 1] <= '9'))) {
+                            if (((inputData[sp] >= '0') && (inputData[sp] <= '9')) && ((inputData[sp + 1] >= '0') && (inputData[sp + 1] <= '9'))) {
                                 /* Two digits */
-                                glyph = 8033 + (10 * (inputIntArray[sp] - '0')) + (inputIntArray[sp + 1] - '0');
+                                glyph = 8033 + (10 * (inputData[sp] - '0')) + (inputData[sp + 1] - '0');
                                 sp++;
                             }
                         }
                     }
                     if (!(done)) {
                         /* Byte value */
-                        glyph = 7777 + inputIntArray[sp];
+                        glyph = 7777 + inputData[sp];
                     }
 
                     encodeInfo += Integer.toString(glyph) + " ";
@@ -849,24 +849,24 @@ public class GridMatrix extends Symbol {
                     numbuf[1] = '0';
                     numbuf[2] = '0';
                     do {
-                        if ((inputIntArray[sp] >= '0') && (inputIntArray[sp] <= '9')) {
-                            numbuf[p] = inputIntArray[sp];
+                        if ((inputData[sp] >= '0') && (inputData[sp] <= '9')) {
+                            numbuf[p] = inputData[sp];
                             p++;
                         }
-                        switch (inputIntArray[sp]) {
+                        switch (inputData[sp]) {
                             case ' ':
                             case '+':
                             case '-':
                             case '.':
                             case ',':
-                                punt = inputIntArray[sp];
+                                punt = inputData[sp];
                                 ppos = p;
                                 break;
                         }
                         if (sp < (length - 1)) {
-                            if ((inputIntArray[sp] == 13) && (inputIntArray[sp + 1] == 10)) {
+                            if ((inputData[sp] == 13) && (inputData[sp + 1] == 10)) {
                                 /* <end of line> */
-                                punt = inputIntArray[sp];
+                                punt = inputData[sp];
                                 sp++;
                                 ppos = p;
                             }
@@ -934,7 +934,7 @@ public class GridMatrix extends Symbol {
                         byte_count = 0;
                     }
 
-                    glyph = inputIntArray[sp];
+                    glyph = inputData[sp];
                     encodeInfo += Integer.toString(glyph) + " ";
                     for (i = 0x80; i > 0; i = i >> 1) {
                         if ((glyph & i) != 0) {
@@ -949,22 +949,22 @@ public class GridMatrix extends Symbol {
 
                 case GM_MIXED:
                     shift = 1;
-                    if ((inputIntArray[sp] >= '0') && (inputIntArray[sp] <= '9')) {
+                    if ((inputData[sp] >= '0') && (inputData[sp] <= '9')) {
                         shift = 0;
                     }
-                    if ((inputIntArray[sp] >= 'A') && (inputIntArray[sp] <= 'Z')) {
+                    if ((inputData[sp] >= 'A') && (inputData[sp] <= 'Z')) {
                         shift = 0;
                     }
-                    if ((inputIntArray[sp] >= 'a') && (inputIntArray[sp] <= 'z')) {
+                    if ((inputData[sp] >= 'a') && (inputData[sp] <= 'z')) {
                         shift = 0;
                     }
-                    if (inputIntArray[sp] == ' ') {
+                    if (inputData[sp] == ' ') {
                         shift = 0;
                     }
 
                     if (shift == 0) {
                         /* Mixed Mode character */
-                        glyph = positionOf((char) inputIntArray[sp], MIXED_ALPHANUM_SET);
+                        glyph = positionOf((char) inputData[sp], MIXED_ALPHANUM_SET);
                         encodeInfo += Integer.toString(glyph) + " ";
 
                         for (i = 0x20; i > 0; i = i >> 1) {
@@ -978,7 +978,7 @@ public class GridMatrix extends Symbol {
                         /* Shift Mode character */
                         binary += "1111110110"; /* 1014 - shift indicator */
 
-                        addShiftCharacter(inputIntArray[sp]);
+                        addShiftCharacter(inputData[sp]);
                     }
 
                     sp++;
@@ -986,16 +986,16 @@ public class GridMatrix extends Symbol {
 
                 case GM_UPPER:
                     shift = 1;
-                    if ((inputIntArray[sp] >= 'A') && (inputIntArray[sp] <= 'Z')) {
+                    if ((inputData[sp] >= 'A') && (inputData[sp] <= 'Z')) {
                         shift = 0;
                     }
-                    if (inputIntArray[sp] == ' ') {
+                    if (inputData[sp] == ' ') {
                         shift = 0;
                     }
 
                     if (shift == 0) {
                         /* Upper Case character */
-                        glyph = positionOf((char) inputIntArray[sp], MIXED_ALPHANUM_SET) - 10;
+                        glyph = positionOf((char) inputData[sp], MIXED_ALPHANUM_SET) - 10;
                         if (glyph == 52) {
                             // Space character
                             glyph = 26;
@@ -1014,7 +1014,7 @@ public class GridMatrix extends Symbol {
                         /* Shift Mode character */
                         binary += "1111101"; /* 127 - shift indicator */
 
-                        addShiftCharacter(inputIntArray[sp]);
+                        addShiftCharacter(inputData[sp]);
                     }
 
                     sp++;
@@ -1022,16 +1022,16 @@ public class GridMatrix extends Symbol {
 
                 case GM_LOWER:
                     shift = 1;
-                    if ((inputIntArray[sp] >= 'a') && (inputIntArray[sp] <= 'z')) {
+                    if ((inputData[sp] >= 'a') && (inputData[sp] <= 'z')) {
                         shift = 0;
                     }
-                    if (inputIntArray[sp] == ' ') {
+                    if (inputData[sp] == ' ') {
                         shift = 0;
                     }
 
                     if (shift == 0) {
                         /* Lower Case character */
-                        glyph = positionOf((char) inputIntArray[sp], MIXED_ALPHANUM_SET) - 36;
+                        glyph = positionOf((char) inputData[sp], MIXED_ALPHANUM_SET) - 36;
                         encodeInfo += Integer.toString(glyph) + " ";
 
                         for (i = 0x10; i > 0; i = i >> 1) {
@@ -1046,7 +1046,7 @@ public class GridMatrix extends Symbol {
                         /* Shift Mode character */
                         binary += "1111101"; /* 127 - shift indicator */
 
-                        addShiftCharacter(inputIntArray[sp]);
+                        addShiftCharacter(inputData[sp]);
                     }
 
                     sp++;
@@ -1135,7 +1135,7 @@ public class GridMatrix extends Symbol {
         // Characters in GB2312 are encoded as Chinese characters
         for (i = 0; i < length; i++) {
             modeMap[i] = Mode.NULL;
-            if (inputIntArray[i] > 0xFF) {
+            if (inputData[i] > 0xFF) {
                 modeMap[i] = Mode.GM_CHINESE;
             }
         }
@@ -1145,7 +1145,7 @@ public class GridMatrix extends Symbol {
         if (length > 3) {
             i = 1;
             do {
-                if ((inputIntArray[i] == 13) && (inputIntArray[i + 1] == 10)) {
+                if ((inputData[i] == 13) && (inputData[i + 1] == 10)) {
                     // End of line (CR/LF)
 
                     if (modeMap[i - 1] == Mode.GM_CHINESE) {
@@ -1160,7 +1160,7 @@ public class GridMatrix extends Symbol {
 
             i = length - 3;
             do {
-                if ((inputIntArray[i] == 13) && (inputIntArray[i + 1] == 10)) {
+                if ((inputData[i] == 13) && (inputData[i + 1] == 10)) {
                     // End of line (CR/LF)
                     if (modeMap[i + 2] == Mode.GM_CHINESE) {
                         modeMap[i] = Mode.GM_CHINESE;
@@ -1178,7 +1178,7 @@ public class GridMatrix extends Symbol {
         digitLength = 0;
         digitStart = 0;
         for (i = 1; i < length - 1; i++) {
-            if ((inputIntArray[i] >= 48) && (inputIntArray[i] <= 57)) {
+            if ((inputData[i] >= 48) && (inputData[i] <= 57)) {
                 // '0' to '9'
                 if (digits == false) {
                     digits = true;
@@ -1204,14 +1204,14 @@ public class GridMatrix extends Symbol {
 
         // Step 2: all characters 'a' to 'z' are lowercase.
         for (i = 0; i < length; i++) {
-            if ((inputIntArray[i] >= 97) && (inputIntArray[i] <= 122)) {
+            if ((inputData[i] >= 97) && (inputData[i] <= 122)) {
                 modeMap[i] = Mode.GM_LOWER;
             }
         }
 
         // Step 3: all characters 'A' to 'Z' are uppercase.
         for (i = 0; i < length; i++) {
-            if ((inputIntArray[i] >= 65) && (inputIntArray[i] <= 90)) {
+            if ((inputData[i] >= 65) && (inputData[i] <= 90)) {
                 modeMap[i] = Mode.GM_UPPER;
             }
         }
@@ -1222,7 +1222,7 @@ public class GridMatrix extends Symbol {
         spaceLength = 0;
         spaceStart = 0;
         for (i = 1; i < length - 1; i++) {
-            if (inputIntArray[i] == 32) {
+            if (inputData[i] == 32) {
                 if (spaces == false) {
                     spaces = true;
                     spaceLength = 1;
@@ -1256,11 +1256,11 @@ public class GridMatrix extends Symbol {
         // Non-numeric characters in table 7 are also assigned as numerals.
         for(i = 0; i < length; i++) {
             if(modeMap[i] == Mode.NULL) {
-                if ((inputIntArray[i] >= 48) && (inputIntArray[i] <= 57)) {
+                if ((inputData[i] >= 48) && (inputData[i] <= 57)) {
                     // '0' to '9'
                     modeMap[i] = Mode.GM_NUMBER;
                 } else {
-                    switch (inputIntArray[i]) {
+                    switch (inputData[i]) {
                         case 32: // Space
                         case 43: // '+'
                         case 45: // '-'
@@ -1270,7 +1270,7 @@ public class GridMatrix extends Symbol {
                             break;
                         case 13: // CR
                             if (i < length - 1) {
-                                if (inputIntArray[i + 1] == 10) { // LF
+                                if (inputData[i + 1] == 10) { // LF
                                     // <end of line>
                                     modeMap[i] = Mode.GM_NUMBER;
                                     modeMap[i + 1] = Mode.GM_NUMBER;
@@ -1320,7 +1320,7 @@ public class GridMatrix extends Symbol {
                     for (int j = 0; j < segmentLength[i]; j++) {
                         boolean thischarLatch = false;
                         for(int k = 0; k < 63; k++) {
-                            if (inputIntArray[segmentStart[i] + j] == SHIFT_SET[k]) {
+                            if (inputData[segmentStart[i] + j] == SHIFT_SET[k]) {
                                 thischarLatch = true;
                             }
                         }
@@ -1705,13 +1705,13 @@ public class GridMatrix extends Symbol {
             bits += 13;
 
             if (i < length) {
-                if ((inputIntArray[position + i] == 13) && (inputIntArray[position + i + 1] == 10)) {
+                if ((inputData[position + i] == 13) && (inputData[position + i + 1] == 10)) {
                     // <end of line>
                     i++;
                 }
 
-                if (((inputIntArray[position + i] >= 48) && (inputIntArray[position + i] <= 57)) &&
-                       ((inputIntArray[position + i + 1] >= 48) && (inputIntArray[position + i + 1] <= 57))) {
+                if (((inputData[position + i] >= 48) && (inputData[position + i] <= 57)) &&
+                       ((inputData[position + i + 1] >= 48) && (inputData[position + i + 1] <= 57))) {
                     // two digits
                     i++;
                 }
@@ -1729,7 +1729,7 @@ public class GridMatrix extends Symbol {
         for (i = 0; i < length; i++) {
             bits += 6;
             for(int k = 0; k < 63; k++) {
-                if (inputIntArray[position + i] == SHIFT_SET[k]) {
+                if (inputData[position + i] == SHIFT_SET[k]) {
                     bits += 10;
                 }
             }
@@ -1745,14 +1745,14 @@ public class GridMatrix extends Symbol {
         int nonnumbers = 0;
 
         for (i = 0; i < length; i++) {
-            if ((inputIntArray[position + i] >= 48) && (inputIntArray[position + i] <= 57)) {
+            if ((inputData[position + i] >= 48) && (inputData[position + i] <= 57)) {
                 numbers++;
             } else {
                 nonnumbers++;
             }
 
             if (i != 0) {
-                if ((inputIntArray[position + i] == 10) && (inputIntArray[position + i - 1] == 13)) {
+                if ((inputData[position + i] == 10) && (inputData[position + i - 1] == 13)) {
                     // <end of line>
                     nonnumbers--;
                 }
@@ -1786,7 +1786,7 @@ public class GridMatrix extends Symbol {
             bits += 100;
         }
 
-        if (!((inputIntArray[position + i - 1] >= 48) && (inputIntArray[position + i - 1] <= 57))) {
+        if (!((inputData[position + i - 1] >= 48) && (inputData[position + i - 1] <= 57))) {
             // Data must end with a digit
             bits += 100;
         }
@@ -1800,7 +1800,7 @@ public class GridMatrix extends Symbol {
         int bits = 0;
 
         for (i = 0; i < length; i++) {
-            if (inputIntArray[position + i] <= 0xFF) {
+            if (inputData[position + i] <= 0xFF) {
                 bits += 8;
             } else {
                 bits += 16;

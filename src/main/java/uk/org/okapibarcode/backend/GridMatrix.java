@@ -15,7 +15,8 @@
  */
 package uk.org.okapibarcode.backend;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.UnsupportedCharsetException;
 
 /**
  * <p>Implements Grid Matrix bar code symbology according to AIMD014.
@@ -347,29 +348,16 @@ public class GridMatrix extends Symbol {
         int data_max;
         int length;
         String bin;
-        int qmarksBefore, qmarksAfter;
 
         for (i = 0; i < 1460; i++) {
             word[i] = 0;
         }
 
         try {
-            /* Try converting to GB2312 */
-            qmarksBefore = 0;
-            for (i = 0; i < content.length(); i++) {
-                if (content.charAt(i) == '?') {
-                    qmarksBefore++;
-                }
-            }
-            inputBytes = content.getBytes("EUC_CN");
-            qmarksAfter = 0;
-            for (i = 0; i < inputBytes.length; i++) {
-                if (inputBytes[i] == '?') {
-                    qmarksAfter++;
-                }
-            }
-            if (qmarksBefore == qmarksAfter) {
-                /* GB2312 encoding worked, use chinese compaction */
+            Charset gb2312 = Charset.forName("GB2312");
+            if (gb2312.newEncoder().canEncode(content)) {
+                /* GB2312 will work, use Chinese compaction */
+                inputBytes = content.getBytes(gb2312);
                 inputIntArray = new int[inputBytes.length];
                 length = 0;
                 for (i = 0; i < inputBytes.length; i++) {
@@ -387,7 +375,7 @@ public class GridMatrix extends Symbol {
                 encodeInfo += "Using GB2312 character encoding\n";
                 eciMode = 29;
             } else {
-                /* GB2312 encoding didn't work, use other ECI mode */
+                /* GB2312 encoding won't work, use other ECI mode */
                 eciProcess(); // Get ECI mode
                 length = inputBytes.length;
                 inputIntArray = new int[length];
@@ -395,7 +383,7 @@ public class GridMatrix extends Symbol {
                     inputIntArray[i] = inputBytes[i] & 0xFF;
                 }
             }
-        } catch (UnsupportedEncodingException e) {
+        } catch (UnsupportedCharsetException e) {
             throw new OkapiException("Byte conversion encoding error");
         }
 

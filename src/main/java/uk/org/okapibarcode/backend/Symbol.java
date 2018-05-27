@@ -575,7 +575,7 @@ public abstract class Symbol {
         // Enforce compliance with GS1 General Specification
         // http://www.gs1.org/docs/gsmp/barcodes/GS1_General_Specifications.pdf
 
-        String reduced = "";
+        StringBuilder reduced = new StringBuilder(source.length());
 
         int i, j, last_ai;
         boolean ai_latch;
@@ -799,12 +799,12 @@ public abstract class Symbol {
         ai_latch = false;
         for (i = 0; i < src_len; i++) {
             if ((source.charAt(i) != '[') && (source.charAt(i) != ']')) {
-                reduced += source.charAt(i);
+                reduced.append(source.charAt(i));
             }
             if (source.charAt(i) == '[') {
                 /* Start of an AI string */
                 if (ai_latch) {
-                    reduced += '[';
+                    reduced.append('[');
                 }
                 last_ai = (10 * Character.getNumericValue(source.charAt(i + 1)))
                         + Character.getNumericValue(source.charAt(i + 2));
@@ -824,7 +824,7 @@ public abstract class Symbol {
         }
 
         /* the character '[' in the reduced string refers to the FNC1 character */
-        return reduced;
+        return reduced.toString();
     }
 
     protected String hibcProcess(String source) {

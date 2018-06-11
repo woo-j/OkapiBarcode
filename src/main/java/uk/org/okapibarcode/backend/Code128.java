@@ -341,7 +341,7 @@ public class Code128 extends Symbol {
                     break;
                 default: /* Start C */
                     dest += CODE128_TABLE[104]; /* Start B */
-                    values[0] = 105;
+                    values[0] = 104;
                     dest += CODE128_TABLE[96]; /* FNC3 */
                     values[1] = 96;
                     dest += CODE128_TABLE[99]; /* Code C */

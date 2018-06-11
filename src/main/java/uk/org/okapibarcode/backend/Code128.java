@@ -318,9 +318,9 @@ public class Code128 extends Symbol {
         encodeInfo += "Encoding: ";
 
         /* So now we know what start character to use - we can get on with it! */
-        if(readerInit) {
+        if (readerInit) {
             /* Reader Initialisation mode */
-            switch(set[0]) {
+            switch (set[0]) {
                 case LATCHA: /* Start A */
                     dest += CODE128_TABLE[103];
                     values[0] = 103;

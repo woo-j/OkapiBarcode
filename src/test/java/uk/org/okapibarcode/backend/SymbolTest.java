@@ -253,7 +253,8 @@ public class SymbolTest {
             return new Code39Reader();
         } else if (symbol instanceof Codabar) {
             return new CodaBarReader();
-        } else if (symbol instanceof AztecCode) {
+        } else if (symbol instanceof AztecCode && symbol.getDataType() != DataType.GS1) {
+            // ZXing does not currently support GS1 in Aztec Code symbols.
             return new AztecReader();
         } else if (symbol instanceof QrCode) {
             return new QRCodeReader();

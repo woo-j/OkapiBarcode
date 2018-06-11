@@ -18,9 +18,9 @@ package uk.org.okapibarcode.backend;
 import java.io.UnsupportedEncodingException;
 
 /**
- * Implements QR Code bar code symbology According to ISO/IEC 18004:2015
- * <br>
- * The maximum capacity of a (version 40) QR Code symbol is 7089 numeric digits,
+ * <p>Implements QR Code bar code symbology According to ISO/IEC 18004:2015.
+ *
+ * <p>The maximum capacity of a (version 40) QR Code symbol is 7089 numeric digits,
  * 4296 alphanumeric characters or 2953 bytes of data. QR Code symbols can also
  * be used to encode GS1 data. QR Code symbols can encode characters in the
  * Latin-1 set and Kanji characters which are members of the Shift-JIS encoding
@@ -30,359 +30,81 @@ import java.io.UnsupportedEncodingException;
  */
 public class QrCode extends Symbol {
 
-    private enum qrMode {
+    public enum EccMode {
+        L, M, Q, H
+    }
 
+    private enum QrMode {
         NULL, KANJI, BINARY, ALPHANUM, NUMERIC
     }
 
-    public enum EccMode {
-
-        L, M, Q, H
-    }
-    private qrMode[] inputMode;
-    private qrMode[] proposedMode;
-    private String binary;
-    private int[] datastream;
-    private int[] fullstream;
-    private int[] inputData;
-    private byte[] grid;
-    private byte[] eval;
-    private int preferredVersion = 0;
-    private int inputLength;
-
-    /**
-     * Sets the preferred symbol size. This value may be ignored if the data
-     * string is too large to fit into the specified symbol. Input values
-     * correspond to symbol sizes as shown in the following table.
-     * <table summary="Available QR Code sizes">
-     * <tbody>
-     * <tr>
-     * <th><p>
-     * Input</p></th>
-     * <th><p>
-     * Symbol Size</p></th>
-     * <th><p>
-     * Input</p></th>
-     * <th><p>
-     * Symbol Size</p></th>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 1</p></td>
-     * <td><p>
-     * 21 x 21</p></td>
-     * <td><p>
-     * 21</p></td>
-     * <td><p>
-     * 101 x 101</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 2</p></td>
-     * <td><p>
-     * 25 x 25</p></td>
-     * <td><p>
-     * 22</p></td>
-     * <td><p>
-     * 105 x 105</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 3</p></td>
-     * <td><p>
-     * 29 x 29</p></td>
-     * <td><p>
-     * 23</p></td>
-     * <td><p>
-     * 109 x 109</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 4</p></td>
-     * <td><p>
-     * 33 x 33</p></td>
-     * <td><p>
-     * 24</p></td>
-     * <td><p>
-     * 113 x 113</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 5</p></td>
-     * <td><p>
-     * 37 x 37</p></td>
-     * <td><p>
-     * 25</p></td>
-     * <td><p>
-     * 117 x 117</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 6</p></td>
-     * <td><p>
-     * 41 x 41</p></td>
-     * <td><p>
-     * 26</p></td>
-     * <td><p>
-     * 121 x 121</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 7</p></td>
-     * <td><p>
-     * 45 x 45</p></td>
-     * <td><p>
-     * 27</p></td>
-     * <td><p>
-     * 125 x 125</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 8</p></td>
-     * <td><p>
-     * 49 x 49</p></td>
-     * <td><p>
-     * 28</p></td>
-     * <td><p>
-     * 129 x 129</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 9</p></td>
-     * <td><p>
-     * 53 x 53</p></td>
-     * <td><p>
-     * 29</p></td>
-     * <td><p>
-     * 133 x 133</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 10</p></td>
-     * <td><p>
-     * 57 x 57</p></td>
-     * <td><p>
-     * 30</p></td>
-     * <td><p>
-     * 137 x 137</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 11</p></td>
-     * <td><p>
-     * 61 x 61</p></td>
-     * <td><p>
-     * 31</p></td>
-     * <td><p>
-     * 141 x 141</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 12</p></td>
-     * <td><p>
-     * 65 x 65</p></td>
-     * <td><p>
-     * 32</p></td>
-     * <td><p>
-     * 145 x 145</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 13</p></td>
-     * <td><p>
-     * 69 x 69</p></td>
-     * <td><p>
-     * 33</p></td>
-     * <td><p>
-     * 149 x 149</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 14</p></td>
-     * <td><p>
-     * 73 x 73</p></td>
-     * <td><p>
-     * 34</p></td>
-     * <td><p>
-     * 153 x 153</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 15</p></td>
-     * <td><p>
-     * 77 x 77</p></td>
-     * <td><p>
-     * 35</p></td>
-     * <td><p>
-     * 157 x 157</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 16</p></td>
-     * <td><p>
-     * 81 x 81</p></td>
-     * <td><p>
-     * 36</p></td>
-     * <td><p>
-     * 161 x 161</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 17</p></td>
-     * <td><p>
-     * 85 x 85</p></td>
-     * <td><p>
-     * 37</p></td>
-     * <td><p>
-     * 165 x 165</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 18</p></td>
-     * <td><p>
-     * 89 x 89</p></td>
-     * <td><p>
-     * 38</p></td>
-     * <td><p>
-     * 169 x 169</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 19</p></td>
-     * <td><p>
-     * 93 x 93</p></td>
-     * <td><p>
-     * 39</p></td>
-     * <td><p>
-     * 173 x 173</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 20</p></td>
-     * <td><p>
-     * 97 x 97</p></td>
-     * <td><p>
-     * 40</p></td>
-     * <td><p>
-     * 177 x 177</p></td>
-     * </tr>
-     * </tbody>
-     * </table>
-     *
-     * @param version Symbol version number required
-     */
-    public void setPreferredVersion(int version) {
-        preferredVersion = version;
-    }
-
-    private EccMode preferredEccLevel = EccMode.L;
-
-    /**
-     * Set the amount of symbol space allocated to error correction. Levels are
-     * predefined according to the following table:
-     * <table summary="QR Code error correction levels">
-     * <tbody>
-     * <tr>
-     * <th>ECC Level</th>
-     * <th>Error Correction Capacity</th>
-     * <th>Recovery Capacity</th>
-     * </tr>
-     * <tr>
-     * <td>L (default)</td>
-     * <td>Approx 20% of symbol</td>
-     * <td>Approx 7%</td>
-     * </tr>
-     * <tr>
-     * <td>M</td>
-     * <td>Approx 37% of symbol</td>
-     * <td>Approx 15%</td>
-     * </tr>
-     * <tr>
-     * <td>Q</td>
-     * <td>Approx 55% of symbol</td>
-     * <td>Approx 25%</td>
-     * </tr>
-     * <tr>
-     * <td>H</td>
-     * <td>Approx 65% of symbol</td>
-     * <td>Approx 30%</td>
-     * </tr>
-     * </tbody>
-     * </table>
-     *
-     * @param eccMode Error correction level
-     */
-    public void setEccMode(EccMode eccMode) {
-        preferredEccLevel = eccMode;
-    }
-
     /* Table 5 - Encoding/Decoding table for Alphanumeric mode */
-    private final char[] rhodium = {
+    private static final char[] RHODIUM = {
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E',
         'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
         'U', 'V', 'W', 'X', 'Y', 'Z', ' ', '$', '%', '*', '+', '-', '.', '/', ':'
     };
 
-    private final int[] qr_data_codewords_L = {
+    private static final int[] QR_DATA_CODEWORDS_L = {
         19, 34, 55, 80, 108, 136, 156, 194, 232, 274, 324, 370, 428, 461, 523, 589, 647,
         721, 795, 861, 932, 1006, 1094, 1174, 1276, 1370, 1468, 1531, 1631,
         1735, 1843, 1955, 2071, 2191, 2306, 2434, 2566, 2702, 2812, 2956
     };
 
-    private final int[] qr_data_codewords_M = {
+    private static final int[] QR_DATA_CODEWORDS_M = {
         16, 28, 44, 64, 86, 108, 124, 154, 182, 216, 254, 290, 334, 365, 415, 453, 507,
         563, 627, 669, 714, 782, 860, 914, 1000, 1062, 1128, 1193, 1267,
         1373, 1455, 1541, 1631, 1725, 1812, 1914, 1992, 2102, 2216, 2334
     };
 
-    private final int[] qr_data_codewords_Q = {
+    private static final int[] QR_DATA_CODEWORDS_Q = {
         13, 22, 34, 48, 62, 76, 88, 110, 132, 154, 180, 206, 244, 261, 295, 325, 367,
         397, 445, 485, 512, 568, 614, 664, 718, 754, 808, 871, 911,
         985, 1033, 1115, 1171, 1231, 1286, 1354, 1426, 1502, 1582, 1666
     };
 
-    private final int[] qr_data_codewords_H = {
+    private static final int[] QR_DATA_CODEWORDS_H = {
         9, 16, 26, 36, 46, 60, 66, 86, 100, 122, 140, 158, 180, 197, 223, 253, 283,
         313, 341, 385, 406, 442, 464, 514, 538, 596, 628, 661, 701,
         745, 793, 845, 901, 961, 986, 1054, 1096, 1142, 1222, 1276
     };
 
-    private final int[] qr_blocks_L = {
+    private static final int[] QR_BLOCKS_L = {
         1, 1, 1, 1, 1, 2, 2, 2, 2, 4, 4, 4, 4, 4, 6, 6, 6, 6, 7, 8, 8, 9, 9, 10, 12, 12,
         12, 13, 14, 15, 16, 17, 18, 19, 19, 20, 21, 22, 24, 25
     };
 
-    private final int[] qr_blocks_M = {
+    private static final int[] QR_BLOCKS_M = {
         1, 1, 1, 2, 2, 4, 4, 4, 5, 5, 5, 8, 9, 9, 10, 10, 11, 13, 14, 16, 17, 17, 18, 20,
         21, 23, 25, 26, 28, 29, 31, 33, 35, 37, 38, 40, 43, 45, 47, 49
     };
 
-    private final int[] qr_blocks_Q = {
+    private static final int[] QR_BLOCKS_Q = {
         1, 1, 2, 2, 4, 4, 6, 6, 8, 8, 8, 10, 12, 16, 12, 17, 16, 18, 21, 20, 23, 23, 25,
         27, 29, 34, 34, 35, 38, 40, 43, 45, 48, 51, 53, 56, 59, 62, 65, 68
     };
 
-    private final int[] qr_blocks_H = {
+    private static final int[] QR_BLOCKS_H = {
         1, 1, 2, 4, 4, 4, 5, 6, 8, 8, 11, 11, 16, 16, 18, 16, 19, 21, 25, 25, 25, 34, 30,
         32, 35, 37, 40, 42, 45, 48, 51, 54, 57, 60, 63, 66, 70, 74, 77, 81
     };
 
-    private final int[] qr_total_codewords = {
+    private static final int[] QR_TOTAL_CODEWORDS = {
         26, 44, 70, 100, 134, 172, 196, 242, 292, 346, 404, 466, 532, 581, 655, 733, 815,
         901, 991, 1085, 1156, 1258, 1364, 1474, 1588, 1706, 1828, 1921, 2051,
         2185, 2323, 2465, 2611, 2761, 2876, 3034, 3196, 3362, 3532, 3706
     };
 
-    private final int[] qr_sizes = {
+    private static final int[] QR_SIZES = {
         21, 25, 29, 33, 37, 41, 45, 49, 53, 57, 61, 65, 69, 73, 77, 81, 85, 89, 93, 97,
         101, 105, 109, 113, 117, 121, 125, 129, 133, 137, 141, 145, 149, 153, 157, 161, 165, 169, 173, 177
     };
 
-    private final int[] qr_align_loopsize = {
+    private static final int[] QR_ALIGN_LOOPSIZE = {
         0, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7
     };
 
-    private final int[] qr_table_e1 = {
+    private static final int[] QR_TABLE_E1 = {
         6, 18, 0, 0, 0, 0, 0,
         6, 22, 0, 0, 0, 0, 0,
         6, 26, 0, 0, 0, 0, 0,
@@ -424,20 +146,89 @@ public class QrCode extends Symbol {
         6, 30, 58, 86, 114, 142, 170
     };
 
-    private final int[] qr_annex_c = {
+    private static final int[] QR_ANNEX_C = {
         /* Format information bit sequences */
         0x5412, 0x5125, 0x5e7c, 0x5b4b, 0x45f9, 0x40ce, 0x4f97, 0x4aa0, 0x77c4, 0x72f3, 0x7daa, 0x789d,
         0x662f, 0x6318, 0x6c41, 0x6976, 0x1689, 0x13be, 0x1ce7, 0x19d0, 0x0762, 0x0255, 0x0d0c, 0x083b,
         0x355f, 0x3068, 0x3f31, 0x3a06, 0x24b4, 0x2183, 0x2eda, 0x2bed
     };
 
-    private final long[] qr_annex_d = {
+    private static final long[] QR_ANNEX_D = {
         /* Version information bit sequences */
         0x07c94, 0x085bc, 0x09a99, 0x0a4d3, 0x0bbf6, 0x0c762, 0x0d847, 0x0e60d, 0x0f928, 0x10b78,
         0x1145d, 0x12a17, 0x13532, 0x149a6, 0x15683, 0x168c9, 0x177ec, 0x18ec4, 0x191e1, 0x1afab,
         0x1b08e, 0x1cc1a, 0x1d33f, 0x1ed75, 0x1f250, 0x209d5, 0x216f0, 0x228ba, 0x2379f, 0x24b0b,
         0x2542e, 0x26a64, 0x27541, 0x28c69
     };
+
+    private QrMode[] inputMode;
+    private QrMode[] proposedMode;
+    private String binary;
+    private int[] datastream;
+    private int[] fullstream;
+    private int[] inputData;
+    private byte[] grid;
+    private byte[] eval;
+    private int preferredVersion;
+    private int inputLength;
+    private EccMode preferredEccLevel = EccMode.L;
+
+    /**
+     * Sets the preferred symbol size. This value may be ignored if the data
+     * string is too large to fit into the specified symbol. Input values
+     * correspond to symbol sizes as shown in the following table:
+     *
+     * <table summary="Available QR Code sizes">
+     * <tbody>
+     * <tr><th>Input</th><th>Symbol Size</th><th>Input</th><th>Symbol Size</th></tr>
+     * <tr><td>1    </td><td>21 x 21    </td><td>21   </td><td>101 x 101  </td></tr>
+     * <tr><td>2    </td><td>25 x 25    </td><td>22   </td><td>105 x 105  </td></tr>
+     * <tr><td>3    </td><td>29 x 29    </td><td>23   </td><td>109 x 109  </td></tr>
+     * <tr><td>4    </td><td>33 x 33    </td><td>24   </td><td>113 x 113  </td></tr>
+     * <tr><td>5    </td><td>37 x 37    </td><td>25   </td><td>117 x 117  </td></tr>
+     * <tr><td>6    </td><td>41 x 41    </td><td>26   </td><td>121 x 121  </td></tr>
+     * <tr><td>7    </td><td>45 x 45    </td><td>27   </td><td>125 x 125  </td></tr>
+     * <tr><td>8    </td><td>49 x 49    </td><td>28   </td><td>129 x 129  </td></tr>
+     * <tr><td>9    </td><td>53 x 53    </td><td>29   </td><td>133 x 133  </td></tr>
+     * <tr><td>10   </td><td>57 x 57    </td><td>30   </td><td>137 x 137  </td></tr>
+     * <tr><td>11   </td><td>61 x 61    </td><td>31   </td><td>141 x 141  </td></tr>
+     * <tr><td>12   </td><td>65 x 65    </td><td>32   </td><td>145 x 145  </td></tr>
+     * <tr><td>13   </td><td>69 x 69    </td><td>33   </td><td>149 x 149  </td></tr>
+     * <tr><td>14   </td><td>73 x 73    </td><td>34   </td><td>153 x 153  </td></tr>
+     * <tr><td>15   </td><td>77 x 77    </td><td>35   </td><td>157 x 157  </td></tr>
+     * <tr><td>16   </td><td>81 x 81    </td><td>36   </td><td>161 x 161  </td></tr>
+     * <tr><td>17   </td><td>85 x 85    </td><td>37   </td><td>165 x 165  </td></tr>
+     * <tr><td>18   </td><td>89 x 89    </td><td>38   </td><td>169 x 169  </td></tr>
+     * <tr><td>19   </td><td>93 x 93    </td><td>39   </td><td>173 x 173  </td></tr>
+     * <tr><td>20   </td><td>97 x 97    </td><td>40   </td><td>177 x 177  </td></tr>
+     * </tbody>
+     * </table>
+     *
+     * @param version symbol version number required
+     */
+    public void setPreferredVersion(int version) {
+        preferredVersion = version;
+    }
+
+    /**
+     * Sets the amount of symbol space allocated to error correction. Levels are
+     * predefined according to the following table:
+     *
+     * <table summary="QR Code error correction levels">
+     * <tbody>
+     * <tr><th>ECC Level  </th><th>Error Correction Capacity</th><th>Recovery Capacity</th></tr>
+     * <tr><td>L (default)</td><td>Approx 20% of symbol     </td><td>Approx 7%        </td></tr>
+     * <tr><td>M          </td><td>Approx 37% of symbol     </td><td>Approx 15%       </td></tr>
+     * <tr><td>Q          </td><td>Approx 55% of symbol     </td><td>Approx 25%       </td></tr>
+     * <tr><td>H          </td><td>Approx 65% of symbol     </td><td>Approx 30%       </td></tr>
+     * </tbody>
+     * </table>
+     *
+     * @param eccMode error correction level
+     */
+    public void setEccMode(EccMode eccMode) {
+        preferredEccLevel = eccMode;
+    }
 
     @Override
     protected void encode() {
@@ -457,7 +248,7 @@ public class QrCode extends Symbol {
          checks to see if the the data will fit in a smaller
          symbol, recalculating the binary length if necessary.
          */
-        inputMode = new qrMode[content.length()];
+        inputMode = new QrMode[content.length()];
         modeFirstFix();
         est_binlen = estimate_binary_length();
 
@@ -484,22 +275,22 @@ public class QrCode extends Symbol {
         for (i = 39; i >= 0; i--) {
             switch (ecc_level) {
                 case L:
-                    if ((8 * qr_data_codewords_L[i]) >= est_binlen) {
+                    if ((8 * QR_DATA_CODEWORDS_L[i]) >= est_binlen) {
                         autosize = i + 1;
                     }
                     break;
                 case M:
-                    if ((8 * qr_data_codewords_M[i]) >= est_binlen) {
+                    if ((8 * QR_DATA_CODEWORDS_M[i]) >= est_binlen) {
                         autosize = i + 1;
                     }
                     break;
                 case Q:
-                    if ((8 * qr_data_codewords_Q[i]) >= est_binlen) {
+                    if ((8 * QR_DATA_CODEWORDS_Q[i]) >= est_binlen) {
                         autosize = i + 1;
                     }
                     break;
                 case H:
-                    if ((8 * qr_data_codewords_H[i]) >= est_binlen) {
+                    if ((8 * QR_DATA_CODEWORDS_H[i]) >= est_binlen) {
                         autosize = i + 1;
                     }
                     break;
@@ -527,22 +318,22 @@ public class QrCode extends Symbol {
 
                 switch (ecc_level) {
                     case L:
-                        if ((8 * qr_data_codewords_L[autosize - 2]) < est_binlen) {
+                        if ((8 * QR_DATA_CODEWORDS_L[autosize - 2]) < est_binlen) {
                             canShrink = false;
                         }
                         break;
                     case M:
-                        if ((8 * qr_data_codewords_M[autosize - 2]) < est_binlen) {
+                        if ((8 * QR_DATA_CODEWORDS_M[autosize - 2]) < est_binlen) {
                             canShrink = false;
                         }
                         break;
                     case Q:
-                        if ((8 * qr_data_codewords_Q[autosize - 2]) < est_binlen) {
+                        if ((8 * QR_DATA_CODEWORDS_Q[autosize - 2]) < est_binlen) {
                             canShrink = false;
                         }
                         break;
                     case H:
-                        if ((8 * qr_data_codewords_H[autosize - 2]) < est_binlen) {
+                        if ((8 * QR_DATA_CODEWORDS_H[autosize - 2]) < est_binlen) {
                             canShrink = false;
                         }
                         break;
@@ -573,41 +364,41 @@ public class QrCode extends Symbol {
             }
         }
 
-        /* Ensure maxium error correction capacity */
-        if (est_binlen <= (qr_data_codewords_M[version - 1] * 8)) {
+        /* Ensure maximum error correction capacity */
+        if (est_binlen <= (QR_DATA_CODEWORDS_M[version - 1] * 8)) {
             ecc_level = EccMode.M;
         }
-        if (est_binlen <= (qr_data_codewords_Q[version - 1] * 8)) {
+        if (est_binlen <= (QR_DATA_CODEWORDS_Q[version - 1] * 8)) {
             ecc_level = EccMode.Q;
         }
-        if (est_binlen <= (qr_data_codewords_H[version - 1] * 8)) {
+        if (est_binlen <= (QR_DATA_CODEWORDS_H[version - 1] * 8)) {
             ecc_level = EccMode.H;
         }
 
-        targetCwCount = qr_data_codewords_L[version - 1];
-        blocks = qr_blocks_L[version - 1];
+        targetCwCount = QR_DATA_CODEWORDS_L[version - 1];
+        blocks = QR_BLOCKS_L[version - 1];
         switch (ecc_level) {
             case M:
-                targetCwCount = qr_data_codewords_M[version - 1];
-                blocks = qr_blocks_M[version - 1];
+                targetCwCount = QR_DATA_CODEWORDS_M[version - 1];
+                blocks = QR_BLOCKS_M[version - 1];
                 break;
             case Q:
-                targetCwCount = qr_data_codewords_Q[version - 1];
-                blocks = qr_blocks_Q[version - 1];
+                targetCwCount = QR_DATA_CODEWORDS_Q[version - 1];
+                blocks = QR_BLOCKS_Q[version - 1];
                 break;
             case H:
-                targetCwCount = qr_data_codewords_H[version - 1];
-                blocks = qr_blocks_H[version - 1];
+                targetCwCount = QR_DATA_CODEWORDS_H[version - 1];
+                blocks = QR_BLOCKS_H[version - 1];
                 break;
         }
 
         datastream = new int[targetCwCount + 1];
-        fullstream = new int[qr_total_codewords[version - 1] + 1];
+        fullstream = new int[QR_TOTAL_CODEWORDS[version - 1] + 1];
 
         qr_binary(version, targetCwCount);
         add_ecc(version, targetCwCount, blocks);
 
-        size = qr_sizes[version - 1];
+        size = QR_SIZES[version - 1];
 
         grid = new byte[size * size];
 
@@ -636,7 +427,7 @@ public class QrCode extends Symbol {
         }
 
         setup_grid(size, version);
-        populate_grid(size, qr_total_codewords[version - 1]);
+        populate_grid(size, QR_TOTAL_CODEWORDS[version - 1]);
         bitmask = apply_bitmask(size, ecc_level);
         encodeInfo += "Mask Pattern: " + Integer.toBinaryString(bitmask) + "\n";
         add_format_info(size, ecc_level, bitmask);
@@ -663,7 +454,6 @@ public class QrCode extends Symbol {
     }
 
     private void modeFirstFix() {
-        int i;
 
         eciProcess(); // Get ECI mode
 
@@ -671,47 +461,47 @@ public class QrCode extends Symbol {
             /* Shift-JIS encoding, use Kanji mode */
             inputLength = content.length();
             inputData = new int[inputLength];
-            for (i = 0; i < inputLength; i++) {
+            for (int i = 0; i < inputLength; i++) {
                 inputData[i] = content.charAt(i);
             }
         } else {
             /* Any other encoding method */
             inputLength = inputBytes.length;
             inputData = new int[inputLength];
-            for (i = 0; i < inputLength; i++) {
+            for (int i = 0; i < inputLength; i++) {
                 inputData[i] = inputBytes[i] & 0xFF;
             }
         }
 
-        inputMode = new qrMode[inputLength];
+        inputMode = new QrMode[inputLength];
 
-        for (i = 0; i < inputLength; i++) {
+        for (int i = 0; i < inputLength; i++) {
             if (inputData[i] > 0xff) {
-                inputMode[i] = qrMode.KANJI;
+                inputMode[i] = QrMode.KANJI;
             } else {
-                inputMode[i] = qrMode.BINARY;
+                inputMode[i] = QrMode.BINARY;
                 if (isXAlpha((char) (inputData[i] & 0xFF))) {
-                    inputMode[i] = qrMode.ALPHANUM;
+                    inputMode[i] = QrMode.ALPHANUM;
                 }
                 if ((inputDataType == DataType.GS1) && (inputData[i] == '[')) {
-                    inputMode[i] = qrMode.ALPHANUM;
+                    inputMode[i] = QrMode.ALPHANUM;
                 }
                 if (isXNumeric((char) (inputData[i] & 0xff))) {
-                    inputMode[i] = qrMode.NUMERIC;
+                    inputMode[i] = QrMode.NUMERIC;
                 }
             }
         }
     }
 
     private int getBinaryLength(int version) {
-        /* Calculate the actial bitlength of the proposed binary string */
-        qrMode currentMode;
+        /* Calculate the actual bit length of the proposed binary string */
+        QrMode currentMode;
         int i, j;
         int count = 0;
 
         applyOptimisation(version);
 
-        currentMode = qrMode.NULL;
+        currentMode = QrMode.NULL;
 
         if (eciMode != 3) {
             count += 12;
@@ -782,7 +572,7 @@ public class QrCode extends Symbol {
 
         int blockCount = 0;
         int i, j;
-        qrMode currentMode = qrMode.NULL;
+        QrMode currentMode = QrMode.NULL;
 
         for (i = 0; i < inputLength; i++) {
             if (inputMode[i] != currentMode) {
@@ -792,10 +582,10 @@ public class QrCode extends Symbol {
         }
 
         int[] blockLength = new int[blockCount];
-        qrMode[] blockMode = new qrMode[blockCount];
+        QrMode[] blockMode = new QrMode[blockCount];
 
         j = -1;
-        currentMode = qrMode.NULL;
+        currentMode = QrMode.NULL;
         for (i = 0; i < inputLength; i++) {
             if (inputMode[i] != currentMode) {
                 j++;
@@ -810,60 +600,60 @@ public class QrCode extends Symbol {
         if (blockCount > 1) {
             // Search forward
             for (i = 0; i <= (blockCount - 2); i++) {
-                if (blockMode[i] == qrMode.BINARY) {
+                if (blockMode[i] == QrMode.BINARY) {
                     switch (blockMode[i + 1]) {
                         case KANJI:
                             if (blockLength[i + 1] < tribus(version, 4, 5, 6)) {
-                                blockMode[i + 1] = qrMode.BINARY;
+                                blockMode[i + 1] = QrMode.BINARY;
                             }
                             break;
                         case ALPHANUM:
                             if (blockLength[i + 1] < tribus(version, 7, 8, 9)) {
-                                blockMode[i + 1] = qrMode.BINARY;
+                                blockMode[i + 1] = QrMode.BINARY;
                             }
                             break;
                         case NUMERIC:
                             if (blockLength[i + 1] < tribus(version, 3, 4, 5)) {
-                                blockMode[i + 1] = qrMode.BINARY;
+                                blockMode[i + 1] = QrMode.BINARY;
                             }
                             break;
                     }
                 }
 
-                if ((blockMode[i] == qrMode.ALPHANUM)
-                        && (blockMode[i + 1] == qrMode.NUMERIC)) {
+                if ((blockMode[i] == QrMode.ALPHANUM)
+                        && (blockMode[i + 1] == QrMode.NUMERIC)) {
                     if (blockLength[i + 1] < tribus(version, 6, 8, 10)) {
-                        blockMode[i + 1] = qrMode.ALPHANUM;
+                        blockMode[i + 1] = QrMode.ALPHANUM;
                     }
                 }
             }
 
             // Search backward
             for (i = blockCount - 1; i > 0; i--) {
-                if (blockMode[i] == qrMode.BINARY) {
+                if (blockMode[i] == QrMode.BINARY) {
                     switch (blockMode[i - 1]) {
                         case KANJI:
                             if (blockLength[i - 1] < tribus(version, 4, 5, 6)) {
-                                blockMode[i - 1] = qrMode.BINARY;
+                                blockMode[i - 1] = QrMode.BINARY;
                             }
                             break;
                         case ALPHANUM:
                             if (blockLength[i - 1] < tribus(version, 7, 8, 9)) {
-                                blockMode[i - 1] = qrMode.BINARY;
+                                blockMode[i - 1] = QrMode.BINARY;
                             }
                             break;
                         case NUMERIC:
                             if (blockLength[i - 1] < tribus(version, 3, 4, 5)) {
-                                blockMode[i - 1] = qrMode.BINARY;
+                                blockMode[i - 1] = QrMode.BINARY;
                             }
                             break;
                     }
                 }
 
-                if ((blockMode[i] == qrMode.ALPHANUM)
-                        && (blockMode[i - 1] == qrMode.NUMERIC)) {
+                if ((blockMode[i] == QrMode.ALPHANUM)
+                        && (blockMode[i - 1] == QrMode.NUMERIC)) {
                     if (blockLength[i - 1] < tribus(version, 6, 8, 10)) {
-                        blockMode[i - 1] = qrMode.ALPHANUM;
+                        blockMode[i - 1] = QrMode.ALPHANUM;
                     }
                 }
             }
@@ -882,7 +672,7 @@ public class QrCode extends Symbol {
     private int blockLength(int start) {
         /* Find the length of the block starting from 'start' */
         int i, count;
-        qrMode mode = inputMode[start];
+        QrMode mode = inputMode[start];
 
         count = 0;
         i = start;
@@ -951,7 +741,7 @@ public class QrCode extends Symbol {
     private int estimate_binary_length() {
         /* Make an estimate (worst case scenario) of how long the binary string will be */
         int i, count = 0;
-        qrMode current = qrMode.NULL;
+        QrMode current = QrMode.NULL;
         int a_count = 0;
         int n_count = 0;
 
@@ -968,20 +758,20 @@ public class QrCode extends Symbol {
                 switch (inputMode[i]) {
                     case KANJI:
                         count += 12 + 4;
-                        current = qrMode.KANJI;
+                        current = QrMode.KANJI;
                         break;
                     case BINARY:
                         count += 16 + 4;
-                        current = qrMode.BINARY;
+                        current = QrMode.BINARY;
                         break;
                     case ALPHANUM:
                         count += 13 + 4;
-                        current = qrMode.ALPHANUM;
+                        current = QrMode.ALPHANUM;
                         a_count = 0;
                         break;
                     case NUMERIC:
                         count += 14 + 4;
-                        current = qrMode.NUMERIC;
+                        current = QrMode.NUMERIC;
                         n_count = 0;
                         break;
                 }
@@ -1029,7 +819,7 @@ public class QrCode extends Symbol {
         int toggle;
         boolean alphanumPercent;
         String oneChar;
-        qrMode data_block;
+        QrMode data_block;
         int jis;
         byte[] jisBytes;
         int msb, lsb, prod;
@@ -1198,35 +988,35 @@ public class QrCode extends Symbol {
 
                         if (!alphanumPercent) {
                             if ((inputDataType == DataType.GS1) && (inputData[position + i] == '%')) {
-                                first = positionOf('%', rhodium);
-                                second = positionOf('%', rhodium);
+                                first = positionOf('%', RHODIUM);
+                                second = positionOf('%', RHODIUM);
                                 count = 2;
                                 prod = (first * 45) + second;
                                 i++;
                             } else {
                                 if ((inputDataType == DataType.GS1) && (inputData[position + i] == '[')) {
-                                    first = positionOf('%', rhodium); /* FNC1 */
+                                    first = positionOf('%', RHODIUM); /* FNC1 */
 
                                 } else {
-                                    first = positionOf((char) (inputData[position + i] & 0xFF), rhodium);
+                                    first = positionOf((char) (inputData[position + i] & 0xFF), RHODIUM);
                                 }
                                 count = 1;
                                 i++;
                                 prod = first;
 
                                 if (i < short_data_block_length) {
-                                    if (inputMode[position + i] == qrMode.ALPHANUM) {
+                                    if (inputMode[position + i] == QrMode.ALPHANUM) {
                                         if ((inputDataType == DataType.GS1) && (inputData[position + i] == '%')) {
-                                            second = positionOf('%', rhodium);
+                                            second = positionOf('%', RHODIUM);
                                             count = 2;
                                             prod = (first * 45) + second;
                                             alphanumPercent = true;
                                         } else {
                                             if ((inputDataType == DataType.GS1) && (inputData[position + i] == '[')) {
-                                                second = positionOf('%', rhodium); /* FNC1 */
+                                                second = positionOf('%', RHODIUM); /* FNC1 */
 
                                             } else {
-                                                second = positionOf((char) (inputData[position + i] & 0xFF), rhodium);
+                                                second = positionOf((char) (inputData[position + i] & 0xFF), RHODIUM);
                                             }
                                             count = 2;
                                             i++;
@@ -1236,25 +1026,25 @@ public class QrCode extends Symbol {
                                 }
                             }
                         } else {
-                            first = positionOf('%', rhodium);
+                            first = positionOf('%', RHODIUM);
                             count = 1;
                             i++;
                             prod = first;
                             alphanumPercent = false;
 
                             if (i < short_data_block_length) {
-                                if (inputMode[position + i] == qrMode.ALPHANUM) {
+                                if (inputMode[position + i] == QrMode.ALPHANUM) {
                                     if ((inputDataType == DataType.GS1) && (inputData[position + i] == '%')) {
-                                        second = positionOf('%', rhodium);
+                                        second = positionOf('%', RHODIUM);
                                         count = 2;
                                         prod = (first * 45) + second;
                                         alphanumPercent = true;
                                     } else {
                                         if ((inputDataType == DataType.GS1) && (inputData[position + i] == '[')) {
-                                            second = positionOf('%', rhodium); /* FNC1 */
+                                            second = positionOf('%', RHODIUM); /* FNC1 */
 
                                         } else {
-                                            second = positionOf((char) (inputData[position + i] & 0xFF), rhodium);
+                                            second = positionOf((char) (inputData[position + i] & 0xFF), RHODIUM);
                                         }
                                         count = 2;
                                         i++;
@@ -1359,21 +1149,18 @@ public class QrCode extends Symbol {
     }
 
     private void qr_bscan(int data, int h) {
-
-        for (;
-                (h != 0); h >>= 1) {
+        for (; (h != 0); h >>= 1) {
             if ((data & h) != 0) {
                 binary += "1";
             } else {
                 binary += "0";
             }
         }
-
     }
 
     private void add_ecc(int version, int data_cw, int blocks) {
         /* Split data into blocks, add error correction and then interleave the blocks and error correction data */
-        int ecc_cw = qr_total_codewords[version - 1] - data_cw;
+        int ecc_cw = QR_TOTAL_CODEWORDS[version - 1] - data_cw;
         int short_data_block_length = data_cw / blocks;
         int qty_long_blocks = data_cw % blocks;
         int qty_short_blocks = blocks - qty_long_blocks;
@@ -1495,11 +1282,11 @@ public class QrCode extends Symbol {
         if (version != 1) {
             /* Version 1 does not have alignment patterns */
 
-            loopsize = qr_align_loopsize[version - 1];
+            loopsize = QR_ALIGN_LOOPSIZE[version - 1];
             for (x = 0; x < loopsize; x++) {
                 for (y = 0; y < loopsize; y++) {
-                    xcoord = qr_table_e1[((version - 2) * 7) + x];
-                    ycoord = qr_table_e1[((version - 2) * 7) + y];
+                    xcoord = QR_TABLE_E1[((version - 2) * 7) + x];
+                    ycoord = QR_TABLE_E1[((version - 2) * 7) + y];
 
                     if ((grid[(ycoord * size) + xcoord] & 0x10) == 0) {
                         place_align(size, xcoord, ycoord);
@@ -1747,7 +1534,7 @@ public class QrCode extends Symbol {
 		case H: format += 0x10; break;
 	}
 
-	seq = qr_annex_c[format];
+	seq = QR_ANNEX_C[format];
 
         for (i = 0; i < 6; i++) {
             if (((seq >> i) & 0x01) != 0) {
@@ -2006,7 +1793,7 @@ public class QrCode extends Symbol {
                 break;
         }
 
-        seq = qr_annex_c[format];
+        seq = QR_ANNEX_C[format];
 
         for (i = 0; i < 6; i++) {
             grid[(i * size) + 8] += (seq >> i) & 0x01;
@@ -2033,7 +1820,7 @@ public class QrCode extends Symbol {
         /* Add version information */
         int i;
 
-        long version_data = qr_annex_d[version - 7];
+        long version_data = QR_ANNEX_D[version - 7];
         for (i = 0; i < 6; i++) {
             grid[((size - 11) * size) + i] += (version_data >> (i * 3)) & 0x01;
             grid[((size - 10) * size) + i] += (version_data >> ((i * 3) + 1)) & 0x01;

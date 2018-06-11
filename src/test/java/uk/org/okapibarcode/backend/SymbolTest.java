@@ -300,6 +300,10 @@ public class SymbolTest {
                    symbol.getDataType() == DataType.GS1) {
             // remove initial GS + transform subsequent GS -> '[' (Okapi internal representation of FNC1)
             return s.substring(1).replace('\u001d', '[');
+        } else if (symbol instanceof QrCode &&
+                   symbol.getDataType() == DataType.GS1) {
+            // transform GS -> '[' (Okapi internal representation of FNC1)
+            return s.replace('\u001d', '[');
         } else {
             // no massaging
             return s;

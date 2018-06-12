@@ -536,13 +536,8 @@ public class Code128 extends Symbol {
                             dest += CODE128_TABLE[(c - 128) + 64];
                             values[bar_characters] = (c - 128) + 64;
                         } else {
-                            if (c < 32) {
-                                dest += CODE128_TABLE[c + 64];
-                                values[bar_characters] = c + 64;
-                            } else {
-                                dest += CODE128_TABLE[c - 32];
-                                values[bar_characters] = c - 32;
-                            }
+                            dest += CODE128_TABLE[(c - 128) - 32];
+                            values[bar_characters] = (c - 128) - 32;
                         }
                         encodeInfo += Integer.toString(values[bar_characters]) + " ";
                     } else {

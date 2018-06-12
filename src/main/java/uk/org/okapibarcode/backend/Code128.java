@@ -457,7 +457,7 @@ public class Code128 extends Symbol {
                             break;
                     }
                     bar_characters += 2;
-                    f_state = FMode.LATCHN;
+                    f_state = FMode.LATCHF;
                 }
                 if ((fset[read] == FMode.LATCHN) && (f_state == FMode.LATCHF)) {
                     /* Latch end of extended mode */

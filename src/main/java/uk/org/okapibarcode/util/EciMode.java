@@ -61,4 +61,9 @@ public class EciMode {
     public int hashCode() {
         return Integer.valueOf(mode).hashCode();
     }
+
+    @Override
+    public String toString() {
+        return "EciMode[mode=" + mode + ", charset=" + charset + "]";
+    }
 }

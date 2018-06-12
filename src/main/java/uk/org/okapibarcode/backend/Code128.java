@@ -96,22 +96,25 @@ public class Code128 extends Symbol {
     private Mode[] mode_type = new Mode[200];
     private int[] mode_length = new int[200];
     private int index_point = 0, read = 0;
-    private boolean modeCSupression = false;
+    private boolean suppressModeC = false;
     private Composite compositeMode = Composite.OFF;
 
     /**
-     * Allow the use of subset C (numeric compression) in encoding (default).
+     * Optionally prevents this symbol from using subset mode C for numeric data compression.
+     *
+     * @param suppressModeC whether or not to prevent this symbol from using subset mode C
      */
-    public void useModeC() {
-        modeCSupression = false;
+    public void setSuppressModeC(boolean suppressModeC) {
+        this.suppressModeC = suppressModeC;
     }
 
     /**
-     * Disallow the use of subset C (numeric compression) in encoding.
-     * Numeric values will be encoded using subset B.
+     * Returns whether or not this symbol is prevented from using subset mode C for numeric data compression.
+     *
+     * @return whether or not this symbol is prevented from using subset mode C for numeric data compression
      */
-    public void stopModeC() {
-        modeCSupression = true;
+    public boolean getSuppressModeC() {
+        return suppressModeC;
     }
 
     protected void setCca() {
@@ -736,7 +739,7 @@ public class Code128 extends Symbol {
             mode = Mode.SHIFTB;
         }
 
-        if (modeCSupression && mode == Mode.ABORC) {
+        if (suppressModeC && mode == Mode.ABORC) {
             mode = Mode.AORB;
         }
 

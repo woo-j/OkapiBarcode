@@ -206,7 +206,7 @@ public class MakeBarcode {
                         code128.setDataType(Symbol.DataType.HIBC);
                     }
                     if (type == 60) {
-                        code128.stopModeC();
+                        code128.setSuppressModeC(true);
                     }
                     code128.setReaderInit(settings.isReaderInit());
                     code128.setHumanReadableLocation(hrtLocation);

@@ -16,9 +16,9 @@
 package uk.org.okapibarcode.backend;
 
 /**
- * Implements Aztec Code bar code symbology According to ISO/IEC 24778:2008
- * <p>
- * Aztec Code can encode 8-bit ISO 8859-1 (Latin-1) data (except 0x00 Null
+ * <p>Implements Aztec Code bar code symbology According to ISO/IEC 24778:2008.
+ *
+ * <p>Aztec Code can encode 8-bit ISO 8859-1 (Latin-1) data (except 0x00 Null
  * characters) up to a maximum length of approximately 3800 numeric characters,
  * 3000 alphabetic characters or 1900 bytes of data in a two-dimensional matrix
  * symbol.
@@ -27,264 +27,7 @@ package uk.org.okapibarcode.backend;
  */
 public class AztecCode extends Symbol {
 
-    private int preferredSize = 0;
-
-    /**
-     * Sets a preferred symbol size. This value may be ignored if data string is
-     * too large to fit in the specified symbol size. Values correspond to
-     * symbol sizes as shown in the following table:
-     * <table summary="Available Aztec Code symbol sizes">
-     * <tbody>
-     * <tr>
-     * <th><p>
-     * Input</p></th>
-     * <th><p>
-     * Symbol Size</p></th>
-     * <th><p>
-     * Input</p></th>
-     * <th><p>
-     * Symbol Size</p></th>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 1</p></td>
-     * <td><p>
-     * 15 x 15*</p></td>
-     * <td><p>
-     * 19</p></td>
-     * <td><p>
-     * 79 x 79</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 2</p></td>
-     * <td><p>
-     * 19 x 19*</p></td>
-     * <td><p>
-     * 20</p></td>
-     * <td><p>
-     * 83 x 83</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 3</p></td>
-     * <td><p>
-     * 23 x 23*</p></td>
-     * <td><p>
-     * 21</p></td>
-     * <td><p>
-     * 87 x 87</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 4</p></td>
-     * <td><p>
-     * 27 x 27*</p></td>
-     * <td><p>
-     * 22</p></td>
-     * <td><p>
-     * 91 x 91</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 5</p></td>
-     * <td><p>
-     * 19 x 19</p></td>
-     * <td><p>
-     * 23</p></td>
-     * <td><p>
-     * 95 x 95</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 6</p></td>
-     * <td><p>
-     * 23 x 23</p></td>
-     * <td><p>
-     * 24</p></td>
-     * <td><p>
-     * 101 x 101</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 7</p></td>
-     * <td><p>
-     * 27 x 27</p></td>
-     * <td><p>
-     * 25</p></td>
-     * <td><p>
-     * 105 x 105</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 8</p></td>
-     * <td><p>
-     * 31 x 31</p></td>
-     * <td><p>
-     * 26</p></td>
-     * <td><p>
-     * 109 x 109</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 9</p></td>
-     * <td><p>
-     * 37 x 37</p></td>
-     * <td><p>
-     * 27</p></td>
-     * <td><p>
-     * 113 x 113</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 10</p></td>
-     * <td><p>
-     * 41 x 41</p></td>
-     * <td><p>
-     * 28</p></td>
-     * <td><p>
-     * 117 x 117</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 11</p></td>
-     * <td><p>
-     * 45 x 45</p></td>
-     * <td><p>
-     * 29</p></td>
-     * <td><p>
-     * 121 x 121</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 12</p></td>
-     * <td><p>
-     * 49 x 49</p></td>
-     * <td><p>
-     * 30</p></td>
-     * <td><p>
-     * 125 x 125</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 13</p></td>
-     * <td><p>
-     * 53 x 53</p></td>
-     * <td><p>
-     * 31</p></td>
-     * <td><p>
-     * 131 x 131</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 14</p></td>
-     * <td><p>
-     * 57 x 57</p></td>
-     * <td><p>
-     * 32</p></td>
-     * <td><p>
-     * 135 x 135</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 15</p></td>
-     * <td><p>
-     * 61 x 61</p></td>
-     * <td><p>
-     * 33</p></td>
-     * <td><p>
-     * 139 x 139</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 16</p></td>
-     * <td><p>
-     * 67 x 67</p></td>
-     * <td><p>
-     * 34</p></td>
-     * <td><p>
-     * 143 x 143</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 17</p></td>
-     * <td><p>
-     * 71 x 71</p></td>
-     * <td><p>
-     * 35</p></td>
-     * <td><p>
-     * 147 x 147</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 18</p></td>
-     * <td><p>
-     * 75 x 75</p></td>
-     * <td><p>
-     * 36</p></td>
-     * <td><p>
-     * 151 x 151</p></td>
-     * </tr>
-     * </tbody>
-     * </table>
-     *
-     * @param size An <em>integer</em> in the range 1 - 36
-     */
-    public void setPreferredSize(int size) {
-        preferredSize = size;
-    }
-
-    private int preferredEccLevel = 2;
-
-    /**
-     * Sets the preferred minimum amount of symbol space dedicated to error
-     * correction. This value will be ignored if a symbol size has been set by
-     * <code>setPreferredSize</code> Valid options are:
-     * <table summary="Error correction options">
-     * <tbody>
-     * <tr>
-     * <th><p>
-     * Mode</p></th>
-     * <th><p>
-     * Error Correction Capacity</p></th>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 1</p></td>
-     * <td><p>
-     * &gt;10% + 3 codewords</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 2</p></td>
-     * <td><p>
-     * &gt;23% + 3 codewords</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 3</p></td>
-     * <td><p>
-     * &gt;36% + 3 codewords</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 4</p></td>
-     * <td><p>
-     * &gt;50% + 3 codewords</p></td>
-     * </tr>
-     * </tbody>
-     * </table>
-     *
-     * @param eccLevel An <em>integer</em> in the range 1 - 4
-     */
-    public void setPreferredEccLevel(int eccLevel) {
-        if (eccLevel < 1 || eccLevel > 4) {
-            throw new IllegalArgumentException("Invalid ECC level: " + eccLevel);
-        }
-        preferredEccLevel = eccLevel;
-    }
-
-    private final int[] CompactAztecMap = { //27 x 27 data grid
+    private static final int[] COMPACT_AZTEC_MAP = { //27 x 27 data grid
         609, 608, 411, 413, 415, 417, 419, 421, 423, 425, 427, 429, 431, 433, 435, 437, 439, 441, 443, 445, 447, 449, 451, 453, 455, 457, 459,
         607, 606, 410, 412, 414, 416, 418, 420, 422, 424, 426, 428, 430, 432, 434, 436, 438, 440, 442, 444, 446, 448, 450, 452, 454, 456, 458,
         605, 604, 409, 408, 243, 245, 247, 249, 251, 253, 255, 257, 259, 261, 263, 265, 267, 269, 271, 273, 275, 277, 279, 281, 283, 460, 461,
@@ -314,9 +57,9 @@ public class AztecCode extends Symbol {
         559, 557, 555, 553, 551, 549, 547, 545, 543, 541, 539, 537, 535, 533, 531, 529, 527, 525, 523, 521, 519, 517, 515, 513, 511, 508, 509
     };
 
-    private final int[][] AztecMap = new int[151][151];
+    private static final int[][] AZTEC_MAP = new int[151][151];
 
-    private final int[] AztecCodeSet = { /* From Table 2 */
+    private static final int[] AZTEC_CODE_SET = { /* From Table 2 */
         32, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 12, 32, 32, 32, 32, 32, 32,
         32, 32, 32, 32, 32, 32, 32, 4, 4, 4, 4, 4, 23, 8, 8, 8, 8, 8, 8, 8,
         8, 8, 8, 8, 24, 8, 24, 8, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 8, 8,
@@ -326,7 +69,7 @@ public class AztecCode extends Symbol {
         2, 2, 2, 8, 4, 8, 4, 4
     };
 
-    private final int[] AztecSymbolChar = { /* From Table 2 */
+    private static final int[] AZTEC_SYMBOL_CHAR = { /* From Table 2 */
         0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 300, 14, 15, 16, 17, 18, 19,
         20, 21, 22, 23, 24, 25, 26, 15, 16, 17, 18, 19, 1, 6, 7, 8, 9, 10, 11, 12,
         13, 14, 15, 16, 301, 18, 302, 20, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 21, 22,
@@ -341,83 +84,85 @@ public class AztecCode extends Symbol {
      301: Comma (ASCII 44)
      302: Full Stop (ASCII 46)
      */
-    private final String[] pentbit = {
+    private static final String[] PENTBIT = {
         "00000", "00001", "00010", "00011", "00100", "00101", "00110", "00111", "01000", "01001",
         "01010", "01011", "01100", "01101", "01110", "01111", "10000", "10001", "10010", "10011", "10100", "10101",
         "10110", "10111", "11000", "11001", "11010", "11011", "11100", "11101", "11110", "11111"
     };
 
-    private final String[] quadbit = {
+    private static final String[] QUADBIT = {
         "0000", "0001", "0010", "0011", "0100", "0101", "0110", "0111", "1000", "1001",
         "1010", "1011", "1100", "1101", "1110", "1111"
     };
 
-    private final String[] tribit = {
+    private static final String[] TRIBIT = {
         "000", "001", "010", "011", "100", "101", "110", "111"
     };
 
-    private final int[] AztecSizes = { /* Codewords per symbol */
+    private static final int[] AZTEC_SIZES = { /* Codewords per symbol */
         21, 48, 60, 88, 120, 156, 196, 240, 230, 272, 316, 364, 416, 470, 528, 588, 652, 720, 790,
         864, 940, 1020, 920, 992, 1066, 1144, 1224, 1306, 1392, 1480, 1570, 1664
     };
 
-    private final int[] AztecCompactSizes = {
+    private static final int[] AZTEC_COMPACT_SIZES = {
         17, 40, 51, 76
     };
 
-    private final int[] Aztec10DataSizes = { /* Data bits per symbol maximum with 10% error correction */
+    private static final int[] AZTEC_10_DATA_SIZES = { /* Data bits per symbol maximum with 10% error correction */
         96, 246, 408, 616, 840, 1104, 1392, 1704, 2040, 2420, 2820, 3250, 3720, 4200, 4730,
         5270, 5840, 6450, 7080, 7750, 8430, 9150, 9900, 10680, 11484, 12324, 13188, 14076,
         15000, 15948, 16920, 17940
     };
 
-    private final int[] Aztec23DataSizes = { /* Data bits per symbol maximum with 23% error correction */
+    private static final int[] AZTEC_23_DATA_SIZES = { /* Data bits per symbol maximum with 23% error correction */
         84, 204, 352, 520, 720, 944, 1184, 1456, 1750, 2070, 2410, 2780, 3180, 3590, 4040,
         4500, 5000, 5520, 6060, 6630, 7210, 7830, 8472, 9132, 9816, 10536, 11280, 12036,
         12828, 13644, 14472, 15348
     };
 
-    private final int[] Aztec36DataSizes = { /* Data bits per symbol maximum with 36% error correction */
+    private static final int[] AZTEC_36_DATA_SIZES = { /* Data bits per symbol maximum with 36% error correction */
         66, 168, 288, 432, 592, 776, 984, 1208, 1450, 1720, 2000, 2300, 2640, 2980, 3350,
         3740, 4150, 4580, 5030, 5500, 5990, 6500, 7032, 7584, 8160, 8760, 9372, 9996, 10656,
         11340, 12024, 12744
     };
 
-    private final int[] Aztec50DataSizes = { /* Data bits per symbol maximum with 50% error correction */
+    private static final int[] AZTEC_50_DATA_SIZES = { /* Data bits per symbol maximum with 50% error correction */
         48, 126, 216, 328, 456, 600, 760, 936, 1120, 1330, 1550, 1790, 2050, 2320, 2610,
         2910, 3230, 3570, 3920, 4290, 4670, 5070, 5484, 5916, 6360, 6828, 7308, 7800, 8316,
         8844, 9384, 9948
     };
 
-    private final int[] AztecCompact10DataSizes = {
+    private static final int[] AZTEC_COMPACT_10_DATA_SIZES = {
         78, 198, 336, 520
     };
-    private final int[] AztecCompact23DataSizes = {
+    private static final int[] AZTEC_COMPACT_23_DATA_SIZES = {
         66, 168, 288, 440
     };
-    private final int[] AztecCompact36DataSizes = {
+    private static final int[] AZTEC_COMPACT_36_DATA_SIZES = {
         48, 138, 232, 360
     };
-    private final int[] AztecCompact50DataSizes = {
+    private static final int[] AZTEC_COMPACT_50_DATA_SIZES = {
         36, 102, 176, 280
     };
 
-    private final int[] AztecOffset = {
+    private static final int[] AZTEC_OFFSET = {
         66, 64, 62, 60, 57, 55, 53, 51, 49, 47, 45, 42, 40, 38, 36, 34, 32, 30, 28, 25, 23, 21,
         19, 17, 15, 13, 10, 8, 6, 4, 2, 0
     };
 
-    private final int[] AztecCompactOffset = {
+    private static final int[] AZTEC_COMPACT_OFFSET = {
         6, 4, 2, 0
     };
 
-    public AztecCode() {
+    /* Initialize AZTEC_MAP */
+    static {
+
         int layer, start, length, n, i;
         int x, y;
 
         for (x = 0; x < 151; x++) {
             for (y = 0; y < 151; y++) {
-                AztecMap[x][y] = 0;
+                AZTEC_MAP[x][y] = 0;
             }
         }
 
@@ -429,8 +174,8 @@ public class AztecCode extends Symbol {
             x = 64 - ((layer - 1) * 2);
             y = 63 - ((layer - 1) * 2);
             for (n = start; n < (start + length); n += 2) {
-                AztecMap[avoidReferenceGrid(x + i)][avoidReferenceGrid(y)] = n;
-                AztecMap[avoidReferenceGrid(x + i)][avoidReferenceGrid(y - 1)] = n + 1;
+                AZTEC_MAP[avoidReferenceGrid(x + i)][avoidReferenceGrid(y)] = n;
+                AZTEC_MAP[avoidReferenceGrid(x + i)][avoidReferenceGrid(y - 1)] = n + 1;
                 i++;
             }
             /* Right */
@@ -438,8 +183,8 @@ public class AztecCode extends Symbol {
             x = 78 + ((layer - 1) * 2);
             y = 64 - ((layer - 1) * 2);
             for (n = start + length; n < (start + (length * 2)); n += 2) {
-                AztecMap[avoidReferenceGrid(x)][avoidReferenceGrid(y + i)] = n;
-                AztecMap[avoidReferenceGrid(x + 1)][avoidReferenceGrid(y + i)] = n + 1;
+                AZTEC_MAP[avoidReferenceGrid(x)][avoidReferenceGrid(y + i)] = n;
+                AZTEC_MAP[avoidReferenceGrid(x + 1)][avoidReferenceGrid(y + i)] = n + 1;
                 i++;
             }
             /* Bottom */
@@ -447,8 +192,8 @@ public class AztecCode extends Symbol {
             x = 77 + ((layer - 1) * 2);
             y = 78 + ((layer - 1) * 2);
             for (n = start + (length * 2); n < (start + (length * 3)); n += 2) {
-                AztecMap[avoidReferenceGrid(x - i)][avoidReferenceGrid(y)] = n;
-                AztecMap[avoidReferenceGrid(x - i)][avoidReferenceGrid(y + 1)] = n + 1;
+                AZTEC_MAP[avoidReferenceGrid(x - i)][avoidReferenceGrid(y)] = n;
+                AZTEC_MAP[avoidReferenceGrid(x - i)][avoidReferenceGrid(y + 1)] = n + 1;
                 i++;
             }
             /* Left */
@@ -456,8 +201,8 @@ public class AztecCode extends Symbol {
             x = 63 - ((layer - 1) * 2);
             y = 77 + ((layer - 1) * 2);
             for (n = start + (length * 3); n < (start + (length * 4)); n += 2) {
-                AztecMap[avoidReferenceGrid(x)][avoidReferenceGrid(y - i)] = n;
-                AztecMap[avoidReferenceGrid(x - 1)][avoidReferenceGrid(y - i)] = n + 1;
+                AZTEC_MAP[avoidReferenceGrid(x)][avoidReferenceGrid(y - i)] = n;
+                AZTEC_MAP[avoidReferenceGrid(x - 1)][avoidReferenceGrid(y - i)] = n + 1;
                 i++;
             }
         }
@@ -465,74 +210,68 @@ public class AztecCode extends Symbol {
         /* Central finder pattern */
         for (y = 69; y <= 81; y++) {
             for (x = 69; x <= 81; x++) {
-                AztecMap[x][y] = 1;
+                AZTEC_MAP[x][y] = 1;
             }
         }
         for (y = 70; y <= 80; y++) {
             for (x = 70; x <= 80; x++) {
-                AztecMap[x][y] = 0;
+                AZTEC_MAP[x][y] = 0;
             }
         }
         for (y = 71; y <= 79; y++) {
             for (x = 71; x <= 79; x++) {
-                AztecMap[x][y] = 1;
+                AZTEC_MAP[x][y] = 1;
             }
         }
         for (y = 72; y <= 78; y++) {
             for (x = 72; x <= 78; x++) {
-                AztecMap[x][y] = 0;
+                AZTEC_MAP[x][y] = 0;
             }
         }
         for (y = 73; y <= 77; y++) {
             for (x = 73; x <= 77; x++) {
-                AztecMap[x][y] = 1;
+                AZTEC_MAP[x][y] = 1;
             }
         }
         for (y = 74; y <= 76; y++) {
             for (x = 74; x <= 76; x++) {
-                AztecMap[x][y] = 0;
+                AZTEC_MAP[x][y] = 0;
             }
         }
 
         /* Guide bars */
         for (y = 11; y < 151; y += 16) {
             for (x = 1; x < 151; x += 2) {
-                AztecMap[x][y] = 1;
-                AztecMap[y][x] = 1;
+                AZTEC_MAP[x][y] = 1;
+                AZTEC_MAP[y][x] = 1;
             }
         }
 
         /* Descriptor */
         for (i = 0; i < 10; i++) { /* Top */
-
-            AztecMap[avoidReferenceGrid(66 + i)][avoidReferenceGrid(64)] = 20000 + i;
+            AZTEC_MAP[avoidReferenceGrid(66 + i)][avoidReferenceGrid(64)] = 20000 + i;
         }
         for (i = 0; i < 10; i++) { /* Right */
-
-            AztecMap[avoidReferenceGrid(77)][avoidReferenceGrid(66 + i)] = 20010 + i;
+            AZTEC_MAP[avoidReferenceGrid(77)][avoidReferenceGrid(66 + i)] = 20010 + i;
         }
         for (i = 0; i < 10; i++) { /* Bottom */
-
-            AztecMap[avoidReferenceGrid(75 - i)][avoidReferenceGrid(77)] = 20020 + i;
+            AZTEC_MAP[avoidReferenceGrid(75 - i)][avoidReferenceGrid(77)] = 20020 + i;
         }
         for (i = 0; i < 10; i++) { /* Left */
-
-            AztecMap[avoidReferenceGrid(64)][avoidReferenceGrid(75 - i)] = 20030 + i;
+            AZTEC_MAP[avoidReferenceGrid(64)][avoidReferenceGrid(75 - i)] = 20030 + i;
         }
 
         /* Orientation */
-        AztecMap[avoidReferenceGrid(64)][avoidReferenceGrid(64)] = 1;
-        AztecMap[avoidReferenceGrid(65)][avoidReferenceGrid(64)] = 1;
-        AztecMap[avoidReferenceGrid(64)][avoidReferenceGrid(65)] = 1;
-        AztecMap[avoidReferenceGrid(77)][avoidReferenceGrid(64)] = 1;
-        AztecMap[avoidReferenceGrid(77)][avoidReferenceGrid(65)] = 1;
-        AztecMap[avoidReferenceGrid(77)][avoidReferenceGrid(76)] = 1;
+        AZTEC_MAP[avoidReferenceGrid(64)][avoidReferenceGrid(64)] = 1;
+        AZTEC_MAP[avoidReferenceGrid(65)][avoidReferenceGrid(64)] = 1;
+        AZTEC_MAP[avoidReferenceGrid(64)][avoidReferenceGrid(65)] = 1;
+        AZTEC_MAP[avoidReferenceGrid(77)][avoidReferenceGrid(64)] = 1;
+        AZTEC_MAP[avoidReferenceGrid(77)][avoidReferenceGrid(65)] = 1;
+        AZTEC_MAP[avoidReferenceGrid(77)][avoidReferenceGrid(76)] = 1;
     }
 
-    private int avoidReferenceGrid(int input) {
-        int output;
-
-        output = input;
+    private static int avoidReferenceGrid(int input) {
+        int output = input;
         if (output > 10) {
             output++;
         }
@@ -560,12 +299,77 @@ public class AztecCode extends Symbol {
         if (output > 138) {
             output++;
         }
-
         return output;
+    }
+
+    private int preferredSize = 0;
+    private int preferredEccLevel = 2;
+
+    /**
+     * Sets a preferred symbol size. This value may be ignored if data string is
+     * too large to fit in the specified symbol size. Values correspond to symbol
+     * sizes as shown in the following table:
+     *
+     * <table summary="Available Aztec Code symbol sizes">
+     * <tbody>
+     * <tr><th>Input</th><th>Symbol Size</th><th>Input</th><th>Symbol Size</th></tr>
+     * <tr><td>1    </td><td>15 x 15    </td><td>19   </td><td>79 x 79    </td></tr>
+     * <tr><td>2    </td><td>19 x 19    </td><td>20   </td><td>83 x 83    </td></tr>
+     * <tr><td>3    </td><td>23 x 23    </td><td>21   </td><td>87 x 87    </td></tr>
+     * <tr><td>4    </td><td>27 x 27    </td><td>22   </td><td>91 x 91    </td></tr>
+     * <tr><td>5    </td><td>19 x 19    </td><td>23   </td><td>95 x 95    </td></tr>
+     * <tr><td>6    </td><td>23 x 23    </td><td>24   </td><td>101 x 101  </td></tr>
+     * <tr><td>7    </td><td>27 x 27    </td><td>25   </td><td>105 x 105  </td></tr>
+     * <tr><td>8    </td><td>31 x 31    </td><td>26   </td><td>109 x 109  </td></tr>
+     * <tr><td>9    </td><td>37 x 37    </td><td>27   </td><td>113 x 113  </td></tr>
+     * <tr><td>10   </td><td>41 x 41    </td><td>28   </td><td>117 x 117  </td></tr>
+     * <tr><td>11   </td><td>45 x 45    </td><td>29   </td><td>121 x 121  </td></tr>
+     * <tr><td>12   </td><td>49 x 49    </td><td>30   </td><td>125 x 125  </td></tr>
+     * <tr><td>13   </td><td>53 x 53    </td><td>31   </td><td>131 x 131  </td></tr>
+     * <tr><td>14   </td><td>57 x 57    </td><td>32   </td><td>135 x 135  </td></tr>
+     * <tr><td>15   </td><td>61 x 61    </td><td>33   </td><td>139 x 139  </td></tr>
+     * <tr><td>16   </td><td>67 x 67    </td><td>34   </td><td>143 x 143  </td></tr>
+     * <tr><td>17   </td><td>71 x 71    </td><td>35   </td><td>147 x 147  </td></tr>
+     * <tr><td>18   </td><td>75 x 75    </td><td>36   </td><td>151 x 151  </td></tr>
+     * </tbody>
+     * </table>
+     *
+     * @param size an integer in the range 1 - 36
+     */
+    public void setPreferredSize(int size) {
+        if (size < 1 || size > 36) {
+            throw new IllegalArgumentException("Invalid size: " + size);
+        }
+        preferredSize = size;
+    }
+
+    /**
+     * Sets the preferred minimum amount of symbol space dedicated to error
+     * correction. This value will be ignored if a symbol size has been set by
+     * <code>setPreferredSize</code>. Valid options are:
+     *
+     * <table summary="Error correction options">
+     * <tbody>
+     * <tr><th>Mode</th><th>Error Correction Capacity</th></tr>
+     * <tr><td>1   </td><td>&gt; 10% + 3 codewords    </td></tr>
+     * <tr><td>2   </td><td>&gt; 23% + 3 codewords    </td></tr>
+     * <tr><td>3   </td><td>&gt; 36% + 3 codewords    </td></tr>
+     * <tr><td>4   </td><td>&gt; 50% + 3 codewords    </td></tr>
+     * </tbody>
+     * </table>
+     *
+     * @param eccLevel an integer in the range 1 - 4
+     */
+    public void setPreferredEccLevel(int eccLevel) {
+        if (eccLevel < 1 || eccLevel > 4) {
+            throw new IllegalArgumentException("Invalid ECC level: " + eccLevel);
+        }
+        preferredEccLevel = eccLevel;
     }
 
     @Override
     protected void encode() {
+
         int i, ecc_level, data_length, layers, data_maxsize;
         int adjustment_size, codeword_size;
         int j, count, adjusted_length, padbits, remainder;
@@ -609,10 +413,6 @@ public class AztecCode extends Symbol {
 
         adjustment_size = 0;
 
-        if ((preferredSize < 0) || (preferredSize > 36)) {
-            preferredSize = 0;
-        }
-
         if (preferredSize == 0) { /* The size of the symbol can be determined by Okapi */
 
             do {
@@ -626,65 +426,65 @@ public class AztecCode extends Symbol {
                      the data will fit in */
                     case 1:
                         for (i = 32; i > 0; i--) {
-                            if ((data_length + adjustment_size) < Aztec10DataSizes[i - 1]) {
+                            if ((data_length + adjustment_size) < AZTEC_10_DATA_SIZES[i - 1]) {
                                 layers = i;
                                 compact = false;
-                                data_maxsize = Aztec10DataSizes[i - 1];
+                                data_maxsize = AZTEC_10_DATA_SIZES[i - 1];
                             }
                         }
                         for (i = comp_loop; i > 0; i--) {
-                            if ((data_length + adjustment_size) < AztecCompact10DataSizes[i - 1]) {
+                            if ((data_length + adjustment_size) < AZTEC_COMPACT_10_DATA_SIZES[i - 1]) {
                                 layers = i;
                                 compact = true;
-                                data_maxsize = AztecCompact10DataSizes[i - 1];
+                                data_maxsize = AZTEC_COMPACT_10_DATA_SIZES[i - 1];
                             }
                         }
                         break;
                     case 2:
                         for (i = 32; i > 0; i--) {
-                            if ((data_length + adjustment_size) < Aztec23DataSizes[i - 1]) {
+                            if ((data_length + adjustment_size) < AZTEC_23_DATA_SIZES[i - 1]) {
                                 layers = i;
                                 compact = false;
-                                data_maxsize = Aztec23DataSizes[i - 1];
+                                data_maxsize = AZTEC_23_DATA_SIZES[i - 1];
                             }
                         }
                         for (i = comp_loop; i > 0; i--) {
-                            if ((data_length + adjustment_size) < AztecCompact23DataSizes[i - 1]) {
+                            if ((data_length + adjustment_size) < AZTEC_COMPACT_23_DATA_SIZES[i - 1]) {
                                 layers = i;
                                 compact = true;
-                                data_maxsize = AztecCompact23DataSizes[i - 1];
+                                data_maxsize = AZTEC_COMPACT_23_DATA_SIZES[i - 1];
                             }
                         }
                         break;
                     case 3:
                         for (i = 32; i > 0; i--) {
-                            if ((data_length + adjustment_size) < Aztec36DataSizes[i - 1]) {
+                            if ((data_length + adjustment_size) < AZTEC_36_DATA_SIZES[i - 1]) {
                                 layers = i;
                                 compact = false;
-                                data_maxsize = Aztec36DataSizes[i - 1];
+                                data_maxsize = AZTEC_36_DATA_SIZES[i - 1];
                             }
                         }
                         for (i = comp_loop; i > 0; i--) {
-                            if ((data_length + adjustment_size) < AztecCompact36DataSizes[i - 1]) {
+                            if ((data_length + adjustment_size) < AZTEC_COMPACT_36_DATA_SIZES[i - 1]) {
                                 layers = i;
                                 compact = true;
-                                data_maxsize = AztecCompact36DataSizes[i - 1];
+                                data_maxsize = AZTEC_COMPACT_36_DATA_SIZES[i - 1];
                             }
                         }
                         break;
                     case 4:
                         for (i = 32; i > 0; i--) {
-                            if ((data_length + adjustment_size) < Aztec50DataSizes[i - 1]) {
+                            if ((data_length + adjustment_size) < AZTEC_50_DATA_SIZES[i - 1]) {
                                 layers = i;
                                 compact = false;
-                                data_maxsize = Aztec50DataSizes[i - 1];
+                                data_maxsize = AZTEC_50_DATA_SIZES[i - 1];
                             }
                         }
                         for (i = comp_loop; i > 0; i--) {
-                            if ((data_length + adjustment_size) < AztecCompact50DataSizes[i - 1]) {
+                            if ((data_length + adjustment_size) < AZTEC_COMPACT_50_DATA_SIZES[i - 1]) {
                                 layers = i;
                                 compact = true;
-                                data_maxsize = AztecCompact50DataSizes[i - 1];
+                                data_maxsize = AZTEC_COMPACT_50_DATA_SIZES[i - 1];
                             }
                         }
                         break;
@@ -880,9 +680,9 @@ public class AztecCode extends Symbol {
 
             /* Check if the data actually fits into the selected symbol size */
             if (compact) {
-                data_maxsize = codeword_size * (AztecCompactSizes[layers - 1] - 3);
+                data_maxsize = codeword_size * (AZTEC_COMPACT_SIZES[layers - 1] - 3);
             } else {
-                data_maxsize = codeword_size * (AztecSizes[layers - 1] - 3);
+                data_maxsize = codeword_size * (AZTEC_SIZES[layers - 1] - 3);
             }
 
             if (adjusted_length > data_maxsize) {
@@ -910,17 +710,12 @@ public class AztecCode extends Symbol {
         data_blocks = adjusted_length / codeword_size;
 
         if (compact) {
-            ecc_blocks = AztecCompactSizes[layers - 1] - data_blocks;
+            ecc_blocks = AZTEC_COMPACT_SIZES[layers - 1] - data_blocks;
         } else {
-            ecc_blocks = AztecSizes[layers - 1] - data_blocks;
+            ecc_blocks = AZTEC_SIZES[layers - 1] - data_blocks;
         }
 
-        encodeInfo += "Compact Mode: ";
-        if (compact) {
-            encodeInfo += "TRUE\n";
-        } else {
-            encodeInfo += "FALSE\n";
-        }
+        encodeInfo += "Compact Mode: " + compact + "\n";
         encodeInfo += "Layers: " + layers + '\n';
         encodeInfo += "Codeword Length: " + codeword_size + " bits\n";
         encodeInfo += "Data Codewords: " + data_blocks + '\n';
@@ -929,7 +724,7 @@ public class AztecCode extends Symbol {
         int[] data_part = new int[data_blocks + 3];
         int[] ecc_part = new int[ecc_blocks + 3];
 
-        /* Split into codewords and calculate reed-colomon error correction codes */
+        /* Split into codewords and calculate Reed-Solomon error correction codes */
         switch (codeword_size) {
             case 6:
                 for (i = 0; i < data_blocks; i++) {
@@ -1147,14 +942,14 @@ public class AztecCode extends Symbol {
         /* Plot all of the data into the symbol in pre-defined spiral pattern */
         if (compact) {
 
-            row_count = 27 - (2 * AztecCompactOffset[layers - 1]);
+            row_count = 27 - (2 * AZTEC_COMPACT_OFFSET[layers - 1]);
             row_height = new int[row_count];
             row_height[0] = -1;
             pattern = new String[row_count];
             bin = "";
-            for (y = AztecCompactOffset[layers - 1]; y < (27 - AztecCompactOffset[layers - 1]); y++) {
-                for (x = AztecCompactOffset[layers - 1]; x < (27 - AztecCompactOffset[layers - 1]); x++) {
-                    j = CompactAztecMap[(y * 27) + x];
+            for (y = AZTEC_COMPACT_OFFSET[layers - 1]; y < (27 - AZTEC_COMPACT_OFFSET[layers - 1]); y++) {
+                for (x = AZTEC_COMPACT_OFFSET[layers - 1]; x < (27 - AZTEC_COMPACT_OFFSET[layers - 1]); x++) {
+                    j = COMPACT_AZTEC_MAP[(y * 27) + x];
 
                     if (j == 0) {
                         bin += "0";
@@ -1175,20 +970,20 @@ public class AztecCode extends Symbol {
                         }
                     }
                 }
-                row_height[y - AztecCompactOffset[layers - 1]] = 1;
-                pattern[y - AztecCompactOffset[layers - 1]] = bin2pat(bin);
+                row_height[y - AZTEC_COMPACT_OFFSET[layers - 1]] = 1;
+                pattern[y - AZTEC_COMPACT_OFFSET[layers - 1]] = bin2pat(bin);
                 bin = "";
             }
 
         } else {
-            row_count = 151 - (2 * AztecOffset[layers - 1]);
+            row_count = 151 - (2 * AZTEC_OFFSET[layers - 1]);
             row_height = new int[row_count];
             row_height[0] = -1;
             pattern = new String[row_count];
             bin = "";
-            for (y = AztecOffset[layers - 1]; y < (151 - AztecOffset[layers - 1]); y++) {
-                for (x = AztecOffset[layers - 1]; x < (151 - AztecOffset[layers - 1]); x++) {
-                    j = AztecMap[x][y];
+            for (y = AZTEC_OFFSET[layers - 1]; y < (151 - AZTEC_OFFSET[layers - 1]); y++) {
+                for (x = AZTEC_OFFSET[layers - 1]; x < (151 - AZTEC_OFFSET[layers - 1]); x++) {
+                    j = AZTEC_MAP[x][y];
                     if (j == 1) {
                         bin += "1";
                     }
@@ -1207,8 +1002,8 @@ public class AztecCode extends Symbol {
                         }
                     }
                 }
-                row_height[y - AztecOffset[layers - 1]] = 1;
-                pattern[y - AztecOffset[layers - 1]] = bin2pat(bin);
+                row_height[y - AZTEC_OFFSET[layers - 1]] = 1;
+                pattern[y - AZTEC_OFFSET[layers - 1]] = bin2pat(bin);
                 bin = "";
             }
         }
@@ -1280,8 +1075,8 @@ public class AztecCode extends Symbol {
                     charmap[maplength] = (inputBytes[i] & 0xFF);
                     typemap[maplength++] = 32; //BINARY
                 } else {
-                    charmap[maplength] = AztecSymbolChar[(inputBytes[i] & 0xFF)];
-                    typemap[maplength++] = AztecCodeSet[(inputBytes[i] & 0xFF)];
+                    charmap[maplength] = AZTEC_SYMBOL_CHAR[(inputBytes[i] & 0xFF)];
+                    typemap[maplength++] = AZTEC_CODE_SET[(inputBytes[i] & 0xFF)];
                 }
             }
         }
@@ -1553,24 +1348,24 @@ public class AztecCode extends Symbol {
                             switch (curtable) {
                                 case 2:
                                     /* US */
-                                    binaryString.append(pentbit[28]);
+                                    binaryString.append(PENTBIT[28]);
                                     encodeInfo += "US ";
                                     break;
                                 case 4:
                                     /* UL */
-                                    binaryString.append(pentbit[29]);
+                                    binaryString.append(PENTBIT[29]);
                                     encodeInfo += "UL ";
                                     newtable = 1;
                                     break;
                                 case 8:
                                     /* UL */
-                                    binaryString.append(pentbit[31]);
+                                    binaryString.append(PENTBIT[31]);
                                     encodeInfo += "UL ";
                                     newtable = 1;
                                     break;
                                 case 16:
                                     /* US */
-                                    binaryString.append(quadbit[15]);
+                                    binaryString.append(QUADBIT[15]);
                                     encodeInfo += "US ";
                                     break;
                             }
@@ -1580,29 +1375,29 @@ public class AztecCode extends Symbol {
                             switch (curtable) {
                                 case 1:
                                     /* LL */
-                                    binaryString.append(pentbit[28]);
+                                    binaryString.append(PENTBIT[28]);
                                     encodeInfo += "LL ";
                                     newtable = 2;
                                     break;
                                 case 4:
                                     /* LL */
-                                    binaryString.append(pentbit[28]);
+                                    binaryString.append(PENTBIT[28]);
                                     encodeInfo += "LL ";
                                     newtable = 2;
                                     break;
                                 case 8:
                                     /* UL LL */
-                                    binaryString.append(pentbit[31]);
+                                    binaryString.append(PENTBIT[31]);
                                     encodeInfo += "UL ";
-                                    binaryString.append(pentbit[28]);
+                                    binaryString.append(PENTBIT[28]);
                                     encodeInfo += "LL ";
                                     newtable = 2;
                                     break;
                                 case 16:
                                     /* UL LL */
-                                    binaryString.append(quadbit[14]);
+                                    binaryString.append(QUADBIT[14]);
                                     encodeInfo += "UL ";
-                                    binaryString.append(pentbit[28]);
+                                    binaryString.append(PENTBIT[28]);
                                     encodeInfo += "LL ";
                                     newtable = 2;
                                     break;
@@ -1613,29 +1408,29 @@ public class AztecCode extends Symbol {
                             switch (curtable) {
                                 case 1:
                                     /* ML */
-                                    binaryString.append(pentbit[29]);
+                                    binaryString.append(PENTBIT[29]);
                                     encodeInfo += "ML ";
                                     newtable = 4;
                                     break;
                                 case 2:
                                     /* ML */
-                                    binaryString.append(pentbit[29]);
+                                    binaryString.append(PENTBIT[29]);
                                     encodeInfo += "ML ";
                                     newtable = 4;
                                     break;
                                 case 8:
                                     /* UL ML */
-                                    binaryString.append(pentbit[31]);
+                                    binaryString.append(PENTBIT[31]);
                                     encodeInfo += "UL ";
-                                    binaryString.append(pentbit[29]);
+                                    binaryString.append(PENTBIT[29]);
                                     encodeInfo += "ML ";
                                     newtable = 4;
                                     break;
                                 case 16:
                                     /* UL ML */
-                                    binaryString.append(quadbit[14]);
+                                    binaryString.append(QUADBIT[14]);
                                     encodeInfo += "UL ";
-                                    binaryString.append(pentbit[29]);
+                                    binaryString.append(PENTBIT[29]);
                                     encodeInfo += "ML ";
                                     newtable = 4;
                                     break;
@@ -1646,22 +1441,22 @@ public class AztecCode extends Symbol {
                             switch (curtable) {
                                 case 1:
                                     /* PS */
-                                    binaryString.append(pentbit[0]);
+                                    binaryString.append(PENTBIT[0]);
                                     encodeInfo += "PS ";
                                     break;
                                 case 2:
                                     /* PS */
-                                    binaryString.append(pentbit[0]);
+                                    binaryString.append(PENTBIT[0]);
                                     encodeInfo += "PS ";
                                     break;
                                 case 4:
                                     /* PS */
-                                    binaryString.append(pentbit[0]);
+                                    binaryString.append(PENTBIT[0]);
                                     encodeInfo += "PS ";
                                     break;
                                 case 16:
                                     /* PS */
-                                    binaryString.append(quadbit[0]);
+                                    binaryString.append(QUADBIT[0]);
                                     encodeInfo += "PS ";
                                     break;
                             }
@@ -1671,29 +1466,29 @@ public class AztecCode extends Symbol {
                             switch (curtable) {
                                 case 1:
                                     /* DL */
-                                    binaryString.append(pentbit[30]);
+                                    binaryString.append(PENTBIT[30]);
                                     encodeInfo += "DL ";
                                     newtable = 16;
                                     break;
                                 case 2:
                                     /* DL */
-                                    binaryString.append(pentbit[30]);
+                                    binaryString.append(PENTBIT[30]);
                                     encodeInfo += "DL ";
                                     newtable = 16;
                                     break;
                                 case 4:
                                     /* UL DL */
-                                    binaryString.append(pentbit[29]);
+                                    binaryString.append(PENTBIT[29]);
                                     encodeInfo += "UL ";
-                                    binaryString.append(pentbit[30]);
+                                    binaryString.append(PENTBIT[30]);
                                     encodeInfo += "DL ";
                                     newtable = 16;
                                     break;
                                 case 8:
                                     /* UL DL */
-                                    binaryString.append(pentbit[31]);
+                                    binaryString.append(PENTBIT[31]);
                                     encodeInfo += "UL ";
-                                    binaryString.append(pentbit[30]);
+                                    binaryString.append(PENTBIT[30]);
                                     encodeInfo += "DL ";
                                     newtable = 16;
                                     break;
@@ -1708,27 +1503,27 @@ public class AztecCode extends Symbol {
                             switch (curtable) {
                                 case 2:
                                     /* ML UL */
-                                    binaryString.append(pentbit[29]);
+                                    binaryString.append(PENTBIT[29]);
                                     encodeInfo += "ML ";
-                                    binaryString.append(pentbit[29]);
+                                    binaryString.append(PENTBIT[29]);
                                     encodeInfo += "UL ";
                                     newtable = 1;
                                     break;
                                 case 4:
                                     /* UL */
-                                    binaryString.append(pentbit[29]);
+                                    binaryString.append(PENTBIT[29]);
                                     encodeInfo += "UL ";
                                     newtable = 1;
                                     break;
                                 case 8:
                                     /* UL */
-                                    binaryString.append(pentbit[31]);
+                                    binaryString.append(PENTBIT[31]);
                                     encodeInfo += "UL ";
                                     newtable = 1;
                                     break;
                                 case 16:
                                     /* UL */
-                                    binaryString.append(quadbit[14]);
+                                    binaryString.append(QUADBIT[14]);
                                     encodeInfo += "UL ";
                                     newtable = 1;
                                     break;
@@ -1739,29 +1534,29 @@ public class AztecCode extends Symbol {
                             switch (curtable) {
                                 case 1:
                                     /* LL */
-                                    binaryString.append(pentbit[28]);
+                                    binaryString.append(PENTBIT[28]);
                                     encodeInfo += "LL ";
                                     newtable = 2;
                                     break;
                                 case 4:
                                     /* LL */
-                                    binaryString.append(pentbit[28]);
+                                    binaryString.append(PENTBIT[28]);
                                     encodeInfo += "LL ";
                                     newtable = 2;
                                     break;
                                 case 8:
                                     /* UL LL */
-                                    binaryString.append(pentbit[31]);
+                                    binaryString.append(PENTBIT[31]);
                                     encodeInfo += "UL ";
-                                    binaryString.append(pentbit[28]);
+                                    binaryString.append(PENTBIT[28]);
                                     encodeInfo += "LL ";
                                     newtable = 2;
                                     break;
                                 case 16:
                                     /* UL LL */
-                                    binaryString.append(quadbit[14]);
+                                    binaryString.append(QUADBIT[14]);
                                     encodeInfo += "UL ";
-                                    binaryString.append(pentbit[28]);
+                                    binaryString.append(PENTBIT[28]);
                                     encodeInfo += "LL ";
                                     newtable = 2;
                                     break;
@@ -1772,29 +1567,29 @@ public class AztecCode extends Symbol {
                             switch (curtable) {
                                 case 1:
                                     /* ML */
-                                    binaryString.append(pentbit[29]);
+                                    binaryString.append(PENTBIT[29]);
                                     encodeInfo += "ML ";
                                     newtable = 4;
                                     break;
                                 case 2:
                                     /* ML */
-                                    binaryString.append(pentbit[29]);
+                                    binaryString.append(PENTBIT[29]);
                                     encodeInfo += "ML ";
                                     newtable = 4;
                                     break;
                                 case 8:
                                     /* UL ML */
-                                    binaryString.append(pentbit[31]);
+                                    binaryString.append(PENTBIT[31]);
                                     encodeInfo += "UL ";
-                                    binaryString.append(pentbit[29]);
+                                    binaryString.append(PENTBIT[29]);
                                     encodeInfo += "ML ";
                                     newtable = 4;
                                     break;
                                 case 16:
                                     /* UL ML */
-                                    binaryString.append(quadbit[14]);
+                                    binaryString.append(QUADBIT[14]);
                                     encodeInfo += "UL ";
-                                    binaryString.append(pentbit[29]);
+                                    binaryString.append(PENTBIT[29]);
                                     encodeInfo += "ML ";
                                     newtable = 4;
                                     break;
@@ -1805,33 +1600,33 @@ public class AztecCode extends Symbol {
                             switch (curtable) {
                                 case 1:
                                     /* ML PL */
-                                    binaryString.append(pentbit[29]);
+                                    binaryString.append(PENTBIT[29]);
                                     encodeInfo += "ML ";
-                                    binaryString.append(pentbit[30]);
+                                    binaryString.append(PENTBIT[30]);
                                     encodeInfo += "PL ";
                                     newtable = 8;
                                     break;
                                 case 2:
                                     /* ML PL */
-                                    binaryString.append(pentbit[29]);
+                                    binaryString.append(PENTBIT[29]);
                                     encodeInfo += "ML ";
-                                    binaryString.append(pentbit[30]);
+                                    binaryString.append(PENTBIT[30]);
                                     encodeInfo += "PL ";
                                     newtable = 8;
                                     break;
                                 case 4:
                                     /* PL */
-                                    binaryString.append(pentbit[30]);
+                                    binaryString.append(PENTBIT[30]);
                                     encodeInfo += "PL ";
                                     newtable = 8;
                                     break;
                                 case 16:
                                     /* UL ML PL */
-                                    binaryString.append(quadbit[14]);
+                                    binaryString.append(QUADBIT[14]);
                                     encodeInfo += "UL ";
-                                    binaryString.append(pentbit[29]);
+                                    binaryString.append(PENTBIT[29]);
                                     encodeInfo += "ML ";
-                                    binaryString.append(pentbit[30]);
+                                    binaryString.append(PENTBIT[30]);
                                     encodeInfo += "PL ";
                                     newtable = 8;
                                     break;
@@ -1842,29 +1637,29 @@ public class AztecCode extends Symbol {
                             switch (curtable) {
                                 case 1:
                                     /* DL */
-                                    binaryString.append(pentbit[30]);
+                                    binaryString.append(PENTBIT[30]);
                                     encodeInfo += "DL ";
                                     newtable = 16;
                                     break;
                                 case 2:
                                     /* DL */
-                                    binaryString.append(pentbit[30]);
+                                    binaryString.append(PENTBIT[30]);
                                     encodeInfo += "DL ";
                                     newtable = 16;
                                     break;
                                 case 4:
                                     /* UL DL */
-                                    binaryString.append(pentbit[29]);
+                                    binaryString.append(PENTBIT[29]);
                                     encodeInfo += "UL ";
-                                    binaryString.append(pentbit[30]);
+                                    binaryString.append(PENTBIT[30]);
                                     encodeInfo += "DL ";
                                     newtable = 16;
                                     break;
                                 case 8:
                                     /* UL DL */
-                                    binaryString.append(pentbit[31]);
+                                    binaryString.append(PENTBIT[31]);
                                     encodeInfo += "UL ";
-                                    binaryString.append(pentbit[30]);
+                                    binaryString.append(PENTBIT[30]);
                                     encodeInfo += "DL ";
                                     newtable = 16;
                                     break;
@@ -1876,36 +1671,36 @@ public class AztecCode extends Symbol {
                             switch (curtable) {
                                 case 1:
                                     /* BS */
-                                    binaryString.append(pentbit[31]);
+                                    binaryString.append(PENTBIT[31]);
                                     encodeInfo += "BS ";
                                     newtable = 32;
                                     break;
                                 case 2:
                                     /* BS */
-                                    binaryString.append(pentbit[31]);
+                                    binaryString.append(PENTBIT[31]);
                                     encodeInfo += "BS ";
                                     newtable = 32;
                                     break;
                                 case 4:
                                     /* BS */
-                                    binaryString.append(pentbit[31]);
+                                    binaryString.append(PENTBIT[31]);
                                     encodeInfo += "BS ";
                                     newtable = 32;
                                     break;
                                 case 8:
                                     /* UL BS */
-                                    binaryString.append(pentbit[31]);
+                                    binaryString.append(PENTBIT[31]);
                                     encodeInfo += "UL ";
-                                    binaryString.append(pentbit[31]);
+                                    binaryString.append(PENTBIT[31]);
                                     encodeInfo += "BS ";
                                     lasttable = 1;
                                     newtable = 32;
                                     break;
                                 case 16:
                                     /* UL BS */
-                                    binaryString.append(quadbit[14]);
+                                    binaryString.append(QUADBIT[14]);
                                     encodeInfo += "UL ";
-                                    binaryString.append(pentbit[31]);
+                                    binaryString.append(PENTBIT[31]);
                                     encodeInfo += "BS ";
                                     lasttable = 1;
                                     newtable = 32;
@@ -1960,18 +1755,18 @@ public class AztecCode extends Symbol {
                 case 8:
                     if (charmap[i] >= 400) {
                         encodeInfo += "FLG(" + Integer.toString(charmap[i] - 400) + ") ";
-                        binaryString.append(tribit[charmap[i] - 400]);
+                        binaryString.append(TRIBIT[charmap[i] - 400]);
                         if (charmap[i] != 400) {
                             /* ECI */
                             binaryString.append(eciToBinary());
                         }
                     } else {
-                        binaryString.append(pentbit[charmap[i]]);
+                        binaryString.append(PENTBIT[charmap[i]]);
                         encodeInfo += Integer.toString(charmap[i]) + " ";
                     }
                     break;
                 case 16:
-                    binaryString.append(quadbit[charmap[i]]);
+                    binaryString.append(QUADBIT[charmap[i]]);
                     encodeInfo += Integer.toString(charmap[i]);
                     break;
                 case 32:
@@ -1999,7 +1794,7 @@ public class AztecCode extends Symbol {
         int i;
 
         for (i = 0; i < eciNumber.length(); i++) {
-            binary += quadbit[(eciNumber.charAt(i) - '0') + 2];
+            binary += QUADBIT[(eciNumber.charAt(i) - '0') + 2];
             encodeInfo += Character.toString(eciNumber.charAt(i)) + " ";
         }
 

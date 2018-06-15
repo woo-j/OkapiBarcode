@@ -496,12 +496,12 @@ public class CodablockF extends Symbol {
                 if (((current_mode == CfMode.MODEA) || (current_mode == CfMode.MODEB))
                         && ((findSubset(inputData[input_position]) == Mode.ABORC)
                         || ((inputDataType == DataType.GS1) && (inputData[input_position] == '[')))) {
-                    /* Count the number of numeric digits */
-                    /*  If 4 or more numeric data characters occur together when in subsets A or B:
-                     a.      If there is an even number of numeric data characters, insert a Code C character before the
-                     first numeric digit to change to subset C.
-                     b.      If there is an odd number of numeric data characters, insert a Code Set C character immedi-
-                     ately after the first numeric digit to change to subset C. */
+                    // Count the number of numeric digits
+                    // If 4 or more numeric data characters occur together when in subsets A or B:
+                    //   a. If there is an even number of numeric data characters, insert a Code C character before the
+                    //      first numeric digit to change to subset C.
+                    //   b. If there is an odd number of numeric data characters, insert a Code Set C character immediately
+                    //      after the first numeric digit to change to subset C.
                     i = 0;
                     j = 0;
                     do {

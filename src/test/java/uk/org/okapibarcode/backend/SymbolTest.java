@@ -15,7 +15,6 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
@@ -24,8 +23,8 @@ import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CodingErrorAction;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -44,6 +43,7 @@ import org.reflections.Reflections;
 
 import uk.org.okapibarcode.backend.Symbol.DataType;
 import uk.org.okapibarcode.output.Java2DRenderer;
+import uk.org.okapibarcode.util.Strings;
 
 import com.google.zxing.BinaryBitmap;
 import com.google.zxing.DecodeHintType;
@@ -67,36 +67,51 @@ import com.google.zxing.pdf417.PDF417Reader;
 import com.google.zxing.qrcode.QRCodeReader;
 
 /**
- * <p>
- * Scans the test resources for file-based bar code tests.
+ * <p>Scans the test resources for file-based barcode tests.
  *
- * <p>
- * Tests that verify successful behavior will contain the following sets of files:
+ * <p>Test files match the following naming convention:
  *
  * <pre>
- *   /src/test/resources/uk/org/okapibarcode/backend/[symbol-name]/[test-name].properties (bar code initialization attributes)
- *   /src/test/resources/uk/org/okapibarcode/backend/[symbol-name]/[test-name].codewords  (expected intermediate coding of the bar code)
- *   /src/test/resources/uk/org/okapibarcode/backend/[symbol-name]/[test-name].png        (expected final rendering of the bar code)
+ *   /src/test/resources/uk/org/okapibarcode/backend/[symbol-name]/[test-name].properties
+ *   /src/test/resources/uk/org/okapibarcode/backend/[symbol-name]/[test-name].png
  * </pre>
  *
- * <p>
- * Tests that verify error conditions will contain the following sets of files:
+ * <p>The test properties files contain different sections, each section indicated by a header line:
+ * <ul>
+ *     <li>PROPERTIES: The symbol configuration used to run the test. Each line in this section is of
+ *         the format [property-name]=[property-value]. Empty lines can be used to delimit multiple tests
+ *         within a single file, as long as the expected output is the same for all of the tests.
  *
- * <pre>
- *   /src/test/resources/uk/org/okapibarcode/backend/[symbol-name]/[test-name].properties (bar code initialization attributes)
- *   /src/test/resources/uk/org/okapibarcode/backend/[symbol-name]/[test-name].error      (expected error message)
- * </pre>
+ *     <li>LOG: The expected output symbol encoding information log. This expected log is checked against
+ *         the actual log to verify that encoding worked as expected. This section will be omitted when a
+ *         test is meant to verify an error scenario. Some symbols do not generate any log information;
+ *         this section will always be omitted for such symbols.
  *
- * <p>
- * If a properties file is found with no matching expectation files, we assume that it was recently added to the test suite and
- * that we need to generate suitable expectation files for it.
+ *     <li>CODEWORDS: The expected output symbol codewords (or in some cases symbol pattern). The expected
+ *         codewords are checked against the actual codewords to verify that encoding worked as expected.
+ *         This section will be omitted when a test is meant to verify an error scenario.
  *
- * <p>
- * A single properties file can contain multiple test configurations (separated by an empty line), as long as the expected output
- * is the same for all of those tests.
+ *     <li>ERROR: The expected error message, used to check error scenarios. This section will be omitted
+ *         when a test is meant to verify a success scenario.
+ * </ul>
+ *
+ * <p>Test properties files should use the platform line separator. Lines that begin with "#" in the test
+ * properties files are ignored.
+ *
+ * <p>If a test properties file is missing the expectation sections (LOG, CODEWORDS, ERROR), we assume
+ * that it was recently added to the test suite and that we need to generate suitable expectation sections
+ * to the file. This is done automatically the first time that the test is run.
+ *
+ * <p>The PNG files contain the expected rendering of the symbol, and are also checked to verify that
+ * encoding worked as expected. PNG files are checked against the actual Okapi output, and are also fed
+ * to ZXing (when an appropriate {@link Reader} is available) to verify that ZXing can read the barcode.
+ * PNG files do not exist for tests intended to verify error scenarios.
  */
 @RunWith(Parameterized.class)
 public class SymbolTest {
+
+    /** The system end-of-line character sequence. */
+    private static final String EOL = System.lineSeparator();
 
     /** The directory to which barcode images (expected and actual) are saved when an image check fails. */
     private static final File TEST_FAILURE_IMAGES_DIR = new File("build", "test-failure-images");
@@ -120,41 +135,29 @@ public class SymbolTest {
     /** The type of symbology being tested. */
     private final Class< ? extends Symbol > symbolType;
 
-    /** The test configuration properties. */
-    private final Map< String, String > properties;
-
-    /** The file containing the expected intermediate coding of the bar code, if this test verifies successful behavior. */
-    private final File codewordsFile;
+    /** The test configuration read from the test properties file. */
+    private final TestConfig config;
 
     /** The file containing the expected final rendering of the bar code, if this test verifies successful behavior. */
     private final File pngFile;
-
-    /** The file containing the expected error message, if this test verifies a failure. */
-    private final File errorFile;
 
     /**
      * Creates a new test.
      *
      * @param symbolType the type of symbol being tested
-     * @param properties the test configuration properties
-     * @param codewordsFile the file containing the expected intermediate coding of the bar code, if this test verifies successful behavior
+     * @param config the test configuration, as read from the test properties file
      * @param pngFile the file containing the expected final rendering of the bar code, if this test verifies successful behavior
-     * @param errorFile the file containing the expected error message, if this test verifies a failure
      * @param symbolName the name of the symbol type (used only for test naming)
      * @param fileBaseName the base name of the test file (used only for test naming)
-     * @throws IOException if there is any I/O error
      */
-    public SymbolTest(Class< ? extends Symbol > symbolType, Map< String, String > properties, File codewordsFile, File pngFile,
-                    File errorFile, String symbolName, String fileBaseName) throws IOException {
+    public SymbolTest(Class< ? extends Symbol > symbolType, TestConfig config, File pngFile, String symbolName, String fileBaseName) {
         this.symbolType = symbolType;
-        this.properties = properties;
-        this.codewordsFile = codewordsFile;
+        this.config = config;
         this.pngFile = pngFile;
-        this.errorFile = errorFile;
     }
 
     /**
-     * Runs the test. If there are no expectation files yet, we generate them instead of checking against them.
+     * Runs the test. If there are no expectations yet, we generate them instead of checking against them.
      *
      * @throws Exception if any error occurs during the test
      */
@@ -167,18 +170,18 @@ public class SymbolTest {
         String actualError;
 
         try {
-            setProperties(symbol, properties);
+            setProperties(symbol, config.properties);
             actualError = null;
         } catch (InvocationTargetException e) {
             actualError = e.getCause().getMessage();
         }
 
-        if (codewordsFile.exists() && pngFile.exists()) {
+        if (config.hasSuccessExpectations() && pngFile.exists()) {
             verifySuccess(symbol, actualError);
-        } else if (errorFile.exists()) {
+        } else if (config.hasErrorExpectations()) {
             verifyError(actualError);
         } else {
-            generateExpectationFiles(symbol, actualError);
+            addMissingExpectations(symbol, actualError);
         }
     }
 
@@ -192,25 +195,32 @@ public class SymbolTest {
      */
     private void verifySuccess(Symbol symbol, String actualError) throws IOException, ReaderException {
 
-        assertEquals("Error message", null, actualError);
+        assertEquals("error message", null, actualError);
 
-        List< String > expectedList = Files.readAllLines(codewordsFile.toPath(), UTF_8);
+        // try to verify logs
+        String[] actualLog = symbol.getEncodeInfo().split("\n");
+        assertEquals("log size", config.expectedLog.size(), actualLog.length);
+        for (int i = 0; i < actualLog.length; i++) {
+            String expected = config.expectedLog.get(i).trim();
+            String actual = actualLog[i].trim();
+            assertEquals("at log line " + i, expected, actual);
+        }
 
         try {
             // try to verify codewords
             int[] actualCodewords = symbol.getCodewords();
-            assertEquals(expectedList.size(), actualCodewords.length);
+            assertEquals(config.expectedCodewords.size(), actualCodewords.length);
             for (int i = 0; i < actualCodewords.length; i++) {
-                int expected = getInt(expectedList.get(i));
+                int expected = Integer.parseInt(config.expectedCodewords.get(i));
                 int actual = actualCodewords[i];
                 assertEquals("at codeword index " + i, expected, actual);
             }
         } catch (UnsupportedOperationException e) {
             // codewords aren't supported, try to verify patterns
             String[] actualPatterns = symbol.pattern;
-            assertEquals(expectedList.size(), actualPatterns.length);
+            assertEquals(config.expectedCodewords.size(), actualPatterns.length);
             for (int i = 0; i < actualPatterns.length; i++) {
-                String expected = expectedList.get(i);
+                String expected = config.expectedCodewords.get(i);
                 String actual = actualPatterns[i];
                 assertEquals("at pattern index " + i, expected, actual);
             }
@@ -236,6 +246,8 @@ public class SymbolTest {
             String okapiData = massageOkapiData(symbol.getContent(), symbol);
             assertEquals("checking against ZXing results", okapiData, zxingData);
         }
+
+        // TODO: check against Zint?
     }
 
     /**
@@ -342,63 +354,94 @@ public class SymbolTest {
      * Verifies that the specified symbol encountered the expected error during encoding.
      *
      * @param actualError the actual error message
-     * @throws IOException if there is any I/O error
      */
-    private void verifyError(String actualError) throws IOException {
-        String expectedError = Files.readAllLines(errorFile.toPath(), UTF_8).get(0);
-        assertEquals(expectedError, actualError);
+    private void verifyError(String actualError) {
+        assertEquals(config.expectedError, actualError);
     }
 
     /**
-     * Generates the expectation files for the specified symbol.
+     * If necessary, generates the test expectations for the specified symbol.
      *
-     * @param symbol the symbol to generate expectation files for
+     * @param symbol the symbol to generate test expectations for
      * @param actualError the actual error message (may be <tt>null</tt> if there was no error)
      * @throws IOException if there is any I/O error
      */
-    private void generateExpectationFiles(Symbol symbol, String actualError) throws IOException {
+    private void addMissingExpectations(Symbol symbol, String actualError) throws IOException {
+
+        // check the file on disk one more time before adding anything; otherwise, files containing multiple
+        // test cases will generate multiple expectations sections when we first auto-generate them
+        byte[] bytes = Files.readAllBytes(config.file.toPath());
+        String content = decode(bytes, UTF_8);
+        if (content.contains(ReadMode.CODEWORDS.name()) ||
+            content.contains(ReadMode.LOG.name()) ||
+            content.contains(ReadMode.ERROR.name())) {
+            return;
+        }
+
         if (actualError != null && !actualError.isEmpty()) {
-            generateErrorExpectationFile(actualError);
+            addExpectedError(actualError);
         } else {
-            generateCodewordsExpectationFile(symbol);
-            generatePngExpectationFile(symbol);
+            addExpectedLog(symbol);
+            addExpectedCodewords(symbol);
+            createExpectedPngFile(symbol);
         }
     }
 
     /**
-     * Generates the error expectation file for the specified symbol.
+     * Generates the error section for the specified symbol and adds it to the test properties file.
      *
      * @param error the error message
      * @throws IOException if there is any I/O error
      */
-    private void generateErrorExpectationFile(String error) throws IOException {
-        if (!errorFile.exists()) {
-            PrintWriter writer = new PrintWriter(errorFile);
-            writer.println(error);
-            writer.close();
+    private void addExpectedError(String error) throws IOException {
+        if (config.expectedError == null) {
+            String append = EOL + ReadMode.ERROR.name() + EOL + EOL + error + EOL;
+            Files.write(config.file.toPath(), append.getBytes(UTF_8), StandardOpenOption.APPEND);
         }
     }
 
     /**
-     * Generates the codewords expectation file for the specified symbol.
+     * Generates the encoding log section for the specified symbol and adds it to the test properties file.
+     *
+     * @param symbol the symbol to generate the encoding log for
+     * @throws IOException if there is any I/O error
+     */
+    private void addExpectedLog(Symbol symbol) throws IOException {
+        String info = symbol.getEncodeInfo();
+        if (config.expectedLog.isEmpty() && info != null && !info.isEmpty()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(EOL).append(ReadMode.LOG.name()).append(EOL).append(EOL);
+            String[] logs = info.split("\n");
+            for (String log : logs) {
+                if (!log.isEmpty()) {
+                    sb.append(log.trim()).append(EOL);
+                }
+            }
+            Files.write(config.file.toPath(), sb.toString().getBytes(UTF_8), StandardOpenOption.APPEND);
+        }
+    }
+
+    /**
+     * Generates the codeword section for the specified symbol and adds it to the test properties file.
      *
      * @param symbol the symbol to generate codewords for
      * @throws IOException if there is any I/O error
      */
-    private void generateCodewordsExpectationFile(Symbol symbol) throws IOException {
-        if (!codewordsFile.exists()) {
-            PrintWriter writer = new PrintWriter(codewordsFile);
+    private void addExpectedCodewords(Symbol symbol) throws IOException {
+        if (config.expectedCodewords.isEmpty()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(EOL).append(ReadMode.CODEWORDS.name()).append(EOL).append(EOL);
             try {
                 int[] codewords = symbol.getCodewords();
                 for (int codeword : codewords) {
-                    writer.println(codeword);
+                    sb.append(codeword).append(EOL);
                 }
             } catch (UnsupportedOperationException e) {
                 for (String pattern : symbol.pattern) {
-                    writer.println(pattern);
+                    sb.append(pattern).append(EOL);
                 }
             }
-            writer.close();
+            Files.write(config.file.toPath(), sb.toString().getBytes(UTF_8), StandardOpenOption.APPEND);
         }
     }
 
@@ -408,26 +451,11 @@ public class SymbolTest {
      * @param symbol the symbol to draw
      * @throws IOException if there is any I/O error
      */
-    private void generatePngExpectationFile(Symbol symbol) throws IOException {
+    private void createExpectedPngFile(Symbol symbol) throws IOException {
         if (!pngFile.exists()) {
             BufferedImage img = draw(symbol);
             ImageIO.write(img, "png", pngFile);
         }
-    }
-
-    /**
-     * Returns the integer contained in the specified string. If the string contains a tab character, it and everything after it
-     * is ignored.
-     *
-     * @param s the string to extract the integer from
-     * @return the integer contained in the specified string
-     */
-    private static int getInt(String s) {
-        int i = s.indexOf('\t');
-        if (i != -1) {
-            s = s.substring(0, i);
-        }
-        return Integer.parseInt(s);
     }
 
     /**
@@ -593,44 +621,85 @@ public class SymbolTest {
 
     /**
      * Extracts test configuration properties from the specified properties file. A single properties file can contain
-     * configuration properties for multiple tests.
+     * configuration properties for multiple tests, as long as the output expectations are identical.
      *
-     * @param propertiesFile the properties file to read
-     * @return the test configuration properties in the specified file
+     * @param file the properties file to read
+     * @return the tests in the specified file
      * @throws IOException if there is an error reading the properties file
      */
-    private static List< Map< String, String > > readProperties(File propertiesFile) throws IOException {
+    private static List< TestConfig > readTestConfig(File file) throws IOException {
 
-        String content;
+        String[] lines;
         try {
-            byte[] bytes = Files.readAllBytes(propertiesFile.toPath());
-            content = decode(bytes, UTF_8);
+            byte[] bytes = Files.readAllBytes(file.toPath());
+            String content = decode(bytes, UTF_8);
+            lines = content.split(EOL);
         } catch (CharacterCodingException e) {
-            throw new IOException("Invalid UTF-8 content in file " + propertiesFile.getAbsolutePath(), e);
+            throw new IOException("Invalid UTF-8 content in file " + file.getAbsolutePath(), e);
         }
-
-        String eol = System.lineSeparator();
-        String[] lines = content.split(eol);
 
         List< Map< String, String > > allProperties = new ArrayList<>();
         Map< String, String > properties = new LinkedHashMap<>();
+        List< String > expectedCodewords = new ArrayList<>();
+        List< String > expectedLog = new ArrayList<>();
+        String expectedError = null;
+
+        ReadMode mode = ReadMode.NONE;
 
         for (String line : lines) {
-            if (line.isEmpty()) {
-                // an empty line signals the start of a new test configuration within this single file
-                if (!properties.isEmpty()) {
-                    allProperties.add(properties);
-                    properties = new LinkedHashMap<>();
-                }
-            } else if (!line.startsWith("#")) {
-                int index = line.indexOf('=');
-                if (index != -1) {
-                    String name = line.substring(0, index);
-                    String value = replacePlaceholders(line.substring(index + 1));
-                    properties.put(name, value);
-                } else {
-                    String path = propertiesFile.getAbsolutePath();
-                    throw new IOException(path + ": found line '" + line + "' without '=' character; unintentional newline?");
+            if (line.startsWith("#")) {
+                continue;
+            } else if (ReadMode.PROPERTIES.name().equals(line)) {
+                mode = ReadMode.PROPERTIES;
+            } else if (ReadMode.CODEWORDS.name().equals(line)) {
+                mode = ReadMode.CODEWORDS;
+            } else if (ReadMode.LOG.name().equals(line)) {
+                mode = ReadMode.LOG;
+            } else if (ReadMode.ERROR.name().equals(line)) {
+                mode = ReadMode.ERROR;
+            } else {
+                switch (mode) {
+                    case LOG:
+                        if (!line.isEmpty()) {
+                            expectedLog.add(line);
+                        }
+                        break;
+                    case ERROR:
+                        if (!line.isEmpty()) {
+                            expectedError = line;
+                        }
+                        break;
+                    case CODEWORDS:
+                        if (!line.isEmpty()) {
+                            int index = line.indexOf("#");
+                            if (index != -1) {
+                                line = line.substring(0, index).trim();
+                            }
+                            expectedCodewords.add(line);
+                        }
+                        break;
+                    case PROPERTIES:
+                        if (line.isEmpty()) {
+                            // an empty line signals the start of a new test configuration within this single file
+                            if (!properties.isEmpty()) {
+                                allProperties.add(properties);
+                                properties = new LinkedHashMap<>();
+                            }
+                        } else {
+                            int index = line.indexOf('=');
+                            if (index != -1) {
+                                String name = line.substring(0, index);
+                                String value = Strings.replacePlaceholders(line.substring(index + 1), true);
+                                properties.put(name, value);
+                            } else {
+                                String path = file.getAbsolutePath();
+                                throw new IOException(path + ": found line '" + line + "' without '=' character; unintentional newline?");
+                            }
+                        }
+                        break;
+                    default:
+                        // do nothing
+                        break;
                 }
             }
         }
@@ -639,7 +708,16 @@ public class SymbolTest {
             allProperties.add(properties);
         }
 
-        return allProperties;
+        List< TestConfig > configs = new ArrayList<>();
+        for (Map< String, String > props : allProperties) {
+            configs.add(new TestConfig(file, props, expectedCodewords, expectedLog, expectedError));
+        }
+
+        if (configs.isEmpty()) {
+            throw new OkapiException("Unable to find any tests in file " + file);
+        }
+
+        return configs;
     }
 
     /**
@@ -660,118 +738,12 @@ public class SymbolTest {
     }
 
     /**
-     * Replaces any special placeholders supported in test properties files with their raw values.
-     *
-     * TODO: move this to the Symbol class itself, to mirror zint escape mode functionality
-     *
-     * @param s the string to check for placeholders
-     * @return the specified string, with placeholders replaced
-     */
-    private static String replacePlaceholders(String s) {
-        StringBuilder sb = new StringBuilder(s.length());
-        for (int i = 0; i < s.length(); i++) {
-            char c = s.charAt(i);
-            if (c != '\\') {
-                sb.append(c);
-            } else {
-                if (i + 1 >= s.length()) {
-                    String msg = "Error processing escape sequences: expected escape character, found end of string";
-                    throw new OkapiException(msg);
-                } else {
-                    char c2 = s.charAt(i + 1);
-                    switch (c2) {
-                        case '0':
-                            sb.append('\u0000'); // null
-                            i++;
-                            break;
-                        case 'E':
-                            sb.append('\u0004'); // end of transmission
-                            i++;
-                            break;
-                        case 'a':
-                            sb.append('\u0007'); // bell
-                            i++;
-                            break;
-                        case 'b':
-                            sb.append('\u0008'); // backspace
-                            i++;
-                            break;
-                        case 't':
-                            sb.append('\u0009'); // horizontal tab
-                            i++;
-                            break;
-                        case 'n':
-                            sb.append('\n'); // line feed
-                            i++;
-                            break;
-                        case 'v':
-                            sb.append('\u000b'); // vertical tab
-                            i++;
-                            break;
-                        case 'f':
-                            sb.append('\u000c'); // form feed
-                            i++;
-                            break;
-                        case 'r':
-                            sb.append('\r'); // carriage return
-                            i++;
-                            break;
-                        case 'e':
-                            sb.append('\u001b'); // escape
-                            i++;
-                            break;
-                        case 'G':
-                            sb.append('\u001d'); // group separator
-                            i++;
-                            break;
-                        case 'R':
-                            sb.append('\u001e'); // record separator
-                            i++;
-                            break;
-                        case '\\':
-                            sb.append('\\'); // escape the escape character
-                            i++;
-                            break;
-                        case 'x':
-                            if (i + 3 >= s.length()) {
-                                String msg = "Error processing escape sequences: expected hex sequence, found end of string";
-                                throw new OkapiException(msg);
-                            } else {
-                                char c3 = s.charAt(i + 2);
-                                char c4 = s.charAt(i + 3);
-                                if (isHex(c3) && isHex(c4)) {
-                                    byte b = (byte) Integer.parseInt("" + c3 + c4, 16);
-                                    sb.append(new String(new byte[] { b }, StandardCharsets.ISO_8859_1));
-                                    i += 3;
-                                } else {
-                                    String msg = "Error processing escape sequences: expected hex sequence, found '" + c3 + c4
-                                                    + "'";
-                                    throw new OkapiException(msg);
-                                }
-                            }
-                            break;
-                        default:
-                            sb.append(c);
-                            // TODO
-                            // throw new OkapiException("Error processing escape sequences: expected valid escape character, found '" + c2 + "'");
-                    }
-                }
-            }
-        }
-        return sb.toString();
-    }
-
-    private static boolean isHex(char c) {
-        return (c >= '0' && c <= '9') || (c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f');
-    }
-
-    /**
      * Finds all test resources and returns the information that JUnit needs to dynamically create the corresponding test cases.
      *
      * @return the test data needed to dynamically create the test cases
      * @throws IOException if there is an error reading a file
      */
-    @Parameters(name = "test {index}: {5}: {6}")
+    @Parameters(name = "test {index}: {3}: {4}")
     public static List< Object[] > data() throws IOException {
 
         clear(TEST_FAILURE_IMAGES_DIR);
@@ -792,11 +764,9 @@ public class SymbolTest {
                 for (File file : getPropertiesFiles(dir)) {
                     String fileBaseName = file.getName().replaceAll(".properties", "");
                     if (testNameFilter == null || testNameFilter.isEmpty() || testNameFilter.equalsIgnoreCase(fileBaseName)) {
-                        File codewordsFile = new File(file.getParentFile(), fileBaseName + ".codewords");
                         File pngFile = new File(file.getParentFile(), fileBaseName + ".png");
-                        File errorFile = new File(file.getParentFile(), fileBaseName + ".error");
-                        for (Map< String, String > properties : readProperties(file)) {
-                            data.add(new Object[] { symbol, properties, codewordsFile, pngFile, errorFile, symbolName, fileBaseName });
+                        for (TestConfig config : readTestConfig(file)) {
+                            data.add(new Object[] { symbol, config, pngFile, symbolName, fileBaseName });
                         }
                     }
                 }
@@ -823,5 +793,42 @@ public class SymbolTest {
         if (!dir.exists() && !dir.mkdirs()) {
             throw new OkapiException("Unable to create directory: " + dir);
         }
+    }
+
+    private static final class TestConfig {
+
+        public final File file;
+        public final Map< String, String > properties;
+        public final List< String > expectedCodewords;
+        public final List< String > expectedLog;
+        public final String expectedError;
+
+        public TestConfig(File file,
+                          Map< String, String > properties,
+                          List< String > expectedCodewords,
+                          List< String > expectedLog,
+                          String expectedError) {
+            this.file = file;
+            this.properties = properties;
+            this.expectedCodewords = expectedCodewords;
+            this.expectedLog = expectedLog;
+            this.expectedError = expectedError;
+        }
+
+        public boolean hasSuccessExpectations() {
+            return !expectedCodewords.isEmpty() && !expectedLog.isEmpty();
+        }
+
+        public boolean hasErrorExpectations() {
+            return expectedError != null;
+        }
+    }
+
+    private static enum ReadMode {
+        PROPERTIES,
+        CODEWORDS,
+        LOG,
+        ERROR,
+        NONE
     }
 }

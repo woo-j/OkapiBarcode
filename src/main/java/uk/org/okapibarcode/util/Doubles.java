@@ -16,6 +16,11 @@
 
 package uk.org.okapibarcode.util;
 
+/**
+ * Double utility class.
+ *
+ * @author Daniel Gredler
+ */
 public final class Doubles {
 
     private Doubles() {

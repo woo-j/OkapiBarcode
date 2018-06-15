@@ -207,7 +207,7 @@ public class CodablockF extends Symbol {
         pattern = new String[row_count];
         row_height = new int[row_count];
 
-        encodeInfo += "Grid size: " + columns_needed + " X " + rows_needed + '\n';
+        encodeInfo += "Grid Size: " + columns_needed + " X " + rows_needed + '\n';
         encodeInfo += "K1 Check Digit: " + k1_check + "\n";
         encodeInfo += "K2 Check Digit: " + k2_check + "\n";
 

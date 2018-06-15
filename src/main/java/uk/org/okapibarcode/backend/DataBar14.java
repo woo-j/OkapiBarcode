@@ -157,7 +157,7 @@ public class DataBar14 extends Symbol {
         accum = right_reg.mod(new BigInteger("1597"));
         data_character[3] = accum.intValue();
 
-        encodeInfo += "Data characters: ";
+        encodeInfo += "Data Characters: ";
         for (i = 0; i < 4; i++) {
             encodeInfo += Integer.toString(data_character[i]) + " ";
         }

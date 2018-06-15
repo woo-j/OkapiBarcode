@@ -620,7 +620,7 @@ public class Code128 extends Symbol {
                     case LATCHB: linkage_flag = 99; break;
                     case LATCHC: linkage_flag = 101; break;
                 }
-                encodeInfo += "Linkage flag: " + linkage_flag + '\n';
+                encodeInfo += "Linkage Flag: " + linkage_flag + '\n';
                 break;
             case CCC:
                 /* CC-C 2D component */
@@ -629,7 +629,7 @@ public class Code128 extends Symbol {
                     case LATCHB: linkage_flag = 101; break;
                     case LATCHC: linkage_flag = 100; break;
                 }
-                encodeInfo += "Linkage flag: " + linkage_flag + '\n';
+                encodeInfo += "Linkage Flag: " + linkage_flag + '\n';
                 break;
             default:
                 break;

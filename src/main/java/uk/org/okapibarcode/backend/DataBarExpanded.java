@@ -201,7 +201,7 @@ public class DataBarExpanded extends Symbol {
 
         data_chars = binaryString.length() / 12;
 
-        encodeInfo += "Data characters: ";
+        encodeInfo += "Data Characters: ";
         for (i = 0; i < data_chars; i++) {
             vs[i] = 0;
             for (j = 0; j < 12; j++) {
@@ -1408,7 +1408,7 @@ public class DataBarExpanded extends Symbol {
                     + binaryString.substring(8);
         }
 
-        encodeInfo += "Binary length: " + Integer.toString(binaryString.length()) + "\n";
+        encodeInfo += "Binary Length: " + binaryString.length() + "\n";
         displayBinaryString();
 //        if (debug) System.out.printf("Resultant binary = %s\n", binary_string);
 //        if (debug) System.out.printf("\tLength: %d\n", binary_string.length());

@@ -266,7 +266,7 @@ public class AustraliaPost extends Symbol {
         /* Stop character */
         barStateValues += "13";
 
-        encodeInfo += "Total length: " + barStateValues.length() + '\n';
+        encodeInfo += "Total Length: " + barStateValues.length() + '\n';
         encodeInfo += "Encoding: ";
         for (i = 0; i < barStateValues.length(); i++) {
             switch (barStateValues.charAt(i)) {

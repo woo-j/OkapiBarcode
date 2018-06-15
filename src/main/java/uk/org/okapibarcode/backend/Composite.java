@@ -766,7 +766,7 @@ public class Composite extends Symbol {
                 break;
         }
 
-        encodeInfo += "Composite width: " + Integer.toString(cc_width) + "\n";
+        encodeInfo += "Composite Width: " + Integer.toString(cc_width) + "\n";
 
         if (cc_mode == CompositeMode.CC_A && !cc_binary_string()) {
             cc_mode = CompositeMode.CC_B;
@@ -793,15 +793,15 @@ public class Composite extends Symbol {
         switch (cc_mode) { /* Note that ecc_level is only relevant to CC-C */
             case CC_A:
                 cc_a();
-                encodeInfo += "Composite type: CC-A\n";
+                encodeInfo += "Composite Type: CC-A\n";
                 break;
             case CC_B:
                 cc_b();
-                encodeInfo += "Composite type: CC-B\n";
+                encodeInfo += "Composite Type: CC-B\n";
                 break;
             case CC_C:
                 cc_c();
-                encodeInfo += "Composite type: CC-C\n";
+                encodeInfo += "Composite Type: CC-C\n";
                 break;
         }
 

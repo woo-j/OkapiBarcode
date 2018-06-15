@@ -477,8 +477,8 @@ public abstract class Symbol {
         eciMode = eci.mode;
         inputBytes = content.getBytes(eci.charset);
 
-        encodeInfo += "ECI mode: " + eci.mode + "\n";
-        encodeInfo += "ECI charset: " + eci.charset.name() + "\n";
+        encodeInfo += "ECI Mode: " + eci.mode + "\n";
+        encodeInfo += "ECI Charset: " + eci.charset.name() + "\n";
     }
 
     protected abstract void encode();

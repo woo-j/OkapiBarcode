@@ -1767,7 +1767,7 @@ public class AztecCode extends Symbol {
                     break;
                 case 16:
                     binaryString.append(QUADBIT[charmap[i]]);
-                    encodeInfo += Integer.toString(charmap[i]);
+                    encodeInfo += Integer.toString(charmap[i]) + " ";
                     break;
                 case 32:
                     for (weight = 0x80; weight > 0; weight = weight >> 1) {
@@ -1777,7 +1777,7 @@ public class AztecCode extends Symbol {
                             binaryString.append("0");
                         }
                     }
-                    encodeInfo += Integer.toString(charmap[i]);
+                    encodeInfo += Integer.toString(charmap[i]) + " ";
                     break;
             }
 

@@ -198,7 +198,8 @@ public class SymbolTest {
         assertEquals("error message", null, actualError);
 
         // try to verify logs
-        String[] actualLog = symbol.getEncodeInfo().split("\n");
+        String info = symbol.getEncodeInfo();
+        String[] actualLog = (!info.isEmpty() ? symbol.getEncodeInfo().split("\n") : new String[0]);
         assertEquals("log size", config.expectedLog.size(), actualLog.length);
         for (int i = 0; i < actualLog.length; i++) {
             String expected = config.expectedLog.get(i).trim();
@@ -816,7 +817,8 @@ public class SymbolTest {
         }
 
         public boolean hasSuccessExpectations() {
-            return !expectedCodewords.isEmpty() && !expectedLog.isEmpty();
+            // don't check log, it is sometimes empty for success test cases for some symbol types
+            return !expectedCodewords.isEmpty();
         }
 
         public boolean hasErrorExpectations() {

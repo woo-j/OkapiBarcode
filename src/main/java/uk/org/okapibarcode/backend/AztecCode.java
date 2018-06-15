@@ -234,7 +234,7 @@ public class AztecCode extends Symbol {
         preferredSize = size;
     }
 
-    private int preferredEccLevel = -1;
+    private int preferredEccLevel = 2;
 
     /**
      * Sets the preferred minimum amount of symbol space dedicated to error
@@ -278,6 +278,9 @@ public class AztecCode extends Symbol {
      * @param eccLevel An <em>integer</em> in the range 1 - 4
      */
     public void setPreferredEccLevel(int eccLevel) {
+        if (eccLevel < 1 || eccLevel > 4) {
+            throw new IllegalArgumentException("Invalid ECC level: " + eccLevel);
+        }
         preferredEccLevel = eccLevel;
     }
 
@@ -596,11 +599,7 @@ public class AztecCode extends Symbol {
         }
 
         // Set the error correction level
-        if ((preferredEccLevel <= 0) || (preferredEccLevel > 4)) {
-            ecc_level = 2;
-        } else {
-            ecc_level = preferredEccLevel;
-        }
+        ecc_level = preferredEccLevel;
 
         data_length = binaryString.length();
 

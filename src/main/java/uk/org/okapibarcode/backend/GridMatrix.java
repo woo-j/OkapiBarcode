@@ -194,96 +194,27 @@ public class GridMatrix extends Symbol {
      * Set preferred size, or "version" of the symbol according to the following
      * table. This value may be ignored if the data to be encoded does not fit
      * into a symbol of the selected size.
+     *
      * <table summary="Available Grid Matrix symbol sizes">
      * <tbody>
-     * <tr>
-     * <th><p>
-     * Input</p></th>
-     * <th><p>
-     * Size</p></th>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 1</p></td>
-     * <td><p>
-     * 18 x 18</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 2</p></td>
-     * <td><p>
-     * 30 x 30</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 3</p></td>
-     * <td><p>
-     * 42 x 42</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 4</p></td>
-     * <td><p>
-     * 54 x 54</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 5</p></td>
-     * <td><p>
-     * 66 x 66</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 6</p></td>
-     * <td><p>
-     * 78 x 78</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 7</p></td>
-     * <td><p>
-     * 90x 90</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 8</p></td>
-     * <td><p>
-     * 102 x 102</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 9</p></td>
-     * <td><p>
-     * 114 x 114</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 10</p></td>
-     * <td><p>
-     * 126 x 126</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 11</p></td>
-     * <td><p>
-     * 138 x 138</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 12</p></td>
-     * <td><p>
-     * 150 x 150</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 13</p></td>
-     * <td><p>
-     * 162 x 162</p></td>
-     * </tr>
+     * <tr><th>Input</th><th>Size     </th></tr>
+     * <tr><td>1    </td><td>18 x 18  </td></tr>
+     * <tr><td>2    </td><td>30 x 30  </td></tr>
+     * <tr><td>3    </td><td>42 x 42  </td></tr>
+     * <tr><td>4    </td><td>54 x 54  </td></tr>
+     * <tr><td>5    </td><td>66 x 66  </td></tr>
+     * <tr><td>6    </td><td>78 x 78  </td></tr>
+     * <tr><td>7    </td><td>90 x 90  </td></tr>
+     * <tr><td>8    </td><td>102 x 102</td></tr>
+     * <tr><td>9    </td><td>114 x 114</td></tr>
+     * <tr><td>10   </td><td>126 x 126</td></tr>
+     * <tr><td>11   </td><td>138 x 138</td></tr>
+     * <tr><td>12   </td><td>150 x 150</td></tr>
+     * <tr><td>13   </td><td>162 x 162</td></tr>
      * </tbody>
      * </table>
      *
-     * @param version Symbol version
+     * @param version symbol version
      */
     public void setPreferredVersion(int version) {
         preferredVersion = version;
@@ -292,48 +223,19 @@ public class GridMatrix extends Symbol {
     /**
      * Set the preferred amount of the symbol which should be dedicated to error
      * correction data. Values should be selected from the following table:
+     *
      * <table summary="Available options for error correction capacity">
      * <tbody>
-     * <tr>
-     * <th><p>
-     * Mode</p></th>
-     * <th><p>
-     * Error Correction Capacity</p></th>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 1</p></td>
-     * <td><p>
-     * Approximately 10%</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 2</p></td>
-     * <td><p>
-     * Approximately 20%</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 3</p></td>
-     * <td><p>
-     * Approximately 30%</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 4</p></td>
-     * <td><p>
-     * Approximately 40%</p></td>
-     * </tr>
-     * <tr>
-     * <td><p>
-     * 5</p></td>
-     * <td><p>
-     * Approximately 50%</p></td>
-     * </tr>
+     * <tr><th>Mode</th><th>Error Correction Capacity</th></tr>
+     * <tr><td>1   </td><td>Approximately 10%        </td></tr>
+     * <tr><td>2   </td><td>Approximately 20%        </td></tr>
+     * <tr><td>3   </td><td>Approximately 30%        </td></tr>
+     * <tr><td>4   </td><td>Approximately 40%        </td></tr>
+     * <tr><td>5   </td><td>Approximately 50%        </td></tr>
      * </tbody>
      * </table>
      *
-     * @param eccLevel Error correction mode
+     * @param eccLevel error correction level
      */
     public void setPreferredEccLevel(int eccLevel) {
         preferredEccLevel = eccLevel;

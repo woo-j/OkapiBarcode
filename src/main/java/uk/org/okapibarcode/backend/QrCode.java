@@ -701,14 +701,14 @@ public class QrCode extends Symbol {
         return RetVal;
     }
 
-    private boolean isXAlpha(char cglyph) {
+    private boolean isXAlpha(char c) {
         /* Returns true if input is in exclusive Alphanumeric set (Table J.1) */
         boolean retval = false;
 
-        if ((cglyph >= 'A') && (cglyph <= 'Z')) {
+        if (c >= 'A' && c <= 'Z') {
             retval = true;
         }
-        switch (cglyph) {
+        switch (c) {
             case ' ':
             case '$':
             case '%':
@@ -882,6 +882,7 @@ public class QrCode extends Symbol {
                     && (inputMode[position + short_data_block_length] == data_block));
 
             switch (data_block) {
+
                 case KANJI:
                     /* Kanji mode */
                     /* Mode indicator */
@@ -919,7 +920,9 @@ public class QrCode extends Symbol {
 
                         encodeInfo += Integer.toString(prod) + " ";
                     }
+
                     break;
+
                 case BINARY:
                     /* Byte mode */
                     /* Mode indicator */
@@ -972,6 +975,7 @@ public class QrCode extends Symbol {
                     }
 
                     break;
+
                 case ALPHANUM:
                     /* Alphanumeric mode */
                     /* Mode indicator */
@@ -1058,8 +1062,9 @@ public class QrCode extends Symbol {
 
                         encodeInfo += Integer.toString(prod) + " ";
                     }
-                    ;
+
                     break;
+
                 case NUMERIC:
                     /* Numeric mode */
                     /* Mode indicator */
@@ -1096,10 +1101,12 @@ public class QrCode extends Symbol {
 
                         i += count;
                     }
-                    ;
+
                     break;
             }
+
             position += short_data_block_length;
+
         } while (position < inputLength);
 
         encodeInfo += "\n";
@@ -1522,19 +1529,19 @@ public class QrCode extends Symbol {
     }
 
     private void add_format_info_eval(int size, EccMode ecc_level, int pattern) {
-	/* Add format information to grid */
+        /* Add format information to grid */
 
-	int format = pattern;
-	int seq;
-	int i;
+    	int format = pattern;
+    	int seq;
+    	int i;
 
-	switch(ecc_level) {
-		case L: format += 0x08; break;
-		case Q: format += 0x18; break;
-		case H: format += 0x10; break;
-	}
+    	switch(ecc_level) {
+    		case L: format += 0x08; break;
+    		case Q: format += 0x18; break;
+    		case H: format += 0x10; break;
+    	}
 
-	seq = QR_ANNEX_C[format];
+    	seq = QR_ANNEX_C[format];
 
         for (i = 0; i < 6; i++) {
             if (((seq >> i) & 0x01) != 0) {

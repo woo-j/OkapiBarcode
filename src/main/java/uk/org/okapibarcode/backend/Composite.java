@@ -485,12 +485,9 @@ public class Composite extends Symbol {
 
     @Override
     public void setDataType(DataType dataType) {
-
         if (dataType != Symbol.DataType.GS1) {
-            throw new IllegalArgumentException("Only GS1 data type is supported for composite symbology.");
+            throw new IllegalArgumentException("Only GS1 data type is supported for GS1 Composite symbology.");
         }
-
-        super.setDataType(dataType);
     }
 
     /**

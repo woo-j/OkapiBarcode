@@ -239,7 +239,7 @@ public class SymbolTest {
         // if possible, ensure an independent third party (ZXing) can read the generated barcode and agrees on what it represents
         Reader zxingReader = findReader(symbol);
         if (zxingReader != null) {
-            LuminanceSource source = new BufferedImageLuminanceSource(expected);
+            LuminanceSource source = new BufferedImageLuminanceSource(actual);
             BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
             Map< DecodeHintType, Boolean > hints = Collections.singletonMap(DecodeHintType.PURE_BARCODE, Boolean.TRUE);
             Result result = zxingReader.decode(bitmap, hints);

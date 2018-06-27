@@ -368,7 +368,7 @@ public abstract class Symbol {
         return Collections.unmodifiableList(target);
     }
 
-    protected int positionOf(char c, char[] chars) {
+    protected static int positionOf(char c, char[] chars) {
 
         for (int i = 0; i < chars.length; i++) {
             if (c == chars[i]) {
@@ -379,7 +379,7 @@ public abstract class Symbol {
         throw new OkapiException("Unable to find character '" + c + "' in character array.");
     }
 
-    protected String bin2pat(String bin) {
+    protected static String bin2pat(String bin) {
 
         int len = 0;
         boolean black = true;

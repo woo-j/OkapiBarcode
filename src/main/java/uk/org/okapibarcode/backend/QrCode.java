@@ -15,7 +15,8 @@
  */
 package uk.org.okapibarcode.backend;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
 
 /**
  * <p>Implements QR Code bar code symbology According to ISO/IEC 18004:2015.
@@ -161,16 +162,7 @@ public class QrCode extends Symbol {
         0x2542e, 0x26a64, 0x27541, 0x28c69
     };
 
-    private QrMode[] inputMode;
-    private QrMode[] proposedMode;
-    private String binary;
-    private int[] datastream;
-    private int[] fullstream;
-    private int[] inputData;
-    private byte[] grid;
-    private byte[] eval;
     private int preferredVersion;
-    private int inputLength;
     private EccMode preferredEccLevel = EccMode.L;
 
     /**
@@ -232,29 +224,46 @@ public class QrCode extends Symbol {
 
     @Override
     protected void encode() {
+
         int i, j;
         int est_binlen;
         EccMode ecc_level;
         int max_cw;
-        int autosize;
         int targetCwCount, version, blocks;
         int size;
         int bitmask;
-        String bin;
         boolean canShrink;
+        int[] inputData;
+        boolean gs1 = (inputDataType == DataType.GS1);
 
-        /* This code uses modeFirstFix to make an estimate of the symbol size
-         needed to contain the data. It then optimises the encoding and
-         checks to see if the the data will fit in a smaller
-         symbol, recalculating the binary length if necessary.
-         */
-        inputMode = new QrMode[content.length()];
-        modeFirstFix();
-        est_binlen = estimate_binary_length();
+        eciProcess(); // Get ECI mode
+
+        if (eciMode == 20) {
+            /* Shift-JIS encoding, use Kanji mode */
+            Charset c = Charset.forName("Shift_JIS");
+            inputData = new int[content.length()];
+            for (i = 0; i < inputData.length; i++) {
+                CharBuffer buffer = CharBuffer.wrap(content, i, i + 1);
+                byte[] bytes = c.encode(buffer).array();
+                int value = (bytes.length == 2 ? ((bytes[0] & 0xff) << 8) | (bytes[1] & 0xff) : bytes[0]);
+                inputData[i] = value;
+            }
+        } else {
+            /* Any other encoding method */
+            inputData = new int[inputBytes.length];
+            for (i = 0; i < inputData.length; i++) {
+                inputData[i] = inputBytes[i] & 0xff;
+            }
+        }
+
+        QrMode[] inputMode = new QrMode[inputData.length];
+        defineMode(inputMode, inputData, gs1);
+        est_binlen = getBinaryLength(40, inputMode, inputData, gs1, eciMode);
 
         ecc_level = preferredEccLevel;
         switch (preferredEccLevel) {
             case L:
+            default:
                 max_cw = 2956;
                 break;
             case M:
@@ -266,101 +275,132 @@ public class QrCode extends Symbol {
             case H:
                 max_cw = 1276;
                 break;
-            default:
-                max_cw = 2956;
-                break;
         }
-
-        autosize = 40;
-        for (i = 39; i >= 0; i--) {
-            switch (ecc_level) {
-                case L:
-                    if ((8 * QR_DATA_CODEWORDS_L[i]) >= est_binlen) {
-                        autosize = i + 1;
-                    }
-                    break;
-                case M:
-                    if ((8 * QR_DATA_CODEWORDS_M[i]) >= est_binlen) {
-                        autosize = i + 1;
-                    }
-                    break;
-                case Q:
-                    if ((8 * QR_DATA_CODEWORDS_Q[i]) >= est_binlen) {
-                        autosize = i + 1;
-                    }
-                    break;
-                case H:
-                    if ((8 * QR_DATA_CODEWORDS_H[i]) >= est_binlen) {
-                        autosize = i + 1;
-                    }
-                    break;
-            }
-        }
-
-        // The first guess of symbol size is in autosize. Use this to optimize.
-        est_binlen = getBinaryLength(autosize);
 
         if (est_binlen > (8 * max_cw)) {
             throw new OkapiException("Input too long for selected error correction level");
         }
 
-        // Now see if the optimized binary will fit in a smaller symbol.
-        canShrink = true;
+        // ZINT NOTE: this block is different from the corresponding block of code in Zint;
+        // it is simplified, but the simplification required that the applyOptimisation method
+        // be changed to be free of side effects (by putting the optimized mode array into a
+        // new array instead of modifying the existing array)
 
-        do {
-            if (autosize == 1) {
-                canShrink = false;
-            } else {
-                if (tribus(autosize - 1, 1, 2, 3) != tribus(autosize, 1, 2, 3)) {
-                    // Length of binary needed to encode the data in the smaller symbol is different, recalculate
-                    est_binlen = getBinaryLength(autosize - 1);
-                }
-
-                switch (ecc_level) {
-                    case L:
-                        if ((8 * QR_DATA_CODEWORDS_L[autosize - 2]) < est_binlen) {
-                            canShrink = false;
-                        }
-                        break;
-                    case M:
-                        if ((8 * QR_DATA_CODEWORDS_M[autosize - 2]) < est_binlen) {
-                            canShrink = false;
-                        }
-                        break;
-                    case Q:
-                        if ((8 * QR_DATA_CODEWORDS_Q[autosize - 2]) < est_binlen) {
-                            canShrink = false;
-                        }
-                        break;
-                    case H:
-                        if ((8 * QR_DATA_CODEWORDS_H[autosize - 2]) < est_binlen) {
-                            canShrink = false;
-                        }
-                        break;
-                }
-
-                if (canShrink) {
-                    // Optimisation worked - data will fit in a smaller symbol
-                    autosize--;
-                } else {
-                    // Data did not fit in the smaller symbol, revert to original size
-                    if (tribus(autosize - 1, 1, 2, 3) != tribus(autosize, 1, 2, 3)) {
-                        est_binlen = getBinaryLength(autosize);
-                    }
-                }
+        version = 40;
+        for (i = 39; i >= 0; i--) {
+            int[] dataCodewords;
+            switch (ecc_level) {
+                case L:
+                default:
+                    dataCodewords = QR_DATA_CODEWORDS_L;
+                    break;
+                case M:
+                    dataCodewords = QR_DATA_CODEWORDS_M;
+                    break;
+                case Q:
+                    dataCodewords = QR_DATA_CODEWORDS_Q;
+                    break;
+                case H:
+                    dataCodewords = QR_DATA_CODEWORDS_H;
+                    break;
             }
-        } while (canShrink);
+            int proposedVersion = i + 1;
+            int proposedBinLen = getBinaryLength(proposedVersion, inputMode, inputData, gs1, eciMode);
+            if ((8 * dataCodewords[i]) >= proposedBinLen) {
+                version = proposedVersion;
+                est_binlen = proposedBinLen;
+            }
+        }
 
-        version = autosize;
+        inputMode = applyOptimisation(version, inputMode);
+
+        // ZINT NOTE: end of block of code that is different
+
+// TODO: delete this
+//
+//        autosize = 40;
+//        for (i = 39; i >= 0; i--) {
+//            switch (ecc_level) {
+//                case L:
+//                    if ((8 * QR_DATA_CODEWORDS_L[i]) >= est_binlen) {
+//                        autosize = i + 1;
+//                    }
+//                    break;
+//                case M:
+//                    if ((8 * QR_DATA_CODEWORDS_M[i]) >= est_binlen) {
+//                        autosize = i + 1;
+//                    }
+//                    break;
+//                case Q:
+//                    if ((8 * QR_DATA_CODEWORDS_Q[i]) >= est_binlen) {
+//                        autosize = i + 1;
+//                    }
+//                    break;
+//                case H:
+//                    if ((8 * QR_DATA_CODEWORDS_H[i]) >= est_binlen) {
+//                        autosize = i + 1;
+//                    }
+//                    break;
+//            }
+//        }
+//
+//        // Now see if the optimized binary will fit in a smaller symbol.
+//        canShrink = true;
+//
+//        do {
+//            if (autosize == 1) {
+//                est_binlen = getBinaryLength(autosize, inputMode, inputData, gs1, eciMode); // TODO: added
+//                canShrink = false;
+//            } else {
+//                est_binlen = getBinaryLength(autosize - 1, inputMode, inputData, gs1, eciMode);
+//
+//                switch (ecc_level) {
+//                    case L:
+//                        if ((8 * QR_DATA_CODEWORDS_L[autosize - 2]) < est_binlen) {
+//                            canShrink = false;
+//                        }
+//                        break;
+//                    case M:
+//                        if ((8 * QR_DATA_CODEWORDS_M[autosize - 2]) < est_binlen) {
+//                            canShrink = false;
+//                        }
+//                        break;
+//                    case Q:
+//                        if ((8 * QR_DATA_CODEWORDS_Q[autosize - 2]) < est_binlen) {
+//                            canShrink = false;
+//                        }
+//                        break;
+//                    case H:
+//                        if ((8 * QR_DATA_CODEWORDS_H[autosize - 2]) < est_binlen) {
+//                            canShrink = false;
+//                        }
+//                        break;
+//                }
+//
+//                if (canShrink) {
+//                    // Optimization worked - data will fit in a smaller symbol
+//                    autosize--;
+//                } else {
+//                    // Data did not fit in the smaller symbol, revert to original size
+//                    est_binlen = getBinaryLength(autosize, inputMode, inputData, gs1, eciMode);
+//                }
+//            }
+//        } while (canShrink);
+//
+//        version = autosize;
 
         if ((preferredVersion >= 1) && (preferredVersion <= 40)) {
             /* If the user has selected a larger symbol than the smallest available,
-             then use the size the user has selected, and re-optimise for this
+             then use the size the user has selected, and re-optimize for this
              symbol size.
              */
             if (preferredVersion > version) {
                 version = preferredVersion;
-                est_binlen = getBinaryLength(preferredVersion);
+                est_binlen = getBinaryLength(preferredVersion, inputMode, inputData, gs1, eciMode);
+                inputMode = applyOptimisation(version, inputMode);
+            }
+            if (preferredVersion < version) {
+                throw new OkapiException("Input too long for selected symbol size");
             }
         }
 
@@ -392,123 +432,129 @@ public class QrCode extends Symbol {
                 break;
         }
 
-        datastream = new int[targetCwCount + 1];
-        fullstream = new int[QR_TOTAL_CODEWORDS[version - 1] + 1];
+        int[] datastream = new int[targetCwCount + 1];
+        int[] fullstream = new int[QR_TOTAL_CODEWORDS[version - 1] + 1];
 
-        qr_binary(version, targetCwCount);
-        add_ecc(version, targetCwCount, blocks);
+        qrBinary(datastream, version, targetCwCount, inputMode, inputData, gs1, eciMode, est_binlen);
+        addEcc(fullstream, datastream, version, targetCwCount, blocks);
 
         size = QR_SIZES[version - 1];
 
-        grid = new byte[size * size];
+        byte[] grid = new byte[size * size];
 
         encodeInfo += "Version: " + version + "\n";
-        encodeInfo += "ECC Level: ";
-        switch (ecc_level) {
-            case L:
-                encodeInfo += "L\n";
-                break;
-            case M:
-                encodeInfo += "M\n";
-                break;
-            case Q:
-                encodeInfo += "Q\n";
-                break;
-            case H:
-            default:
-                encodeInfo += "H\n";
-                break;
-        }
+        encodeInfo += "ECC Level: " + ecc_level.name() + "\n";
 
-        for (i = 0; i < size; i++) {
-            for (j = 0; j < size; j++) {
-                grid[(i * size) + j] = 0;
-            }
-        }
+        setupGrid(grid, size, version);
+        populateGrid(grid, size, fullstream, QR_TOTAL_CODEWORDS[version - 1]);
 
-        setup_grid(size, version);
-        populate_grid(size, QR_TOTAL_CODEWORDS[version - 1]);
-        bitmask = apply_bitmask(size, ecc_level);
-        encodeInfo += "Mask Pattern: " + Integer.toBinaryString(bitmask) + "\n";
-        add_format_info(size, ecc_level, bitmask);
         if (version >= 7) {
-            add_version_info(size, version);
+            addVersionInfo(grid, size, version);
         }
+
+        bitmask = applyBitmask(grid, size, ecc_level);
+        encodeInfo += "Mask Pattern: " + Integer.toBinaryString(bitmask) + "\n";
+        addFormatInfo(grid, size, ecc_level, bitmask);
 
         readable = "";
         pattern = new String[size];
         row_count = size;
         row_height = new int[size];
         for (i = 0; i < size; i++) {
-            bin = "";
+            StringBuilder bin = new StringBuilder(size);
             for (j = 0; j < size; j++) {
                 if ((grid[(i * size) + j] & 0x01) != 0) {
-                    bin += "1";
+                    bin.append('1');
                 } else {
-                    bin += "0";
+                    bin.append('0');
                 }
             }
-            pattern[i] = bin2pat(bin);
+            pattern[i] = bin2pat(bin.toString());
             row_height[i] = 1;
         }
     }
 
-    private void modeFirstFix() {
+    /** Place Kanji / Binary / Alphanumeric / Numeric values in inputMode. */
+    private static void defineMode(QrMode[] inputMode, int[] inputData, boolean gs1) {
 
-        eciProcess(); // Get ECI mode
+        int mlen;
 
-        if (eciMode == 20) {
-            /* Shift-JIS encoding, use Kanji mode */
-            inputLength = content.length();
-            inputData = new int[inputLength];
-            for (int i = 0; i < inputLength; i++) {
-                inputData[i] = content.charAt(i);
-            }
-        } else {
-            /* Any other encoding method */
-            inputLength = inputBytes.length;
-            inputData = new int[inputLength];
-            for (int i = 0; i < inputLength; i++) {
-                inputData[i] = inputBytes[i] & 0xFF;
-            }
-        }
-
-        inputMode = new QrMode[inputLength];
-
-        for (int i = 0; i < inputLength; i++) {
+        for (int i = 0; i < inputData.length; i++) {
             if (inputData[i] > 0xff) {
                 inputMode[i] = QrMode.KANJI;
             } else {
                 inputMode[i] = QrMode.BINARY;
-                if (isXAlpha((char) (inputData[i] & 0xFF))) {
+                if (isAlpha(inputData[i])) {
                     inputMode[i] = QrMode.ALPHANUM;
                 }
-                if ((inputDataType == DataType.GS1) && (inputData[i] == '[')) {
+                if (gs1 && (inputData[i] == '[')) {
                     inputMode[i] = QrMode.ALPHANUM;
                 }
-                if (isXNumeric((char) (inputData[i] & 0xff))) {
+                if (isNumeric(inputData[i])) {
                     inputMode[i] = QrMode.NUMERIC;
                 }
             }
         }
+
+        // TODO: uncomment
+//        /* If less than 6 numeric digits together then don't use numeric mode */
+//        for (int i = 0; i < inputMode.length; i++) {
+//            if (inputMode[i] == QrMode.NUMERIC) {
+//                if (((i != 0) && (inputMode[i - 1] != QrMode.NUMERIC)) || (i == 0)) {
+//                    mlen = 0;
+//                    while (((mlen + i) < inputMode.length) && (inputMode[mlen + i] == QrMode.NUMERIC)) {
+//                        mlen++;
+//                    };
+//                    if (mlen < 6) {
+//                        for (int j = 0; j < mlen; j++) {
+//                            inputMode[i + j] = QrMode.ALPHANUM;
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//
+//        /* If less than 4 alphanumeric characters together then don't use alphanumeric mode */
+//        for (int i = 0; i < inputMode.length; i++) {
+//            if (inputMode[i] == QrMode.ALPHANUM) {
+//                if (((i != 0) && (inputMode[i - 1] != QrMode.ALPHANUM)) || (i == 0)) {
+//                    mlen = 0;
+//                    while (((mlen + i) < inputMode.length) && (inputMode[mlen + i] == QrMode.ALPHANUM)) {
+//                        mlen++;
+//                    };
+//                    if (mlen < 4) {
+//                        for (int j = 0; j < mlen; j++) {
+//                            inputMode[i + j] = QrMode.BINARY;
+//                        }
+//                    }
+//                }
+//            }
+//        }
     }
 
-    private int getBinaryLength(int version) {
-        /* Calculate the actual bit length of the proposed binary string */
-        QrMode currentMode;
-        int i, j;
-        int count = 0;
+    /** Calculate the actual bit length of the proposed binary string. */
+    private static int getBinaryLength(int version, QrMode[] inputModeUnoptimized, int[] inputData, boolean gs1, int eciMode) {
 
-        applyOptimisation(version);
+        int i, j;
+        QrMode currentMode;
+        int inputLength = inputModeUnoptimized.length;
+        int count = 0;
+        int alphaLength;
+        int percent = 0;
+
+        // ZINT NOTE: in Zint, this call modifies the input mode array directly; here, we leave
+        // the original array alone so that subsequent binary length checks don't irrevocably
+        // optimize the mode array for the wrong QR Code version
+        QrMode[] inputMode = applyOptimisation(version, inputModeUnoptimized);
 
         currentMode = QrMode.NULL;
 
-        if (eciMode != 3) {
-            count += 12;
+        if (gs1) {
+            count += 4;
         }
 
-        if (inputDataType == DataType.GS1) {
-            count += 4;
+        if (eciMode != 3) {
+            count += 12;
         }
 
         for (i = 0; i < inputLength; i++) {
@@ -517,11 +563,11 @@ public class QrCode extends Symbol {
                 switch (inputMode[i]) {
                     case KANJI:
                         count += tribus(version, 8, 10, 12);
-                        count += (blockLength(i) * 13);
+                        count += (blockLength(i, inputMode) * 13);
                         break;
                     case BINARY:
                         count += tribus(version, 8, 16, 16);
-                        for (j = i; j < (i + blockLength(i)); j++) {
+                        for (j = i; j < (i + blockLength(i, inputMode)); j++) {
                             if (inputData[j] > 0xff) {
                                 count += 16;
                             } else {
@@ -531,28 +577,38 @@ public class QrCode extends Symbol {
                         break;
                     case ALPHANUM:
                         count += tribus(version, 9, 11, 13);
-                        switch (blockLength(i) % 2) {
+                        alphaLength = blockLength(i, inputMode);
+                        // In alphanumeric mode % becomes %%
+                        if (gs1) {
+                            for (j = i; j < (i + alphaLength); j++) { // TODO: need to do this only if in GS1 mode? or is the other code wrong? https://sourceforge.net/p/zint/tickets/104/#227b
+                                if (inputData[j] == '%') {
+                                    percent++;
+                                }
+                            }
+                        }
+                        alphaLength += percent;
+                        switch (alphaLength % 2) {
                             case 0:
-                                count += (blockLength(i) / 2) * 11;
+                                count += (alphaLength / 2) * 11;
                                 break;
                             case 1:
-                                count += ((blockLength(i) - 1) / 2) * 11;
+                                count += ((alphaLength - 1) / 2) * 11;
                                 count += 6;
                                 break;
                         }
                         break;
                     case NUMERIC:
                         count += tribus(version, 10, 12, 14);
-                        switch (blockLength(i) % 3) {
+                        switch (blockLength(i, inputMode) % 3) {
                             case 0:
-                                count += (blockLength(i) / 3) * 10;
+                                count += (blockLength(i, inputMode) / 3) * 10;
                                 break;
                             case 1:
-                                count += ((blockLength(i) - 1) / 3) * 10;
+                                count += ((blockLength(i, inputMode) - 1) / 3) * 10;
                                 count += 4;
                                 break;
                             case 2:
-                                count += ((blockLength(i) - 2) / 3) * 10;
+                                count += ((blockLength(i, inputMode) - 2) / 3) * 10;
                                 count += 7;
                                 break;
                         }
@@ -565,11 +621,13 @@ public class QrCode extends Symbol {
         return count;
     }
 
-    private void applyOptimisation(int version) {
-        /* Implements a custom optimisation algorithm, because implementation
-         of the algorithm shown in Annex J.2 created LONGER binary sequences.
-         */
+    /**
+     * Implements a custom optimization algorithm, because implementation of the algorithm
+     * shown in Annex J.2 created LONGER binary sequences.
+     */
+    private static QrMode[] applyOptimisation(int version, QrMode[] inputMode) {
 
+        int inputLength = inputMode.length;
         int blockCount = 0;
         int i, j;
         QrMode currentMode = QrMode.NULL;
@@ -659,226 +717,107 @@ public class QrCode extends Symbol {
             }
         }
 
+        // ZINT NOTE: this method is different from the original Zint code in that it creates a
+        // new array to hold the optimized values and returns it, rather than modifying the
+        // original array; this allows this method to be called as many times as we want without
+        // worrying about side effects
+
+        QrMode[] optimized = new QrMode[inputMode.length];
+
         j = 0;
         for (int block = 0; block < blockCount; block++) {
             currentMode = blockMode[block];
             for (i = 0; i < blockLength[block]; i++) {
-                inputMode[j] = currentMode;
+                optimized[j] = currentMode;
                 j++;
             }
         }
+
+        return optimized;
     }
 
-    private int blockLength(int start) {
-        /* Find the length of the block starting from 'start' */
-        int i, count;
-        QrMode mode = inputMode[start];
+    /** Find the length of the block starting from 'start'. */
+    private static int blockLength(int start, QrMode[] inputMode) {
 
-        count = 0;
-        i = start;
+        QrMode mode = inputMode[start];
+        int count = 0;
+        int i = start;
 
         do {
             count++;
-        } while (((i + count) < inputLength) && (inputMode[i + count] == mode));
+        } while (((i + count) < inputMode.length) && (inputMode[i + count] == mode));
 
         return count;
     }
 
-    private int tribus(int version, int a, int b, int c) {
-        /* Choose from three numbers based on version */
-        int RetVal;
-
-        RetVal = c;
-
+    /** Choose from three numbers based on version. */
+    private static int tribus(int version, int a, int b, int c) {
         if (version < 10) {
-            RetVal = a;
-        }
-
-        if ((version >= 10) && (version <= 26)) {
-            RetVal = b;
-        }
-
-        return RetVal;
-    }
-
-    private boolean isXAlpha(char c) {
-        /* Returns true if input is in exclusive Alphanumeric set (Table J.1) */
-        boolean retval = false;
-
-        if (c >= 'A' && c <= 'Z') {
-            retval = true;
-        }
-        switch (c) {
-            case ' ':
-            case '$':
-            case '%':
-            case '*':
-            case '+':
-            case '-':
-            case '.':
-            case '/':
-            case ':':
-                retval = true;
-                break;
-        }
-
-        return retval;
-    }
-
-    private boolean isXNumeric(char cglyph) {
-        /* Returns true if input is in exclusive Numeric set (Table J.1) */
-        boolean retval;
-
-        if ((cglyph >= '0') && (cglyph <= '9')) {
-            retval = true;
+            return a;
+        } else if (version >= 10 && version <= 26) {
+            return b;
         } else {
-            retval = false;
+            return c;
         }
-
-        return retval;
     }
 
-    private int estimate_binary_length() {
-        /* Make an estimate (worst case scenario) of how long the binary string will be */
-        int i, count = 0;
-        QrMode current = QrMode.NULL;
-        int a_count = 0;
-        int n_count = 0;
-
-        if (eciMode != 3) {
-            count += 12;
-        }
-
-        if (inputDataType == DataType.GS1) {
-            count += 4;
-        }
-
-        for (i = 0; i < inputLength; i++) {
-            if (inputMode[i] != current) {
-                switch (inputMode[i]) {
-                    case KANJI:
-                        count += 12 + 4;
-                        current = QrMode.KANJI;
-                        break;
-                    case BINARY:
-                        count += 16 + 4;
-                        current = QrMode.BINARY;
-                        break;
-                    case ALPHANUM:
-                        count += 13 + 4;
-                        current = QrMode.ALPHANUM;
-                        a_count = 0;
-                        break;
-                    case NUMERIC:
-                        count += 14 + 4;
-                        current = QrMode.NUMERIC;
-                        n_count = 0;
-                        break;
-                }
-            }
-
-            switch (inputMode[i]) {
-                case KANJI:
-                    count += 13;
-                    break;
-                case BINARY:
-                    count += 8;
-                    break;
-                case ALPHANUM:
-                    a_count++;
-                    if ((a_count & 1) == 0) {
-                        count += 5; // 11 in total
-                        a_count = 0;
-                    } else {
-                        count += 6;
-                    }
-                    break;
-                case NUMERIC:
-                    n_count++;
-                    if ((n_count % 3) == 0) {
-                        count += 3; // 10 in total
-                        n_count = 0;
-                    } else if ((n_count & 1) == 0) {
-                        count += 3; // 7 in total
-                    } else {
-                        count += 4;
-                    }
-                    break;
-            }
-        }
-
-        return count;
+    /** Returns true if input is in the Alphanumeric set (see Table J.1) */
+    private static boolean isAlpha(int c) {
+        return (c >= '0' && c <= '9') ||
+               (c >= 'A' && c <= 'Z') ||
+               (c == ' ') ||
+               (c == '$') ||
+               (c == '%') ||
+               (c == '*') ||
+               (c == '+') ||
+               (c == '-') ||
+               (c == '.') ||
+               (c == '/') ||
+               (c == ':');
     }
 
-    private void qr_binary(int version, int target_binlen) {
-        /* Convert input data to a binary stream and add padding */
+    /** Returns true if input is in the Numeric set (see Table J.1) */
+    private static boolean isNumeric(int c) {
+        return (c >= '0' && c <= '9');
+    }
+
+    /** Converts input data to a binary stream and adds padding. */
+    private void qrBinary(int[] datastream, int version, int target_binlen, QrMode[] inputMode, int[] inputData, boolean gs1, int eciMode, int est_binlen) {
+
+        // TODO: make encodeInfo a StringBuilder, make this method static?
+
         int position = 0;
-        int short_data_block_length, i, scheme = 1;
+        int short_data_block_length, i;
         int padbits;
         int current_binlen, current_bytes;
         int toggle;
-        boolean alphanumPercent;
-        String oneChar;
         QrMode data_block;
-        int jis;
-        byte[] jisBytes;
-        int msb, lsb, prod;
-        int count, first, second, third;
-        int weight;
 
-        binary = "";
+        StringBuilder binary = new StringBuilder(est_binlen + 12);
 
-        /* Note: Shift-JIS characters can be encoded in either Kanji
-         mode or Byte mode. If no ECI code is given, a sequence in Byte
-         mode could be interpreted in two ways - for example 0xE4 0x6E
-         could refer to U+E4 and U+6E (än) or U+8205 (舅). To avoid
-         Mojibake, if using ECI 20 (i.e. if only valid Shift-JIS
-         characters are found in the input data), this code will insert
-         an explicit ECI 20 instruction. Symbols without an ECI can then
-         be assumed to be ECI 3 (ISO 8859-1).
-         */
+        if (gs1) {
+            binary.append("0101"); /* FNC1 */
+        }
+
         if (eciMode != 3) {
-            binary += "0111"; /* ECI */
-
-            if ((eciMode >= 0) && (eciMode <= 127)) {
-                binary += "0";
-                qr_bscan(eciMode, 0x40);
+            binary.append("0111"); /* ECI (Table 4) */
+            if (eciMode <= 127) {
+                binaryAppend(eciMode, 8, binary); /* 000000 to 000127 */
+            } else if (eciMode <= 16383) {
+                binaryAppend(0x8000 + eciMode, 16, binary); /* 000000 to 016383 */
+            } else {
+                binaryAppend(0xC00000 + eciMode, 24, binary); /* 000000 to 999999 */
             }
-
-            if ((eciMode >= 128) && (eciMode <= 16383)) {
-                binary += "10";
-                qr_bscan(eciMode, 0x1000);
-            }
-
-            if ((eciMode >= 16384) && (eciMode <= 999999)) {
-                binary += "110";
-                qr_bscan(eciMode, 0x100000);
-            }
-        }
-
-        if (inputDataType == DataType.GS1) {
-            binary += "0101"; /* FNC1 */
-
-        }
-
-        if (version <= 9) {
-            scheme = 1;
-        } else if ((version >= 10) && (version <= 26)) {
-            scheme = 2;
-        } else if (version >= 27) {
-            scheme = 3;
         }
 
         encodeInfo += "Encoding: ";
-
-        alphanumPercent = false;
 
         do {
             data_block = inputMode[position];
             short_data_block_length = 0;
             do {
                 short_data_block_length++;
-            } while (((short_data_block_length + position) < inputLength)
+            } while (((short_data_block_length + position) < inputMode.length)
                     && (inputMode[position + short_data_block_length] == data_block));
 
             switch (data_block) {
@@ -886,38 +825,23 @@ public class QrCode extends Symbol {
                 case KANJI:
                     /* Kanji mode */
                     /* Mode indicator */
-                    binary += "1000";
+                    binary.append("1000");
 
                     /* Character count indicator */
-                    qr_bscan(short_data_block_length, 0x20 << (scheme * 2)); /* scheme = 1..3 */
+                    binaryAppend(short_data_block_length, tribus(version, 8, 10, 12), binary);
 
                     encodeInfo += "KNJI ";
 
                     /* Character representation */
                     for (i = 0; i < short_data_block_length; i++) {
-                        oneChar = "";
-                        oneChar += (char) inputData[position + i];
-
-                        /* Convert Unicode input to Shift-JIS */
-                        try {
-                            jisBytes = oneChar.getBytes("SJIS");
-                        } catch (UnsupportedEncodingException e) {
-                            throw new OkapiException("Shift-JIS character conversion error");
-                        }
-
-                        jis = ((jisBytes[0] & 0xFF) << 8) + (jisBytes[1] & 0xFF);
-
-                        if (jis > 0x9fff) {
-                            jis -= 0xc140;
-                        } else {
+                        int jis = inputData[position + i];
+                        if (jis >= 0x8140 && jis <= 0x9ffc) {
                             jis -= 0x8140;
+                        } else if (jis >= 0xe040 && jis <= 0xebbf) {
+                            jis -= 0xc140;
                         }
-                        msb = (jis & 0xff00) >> 8;
-                        lsb = (jis & 0xff);
-                        prod = (msb * 0xc0) + lsb;
-
-                        qr_bscan(prod, 0x1000);
-
+                        int prod = ((jis >> 8) * 0xc0) + (jis & 0xff);
+                        binaryAppend(prod, 13, binary);
                         encodeInfo += Integer.toString(prod) + " ";
                     }
 
@@ -926,52 +850,21 @@ public class QrCode extends Symbol {
                 case BINARY:
                     /* Byte mode */
                     /* Mode indicator */
-                    binary += "0100";
-                    int kanjiModifiedLength = short_data_block_length;
-
-                    for (i = 0; i < short_data_block_length; i++) {
-                        if (inputData[position + i] > 0xff) {
-                            kanjiModifiedLength++;
-                        }
-                    }
+                    binary.append("0100");
 
                     /* Character count indicator */
-                    qr_bscan(kanjiModifiedLength, scheme > 1 ? 0x8000 : 0x80); /* scheme = 1..3 */
+                    binaryAppend(short_data_block_length, tribus(version, 8, 16, 16), binary);
 
                     encodeInfo += "BYTE ";
 
                     /* Character representation */
                     for (i = 0; i < short_data_block_length; i++) {
-                        if (inputData[position + i] > 0xff) {
-                            // Convert Kanji character to Shift-JIS
-                            oneChar = "";
-                            oneChar += (char) inputData[position + i];
-
-                            /* Convert Unicode input to Shift-JIS */
-                            try {
-                                jisBytes = oneChar.getBytes("SJIS");
-                            } catch (UnsupportedEncodingException e) {
-                                throw new OkapiException("Shift-JIS character conversion error");
-                            }
-
-                            qr_bscan(jisBytes[0] & 0xff, 0x80);
-                            qr_bscan(jisBytes[1] & 0xff, 0x80);
-
-                            encodeInfo += "(" + Integer.toString(jisBytes[0] & 0xff) + " ";
-                            encodeInfo += Integer.toString(jisBytes[1] & 0xff) + ") ";
-                        } else {
-                            // Process 8-bit byte
-                            int lbyte = inputData[position + i] & 0xFF;
-
-                            if ((inputDataType == DataType.GS1) && (lbyte == '[')) {
-                                lbyte = 0x1d; /* FNC1 */
-
-                            }
-
-                            qr_bscan(lbyte, 0x80);
-
-                            encodeInfo += Integer.toString(lbyte) + " ";
+                        int b = inputData[position + i];
+                        if (gs1 && (b == '[')) {
+                            b = 0x1d; /* FNC1 */
                         }
+                        binaryAppend(b, 8, binary);
+                        encodeInfo += Integer.toString(b) + " ";
                     }
 
                     break;
@@ -979,87 +872,51 @@ public class QrCode extends Symbol {
                 case ALPHANUM:
                     /* Alphanumeric mode */
                     /* Mode indicator */
-                    binary += "0010";
+                    binary.append("0010");
+
+                    /* If in GS1 mode, expand FNC1 -> '%' and expand '%' -> '%%' in a new array */
+                    int percentCount = 0;
+                    if (gs1) {
+                        for (i = 0; i < short_data_block_length; i++) {
+                            if (inputData[position + i] == '%') {
+                                percentCount++;
+                            }
+                        }
+                    }
+                    int[] inputExpanded = new int[short_data_block_length + percentCount];
+                    percentCount = 0;
+                    for (i = 0; i < short_data_block_length; i++) {
+                        int c = inputData[position + i];
+                        if (gs1 && c == '[') {
+                            inputExpanded[i + percentCount] = '%'; /* FNC1 */
+                        } else {
+                            inputExpanded[i + percentCount] = c;
+                            if (gs1 && c == '%') {
+                                percentCount++;
+                                inputExpanded[i + percentCount] = c;
+                            }
+                        }
+                    }
 
                     /* Character count indicator */
-                    qr_bscan(short_data_block_length, 0x40 << (2 * scheme)); /* scheme = 1..3 */
+                    binaryAppend(inputExpanded.length, tribus(version, 9, 11, 13), binary);
 
                     encodeInfo += "ALPH ";
 
                     /* Character representation */
-                    i = 0;
-                    while (i < short_data_block_length) {
-
-                        if (!alphanumPercent) {
-                            if ((inputDataType == DataType.GS1) && (inputData[position + i] == '%')) {
-                                first = positionOf('%', RHODIUM);
-                                second = positionOf('%', RHODIUM);
-                                count = 2;
-                                prod = (first * 45) + second;
-                                i++;
-                            } else {
-                                if ((inputDataType == DataType.GS1) && (inputData[position + i] == '[')) {
-                                    first = positionOf('%', RHODIUM); /* FNC1 */
-
-                                } else {
-                                    first = positionOf((char) (inputData[position + i] & 0xFF), RHODIUM);
-                                }
-                                count = 1;
-                                i++;
-                                prod = first;
-
-                                if (i < short_data_block_length) {
-                                    if (inputMode[position + i] == QrMode.ALPHANUM) {
-                                        if ((inputDataType == DataType.GS1) && (inputData[position + i] == '%')) {
-                                            second = positionOf('%', RHODIUM);
-                                            count = 2;
-                                            prod = (first * 45) + second;
-                                            alphanumPercent = true;
-                                        } else {
-                                            if ((inputDataType == DataType.GS1) && (inputData[position + i] == '[')) {
-                                                second = positionOf('%', RHODIUM); /* FNC1 */
-
-                                            } else {
-                                                second = positionOf((char) (inputData[position + i] & 0xFF), RHODIUM);
-                                            }
-                                            count = 2;
-                                            i++;
-                                            prod = (first * 45) + second;
-                                        }
-                                    }
-                                }
-                            }
-                        } else {
-                            first = positionOf('%', RHODIUM);
-                            count = 1;
-                            i++;
-                            prod = first;
-                            alphanumPercent = false;
-
-                            if (i < short_data_block_length) {
-                                if (inputMode[position + i] == QrMode.ALPHANUM) {
-                                    if ((inputDataType == DataType.GS1) && (inputData[position + i] == '%')) {
-                                        second = positionOf('%', RHODIUM);
-                                        count = 2;
-                                        prod = (first * 45) + second;
-                                        alphanumPercent = true;
-                                    } else {
-                                        if ((inputDataType == DataType.GS1) && (inputData[position + i] == '[')) {
-                                            second = positionOf('%', RHODIUM); /* FNC1 */
-
-                                        } else {
-                                            second = positionOf((char) (inputData[position + i] & 0xFF), RHODIUM);
-                                        }
-                                        count = 2;
-                                        i++;
-                                        prod = (first * 45) + second;
-                                    }
-                                }
-                            }
-                        }
-
-                        qr_bscan(prod, count == 2 ? 0x400 : 0x20); /* count = 1..2 */
-
+                    for (i = 0; i + 1 < inputExpanded.length; i += 2) {
+                        int first = positionOf((char) inputExpanded[i], RHODIUM);
+                        int second = positionOf((char) inputExpanded[i + 1], RHODIUM);
+                        int prod = (first * 45) + second;
+                        int count = 2;
+                        binaryAppend(prod, 1 + (5 * count), binary);
+                        encodeInfo += Integer.toString(prod) + " ";
+                    }
+                    if (inputExpanded.length % 2 != 0) {
+                        int first = positionOf((char) inputExpanded[inputExpanded.length - 1], RHODIUM);
+                        int prod = first;
+                        int count = 1;
+                        binaryAppend(prod, 1 + (5 * count), binary);
                         encodeInfo += Integer.toString(prod) + " ";
                     }
 
@@ -1068,10 +925,10 @@ public class QrCode extends Symbol {
                 case NUMERIC:
                     /* Numeric mode */
                     /* Mode indicator */
-                    binary += "0001";
+                    binary.append("0001");
 
                     /* Character count indicator */
-                    qr_bscan(short_data_block_length, 0x80 << (2 * scheme)); /* scheme = 1..3 */
+                    binaryAppend(short_data_block_length, tribus(version, 10, 12, 14), binary);
 
                     encodeInfo += "NUMB ";
 
@@ -1079,40 +936,40 @@ public class QrCode extends Symbol {
                     i = 0;
                     while (i < short_data_block_length) {
 
-                        first = Character.getNumericValue(inputData[position + i]);
-                        count = 1;
-                        prod = first;
+                        int first = Character.getNumericValue(inputData[position + i]);
+                        int count = 1;
+                        int prod = first;
 
-                        if ((i + 1) < short_data_block_length) {
-                            second = Character.getNumericValue(inputData[position + i + 1]);
+                        if (i + 1 < short_data_block_length) {
+                            int second = Character.getNumericValue(inputData[position + i + 1]);
                             count = 2;
                             prod = (prod * 10) + second;
+
+                            if (i + 2 < short_data_block_length) {
+                                int third = Character.getNumericValue(inputData[position + i + 2]);
+                                count = 3;
+                                prod = (prod * 10) + third;
+                            }
                         }
 
-                        if ((i + 2) < short_data_block_length) {
-                            third = Character.getNumericValue(inputData[position + i + 2]);
-                            count = 3;
-                            prod = (prod * 10) + third;
-                        }
-
-                        qr_bscan(prod, 1 << (3 * count)); /* count = 1..3 */
+                        binaryAppend(prod, 1 + (3 * count), binary);
 
                         encodeInfo += Integer.toString(prod) + " ";
 
                         i += count;
-                    }
+                    };
 
                     break;
             }
 
             position += short_data_block_length;
 
-        } while (position < inputLength);
+        } while (position < inputMode.length);
 
         encodeInfo += "\n";
 
         /* Terminator */
-        binary += "0000";
+        binary.append("0000");
 
         current_binlen = binary.length();
         padbits = 8 - (current_binlen % 8);
@@ -1123,15 +980,15 @@ public class QrCode extends Symbol {
 
         /* Padding bits */
         for (i = 0; i < padbits; i++) {
-            binary += "0";
+            binary.append('0');
         }
 
         /* Put data into 8-bit codewords */
         for (i = 0; i < current_bytes; i++) {
             datastream[i] = 0x00;
-            for (weight = 0; weight < 8; weight++) {
-                if (binary.charAt((i * 8) + weight) == '1') {
-                    datastream[i] += (0x80 >> weight);
+            for (int p = 0; p < 8; p++) {
+                if (binary.charAt((i * 8) + p) == '1') {
+                    datastream[i] += (0x80 >> p);
                 }
             }
         }
@@ -1155,24 +1012,26 @@ public class QrCode extends Symbol {
         encodeInfo += "\n";
     }
 
-    private void qr_bscan(int data, int h) {
-        for (; (h != 0); h >>= 1) {
-            if ((data & h) != 0) {
-                binary += "1";
+    private static void binaryAppend(int value, int length, StringBuilder binary) {
+        int start = 0x01 << (length - 1);
+        for (int i = 0; i < length; i++) {
+            if ((value & (start >> i)) != 0) {
+                binary.append('1');
             } else {
-                binary += "0";
+                binary.append('0');
             }
         }
     }
 
-    private void add_ecc(int version, int data_cw, int blocks) {
-        /* Split data into blocks, add error correction and then interleave the blocks and error correction data */
+    /** Splits data into blocks, adds error correction and then interleaves the blocks and error correction data. */
+    private static void addEcc(int[] fullstream, int[] datastream, int version, int data_cw, int blocks) {
+
         int ecc_cw = QR_TOTAL_CODEWORDS[version - 1] - data_cw;
         int short_data_block_length = data_cw / blocks;
         int qty_long_blocks = data_cw % blocks;
         int qty_short_blocks = blocks - qty_long_blocks;
         int ecc_block_length = ecc_cw / blocks;
-        int i, j, k, length_this_block, posn;
+        int i, j, length_this_block, posn;
 
         int[] data_block = new int[short_data_block_length + 2];
         int[] ecc_block = new int[ecc_block_length + 2];
@@ -1182,7 +1041,6 @@ public class QrCode extends Symbol {
         posn = 0;
 
         for (i = 0; i < blocks; i++) {
-            ReedSolomon rs = new ReedSolomon();
             if (i < qty_short_blocks) {
                 length_this_block = short_data_block_length;
             } else {
@@ -1197,26 +1055,14 @@ public class QrCode extends Symbol {
                 data_block[j] = datastream[posn + j];
             }
 
+            ReedSolomon rs = new ReedSolomon();
             rs.init_gf(0x11d);
             rs.init_code(ecc_block_length, 0);
             rs.encode(length_this_block, data_block);
-            for (k = 0; k < ecc_block_length; k++) {
-                ecc_block[k] = rs.getResult(k);
+
+            for (j = 0; j < ecc_block_length; j++) {
+                ecc_block[j] = rs.getResult(j);
             }
-//            if (debug) {
-//                System.out.printf("\tBlock %d: ", i + 1);
-//                for (j = 0; j < length_this_block; j++) {
-//                    System.out.printf("%d ", data_block[j]);
-//                }
-//                if (i < qty_short_blocks) {
-//                    System.out.printf("   ");
-//                }
-//                System.out.printf(" // ");
-//                for (j = 0; j < ecc_block_length; j++) {
-//                    System.out.printf("%2X ", ecc_block[ecc_block_length - j - 1]);
-//                }
-//                System.out.printf("\n");
-//            }
 
             for (j = 0; j < short_data_block_length; j++) {
                 interleaved_data[(j * blocks) + i] = data_block[j];
@@ -1239,19 +1085,11 @@ public class QrCode extends Symbol {
         for (j = 0; j < ecc_cw; j++) {
             fullstream[j + data_cw] = interleaved_ecc[j];
         }
-
-//        if (debug) {
-//            System.out.printf("\tStream: ");
-//            for (j = 0; j < (data_cw + ecc_cw); j++) {
-//                System.out.printf("%d ", fullstream[j]);
-//            }
-//            System.out.printf("\n");
-//        }
     }
 
-    private void setup_grid(int size, int version) {
+    private static void setupGrid(byte[] grid, int size, int version) {
+
         int i;
-        int loopsize, x, y, xcoord, ycoord;
         boolean toggle = true;
 
         /* Add timing patterns */
@@ -1268,9 +1106,9 @@ public class QrCode extends Symbol {
         }
 
         /* Add finder patterns */
-        place_finder(size, 0, 0);
-        place_finder(size, 0, size - 7);
-        place_finder(size, size - 7, 0);
+        placeFinder(grid, size, 0, 0);
+        placeFinder(grid, size, 0, size - 7);
+        placeFinder(grid, size, size - 7, 0);
 
         /* Add separators */
         for (i = 0; i < 7; i++) {
@@ -1288,15 +1126,13 @@ public class QrCode extends Symbol {
         /* Add alignment patterns */
         if (version != 1) {
             /* Version 1 does not have alignment patterns */
-
-            loopsize = QR_ALIGN_LOOPSIZE[version - 1];
-            for (x = 0; x < loopsize; x++) {
-                for (y = 0; y < loopsize; y++) {
-                    xcoord = QR_TABLE_E1[((version - 2) * 7) + x];
-                    ycoord = QR_TABLE_E1[((version - 2) * 7) + y];
-
+            int loopsize = QR_ALIGN_LOOPSIZE[version - 1];
+            for (int x = 0; x < loopsize; x++) {
+                for (int y = 0; y < loopsize; y++) {
+                    int xcoord = QR_TABLE_E1[((version - 2) * 7) + x];
+                    int ycoord = QR_TABLE_E1[((version - 2) * 7) + y];
                     if ((grid[(ycoord * size) + xcoord] & 0x10) == 0) {
-                        place_align(size, xcoord, ycoord);
+                        placeAlign(grid, size, xcoord, ycoord);
                     }
                 }
             }
@@ -1309,7 +1145,7 @@ public class QrCode extends Symbol {
             grid[(8 * size) + (size - 1 - i)] = 0x20;
             grid[((size - 1 - i) * size) + 8] = 0x20;
         }
-        grid[(8 * size) + 8] += 0x20;
+        grid[(8 * size) + 8] += 0x20; // TODO: suspicious! in Zint, this is 20... https://sourceforge.net/p/zint/tickets/108/
         grid[((size - 1 - 7) * size) + 8] = 0x21; /* Dark Module from Figure 25 */
 
         /* Reserve space for version information */
@@ -1325,8 +1161,7 @@ public class QrCode extends Symbol {
         }
     }
 
-    private void place_finder(int size, int x, int y) {
-        int xp, yp;
+    private static void placeFinder(byte[] grid, int size, int x, int y) {
 
         int[] finder = {
             1, 1, 1, 1, 1, 1, 1,
@@ -1338,8 +1173,8 @@ public class QrCode extends Symbol {
             1, 1, 1, 1, 1, 1, 1
         };
 
-        for (xp = 0; xp < 7; xp++) {
-            for (yp = 0; yp < 7; yp++) {
+        for (int xp = 0; xp < 7; xp++) {
+            for (int yp = 0; yp < 7; yp++) {
                 if (finder[xp + (7 * yp)] == 1) {
                     grid[((yp + y) * size) + (xp + x)] = 0x11;
                 } else {
@@ -1349,8 +1184,7 @@ public class QrCode extends Symbol {
         }
     }
 
-    private void place_align(int size, int x, int y) {
-        int xp, yp;
+    private static void placeAlign(byte[] grid, int size, int x, int y) {
 
         int[] alignment = {
             1, 1, 1, 1, 1,
@@ -1363,8 +1197,8 @@ public class QrCode extends Symbol {
         x -= 2;
         y -= 2; /* Input values represent centre of pattern */
 
-        for (xp = 0; xp < 5; xp++) {
-            for (yp = 0; yp < 5; yp++) {
+        for (int xp = 0; xp < 5; xp++) {
+            for (int yp = 0; yp < 5; yp++) {
                 if (alignment[xp + (5 * yp)] == 1) {
                     grid[((yp + y) * size) + (xp + x)] = 0x11;
                 } else {
@@ -1374,24 +1208,25 @@ public class QrCode extends Symbol {
         }
     }
 
-    private void populate_grid(int size, int cw) {
+    // TODO: third parameter name is different from Zint, need to make sure this is correct; https://sourceforge.net/p/zint/tickets/109/
+    private static void populateGrid(byte[] grid, int size, int[] fullstream, int cw) {
+
         boolean goingUp = true;
         int row = 0; /* right hand side */
 
-        int i, n, x, y;
+        int i, n, y;
 
         n = cw * 8;
         y = size - 1;
         i = 0;
         do {
-            x = (size - 2) - (row * 2);
+            int x = (size - 2) - (row * 2);
             if (x < 6) {
                 x--; /* skip over vertical timing pattern */
-
             }
 
             if ((grid[(y * size) + (x + 1)] & 0xf0) == 0) {
-                if (cwbit(i)) {
+                if (cwbit(fullstream, i)) {
                     grid[(y * size) + (x + 1)] = 0x01;
                 } else {
                     grid[(y * size) + (x + 1)] = 0x00;
@@ -1401,7 +1236,7 @@ public class QrCode extends Symbol {
 
             if (i < n) {
                 if ((grid[(y * size) + x] & 0xf0) == 0) {
-                    if (cwbit(i)) {
+                    if (cwbit(fullstream, i)) {
                         grid[(y * size) + x] = 0x01;
                     } else {
                         grid[(y * size) + x] = 0x00;
@@ -1430,32 +1265,26 @@ public class QrCode extends Symbol {
         } while (i < n);
     }
 
-    private boolean cwbit(int i) {
-        boolean resultant = false;
-
-        if ((fullstream[i / 8] & (0x80 >> (i % 8))) != 0) {
-            resultant = true;
-        }
-
-        return resultant;
+    private static boolean cwbit(int[] fullstream, int i) {
+        return ((fullstream[i / 8] & (0x80 >> (i % 8))) != 0);
     }
 
-    private int apply_bitmask(int size, EccMode ecc_level) {
+    private static int applyBitmask(byte[] grid, int size, EccMode ecc_level) {
+
         int x, y;
         char p;
-        int local_pattern;
+        int pattern;
         int best_val, best_pattern;
         int[] penalty = new int[8];
         byte[] mask = new byte[size * size];
-        eval = new byte[size * size];
-
+        byte[] eval = new byte[size * size];
 
         /* Perform data masking */
         for (x = 0; x < size; x++) {
             for (y = 0; y < size; y++) {
                 mask[(y * size) + x] = 0x00;
-
-                if ((grid[(y * size) + x] & 0xf0) == 0) {
+                // all eight bit mask variants are encoded in the 8 bits of the bytes that make up the mask array
+                if ((grid[(y * size) + x] & 0xf0) == 0) { // exclude areas not to be masked
                     if (((y + x) & 1) == 0) {
                         mask[(y * size) + x] += 0x01;
                     }
@@ -1484,6 +1313,7 @@ public class QrCode extends Symbol {
             }
         }
 
+        /* Apply data masks to grid, result in eval */
         for (x = 0; x < size; x++) {
             for (y = 0; y < size; y++) {
                 if ((grid[(y * size) + x] & 0x01) != 0) {
@@ -1491,24 +1321,22 @@ public class QrCode extends Symbol {
                 } else {
                     p = 0x00;
                 }
-
                 eval[(y * size) + x] = (byte) (mask[(y * size) + x] ^ p);
             }
         }
 
-
         /* Evaluate result */
-        for (local_pattern = 0; local_pattern < 8; local_pattern++) {
-            add_format_info_eval(size, ecc_level, local_pattern);
-            penalty[local_pattern] = evaluate(size, local_pattern);
+        for (pattern = 0; pattern < 8; pattern++) {
+            addFormatInfoEval(eval, size, ecc_level, pattern);
+            penalty[pattern] = evaluate(eval, size, pattern);
         }
 
         best_pattern = 0;
         best_val = penalty[0];
-        for (local_pattern = 1; local_pattern < 8; local_pattern++) {
-            if (penalty[local_pattern] < best_val) {
-                best_pattern = local_pattern;
-                best_val = penalty[local_pattern];
+        for (pattern = 1; pattern < 8; pattern++) {
+            if (penalty[pattern] < best_val) {
+                best_pattern = pattern;
+                best_val = penalty[pattern];
             }
         }
 
@@ -1528,83 +1356,56 @@ public class QrCode extends Symbol {
         return best_pattern;
     }
 
-    private void add_format_info_eval(int size, EccMode ecc_level, int pattern) {
-        /* Add format information to grid */
+    /** Adds format information to eval. */
+    private static void addFormatInfoEval(byte[] eval, int size, EccMode ecc_level, int pattern) {
 
-    	int format = pattern;
-    	int seq;
-    	int i;
+        int format = pattern;
+        int seq;
+        int i;
 
-    	switch(ecc_level) {
-    		case L: format += 0x08; break;
-    		case Q: format += 0x18; break;
-    		case H: format += 0x10; break;
-    	}
+        switch(ecc_level) {
+            case L: format += 0x08; break;
+            case Q: format += 0x18; break;
+            case H: format += 0x10; break;
+        }
 
-    	seq = QR_ANNEX_C[format];
+        seq = QR_ANNEX_C[format];
 
         for (i = 0; i < 6; i++) {
-            if (((seq >> i) & 0x01) != 0) {
-                eval[(i * size) + 8] = (byte)(0x01 >> pattern);
-            } else {
-                eval[(i * size) + 8] = 0;
-            }
+            eval[(i * size) + 8] = (byte) ((((seq >> i) & 0x01) != 0) ? (0x01 >> pattern) : 0x00);
         }
 
         for (i = 0; i < 8; i++) {
-            if (((seq >> i) & 0x01) != 0) {
-                eval[(8 * size) + (size - i - 1)] = (byte)(0x01 >> pattern);
-            } else {
-                eval[(8 * size) + (size - i - 1)] = 0;
-            }
+            eval[(8 * size) + (size - i - 1)] = (byte) ((((seq >> i) & 0x01) != 0) ? (0x01 >> pattern) : 0x00);
         }
 
         for (i = 0; i < 6; i++) {
-            if (((seq >> (i + 9)) & 0x01) != 0) {
-                eval[(8 * size) + (5 - i)] = (byte)(0x01 >> pattern);
-            } else {
-                eval[(8 * size) + (5 - i)] = 0;
-            }
+            eval[(8 * size) + (5 - i)] = (byte) ((((seq >> (i + 9)) & 0x01) != 0) ? (0x01 >> pattern) : 0x00);
         }
 
         for (i = 0; i < 7; i++) {
-            if (((seq >> (i + 8)) & 0x01) != 0) {
-                eval[(((size - 7) + i) * size) + 8] = (byte)(0x01 >> pattern);
-            } else {
-                eval[(((size - 7) + i) * size) + 8] = 0;
-            }
+            eval[(((size - 7) + i) * size) + 8] = (byte) ((((seq >> (i + 8)) & 0x01) != 0) ? (0x01 >> pattern) : 0x00);
         }
 
-        if (((seq >> 6) & 0x01) != 0) {
-            eval[(7 * size) + 8] = (byte)(0x01 >> pattern);
-        } else {
-            eval[(7 * size) + 8] = 0;
-        }
-
-        if (((seq >> 7) & 0x01) != 0) {
-            eval[(8 * size) + 8] = (byte)(0x01 >> pattern);
-        } else {
-            eval[(8 * size) + 8] = 0;
-        }
-
-        if (((seq >> 8) & 0x01) != 0) {
-            eval[(8 * size) + 7] = (byte)(0x01 >> pattern);
-        } else {
-            eval[(8 * size) + 7] = 0;
-        }
+        eval[(7 * size) + 8] = (byte) ((((seq >> 6) & 0x01) != 0) ? (0x01 >> pattern) : 0x00);
+        eval[(8 * size) + 8] = (byte) ((((seq >> 7) & 0x01) != 0) ? (0x01 >> pattern) : 0x00);
+        eval[(8 * size) + 7] = (byte) ((((seq >> 8) & 0x01) != 0) ? (0x01 >> pattern) : 0x00);
     }
 
-    private int evaluate(int size, int pattern) {
-        int x, y, block;
+    private static int evaluate(byte[] eval, int size, int pattern) {
+
+        int x, y, block, weight;
         int result = 0;
         int state;
         int p;
-        int weight;
         int dark_mods;
         int percentage, k;
         int a, b, afterCount, beforeCount;
         byte[] local = new byte[size * size];
 
+        // all eight bit mask variants have been encoded in the 8 bits of the bytes
+        // that make up the grid array; select them for evaluation according to the
+        // desired pattern
         for (x = 0; x < size; x++) {
             for (y = 0; y < size; y++) {
                 if ((eval[(y * size) + x] & (0x01 << pattern)) != 0) {
@@ -1659,9 +1460,9 @@ public class QrCode extends Symbol {
         /* Test 2: Block of modules in same color */
         for (x = 0; x < size - 1; x++) {
             for (y = 0; y < size - 1; y++) {
-                if (((local[(y * size) + x] == local[((y + 1) * size) + x])
-                        && (local[(y * size) + x] == local[(y * size) + (x + 1)]))
-                        && (local[(y * size) + x] == local[((y + 1) * size) + (x + 1)])) {
+                if (((local[(y * size) + x] == local[((y + 1) * size) + x]) &&
+                        (local[(y * size) + x] == local[(y * size) + (x + 1)])) &&
+                        (local[(y * size) + x] == local[((y + 1) * size) + (x + 1)])) {
                     result += 3;
                 }
             }
@@ -1706,8 +1507,7 @@ public class QrCode extends Symbol {
                     }
 
                     if ((beforeCount == 4) || (afterCount == 4)) {
-                        /* Pattern is preceeded or followed by light area
-                         4 modules wide */
+                        // Pattern is preceded or followed by light area 4 modules wide
                         result += 40;
                     }
                 }
@@ -1752,8 +1552,7 @@ public class QrCode extends Symbol {
                     }
 
                     if ((beforeCount == 4) || (afterCount == 4)) {
-                        /* Pattern is preceeded or followed by light area
-                         4 modules wide */
+                        // Pattern is preceded or followed by light area 4 modules wide
                         result += 40;
                     }
                 }
@@ -1781,8 +1580,8 @@ public class QrCode extends Symbol {
         return result;
     }
 
-    private void add_format_info(int size, EccMode ecc_level, int pattern) {
-        /* Add format information to grid */
+    /* Adds format information to grid. */
+    private static void addFormatInfo(byte[] grid, int size, EccMode ecc_level, int pattern) {
 
         int format = pattern;
         int seq;
@@ -1823,12 +1622,11 @@ public class QrCode extends Symbol {
         grid[(8 * size) + 7] += (seq >> 8) & 0x01;
     }
 
-    private void add_version_info(int size, int version) {
-        /* Add version information */
-        int i;
-
+    /** Adds version information. */
+    private static void addVersionInfo(byte[] grid, int size, int version) {
+        // TODO: Zint masks with 0x41 instead of 0x01; which is correct? https://sourceforge.net/p/zint/tickets/110/
         long version_data = QR_ANNEX_D[version - 7];
-        for (i = 0; i < 6; i++) {
+        for (int i = 0; i < 6; i++) {
             grid[((size - 11) * size) + i] += (version_data >> (i * 3)) & 0x01;
             grid[((size - 10) * size) + i] += (version_data >> ((i * 3) + 1)) & 0x01;
             grid[((size - 9) * size) + i] += (version_data >> ((i * 3) + 2)) & 0x01;

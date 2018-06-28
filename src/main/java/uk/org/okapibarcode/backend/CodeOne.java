@@ -102,7 +102,7 @@ public class CodeOne extends Symbol {
     };
 
     private int[] data = new int[1500];
-    private int[] source;
+    private int[] inputData;
     private int[][] datagrid = new int[136][120];
     private boolean[][] outputGrid = new boolean[148][134];
 
@@ -741,9 +741,9 @@ public class CodeOne extends Symbol {
         boolean isTwoDigits;
 
         byte[] bytes = content.getBytes(StandardCharsets.ISO_8859_1);
-        source = new int[bytes.length];
-        for (i = 0; i < source.length; i++) {
-            source[i] = bytes[i] & 0xff;
+        inputData = new int[bytes.length];
+        for (i = 0; i < inputData.length; i++) {
+            inputData[i] = bytes[i] & 0xff;
         }
 
         sourcePoint = 0;
@@ -796,7 +796,7 @@ public class CodeOne extends Symbol {
                     j = 0;
 
                     for (i = 0; i < 21; i++) {
-                        if ((source[sourcePoint + i] >= '0') && (source[sourcePoint + i] <= '9')) {
+                        if ((inputData[sourcePoint + i] >= '0') && (inputData[sourcePoint + i] <= '9')) {
                             j++;
                         }
                     }
@@ -811,7 +811,7 @@ public class CodeOne extends Symbol {
                     j = 0;
 
                     for (i = 0; i < 13; i++) {
-                        if ((source[sourcePoint + i] >= '0') && (source[sourcePoint + i] <= '9')) {
+                        if ((inputData[sourcePoint + i] >= '0') && (inputData[sourcePoint + i] <= '9')) {
                             j++;
                         }
                     }
@@ -819,8 +819,8 @@ public class CodeOne extends Symbol {
                     if (j == 13) {
                         latch = false;
                         for (i = sourcePoint + 13; i < length; i++) {
-                            if (!((source[i] >= '0') &&
-                                    (source[i] <= '9'))) {
+                            if (!((inputData[i] >= '0') &&
+                                    (inputData[i] <= '9'))) {
                                 latch = true;
                             }
                         }
@@ -835,11 +835,11 @@ public class CodeOne extends Symbol {
                 if (next_mode == Mode.C1_ASCII) { /* Step B3 */
                     isTwoDigits = false;
                     if ((sourcePoint + 1) != length) {
-                        if ((source[sourcePoint] >= '0') && (source[sourcePoint] <= '9')) {
-                            if ((source[sourcePoint + 1] >= '0') && (source[sourcePoint + 1] <= '9')) {
+                        if ((inputData[sourcePoint] >= '0') && (inputData[sourcePoint] <= '9')) {
+                            if ((inputData[sourcePoint + 1] >= '0') && (inputData[sourcePoint + 1] <= '9')) {
                                 // remaining data consists of two numeric digits
-                                data[targetPoint] = (10 * (source[sourcePoint] - '0'))
-                                        + (source[sourcePoint + 1] - '0') + 130;
+                                data[targetPoint] = (10 * (inputData[sourcePoint] - '0'))
+                                        + (inputData[sourcePoint + 1] - '0') + 130;
                                 targetPoint++;
                                 sourcePoint += 2;
                                 isTwoDigits = true;
@@ -848,13 +848,13 @@ public class CodeOne extends Symbol {
                     }
 
                     if (!(isTwoDigits)) {
-                        if ((inputDataType == DataType.GS1) && (source[sourcePoint] == '[')) {
+                        if ((inputDataType == DataType.GS1) && (inputData[sourcePoint] == '[')) {
                             if ((length - sourcePoint) >= 15) { /* Step B4 */
                                 j = 0;
 
                                 for (i = 0; i < 15; i++) {
-                                    if ((source[sourcePoint + i] >= '0')
-                                            && (source[sourcePoint + i] <= '9')) {
+                                    if ((inputData[sourcePoint + i] >= '0')
+                                            && (inputData[sourcePoint + i] <= '9')) {
                                         j++;
                                     }
                                 }
@@ -871,8 +871,8 @@ public class CodeOne extends Symbol {
                                 j = 0;
 
                                 for (i = 0; i < 7; i++) {
-                                    if ((source[sourcePoint + i] >= '0')
-                                            && (source[sourcePoint + i] <= '9')) {
+                                    if ((inputData[sourcePoint + i] >= '0')
+                                            && (inputData[sourcePoint + i] <= '9')) {
                                         j++;
                                     }
                                 }
@@ -880,8 +880,8 @@ public class CodeOne extends Symbol {
                                 if (j == 7) {
                                     latch = false;
                                     for (i = sourcePoint + 7; i < length; i++) {
-                                        if (!((source[sourcePoint + i] >= '0')
-                                                && (source[sourcePoint + i] <= '9'))) {
+                                        if (!((inputData[sourcePoint + i] >= '0')
+                                                && (inputData[sourcePoint + i] <= '9'))) {
                                             latch = true;
                                         }
                                     }
@@ -902,21 +902,21 @@ public class CodeOne extends Symbol {
                             next_mode = lookAheadTest(length, sourcePoint, current_mode);
 
                             if (next_mode == Mode.C1_ASCII) {
-                                if (source[sourcePoint] > 127) {
+                                if (inputData[sourcePoint] > 127) {
                                     /* Step B7 */
                                     data[targetPoint] = 235;
                                     targetPoint++; /* FNC4 */
-                                    data[targetPoint] = (source[sourcePoint] - 128) + 1;
+                                    data[targetPoint] = (inputData[sourcePoint] - 128) + 1;
                                     targetPoint++;
                                     sourcePoint++;
                                 } else {
                                     /* Step B8 */
-                                    if ((inputDataType == DataType.GS1) && (source[sourcePoint] == '[')) {
+                                    if ((inputDataType == DataType.GS1) && (inputData[sourcePoint] == '[')) {
                                         data[targetPoint] = 232;
                                         targetPoint++;
                                         sourcePoint++; /* FNC1 */
                                     } else {
-                                        data[targetPoint] = source[sourcePoint] + 1;
+                                        data[targetPoint] = inputData[sourcePoint] + 1;
                                         targetPoint++;
                                         sourcePoint++;
                                     }
@@ -935,8 +935,8 @@ public class CodeOne extends Symbol {
                         j = 0;
 
                         for (i = 0; i < 12; i++) {
-                            if ((source[sourcePoint + i] >= '0')
-                                    && (source[sourcePoint + i] <= '9')) {
+                            if ((inputData[sourcePoint + i] >= '0')
+                                    && (inputData[sourcePoint + i] <= '9')) {
                                 j++;
                             }
                         }
@@ -951,8 +951,8 @@ public class CodeOne extends Symbol {
                         j = 0;
 
                         for (i = 0; i < 8; i++) {
-                            if ((source[sourcePoint + i] >= '0')
-                                    && (source[sourcePoint + i] <= '9')) {
+                            if ((inputData[sourcePoint + i] >= '0')
+                                    && (inputData[sourcePoint + i] <= '9')) {
                                 j++;
                             }
                         }
@@ -962,7 +962,7 @@ public class CodeOne extends Symbol {
                         } else {
                             latch = true;
                             for (j = sourcePoint + 8; j < length; j++) {
-                                if ((source[j] <= '0') || (source[j] >= '9')) {
+                                if ((inputData[j] <= '0') || (inputData[j] >= '9')) {
                                     latch = false;
                                 }
                             }
@@ -983,19 +983,19 @@ public class CodeOne extends Symbol {
                     data[targetPoint] = 255;
                     targetPoint++; /* Unlatch */
                 } else {
-                    if (source[sourcePoint] > 127) {
+                    if (inputData[sourcePoint] > 127) {
                         c40_buffer[c40_p] = 1;
                         c40_p++;
                         c40_buffer[c40_p] = 30;
                         c40_p++; /* Upper Shift */
-                        shift_set = C40_SHIFT[source[sourcePoint] - 128];
-                        value = C40_VALUE[source[sourcePoint] - 128];
+                        shift_set = C40_SHIFT[inputData[sourcePoint] - 128];
+                        value = C40_VALUE[inputData[sourcePoint] - 128];
                     } else {
-                        shift_set = C40_SHIFT[source[sourcePoint]];
-                        value = C40_VALUE[source[sourcePoint]];
+                        shift_set = C40_SHIFT[inputData[sourcePoint]];
+                        value = C40_VALUE[inputData[sourcePoint]];
                     }
 
-                    if ((inputDataType == DataType.GS1) && (source[sourcePoint] == '[')) {
+                    if ((inputDataType == DataType.GS1) && (inputData[sourcePoint] == '[')) {
                         shift_set = 2;
                         value = 27; /* FNC1 */
                     }
@@ -1037,8 +1037,8 @@ public class CodeOne extends Symbol {
                         j = 0;
 
                         for (i = 0; i < 12; i++) {
-                            if ((source[sourcePoint + i] >= '0')
-                                    && (source[sourcePoint + i] <= '9')) {
+                            if ((inputData[sourcePoint + i] >= '0')
+                                    && (inputData[sourcePoint + i] <= '9')) {
                                 j++;
                             }
                         }
@@ -1053,8 +1053,8 @@ public class CodeOne extends Symbol {
                         j = 0;
 
                         for (i = 0; i < 8; i++) {
-                            if ((source[sourcePoint + i] >= '0')
-                                    && (source[sourcePoint + i] <= '9')) {
+                            if ((inputData[sourcePoint + i] >= '0')
+                                    && (inputData[sourcePoint + i] <= '9')) {
                                 j++;
                             }
                         }
@@ -1064,7 +1064,7 @@ public class CodeOne extends Symbol {
                         } else {
                             latch = true;
                             for (j = sourcePoint + 8; j < length; j++) {
-                                if ((source[j] <= '0') || (source[j] >= '9')) {
+                                if ((inputData[j] <= '0') || (inputData[j] >= '9')) {
                                     latch = false;
                                 }
                             }
@@ -1085,19 +1085,19 @@ public class CodeOne extends Symbol {
                     data[targetPoint] = 255;
                     targetPoint++; /* Unlatch */
                 } else {
-                    if (source[sourcePoint] > 127) {
+                    if (inputData[sourcePoint] > 127) {
                         text_buffer[text_p] = 1;
                         text_p++;
                         text_buffer[text_p] = 30;
                         text_p++; /* Upper Shift */
-                        shift_set = TEXT_SHIFT[source[sourcePoint] - 128];
-                        value = TEXT_VALUE[source[sourcePoint] - 128];
+                        shift_set = TEXT_SHIFT[inputData[sourcePoint] - 128];
+                        value = TEXT_VALUE[inputData[sourcePoint] - 128];
                     } else {
-                        shift_set = TEXT_SHIFT[source[sourcePoint]];
-                        value = TEXT_VALUE[source[sourcePoint]];
+                        shift_set = TEXT_SHIFT[inputData[sourcePoint]];
+                        value = TEXT_VALUE[inputData[sourcePoint]];
                     }
 
-                    if ((inputDataType == DataType.GS1) && (source[sourcePoint] == '[')) {
+                    if ((inputDataType == DataType.GS1) && (inputData[sourcePoint] == '[')) {
                         shift_set = 2;
                         value = 27; /* FNC1 */
                     }
@@ -1140,8 +1140,8 @@ public class CodeOne extends Symbol {
                         j = 0;
 
                         for (i = 0; i < 12; i++) {
-                            if ((source[sourcePoint + i] >= '0')
-                                    && (source[sourcePoint + i] <= '9')) {
+                            if ((inputData[sourcePoint + i] >= '0')
+                                    && (inputData[sourcePoint + i] <= '9')) {
                                 j++;
                             }
                         }
@@ -1155,8 +1155,8 @@ public class CodeOne extends Symbol {
                         j = 0;
 
                         for (i = 0; i < 8; i++) {
-                            if ((source[sourcePoint + i] >= '0') &&
-                                    (source[sourcePoint + i] <= '9')) {
+                            if ((inputData[sourcePoint + i] >= '0') &&
+                                    (inputData[sourcePoint + i] <= '9')) {
                                 j++;
                             }
                         }
@@ -1166,7 +1166,7 @@ public class CodeOne extends Symbol {
                         } else {
                             latch = true;
                             for (j = sourcePoint + 8; j < length; j++) {
-                                if ((source[j] <= '0') || (source[j] >= '9')) {
+                                if ((inputData[j] <= '0') || (inputData[j] >= '9')) {
                                     latch = false;
                                 }
                             }
@@ -1177,9 +1177,9 @@ public class CodeOne extends Symbol {
                         }
                     }
 
-                    if (!((isEdiEncodable(source[sourcePoint])
-                            && isEdiEncodable(source[sourcePoint + 1]))
-                            && isEdiEncodable(source[sourcePoint + 2]))) {
+                    if (!((isEdiEncodable(inputData[sourcePoint])
+                            && isEdiEncodable(inputData[sourcePoint + 1]))
+                            && isEdiEncodable(inputData[sourcePoint + 2]))) {
                         next_mode = Mode.C1_ASCII;
                     }
                 }
@@ -1188,23 +1188,23 @@ public class CodeOne extends Symbol {
                     data[targetPoint] = 255;
                     targetPoint++; /* Unlatch */
                 } else {
-                    if (source[sourcePoint] == 13) {
+                    if (inputData[sourcePoint] == 13) {
                         value = 0;
                     }
-                    if (source[sourcePoint] == '*') {
+                    if (inputData[sourcePoint] == '*') {
                         value = 1;
                     }
-                    if (source[sourcePoint] == '>') {
+                    if (inputData[sourcePoint] == '>') {
                         value = 2;
                     }
-                    if (source[sourcePoint] == ' ') {
+                    if (inputData[sourcePoint] == ' ') {
                         value = 3;
                     }
-                    if ((source[sourcePoint] >= '0') && (source[sourcePoint] <= '9')) {
-                        value = source[sourcePoint] - '0' + 4;
+                    if ((inputData[sourcePoint] >= '0') && (inputData[sourcePoint] <= '9')) {
+                        value = inputData[sourcePoint] - '0' + 4;
                     }
-                    if ((source[sourcePoint] >= 'A') && (source[sourcePoint] <= 'Z')) {
-                        value = source[sourcePoint] - 'A' + 14;
+                    if ((inputData[sourcePoint] >= 'A') && (inputData[sourcePoint] <= 'Z')) {
+                        value = inputData[sourcePoint] - 'A' + 14;
                     }
 
                     edi_buffer[edi_p] = value;
@@ -1240,19 +1240,19 @@ public class CodeOne extends Symbol {
                 decimal_count = 0;
 
                 if (data_left >= 1) {
-                    if ((source[sourcePoint] >= '0') && (source[sourcePoint] <= '9')) {
+                    if ((inputData[sourcePoint] >= '0') && (inputData[sourcePoint] <= '9')) {
                         decimal_count = 1;
                     }
                 }
                 if (data_left >= 2) {
-                    if ((decimal_count == 1) && ((source[sourcePoint + 1] >= '0')
-                            && (source[sourcePoint + 1] <= '9'))) {
+                    if ((decimal_count == 1) && ((inputData[sourcePoint + 1] >= '0')
+                            && (inputData[sourcePoint + 1] <= '9'))) {
                         decimal_count = 2;
                     }
                 }
                 if (data_left >= 3) {
-                    if ((decimal_count == 2) && ((source[sourcePoint + 2] >= '0')
-                            && (source[sourcePoint + 2] <= '9'))) {
+                    if ((decimal_count == 2) && ((inputData[sourcePoint + 2] >= '0')
+                            && (inputData[sourcePoint + 2] <= '9'))) {
                         decimal_count = 3;
                     }
                 }
@@ -1281,7 +1281,7 @@ public class CodeOne extends Symbol {
 
                     if ((bits_left_in_byte == 4) || (bits_left_in_byte == 6)) {
                         if (decimal_count >= 1) {
-                            sub_value = source[sourcePoint] - '0' + 1;
+                            sub_value = inputData[sourcePoint] - '0' + 1;
 
                             for (i = 0x08; i > 0; i = i >> 1) {
                                 if ((sub_value & i) != 0) {
@@ -1331,9 +1331,9 @@ public class CodeOne extends Symbol {
                     next_mode = Mode.C1_ASCII;
                 } else {
                     /* There are three digits - convert the value to binary */
-                    value = (100 * (source[sourcePoint] - '0'))
-                            + (10 * (source[sourcePoint + 1] - '0'))
-                            + (source[sourcePoint + 2] - '0') + 1;
+                    value = (100 * (inputData[sourcePoint] - '0'))
+                            + (10 * (inputData[sourcePoint + 1] - '0'))
+                            + (inputData[sourcePoint + 2] - '0') + 1;
 
                     for (i = 0x200; i > 0; i = i >> 1) {
                         if ((value & i) != 0) {
@@ -1372,10 +1372,10 @@ public class CodeOne extends Symbol {
             if (current_mode == Mode.C1_BYTE) {
                 next_mode = Mode.C1_BYTE;
 
-                if ((inputDataType == DataType.GS1) && (source[sourcePoint] == '[')) {
+                if ((inputDataType == DataType.GS1) && (inputData[sourcePoint] == '[')) {
                     next_mode = Mode.C1_ASCII;
                 } else {
-                    if (source[sourcePoint] <= 127) {
+                    if (inputData[sourcePoint] <= 127) {
                         next_mode = lookAheadTest(length, sourcePoint, current_mode);
                     }
                 }
@@ -1397,7 +1397,7 @@ public class CodeOne extends Symbol {
                         targetPoint += 2;
                     }
                 } else {
-                    data[targetPoint] = source[sourcePoint];
+                    data[targetPoint] = inputData[sourcePoint];
                     targetPoint++;
                     sourcePoint++;
                 }
@@ -1589,18 +1589,18 @@ public class CodeOne extends Symbol {
         for (sp = position;
         (sp < sourcelen) && (sp <= (position + 8)); sp++) {
 
-            if (source[sp] <= 127) {
-                reduced_char = source[sp];
+            if (inputData[sp] <= 127) {
+                reduced_char = inputData[sp];
             } else {
-                reduced_char = source[sp] - 127;
+                reduced_char = inputData[sp] - 127;
             }
 
             /* Step L */
-            if ((source[sp] >= '0') && (source[sp] <= '9')) {
+            if ((inputData[sp] >= '0') && (inputData[sp] <= '9')) {
                 ascii_count += 0.5;
             } else {
                 ascii_count = roundUpToNextInteger(ascii_count);
-                if (source[sp] > 127) {
+                if (inputData[sp] > 127) {
                     ascii_count += 2.0;
                 } else {
                     ascii_count += 1.0;
@@ -1621,7 +1621,7 @@ public class CodeOne extends Symbol {
                 c40_count += (2.0 / 3.0);
                 done = 1;
             }
-            if (source[sp] > 127) {
+            if (inputData[sp] > 127) {
                 c40_count += (4.0 / 3.0);
             }
             if (done == 0) {
@@ -1642,7 +1642,7 @@ public class CodeOne extends Symbol {
                 text_count += (2.0 / 3.0);
                 done = 1;
             }
-            if (source[sp] > 127) {
+            if (inputData[sp] > 127) {
                 text_count += (4.0 / 3.0);
             }
             if (done == 0) {
@@ -1651,31 +1651,31 @@ public class CodeOne extends Symbol {
 
             /* Step O */
             done = 0;
-            if (source[sp] == 13) {
+            if (inputData[sp] == 13) {
                 edi_count += (2.0 / 3.0);
                 done = 1;
             }
-            if (source[sp] == '*') {
+            if (inputData[sp] == '*') {
                 edi_count += (2.0 / 3.0);
                 done = 1;
             }
-            if (source[sp] == '>') {
+            if (inputData[sp] == '>') {
                 edi_count += (2.0 / 3.0);
                 done = 1;
             }
-            if (source[sp] == ' ') {
+            if (inputData[sp] == ' ') {
                 edi_count += (2.0 / 3.0);
                 done = 1;
             }
-            if ((source[sp] >= '0') && (source[sp] <= '9')) {
+            if ((inputData[sp] >= '0') && (inputData[sp] <= '9')) {
                 edi_count += (2.0 / 3.0);
                 done = 1;
             }
-            if ((source[sp] >= 'A') && (source[sp] <= 'Z')) {
+            if ((inputData[sp] >= 'A') && (inputData[sp] <= 'Z')) {
                 edi_count += (2.0 / 3.0);
                 done = 1;
             }
-            if (source[sp] > 127) {
+            if (inputData[sp] > 127) {
                 edi_count += (13.0 / 3.0);
             } else {
                 if (done == 0) {
@@ -1684,7 +1684,7 @@ public class CodeOne extends Symbol {
             }
 
             /* Step P */
-            if ((inputDataType == DataType.GS1) && (source[sp] == '[')) {
+            if ((inputDataType == DataType.GS1) && (inputData[sp] == '[')) {
                 byte_count += 3.0;
             } else {
                 byte_count += 1.0;
@@ -1792,7 +1792,7 @@ public class CodeOne extends Symbol {
     private boolean preferEdi(int sourcelen, int position) {
         int i;
 
-        for (i = position; isEdiEncodable(source[position + i])
+        for (i = position; isEdiEncodable(inputData[position + i])
                 && ((position + i) < sourcelen); i++);
 
         if ((position + i) == sourcelen) {
@@ -1800,13 +1800,13 @@ public class CodeOne extends Symbol {
             return false;
         }
 
-        if (source[position + i - 1] == 13) {
+        if (inputData[position + i - 1] == 13) {
             return true;
         }
-        if (source[position + i - 1] == '*') {
+        if (inputData[position + i - 1] == '*') {
             return true;
         }
-        if (source[position + i - 1] == '>') {
+        if (inputData[position + i - 1] == '>') {
             return true;
         }
 

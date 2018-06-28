@@ -767,7 +767,7 @@ public class CodablockF extends Symbol {
 
         /* Section 4.5.2 - Determining the Character Subset Selector in a Row */
 
-        if((inputData[input_position] >= '0') && (inputData[input_position + 1] <= '9')) {
+        if((inputData[input_position] >= '0') && (inputData[input_position] <= '9')) {
             /* Rule 1 */
             return CfMode.MODEC;
         }

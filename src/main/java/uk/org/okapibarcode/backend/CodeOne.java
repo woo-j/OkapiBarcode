@@ -102,7 +102,7 @@ public class CodeOne extends Symbol {
     };
 
     private int[] data = new int[1500];
-    private byte[] source;
+    private int[] source;
     private int[][] datagrid = new int[136][120];
     private boolean[][] outputGrid = new boolean[148][134];
 
@@ -740,7 +740,11 @@ public class CodeOne extends Symbol {
         int bits_left_in_byte, target_count;
         boolean isTwoDigits;
 
-        source = content.getBytes(StandardCharsets.ISO_8859_1);
+        byte[] bytes = content.getBytes(StandardCharsets.ISO_8859_1);
+        source = new int[bytes.length];
+        for (i = 0; i < source.length; i++) {
+            source[i] = bytes[i] & 0xff;
+        }
 
         sourcePoint = 0;
         targetPoint = 0;

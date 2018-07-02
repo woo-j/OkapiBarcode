@@ -356,7 +356,7 @@ public class DataMatrix extends Symbol {
                 }
             }
             pattern[(H - y) - 1] = bin2pat(bin);
-            row_height[(H - y) - 1] = 1;
+            row_height[(H - y) - 1] = moduleWidth;
         }
 
         encodeInfo += "Grid Size: " + W + " X " + H + "\n";

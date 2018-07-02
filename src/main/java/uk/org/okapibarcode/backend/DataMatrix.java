@@ -120,6 +120,7 @@ public class DataMatrix extends Symbol {
 
     // internal state calculated when setContent() is called
 
+    private int actualSize = -1;
     private int[] target = new int[2200];
     private int[] binary = new int[2200];
     private int binary_length;
@@ -188,6 +189,41 @@ public class DataMatrix extends Symbol {
      */
     public int getPreferredSize() {
         return preferredSize;
+    }
+
+    /**
+     * Returns the actual symbol size used. Available after the symbol is encoded.
+     *
+     * @return the actual symbol size used
+     */
+    public int getActualSize() {
+        if (actualSize != -1) {
+            return actualSize;
+        } else {
+            throw new IllegalStateException("Actual size not calculated until symbol is encoded.");
+        }
+    }
+
+    /**
+     * Returns the actual width (columns) used for the symbol. Available after the symbol is encoded.
+     *
+     * @return the actual width (columns) used for the symbol
+     */
+    public int getActualWidth() {
+        int index1 = getActualSize() - 1;
+        int index2 = INT_SYMBOL[index1];
+        return MATRIX_W[index2];
+    }
+
+    /**
+     * Returns the actual height (rows) used for the symbol. Available after the symbol is encoded.
+     *
+     * @return the actual height (rows) used for the symbol
+     */
+    public int getActualHeight() {
+        int index1 = getActualSize() - 1;
+        int index2 = INT_SYMBOL[index1];
+        return MATRIX_H[index2];
     }
 
     @Override
@@ -305,6 +341,7 @@ public class DataMatrix extends Symbol {
             }
         }
 
+        actualSize = positionOf(symbolsize, INT_SYMBOL) + 1;
         readable = "";
         pattern = new String[H];
         row_count = H;
@@ -530,7 +567,6 @@ public class DataMatrix extends Symbol {
                         sp++;
                     }
                 }
-
             }
 
             /* step (c) C40 encodation */

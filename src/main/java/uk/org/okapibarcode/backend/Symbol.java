@@ -369,14 +369,21 @@ public abstract class Symbol {
     }
 
     protected static int positionOf(char c, char[] chars) {
-
         for (int i = 0; i < chars.length; i++) {
             if (c == chars[i]) {
                 return i;
             }
         }
-
         throw new OkapiException("Unable to find character '" + c + "' in character array.");
+    }
+
+    protected static int positionOf(int value, int[] ints) {
+        for (int i = 0; i < ints.length; i++) {
+            if (value == ints[i]) {
+                return i;
+            }
+        }
+        throw new OkapiException("Unable to find integer '" + value + "' in integer array.");
     }
 
     protected static String bin2pat(String bin) {

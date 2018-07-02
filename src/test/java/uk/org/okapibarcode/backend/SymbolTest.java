@@ -267,14 +267,19 @@ public class SymbolTest {
             return new Code39Reader();
         } else if (symbol instanceof Codabar) {
             return new CodaBarReader();
-        } else if (symbol instanceof AztecCode && symbol.getDataType() != DataType.GS1 && symbol.getEciMode() == 3) {
+        } else if (symbol instanceof AztecCode &&
+                   symbol.getDataType() != DataType.GS1 &&
+                   symbol.getEciMode() == 3) {
             // ZXing does not currently support GS1 in Aztec Code symbols
             // ZXing does not currently support ECI in Aztec Code symbols
             return new AztecReader();
         } else if (symbol instanceof QrCode) {
             return new QRCodeReader();
-        } else if (symbol instanceof DataMatrix && symbol.getEciMode() == 3) {
+        } else if (symbol instanceof DataMatrix &&
+                   symbol.getEciMode() == 3 &&
+                   ((DataMatrix) symbol).getStructuredAppendTotal() == 1) {
             // ZXing does not currently support ECI in Data Matrix symbols
+            // ZXing does not currently support Structured Append in Data Matrix symbols
             return new DataMatrixReader();
         } else if (symbol instanceof Ean) {
             Ean ean = (Ean) symbol;

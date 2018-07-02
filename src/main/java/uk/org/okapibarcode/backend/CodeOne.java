@@ -147,7 +147,7 @@ public class CodeOne extends Symbol {
         if (preferredVersion == Version.S) {
             /* Version S */
 
-            encodeInfo += "Version: S";
+            encodeInfo += "Version: S\n";
 
             if (length > 18) {
                 throw new OkapiException("Input data too long");
@@ -343,7 +343,7 @@ public class CodeOne extends Symbol {
                 size = getSize(preferredVersion);
             }
 
-            encodeInfo += "Version:  " + (char)((size - 1) + 'A') + "\n";
+            encodeInfo += "Version: " + (char)((size - 1) + 'A') + "\n";
 
             encodeInfo += "Codewords: ";
             for(i = 0; i < data_length; i++) {

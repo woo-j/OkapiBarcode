@@ -117,6 +117,9 @@ public class DataMatrix extends Symbol {
 
     private ForceMode forceMode = ForceMode.NONE;
     private int preferredSize;
+    private int structuredAppendFileId = 1;
+    private int structuredAppendPosition = 1;
+    private int structuredAppendTotal = 1;
 
     // internal state calculated when setContent() is called
 
@@ -224,6 +227,80 @@ public class DataMatrix extends Symbol {
         int index1 = getActualSize() - 1;
         int index2 = INT_SYMBOL[index1];
         return MATRIX_H[index2];
+    }
+
+    /**
+     * If this Data Matrix symbol is part of a series of Data Matrix symbols appended in a structured
+     * format, this method sets the position of this symbol in the series. Valid values are 1 through
+     * 16 inclusive.
+     *
+     * @param position the position of this Data Matrix symbol in the structured append series
+     */
+    public void setStructuredAppendPosition(int position) {
+        if (position < 1 || position > 16) {
+            throw new IllegalArgumentException("Invalid Data Matrix structured append position: " + position);
+        }
+        this.structuredAppendPosition = position;
+    }
+
+    /**
+     * Returns the position of this Data Matrix symbol in a series of symbols using structured append.
+     * If this symbol is not part of such a series, this method will return <code>1</code>.
+     *
+     * @return the position of this Data Matrix symbol in a series of symbols using structured append
+     */
+    public int getStructuredAppendPosition() {
+        return structuredAppendPosition;
+    }
+
+    /**
+     * If this Data Matrix symbol is part of a series of Data Matrix symbols appended in a structured
+     * format, this method sets the total number of symbols in the series. Valid values are
+     * 1 through 16 inclusive. A value of 1 indicates that this symbol is not part of a structured
+     * append series.
+     *
+     * @param total the total number of Data Matrix symbols in the structured append series
+     */
+    public void setStructuredAppendTotal(int total) {
+        if (total < 1 || total > 16) {
+            throw new IllegalArgumentException("Invalid Data Matrix structured append total: " + total);
+        }
+        this.structuredAppendTotal = total;
+    }
+
+    /**
+     * Returns the size of the series of Data Matrix symbols using structured append that this symbol
+     * is part of. If this symbol is not part of a structured append series, this method will return
+     * <code>1</code>.
+     *
+     * @return size of the series that this symbol is part of
+     */
+    public int getStructuredAppendTotal() {
+        return structuredAppendTotal;
+    }
+
+    /**
+     * If this Data Matrix symbol is part of a series of Data Matrix symbols appended in a structured format,
+     * this method sets the unique file ID for the series. Valid values are 1 through 64,516 inclusive.
+     *
+     * @param fileId the unique file ID for the series that this symbol is part of
+     */
+    public void setStructuredAppendFileId(int fileId) {
+        if (fileId < 1 || fileId > 64_516) {
+            throw new IllegalArgumentException("Invalid Data Matrix structured append file ID: " + fileId);
+        }
+        this.structuredAppendFileId = fileId;
+    }
+
+    /**
+     * Returns the unique file ID of the series of Data Matrix symbols using structured append that this
+     * symbol is part of. If this symbol is not part of a structured append series, this method will return
+     * <code>1</code>.
+     *
+     * @return the unique file ID for the series that this symbol is part of
+     */
+    public int getStructuredAppendFileId() {
+        return structuredAppendFileId;
     }
 
     @Override
@@ -391,6 +468,40 @@ public class DataMatrix extends Symbol {
         /* step (a) */
         current_mode = Mode.DM_ASCII;
         next_mode = Mode.DM_ASCII;
+
+        if (structuredAppendTotal != 1) {
+
+            /* FNC2 */
+            target[tp] = 233;
+            tp++;
+            binary[binary_length] = ' ';
+            binary_length++;
+            encodeInfo += "FNC2 ";
+
+            /* symbol sequence indicator (position + total) */
+            int ssi = ((structuredAppendPosition - 1) << 4) | (17 - structuredAppendTotal);
+            target[tp] = ssi;
+            tp++;
+            binary[binary_length] = ' ';
+            binary_length++;
+            encodeInfo += ssi + " ";
+
+            /* file identification codeword 1 (valid values 1 - 254) */
+            int id1 = 1 + ((structuredAppendFileId - 1) / 254);
+            target[tp] = id1;
+            tp++;
+            binary[binary_length] = ' ';
+            binary_length++;
+            encodeInfo += id1 + " ";
+
+            /* file identification codeword 2 (valid values 1 - 254) */
+            int id2 = 1 + ((structuredAppendFileId - 1) % 254);
+            target[tp] = id2;
+            tp++;
+            binary[binary_length] = ' ';
+            binary_length++;
+            encodeInfo += id2 + " ";
+        }
 
         if (inputDataType == DataType.GS1) {
             target[tp] = 232;

@@ -68,6 +68,9 @@ public class Java2DRenderer implements SymbolRenderer {
     @Override
     public void render(Symbol symbol) {
 
+        g2d.setBackground(paper);
+        g2d.clearRect(0, 0, symbol.getWidth(), symbol.getHeight());
+
         int marginX = (int) (symbol.getQuietZoneHorizontal() * magnification);
         int marginY = (int) (symbol.getQuietZoneVertical() * magnification);
 

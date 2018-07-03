@@ -368,6 +368,11 @@ public class AztecCode extends Symbol {
     }
 
     @Override
+    protected boolean gs1Supported() {
+        return true;
+    }
+
+    @Override
     protected void encode() {
 
         int i, ecc_level, data_length, layers, data_maxsize;

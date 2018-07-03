@@ -93,6 +93,9 @@ public abstract class Symbol {
      * @param dataType the type of input data
      */
     public void setDataType(DataType dataType) {
+        if (dataType == DataType.GS1 && !gs1Supported()) {
+            throw new IllegalArgumentException("This symbology type does not support GS1 data.");
+        }
         inputDataType = dataType;
     }
 
@@ -103,6 +106,15 @@ public abstract class Symbol {
      */
     public DataType getDataType() {
         return inputDataType;
+    }
+
+    /**
+     * Returns <code>true</code> if this type of symbology supports GS1 data.
+     *
+     * @return <code>true</code> if this type of symbology supports GS1 data
+     */
+    protected boolean gs1Supported() {
+        return false;
     }
 
     /**

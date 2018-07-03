@@ -134,6 +134,11 @@ public class Code128 extends Symbol {
     }
 
     @Override
+    protected boolean gs1Supported() {
+        return true;
+    }
+
+    @Override
     protected void encode() {
         int sourcelen = content.length();
         int i, j, k;

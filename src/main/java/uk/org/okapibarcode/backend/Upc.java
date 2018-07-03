@@ -48,15 +48,17 @@ public class Upc extends Symbol {
         "3121", "2113"
     };
 
+    /* Number set for UPC-E symbol (EN Table 4) */
     private static final String[] UPC_PARITY_0 = {
         "BBBAAA", "BBABAA", "BBAABA", "BBAAAB", "BABBAA", "BAABBA", "BAAABB",
         "BABABA", "BABAAB", "BAABAB"
-    }; /* Number set for UPC-E symbol (EN Table 4) */
+    };
 
+    /* Not covered by BS EN 797 */
     private static final String[] UPC_PARITY_1 = {
         "AAABBB", "AABABB", "AABBAB", "AABBBA", "ABAABB", "ABBAAB", "ABBBAA",
         "ABABAB", "ABABBA", "ABBABA"
-    }; /* Not covered by BS EN 797 */
+    };
 
     private Mode mode = Mode.UPCA;
     private boolean linkageFlag;

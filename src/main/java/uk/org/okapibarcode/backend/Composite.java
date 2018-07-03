@@ -490,6 +490,11 @@ public class Composite extends Symbol {
         }
     }
 
+    @Override
+    protected boolean gs1Supported() {
+        return true;
+    }
+
     /**
      * Set the type of linear component included in the composite symbol,
      * this will determine how the lower part of the symbol is encoded.

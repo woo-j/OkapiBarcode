@@ -76,6 +76,15 @@ public class DataBar14 extends Symbol {
         // Do nothing!
     }
 
+    /**
+     * Although this is a GS1 symbology, input data is expected to omit the [01] Application Identifier,
+     * as well as the check digit. Thus, the input data is not considered GS1-format data.
+     */
+    @Override
+    protected boolean gs1Supported() {
+        return false;
+    }
+
     protected void setLinkageFlag() {
         linkageFlag = true;
     }

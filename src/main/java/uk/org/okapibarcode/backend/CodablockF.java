@@ -59,6 +59,17 @@ public class CodablockF extends Symbol {
     private CfMode final_mode;
     private CfMode[] subset_selector = new CfMode[44];
 
+    /**
+     * TODO: It doesn't appear that this symbol should support GS1 (it's not in the GS1 spec and Zint doesn't
+     * support GS1 with this type of symbology). However, the code below does contain GS1 checks, so we'll mark
+     * it as supported for now. It's very possible that the code below which supports GS1 only does so because
+     * it was originally copied from the Code 128 source code (just a suspicion, though).
+     */
+    @Override
+    protected boolean gs1Supported() {
+        return true;
+    }
+
     @Override
     protected void encode() {
 

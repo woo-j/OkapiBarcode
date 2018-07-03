@@ -120,6 +120,11 @@ public class DataBarExpanded extends Symbol {
         }
     }
 
+    @Override
+    protected boolean gs1Supported() {
+        return true;
+    }
+
     /**
      * Set the width of a stacked symbol by selecting the number
      * of "columns" or symbol segments in each row of data.

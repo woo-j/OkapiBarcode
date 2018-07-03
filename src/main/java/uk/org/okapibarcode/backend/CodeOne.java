@@ -123,6 +123,11 @@ public class CodeOne extends Symbol {
     }
 
     @Override
+    protected boolean gs1Supported() {
+        return true;
+    }
+
+    @Override
     protected void encode() {
         int size = 1, i, j, data_blocks;
         int row, col;

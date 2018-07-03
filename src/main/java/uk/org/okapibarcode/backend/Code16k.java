@@ -71,6 +71,11 @@ public class Code16k extends Symbol {
     private int block_count;
 
     @Override
+    protected boolean gs1Supported() {
+        return true;
+    }
+
+    @Override
     protected void encode() {
 
         // TODO: is it possible to share any of this code with Code128, which is more up to date?

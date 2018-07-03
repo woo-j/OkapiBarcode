@@ -991,6 +991,11 @@ public class Code49 extends Symbol {
     };
 
     @Override
+    protected boolean gs1Supported() {
+        return true;
+    }
+
+    @Override
     protected void encode() {
         int length = content.length();
         int i, codeword_count = 0, h, j, M, rows, pad_count = 0;

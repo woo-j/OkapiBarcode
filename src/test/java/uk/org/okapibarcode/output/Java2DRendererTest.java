@@ -39,6 +39,7 @@ public class Java2DRendererTest {
     public void testPaperColor() throws Exception {
 
         Code128 code128 = new Code128();
+        code128.setFontName(SymbolTest.DEJA_VU_SANS.getFontName());
         code128.setContent("123456");
 
         DataMatrix datamatrix = new DataMatrix();

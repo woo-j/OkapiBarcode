@@ -117,7 +117,7 @@ public class SymbolTest {
     private static final File TEST_FAILURE_IMAGES_DIR = new File("build", "test-failure-images");
 
     /** The font used to render human-readable text when drawing the symbologies; allows for consistent results across operating systems. */
-    private static final Font DEJA_VU_SANS;
+    public static final Font DEJA_VU_SANS;
 
     static {
         String path = "/uk/org/okapibarcode/fonts/OkapiDejaVuSans.ttf";

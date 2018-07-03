@@ -19,7 +19,7 @@ of work that have been invested in that project.
 * [Codabar](src/main/java/uk/org/okapibarcode/backend/Codabar.java)
 * [Codablock F](src/main/java/uk/org/okapibarcode/backend/CodablockF.java)
 * [Code 11](src/main/java/uk/org/okapibarcode/backend/Code11.java)
-* [Code 128](src/main/java/uk/org/okapibarcode/backend/Code128.java) with automatic subset switching
+* [Code 128](src/main/java/uk/org/okapibarcode/backend/Code128.java)
 * [Code 16k](src/main/java/uk/org/okapibarcode/backend/Code16k.java)
 * [Code 2 of 5](src/main/java/uk/org/okapibarcode/backend/Code2Of5.java) variants:
   * Matrix 2 of 5
@@ -73,14 +73,6 @@ of work that have been invested in that project.
   * UPC-E
 * [USPS OneCode](src/main/java/uk/org/okapibarcode/backend/UspsOneCode.java) (Intelligent Mail)
 
-### GUI Usage
-
-To use the Swing GUI, just run the [OkapiUI](src/main/java/uk/org/okapibarcode/gui/OkapiUI.java) class.
-The GUI allows you to explore the supported barcode symbologies and test them with different configurations
-and data.
-
-![Okapi GUI Screenshot](okapi-gui-screenshot.png)
-
 ### Library Usage
 
 To generate barcode images in your own code using the Okapi Barcode library, use one of the symbology
@@ -118,6 +110,14 @@ ImageIO.write(image, "png", new File("code128.png"));
 ```
 
 Okapi Barcode JARs are available for download from [Maven Central](http://search.maven.org/#search|ga|1|uk.org.okapibarcode).
+
+### GUI Usage
+
+To use the Swing GUI, just run the [OkapiUI](src/main/java/uk/org/okapibarcode/gui/OkapiUI.java) class.
+The GUI allows you to explore the supported barcode symbologies and test them with different configurations
+and data.
+
+![Okapi GUI Screenshot](okapi-gui-screenshot.png)
 
 ### Building
 

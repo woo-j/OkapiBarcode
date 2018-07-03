@@ -231,10 +231,9 @@ public class SymbolTest {
         String parentName = pngFile.getParentFile().getName();
         String pngName = pngFile.getName();
         String dirName = parentName + "-" + pngName.substring(0, pngName.lastIndexOf('.'));
-        File failureDirectory = new File(TEST_FAILURE_IMAGES_DIR, dirName);
         BufferedImage expected = ImageIO.read(pngFile);
         BufferedImage actual = draw(symbol);
-        assertEqual(expected, actual, failureDirectory);
+        assertEqual(expected, actual, dirName);
 
         // if possible, ensure an independent third party (ZXing) can read the generated barcode and agrees on what it represents
         Reader zxingReader = findReader(symbol);
@@ -258,6 +257,8 @@ public class SymbolTest {
      * @return a ZXing reader that can read the specified symbol
      */
     private static Reader findReader(Symbol symbol) {
+
+        // TODO: see if we can massage data enough to check MaxiCode symbols against MaxiCodeReader instances
 
         if (symbol instanceof Code128 || symbol instanceof UspsPackage) {
             return new Code128Reader();
@@ -375,22 +376,27 @@ public class SymbolTest {
      */
     private void addMissingExpectations(Symbol symbol, String actualError) throws IOException {
 
-        // check the file on disk one more time before adding anything; otherwise, files containing multiple
-        // test cases will generate multiple expectations sections when we first auto-generate them
+        // check the properties file on disk one more time before adding anything to it; otherwise,
+        // files containing multiple test cases will generate multiple expectations sections when
+        // we first auto-generate them
+
         byte[] bytes = Files.readAllBytes(config.file.toPath());
         String content = decode(bytes, UTF_8);
-        if (content.contains(ReadMode.CODEWORDS.name()) ||
-            content.contains(ReadMode.LOG.name()) ||
-            content.contains(ReadMode.ERROR.name())) {
-            return;
-        }
+        boolean propertiesFileNeedsModification =
+            !content.contains(ReadMode.CODEWORDS.name()) &&
+            !content.contains(ReadMode.LOG.name()) &&
+            !content.contains(ReadMode.ERROR.name());
 
         if (actualError != null && !actualError.isEmpty()) {
-            addExpectedError(actualError);
+            if (propertiesFileNeedsModification) {
+                addExpectedError(actualError);
+            }
         } else {
-            addExpectedLog(symbol);
-            addExpectedCodewords(symbol);
             createExpectedPngFile(symbol);
+            if (propertiesFileNeedsModification) {
+                addExpectedLog(symbol);
+                addExpectedCodewords(symbol);
+            }
         }
     }
 
@@ -586,10 +592,11 @@ public class SymbolTest {
      * @param failureDirectory the directory to save images to if the assertion fails
      * @throws IOException if there is any I/O error
      */
-    private static void assertEqual(BufferedImage expected, BufferedImage actual, File failureDirectory) throws IOException {
+    public static void assertEqual(BufferedImage expected, BufferedImage actual, String failureDirectoryName) throws IOException {
 
         int w = expected.getWidth();
         int h = expected.getHeight();
+        File failureDirectory = new File(TEST_FAILURE_IMAGES_DIR, failureDirectoryName);
 
         if (w != actual.getWidth()) {
             writeImageFilesToFailureDirectory(expected, actual, failureDirectory);

@@ -23,9 +23,11 @@ import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.font.TextAttribute;
+import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import uk.org.okapibarcode.backend.Hexagon;
@@ -50,11 +52,12 @@ public class Java2DRenderer implements SymbolRenderer {
     private final Color ink;
 
     /**
-     * Creates a new Java 2D renderer.
+     * Creates a new Java 2D renderer. If the specified paper color is <tt>null</tt>, the symbol is drawn without clearing the
+     * existing <tt>g2d</tt> background.
      *
      * @param g2d the graphics to render to
      * @param magnification the magnification factor to apply
-     * @param paper the paper (background) color
+     * @param paper the paper (background) color (may be <tt>null</tt>)
      * @param ink the ink (foreground) color
      */
     public Java2DRenderer(Graphics2D g2d, double magnification, Color paper, Color ink) {
@@ -77,6 +80,13 @@ public class Java2DRenderer implements SymbolRenderer {
 
         Font oldFont = g2d.getFont();
         Color oldColor = g2d.getColor();
+
+        if (paper != null) {
+            int w = (int) (symbol.getWidth() * magnification);
+            int h = (int) (symbol.getHeight() * magnification);
+            g2d.setColor(paper);
+            g2d.fillRect(0, 0, w, h);
+        }
 
         g2d.setFont(f);
         g2d.setColor(ink);
@@ -119,21 +129,24 @@ public class Java2DRenderer implements SymbolRenderer {
             g2d.fill(polygon);
         }
 
-        for (int i = 0; i < symbol.getTarget().size(); i++) {
-            Ellipse2D.Double ellipse = symbol.getTarget().get(i);
-            double x = (ellipse.x * magnification) + marginX;
-            double y = (ellipse.y * magnification) + marginY;
-            double w = (ellipse.width * magnification) + marginX;
-            double h = (ellipse.height * magnification) + marginY;
-            if ((i & 1) == 0) {
-                g2d.setColor(ink);
-            } else {
-                g2d.setColor(paper);
-            }
-            g2d.fill(new Ellipse2D.Double(x, y, w, h));
+        List< Ellipse2D.Double > target = symbol.getTarget();
+        for (int i = 0; i + 1 < target.size(); i += 2) {
+            Ellipse2D.Double outer = adjust(target.get(i), magnification, marginX, marginY);
+            Ellipse2D.Double inner = adjust(target.get(i + 1), magnification, marginX, marginY);
+            Area area = new Area(outer);
+            area.subtract(new Area(inner));
+            g2d.fill(area);
         }
 
         g2d.setFont(oldFont);
         g2d.setColor(oldColor);
+    }
+
+    private static Ellipse2D.Double adjust(Ellipse2D.Double ellipse, double magnification, int marginX, int marginY) {
+        double x = (ellipse.x * magnification) + marginX;
+        double y = (ellipse.y * magnification) + marginY;
+        double w = (ellipse.width * magnification) + marginX;
+        double h = (ellipse.height * magnification) + marginY;
+        return new Ellipse2D.Double(x, y, w, h);
     }
 }

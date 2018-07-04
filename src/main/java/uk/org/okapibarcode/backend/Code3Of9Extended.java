@@ -83,10 +83,4 @@ public class Code3Of9Extended extends Symbol {
         row_height = new int[1];
         row_height[0] = -1;
     }
-
-    /** {@inheritDoc} */
-    @Override
-    protected int[] getCodewords() {
-        return getPatternAsCodewords(10);
-    }
 }

@@ -161,10 +161,4 @@ public class Code3Of9 extends Symbol {
             return moduleWidthRatio;
         }
     }
-
-    /** {@inheritDoc} */
-    @Override
-    protected int[] getCodewords() {
-        return getPatternAsCodewords(10);
-    }
 }

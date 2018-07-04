@@ -664,6 +664,9 @@ public abstract class Symbol {
      * @return this bar code's pattern, converted into a set of corresponding codewords
      */
     protected int[] getPatternAsCodewords(int size) {
+        if (size >= 10) {
+            throw new IllegalArgumentException("Pattern groups of 10 or more digits are likely to be too large to parse as integers.");
+        }
         if (pattern == null || pattern.length == 0) {
             return new int[0];
         } else {

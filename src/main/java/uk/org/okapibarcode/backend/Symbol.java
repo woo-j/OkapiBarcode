@@ -42,7 +42,7 @@ import uk.org.okapibarcode.util.Gs1;
 public abstract class Symbol {
 
     public static enum DataType {
-        UTF8, LATIN1, BINARY, GS1, HIBC, ECI
+        ECI, GS1, HIBC
     }
 
     private static char[] HIBC_CHAR_TABLE = {

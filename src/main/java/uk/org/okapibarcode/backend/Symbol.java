@@ -45,6 +45,13 @@ public abstract class Symbol {
         UTF8, LATIN1, BINARY, GS1, HIBC, ECI
     }
 
+    private static char[] HIBC_CHAR_TABLE = {
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+        'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
+        'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
+        'U', 'V', 'W', 'X', 'Y', 'Z', '-', '.', ' ', '$',
+        '/', '+', '%' };
+
     // user-specified values and settings
 
     protected DataType inputDataType = DataType.ECI;
@@ -576,20 +583,15 @@ public abstract class Symbol {
         }
     }
 
-    protected String hibcProcess(String source) {
+    /**
+     * Adds the HIBC prefix and check digit to the specified data, returning the resultant data string.
+     *
+     * @see <a href="https://sourceforge.net/p/zint/code/ci/master/tree/backend/library.c">Corresponding Zint code</a>
+     */
+    private String hibcProcess(String source) {
 
-        char[] hibcCharTable = {
-            '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-            'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
-            'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
-            'U', 'V', 'W', 'X', 'Y', 'Z', '-', '.', ' ', '$',
-            '/', '+', '%' };
-
-        int counter, i;
-        String to_process;
-        char check_digit;
-
-        if(source.length() > 36) {
+        // HIBC 2.6 allows up to 110 characters, not including the "+" prefix or the check digit
+        if (source.length() > 110) {
             throw new OkapiException("Data too long for HIBC LIC");
         }
 
@@ -598,35 +600,18 @@ public abstract class Symbol {
             throw new OkapiException("Invalid characters in input");
         }
 
-        counter = 41;
-        for (i = 0; i < source.length(); i++) {
-            counter += positionOf(source.charAt(i), hibcCharTable);
+        int counter = 41;
+        for (int i = 0; i < source.length(); i++) {
+            counter += positionOf(source.charAt(i), HIBC_CHAR_TABLE);
         }
         counter = counter % 43;
 
-        if (counter < 10) {
-            check_digit = (char) (counter + '0');
-        } else {
-            if (counter < 36) {
-                check_digit = (char) ((counter - 10) + 'A');
-            } else {
-                switch (counter) {
-                    case 36: check_digit = '-'; break;
-                    case 37: check_digit = '.'; break;
-                    case 38: check_digit = ' '; break;
-                    case 39: check_digit = '$'; break;
-                    case 40: check_digit = '/'; break;
-                    case 41: check_digit = '+'; break;
-                    case 42: check_digit = '%'; break;
-                    default: check_digit = ' '; break; /* Keep compiler happy */
-                }
-            }
-        }
+        char checkDigit = HIBC_CHAR_TABLE[counter];
 
-        encodeInfo += "HIBC Check Digit: " + counter + " (" + check_digit + ")\n";
+        encodeInfo += "HIBC Check Digit Counter: " + counter + "\n";
+        encodeInfo += "HIBC Check Digit: " + checkDigit + "\n";
 
-        to_process = "+" + source + check_digit;
-        return to_process;
+        return "+" + source + checkDigit;
     }
 
     /**

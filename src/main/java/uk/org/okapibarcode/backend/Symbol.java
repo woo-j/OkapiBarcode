@@ -452,10 +452,18 @@ public abstract class Symbol {
         mergeVerticalBlocks();
     }
 
+    /**
+     * Returns the content encoded by this symbol.
+     *
+     * @return the content encoded by this symbol
+     */
     public String getContent() {
         return content;
     }
 
+    /**
+     * Chooses the ECI mode most suitable for the content of this symbol.
+     */
     protected void eciProcess() {
 
         EciMode eci = EciMode.of(content, "ISO8859_1",    3)

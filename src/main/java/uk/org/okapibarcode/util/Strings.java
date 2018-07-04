@@ -25,7 +25,7 @@ import uk.org.okapibarcode.backend.OkapiException;
  *
  * @author Daniel Gredler
  */
-public class Strings {
+public final class Strings {
 
     private Strings() {
         // utility class

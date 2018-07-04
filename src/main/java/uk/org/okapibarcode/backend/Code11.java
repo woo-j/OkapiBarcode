@@ -16,10 +16,12 @@
 
 package uk.org.okapibarcode.backend;
 
+import static uk.org.okapibarcode.util.Arrays.positionOf;
+
 /**
- * Implements Code 11 bar code symbology.
- * <p>
- * Code 11 can encode any length string consisting of the digits 0-9 and the
+ * <p>Implements Code 11 bar code symbology.
+ *
+ * <p>Code 11 can encode any length string consisting of the digits 0-9 and the
  * dash character (-). One or two modulo-11 check digits are calculated.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>

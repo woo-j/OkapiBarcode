@@ -16,17 +16,17 @@
 
 package uk.org.okapibarcode.backend;
 
+import static uk.org.okapibarcode.util.Arrays.positionOf;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * <p>
- * Implements PDF417 bar code symbology and MicroPDF417 bar code symbology
+ * <p>Implements PDF417 bar code symbology and MicroPDF417 bar code symbology
  * according to ISO/IEC 15438:2006 and ISO/IEC 24728:2006 respectively.
  *
- * <p>
- * PDF417 supports encoding up to the ISO standard maximum symbol size of 925
+ * <p>PDF417 supports encoding up to the ISO standard maximum symbol size of 925
  * codewords which (at error correction level 0) allows a maximum data size
  * of 1850 text characters, or 2710 digits. The maximum size MicroPDF417 symbol
  * can hold 250 alphanumeric characters or 366 digits.

@@ -16,10 +16,12 @@
 
 package uk.org.okapibarcode.backend;
 
+import static uk.org.okapibarcode.util.Arrays.positionOf;
+
 /**
- * Implements <a href="http://en.wikipedia.org/wiki/Code_93">Code 93</a>.
- * <p>
- * Supports encoding of 7-bit ASCII text. Two check digits are added.
+ * <p>Implements <a href="http://en.wikipedia.org/wiki/Code_93">Code 93</a>.
+ *
+ * <p>Supports encoding of 7-bit ASCII text. Two check digits are added.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  * @author Daniel Gredler

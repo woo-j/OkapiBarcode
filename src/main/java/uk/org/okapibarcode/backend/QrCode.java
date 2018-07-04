@@ -15,6 +15,8 @@
  */
 package uk.org.okapibarcode.backend;
 
+import static uk.org.okapibarcode.util.Arrays.positionOf;
+
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 

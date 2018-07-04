@@ -16,6 +16,9 @@
 
 package uk.org.okapibarcode.backend;
 
+import static uk.org.okapibarcode.util.Arrays.contains;
+import static uk.org.okapibarcode.util.Arrays.insertArray;
+
 import java.awt.geom.Ellipse2D;
 import java.util.Arrays;
 
@@ -249,9 +252,9 @@ public class MaxiCode extends Symbol {
         codewords = Arrays.copyOf(character, character.length);
         if (mode == 2 || mode == 3) {
             int[] primary = getPrimaryCodewords();
-            codewords = insert(codewords, 0, primary);
+            codewords = insertArray(codewords, 0, primary);
         } else {
-            codewords = insert(codewords, 0, new int[] { mode });
+            codewords = insertArray(codewords, 0, new int[] { mode });
         }
 
         // insert structured append flag if necessary
@@ -268,7 +271,7 @@ public class MaxiCode extends Symbol {
                 index = 1; // first two data symbols in the primary message (first symbol at index 0 isn't a data symbol)
             }
 
-            codewords = insert(codewords, index, flag);
+            codewords = insertArray(codewords, index, flag);
         }
 
         int secondaryMax, secondaryECMax;
@@ -291,7 +294,7 @@ public class MaxiCode extends Symbol {
         // insert primary error correction between primary message and secondary message (always EEC)
         int[] primary = Arrays.copyOfRange(codewords, 0, 10);
         int[] primaryCheck = getErrorCorrection(primary, 10);
-        codewords = insert(codewords, 10, primaryCheck);
+        codewords = insertArray(codewords, 10, primaryCheck);
 
         // calculate secondary error correction
         int[] secondary = Arrays.copyOfRange(codewords, 20, codewords.length);

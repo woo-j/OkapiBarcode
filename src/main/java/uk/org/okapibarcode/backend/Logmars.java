@@ -15,6 +15,8 @@
  */
 package uk.org.okapibarcode.backend;
 
+import static uk.org.okapibarcode.util.Arrays.positionOf;
+
 /**
  * Implements the LOGMARS (Logistics Applications of Automated Marking
  * and Reading Symbols) standard used by the US Department of Defense.

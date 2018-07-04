@@ -19,6 +19,7 @@ import static uk.org.okapibarcode.backend.HumanReadableAlignment.CENTER;
 import static uk.org.okapibarcode.backend.HumanReadableLocation.BOTTOM;
 import static uk.org.okapibarcode.backend.HumanReadableLocation.NONE;
 import static uk.org.okapibarcode.backend.HumanReadableLocation.TOP;
+import static uk.org.okapibarcode.util.Arrays.positionOf;
 import static uk.org.okapibarcode.util.Doubles.roughlyEqual;
 
 import java.awt.geom.Ellipse2D;
@@ -381,24 +382,6 @@ public abstract class Symbol {
         return Collections.unmodifiableList(target);
     }
 
-    protected static int positionOf(char c, char[] chars) {
-        for (int i = 0; i < chars.length; i++) {
-            if (c == chars[i]) {
-                return i;
-            }
-        }
-        throw new OkapiException("Unable to find character '" + c + "' in character array.");
-    }
-
-    protected static int positionOf(int value, int[] ints) {
-        for (int i = 0; i < ints.length; i++) {
-            if (value == ints[i]) {
-                return i;
-            }
-        }
-        throw new OkapiException("Unable to find integer '" + value + "' in integer array.");
-    }
-
     protected static String bin2pat(String bin) {
 
         int len = 0;
@@ -682,37 +665,5 @@ public abstract class Symbol {
             }
             return codewords;
         }
-    }
-
-    /**
-     * Inserts the specified array into the specified original array at the specified index.
-     *
-     * @param original the original array into which we want to insert another array
-     * @param index the index at which we want to insert the array
-     * @param inserted the array that we want to insert
-     * @return the combined array
-     */
-    protected static int[] insert(int[] original, int index, int[] inserted) {
-        int[] modified = new int[original.length + inserted.length];
-        System.arraycopy(original, 0, modified, 0, index);
-        System.arraycopy(inserted, 0, modified, index, inserted.length);
-        System.arraycopy(original, index, modified, index + inserted.length, modified.length - index - inserted.length);
-        return modified;
-    }
-
-    /**
-     * Returns true if the specified array contains the specified value.
-     *
-     * @param values the array to check in
-     * @param value the value to check for
-     * @return true if the specified array contains the specified value
-     */
-    protected static boolean contains(int[] values, int value) {
-        for (int i = 0; i < values.length; i++) {
-            if (values[i] == value) {
-                return true;
-            }
-        }
-        return false;
     }
 }

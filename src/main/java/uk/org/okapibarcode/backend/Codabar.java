@@ -15,6 +15,8 @@
  */
 package uk.org.okapibarcode.backend;
 
+import static uk.org.okapibarcode.util.Arrays.positionOf;
+
 /**
  * <p>Implements Codabar barcode symbology according to BS EN 798:1996.
  *

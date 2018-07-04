@@ -15,29 +15,30 @@
  */
 package uk.org.okapibarcode.backend;
 
+import static uk.org.okapibarcode.util.Arrays.positionOf;
+
 import java.awt.geom.Rectangle2D;
 import java.util.Locale;
 
 /**
- * Encodes data according to the Royal Mail 4-State Country Code
- * <br>
- * Data input can consist of numbers 0-9 and letters A-Z and usually includes
+ * <p>Encodes data according to the Royal Mail 4-State Country Code.
+ *
+ * <p>Data input can consist of numbers 0-9 and letters A-Z and usually includes
  * delivery postcode followed by house number. A check digit is calculated
  * and added.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class RoyalMail4State extends Symbol {
-    /* Handles the 4 State barcodes used in the UK by Royal Mail */
 
-    private String[] RoyalTable = {
+    private static final String[] ROYAL_TABLE = {
         "TTFF", "TDAF", "TDFA", "DTAF", "DTFA", "DDAA", "TADF", "TFTF", "TFDA",
         "DATF", "DADA", "DFTA", "TAFD", "TFAD", "TFFT", "DAAD", "DAFT", "DFAT",
         "ATDF", "ADTF", "ADDA", "FTTF", "FTDA", "FDTA", "ATFD", "ADAD", "ADFT",
         "FTAD", "FTFT", "FDAT", "AADD", "AFTD", "AFDT", "FATD", "FADT", "FFTT"
     };
 
-    private char[] krSet = {
+    private static final char[] KR_SET = {
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D',
         'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R',
         'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
@@ -57,8 +58,8 @@ public class RoyalMail4State extends Symbol {
         dest = "A";
 
         for (i = 0; i < content.length(); i++) {
-            index = positionOf(content.charAt(i), krSet);
-            dest += RoyalTable[index];
+            index = positionOf(content.charAt(i), KR_SET);
+            dest += ROYAL_TABLE[index];
             top += (index + 1) % 6;
             bottom += ((index / 6) + 1) % 6;
         }
@@ -73,7 +74,7 @@ public class RoyalMail4State extends Symbol {
             column = 5;
         }
 
-        dest += RoyalTable[(6 * row) + column];
+        dest += ROYAL_TABLE[(6 * row) + column];
 
         encodeInfo += "Check Digit: " + ((6 * row) + column) + "\n";
 

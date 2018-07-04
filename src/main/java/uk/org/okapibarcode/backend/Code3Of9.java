@@ -15,11 +15,12 @@
  */
 package uk.org.okapibarcode.backend;
 
+import static uk.org.okapibarcode.util.Arrays.positionOf;
+
 /**
- * Implements Code 39 bar code symbology
- * According to ISO/IEC 16388:2007
- * <p>
- * Input data can be of any length and supports the characters 0-9, A-Z, dash
+ * <p>Implements Code 39 bar code symbology according to ISO/IEC 16388:2007.
+ *
+ * <p>Input data can be of any length and supports the characters 0-9, A-Z, dash
  * (-), full stop (.), space, asterisk (*), dollar ($), slash (/), plus (+)
  * and percent (%). The standard does not require a check digit but a
  * modulo-43 check digit can be added if required.

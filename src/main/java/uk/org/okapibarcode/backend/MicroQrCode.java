@@ -15,6 +15,8 @@
  */
 package uk.org.okapibarcode.backend;
 
+import static uk.org.okapibarcode.util.Arrays.positionOf;
+
 import java.io.UnsupportedEncodingException;
 
 /**
@@ -28,6 +30,7 @@ import java.io.UnsupportedEncodingException;
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class MicroQrCode extends Symbol {
+
     private enum qrMode {
         NULL, KANJI, BINARY, ALPHANUM, NUMERIC
     }

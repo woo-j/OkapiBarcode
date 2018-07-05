@@ -210,7 +210,7 @@ public class SymbolTest {
         try {
             // try to verify codewords
             int[] actualCodewords = symbol.getCodewords();
-            assertEquals(config.expectedCodewords.size(), actualCodewords.length);
+            assertEquals("codeword count", config.expectedCodewords.size(), actualCodewords.length);
             for (int i = 0; i < actualCodewords.length; i++) {
                 int expected = Integer.parseInt(config.expectedCodewords.get(i));
                 int actual = actualCodewords[i];

@@ -194,7 +194,13 @@ public class SvgRenderer implements SymbolRenderer {
         }
     }
 
-    /** A bit convoluted, but we're trying to do it without adding an external dependency just for this... */
+    /**
+     * Cleans / sanitizes the specified string for inclusion in XML. A bit convoluted, but we're
+     * trying to do it without adding an external dependency just for this...
+     *
+     * @param s the string to be cleaned / sanitized
+     * @return the cleaned / sanitized string
+     */
     protected String clean(String s) {
 
         // remove control characters

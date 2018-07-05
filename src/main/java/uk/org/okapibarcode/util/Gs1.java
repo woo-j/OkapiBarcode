@@ -33,6 +33,9 @@ public final class Gs1 {
      * exceptions, this code matches the Zint GS1 validation code as closely as possible, in order to make it
      * easier to keep in sync.
      *
+     * @param s the data string to verify
+     * @param fnc1 the string to use to represent FNC1 in the output
+     * @return the input data, verified and with FNC1 strings added at the appropriate positions
      * @see <a href="https://sourceforge.net/p/zint/code/ci/master/tree/backend/gs1.c">Corresponding Zint code</a>
      * @see <a href="http://www.gs1.org/docs/gsmp/barcodes/GS1_General_Specifications.pdf">GS1 specification</a>
      */

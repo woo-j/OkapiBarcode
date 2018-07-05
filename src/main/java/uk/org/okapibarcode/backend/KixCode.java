@@ -29,7 +29,7 @@ import java.util.Locale;
  * <p>KIX Code is the same as RM4SCC, but without the check digit.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
- * @see <a href="KIX Code Specification">http://www.tntpost.nl/zakelijk/klantenservice/downloads/kIX_code/download.aspx</a>
+ * @see <a href="http://www.tntpost.nl/zakelijk/klantenservice/downloads/kIX_code/download.aspx">KIX Code Specification</a>
  */
 public class KixCode extends Symbol {
 

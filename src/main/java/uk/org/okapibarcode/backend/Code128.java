@@ -22,7 +22,7 @@ import static java.nio.charset.StandardCharsets.ISO_8859_1;
  *
  * <p>Code 128 supports encoding of 8-bit ISO 8859-1 (Latin-1) characters.
  *
- * <p>Setting GS1 mode allows encoding in GS1-128 (also known as UPC/EAN-128).
+ * <p>Setting GS1 mode allows encoding in GS1-128 (also known as UCC/EAN-128).
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  * @author Daniel Gredler

@@ -28,10 +28,6 @@ public class UspsPackage extends Symbol {
 
     @Override
     protected void encode() {
-        String hrt;
-        String spacedHrt;
-        boolean fourTwenty = false;
-        int bracketCount = 0;
 
         if (debug) {
             System.out.printf("IM Package Data Content = \"%s\"\n", content);
@@ -42,22 +38,23 @@ public class UspsPackage extends Symbol {
             throw new OkapiException("Invalid IMpb data");
         }
 
-        if ((content.length() % 2) != 0) {
+        if (content.length() % 2 != 0) {
             /* Input must be even length */
             throw new OkapiException("Invalid IMpb data");
         }
 
         Code128 code128 = new Code128();
         code128.unsetCc();
-        code128.setDataType(Symbol.DataType.GS1);
+        code128.setDataType(DataType.GS1);
         code128.setContent(content);
 
-        if (content.length() > 4) {
-            fourTwenty = ((content.charAt(1) == '4') && (content.charAt(2) == '2') &&
-                    (content.charAt(3) == '0'));
-        }
+        boolean fourTwenty = content.length() > 4 &&
+                             content.charAt(1) == '4' &&
+                             content.charAt(2) == '2' &&
+                             content.charAt(3) == '0';
 
-        hrt = "";
+        String hrt = "";
+        int bracketCount = 0;
         for (int i = 0; i < content.length(); i++) {
             if (content.charAt(i) == '[') {
                 bracketCount++;
@@ -69,7 +66,7 @@ public class UspsPackage extends Symbol {
             }
         }
 
-        spacedHrt = "";
+        String spacedHrt = "";
         for(int i = 0; i < hrt.length(); i++) {
             spacedHrt += hrt.charAt(i);
             if (i % 4 == 3) {

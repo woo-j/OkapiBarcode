@@ -32,12 +32,12 @@ public final class Strings {
     }
 
     /**
-     * Replaces any special placeholders with their raw values.
+     * Replaces any special placeholders with their raw values (not including FNC values).
      *
      * @param s the string to check for placeholders
      * @param lenient whether or not to be lenient with unrecognized escape sequences
      * @return the specified string, with placeholders replaced
-     * @see <a href="http://www.zint.org.uk/Manual.aspx?type=p&page=4">zint placeholders</a>
+     * @see <a href="http://www.zint.org.uk/Manual.aspx?type=p&page=4">Zint placeholders</a>
      */
     public static String replacePlaceholders(String s, boolean lenient) {
         StringBuilder sb = new StringBuilder(s.length());

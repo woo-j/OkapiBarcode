@@ -17,11 +17,6 @@ package uk.org.okapibarcode.backend;
 
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.charset.CharsetEncoder;
-import java.nio.charset.CoderResult;
-
 /**
  * <p>Implements Code 128 bar code symbology according to ISO/IEC 15417:2007.
  *
@@ -33,34 +28,6 @@ import java.nio.charset.CoderResult;
  * @author Daniel Gredler
  */
 public class Code128 extends Symbol {
-
-    /**
-     * The function 1 command character. This character can be used in data sent to {@link #setContent(String)} in
-     * order to insert a function 1 command. This placeholder is not a valid ISO-8859-1 character, so it does not
-     * conflict with other valid Code128 data characters.
-     */
-    public static final char FNC1 = '\u0101';
-
-    /**
-     * The function 2 command character. This character can be used in data sent to {@link #setContent(String)} in
-     * order to insert a function 2 command. This placeholder is not a valid ISO-8859-1 character, so it does not
-     * conflict with other valid Code128 data characters.
-     */
-    public static final char FNC2 = '\u0113';
-
-    /**
-     * The function 3 command character. This character can be used in data sent to {@link #setContent(String)} in
-     * order to insert a function 3 command. This placeholder is not a valid ISO-8859-1 character, so it does not
-     * conflict with other valid Code128 data characters.
-     */
-    public static final char FNC3 = '\u012B';
-
-    /**
-     * The function 4 command character. This character can be used in data sent to {@link #setContent(String)} in
-     * order to insert a function 4 command. This placeholder is not a valid ISO-8859-1 character, so it does not
-     * conflict with other valid Code128 data characters.
-     */
-    public static final char FNC4 = '\u014D';
 
     private enum Mode {
         NULL, SHIFTA, LATCHA, SHIFTB, LATCHB, SHIFTC, LATCHC, AORB, ABORC
@@ -140,7 +107,6 @@ public class Code128 extends Symbol {
 
     @Override
     protected void encode() {
-        int sourcelen = content.length();
         int i, j, k;
         int input_point = 0;
         Mode mode, last_mode;
@@ -151,7 +117,6 @@ public class Code128 extends Symbol {
         int[] values = new int[200];
         int c;
         String dest = "";
-        int[] inputData;
         int linkage_flag = 0;
 
         index_point = 0;
@@ -165,10 +130,12 @@ public class Code128 extends Symbol {
             mode_length[i] = 0;
         }
 
-        inputData = encode(content, inputDataType);
+        inputData = toBytes(content, ISO_8859_1);
         if (inputData == null) {
             throw new OkapiException("Invalid characters in input data");
         }
+
+        int sourcelen = inputData.length;
 
         FMode[] fset = new FMode[200];
         Mode[] set = new Mode[200]; /* set[] = Calculated mode for each character */
@@ -662,7 +629,7 @@ public class Code128 extends Symbol {
 
         /* Readable text */
         if (inputDataType != DataType.GS1) {
-            readable = content.replaceAll("[" + FNC1 + FNC2 + FNC3 + FNC4 + "]", "");
+            readable = removeFncEscapeSequences(content);
             if (inputDataType == DataType.HIBC) {
                 readable = "*" + readable + "*";
             }
@@ -684,6 +651,13 @@ public class Code128 extends Symbol {
             row_height[0] = 1;
             row_height[1] = -1;
         }
+    }
+
+    private static String removeFncEscapeSequences(String s) {
+        return s.replace(FNC1_STRING, "")
+                .replace(FNC2_STRING, "")
+                .replace(FNC3_STRING, "")
+                .replace(FNC4_STRING, "");
     }
 
     private void resolveOddCs(Mode[] set, int i, int cs, int nums) {
@@ -719,7 +693,11 @@ public class Code128 extends Symbol {
 
         Mode mode;
 
-        if (letter <= 31) {
+        if (letter == FNC1) {
+            mode = Mode.ABORC;
+        } else if (letter == FNC2 || letter == FNC3 || letter == FNC4) {
+            mode = Mode.AORB;
+        } else if (letter <= 31) {
             mode = Mode.SHIFTA;
         } else if ((letter >= 48) && (letter <= 57)) {
             mode = Mode.ABORC;
@@ -731,10 +709,6 @@ public class Code128 extends Symbol {
             mode = Mode.SHIFTA;
         } else if (letter <= 223) {
             mode = Mode.AORB;
-        } else if (letter == FNC1) {
-            mode = Mode.ABORC;
-        } else if (letter == FNC2 || letter == FNC3 || letter == FNC4) {
-            mode = Mode.AORB;
         } else {
             mode = Mode.SHIFTB;
         }
@@ -744,46 +718,6 @@ public class Code128 extends Symbol {
         }
 
         return mode;
-    }
-
-    private static int[] encode(String s, DataType dataType) {
-
-        int[] data = new int[s.length()];
-
-        byte[] ba = new byte[1];
-        ByteBuffer bb = ByteBuffer.wrap(ba);
-
-        char[] ca = new char[1];
-        CharBuffer cb = CharBuffer.wrap(ca);
-
-        CharsetEncoder encoder = ISO_8859_1.newEncoder();
-
-        for (int i = 0; i < data.length; i++) {
-            char c = s.charAt(i);
-            if (c == '[' && dataType == DataType.GS1) {
-                // treat GS1 '[' FNC1s the same as raw FNC1s
-                data[i] = FNC1;
-            } else if (c == FNC1 || c == FNC2 || c == FNC3 || c == FNC4) {
-                // a raw FNC command
-                data[i] = c;
-            } else if (encoder.canEncode(c)) {
-                // a valid ISO-8859-1 character (probably)
-                ca[0] = c;
-                CoderResult result = encoder.encode(cb, bb, false);
-                if (!result.isError()) {
-                    data[i] = ba[0] & 0xFF;
-                    cb.rewind();
-                    bb.rewind();
-                } else {
-                    return null;
-                }
-            } else {
-                // unrecognized / invalid character, abort
-                return null;
-            }
-        }
-
-        return data;
     }
 
     private void reduceSubsetChanges() { /* Implements rules from ISO 15417 Annex E */

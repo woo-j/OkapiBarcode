@@ -54,7 +54,6 @@ public class CodablockF extends Symbol {
 
     private int[][] blockmatrix = new int[44][62];
     private int columns_needed;
-    private int[] inputData;
     private int rows_needed;
     private CfMode final_mode;
     private CfMode[] subset_selector = new CfMode[44];
@@ -83,24 +82,18 @@ public class CodablockF extends Symbol {
         int k1_sum, k2_sum;
         int k1_check, k2_check;
 
-        input_length = content.length();
         final_mode = CfMode.MODEA;
-
-        if (input_length > 5450) {
-            throw new OkapiException("Input data too long");
-        }
 
         if (!content.matches("[\u0000-\u00FF]+")) {
             throw new OkapiException("Invalid characters in input data");
         }
 
-        inputBytes = content.getBytes(StandardCharsets.ISO_8859_1);
+        inputData = toBytes(content, StandardCharsets.ISO_8859_1, 0x00);
+        input_length = inputData.length - 1;
 
-        inputData = new int[input_length + 1];
-        for (i = 0; i < input_length; i++) {
-            inputData[i] = inputBytes[i] & 0xFF;
+        if (input_length > 5450) {
+            throw new OkapiException("Input data too long");
         }
-        inputData[input_length] = 0x00;
 
         /* Make a guess at how many characters will be needed to encode the data */
         estimate_codelength = 0.0;
@@ -144,7 +137,7 @@ public class CodablockF extends Symbol {
         k1_sum = 0;
         k2_sum = 0;
         for(i = 0; i < input_length; i++) {
-            if((inputDataType == DataType.GS1) && inputData[i] == '[') {
+            if(inputData[i] == FNC1) {
                 k1_sum += (i + 1) * 29; /* GS */
                 k2_sum += i * 29;
             } else {
@@ -270,7 +263,9 @@ public class CodablockF extends Symbol {
     private Mode findSubset(int letter) {
         Mode mode;
 
-        if (letter <= 31) {
+        if (letter == FNC1) {
+            mode = Mode.AORB;
+        } else if (letter <= 31) {
             mode = Mode.SHIFTA;
         } else if ((letter >= 48) && (letter <= 57)) {
             mode = Mode.ABORC;
@@ -295,6 +290,7 @@ public class CodablockF extends Symbol {
         int column_position, c;
         CfMode current_mode;
         boolean done, exit_status;
+        int input_length = inputData.length - 1;
 
         exit_status = false;
         current_row = 0;
@@ -320,7 +316,7 @@ public class CodablockF extends Symbol {
                 }
             }
 
-            if ((inputDataType == DataType.GS1) && (inputData[input_position] == '[')) {
+            if (inputData[input_position] == FNC1) {
                 blockmatrix[current_row][column_position] = 102; /* FNC1 */
                 column_position++;
                 c--;
@@ -506,7 +502,7 @@ public class CodablockF extends Symbol {
             if (!done) {
                 if (((current_mode == CfMode.MODEA) || (current_mode == CfMode.MODEB))
                         && ((findSubset(inputData[input_position]) == Mode.ABORC)
-                        || ((inputDataType == DataType.GS1) && (inputData[input_position] == '[')))) {
+                        || (inputData[input_position] == FNC1))) {
                     // Count the number of numeric digits
                     // If 4 or more numeric data characters occur together when in subsets A or B:
                     //   a. If there is an even number of numeric data characters, insert a Code C character before the
@@ -517,12 +513,12 @@ public class CodablockF extends Symbol {
                     j = 0;
                     do {
                         i++;
-                        if ((inputDataType == DataType.GS1) && (inputData[input_position + j] == '[')) {
+                        if (inputData[input_position + j] == FNC1) {
                             i++;
                         }
                         j++;
                     } while ((findSubset(inputData[input_position + j]) == Mode.ABORC)
-                            || ((inputDataType == DataType.GS1) && (inputData[input_position + j] == '[')));
+                            || (inputData[input_position + j] == FNC1));
                     i--;
 
                     if (i >= 4) {
@@ -690,7 +686,7 @@ public class CodablockF extends Symbol {
                 }
             }
 
-            if (input_position == content.length()) {
+            if (input_position == input_length) {
                 /* End of data - Annex B rule 5a */
                 if (c == 1) {
                     if (current_mode == CfMode.MODEA) {

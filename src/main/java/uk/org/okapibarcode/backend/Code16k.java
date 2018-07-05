@@ -94,19 +94,13 @@ public class Code16k extends Symbol {
         int input_length;
         int c_count;
         boolean f_state;
-        int[] inputData;
 
         if (!content.matches("[\u0000-\u00FF]+")) {
             throw new OkapiException("Invalid characters in input data");
         }
 
-        inputBytes = content.getBytes(StandardCharsets.ISO_8859_1);
-
-        input_length = content.length();
-        inputData = new int[input_length];
-        for (i = 0; i < input_length; i++) {
-            inputData[i] = inputBytes[i] & 0xFF;
-        }
+        inputData = toBytes(content, StandardCharsets.ISO_8859_1);
+        input_length = inputData.length;
 
         bar_characters = 0;
         set = new char[160];
@@ -163,7 +157,7 @@ public class Code16k extends Symbol {
         indexchaine = 0;
 
         mode = findSubset(inputData[indexchaine]);
-        if ((inputDataType == DataType.GS1) && (inputData[indexchaine] == '[')) {
+        if (inputData[indexchaine] == FNC1) {
             mode = Mode.ABORC;
         } /* FNC1 */
 
@@ -178,7 +172,7 @@ public class Code16k extends Symbol {
                 indexchaine++;
                 if (indexchaine < input_length) {
                     mode = findSubset(inputData[indexchaine]);
-                    if ((inputDataType == DataType.GS1) && (inputData[indexchaine] == '[')) {
+                    if (inputData[indexchaine] == FNC1) {
                         mode = Mode.ABORC;
                     } /* FNC1 */
                 }
@@ -235,7 +229,7 @@ public class Code16k extends Symbol {
         c_count = 0;
         for (i = 0; i < read; i++) {
             if (set[i] == 'C') {
-                if (inputData[i] == '[') {
+                if (inputData[i] == FNC1) {
                     if ((c_count & 1) != 0) {
                         if ((i - c_count) != 0) {
                             set[i - c_count] = 'B';
@@ -306,7 +300,7 @@ public class Code16k extends Symbol {
                 }
             }
 
-            if ((set[i] == 'C') && (!((inputDataType == DataType.GS1) && (content.charAt(i) == '[')))) {
+            if ((set[i] == 'C') && (inputData[i] != FNC1)) {
                 glyph_count = glyph_count + 0.5;
             } else {
                 glyph_count = glyph_count + 1.0;
@@ -481,7 +475,7 @@ public class Code16k extends Symbol {
                 bar_characters++;
             }
 
-            if (!((inputDataType == DataType.GS1) && (inputData[read] == '['))) {
+            if (inputData[read] != FNC1) {
                 switch (set[read]) { /* Encode data characters */
                 case 'A':
                 case 'a':

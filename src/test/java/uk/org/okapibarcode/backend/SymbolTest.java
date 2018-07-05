@@ -320,12 +320,12 @@ public class SymbolTest {
             return s.substring(0, s.length() - 1);
         } else if (symbol instanceof DataMatrix &&
                    symbol.getDataType() == DataType.GS1) {
-            // remove initial GS + transform subsequent GS -> '[' (Okapi internal representation of FNC1)
-            return s.substring(1).replace('\u001d', '[');
+            // remove initial GS + transform subsequent GS -> '\<FNC1>' (Okapi representation of FNC1)
+            return s.substring(1).replace("\u001d", Symbol.FNC1_STRING);
         } else if (symbol instanceof QrCode &&
                    symbol.getDataType() == DataType.GS1) {
-            // transform GS -> '[' (Okapi internal representation of FNC1)
-            return s.replace('\u001d', '[');
+            // transform GS -> '\<FNC1>' (Okapi representation of FNC1)
+            return s.replace("\u001d", Symbol.FNC1_STRING);
         } else {
             // no massaging
             return s;
@@ -345,10 +345,10 @@ public class SymbolTest {
             return s.substring(1, s.length() - 1);
         } else if (symbol instanceof Code128) {
             // remove function characters, since ZXing mostly ignores them during read
-            return s.replaceAll("[" + Code128.FNC1 + "]", "")
-                    .replaceAll("[" + Code128.FNC2 + "]", "")
-                    .replaceAll("[" + Code128.FNC3 + "]", "")
-                    .replaceAll("[" + Code128.FNC4 + "]", "");
+            return s.replace(Symbol.FNC1_STRING, "")
+                    .replace(Symbol.FNC2_STRING, "")
+                    .replace(Symbol.FNC3_STRING, "")
+                    .replace(Symbol.FNC4_STRING, "");
         } else if (symbol instanceof UspsPackage) {
             // remove AI brackets, since ZXing doesn't include them
             return s.replaceAll("[\\[\\]]", "");

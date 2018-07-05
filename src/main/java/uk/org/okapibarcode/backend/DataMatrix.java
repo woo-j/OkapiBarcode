@@ -131,7 +131,6 @@ public class DataMatrix extends Symbol {
     private int binary_length;
     private Mode last_mode;
     private int[] places;
-    private int[] inputData;
     private int process_p;
     private int[] process_buffer = new int[8];
     private int codewordCount;
@@ -322,11 +321,6 @@ public class DataMatrix extends Symbol {
         String bin;
 
         eciProcess(); // Get ECI mode
-
-        inputData = new int[inputBytes.length];
-        for (i = 0; i < inputBytes.length; i++) {
-            inputData[i] = inputBytes[i] & 0xFF;
-        }
 
         binlen = generateCodewords();
 
@@ -671,7 +665,7 @@ public class DataMatrix extends Symbol {
                             binary[binary_length] = ' ';
                             binary_length++;
                         } else {
-                            if ((inputDataType == DataType.GS1) && (inputData[sp] == '[')) {
+                            if (inputData[sp] == FNC1) {
                                 target[tp] = 232; /* FNC1 */
                                 encodeInfo += "FNC1 ";
                             } else {
@@ -705,7 +699,10 @@ public class DataMatrix extends Symbol {
                     next_mode = Mode.DM_ASCII;
                     encodeInfo += "ASC ";
                 } else {
-                    if (inputData[sp] > 127) {
+                    if (inputData[sp] == FNC1) {
+                        shift_set = 2;
+                        value = 27; /* FNC1 */
+                    } else if (inputData[sp] > 127) {
                         process_buffer[process_p] = 1;
                         process_p++;
                         process_buffer[process_p] = 30;
@@ -716,12 +713,6 @@ public class DataMatrix extends Symbol {
                     } else {
                         shift_set = C40_SHIFT[inputData[sp]];
                         value = C40_VALUE[inputData[sp]];
-                    }
-
-                    if ((inputDataType == DataType.GS1) && (inputData[sp] == '[')) {
-                        shift_set = 2;
-                        value = 27; /* FNC1 */
-
                     }
 
                     if (shift_set != 0) {
@@ -778,7 +769,10 @@ public class DataMatrix extends Symbol {
                     next_mode = Mode.DM_ASCII;
                     encodeInfo += "ASC ";
                 } else {
-                    if (inputData[sp] > 127) {
+                    if (inputData[sp] == FNC1) {
+                        shift_set = 2;
+                        value = 27; /* FNC1 */
+                    } else if (inputData[sp] > 127) {
                         process_buffer[process_p] = 1;
                         process_p++;
                         process_buffer[process_p] = 30;
@@ -789,11 +783,6 @@ public class DataMatrix extends Symbol {
                     } else {
                         shift_set = TEXT_SHIFT[inputData[sp]];
                         value = TEXT_VALUE[inputData[sp]];
-                    }
-
-                    if ((inputDataType == DataType.GS1) && (inputData[sp] == '[')) {
-                        shift_set = 2;
-                        value = 27; /* FNC1 */
                     }
 
                     if (shift_set != 0) {
@@ -1303,12 +1292,12 @@ public class DataMatrix extends Symbol {
                         edf_count += 13.0; // (p)(3) > Value changed from ISO
                     }
                 }
-                if ((inputDataType == DataType.GS1) && (inputData[sp] == '[')) {
+                if (inputData[sp] == FNC1) {
                     edf_count += 13.0; //  > Value changed from ISO
                 }
 
                 /* base 256 ... step (q) */
-                if ((inputDataType == DataType.GS1) && (inputData[sp] == '[')) {
+                if (inputData[sp] == FNC1) {
                     b256_count += 4.0; // (q)(1)
                 } else {
                     b256_count += 1.0; // (q)(2)

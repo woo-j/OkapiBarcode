@@ -239,8 +239,6 @@ public class QrCode extends Symbol {
         int targetCwCount, version, blocks;
         int size;
         int bitmask;
-        boolean canShrink;
-        int[] inputData;
         boolean gs1 = (inputDataType == DataType.GS1);
 
         eciProcess(); // Get ECI mode
@@ -256,15 +254,11 @@ public class QrCode extends Symbol {
                 inputData[i] = value;
             }
         } else {
-            /* Any other encoding method */
-            inputData = new int[inputBytes.length];
-            for (i = 0; i < inputData.length; i++) {
-                inputData[i] = inputBytes[i] & 0xff;
-            }
+            /* inputData already initialized in eciProcess() */
         }
 
         QrMode[] inputMode = new QrMode[inputData.length];
-        defineMode(inputMode, inputData, gs1);
+        defineMode(inputMode, inputData);
         est_binlen = getBinaryLength(40, inputMode, inputData, gs1, eciMode);
 
         ecc_level = preferredEccLevel;
@@ -482,7 +476,7 @@ public class QrCode extends Symbol {
     }
 
     /** Place Kanji / Binary / Alphanumeric / Numeric values in inputMode. */
-    private static void defineMode(QrMode[] inputMode, int[] inputData, boolean gs1) {
+    private static void defineMode(QrMode[] inputMode, int[] inputData) {
 
         int mlen;
 
@@ -494,7 +488,7 @@ public class QrCode extends Symbol {
                 if (isAlpha(inputData[i])) {
                     inputMode[i] = QrMode.ALPHANUM;
                 }
-                if (gs1 && (inputData[i] == '[')) {
+                if (inputData[i] == FNC1) {
                     inputMode[i] = QrMode.ALPHANUM;
                 }
                 if (isNumeric(inputData[i])) {
@@ -867,7 +861,7 @@ public class QrCode extends Symbol {
                     /* Character representation */
                     for (i = 0; i < short_data_block_length; i++) {
                         int b = inputData[position + i];
-                        if (gs1 && (b == '[')) {
+                        if (b == FNC1) {
                             b = 0x1d; /* FNC1 */
                         }
                         binaryAppend(b, 8, binary);
@@ -894,7 +888,7 @@ public class QrCode extends Symbol {
                     percentCount = 0;
                     for (i = 0; i < short_data_block_length; i++) {
                         int c = inputData[position + i];
-                        if (gs1 && c == '[') {
+                        if (c == FNC1) {
                             inputExpanded[i + percentCount] = '%'; /* FNC1 */
                         } else {
                             inputExpanded[i + percentCount] = c;

@@ -183,7 +183,6 @@ public class GridMatrix extends Symbol {
         NULL, GM_NUMBER, GM_LOWER, GM_UPPER, GM_MIXED, GM_CONTROL, GM_BYTE, GM_CHINESE
     };
 
-    private int[] inputData;
     private String binary;
     private int[] word = new int[1460];
     private boolean[] grid;
@@ -261,7 +260,7 @@ public class GridMatrix extends Symbol {
             Charset gb2312 = Charset.forName("GB2312");
             if (gb2312.newEncoder().canEncode(content)) {
                 /* GB2312 will work, use Chinese compaction */
-                inputBytes = content.getBytes(gb2312);
+                byte[] inputBytes = content.getBytes(gb2312);
                 inputData = new int[inputBytes.length];
                 length = 0;
                 for (i = 0; i < inputBytes.length; i++) {
@@ -281,11 +280,7 @@ public class GridMatrix extends Symbol {
             } else {
                 /* GB2312 encoding won't work, use other ECI mode */
                 eciProcess(); // Get ECI mode
-                length = inputBytes.length;
-                inputData = new int[length];
-                for (i = 0; i < length; i++) {
-                    inputData[i] = inputBytes[i] & 0xFF;
-                }
+                length = inputData.length;
             }
         } catch (UnsupportedCharsetException e) {
             throw new OkapiException("Byte conversion encoding error");

@@ -1019,10 +1019,10 @@ public class AztecCode extends Symbol {
         /* Encode input data into a binary string */
         int i, j, k, bytes;
         int curtable, newtable, lasttable, chartype, maplength, blocks;
-        int[] charmap = new int[2 * inputBytes.length];
-        int[] typemap = new int[2 * inputBytes.length];
-        int[] blockType = new int[inputBytes.length + 1];
-        int[] blockLength = new int[inputBytes.length + 1];
+        int[] charmap = new int[2 * inputData.length];
+        int[] typemap = new int[2 * inputData.length];
+        int[] blockType = new int[inputData.length + 1];
+        int[] blockLength = new int[inputData.length + 1];
         int weight;
 
         /* Lookup input string in encoding table */
@@ -1068,20 +1068,20 @@ public class AztecCode extends Symbol {
             typemap[maplength++] = 8; // PUNC
         }
 
-        for (i = 0; i < inputBytes.length; i++) {
-            if ((inputDataType == DataType.GS1) && ((inputBytes[i] & 0xFF) == '[')) {
+        for (i = 0; i < inputData.length; i++) {
+            if (inputData[i] == FNC1) {
                 /* FNC1 represented by FLG(0) */
                 charmap[maplength] = 0; // FLG
                 typemap[maplength++] = 8; // PUNC
                 charmap[maplength] = 400; // (0)
                 typemap[maplength++] = 8; // PUNC
             } else {
-                if (((inputBytes[i] & 0xFF) > 0x7F) || ((inputBytes[i] & 0xFF) == 0x00)) {
-                    charmap[maplength] = (inputBytes[i] & 0xFF);
+                if ((inputData[i] > 0x7F) || (inputData[i] == 0x00)) {
+                    charmap[maplength] = inputData[i];
                     typemap[maplength++] = 32; //BINARY
                 } else {
-                    charmap[maplength] = AZTEC_SYMBOL_CHAR[(inputBytes[i] & 0xFF)];
-                    typemap[maplength++] = AZTEC_CODE_SET[(inputBytes[i] & 0xFF)];
+                    charmap[maplength] = AZTEC_SYMBOL_CHAR[inputData[i]];
+                    typemap[maplength++] = AZTEC_CODE_SET[inputData[i]];
                 }
             }
         }

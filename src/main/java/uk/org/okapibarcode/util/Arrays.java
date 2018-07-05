@@ -62,7 +62,7 @@ public final class Arrays {
     }
 
     /**
-     * Returns true if the specified array contains the specified value.
+     * Returns <code>true</code> if the specified array contains the specified value.
      *
      * @param array the array to check in
      * @param value the value to check for
@@ -75,6 +75,23 @@ public final class Arrays {
             }
         }
         return false;
+    }
+
+    /**
+     * Returns <code>true</code> if the specified array contains the specified sub-array at the specified index.
+     *
+     * @param array the array to search in
+     * @param searchFor the sub-array to search for
+     * @param index the index at which to search
+     * @return whether or not the specified array contains the specified sub-array at the specified index
+     */
+    public static boolean containsAt(byte[] array, byte[] searchFor, int index) {
+        for (int i = 0; i < searchFor.length; i++) {
+            if (index + i >= array.length || array[index + i] != searchFor[i]) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**

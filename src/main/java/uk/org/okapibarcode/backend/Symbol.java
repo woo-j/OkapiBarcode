@@ -19,12 +19,15 @@ import static uk.org.okapibarcode.backend.HumanReadableAlignment.CENTER;
 import static uk.org.okapibarcode.backend.HumanReadableLocation.BOTTOM;
 import static uk.org.okapibarcode.backend.HumanReadableLocation.NONE;
 import static uk.org.okapibarcode.backend.HumanReadableLocation.TOP;
+import static uk.org.okapibarcode.util.Arrays.containsAt;
 import static uk.org.okapibarcode.util.Arrays.positionOf;
 import static uk.org.okapibarcode.util.Doubles.roughlyEqual;
 
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -37,6 +40,10 @@ import uk.org.okapibarcode.util.Gs1;
  * TODO: Setting attributes like module width, font size, etc should probably throw
  * an exception if set *after* encoding has already been completed.
  *
+ * TODO: GS1 data is encoded slightly differently depending on whether [AI]data content
+ * is used, or if FNC1 escape sequences are used. We may want to make sure that they
+ * encode to the same output.
+ *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public abstract class Symbol {
@@ -44,6 +51,16 @@ public abstract class Symbol {
     public static enum DataType {
         ECI, GS1, HIBC
     }
+
+    protected static final int FNC1 = -1;
+    protected static final int FNC2 = -2;
+    protected static final int FNC3 = -3;
+    protected static final int FNC4 = -4;
+
+    protected static final String FNC1_STRING = "\\<FNC1>";
+    protected static final String FNC2_STRING = "\\<FNC2>";
+    protected static final String FNC3_STRING = "\\<FNC3>";
+    protected static final String FNC4_STRING = "\\<FNC4>";
 
     private static char[] HIBC_CHAR_TABLE = {
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
@@ -70,7 +87,7 @@ public abstract class Symbol {
 
     protected String content;
     protected int eciMode = -1;
-    protected byte[] inputBytes;
+    protected int[] inputData; // usually bytes (values 0-255), but may also contain FNC flags
     protected String readable = "";
     protected String[] pattern;
     protected int row_count = 0;
@@ -432,7 +449,7 @@ public abstract class Symbol {
 
         switch (inputDataType) {
             case GS1:
-                content = Gs1.verify(data);
+                content = Gs1.verify(data, FNC1_STRING);
                 readable = data.replace('[', '(').replace(']', ')');
                 break;
             case HIBC:
@@ -493,10 +510,55 @@ public abstract class Symbol {
         }
 
         eciMode = eci.mode;
-        inputBytes = content.getBytes(eci.charset);
+        inputData = toBytes(content, eci.charset);
 
         encodeInfo += "ECI Mode: " + eci.mode + "\n";
         encodeInfo += "ECI Charset: " + eci.charset.name() + "\n";
+    }
+
+    protected static int[] toBytes(String s, Charset charset, int... suffix) {
+
+        if (!charset.newEncoder().canEncode(s)) {
+            return null;
+        }
+
+        byte[] fnc1 = FNC1_STRING.getBytes(charset);
+        byte[] fnc2 = FNC2_STRING.getBytes(charset);
+        byte[] fnc3 = FNC3_STRING.getBytes(charset);
+        byte[] fnc4 = FNC4_STRING.getBytes(charset);
+
+        byte[] bytes = s.getBytes(charset);
+        int[] data = new int[bytes.length + suffix.length];
+
+        int i = 0, j = 0;
+        for (; i < bytes.length; i++, j++) {
+            if (containsAt(bytes, fnc1, i)) {
+                data[j] = FNC1;
+                i += fnc1.length - 1;
+            } else if (containsAt(bytes, fnc2, i)) {
+                data[j] = FNC2;
+                i += fnc1.length - 1;
+            } else if (containsAt(bytes, fnc3, i)) {
+                data[j] = FNC3;
+                i += fnc1.length - 1;
+            } else if (containsAt(bytes, fnc4, i)) {
+                data[j] = FNC4;
+                i += fnc1.length - 1;
+            } else {
+                data[j] = bytes[i] & 0xff;
+            }
+        }
+
+        int k = 0;
+        for (; k < suffix.length; k++) {
+            data[j + k] = suffix[k];
+        }
+
+        if (j + k < i) {
+            data = Arrays.copyOf(data, j + k);
+        }
+
+        return data;
     }
 
     protected abstract void encode();

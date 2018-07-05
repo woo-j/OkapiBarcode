@@ -18,6 +18,7 @@ package uk.org.okapibarcode.backend;
 import static uk.org.okapibarcode.util.Arrays.positionOf;
 
 import java.awt.geom.Rectangle2D;
+import java.nio.charset.StandardCharsets;
 
 /**
  * <p>Implements Code 49 according to ANSI/AIM-BC6-2000.
@@ -999,7 +1000,6 @@ public class Code49 extends Symbol {
 
     @Override
     protected void encode() {
-        int length = content.length();
         int i, codeword_count = 0, h, j, M, rows, pad_count = 0;
         int x_count, y_count, z_count, posn_val, local_value;
         String intermediate = "";
@@ -1012,17 +1012,18 @@ public class Code49 extends Symbol {
             throw new OkapiException("Invalid characters in input data");
         }
 
+        inputData = toBytes(content, StandardCharsets.US_ASCII);
+
         if (inputDataType == DataType.GS1) {
             intermediate += "*"; // FNC1
         }
-        for (i = 0; i < length; i++) {
-            if (content.charAt(i) > 127) {
-                throw new OkapiException("Invalid characters in input");
-            }
-            if ((inputDataType == DataType.GS1) && (content.charAt(i) == '[')) {
+
+        for (i = 0; i < inputData.length; i++) {
+            int c = inputData[i];
+            if (c == FNC1) {
                 intermediate += "*"; // FNC1
             } else {
-                intermediate += C49_TABLE7[content.charAt(i)];
+                intermediate += C49_TABLE7[c];
             }
         }
 

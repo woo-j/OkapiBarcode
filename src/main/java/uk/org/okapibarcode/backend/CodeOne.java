@@ -102,7 +102,6 @@ public class CodeOne extends Symbol {
     };
 
     private int[] data = new int[1500];
-    private int[] inputData;
     private int[][] datagrid = new int[136][120];
     private boolean[][] outputGrid = new boolean[148][134];
 
@@ -738,18 +737,15 @@ public class CodeOne extends Symbol {
         int[] text_buffer = new int[6];
         int[] edi_buffer = new int[6];
         String decimal_binary = "";
-        int length = content.length();
+        int length;
         int shift_set, value;
         int data_left, decimal_count;
         int sub_value;
         int bits_left_in_byte, target_count;
         boolean isTwoDigits;
 
-        byte[] bytes = content.getBytes(StandardCharsets.ISO_8859_1);
-        inputData = new int[bytes.length];
-        for (i = 0; i < inputData.length; i++) {
-            inputData[i] = bytes[i] & 0xff;
-        }
+        inputData = toBytes(content, StandardCharsets.ISO_8859_1);
+        length = inputData.length;
 
         sourcePoint = 0;
         targetPoint = 0;
@@ -853,7 +849,7 @@ public class CodeOne extends Symbol {
                     }
 
                     if (!(isTwoDigits)) {
-                        if ((inputDataType == DataType.GS1) && (inputData[sourcePoint] == '[')) {
+                        if (inputData[sourcePoint] == FNC1) {
                             if ((length - sourcePoint) >= 15) { /* Step B4 */
                                 j = 0;
 
@@ -916,7 +912,7 @@ public class CodeOne extends Symbol {
                                     sourcePoint++;
                                 } else {
                                     /* Step B8 */
-                                    if ((inputDataType == DataType.GS1) && (inputData[sourcePoint] == '[')) {
+                                    if (inputData[sourcePoint] == FNC1) {
                                         data[targetPoint] = 232;
                                         targetPoint++;
                                         sourcePoint++; /* FNC1 */
@@ -1000,7 +996,7 @@ public class CodeOne extends Symbol {
                         value = C40_VALUE[inputData[sourcePoint]];
                     }
 
-                    if ((inputDataType == DataType.GS1) && (inputData[sourcePoint] == '[')) {
+                    if (inputData[sourcePoint] == FNC1) {
                         shift_set = 2;
                         value = 27; /* FNC1 */
                     }
@@ -1102,7 +1098,7 @@ public class CodeOne extends Symbol {
                         value = TEXT_VALUE[inputData[sourcePoint]];
                     }
 
-                    if ((inputDataType == DataType.GS1) && (inputData[sourcePoint] == '[')) {
+                    if (inputData[sourcePoint] == FNC1) {
                         shift_set = 2;
                         value = 27; /* FNC1 */
                     }
@@ -1377,7 +1373,7 @@ public class CodeOne extends Symbol {
             if (current_mode == Mode.C1_BYTE) {
                 next_mode = Mode.C1_BYTE;
 
-                if ((inputDataType == DataType.GS1) && (inputData[sourcePoint] == '[')) {
+                if (inputData[sourcePoint] == FNC1) {
                     next_mode = Mode.C1_ASCII;
                 } else {
                     if (inputData[sourcePoint] <= 127) {
@@ -1689,7 +1685,7 @@ public class CodeOne extends Symbol {
             }
 
             /* Step P */
-            if ((inputDataType == DataType.GS1) && (inputData[sp] == '[')) {
+            if (inputData[sp] == FNC1) {
                 byte_count += 3.0;
             } else {
                 byte_count += 1.0;

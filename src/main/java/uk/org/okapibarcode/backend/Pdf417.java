@@ -52,7 +52,6 @@ public class Pdf417 extends Symbol {
     private int[] codeWords = new int[2700];
     private int codeWordCount;
     private Mode symbolMode = Mode.NORMAL;
-    private int[] inputData;
     private Integer columns;
     private Integer rows;
     private int preferredEccLevel = -1;
@@ -676,12 +675,6 @@ public class Pdf417 extends Symbol {
     protected void encode() {
 
         eciProcess();
-
-        int sourceLength = inputBytes.length;
-        inputData = new int[sourceLength];
-        for (int i = 0; i < sourceLength; i++) {
-            inputData[i] = inputBytes[i] & 0xFF;
-        }
 
         switch (symbolMode) {
             case MICRO:

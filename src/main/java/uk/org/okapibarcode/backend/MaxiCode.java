@@ -120,7 +120,6 @@ public class MaxiCode extends Symbol {
     private int structuredAppendTotal = 1;
     private String primaryData = "";
     private int[] codewords;
-    private int[] inputData;
     private int[] set = new int[144];
     private int[] character = new int[144];
     private boolean[][] grid = new boolean[33][30];
@@ -224,15 +223,7 @@ public class MaxiCode extends Symbol {
     @Override
     protected void encode() {
 
-        // copy input data over into source
-        int sourcelen = content.length();
-        inputData = new int[sourcelen];
-
         eciProcess();
-
-        for (int i = 0; i < sourcelen; i++) {
-            inputData[i] = inputBytes[i] & 0xFF;
-        }
 
         // mode 2 -> mode 3 if postal code isn't strictly numeric
         if (mode == 2) {

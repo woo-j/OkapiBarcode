@@ -36,7 +36,7 @@ public final class Gs1 {
      * @see <a href="https://sourceforge.net/p/zint/code/ci/master/tree/backend/gs1.c">Corresponding Zint code</a>
      * @see <a href="http://www.gs1.org/docs/gsmp/barcodes/GS1_General_Specifications.pdf">GS1 specification</a>
      */
-    public static String verify(String s) {
+    public static String verify(String s, String fnc1) {
 
         // Enforce compliance with GS1 General Specification
         // http://www.gs1.org/docs/gsmp/barcodes/GS1_General_Specifications.pdf
@@ -574,7 +574,7 @@ public final class Gs1 {
             if (source[i] == '[') {
                 /* Start of an AI string */
                 if (!fixedLengthAI) {
-                    reduced.append('[');
+                    reduced.append(fnc1);
                 }
                 last_ai = (10 * Character.getNumericValue(source[i + 1]))
                               + Character.getNumericValue(source[i + 2]);
@@ -587,7 +587,6 @@ public final class Gs1 {
                         (last_ai >= 31 && last_ai <= 36) ||
                         (last_ai == 41);
             }
-            /* The ']' character is simply dropped from the input */
         }
 
         /* the character '[' in the reduced string refers to the FNC1 character */

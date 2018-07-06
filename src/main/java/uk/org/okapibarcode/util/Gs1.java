@@ -261,8 +261,8 @@ public final class Gs1 {
                 // Length 18 Fixed
                 case 0: // SSCC
                 case 8006: // ITIP
-                case 8017: // GSRN PROVIDER TODO: https://sourceforge.net/p/zint/tickets/115/
-                case 8018: // GSRN RECIPIENT TODO: https://sourceforge.net/p/zint/tickets/115/
+                case 8017: // GSRN PROVIDER
+                case 8018: // GSRN RECIPIENT
                     if (data_length[i] != 18) {
                         error_latch = 1;
                     } else {
@@ -404,7 +404,7 @@ public final class Gs1 {
                 case 8110: // Coupon code
                 case 8112: // Paperless coupon code
                 case 8200: // PRODUCT URL
-                    if (data_length[i] > 34) {
+                    if (data_length[i] > 70) {
                         error_latch = 1;
                     } else {
                         error_latch = 0;
@@ -414,7 +414,7 @@ public final class Gs1 {
             }
 
             if (ai_value[i] == 253) { // GDTI
-                if ((data_length[i] < 14) || (data_length[i] > 30)) { // TODO: https://sourceforge.net/p/zint/tickets/113/
+                if ((data_length[i] < 14) || (data_length[i] > 30)) {
                     error_latch = 1;
                 } else {
                     error_latch = 0;
@@ -592,7 +592,6 @@ public final class Gs1 {
             }
         }
 
-        /* the character '[' in the reduced string refers to the FNC1 character */
         return reduced.toString();
     }
 }

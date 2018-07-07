@@ -33,7 +33,7 @@ import java.nio.charset.Charset;
  */
 public class QrCode extends Symbol {
 
-    public enum EccMode {
+    public enum EccLevel {
         L, M, Q, H
     }
 
@@ -165,12 +165,12 @@ public class QrCode extends Symbol {
     };
 
     private int preferredVersion;
-    private EccMode preferredEccLevel = EccMode.L;
+    private EccLevel preferredEccLevel = EccLevel.L;
 
     /**
-     * Sets the preferred symbol size. This value may be ignored if the data
-     * string is too large to fit into the specified symbol. Input values
-     * correspond to symbol sizes as shown in the following table:
+     * Sets the preferred symbol size / version. This value may be ignored if the data
+     * string is too large to fit into the specified symbol. Input values correspond
+     * to symbol sizes as shown in the following table:
      *
      * <table summary="Available QR Code sizes">
      * <tbody>
@@ -198,15 +198,25 @@ public class QrCode extends Symbol {
      * </tbody>
      * </table>
      *
-     * @param version symbol version number required
+     * @param version the preferred symbol version
      */
     public void setPreferredVersion(int version) {
         preferredVersion = version;
     }
 
     /**
-     * Sets the amount of symbol space allocated to error correction. Levels are
-     * predefined according to the following table:
+     * Returns the preferred symbol version.
+     *
+     * @return the preferred symbol version
+     */
+    public int getPreferredVersion() {
+        return preferredVersion;
+    }
+
+    /**
+     * Sets the preferred amount of symbol space allocated to error correction. This value may
+     * be ignored if there is room for a higher error correction level. Levels are predefined
+     * according to the following table:
      *
      * <table summary="QR Code error correction levels">
      * <tbody>
@@ -218,10 +228,19 @@ public class QrCode extends Symbol {
      * </tbody>
      * </table>
      *
-     * @param eccMode error correction level
+     * @param preferredEccLevel the preferred error correction level
      */
-    public void setEccMode(EccMode eccMode) {
-        preferredEccLevel = eccMode;
+    public void setPreferredEccLevel(EccLevel preferredEccLevel) {
+        this.preferredEccLevel = preferredEccLevel;
+    }
+
+    /**
+     * Returns the preferred amount of symbol space allocated to error correction.
+     *
+     * @return the preferred amount of symbol space allocated to error correction
+     */
+    public EccLevel getPreferredEccLevel() {
+        return this.preferredEccLevel;
     }
 
     @Override
@@ -234,7 +253,7 @@ public class QrCode extends Symbol {
 
         int i, j;
         int est_binlen;
-        EccMode ecc_level;
+        EccLevel ecc_level;
         int max_cw;
         int targetCwCount, version, blocks;
         int size;
@@ -261,8 +280,8 @@ public class QrCode extends Symbol {
         defineMode(inputMode, inputData);
         est_binlen = getBinaryLength(40, inputMode, inputData, gs1, eciMode);
 
-        ecc_level = preferredEccLevel;
-        switch (preferredEccLevel) {
+        ecc_level = this.preferredEccLevel;
+        switch (this.preferredEccLevel) {
             case L:
             default:
                 max_cw = 2956;
@@ -407,13 +426,13 @@ public class QrCode extends Symbol {
 
         /* Ensure maximum error correction capacity */
         if (est_binlen <= (QR_DATA_CODEWORDS_M[version - 1] * 8)) {
-            ecc_level = EccMode.M;
+            ecc_level = EccLevel.M;
         }
         if (est_binlen <= (QR_DATA_CODEWORDS_Q[version - 1] * 8)) {
-            ecc_level = EccMode.Q;
+            ecc_level = EccLevel.Q;
         }
         if (est_binlen <= (QR_DATA_CODEWORDS_H[version - 1] * 8)) {
-            ecc_level = EccMode.H;
+            ecc_level = EccLevel.H;
         }
 
         targetCwCount = QR_DATA_CODEWORDS_L[version - 1];
@@ -1270,7 +1289,7 @@ public class QrCode extends Symbol {
         return ((fullstream[i / 8] & (0x80 >> (i % 8))) != 0);
     }
 
-    private static int applyBitmask(byte[] grid, int size, EccMode ecc_level) {
+    private static int applyBitmask(byte[] grid, int size, EccLevel ecc_level) {
 
         int x, y;
         char p;
@@ -1358,7 +1377,7 @@ public class QrCode extends Symbol {
     }
 
     /** Adds format information to eval. */
-    private static void addFormatInfoEval(byte[] eval, int size, EccMode ecc_level, int pattern) {
+    private static void addFormatInfoEval(byte[] eval, int size, EccLevel ecc_level, int pattern) {
 
         int format = pattern;
         int seq;
@@ -1582,7 +1601,7 @@ public class QrCode extends Symbol {
     }
 
     /* Adds format information to grid. */
-    private static void addFormatInfo(byte[] grid, int size, EccMode ecc_level, int pattern) {
+    private static void addFormatInfo(byte[] grid, int size, EccLevel ecc_level, int pattern) {
 
         int format = pattern;
         int seq;

@@ -2817,16 +2817,16 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 if (qrUserEcc.isSelected()) {
                     switch(qrUserEccCombo.getSelectedIndex()) {
                         case 0:
-                            qrCode.setEccMode(QrCode.EccMode.L);
+                            qrCode.setPreferredEccLevel(QrCode.EccLevel.L);
                             break;
                         case 1:
-                            qrCode.setEccMode(QrCode.EccMode.M);
+                            qrCode.setPreferredEccLevel(QrCode.EccLevel.M);
                             break;
                         case 2:
-                            qrCode.setEccMode(QrCode.EccMode.Q);
+                            qrCode.setPreferredEccLevel(QrCode.EccLevel.Q);
                             break;
                         case 3:
-                            qrCode.setEccMode(QrCode.EccMode.H);
+                            qrCode.setPreferredEccLevel(QrCode.EccLevel.H);
                             break;
                     }
                 }

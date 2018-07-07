@@ -31,6 +31,10 @@ import java.nio.charset.StandardCharsets;
  */
 public class CodeOne extends Symbol {
 
+    public enum Version {
+        NONE, A, B, C, D, E, F, G, H, S, T
+    }
+
     private static final int[] C40_SHIFT = {
         1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
         1, 1, 1, 1, 1, 1, 1, 1, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
@@ -101,24 +105,30 @@ public class CodeOne extends Symbol {
         C1_ASCII, C1_C40, C1_DECIMAL, C1_TEXT, C1_EDI, C1_BYTE
     };
 
+    private Version preferredVersion = Version.NONE;
+
     private int[] data = new int[1500];
     private int[][] datagrid = new int[136][120];
     private boolean[][] outputGrid = new boolean[148][134];
 
-    public enum Version {
-        NONE, A, B, C, D, E, F, G, H, S, T
-    }
-
-    private Version preferredVersion = Version.NONE;
-
     /**
-     * Set symbol size by "version". Versions A to H are square symbols.
-     * This value may be ignored if the input data does not fit in the
-     * specified version. Version S and T are fixed height symbols.
-     * @param version Symbol version
+     * Sets the preferred symbol size / version. Versions A to H are square symbols.
+     * Version S and T are fixed height symbols. This value may be ignored if the input
+     * data does not fit in the specified version.
+     *
+     * @param version the preferred symbol version
      */
     public void setPreferredVersion(Version version) {
         preferredVersion = version;
+    }
+
+    /**
+     * Returns the preferred symbol version.
+     *
+     * @return the preferred symbol version
+     */
+    public Version getPreferredVersion() {
+        return preferredVersion;
     }
 
     @Override

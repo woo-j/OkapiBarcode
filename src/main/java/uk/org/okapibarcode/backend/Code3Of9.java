@@ -104,7 +104,11 @@ public class Code3Of9 extends Symbol {
         String start = "1211212111";
         String stop = "121121211";
 
-        int patternLength = start.length() + stop.length() + (10 * content.length()) + (checkOption == CheckDigit.MOD43 ? 10 : 0); // TODO: check
+        int patternLength = start.length() +
+                            stop.length() +
+                            (10 * content.length()) +
+                            (checkOption == CheckDigit.MOD43 ? 10 : 0);
+
         StringBuilder dest = new StringBuilder(patternLength);
         dest.append(start);
 
@@ -122,7 +126,7 @@ public class Code3Of9 extends Symbol {
             counter = counter % 43;
             checkDigit = LOOKUP[counter];
             int index = positionOf(checkDigit, LOOKUP);
-            // dest.append(CODE_39[index]); TODO: not sure why check digit is not being included in the barcode
+            dest.append(CODE_39[index]);
             if (checkDigit == ' ') {
                 // display a space check digit as _, otherwise it looks like an error
                 checkDigit = '_';
@@ -137,10 +141,6 @@ public class Code3Of9 extends Symbol {
         } else {
             readable = "*" + content + "*";
         }
-
-        //if(patternLength != dest.length()) {
-        //    throw new OkapiException("what?");
-        //}
 
         pattern = new String[] { dest.toString() };
         row_count = 1;

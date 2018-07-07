@@ -41,6 +41,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.reflections.Reflections;
 
+import uk.org.okapibarcode.backend.Code3Of9.CheckDigit;
 import uk.org.okapibarcode.backend.Symbol.DataType;
 import uk.org.okapibarcode.output.Java2DRenderer;
 import uk.org.okapibarcode.util.Strings;
@@ -316,6 +317,9 @@ public class SymbolTest {
      */
     private static String massageZXingData(String s, Symbol symbol) {
         if (symbol instanceof Ean || symbol instanceof Upc) {
+            // remove the checksum from the barcode content
+            return s.substring(0, s.length() - 1);
+        } else if (symbol instanceof Code3Of9 && ((Code3Of9) symbol).getCheckDigit() == CheckDigit.MOD43) {
             // remove the checksum from the barcode content
             return s.substring(0, s.length() - 1);
         } else if (symbol instanceof DataMatrix &&

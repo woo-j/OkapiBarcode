@@ -46,20 +46,19 @@ public class Code3Of9 extends Symbol {
     };
 
     private static final char[] LOOKUP = {
-        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D',
-        'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R',
-        'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '-', '.', ' ', '$', '/', '+',
-        '%'
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+        'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
+        'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
+        'U', 'V', 'W', 'X', 'Y', 'Z', '-', '.', ' ', '$',
+        '/', '+', '%'
     };
 
     private CheckDigit checkOption = CheckDigit.NONE;
-
-    /** Ratio of wide bar width to narrow bar width. */
     private double moduleWidthRatio = 2;
 
     /**
-     * Sets the ratio of wide bar width to narrow bar width. Valid values are usually
-     * between {@code 2} and {@code 3}. The default value is {@code 2}.
+     * Sets the ratio of wide bar width to narrow bar width. Valid values are usually between
+     * {@code 2} and {@code 3}. The default value is {@code 2}.
      *
      * @param moduleWidthRatio the ratio of wide bar width to narrow bar width
      */
@@ -77,12 +76,22 @@ public class Code3Of9 extends Symbol {
     }
 
     /**
-     * Select addition of optional Modulo-43 check digit or encoding without
-     * check digit.
+     * Select addition of optional Modulo-43 check digit or encoding without check digit. By
+     * default, no check digit is added.
+     *
      * @param checkMode Check digit option.
      */
     public void setCheckDigit(CheckDigit checkMode) {
         checkOption = checkMode;
+    }
+
+    /**
+     * Returns the check digit mode.
+     *
+     * @return the check digit mode
+     */
+    public CheckDigit getCheckDigit() {
+        return checkOption;
     }
 
     @Override
@@ -92,63 +101,48 @@ public class Code3Of9 extends Symbol {
             throw new OkapiException("Invalid characters in input");
         }
 
-        String p = "";
-        String dest;
-        int l = content.length();
-        int charval;
-        char thischar;
+        String start = "1211212111";
+        String stop = "121121211";
+
+        int patternLength = start.length() + stop.length() + (10 * content.length()) + (checkOption == CheckDigit.MOD43 ? 10 : 0); // TODO: check
+        StringBuilder dest = new StringBuilder(patternLength);
+        dest.append(start);
+
         int counter = 0;
-        char check_digit = ' ';
+        char checkDigit = ' ';
 
-        dest = "1211212111"; // Start
-        for (int i = 0; i < l; i++) {
-            thischar = content.charAt(i);
-            charval = positionOf(thischar, LOOKUP);
-            counter += charval;
-            p += CODE_39[charval];
+        for (int i = 0; i < content.length(); i++) {
+            char c = content.charAt(i);
+            int index = positionOf(c, LOOKUP);
+            dest.append(CODE_39[index]);
+            counter += index;
         }
-        dest += p;
 
         if (checkOption == CheckDigit.MOD43) {
-            //User has requested Mod-43 check digit
-
             counter = counter % 43;
-            if(counter < 10) {
-                check_digit = (char)(counter + '0');
-            } else {
-                if(counter < 36) {
-                    check_digit = (char)((counter - 10) + 'A');
-                } else {
-                    switch(counter) {
-                        case 36: check_digit = '-'; break;
-                        case 37: check_digit = '.'; break;
-                        case 38: check_digit = ' '; break;
-                        case 39: check_digit = '$'; break;
-                        case 40: check_digit = '/'; break;
-                        case 41: check_digit = '+'; break;
-                        default: check_digit = 37; break;
-                    }
-                }
+            checkDigit = LOOKUP[counter];
+            int index = positionOf(checkDigit, LOOKUP);
+            // dest.append(CODE_39[index]); TODO: not sure why check digit is not being included in the barcode
+            if (checkDigit == ' ') {
+                // display a space check digit as _, otherwise it looks like an error
+                checkDigit = '_';
             }
-
-            charval = positionOf(check_digit, LOOKUP);
-            p += CODE_39[charval];
-
-            /* Display a space check digit as _, otherwise it looks like an error */
-            if(check_digit == ' ') {
-                check_digit = '_';
-            }
+            encodeInfo += "Check Digit: " + checkDigit + "\n";
         }
 
-        dest += "121121211"; // Stop
+        dest.append(stop);
 
         if (checkOption == CheckDigit.MOD43) {
-            readable = "*" + content + check_digit + "*";
-            encodeInfo += "Check Digit: " + check_digit + "\n";
+            readable = "*" + content + checkDigit + "*";
         } else {
             readable = "*" + content + "*";
         }
-        pattern = new String[] { dest };
+
+        //if(patternLength != dest.length()) {
+        //    throw new OkapiException("what?");
+        //}
+
+        pattern = new String[] { dest.toString() };
         row_count = 1;
         row_height = new int[] { -1 };
     }

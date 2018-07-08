@@ -572,6 +572,15 @@ public class Pdf417 extends Symbol {
     }
 
     /**
+     * Returns the preferred error correction level.
+     *
+     * @return the preferred error correction level
+     */
+    public int getPreferredEccLevel() {
+        return preferredEccLevel;
+    }
+
+    /**
      * Forces the use of the specified MicroPDF417 variant. Only valid
      * when using {@link Mode#MICRO micro} mode.
      *

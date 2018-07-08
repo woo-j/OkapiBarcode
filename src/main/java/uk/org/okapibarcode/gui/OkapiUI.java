@@ -2695,7 +2695,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 return auRedirect;
             case CHANNEL_CODE:
                 ChannelCode channelCode = new ChannelCode();
-                channelCode.setNumberOfChannels(channelChannelsCombo.getSelectedIndex() + 2);
+                channelCode.setPreferredNumberOfChannels(channelChannelsCombo.getSelectedIndex() + 2);
                 channelCode.setHumanReadableLocation(hrtLoc);
                 channelCode.setContent(dataInput);
                 setUniversals(channelCode);

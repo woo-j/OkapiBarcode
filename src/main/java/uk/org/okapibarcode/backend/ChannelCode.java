@@ -16,29 +16,41 @@
 package uk.org.okapibarcode.backend;
 
 /**
- * Implements Channel Code according to ANSI/AIM BC12-1998. Channel code encodes whole integer values
- * between 0 and 7,742,862.
+ * <p>Implements Channel Code according to ANSI/AIM BC12-1998.
+ *
+ * <p>Channel Code encodes whole integer values between 0 and 7,742,862.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class ChannelCode extends Symbol {
 
+    private int preferredNumberOfChannels;
+
     private int[] space = new int[11];
     private int[] bar = new int[11];
     private double currentValue;
     private double targetValue;
-    private int requestedNumberOfChannels;
 
     /**
-     * Sets the number of channels used to encode data. This setting will be ignored if the value to be
-     * encoded requires more channels.
+     * Sets the preferred number of channels used to encode data. This setting will be
+     * ignored if the value to be encoded requires more channels.
      *
-     * @param channels number of channels (between 3 and 8, inclusive)
+     * @param channels the preferred number of channels (3 to 8, inclusive)
      */
-    public void setNumberOfChannels(int channels) {
-        if (channels >= 3 && channels <= 8) {
-            requestedNumberOfChannels = channels;
+    public void setPreferredNumberOfChannels(int channels) {
+        if (channels < 3 || channels > 8) {
+            throw new IllegalArgumentException("Invalid Channel Code number of channels: " + channels);
         }
+        preferredNumberOfChannels = channels;
+    }
+
+    /**
+     * Returns the preferred number of channels used to encode data.
+     *
+     * @return the preferred number of channels used to encode data
+     */
+    public int getPreferredNumberOfChannels() {
+        return preferredNumberOfChannels;
     }
 
     @Override
@@ -56,10 +68,10 @@ public class ChannelCode extends Symbol {
             throw new OkapiException("Invalid characters in input");
         }
 
-        if (requestedNumberOfChannels <= 2 || requestedNumberOfChannels > 8) {
+        if (preferredNumberOfChannels <= 2 || preferredNumberOfChannels > 8) {
             channels = 3;
         } else {
-            channels = requestedNumberOfChannels;
+            channels = preferredNumberOfChannels;
         }
 
         targetValue = Integer.parseInt(content);

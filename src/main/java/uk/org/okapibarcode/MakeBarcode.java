@@ -709,7 +709,7 @@ public class MakeBarcode {
                 case 140:
                     // Channel Code
                     ChannelCode channelCode = new ChannelCode();
-                    channelCode.setNumberOfChannels(settings.getSymbolColumns());
+                    channelCode.setPreferredNumberOfChannels(settings.getSymbolColumns());
                     channelCode.setHumanReadableLocation(hrtLocation);
                     channelCode.setContent(dataInput);
                     symbol = channelCode;

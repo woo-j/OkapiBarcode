@@ -2402,7 +2402,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                     composite.setSymbology(Composite.LinearEncoding.DATABAR_EXPANDED_STACK);
                     break;
             }
-            composite.setLinear(dataInput);
+            composite.setLinearContent(dataInput);
             switch(compositeUserMode.getSelectedIndex()) {
                 case 1:
                     composite.setPreferredMode(Composite.CompositeMode.CC_A);

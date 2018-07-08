@@ -508,24 +508,50 @@ public class Composite extends Symbol {
     }
 
     /**
-     * Set the data to be encoded in the linear component of the composite symbol.
+     * Returns the type of linear component included in the composite symbol.
      *
-     * @param input The linear data in GS1 format
+     * @return the type of linear component included in the composite symbol
      */
-    public void setLinear(String input) {
-        linearContent = input;
+    public LinearEncoding getSymbology() {
+        return symbology;
     }
 
     /**
-     * Set the preferred encoding method for the 2D component of the
-     * composite symbol. This value may be ignored if the amount of data
-     * supplied is too big for the selected encoding. Mode CC-C can only be
-     * used with a Code 128 linear component.
+     * Set the data to be encoded in the linear component of the composite symbol.
+     *
+     * @param input the linear data in GS1 format
+     */
+    public void setLinearContent(String linearContent) {
+        this.linearContent = linearContent;
+    }
+
+    /**
+     * Returns the data encoded in the linear component of the composite symbol.
+     *
+     * @return the data encoded in the linear component of the composite symbol
+     */
+    public String getLinearContent() {
+        return linearContent;
+    }
+
+    /**
+     * Set the preferred encoding method for the 2D component of the composite symbol.
+     * This value may be ignored if the amount of data supplied is too big for the selected
+     * encoding. Mode CC-C can only be used with a Code 128 linear component.
      *
      * @param userMode Preferred mode
      */
     public void setPreferredMode(CompositeMode userMode) {
         userPreferredMode = userMode;
+    }
+
+    /**
+     * Returns the preferred encoding method for the 2D component of the composite symbol.
+     *
+     * @return the preferred encoding method for the 2D component of the composite symbol
+     */
+    public CompositeMode getPreferredMode() {
+        return userPreferredMode;
     }
 
     @Override

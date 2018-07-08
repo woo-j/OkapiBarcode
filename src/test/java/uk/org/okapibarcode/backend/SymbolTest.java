@@ -3,6 +3,7 @@ package uk.org.okapibarcode.backend;
 import static java.lang.Integer.toHexString;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.awt.Color;
@@ -501,8 +502,8 @@ public class SymbolTest {
     }
 
     /**
-     * Initializes the specified symbol using the specified properties, where keys are attribute names and values are attribute
-     * values.
+     * Initializes the specified symbol using the specified properties, where keys are attribute names and
+     * values are attribute values.
      *
      * @param symbol the symbol to initialize
      * @param properties the attribute names and values to set
@@ -510,17 +511,28 @@ public class SymbolTest {
      */
     private static void setProperties(Symbol symbol, Map< String, String > properties) throws ReflectiveOperationException {
         for (Map.Entry< String, String > entry : properties.entrySet()) {
+            // set each symbol property using the corresponding setter method
             String name = entry.getKey();
             String value = entry.getValue();
             String setterName = "set" + name.substring(0, 1).toUpperCase() + name.substring(1);
             Method setter = getMethod(symbol.getClass(), setterName);
-            invoke(symbol, setter, value);
+            assertNotNull("unable to find method " + setterName, setter);
+            Object setterValue = invoke(symbol, setter, value);
+            // while we're here, eliminate some of the code coverage noise by checking the corresponding getter, if there is one
+            if (!"content".equals(name)) {
+                String getterName = "get" + setterName.substring(3);
+                Method getter = getMethod(symbol.getClass(), getterName);
+                if (getter != null) {
+                    Object getterValue = getter.invoke(symbol);
+                    assertEquals(setterValue, getterValue);
+                }
+            }
         }
     }
 
     /**
-     * Returns the method with the specified name in the specified class, or throws an exception if the specified method cannot be
-     * found.
+     * Returns the method with the specified name in the specified class, or <tt>null</tt> if the
+     * specified method cannot be found.
      *
      * @param clazz the class to search in
      * @param name the name of the method to search for
@@ -532,7 +544,7 @@ public class SymbolTest {
                 return method;
             }
         }
-        throw new RuntimeException("Unable to find method: " + name);
+        return null;
     }
 
     /**
@@ -541,29 +553,36 @@ public class SymbolTest {
      * @param object the object to invoke the method on
      * @param setter the method to invoke
      * @param parameter the parameter to pass to the method
+     * @return the actual parameter value passed to the method
      * @throws ReflectiveOperationException if there is any reflection error
      * @throws IllegalArgumentException if the specified parameter is not valid
      */
     @SuppressWarnings("unchecked")
-    private static < E extends Enum< E >> void invoke(Object object, Method setter, Object parameter)
+    private static < E extends Enum< E >> Object invoke(Object object, Method setter, Object parameter)
                     throws ReflectiveOperationException, IllegalArgumentException {
+
+        Object paramValue;
+
         Class< ? > paramType = setter.getParameterTypes()[0];
         if (String.class.equals(paramType)) {
-            setter.invoke(object, parameter.toString());
+            paramValue = parameter.toString();
         } else if (boolean.class.equals(paramType)) {
-            setter.invoke(object, Boolean.valueOf(parameter.toString()));
+            paramValue = Boolean.valueOf(parameter.toString());
         } else if (int.class.equals(paramType)) {
-            setter.invoke(object, Integer.parseInt(parameter.toString()));
+            paramValue = Integer.parseInt(parameter.toString());
         } else if (double.class.equals(paramType)) {
-            setter.invoke(object, Double.parseDouble(parameter.toString()));
+            paramValue = Double.parseDouble(parameter.toString());
         } else if (Character.class.equals(paramType)) {
-            setter.invoke(object, parameter.toString().charAt(0));
+            paramValue = parameter.toString().charAt(0);
         } else if (paramType.isEnum()) {
             Class< E > e = (Class< E >) paramType;
-            setter.invoke(object, Enum.valueOf(e, parameter.toString()));
+            paramValue = Enum.valueOf(e, parameter.toString());
         } else {
             throw new RuntimeException("Unknown setter type: " + paramType);
         }
+
+        setter.invoke(object, paramValue);
+        return paramValue;
     }
 
     /**

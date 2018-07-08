@@ -344,6 +344,15 @@ public class AztecCode extends Symbol {
     }
 
     /**
+     * Returns the preferred symbol size.
+     *
+     * @return the preferred symbol size
+     */
+    public int getPreferredSize() {
+        return preferredSize;
+    }
+
+    /**
      * Sets the preferred minimum amount of symbol space dedicated to error
      * correction. This value will be ignored if a symbol size has been set by
      * <code>setPreferredSize</code>. Valid options are:
@@ -365,6 +374,15 @@ public class AztecCode extends Symbol {
             throw new IllegalArgumentException("Invalid ECC level: " + eccLevel);
         }
         preferredEccLevel = eccLevel;
+    }
+
+    /**
+     * Returns the preferred error correction level.
+     *
+     * @return the preferred error correction level
+     */
+    public int getPreferredEccLevel() {
+        return preferredEccLevel;
     }
 
     @Override

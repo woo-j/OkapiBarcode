@@ -115,6 +115,8 @@ public class DataMatrix extends Symbol {
         68, 42, 56, 36, 48, 56, 68, 56, 68, 62, 62
     };
 
+    private static final int DM_SIZES_COUNT = MATRIX_H.length;
+
     // user-specified values and settings
 
     private ForceMode forceMode = ForceMode.NONE;
@@ -324,14 +326,14 @@ public class DataMatrix extends Symbol {
 
         binlen = generateCodewords();
 
-        if (preferredSize >= 1 && preferredSize <= 30) {
+        if (preferredSize >= 1 && preferredSize <= DM_SIZES_COUNT) {
             optionsize = INT_SYMBOL[preferredSize - 1];
         } else {
             optionsize = -1;
         }
 
-        calcsize = 29;
-        for (i = 29; i > -1; i--) {
+        calcsize = DM_SIZES_COUNT - 1;
+        for (i = DM_SIZES_COUNT - 1; i > -1; i--) {
             if (MATRIX_BYTES[i] >= (binlen + process_p)) {
                 calcsize = i;
             }
@@ -342,14 +344,17 @@ public class DataMatrix extends Symbol {
             // Now check the detailed search options square only or rectangular only
             if (forceMode == ForceMode.SQUARE) {
                 /* Skip rectangular symbols in square only mode */
-                while (MATRIX_H[calcsize] != MATRIX_W[calcsize]) {
+                while (calcsize < DM_SIZES_COUNT && MATRIX_H[calcsize] != MATRIX_W[calcsize]) {
                     calcsize++;
                 }
             } else if (forceMode == ForceMode.RECTANGULAR) {
                 /* Skip square symbols in rectangular only mode */
-                while (MATRIX_H[calcsize] == MATRIX_W[calcsize]) {
+                while (calcsize < DM_SIZES_COUNT && MATRIX_H[calcsize] == MATRIX_W[calcsize]) {
                     calcsize++;
                 }
+            }
+            if (calcsize >= DM_SIZES_COUNT) {
+                throw new OkapiException("Data too long to fit in symbol");
             }
             symbolsize = calcsize;
         } else {

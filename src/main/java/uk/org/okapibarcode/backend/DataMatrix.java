@@ -356,7 +356,7 @@ public class DataMatrix extends Symbol {
             // The symbol size was specified by the user
             // Thus check if the data fits into this symbol size and use this size
             if (calcsize > optionsize) {
-                throw new OkapiException("Data does not fit in selected symbol size");
+                throw new OkapiException("Input too long for selected symbol size");
             }
             symbolsize = optionsize;
         }
@@ -364,6 +364,10 @@ public class DataMatrix extends Symbol {
         // Now we know the symbol size we can handle the remaining data in the process buffer.
         int symbolsLeft = MATRIX_BYTES[symbolsize] - binlen;
         binlen = encodeRemainder(symbolsLeft, binlen);
+
+        if (binlen > MATRIX_BYTES[symbolsize]) {
+            throw new OkapiException("Data too long to fit in symbol");
+        }
 
         H = MATRIX_H[symbolsize];
         W = MATRIX_W[symbolsize];

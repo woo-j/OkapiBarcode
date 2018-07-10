@@ -519,7 +519,7 @@ public class Composite extends Symbol {
     /**
      * Set the data to be encoded in the linear component of the composite symbol.
      *
-     * @param input the linear data in GS1 format
+     * @param linearContent the linear data in GS1 format
      */
     public void setLinearContent(String linearContent) {
         this.linearContent = linearContent;

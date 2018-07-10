@@ -65,12 +65,12 @@ apply plugin: 'signing'
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
     classifier = 'javadoc'
-    from 'build/docs/javadoc'
+    from javadoc
 }
 
 task sourcesJar(type: Jar) {
-    from sourceSets.main.allSource
     classifier = 'sources'
+    from sourceSets.main.allSource
 }
 
 artifacts {

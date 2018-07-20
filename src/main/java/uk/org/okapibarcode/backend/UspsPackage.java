@@ -74,6 +74,7 @@ public class UspsPackage extends Symbol {
             }
         }
 
+        encodeInfo = code128.encodeInfo;
         readable = spacedHrt;
         pattern = new String[1];
         pattern[0] = code128.pattern[0];

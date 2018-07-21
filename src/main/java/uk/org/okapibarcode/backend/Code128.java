@@ -189,18 +189,26 @@ public class Code128 extends Symbol {
         }
 
         /* Decide on mode using same system as PDF417 and rules of ISO 15417 Annex E */
-        mode = findSubset(inputData[input_point]);
+        int letter = inputData[input_point];
+        int numbers = (letter >= '0' && letter <= '9' ? 1 : 0);
+        mode = findSubset(letter, numbers);
         mode_type[0] = mode;
-        mode_length[0] = 1;
+        mode_length[0] += length(letter, mode);
         for (i = 1; i < sourcelen; i++) {
+            letter = inputData[i];
             last_mode = mode;
-            mode = findSubset(inputData[i]);
+            mode = findSubset(letter, numbers);
             if (mode == last_mode) {
-                mode_length[index_point]++;
+                mode_length[index_point] += length(letter, mode);
             } else {
                 index_point++;
                 mode_type[index_point] = mode;
-                mode_length[index_point] = 1;
+                mode_length[index_point] = length(letter, mode);
+            }
+            if (letter >= '0' && letter <= '9') {
+                numbers++;
+            } else {
+                numbers = 0;
             }
         }
         index_point++;
@@ -317,7 +325,7 @@ public class Code128 extends Symbol {
                     current_set = Mode.LATCHC;
                     encodeInfo += "STARTB FNC3 CODEC ";
                     break;
-        	}
+            }
         } else {
             /* Normal mode */
             switch (set[0]) {
@@ -530,7 +538,7 @@ public class Code128 extends Symbol {
         encodeInfo += "\n";
 
         /* "...note that the linkage flag is an extra code set character between
-	    the last data character and the Symbol Check Character" (GS1 Specification) */
+        the last data character and the Symbol Check Character" (GS1 Specification) */
 
         /* Linkage flags in GS1-128 are determined by ISO/IEC 24723 section 7.4 */
 
@@ -636,12 +644,18 @@ public class Code128 extends Symbol {
         }
     }
 
-    private Mode findSubset(int letter) {
+    private Mode findSubset(int letter, int numbers) {
 
         Mode mode;
 
         if (letter == FNC1) {
-            mode = Mode.ABORC;
+            if (numbers % 2 == 0) {
+                /* ISO 15417 Annex E Note 2 */
+                /* FNC1 may use subset C, so long as it doesn't break data into an odd number of digits */
+                mode = Mode.ABORC;
+            } else {
+                mode = Mode.AORB;
+            }
         } else if (letter == FNC2 || letter == FNC3 || letter == FNC4) {
             mode = Mode.AORB;
         } else if (letter <= 31) {
@@ -667,7 +681,18 @@ public class Code128 extends Symbol {
         return mode;
     }
 
+    private int length(int letter, Mode mode) {
+        if (letter == FNC1 && mode == Mode.ABORC) {
+            /* ISO 15417 Annex E Note 2 */
+            /* Logical length used for making subset switching decisions, not actual length */
+            return 2;
+        } else {
+            return 1;
+        }
+    }
+
     private void reduceSubsetChanges() { /* Implements rules from ISO 15417 Annex E */
+        int totalLength = 0;
         int i, length;
         Mode current, last, next;
 
@@ -683,6 +708,15 @@ public class Code128 extends Symbol {
                 next = mode_type[i + 1];
             } else {
                 next = Mode.NULL;
+            }
+
+            /* ISO 15417 Annex E Note 2 */
+            /* Calculate difference between logical length and actual length in this block */
+            int extraLength = 0;
+            for (int j = 0; j < length - extraLength; j++) {
+                if (length(inputData[totalLength + j], current) == 2) {
+                    extraLength++;
+                }
             }
 
             if (i == 0) { /* first block */
@@ -773,10 +807,14 @@ public class Code128 extends Symbol {
                     current = Mode.LATCHB;
                 }
             } /* Rule 2 is implemented elsewhere, Rule 6 is implied */
+
+            /* ISO 15417 Annex E Note 2 */
+            /* Convert logical length back to actual length for this block, now that we've decided on a subset */
+            mode_length[i] -= extraLength;
+            totalLength += mode_length[i];
         }
 
         combineSubsetBlocks();
-
     }
 
     private void combineSubsetBlocks() {

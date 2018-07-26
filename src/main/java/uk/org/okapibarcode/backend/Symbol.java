@@ -95,10 +95,10 @@ public abstract class Symbol {
     protected int symbol_height = 0;
     protected int symbol_width = 0;
     protected String encodeInfo = "";
-    protected List< Rectangle2D.Double > rectangles = new ArrayList<>();
-    protected List< TextBox > texts = new ArrayList<>();
-    protected List< Hexagon > hexagons = new ArrayList<>();
-    protected List< Ellipse2D.Double > target = new ArrayList<>();
+    protected List< Rectangle2D.Double > rectangles = new ArrayList<>(); // note positions do not account for quiet zones (handled in renderers)
+    protected List< TextBox > texts = new ArrayList<>();                 // note positions do not account for quiet zones (handled in renderers)
+    protected List< Hexagon > hexagons = new ArrayList<>();              // note positions do not account for quiet zones (handled in renderers)
+    protected List< Ellipse2D.Double > target = new ArrayList<>();       // note positions do not account for quiet zones (handled in renderers)
 
     /**
      * <p>Sets the type of input data. This setting influences what pre-processing is done on
@@ -615,7 +615,7 @@ public abstract class Symbol {
             if (humanReadableLocation == TOP) {
                 baseline = fontSize;
             } else {
-                baseline = getHeight() + fontSize;
+                baseline = symbol_height + fontSize;
             }
             texts.add(new TextBox(0, baseline, symbol_width, readable));
         }

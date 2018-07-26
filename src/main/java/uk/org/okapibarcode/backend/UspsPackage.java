@@ -123,7 +123,7 @@ public class UspsPackage extends Symbol {
         rectangles.add(topBar);
         rectangles.add(bottomBar);
 
-        texts.add(new TextBox(0, getHeight() - 6.0, symbol_width, readable));
+        texts.add(new TextBox(0, symbol_height - 6.0, symbol_width, readable));
         texts.add(new TextBox(0, 12.0, symbol_width, banner));
     }
 

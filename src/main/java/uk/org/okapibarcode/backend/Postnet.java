@@ -147,7 +147,7 @@ public class Postnet extends Symbol {
             if (humanReadableLocation == TOP) {
                 baseline = fontSize;
             } else {
-                baseline = getHeight() + fontSize;
+                baseline = symbol_height + fontSize;
             }
             texts.add(new TextBox(0, baseline, symbol_width, readable));
         }

@@ -58,68 +58,81 @@ public class PostScriptRendererTest {
     @Test
     public void testCode93Basic() throws IOException {
         Code93 code93 = new Code93();
+        code93.setQuietZoneHorizontal(5);
+        code93.setQuietZoneVertical(5);
         code93.setContent("123456789");
-        test(code93, 1, Color.WHITE, Color.BLACK, 5, "code93-basic.eps");
+        test(code93, 1, Color.WHITE, Color.BLACK, "code93-basic.eps");
     }
 
     @Test
     public void testCode93AlignmentLeft() throws IOException {
         Code93 code93 = new Code93();
+        code93.setQuietZoneHorizontal(5);
+        code93.setQuietZoneVertical(5);
         code93.setHumanReadableAlignment(HumanReadableAlignment.LEFT);
         code93.setContent("123456789");
-        test(code93, 1, Color.WHITE, Color.BLACK, 5, "code93-alignment-left.eps");
+        test(code93, 1, Color.WHITE, Color.BLACK, "code93-alignment-left.eps");
     }
 
     @Test
     public void testCode93AlignmentRight() throws IOException {
         Code93 code93 = new Code93();
+        code93.setQuietZoneHorizontal(5);
+        code93.setQuietZoneVertical(5);
         code93.setHumanReadableAlignment(HumanReadableAlignment.RIGHT);
         code93.setContent("123456789");
-        test(code93, 1, Color.WHITE, Color.BLACK, 5, "code93-alignment-right.eps");
+        test(code93, 1, Color.WHITE, Color.BLACK, "code93-alignment-right.eps");
     }
 
     @Test
     public void testCode93Margin() throws IOException {
         Code93 code93 = new Code93();
+        code93.setQuietZoneHorizontal(20);
+        code93.setQuietZoneVertical(20);
         code93.setContent("123456789");
-        test(code93, 1, Color.WHITE, Color.BLACK, 20, "code93-margin-size-20.eps");
+        test(code93, 1, Color.WHITE, Color.BLACK, "code93-margin-size-20.eps");
     }
 
     @Test
     public void testCode93Magnification() throws IOException {
         Code93 code93 = new Code93();
+        code93.setQuietZoneHorizontal(5);
+        code93.setQuietZoneVertical(5);
         code93.setContent("123456789");
-        test(code93, 2, Color.WHITE, Color.BLACK, 5, "code93-magnification-2.eps");
+        test(code93, 2, Color.WHITE, Color.BLACK, "code93-magnification-2.eps");
     }
 
     @Test
     public void testCode93Colors() throws IOException {
         Code93 code93 = new Code93();
+        code93.setQuietZoneHorizontal(5);
+        code93.setQuietZoneVertical(5);
         code93.setContent("123456789");
-        test(code93, 1, Color.GREEN, Color.RED, 5, "code93-colors.eps");
+        test(code93, 1, Color.GREEN, Color.RED, "code93-colors.eps");
     }
 
     @Test
     public void testCode93CustomFont() throws IOException {
         Code93 code93 = new Code93();
+        code93.setQuietZoneHorizontal(5);
+        code93.setQuietZoneVertical(5);
         code93.setFontName("Arial");
         code93.setFontSize(26);
         code93.setContent("123456789");
-        test(code93, 1, Color.WHITE, Color.BLACK, 5, "code93-custom-font.eps");
+        test(code93, 1, Color.WHITE, Color.BLACK, "code93-custom-font.eps");
     }
 
     @Test
     public void testMaxiCodeBasic() throws IOException {
         MaxiCode maxicode = new MaxiCode();
+        maxicode.setQuietZoneHorizontal(5);
+        maxicode.setQuietZoneVertical(5);
         maxicode.setMode(4);
         maxicode.setContent("123456789");
-        test(maxicode, 5, Color.WHITE, Color.BLACK, 5, "maxicode-basic.eps");
+        test(maxicode, 5, Color.WHITE, Color.BLACK, "maxicode-basic.eps");
     }
 
-    private void test(Symbol symbol, double magnification, Color paper, Color ink, int margin, String expectationFile) throws IOException {
-
-        symbol.setQuietZoneHorizontal(margin);
-        symbol.setQuietZoneVertical(margin);
+    private void test(Symbol symbol, double magnification, Color paper, Color ink, String expectationFile) throws IOException {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PostScriptRenderer renderer = new PostScriptRenderer(baos, magnification, paper, ink);

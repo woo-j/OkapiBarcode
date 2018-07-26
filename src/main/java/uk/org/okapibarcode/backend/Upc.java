@@ -410,7 +410,7 @@ public class Upc extends Symbol {
 
         /* Now add the text */
         if (humanReadableLocation != NONE) {
-            double baseline = getHeight() + fontSize - shortLongDiff + compositeOffset;
+            double baseline = symbol_height + fontSize - shortLongDiff + compositeOffset;
             double addOnBaseline = 6.0 + compositeOffset;
             if (mode == Mode.UPCA) {
                 texts.add(new TextBox(0, baseline, 6, readable.substring(0, 1)));

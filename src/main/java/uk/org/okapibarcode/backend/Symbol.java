@@ -479,6 +479,15 @@ public abstract class Symbol {
     }
 
     /**
+     * Returns the human-readable text for this symbol.
+     *
+     * @return the human-readable text for this symbol
+     */
+    public String getHumanReadableText() {
+        return readable;
+    }
+
+    /**
      * Chooses the ECI mode most suitable for the content of this symbol.
      */
     protected void eciProcess() {

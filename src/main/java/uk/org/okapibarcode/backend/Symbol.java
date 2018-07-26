@@ -28,7 +28,6 @@ import java.awt.geom.Rectangle2D;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import uk.org.okapibarcode.util.EciMode;
@@ -376,7 +375,7 @@ public abstract class Symbol {
      * @return render information about the rectangles in this symbol
      */
     public List< Rectangle2D.Double > getRectangles() {
-        return Collections.unmodifiableList(rectangles);
+        return rectangles;
     }
 
     /**
@@ -385,7 +384,7 @@ public abstract class Symbol {
      * @return render information about the text elements in this symbol
      */
     public List< TextBox > getTexts() {
-        return Collections.unmodifiableList(texts);
+        return texts;
     }
 
     /**
@@ -394,7 +393,7 @@ public abstract class Symbol {
      * @return render information about the hexagons in this symbol
      */
     public List< Hexagon > getHexagons() {
-        return Collections.unmodifiableList(hexagons);
+        return hexagons;
     }
 
     /**
@@ -403,7 +402,7 @@ public abstract class Symbol {
      * @return render information about the target circles in this symbol
      */
     public List< Ellipse2D.Double > getTarget() {
-        return Collections.unmodifiableList(target);
+        return target;
     }
 
     protected static String bin2pat(String bin) {

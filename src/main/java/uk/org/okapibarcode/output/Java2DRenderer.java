@@ -26,9 +26,8 @@ import java.awt.font.TextAttribute;
 import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import uk.org.okapibarcode.backend.Hexagon;
 import uk.org.okapibarcode.backend.Symbol;
@@ -74,9 +73,13 @@ public class Java2DRenderer implements SymbolRenderer {
         int marginX = (int) (symbol.getQuietZoneHorizontal() * magnification);
         int marginY = (int) (symbol.getQuietZoneVertical() * magnification);
 
-        Map< TextAttribute, Object > attributes = new HashMap<>();
-        attributes.put(TextAttribute.TRACKING, 0);
-        Font f = new Font(symbol.getFontName(), Font.PLAIN, (int) (symbol.getFontSize() * magnification)).deriveFont(attributes);
+        Font f = symbol.getFont();
+        if (f != null) {
+            f = f.deriveFont((float) (f.getSize2D() * magnification));
+        } else {
+            f = new Font(symbol.getFontName(), Font.PLAIN, (int) (symbol.getFontSize() * magnification));
+            f = f.deriveFont(Collections.singletonMap(TextAttribute.TRACKING, 0));
+        }
 
         Font oldFont = g2d.getFont();
         Color oldColor = g2d.getColor();

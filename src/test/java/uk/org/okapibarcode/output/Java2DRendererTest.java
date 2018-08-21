@@ -17,9 +17,12 @@
 package uk.org.okapibarcode.output;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.GradientPaint;
 import java.awt.Graphics2D;
+import java.awt.font.TextAttribute;
 import java.awt.image.BufferedImage;
+import java.util.Collections;
 
 import javax.imageio.ImageIO;
 
@@ -78,4 +81,31 @@ public class Java2DRendererTest {
         String dirName = filename.substring(0, filename.lastIndexOf('.'));
         SymbolTest.assertEqual(expected, image, dirName);
     }
+
+    @Test
+    public void testCustomFont() throws Exception {
+
+        Font font = SymbolTest.DEJA_VU_SANS.deriveFont((float) 18);
+        font = font.deriveFont(Collections.singletonMap(TextAttribute.STRIKETHROUGH, TextAttribute.STRIKETHROUGH_ON));
+
+        Code128 code128 = new Code128();
+        code128.setFont(font);
+        code128.setContent("123456");
+
+        int magnification = 4;
+        int w = code128.getWidth() * magnification;
+        int h = code128.getHeight() * magnification;
+
+        BufferedImage image = new BufferedImage(w, h, BufferedImage.TYPE_BYTE_GRAY);
+        Graphics2D g2d = image.createGraphics();
+
+        Java2DRenderer renderer = new Java2DRenderer(g2d, magnification, Color.WHITE, Color.BLACK);
+        renderer.render(code128);
+
+        String filename = "java-2d-custom-font.png";
+        BufferedImage expected = ImageIO.read(getClass().getResourceAsStream(filename));
+        String dirName = filename.substring(0, filename.lastIndexOf('.'));
+        SymbolTest.assertEqual(expected, image, dirName);
+    }
+
 }

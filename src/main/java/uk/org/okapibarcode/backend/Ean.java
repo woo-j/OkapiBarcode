@@ -249,7 +249,6 @@ public class Ean extends Symbol {
         for (xBlock = 0; xBlock < pattern[0].length(); xBlock++) {
             if (black) {
                 y = 0;
-                black = false;
                 w = pattern[0].charAt(xBlock) - '0';
                 h = default_height;
                 /* Add extension to guide bars */
@@ -296,11 +295,12 @@ public class Ean extends Symbol {
                 if ((x + w + 12) > symbol_width) {
                     symbol_width = x + w + 12;
                 }
-            } else {
-                black = true;
+                if ((y + h) > symbol_height) {
+                    symbol_height = (int) Math.ceil(y + h);
+                }
             }
-            x += (double)(pattern[0].charAt(xBlock) - '0');
-
+            black = !black;
+            x += (double) (pattern[0].charAt(xBlock) - '0');
         }
 
         if (linkageFlag) {
@@ -317,8 +317,6 @@ public class Ean extends Symbol {
                 rectangles.add(new Rectangle2D.Double(67 + 6, 2, 1, 2));
             }
         }
-
-        symbol_height = default_height + 5; // TODO: wonky, images are taller than necessary
 
         /* Now add the text */
         if (humanReadableLocation != NONE) {

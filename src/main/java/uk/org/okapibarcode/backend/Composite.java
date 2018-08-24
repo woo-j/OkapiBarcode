@@ -609,7 +609,7 @@ public class Composite extends Symbol {
                     ean.setMode(Ean.Mode.EAN13);
                     top_shift = 3;
                 }
-                ean.setLinkageFlag();
+                ean.setLinkageFlag(true);
                 ean.setContent(linearContent);
                 linear_rect = ean.rectangles;
                 linear_txt = ean.texts;

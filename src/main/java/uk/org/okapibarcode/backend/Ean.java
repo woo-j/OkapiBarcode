@@ -27,6 +27,9 @@ import java.awt.geom.Rectangle2D;
  * whereas EAN-8 symbols are generally for internal use only. Check digit is calculated and should not
  * be in input data. Leading zeroes are added as required.
  *
+ * <p>Add-on content can be appended to the main symbol content by adding a <tt>'+'</tt> character,
+ * followed by the add-on content (up to 5 digits).
+ *
  * @author <a href="mailto:jakel2006@me.com">Robert Elliott</a>
  */
 public class Ean extends Symbol {
@@ -60,12 +63,8 @@ public class Ean extends Symbol {
         return mode;
     }
 
-    protected void setLinkageFlag() {
-        linkageFlag = true;
-    }
-
-    protected void unsetLinkageFlag() {
-        linkageFlag = false;
+    protected void setLinkageFlag(boolean linkageFlag) {
+        this.linkageFlag = linkageFlag;
     }
 
     @Override
@@ -89,31 +88,32 @@ public class Ean extends Symbol {
 
         if (content.length() == 0) {
             throw new OkapiException("Missing EAN data");
+        }
+
+        if (mode == Mode.EAN8) {
+            ean8();
         } else {
-            if (mode == Mode.EAN8) {
-                ean8();
-            } else {
-                ean13();
-            }
+            ean13();
         }
 
         if (addOnContent != null) {
+
             String addOnData = AddOn.calcAddOn(addOnContent);
             if (addOnData.length() == 0) {
-                throw new OkapiException("Invalid Add-On data");
-            } else {
-                pattern[0] = pattern[0] + "9" + addOnData;
+                throw new OkapiException("Invalid add-on data");
+            }
 
-                //add leading zeroes to add-on text
-                if(addOnContent.length() == 1) {
-                    addOnContent = "0" + addOnContent;
-                }
-                if(addOnContent.length() == 3) {
-                    addOnContent = "0" + addOnContent;
-                }
-                if(addOnContent.length() == 4) {
-                    addOnContent = "0" + addOnContent;
-                }
+            pattern[0] = pattern[0] + "9" + addOnData;
+
+            // add leading zeroes to add-on text
+            if (addOnContent.length() == 1) {
+                addOnContent = "0" + addOnContent;
+            }
+            if (addOnContent.length() == 3) {
+                addOnContent = "0" + addOnContent;
+            }
+            if (addOnContent.length() == 4) {
+                addOnContent = "0" + addOnContent;
             }
         }
     }
@@ -130,9 +130,6 @@ public class Ean extends Symbol {
     }
 
     private void ean13() {
-        String accumulator = "";
-        String dest, parity;
-        int i;
 
         if (!content.matches("[0-9]+")) {
             throw new OkapiException("Invalid characters in input");
@@ -142,50 +139,42 @@ public class Ean extends Symbol {
             throw new OkapiException("Input data too long");
         }
 
-        for (i = content.length(); i < 12; i++) {
-            accumulator += "0";
-        }
-        accumulator += content;
-
-        accumulator += calcDigit(accumulator);
-
-        parity = EAN13_PARITY[accumulator.charAt(0) - '0'];
-
-        encodeInfo += "Parity Digit: " + accumulator.charAt(0) + "\n";
-
-        /* Start character */
-        dest = "111";
-
-        for (i = 1; i < 13; i++) {
-            if (i == 7) {
-                dest += "11111";
+        if (content.length() < 12) {
+            for (int i = content.length(); i < 12; i++) {
+                content = '0' + content;
             }
+        }
 
-            if ((i >= 1) && (i <= 6)) {
+        String hrt = content + calcDigit(content);
+        char parityChar = hrt.charAt(0);
+        String parity = EAN13_PARITY[parityChar - '0'];
+
+        encodeInfo += "Parity Digit: " + parityChar + "\n";
+
+        StringBuilder dest = new StringBuilder("111");
+        for (int i = 1; i < 13; i++) {
+            if (i == 7) {
+                dest.append("11111");
+            }
+            if (i >= 1 && i <= 6) {
                 if (parity.charAt(i - 1) == 'B') {
-                    dest += EAN_SET_B[accumulator.charAt(i) - '0'];
+                    dest.append(EAN_SET_B[hrt.charAt(i) - '0']);
                 } else {
-                    dest += EAN_SET_A[accumulator.charAt(i) - '0'];
+                    dest.append(EAN_SET_A[hrt.charAt(i) - '0']);
                 }
             } else {
-                dest += EAN_SET_A[accumulator.charAt(i) - '0'];
+                dest.append(EAN_SET_A[hrt.charAt(i) - '0']);
             }
         }
+        dest.append("111");
 
-        dest += "111";
-
-        readable = accumulator;
-        pattern = new String[1];
-        pattern[0] = dest;
+        readable = hrt;
+        pattern = new String[] { dest.toString() };
         row_count = 1;
-        row_height = new int[1];
-        row_height[0] = -1;
+        row_height = new int[] { -1 };
     }
 
     private void ean8() {
-        String accumulator = "";
-        int i;
-        String dest;
 
         if (!content.matches("[0-9]+")) {
             throw new OkapiException("Invalid characters in input");
@@ -195,50 +184,51 @@ public class Ean extends Symbol {
             throw new OkapiException("Input data too long");
         }
 
-        for (i = content.length(); i < 7; i++) {
-            accumulator += "0";
-        }
-        accumulator += content;
-
-        accumulator += calcDigit(accumulator);
-
-        dest = "111";
-        for (i = 0; i < 8; i++) {
-            if (i == 4) {
-                dest += "11111";
+        if (content.length() < 7) {
+            for (int i = content.length(); i < 7; i++) {
+                content = '0' + content;
             }
-            dest += EAN_SET_A[Character.getNumericValue(accumulator.charAt(i))];
         }
-        dest += "111";
 
-        readable = accumulator;
-        pattern = new String[1];
-        pattern[0] = dest;
+        String hrt = content + calcDigit(content);
+
+        StringBuilder dest = new StringBuilder("111");
+        for (int i = 0; i < 8; i++) {
+            if (i == 4) {
+                dest.append("11111");
+            }
+            dest.append(EAN_SET_A[hrt.charAt(i) - '0']);
+        }
+        dest.append("111");
+
+        readable = hrt;
+        pattern = new String[] { dest.toString() };
         row_count = 1;
-        row_height = new int[1];
-        row_height[0] = -1;
+        row_height = new int[] { -1 };
     }
 
-    private char calcDigit(String x) {
+    private char calcDigit(String s) {
+
         int count = 0;
-        int c, cdigit;
         int p = 0;
-        for (int i = x.length() - 1; i >= 0; i--) {
-            c = Character.getNumericValue(x.charAt(i));
-            if ((p % 2) == 0) {
+
+        for (int i = s.length() - 1; i >= 0; i--) {
+            int c = Character.getNumericValue(s.charAt(i));
+            if (p % 2 == 0) {
                 c = c * 3;
             }
             count += c;
             p++;
         }
-        cdigit = 10 - (count % 10);
+
+        int cdigit = 10 - (count % 10);
         if (cdigit == 10) {
             cdigit = 0;
         }
 
         encodeInfo += "Check Digit: " + cdigit + "\n";
 
-        return (char)(cdigit + '0');
+        return (char) (cdigit + '0');
     }
 
     @Override

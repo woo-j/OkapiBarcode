@@ -61,26 +61,23 @@ public final class AddOn {
 
     private static String ean2(String content) {
 
-        String parity;
-        String accumulator = "";
-        int i, code_value;
-
-        for (i = content.length(); i < 2; i++) {
-            accumulator += "0";
+        StringBuilder accumulator = new StringBuilder(2);
+        for (int i = content.length(); i < 2; i++) {
+            accumulator.append('0');
         }
-        accumulator += content;
+        accumulator.append(content);
 
-        code_value = ((accumulator.charAt(0) - '0') * 10)
-                + (accumulator.charAt(1) - '0');
-        parity = EAN2_PARITY[code_value % 4];
+        int sum = ((accumulator.charAt(0) - '0') * 10) + (accumulator.charAt(1) - '0');
+        String parity = EAN2_PARITY[sum % 4];
 
         StringBuilder sb = new StringBuilder();
         sb.append("112"); /* Start */
-        for (i = 0; i < 2; i++) {
-            if ((parity.charAt(i) == 'B')) {
-                sb.append(EAN_SET_B[Character.getNumericValue(accumulator.charAt(i))]);
+        for (int i = 0; i < 2; i++) {
+            int val = Character.getNumericValue(accumulator.charAt(i));
+            if (parity.charAt(i) == 'B') {
+                sb.append(EAN_SET_B[val]);
             } else {
-                sb.append(EAN_SET_A[Character.getNumericValue(accumulator.charAt(i))]);
+                sb.append(EAN_SET_A[val]);
             }
             if (i != 1) { /* Glyph separator */
                 sb.append("11");
@@ -92,32 +89,30 @@ public final class AddOn {
 
     private static String ean5(String content) {
 
-        String parity;
-        String accumulator = "";
-        int i, parity_sum;
-
-        for (i = content.length(); i < 5; i++) {
-            accumulator += "0";
+        StringBuilder accumulator = new StringBuilder(5);
+        for (int i = content.length(); i < 5; i++) {
+            accumulator.append('0');
         }
-        accumulator += content;
+        accumulator.append(content);
 
-        parity_sum = 0;
-        for (i = 0; i < 5; i++) {
+        int sum = 0;
+        for (int i = 0; i < 5; i++) {
             if ((i % 2) == 0) {
-                parity_sum += 3 * (accumulator.charAt(i) - '0');
+                sum += 3 * (accumulator.charAt(i) - '0');
             } else {
-                parity_sum += 9 * (accumulator.charAt(i) - '0');
+                sum += 9 * (accumulator.charAt(i) - '0');
             }
         }
-        parity = EAN5_PARITY[parity_sum % 10];
+        String parity = EAN5_PARITY[sum % 10];
 
         StringBuilder sb = new StringBuilder();
         sb.append("112"); /* Start */
-        for (i = 0; i < 5; i++) {
-            if ((parity.charAt(i) == 'B')) {
-                sb.append(EAN_SET_B[Character.getNumericValue(accumulator.charAt(i))]);
+        for (int i = 0; i < 5; i++) {
+            int val = Character.getNumericValue(accumulator.charAt(i));
+            if (parity.charAt(i) == 'B') {
+                sb.append(EAN_SET_B[val]);
             } else {
-                sb.append(EAN_SET_A[Character.getNumericValue(accumulator.charAt(i))]);
+                sb.append(EAN_SET_A[val]);
             }
             if (i != 4) { /* Glyph separator */
                 sb.append("11");

@@ -99,7 +99,7 @@ public class Ean extends Symbol {
         if (addOnContent != null) {
 
             String addOnData = AddOn.calcAddOn(addOnContent);
-            if (addOnData.length() == 0) {
+            if (addOnData.isEmpty()) {
                 throw new OkapiException("Invalid add-on data");
             }
 
@@ -156,7 +156,7 @@ public class Ean extends Symbol {
             if (i == 7) {
                 dest.append("11111");
             }
-            if (i >= 1 && i <= 6) {
+            if (i <= 6) {
                 if (parity.charAt(i - 1) == 'B') {
                     dest.append(EAN_SET_B[hrt.charAt(i) - '0']);
                 } else {
@@ -233,19 +233,18 @@ public class Ean extends Symbol {
 
     @Override
     protected void plotSymbol() {
+
         int xBlock;
         int x, y, w, h;
-        boolean black;
-        int compositeOffset = 0;
+        boolean black = true;
+        int compositeOffset = (linkageFlag ? 6 : 0);
         int shortLongDiff = 5;
 
         rectangles.clear();
         texts.clear();
-        black = true;
         x = 0;
-        if (linkageFlag) {
-            compositeOffset = 6;
-        }
+
+        /* Draw the bars in the symbology */
         for (xBlock = 0; xBlock < pattern[0].length(); xBlock++) {
             if (black) {
                 y = 0;
@@ -253,10 +252,10 @@ public class Ean extends Symbol {
                 h = default_height;
                 /* Add extension to guide bars */
                 if (mode == Mode.EAN13) {
-                    if ((x < 3) || (x > 91)) {
+                    if (x < 3 || x > 91) {
                         h += shortLongDiff;
                     }
-                    if ((x > 45) && (x < 49)) {
+                    if (x > 45 && x < 49) {
                         h += shortLongDiff;
                     }
                     if (x > 95) {
@@ -265,17 +264,17 @@ public class Ean extends Symbol {
                         y = 8;
                     }
                     if (linkageFlag) {
-                        if ((x == 0) || (x == 94)) {
+                        if (x == 0 || x == 94) {
                             h += 2;
                             y -= 2;
                         }
                     }
                 }
                 if (mode == Mode.EAN8) {
-                    if ((x < 3) || (x > 62)) {
+                    if (x < 3 || x > 62) {
                         h += shortLongDiff;
                     }
-                    if ((x > 30) && (x < 35)) {
+                    if (x > 30 && x < 35) {
                         h += shortLongDiff;
                     }
                     if (x > 66) {
@@ -284,27 +283,26 @@ public class Ean extends Symbol {
                         y = 8;
                     }
                     if (linkageFlag) {
-                        if ((x == 0) || (x == 66)) {
+                        if (x == 0 || x == 66) {
                             h += 2;
                             y -= 2;
                         }
                     }
                 }
-                Rectangle2D.Double rect = new Rectangle2D.Double(x + 6, y + compositeOffset, w, h);
-                rectangles.add(rect);
-                if ((x + w + 12) > symbol_width) {
+                rectangles.add(new Rectangle2D.Double(x + 6, y + compositeOffset, w, h));
+                if (x + w + 12 > symbol_width) {
                     symbol_width = x + w + 12;
                 }
-                if ((y + h) > symbol_height) {
-                    symbol_height = (int) Math.ceil(y + h);
+                if (y + h > symbol_height) {
+                    symbol_height = y + h;
                 }
             }
             black = !black;
             x += (double) (pattern[0].charAt(xBlock) - '0');
         }
 
+        /* Add separator for composite symbology, if necessary */
         if (linkageFlag) {
-            // Add separator for composite symbology
             if (mode == Mode.EAN13) {
                 rectangles.add(new Rectangle2D.Double(0 + 6, 0, 1, 2));
                 rectangles.add(new Rectangle2D.Double(94 + 6, 0, 1, 2));

@@ -19,6 +19,9 @@ import static uk.org.okapibarcode.backend.HumanReadableLocation.NONE;
 import static uk.org.okapibarcode.backend.HumanReadableLocation.TOP;
 
 import java.awt.geom.Rectangle2D;
+
+import uk.org.okapibarcode.output.SymbolRenderer;
+
 /**
  * <p>Implements EAN bar code symbology according to BS EN 797:1996.
  *
@@ -65,6 +68,14 @@ public class Ean extends Symbol {
 
     protected void setLinkageFlag(boolean linkageFlag) {
         this.linkageFlag = linkageFlag;
+    }
+
+    /**
+     * Not supported. If you need to change the magnification, adjust the magnification of your {@link SymbolRenderer} instead.
+     */
+    @Override
+    public void setModuleWidth(int moduleWidth) {
+        throw new UnsupportedOperationException("EAN module width cannot be changed.");
     }
 
     @Override
@@ -246,16 +257,15 @@ public class Ean extends Symbol {
 
         /* Draw the bars in the symbology */
         for (xBlock = 0; xBlock < pattern[0].length(); xBlock++) {
+
+            w = (pattern[0].charAt(xBlock) - '0');
+
             if (black) {
                 y = 0;
-                w = pattern[0].charAt(xBlock) - '0';
                 h = default_height;
                 /* Add extension to guide bars */
                 if (mode == Mode.EAN13) {
-                    if (x < 3 || x > 91) {
-                        h += shortLongDiff;
-                    }
-                    if (x > 45 && x < 49) {
+                    if (x < 3 || x > 91 || (x > 45 && x < 49)) {
                         h += shortLongDiff;
                     }
                     if (x > 95) {
@@ -263,18 +273,13 @@ public class Ean extends Symbol {
                         h -= 8;
                         y = 8;
                     }
-                    if (linkageFlag) {
-                        if (x == 0 || x == 94) {
-                            h += 2;
-                            y -= 2;
-                        }
+                    if (linkageFlag && (x == 0 || x == 94)) {
+                        h += 2;
+                        y -= 2;
                     }
                 }
                 if (mode == Mode.EAN8) {
-                    if (x < 3 || x > 62) {
-                        h += shortLongDiff;
-                    }
-                    if (x > 30 && x < 35) {
+                    if (x < 3 || x > 62 || (x > 30 && x < 35)) {
                         h += shortLongDiff;
                     }
                     if (x > 66) {
@@ -282,11 +287,9 @@ public class Ean extends Symbol {
                         h -= 8;
                         y = 8;
                     }
-                    if (linkageFlag) {
-                        if (x == 0 || x == 66) {
-                            h += 2;
-                            y -= 2;
-                        }
+                    if (linkageFlag && (x == 0 || x == 66)) {
+                        h += 2;
+                        y -= 2;
                     }
                 }
                 rectangles.add(new Rectangle2D.Double(x + 6, y + compositeOffset, w, h));
@@ -297,8 +300,9 @@ public class Ean extends Symbol {
                     symbol_height = y + h;
                 }
             }
+
             black = !black;
-            x += (double) (pattern[0].charAt(xBlock) - '0');
+            x += w;
         }
 
         /* Add separator for composite symbology, if necessary */

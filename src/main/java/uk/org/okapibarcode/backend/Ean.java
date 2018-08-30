@@ -15,12 +15,10 @@
  */
 package uk.org.okapibarcode.backend;
 
-import static uk.org.okapibarcode.backend.HumanReadableLocation.NONE;
+import static uk.org.okapibarcode.backend.HumanReadableLocation.BOTTOM;
 import static uk.org.okapibarcode.backend.HumanReadableLocation.TOP;
 
 import java.awt.geom.Rectangle2D;
-
-import uk.org.okapibarcode.output.SymbolRenderer;
 
 /**
  * <p>Implements EAN bar code symbology according to BS EN 797:1996.
@@ -55,41 +53,58 @@ public class Ean extends Symbol {
     };
 
     private Mode mode = Mode.EAN13;
+    private int guardPatternExtraHeight = 5;
     private boolean linkageFlag;
     private String addOnContent;
 
+    /**
+     * Sets the EAN mode (EAN-8 or EAN-13). The default is EAN-13.
+     *
+     * @param mode the EAN mode (EAN-8 or EAN-13)
+     */
     public void setMode(Mode mode) {
         this.mode = mode;
     }
 
+    /**
+     * Returns the EAN mode (EAN-8 or EAN-13).
+     *
+     * @return the EAN mode (EAN-8 or EAN-13)
+     */
     public Mode getMode() {
         return mode;
     }
 
-    protected void setLinkageFlag(boolean linkageFlag) {
-        this.linkageFlag = linkageFlag;
+    /**
+     * Sets the extra height used for the guard patterns. The default value is <code>5</code>.
+     *
+     * @param guardPatternExtraHeight the extra height used for the guard patterns
+     */
+    public void setGuardPatternExtraHeight(int guardPatternExtraHeight) {
+        this.guardPatternExtraHeight = guardPatternExtraHeight;
     }
 
     /**
-     * Not supported. If you need to change the magnification, adjust the magnification of your {@link SymbolRenderer} instead.
+     * Returns the extra height used for the guard patterns.
+     *
+     * @return the extra height used for the guard patterns
      */
-    @Override
-    public void setModuleWidth(int moduleWidth) {
-        throw new UnsupportedOperationException("EAN module width cannot be changed.");
+    public int getGuardPatternExtraHeight() {
+        return guardPatternExtraHeight;
+    }
+
+    /**
+     * Sets the linkage flag. If set to <code>true</code>, this symbol is part of a composite symbol.
+     *
+     * @param linkageFlag the linkage flag
+     */
+    protected void setLinkageFlag(boolean linkageFlag) {
+        this.linkageFlag = linkageFlag;
     }
 
     @Override
     public void setHumanReadableAlignment(HumanReadableAlignment humanReadableAlignment) {
         throw new UnsupportedOperationException("EAN human-readable text alignment cannot be changed.");
-    }
-
-    @Override
-    public void setHumanReadableLocation(HumanReadableLocation humanReadableLocation) {
-        if (humanReadableLocation == TOP) {
-            throw new IllegalArgumentException("Cannot display human-readable text above EAN bar codes.");
-        } else {
-            super.setHumanReadableLocation(humanReadableLocation);
-        }
     }
 
     @Override
@@ -248,8 +263,8 @@ public class Ean extends Symbol {
         int xBlock;
         int x, y, w, h;
         boolean black = true;
-        int compositeOffset = (linkageFlag ? 6 : 0);
-        int shortLongDiff = 5;
+        int compositeOffset = (linkageFlag ? 6 : 0); // space for composite separator above
+        int hrtOffset = (humanReadableLocation == TOP ? getTheoreticalHumanReadableHeight() : 0); // space for HRT above
 
         rectangles.clear();
         texts.clear();
@@ -266,7 +281,7 @@ public class Ean extends Symbol {
                 /* Add extension to guide bars */
                 if (mode == Mode.EAN13) {
                     if (x < 3 || x > 91 || (x > 45 && x < 49)) {
-                        h += shortLongDiff;
+                        h += guardPatternExtraHeight;
                     }
                     if (x > 95) {
                         // Drop add-on
@@ -280,7 +295,7 @@ public class Ean extends Symbol {
                 }
                 if (mode == Mode.EAN8) {
                     if (x < 3 || x > 62 || (x > 30 && x < 35)) {
-                        h += shortLongDiff;
+                        h += guardPatternExtraHeight;
                     }
                     if (x > 66) {
                         // Drop add-on
@@ -292,13 +307,10 @@ public class Ean extends Symbol {
                         y -= 2;
                     }
                 }
-                rectangles.add(new Rectangle2D.Double(x + 6, y + compositeOffset, w, h));
-                if (x + w + 12 > symbol_width) {
-                    symbol_width = x + w + 12;
-                }
-                if (y + h > symbol_height) {
-                    symbol_height = y + h;
-                }
+                Rectangle2D.Double rect = new Rectangle2D.Double(scale(x), y + compositeOffset + hrtOffset, scale(w), h);
+                rectangles.add(rect);
+                symbol_width = Math.max(symbol_width, (int) rect.getMaxX());
+                symbol_height = Math.max(symbol_height, (int) rect.getMaxY() - hrtOffset);
             }
 
             black = !black;
@@ -308,38 +320,53 @@ public class Ean extends Symbol {
         /* Add separator for composite symbology, if necessary */
         if (linkageFlag) {
             if (mode == Mode.EAN13) {
-                rectangles.add(new Rectangle2D.Double(0 + 6, 0, 1, 2));
-                rectangles.add(new Rectangle2D.Double(94 + 6, 0, 1, 2));
-                rectangles.add(new Rectangle2D.Double(-1 + 6, 2, 1, 2));
-                rectangles.add(new Rectangle2D.Double(95 + 6, 2, 1, 2));
+                rectangles.add(new Rectangle2D.Double(scale(0),  0, scale(1), 2));
+                rectangles.add(new Rectangle2D.Double(scale(94), 0, scale(1), 2));
+                rectangles.add(new Rectangle2D.Double(scale(-1), 2, scale(1), 2));
+                rectangles.add(new Rectangle2D.Double(scale(95), 2, scale(1), 2));
             } else {
-                rectangles.add(new Rectangle2D.Double(0 + 6, 0, 1, 2));
-                rectangles.add(new Rectangle2D.Double(66 + 6, 0, 1, 2));
-                rectangles.add(new Rectangle2D.Double(-1 + 6, 2, 1, 2));
-                rectangles.add(new Rectangle2D.Double(67 + 6, 2, 1, 2));
+                rectangles.add(new Rectangle2D.Double(scale(0),  0, scale(1), 2));
+                rectangles.add(new Rectangle2D.Double(scale(66), 0, scale(1), 2));
+                rectangles.add(new Rectangle2D.Double(scale(-1), 2, scale(1), 2));
+                rectangles.add(new Rectangle2D.Double(scale(67), 2, scale(1), 2));
             }
         }
 
         /* Now add the text */
-        if (humanReadableLocation != NONE) {
-            double baseline = symbol_height + fontSize - shortLongDiff + compositeOffset;
+        if (humanReadableLocation == BOTTOM) {
+            symbol_height -= guardPatternExtraHeight;
+            double baseline = symbol_height + fontSize;
             double addOnBaseline = 6.0 + compositeOffset;
             if (mode == Mode.EAN13) {
-                texts.add(new TextBox(0, baseline, 6, readable.substring(0, 1)));
-                texts.add(new TextBox(9, baseline, 43, readable.substring(1, 7)));
-                texts.add(new TextBox(55, baseline, 43, readable.substring(7, 13)));
+                texts.add(new TextBox(scale(-6), baseline, scale(6),  readable.substring(0, 1)));
+                texts.add(new TextBox(scale(3),  baseline, scale(43), readable.substring(1, 7)));
+                texts.add(new TextBox(scale(49), baseline, scale(43), readable.substring(7, 13)));
                 if (addOnContent != null) {
                     int width = (addOnContent.length() == 2 ? 20 : 47);
-                    texts.add(new TextBox(110, addOnBaseline, width, addOnContent));
+                    texts.add(new TextBox(scale(104), addOnBaseline, scale(width), addOnContent));
                 }
             } else { // EAN8
-                texts.add(new TextBox(9, baseline, 29, readable.substring(0, 4)));
-                texts.add(new TextBox(41, baseline, 29, readable.substring(4, 8)));
+                texts.add(new TextBox(scale(3),  baseline, scale(29), readable.substring(0, 4)));
+                texts.add(new TextBox(scale(35), baseline, scale(29), readable.substring(4, 8)));
                 if (addOnContent != null) {
                     int width = (addOnContent.length() == 2 ? 20 : 47);
-                    texts.add(new TextBox(82, addOnBaseline, width, addOnContent));
+                    texts.add(new TextBox(scale(76), addOnBaseline, scale(width), addOnContent));
                 }
             }
+        } else if (humanReadableLocation == TOP) {
+            double baseline = fontSize;
+            double addOnBaseline = 6.0 + hrtOffset;
+            int width1 = (mode == Mode.EAN13 ? 94 : 66);
+            texts.add(new TextBox(scale(0), baseline, scale(width1), readable));
+            if (addOnContent != null) {
+                int width2 = (addOnContent.length() == 2 ? 20 : 47);
+                texts.add(new TextBox(scale(width1 + 10), addOnBaseline, scale(width2), addOnContent));
+            }
         }
+    }
+
+    /** Scales the specified width or x-dimension according to the current module width. */
+    private int scale(int w) {
+        return moduleWidth * w;
     }
 }

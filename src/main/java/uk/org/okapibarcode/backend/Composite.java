@@ -604,9 +604,10 @@ public class Composite extends Symbol {
                 Ean ean = new Ean();
                 if (eanCalculateVersion() == 8) {
                     ean.setMode(Ean.Mode.EAN8);
-                    bottom_shift = 8;
+                    bottom_shift = 14;
                 } else {
                     ean.setMode(Ean.Mode.EAN13);
+                    bottom_shift = 6;
                     top_shift = 3;
                 }
                 ean.setLinkageFlag(true);

@@ -16,12 +16,15 @@
 
 package uk.org.okapibarcode.output;
 
+import static uk.org.okapibarcode.backend.HumanReadableAlignment.JUSTIFY;
+
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.Rectangle;
+import java.awt.font.FontRenderContext;
 import java.awt.font.TextAttribute;
 import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
@@ -91,7 +94,6 @@ public class Java2DRenderer implements SymbolRenderer {
             g2d.fillRect(0, 0, w, h);
         }
 
-        g2d.setFont(f);
         g2d.setColor(ink);
 
         for (Rectangle2D.Double rect : symbol.getRectangles()) {
@@ -102,12 +104,17 @@ public class Java2DRenderer implements SymbolRenderer {
             g2d.fill(new Rectangle((int) x, (int) y, (int) w, (int) h));
         }
 
-        FontMetrics fm = g2d.getFontMetrics();
         for (TextBox text : symbol.getTexts()) {
+            Font font = (symbol.getHumanReadableAlignment() != JUSTIFY ? f :
+                addTracking(f, text.width * magnification, text.text, g2d));
+            g2d.setFont(font);
+            FontMetrics fm = g2d.getFontMetrics();
             Rectangle2D bounds = fm.getStringBounds(text.text, g2d);
+            float y = (float) (text.y * magnification) + marginY;
             float x;
             switch (symbol.getHumanReadableAlignment()) {
                 case LEFT:
+                case JUSTIFY:
                     x = (float) ((magnification * text.x) + marginX);
                     break;
                 case RIGHT:
@@ -119,7 +126,6 @@ public class Java2DRenderer implements SymbolRenderer {
                 default:
                     throw new IllegalStateException("Unknown alignment: " + symbol.getHumanReadableAlignment());
             }
-            float y = (float) (text.y * magnification) + marginY;
             g2d.drawString(text.text, x, y);
         }
 
@@ -151,5 +157,14 @@ public class Java2DRenderer implements SymbolRenderer {
         double w = (ellipse.width * magnification) + marginX;
         double h = (ellipse.height * magnification) + marginY;
         return new Ellipse2D.Double(x, y, w, h);
+    }
+
+    private static Font addTracking(Font baseFont, double maxTextWidth, String text, Graphics2D g2d) {
+        FontRenderContext frc = g2d.getFontRenderContext();
+        double originalWidth = baseFont.getStringBounds(text, frc).getWidth();
+        double extraSpace = maxTextWidth - originalWidth;
+        double extraSpacePerGap = extraSpace / (text.length() - 1);
+        double tracking = extraSpacePerGap / baseFont.getSize2D();
+        return baseFont.deriveFont(Collections.singletonMap(TextAttribute.TRACKING, tracking));
     }
 }

@@ -28,5 +28,9 @@ public enum HumanReadableAlignment {
     RIGHT,
 
     /** Center the human-readable text. */
-    CENTER
+    CENTER,
+
+    /** Justify the human-readable text by adjusting the spaces between the characters. */
+    JUSTIFY
+
 }

@@ -85,6 +85,16 @@ public class PostScriptRendererTest {
     }
 
     @Test
+    public void testCode93AlignmentJustify() throws IOException {
+        Code93 code93 = new Code93();
+        code93.setQuietZoneHorizontal(5);
+        code93.setQuietZoneVertical(5);
+        code93.setHumanReadableAlignment(HumanReadableAlignment.JUSTIFY);
+        code93.setContent("123456789");
+        test(code93, 1, Color.WHITE, Color.BLACK, "code93-alignment-justify.eps");
+    }
+
+    @Test
     public void testCode93Margin() throws IOException {
         Code93 code93 = new Code93();
         code93.setQuietZoneHorizontal(20);

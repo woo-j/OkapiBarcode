@@ -16,6 +16,8 @@
 
 package uk.org.okapibarcode.output;
 
+import static uk.org.okapibarcode.backend.HumanReadableAlignment.JUSTIFY;
+
 import java.awt.Color;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
@@ -133,6 +135,7 @@ public class SvgRenderer implements SymbolRenderer {
                 String anchor;
                 switch (symbol.getHumanReadableAlignment()) {
                     case LEFT:
+                    case JUSTIFY:
                         x = (magnification * text.x) + marginX;
                         anchor = "start";
                         break;
@@ -150,6 +153,11 @@ public class SvgRenderer implements SymbolRenderer {
                 writer.append("      <text x=\"").append(x)
                       .append("\" y=\"").append((text.y * magnification) + marginY)
                       .append("\" text-anchor=\"").append(anchor).append("\"\n");
+                if (symbol.getHumanReadableAlignment() == JUSTIFY) {
+                    writer.append("         textLength=\"")
+                          .append(text.width * magnification)
+                          .append("\" lengthAdjust=\"spacing\"\n");
+                }
                 writer.append("         font-family=\"").append(clean(symbol.getFontName()))
                       .append("\" font-size=\"").append(symbol.getFontSize() * magnification)
                       .append("\" fill=\"#").append(fgColour).append("\">\n");

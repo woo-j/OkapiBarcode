@@ -154,6 +154,16 @@ public class PostScriptRenderer implements SymbolRenderer {
                         double leftX = (magnification * text.x) + marginX;
                         writer.append(" 0 0 moveto ").append(leftX).append(" ").append(y)
                               .append(" translate 0.00 rotate 0 0 moveto\n");
+                        writer.append(" (").append(text.text).append(") show\n");
+                        break;
+                    case JUSTIFY:
+                        double textX = (magnification * text.x) + marginX;
+                        double textW = (magnification * text.width);
+                        writer.append(" 0 0 moveto ").append(textX).append(" ").append(y)
+                              .append(" translate 0.00 rotate 0 0 moveto\n");
+                        writer.append(" (").append(text.text).append(") dup stringwidth pop ")
+                              .append(textW).append(" sub neg 1 index length 1 sub div 0")
+                              .append(" 3 -1 roll ashow\n");
                         break;
                     case RIGHT:
                         double rightX = (magnification * text.x) + (magnification * text.width) + marginX;
@@ -162,6 +172,7 @@ public class PostScriptRenderer implements SymbolRenderer {
                         writer.append(" (").append(text.text).append(") stringwidth\n");
                         writer.append("pop\n");
                         writer.append("-1 mul 0 rmoveto\n");
+                        writer.append(" (").append(text.text).append(") show\n");
                         break;
                     case CENTER:
                         double centerX = (magnification * text.x) + (magnification * text.width / 2) + marginX;
@@ -170,11 +181,11 @@ public class PostScriptRenderer implements SymbolRenderer {
                         writer.append(" (").append(text.text).append(") stringwidth\n");
                         writer.append("pop\n");
                         writer.append("-2 div 0 rmoveto\n");
+                        writer.append(" (").append(text.text).append(") show\n");
                         break;
                     default:
                         throw new IllegalStateException("Unknown alignment: " + symbol.getHumanReadableAlignment());
                 }
-                writer.append(" (").append(text.text).append(") show\n");
                 writer.append("setmatrix\n");
             }
 

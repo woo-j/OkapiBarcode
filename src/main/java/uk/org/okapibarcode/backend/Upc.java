@@ -27,8 +27,10 @@ import java.awt.geom.Rectangle2D;
  * UPC-E is a zero-compressed version of UPC-A developed for smaller packages.
  * The code requires a 6 digit article number (digits 0-9). The check digit
  * is calculated. Also supports Number System 1 encoding by entering a 7-digit
- * article number stating with the digit 1. In addition EAN-2 and EAN-5 add-on
- * symbols can be added using the '+' character followed by the add-on data.
+ * article number stating with the digit 1.
+ *
+ * <p>EAN-2 and EAN-5 add-on symbols can be added using the '+' character followed
+ * by the add-on data.
  *
  * @author <a href="mailto:jakel2006@me.com">Robert Elliott</a>
  */
@@ -112,7 +114,7 @@ public class Upc extends Symbol {
         if (addOnContent != null) {
             String addOnData = AddOn.calcAddOn(addOnContent);
             if (addOnData.length() == 0) {
-                throw new OkapiException("Invalid Add-On data");
+                throw new OkapiException("Invalid add-on data");
             } else {
                 pattern[0] = pattern[0] + "9" + addOnData;
 

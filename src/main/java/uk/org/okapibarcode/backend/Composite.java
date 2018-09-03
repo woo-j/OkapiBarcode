@@ -581,7 +581,7 @@ public class Composite extends Symbol {
             case UPCA:
                 Upc upca = new Upc();
                 upca.setMode(Upc.Mode.UPCA);
-                upca.setLinkageFlag();
+                upca.setLinkageFlag(true);
                 upca.setContent(linearContent);
                 linear_rect = upca.rectangles;
                 linear_txt = upca.texts;
@@ -592,7 +592,7 @@ public class Composite extends Symbol {
             case UPCE:
                 Upc upce = new Upc();
                 upce.setMode(Upc.Mode.UPCE);
-                upce.setLinkageFlag();
+                upce.setLinkageFlag(true);
                 upce.setContent(linearContent);
                 linear_rect = upce.rectangles;
                 linear_txt = upce.texts;

@@ -290,7 +290,6 @@ public class MakeBarcode {
                     // UPC-A
                     Upc upca = new Upc();
                     upca.setMode(Upc.Mode.UPCA);
-                    upca.unsetLinkageFlag();
                     upca.setContent(dataInput);
                     symbol = upca;
                     break;
@@ -300,7 +299,6 @@ public class MakeBarcode {
                     // UPC-E
                     Upc upce = new Upc();
                     upce.setMode(Upc.Mode.UPCE);
-                    upce.unsetLinkageFlag();
                     upce.setContent(dataInput);
                     symbol = upce;
                     break;

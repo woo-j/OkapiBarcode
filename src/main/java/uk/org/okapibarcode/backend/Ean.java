@@ -112,7 +112,7 @@ public class Ean extends Symbol {
 
         separateContent();
 
-        if (content.length() == 0) {
+        if (content.isEmpty()) {
             throw new OkapiException("Missing EAN data");
         }
 
@@ -171,10 +171,12 @@ public class Ean extends Symbol {
             }
         }
 
-        String hrt = content + calcDigit(content);
+        char check = calcDigit(content);
+        encodeInfo += "Check Digit: " + check + "\n";
+
+        String hrt = content + check;
         char parityChar = hrt.charAt(0);
         String parity = EAN13_PARITY[parityChar - '0'];
-
         encodeInfo += "Parity Digit: " + parityChar + "\n";
 
         StringBuilder dest = new StringBuilder("111");
@@ -216,7 +218,10 @@ public class Ean extends Symbol {
             }
         }
 
-        String hrt = content + calcDigit(content);
+        char check = calcDigit(content);
+        encodeInfo += "Check Digit: " + check + "\n";
+
+        String hrt = content + check;
 
         StringBuilder dest = new StringBuilder("111");
         for (int i = 0; i < 8; i++) {
@@ -233,7 +238,7 @@ public class Ean extends Symbol {
         row_height = new int[] { -1 };
     }
 
-    private char calcDigit(String s) {
+    protected static char calcDigit(String s) {
 
         int count = 0;
         int p = 0;
@@ -251,8 +256,6 @@ public class Ean extends Symbol {
         if (cdigit == 10) {
             cdigit = 0;
         }
-
-        encodeInfo += "Check Digit: " + cdigit + "\n";
 
         return (char) (cdigit + '0');
     }

@@ -15,10 +15,11 @@
  */
 package uk.org.okapibarcode.backend;
 
+import static uk.org.okapibarcode.backend.Ean.calcDigit;
 import static uk.org.okapibarcode.backend.HumanReadableLocation.NONE;
-import static uk.org.okapibarcode.backend.HumanReadableLocation.TOP;
 
 import java.awt.geom.Rectangle2D;
+import java.util.Arrays;
 
 /**
  * <p>Implements UPC bar code symbology according to BS EN 797:1996.
@@ -63,23 +64,53 @@ public class Upc extends Symbol {
     };
 
     private Mode mode = Mode.UPCA;
+    private int guardPatternExtraHeight = 5;
     private boolean linkageFlag;
     private String addOnContent;
 
+    /**
+     * Sets the UPC mode (UPC-A or UPC-E). The default is UPC-A.
+     *
+     * @param mode the UPC mode (UPC-A or UPC-E)
+     */
     public void setMode(Mode mode) {
         this.mode = mode;
     }
 
+    /**
+     * Returns the UPC mode (UPC-A or UPC-E).
+     *
+     * @return the UPC mode (UPC-A or UPC-E)
+     */
     public Mode getMode() {
         return mode;
     }
 
-    public void setLinkageFlag() {
-        linkageFlag = true;
+    /**
+     * Sets the extra height used for the guard patterns. The default value is <code>5</code>.
+     *
+     * @param guardPatternExtraHeight the extra height used for the guard patterns
+     */
+    public void setGuardPatternExtraHeight(int guardPatternExtraHeight) {
+        this.guardPatternExtraHeight = guardPatternExtraHeight;
     }
 
-    public void unsetLinkageFlag() {
-        linkageFlag = false;
+    /**
+     * Returns the extra height used for the guard patterns.
+     *
+     * @return the extra height used for the guard patterns
+     */
+    public int getGuardPatternExtraHeight() {
+        return guardPatternExtraHeight;
+    }
+
+    /**
+     * Sets the linkage flag. If set to <code>true</code>, this symbol is part of a composite symbol.
+     *
+     * @param linkageFlag the linkage flag
+     */
+    protected void setLinkageFlag(boolean linkageFlag) {
+        this.linkageFlag = linkageFlag;
     }
 
     @Override
@@ -88,46 +119,38 @@ public class Upc extends Symbol {
     }
 
     @Override
-    public void setHumanReadableLocation(HumanReadableLocation humanReadableLocation) {
-        if (humanReadableLocation == TOP) {
-            throw new IllegalArgumentException("Cannot display human-readable text above UPC bar codes.");
-        } else {
-            super.setHumanReadableLocation(humanReadableLocation);
-        }
-    }
-
-    @Override
     protected void encode() {
 
         separateContent();
 
-        if (content.length() == 0) {
+        if (content.isEmpty()) {
             throw new OkapiException("Missing UPC data");
+        }
+
+        if (mode == Mode.UPCA) {
+            upca();
         } else {
-            if (mode == Mode.UPCA) {
-                upca();
-            } else {
-                upce();
-            }
+            upce();
         }
 
         if (addOnContent != null) {
-            String addOnData = AddOn.calcAddOn(addOnContent);
-            if (addOnData.length() == 0) {
-                throw new OkapiException("Invalid add-on data");
-            } else {
-                pattern[0] = pattern[0] + "9" + addOnData;
 
-                //add leading zeroes to add-on text
-                if(addOnContent.length() == 1) {
-                    addOnContent = "0" + addOnContent;
-                }
-                if(addOnContent.length() == 3) {
-                    addOnContent = "0" + addOnContent;
-                }
-                if(addOnContent.length() == 4) {
-                    addOnContent = "0" + addOnContent;
-                }
+            String addOnData = AddOn.calcAddOn(addOnContent);
+            if (addOnData.isEmpty()) {
+                throw new OkapiException("Invalid add-on data");
+            }
+
+            pattern[0] = pattern[0] + "9" + addOnData;
+
+            // add leading zeroes to add-on text
+            if (addOnContent.length() == 1) {
+                addOnContent = "0" + addOnContent;
+            }
+            if (addOnContent.length() == 3) {
+                addOnContent = "0" + addOnContent;
+            }
+            if (addOnContent.length() == 4) {
+                addOnContent = "0" + addOnContent;
             }
         }
     }
@@ -144,10 +167,6 @@ public class Upc extends Symbol {
     }
 
     private void upca() {
-        String accumulator;
-        String dest;
-        int i;
-        char check;
 
         if (!content.matches("[0-9]+")) {
             throw new OkapiException("Invalid characters in input");
@@ -157,38 +176,33 @@ public class Upc extends Symbol {
             throw new OkapiException("Input data too long");
         }
 
-        accumulator = "";
-        for (i = content.length(); i < 11; i++) {
-            accumulator += "0";
-        }
-        accumulator += content;
-        check = calcDigit(accumulator);
-        accumulator += check;
-        dest = "111";
-        for (i = 0; i < 12; i++) {
-            if (i == 6) {
-                dest += "11111";
+        if (content.length() < 11) {
+            for (int i = content.length(); i < 11; i++) {
+                content = '0' + content;
             }
-            dest += SET_AC[Character.getNumericValue(accumulator.charAt(i))];
         }
-        dest += "111";
 
+        char check = calcDigit(content);
         encodeInfo += "Check Digit: " + check + "\n";
 
-        readable = accumulator;
-        pattern = new String[1];
-        pattern[0] = dest;
+        String hrt = content + check;
+
+        StringBuilder dest = new StringBuilder("111");
+        for (int i = 0; i < 12; i++) {
+            if (i == 6) {
+                dest.append("11111");
+            }
+            dest.append(SET_AC[hrt.charAt(i) - '0']);
+        }
+        dest.append("111");
+
+        readable = hrt;
+        pattern = new String[] { dest.toString() };
         row_count = 1;
-        row_height = new int[1];
-        row_height[0] = -1;
+        row_height = new int[] { -1 };
     }
 
     private void upce() {
-        int i, num_system;
-        char emode, check;
-        String source, parity, dest;
-        char[] equivalent = new char[12];
-        String equiv = "";
 
         if (!content.matches("[0-9]+")) {
             throw new OkapiException("Invalid characters in input");
@@ -198,136 +212,104 @@ public class Upc extends Symbol {
             throw new OkapiException("Input data too long");
         }
 
-        source = "";
-        for (i = content.length(); i < 7; i++) {
-            source += "0";
-        }
-        source += content;
-
-        /* Two number systems can be used - system 0 and system 1 */
-        switch (source.charAt(0)) {
-        case '0':
-            num_system = 0;
-            break;
-        case '1':
-            num_system = 1;
-            break;
-        default:
-            throw new OkapiException("Invalid input data");
-        }
-
-        /* Expand the zero-compressed UPCE code to make a UPCA equivalent (EN Table 5) */
-        emode = source.charAt(6);
-        for (i = 0; i < 11; i++) {
-            equivalent[i] = '0';
-        }
-        equivalent[0] = source.charAt(0);
-        equivalent[1] = source.charAt(1);
-        equivalent[2] = source.charAt(2);
-
-        switch (emode) {
-        case '0':
-        case '1':
-        case '2':
-            equivalent[3] = emode;
-            equivalent[8] = source.charAt(3);
-            equivalent[9] = source.charAt(4);
-            equivalent[10] = source.charAt(5);
-            break;
-        case '3':
-            equivalent[3] = source.charAt(3);
-            equivalent[9] = source.charAt(4);
-            equivalent[10] = source.charAt(5);
-            if (((source.charAt(3) == '0') || (source.charAt(3) == '1'))
-                    || (source.charAt(3) == '2')) {
-                /* Note 1 - "X3 shall not be equal to 0, 1 or 2" */
-                throw new OkapiException("Invalid UPC-E data");
+        if (content.length() < 7) {
+            for (int i = content.length(); i < 7; i++) {
+                content = '0' + content;
             }
-            break;
-        case '4':
-            equivalent[3] = source.charAt(3);
-            equivalent[4] = source.charAt(4);
-            equivalent[10] = source.charAt(5);
-            if (source.charAt(4) == '0') {
-                /* Note 2 - "X4 shall not be equal to 0" */
-                throw new OkapiException("Invalid UPC-E data");
-            }
-            break;
-        case '5':
-        case '6':
-        case '7':
-        case '8':
-        case '9':
-            equivalent[3] = source.charAt(3);
-            equivalent[4] = source.charAt(4);
-            equivalent[5] = source.charAt(5);
-            equivalent[10] = emode;
-            if (source.charAt(5) == '0') {
-                /* Note 3 - "X5 shall not be equal to 0" */
-                throw new OkapiException("Invalid UPC-E data");
-            }
-            break;
         }
 
-        for (i = 0; i < 11; i++) {
-            equiv += equivalent[i];
-        }
+        String expanded = expandToEquivalentUpcA(content);
+        encodeInfo += "UPC-A Equivalent: " + expanded + "\n";
 
-        /* Get the check digit from the expanded UPCA code */
-        check = calcDigit(equiv);
-
+        char check = calcDigit(expanded);
         encodeInfo += "Check Digit: " + check + "\n";
 
-        /* Use the number system and check digit information to choose a parity scheme */
-        if (num_system == 1) {
-            parity = UPC_PARITY_1[check - '0'];
-        } else {
-            parity = UPC_PARITY_0[check - '0'];
-        }
+        String hrt = content + check;
 
-        /* Take all this information and make the barcode pattern */
+        int numberSystem = getNumberSystem(content);
+        String[] parityArray = (numberSystem == 1 ? UPC_PARITY_1 : UPC_PARITY_0);
+        String parity = parityArray[check - '0'];
 
-        /* start character */
-        dest = "111";
-
-        for (i = 0; i <= 5; i++) {
-            switch (parity.charAt(i)) {
-            case 'A':
-                dest += SET_AC[source.charAt(i + 1) - '0'];
-                break;
-            case 'B':
-                dest += SET_B[source.charAt(i + 1) - '0'];
-                break;
+        StringBuilder dest = new StringBuilder("111");
+        for (int i = 0; i < 6; i++) {
+            if (parity.charAt(i) == 'A') {
+                dest.append(SET_AC[content.charAt(i + 1) - '0']);
+            } else { // B
+                dest.append(SET_B[content.charAt(i + 1) - '0']);
             }
         }
+        dest.append("111111");
 
-        /* stop character */
-        dest += "111111";
-
-        readable = source + check;
-        pattern = new String[1];
-        pattern[0] = dest;
+        readable = hrt;
+        pattern = new String[] { dest.toString() };
         row_count = 1;
-        row_height = new int[1];
-        row_height[0] = -1;
+        row_height = new int[] { -1 };
     }
 
-    private char calcDigit(String x) {
-        int count = 0;
-        int c, cdigit;
-        for (int i = 0; i < 11; i++) {
-            c = Character.getNumericValue(x.charAt(i));
-            if ((i % 2) == 0) {
-                c = c * 3;
-            }
-            count = count + c;
-        }
-        cdigit = 10 - (count % 10);
-        if (cdigit == 10) {
-            cdigit = 0;
+    /** Expands the zero-compressed UPCE code to make a UPCA equivalent (EN Table 5). */
+    private static String expandToEquivalentUpcA(String content) {
+
+        char[] upce = content.toCharArray();
+        char[] upca = new char[11];
+        Arrays.fill(upca, '0');
+        upca[0] = upce[0];
+        upca[1] = upce[1];
+        upca[2] = upce[2];
+
+        char emode = upce[6];
+
+        switch (emode) {
+            case '0':
+            case '1':
+            case '2':
+                upca[3] = emode;
+                upca[8] = upce[3];
+                upca[9] = upce[4];
+                upca[10] = upce[5];
+                break;
+            case '3':
+                upca[3] = upce[3];
+                upca[9] = upce[4];
+                upca[10] = upce[5];
+                if (upce[3] == '0' || upce[3] == '1' || upce[3] == '2') {
+                    /* Note 1 - "X3 shall not be equal to 0, 1 or 2" */
+                    throw new OkapiException("Invalid UPC-E data");
+                }
+                break;
+            case '4':
+                upca[3] = upce[3];
+                upca[4] = upce[4];
+                upca[10] = upce[5];
+                if (upce[4] == '0') {
+                    /* Note 2 - "X4 shall not be equal to 0" */
+                    throw new OkapiException("Invalid UPC-E data");
+                }
+                break;
+            default:
+                upca[3] = upce[3];
+                upca[4] = upce[4];
+                upca[5] = upce[5];
+                upca[10] = emode;
+                if (upce[5] == '0') {
+                    /* Note 3 - "X5 shall not be equal to 0" */
+                    throw new OkapiException("Invalid UPC-E data");
+                }
+                break;
         }
 
-        return (char)(cdigit + '0');
+        return new String(upca);
+    }
+
+    /** Two number systems can be used: system 0 and system 1. */
+    private static int getNumberSystem(String content) {
+        switch (content.charAt(0)) {
+            case '0':
+                return 0;
+            case '1':
+                return 1;
+            default:
+                throw new OkapiException("Invalid input data");
+        }
     }
 
     @Override

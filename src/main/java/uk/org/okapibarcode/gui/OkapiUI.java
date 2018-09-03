@@ -2423,14 +2423,12 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
             case UPC_A:
                 Upc upca = new Upc();
                 upca.setMode(Upc.Mode.UPCA);
-                upca.unsetLinkageFlag();
                 upca.setContent(dataInput);
                 setUniversals(upca);
                 return upca;
             case UPC_E:
                 Upc upce = new Upc();
                 upce.setMode(Upc.Mode.UPCE);
-                upce.unsetLinkageFlag();
                 upce.setContent(dataInput);
                 setUniversals(upce);
                 return upce;

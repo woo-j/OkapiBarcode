@@ -587,6 +587,7 @@ public class Composite extends Symbol {
                 linear_txt = upca.texts;
                 linear_height = upca.symbol_height;
                 linear_encodeInfo = upca.encodeInfo;
+                bottom_shift = 6;
                 top_shift = 3;
                 break;
             case UPCE:
@@ -598,6 +599,7 @@ public class Composite extends Symbol {
                 linear_txt = upce.texts;
                 linear_height = upce.symbol_height;
                 linear_encodeInfo = upce.encodeInfo;
+                bottom_shift = 6;
                 top_shift = 3;
                 break;
             case EAN:

@@ -16,7 +16,8 @@
 package uk.org.okapibarcode.backend;
 
 import static uk.org.okapibarcode.backend.Ean.calcDigit;
-import static uk.org.okapibarcode.backend.HumanReadableLocation.NONE;
+import static uk.org.okapibarcode.backend.HumanReadableLocation.BOTTOM;
+import static uk.org.okapibarcode.backend.HumanReadableLocation.TOP;
 
 import java.awt.geom.Rectangle2D;
 import java.util.Arrays;
@@ -314,106 +315,115 @@ public class Upc extends Symbol {
 
     @Override
     protected void plotSymbol() {
+
         int xBlock;
         int x, y, w, h;
-        boolean black;
-        int compositeOffset = 0;
-        int shortLongDiff = 5;
+        boolean black = true;
+        int compositeOffset = (linkageFlag ? 6 : 0); // space for composite separator above
+        int hrtOffset = (humanReadableLocation == TOP ? getTheoreticalHumanReadableHeight() : 0); // space for HRT above
 
         rectangles.clear();
         texts.clear();
-        black = true;
         x = 0;
-        if (linkageFlag) {
-            compositeOffset = 6;
-        }
+
+        /* Draw the bars in the symbology */
         for (xBlock = 0; xBlock < pattern[0].length(); xBlock++) {
+
+            w = pattern[0].charAt(xBlock) - '0';
+
             if (black) {
                 y = 0;
-                black = false;
-                w = pattern[0].charAt(xBlock) - '0';
                 h = default_height;
                 /* Add extension to guide bars */
                 if (mode == Mode.UPCA) {
-                    if ((x < 10) || (x > 84)) {
-                        h += shortLongDiff;
-                    }
-                    if ((x > 45) && (x < 49)) {
-                        h += shortLongDiff;
+                    if (x < 10 || x > 84 || (x > 45 && x < 49)) {
+                        h += guardPatternExtraHeight;
                     }
                     if (x > 95) {
                         // Drop add-on
                         h -= 8;
                         y = 8;
                     }
-                    if (linkageFlag && (x == 0) || (x == 94)) {
+                    if (linkageFlag && (x == 0 || x == 94)) {
                         h += 2;
                         y -= 2;
                     }
                 } else {
-                    if ((x < 4) || (x > 45)) {
-                        h += shortLongDiff;
+                    if (x < 4 || x > 45) {
+                        h += guardPatternExtraHeight;
                     }
                     if (x > 52) {
                         // Drop add-on
                         h -= 8;
                         y = 8;
                     }
-                    if (linkageFlag && (x == 0) || (x == 50)) {
+                    if (linkageFlag && (x == 0 || x == 50)) {
                         h += 2;
                         y -= 2;
                     }
                 }
-                Rectangle2D.Double rect = new Rectangle2D.Double(x + 6, y + compositeOffset, w, h);
+                Rectangle2D.Double rect = new Rectangle2D.Double(scale(x), y + compositeOffset + hrtOffset, scale(w), h);
                 rectangles.add(rect);
-                if ((x + w + 12) > symbol_width) {
-                    symbol_width = x + w + 12;
-                }
-            } else {
-                black = true;
+                symbol_width = Math.max(symbol_width, (int) rect.getMaxX());
+                symbol_height = Math.max(symbol_height, (int) rect.getMaxY() - hrtOffset);
             }
-            x += pattern[0].charAt(xBlock) - '0';
+
+            black = !black;
+            x += w;
         }
 
+        /* Add separator for composite symbology, if necessary */
         if (linkageFlag) {
-            // Add separator for composite symbology
             if (mode == Mode.UPCA) {
-                rectangles.add(new Rectangle2D.Double(0 + 6, 0, 1, 2));
-                rectangles.add(new Rectangle2D.Double(94 + 6, 0, 1, 2));
-                rectangles.add(new Rectangle2D.Double(-1 + 6, 2, 1, 2));
-                rectangles.add(new Rectangle2D.Double(95 + 6, 2, 1, 2));
+                rectangles.add(new Rectangle2D.Double(scale(0),  0, scale(1), 2));
+                rectangles.add(new Rectangle2D.Double(scale(94), 0, scale(1), 2));
+                rectangles.add(new Rectangle2D.Double(scale(-1), 2, scale(1), 2));
+                rectangles.add(new Rectangle2D.Double(scale(95), 2, scale(1), 2));
             } else { // UPCE
-                rectangles.add(new Rectangle2D.Double(0 + 6, 0, 1, 2));
-                rectangles.add(new Rectangle2D.Double(50 + 6, 0, 1, 2));
-                rectangles.add(new Rectangle2D.Double(-1 + 6, 2, 1, 2));
-                rectangles.add(new Rectangle2D.Double(51 + 6, 2, 1, 2));
+                rectangles.add(new Rectangle2D.Double(scale(0),  0, scale(1), 2));
+                rectangles.add(new Rectangle2D.Double(scale(50), 0, scale(1), 2));
+                rectangles.add(new Rectangle2D.Double(scale(-1), 2, scale(1), 2));
+                rectangles.add(new Rectangle2D.Double(scale(51), 2, scale(1), 2));
             }
         }
-
-        symbol_height = default_height + 5; // TODO: wonky, images are taller than necessary
 
         /* Now add the text */
-        if (humanReadableLocation != NONE) {
-            double baseline = symbol_height + fontSize - shortLongDiff + compositeOffset;
+        if (humanReadableLocation == BOTTOM) {
+            symbol_height -= guardPatternExtraHeight;
+            double baseline = symbol_height + fontSize;
             double addOnBaseline = 6.0 + compositeOffset;
             if (mode == Mode.UPCA) {
-                texts.add(new TextBox(0, baseline, 6, readable.substring(0, 1)));
-                texts.add(new TextBox(16, baseline, 36, readable.substring(1, 6)));
-                texts.add(new TextBox(55, baseline, 36, readable.substring(6, 11)));
-                texts.add(new TextBox(101, baseline, 6, readable.substring(11, 12)));
+                texts.add(new TextBox(scale(-6), baseline, scale(6), readable.substring(0, 1)));
+                texts.add(new TextBox(scale(10), baseline, scale(36), readable.substring(1, 6)));
+                texts.add(new TextBox(scale(49), baseline, scale(36), readable.substring(6, 11)));
+                texts.add(new TextBox(scale(95), baseline, scale(6), readable.substring(11, 12)));
                 if (addOnContent != null) {
                     int width = (addOnContent.length() == 2 ? 20 : 47);
-                    texts.add(new TextBox(110, addOnBaseline, width, addOnContent));
+                    texts.add(new TextBox(scale(104), addOnBaseline, scale(width), addOnContent));
                 }
             } else { // UPCE
-                texts.add(new TextBox(0, baseline, 6, readable.substring(0, 1)));
-                texts.add(new TextBox(9, baseline, 43, readable.substring(1, 7)));
-                texts.add(new TextBox(57, baseline, 6, readable.substring(7, 8)));
+                texts.add(new TextBox(scale(-6), baseline, scale(6), readable.substring(0, 1)));
+                texts.add(new TextBox(scale(3), baseline, scale(43), readable.substring(1, 7)));
+                texts.add(new TextBox(scale(51), baseline, scale(6), readable.substring(7, 8)));
                 if (addOnContent != null) {
                     int width = (addOnContent.length() == 2 ? 20 : 47);
-                    texts.add(new TextBox(66, addOnBaseline, width, addOnContent));
+                    texts.add(new TextBox(scale(60), addOnBaseline, scale(width), addOnContent));
                 }
             }
+        } else if (humanReadableLocation == TOP) {
+            double baseline = fontSize;
+            double addOnBaseline = 6.0 + hrtOffset;
+            int width1 = (mode == Mode.UPCA ? 94 : 50);
+            texts.add(new TextBox(scale(0), baseline, scale(width1), readable));
+            if (addOnContent != null) {
+                int width2 = (addOnContent.length() == 2 ? 20 : 47);
+                texts.add(new TextBox(scale(width1 + 10), addOnBaseline, scale(width2), addOnContent));
+            }
         }
+    }
+
+    /** Scales the specified width or x-dimension according to the current module width. */
+    private int scale(int w) {
+        return moduleWidth * w;
     }
 }

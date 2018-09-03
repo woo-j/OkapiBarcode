@@ -276,7 +276,7 @@ public class Ean extends Symbol {
         /* Draw the bars in the symbology */
         for (xBlock = 0; xBlock < pattern[0].length(); xBlock++) {
 
-            w = (pattern[0].charAt(xBlock) - '0');
+            w = pattern[0].charAt(xBlock) - '0';
 
             if (black) {
                 y = 0;

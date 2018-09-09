@@ -16,6 +16,7 @@
 package uk.org.okapibarcode.backend;
 
 import static uk.org.okapibarcode.backend.HumanReadableLocation.BOTTOM;
+import static uk.org.okapibarcode.backend.HumanReadableLocation.NONE;
 import static uk.org.okapibarcode.backend.HumanReadableLocation.TOP;
 
 import java.awt.geom.Rectangle2D;
@@ -55,7 +56,7 @@ public class Ean extends Symbol {
     private Mode mode = Mode.EAN13;
     private int guardPatternExtraHeight = 5;
     private boolean linkageFlag;
-    private String addOnContent;
+    private EanUpcAddOn addOn;
 
     /**
      * Sets the EAN mode (EAN-8 or EAN-13). The default is EAN-13.
@@ -121,55 +122,33 @@ public class Ean extends Symbol {
         } else {
             ean13();
         }
-
-        if (addOnContent != null) {
-
-            String addOnData = AddOn.calcAddOn(addOnContent);
-            if (addOnData.isEmpty()) {
-                throw new OkapiException("Invalid add-on data");
-            }
-
-            pattern[0] = pattern[0] + "9" + addOnData;
-
-            // add leading zeroes to add-on text
-            if (addOnContent.length() == 1) {
-                addOnContent = "0" + addOnContent;
-            }
-            if (addOnContent.length() == 3) {
-                addOnContent = "0" + addOnContent;
-            }
-            if (addOnContent.length() == 4) {
-                addOnContent = "0" + addOnContent;
-            }
-        }
     }
 
     private void separateContent() {
         int splitPoint = content.indexOf('+');
-        if (splitPoint != -1) {
-            // There is a '+' in the input data, use an add-on EAN2 or EAN5
-            addOnContent = content.substring(splitPoint + 1);
-            content = content.substring(0, splitPoint);
+        if (splitPoint == -1) {
+            // there is no add-on data
+            addOn = null;
+        } else if (splitPoint == content.length() - 1) {
+            // we found the add-on separator, but no add-on data
+            throw new OkapiException("Invalid add-on data");
         } else {
-            addOnContent = null;
+            // there is a '+' in the input data, use an add-on EAN2 or EAN5
+            addOn = new EanUpcAddOn();
+            addOn.font = this.font;
+            addOn.fontName = this.fontName;
+            addOn.fontSize = this.fontSize;
+            addOn.humanReadableLocation = (this.humanReadableLocation == NONE ? NONE : TOP);
+            addOn.moduleWidth = this.moduleWidth;
+            addOn.default_height = this.default_height + this.guardPatternExtraHeight - 8;
+            addOn.setContent(content.substring(splitPoint + 1));
+            content = content.substring(0, splitPoint);
         }
     }
 
     private void ean13() {
 
-        if (!content.matches("[0-9]+")) {
-            throw new OkapiException("Invalid characters in input");
-        }
-
-        if (content.length() > 12) {
-            throw new OkapiException("Input data too long");
-        }
-
-        if (content.length() < 12) {
-            for (int i = content.length(); i < 12; i++) {
-                content = '0' + content;
-            }
-        }
+        content = validateAndPad(content, 12);
 
         char check = calcDigit(content);
         encodeInfo += "Check Digit: " + check + "\n";
@@ -204,19 +183,7 @@ public class Ean extends Symbol {
 
     private void ean8() {
 
-        if (!content.matches("[0-9]+")) {
-            throw new OkapiException("Invalid characters in input");
-        }
-
-        if (content.length() > 7) {
-            throw new OkapiException("Input data too long");
-        }
-
-        if (content.length() < 7) {
-            for (int i = content.length(); i < 7; i++) {
-                content = '0' + content;
-            }
-        }
+        content = validateAndPad(content, 7);
 
         char check = calcDigit(content);
         encodeInfo += "Check Digit: " + check + "\n";
@@ -236,6 +203,25 @@ public class Ean extends Symbol {
         pattern = new String[] { dest.toString() };
         row_count = 1;
         row_height = new int[] { -1 };
+    }
+
+    protected static String validateAndPad(String s, int targetLength) {
+
+        if (!s.matches("[0-9]+")) {
+            throw new OkapiException("Invalid characters in input");
+        }
+
+        if (s.length() > targetLength) {
+            throw new OkapiException("Input data too long");
+        }
+
+        if (s.length() < targetLength) {
+            for (int i = s.length(); i < targetLength; i++) {
+                s = '0' + s;
+            }
+        }
+
+        return s;
     }
 
     protected static char calcDigit(String s) {
@@ -286,24 +272,13 @@ public class Ean extends Symbol {
                     if (x < 3 || x > 91 || (x > 45 && x < 49)) {
                         h += guardPatternExtraHeight;
                     }
-                    if (x > 95) {
-                        // Drop add-on
-                        h -= 8;
-                        y = 8;
-                    }
                     if (linkageFlag && (x == 0 || x == 94)) {
                         h += 2;
                         y -= 2;
                     }
-                }
-                if (mode == Mode.EAN8) {
+                } else {
                     if (x < 3 || x > 62 || (x > 30 && x < 35)) {
                         h += guardPatternExtraHeight;
-                    }
-                    if (x > 66) {
-                        // Drop add-on
-                        h -= 8;
-                        y = 8;
                     }
                     if (linkageFlag && (x == 0 || x == 66)) {
                         h += 2;
@@ -313,7 +288,7 @@ public class Ean extends Symbol {
                 Rectangle2D.Double rect = new Rectangle2D.Double(scale(x), y + compositeOffset + hrtOffset, scale(w), h);
                 rectangles.add(rect);
                 symbol_width = Math.max(symbol_width, (int) rect.getMaxX());
-                symbol_height = Math.max(symbol_height, (int) rect.getMaxY() - hrtOffset);
+                symbol_height = Math.max(symbol_height, (int) rect.getHeight());
             }
 
             black = !black;
@@ -327,44 +302,48 @@ public class Ean extends Symbol {
                 rectangles.add(new Rectangle2D.Double(scale(94), 0, scale(1), 2));
                 rectangles.add(new Rectangle2D.Double(scale(-1), 2, scale(1), 2));
                 rectangles.add(new Rectangle2D.Double(scale(95), 2, scale(1), 2));
-            } else {
+            } else { // EAN8
                 rectangles.add(new Rectangle2D.Double(scale(0),  0, scale(1), 2));
                 rectangles.add(new Rectangle2D.Double(scale(66), 0, scale(1), 2));
                 rectangles.add(new Rectangle2D.Double(scale(-1), 2, scale(1), 2));
                 rectangles.add(new Rectangle2D.Double(scale(67), 2, scale(1), 2));
             }
+            symbol_height += 4;
         }
 
         /* Now add the text */
         if (humanReadableLocation == BOTTOM) {
             symbol_height -= guardPatternExtraHeight;
             double baseline = symbol_height + fontSize;
-            double addOnBaseline = 6.0 + compositeOffset;
             if (mode == Mode.EAN13) {
                 texts.add(new TextBox(scale(-6), baseline, scale(6),  readable.substring(0, 1)));
                 texts.add(new TextBox(scale(3),  baseline, scale(43), readable.substring(1, 7)));
                 texts.add(new TextBox(scale(49), baseline, scale(43), readable.substring(7, 13)));
-                if (addOnContent != null) {
-                    int width = (addOnContent.length() == 2 ? 20 : 47);
-                    texts.add(new TextBox(scale(104), addOnBaseline, scale(width), addOnContent));
-                }
             } else { // EAN8
                 texts.add(new TextBox(scale(3),  baseline, scale(29), readable.substring(0, 4)));
                 texts.add(new TextBox(scale(35), baseline, scale(29), readable.substring(4, 8)));
-                if (addOnContent != null) {
-                    int width = (addOnContent.length() == 2 ? 20 : 47);
-                    texts.add(new TextBox(scale(76), addOnBaseline, scale(width), addOnContent));
-                }
             }
         } else if (humanReadableLocation == TOP) {
             double baseline = fontSize;
-            double addOnBaseline = 6.0 + hrtOffset;
-            int width1 = (mode == Mode.EAN13 ? 94 : 66);
-            texts.add(new TextBox(scale(0), baseline, scale(width1), readable));
-            if (addOnContent != null) {
-                int width2 = (addOnContent.length() == 2 ? 20 : 47);
-                texts.add(new TextBox(scale(width1 + 10), addOnBaseline, scale(width2), addOnContent));
+            int width = (mode == Mode.EAN13 ? 94 : 66);
+            texts.add(new TextBox(scale(0), baseline, scale(width), readable));
+        }
+
+        /* Now add the add-on symbol, if necessary */
+        if (addOn != null) {
+            int gap = 9;
+            int baseX = symbol_width + scale(gap);
+            Rectangle2D.Double r1 = rectangles.get(0);
+            Rectangle2D.Double ar1 = addOn.rectangles.get(0);
+            int baseY = (int) (r1.y + r1.getHeight() - ar1.y - ar1.getHeight());
+            for (TextBox t : addOn.getTexts()) {
+                texts.add(new TextBox(baseX + t.x, baseY + t.y, t.width, t.text));
             }
+            for (Rectangle2D.Double r : addOn.getRectangles()) {
+                rectangles.add(new Rectangle2D.Double(baseX + r.x, baseY + r.y, r.width, r.height));
+            }
+            symbol_width += scale(gap) + addOn.symbol_width;
+            pattern[0] = pattern[0] + gap + addOn.pattern[0];
         }
     }
 

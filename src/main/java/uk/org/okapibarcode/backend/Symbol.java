@@ -668,7 +668,7 @@ public abstract class Symbol {
             } else {
                 baseline = symbol_height + fontSize;
             }
-            texts.add(new TextBox(0, baseline, symbol_width, readable));
+            texts.add(new TextBox(0, baseline, symbol_width, readable, humanReadableAlignment));
         }
     }
 

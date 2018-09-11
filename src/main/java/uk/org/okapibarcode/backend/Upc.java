@@ -71,6 +71,11 @@ public class Upc extends Symbol {
     private boolean linkageFlag;
     private EanUpcAddOn addOn;
 
+    /** Creates a new instance. */
+    public Upc() {
+        this.humanReadableAlignment = HumanReadableAlignment.JUSTIFY;
+    }
+
     /**
      * Sets the UPC mode (UPC-A or UPC-E). The default is UPC-A.
      *
@@ -351,19 +356,19 @@ public class Upc extends Symbol {
             symbol_height -= guardPatternExtraHeight;
             double baseline = symbol_height + fontSize;
             if (mode == Mode.UPCA) {
-                texts.add(new TextBox(scale(-6), baseline, scale(6), readable.substring(0, 1)));
-                texts.add(new TextBox(scale(10), baseline, scale(36), readable.substring(1, 6)));
-                texts.add(new TextBox(scale(49), baseline, scale(36), readable.substring(6, 11)));
-                texts.add(new TextBox(scale(95), baseline, scale(6), readable.substring(11, 12)));
+                texts.add(new TextBox(scale(-6), baseline, scale(6), readable.substring(0, 1), humanReadableAlignment));
+                texts.add(new TextBox(scale(12), baseline, scale(32), readable.substring(1, 6), humanReadableAlignment));
+                texts.add(new TextBox(scale(51), baseline, scale(32), readable.substring(6, 11), humanReadableAlignment));
+                texts.add(new TextBox(scale(95), baseline, scale(6), readable.substring(11, 12), humanReadableAlignment));
             } else { // UPCE
-                texts.add(new TextBox(scale(-6), baseline, scale(6), readable.substring(0, 1)));
-                texts.add(new TextBox(scale(3), baseline, scale(43), readable.substring(1, 7)));
-                texts.add(new TextBox(scale(51), baseline, scale(6), readable.substring(7, 8)));
+                texts.add(new TextBox(scale(-6), baseline, scale(6), readable.substring(0, 1), humanReadableAlignment));
+                texts.add(new TextBox(scale(5), baseline, scale(39), readable.substring(1, 7), humanReadableAlignment));
+                texts.add(new TextBox(scale(51), baseline, scale(6), readable.substring(7, 8), humanReadableAlignment));
             }
         } else if (humanReadableLocation == TOP) {
             double baseline = fontSize;
             int width = (mode == Mode.UPCA ? 94 : 50);
-            texts.add(new TextBox(scale(0), baseline, scale(width), readable));
+            texts.add(new TextBox(scale(0), baseline, scale(width), readable, humanReadableAlignment));
         }
 
         /* Now add the add-on symbol, if necessary */
@@ -374,7 +379,7 @@ public class Upc extends Symbol {
             Rectangle2D.Double ar1 = addOn.rectangles.get(0);
             int baseY = (int) (r1.y + r1.getHeight() - ar1.y - ar1.getHeight());
             for (TextBox t : addOn.getTexts()) {
-                texts.add(new TextBox(baseX + t.x, baseY + t.y, t.width, t.text));
+                texts.add(new TextBox(baseX + t.x, baseY + t.y, t.width, t.text, t.alignment));
             }
             for (Rectangle2D.Double r : addOn.getRectangles()) {
                 rectangles.add(new Rectangle2D.Double(baseX + r.x, baseY + r.y, r.width, r.height));

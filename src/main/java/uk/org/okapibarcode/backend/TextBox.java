@@ -36,6 +36,9 @@ public class TextBox {
     /** The text value. */
     public final String text;
 
+    /** The text alignment. */
+    public final HumanReadableAlignment alignment;
+
     /**
      * Creates a new instance.
      *
@@ -43,17 +46,19 @@ public class TextBox {
      * @param y the Y position of the text baseline
      * @param width the width of the text box
      * @param text the text value
+     * @param alignment the text alignment
      */
-    public TextBox(double x, double y, double width, String text) {
+    public TextBox(double x, double y, double width, String text, HumanReadableAlignment alignment) {
         this.x = x;
         this.y = y;
         this.width = width;
         this.text = text;
+        this.alignment = alignment;
     }
 
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return "TextBox[x=" + x + ", y=" + y + ", width=" + width + ", text=" + text + "]";
+        return "TextBox[x=" + x + ", y=" + y + ", width=" + width + ", text=" + text + ", alignment=" + alignment + "]";
     }
 }

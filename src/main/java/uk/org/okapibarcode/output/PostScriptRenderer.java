@@ -16,6 +16,8 @@
 
 package uk.org.okapibarcode.output;
 
+import static uk.org.okapibarcode.backend.HumanReadableAlignment.CENTER;
+import static uk.org.okapibarcode.backend.HumanReadableAlignment.JUSTIFY;
 import static uk.org.okapibarcode.util.Doubles.roughlyEqual;
 
 import java.awt.Color;
@@ -25,6 +27,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import uk.org.okapibarcode.backend.Hexagon;
+import uk.org.okapibarcode.backend.HumanReadableAlignment;
 import uk.org.okapibarcode.backend.Symbol;
 import uk.org.okapibarcode.backend.TextBox;
 
@@ -139,6 +142,7 @@ public class PostScriptRenderer implements SymbolRenderer {
             // Text
             for (int i = 0; i < symbol.getTexts().size(); i++) {
                 TextBox text = symbol.getTexts().get(i);
+                HumanReadableAlignment alignment = (text.alignment == JUSTIFY && text.text.length() == 1 ? CENTER : text.alignment);
                 if (i == 0) {
                     writer.append("TE\n");;
                     writer.append(ink.getRed() / 255.0).append(" ")
@@ -149,7 +153,7 @@ public class PostScriptRenderer implements SymbolRenderer {
                 writer.append("/").append(symbol.getFontName()).append(" findfont\n");
                 writer.append(symbol.getFontSize() * magnification).append(" scalefont setfont\n");
                 double y = height - (text.y * magnification) - marginY;
-                switch (symbol.getHumanReadableAlignment()) {
+                switch (alignment) {
                     case LEFT:
                         double leftX = (magnification * text.x) + marginX;
                         writer.append(" 0 0 moveto ").append(leftX).append(" ").append(y)
@@ -184,7 +188,7 @@ public class PostScriptRenderer implements SymbolRenderer {
                         writer.append(" (").append(text.text).append(") show\n");
                         break;
                     default:
-                        throw new IllegalStateException("Unknown alignment: " + symbol.getHumanReadableAlignment());
+                        throw new IllegalStateException("Unknown alignment: " + alignment);
                 }
                 writer.append("setmatrix\n");
             }

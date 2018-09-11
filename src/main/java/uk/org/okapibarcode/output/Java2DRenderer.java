@@ -16,6 +16,7 @@
 
 package uk.org.okapibarcode.output;
 
+import static uk.org.okapibarcode.backend.HumanReadableAlignment.CENTER;
 import static uk.org.okapibarcode.backend.HumanReadableAlignment.JUSTIFY;
 
 import java.awt.Color;
@@ -33,6 +34,7 @@ import java.util.Collections;
 import java.util.List;
 
 import uk.org.okapibarcode.backend.Hexagon;
+import uk.org.okapibarcode.backend.HumanReadableAlignment;
 import uk.org.okapibarcode.backend.Symbol;
 import uk.org.okapibarcode.backend.TextBox;
 
@@ -105,14 +107,14 @@ public class Java2DRenderer implements SymbolRenderer {
         }
 
         for (TextBox text : symbol.getTexts()) {
-            Font font = (symbol.getHumanReadableAlignment() != JUSTIFY ? f :
-                addTracking(f, text.width * magnification, text.text, g2d));
+            HumanReadableAlignment alignment = (text.alignment == JUSTIFY && text.text.length() == 1 ? CENTER : text.alignment);
+            Font font = (alignment != JUSTIFY ? f : addTracking(f, text.width * magnification, text.text, g2d));
             g2d.setFont(font);
             FontMetrics fm = g2d.getFontMetrics();
             Rectangle2D bounds = fm.getStringBounds(text.text, g2d);
             float y = (float) (text.y * magnification) + marginY;
             float x;
-            switch (symbol.getHumanReadableAlignment()) {
+            switch (alignment) {
                 case LEFT:
                 case JUSTIFY:
                     x = (float) ((magnification * text.x) + marginX);
@@ -124,7 +126,7 @@ public class Java2DRenderer implements SymbolRenderer {
                     x = (float) ((magnification * text.x) + (magnification * text.width / 2) - (bounds.getWidth() / 2) + marginX);
                     break;
                 default:
-                    throw new IllegalStateException("Unknown alignment: " + symbol.getHumanReadableAlignment());
+                    throw new IllegalStateException("Unknown alignment: " + alignment);
             }
             g2d.drawString(text.text, x, y);
         }

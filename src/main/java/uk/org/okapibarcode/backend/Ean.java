@@ -58,6 +58,11 @@ public class Ean extends Symbol {
     private boolean linkageFlag;
     private EanUpcAddOn addOn;
 
+    /** Creates a new instance. */
+    public Ean() {
+        this.humanReadableAlignment = HumanReadableAlignment.JUSTIFY;
+    }
+
     /**
      * Sets the EAN mode (EAN-8 or EAN-13). The default is EAN-13.
      *
@@ -316,17 +321,17 @@ public class Ean extends Symbol {
             symbol_height -= guardPatternExtraHeight;
             double baseline = symbol_height + fontSize;
             if (mode == Mode.EAN13) {
-                texts.add(new TextBox(scale(-6), baseline, scale(6),  readable.substring(0, 1)));
-                texts.add(new TextBox(scale(3),  baseline, scale(43), readable.substring(1, 7)));
-                texts.add(new TextBox(scale(49), baseline, scale(43), readable.substring(7, 13)));
+                texts.add(new TextBox(scale(-6), baseline, scale(6),  readable.substring(0, 1), humanReadableAlignment));
+                texts.add(new TextBox(scale(5),  baseline, scale(39), readable.substring(1, 7), humanReadableAlignment));
+                texts.add(new TextBox(scale(51), baseline, scale(39), readable.substring(7, 13), humanReadableAlignment));
             } else { // EAN8
-                texts.add(new TextBox(scale(3),  baseline, scale(29), readable.substring(0, 4)));
-                texts.add(new TextBox(scale(35), baseline, scale(29), readable.substring(4, 8)));
+                texts.add(new TextBox(scale(5),  baseline, scale(25), readable.substring(0, 4), humanReadableAlignment));
+                texts.add(new TextBox(scale(37), baseline, scale(25), readable.substring(4, 8), humanReadableAlignment));
             }
         } else if (humanReadableLocation == TOP) {
             double baseline = fontSize;
             int width = (mode == Mode.EAN13 ? 94 : 66);
-            texts.add(new TextBox(scale(0), baseline, scale(width), readable));
+            texts.add(new TextBox(scale(0), baseline, scale(width), readable, humanReadableAlignment));
         }
 
         /* Now add the add-on symbol, if necessary */
@@ -337,7 +342,7 @@ public class Ean extends Symbol {
             Rectangle2D.Double ar1 = addOn.rectangles.get(0);
             int baseY = (int) (r1.y + r1.getHeight() - ar1.y - ar1.getHeight());
             for (TextBox t : addOn.getTexts()) {
-                texts.add(new TextBox(baseX + t.x, baseY + t.y, t.width, t.text));
+                texts.add(new TextBox(baseX + t.x, baseY + t.y, t.width, t.text, t.alignment));
             }
             for (Rectangle2D.Double r : addOn.getRectangles()) {
                 rectangles.add(new Rectangle2D.Double(baseX + r.x, baseY + r.y, r.width, r.height));

@@ -16,6 +16,7 @@
 
 package uk.org.okapibarcode.output;
 
+import static uk.org.okapibarcode.backend.HumanReadableAlignment.CENTER;
 import static uk.org.okapibarcode.backend.HumanReadableAlignment.JUSTIFY;
 
 import java.awt.Color;
@@ -39,6 +40,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Text;
 
 import uk.org.okapibarcode.backend.Hexagon;
+import uk.org.okapibarcode.backend.HumanReadableAlignment;
 import uk.org.okapibarcode.backend.Symbol;
 import uk.org.okapibarcode.backend.TextBox;
 
@@ -131,9 +133,10 @@ public class SvgRenderer implements SymbolRenderer {
             // Text
             for (int i = 0; i < symbol.getTexts().size(); i++) {
                 TextBox text = symbol.getTexts().get(i);
+                HumanReadableAlignment alignment = (text.alignment == JUSTIFY && text.text.length() == 1 ? CENTER : text.alignment);
                 double x;
                 String anchor;
-                switch (symbol.getHumanReadableAlignment()) {
+                switch (alignment) {
                     case LEFT:
                     case JUSTIFY:
                         x = (magnification * text.x) + marginX;
@@ -148,12 +151,12 @@ public class SvgRenderer implements SymbolRenderer {
                         anchor = "middle";
                         break;
                     default:
-                        throw new IllegalStateException("Unknown alignment: " + symbol.getHumanReadableAlignment());
+                        throw new IllegalStateException("Unknown alignment: " + alignment);
                 }
                 writer.append("      <text x=\"").append(x)
                       .append("\" y=\"").append((text.y * magnification) + marginY)
                       .append("\" text-anchor=\"").append(anchor).append("\"\n");
-                if (symbol.getHumanReadableAlignment() == JUSTIFY) {
+                if (alignment == JUSTIFY) {
                     writer.append("         textLength=\"")
                           .append(text.width * magnification)
                           .append("\" lengthAdjust=\"spacing\"\n");

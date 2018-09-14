@@ -109,11 +109,6 @@ public class Ean extends Symbol {
     }
 
     @Override
-    public void setHumanReadableAlignment(HumanReadableAlignment humanReadableAlignment) {
-        throw new UnsupportedOperationException("EAN human-readable text alignment cannot be changed.");
-    }
-
-    @Override
     protected void encode() {
 
         separateContent();

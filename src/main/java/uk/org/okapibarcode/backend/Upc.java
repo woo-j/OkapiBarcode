@@ -45,13 +45,11 @@ public class Upc extends Symbol {
     };
 
     private static final String[] SET_AC = {
-        "3211", "2221", "2122", "1411", "1132", "1231", "1114", "1312",
-        "1213", "3112"
+        "3211", "2221", "2122", "1411", "1132", "1231", "1114", "1312", "1213", "3112"
     };
 
     private static final String[] SET_B = {
-        "1123", "1222", "2212", "1141", "2311", "1321", "4111", "2131",
-        "3121", "2113"
+        "1123", "1222", "2212", "1141", "2311", "1321", "4111", "2131", "3121", "2113"
     };
 
     /* Number set for UPC-E symbol (EN Table 4) */
@@ -119,11 +117,6 @@ public class Upc extends Symbol {
      */
     protected void setLinkageFlag(boolean linkageFlag) {
         this.linkageFlag = linkageFlag;
-    }
-
-    @Override
-    public void setHumanReadableAlignment(HumanReadableAlignment humanReadableAlignment) {
-        throw new UnsupportedOperationException("UPC human-readable text alignment cannot be changed.");
     }
 
     @Override

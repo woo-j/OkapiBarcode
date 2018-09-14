@@ -65,6 +65,7 @@ public class Upc extends Symbol {
     };
 
     private Mode mode = Mode.UPCA;
+    private boolean showCheckDigit = true;
     private int guardPatternExtraHeight = 5;
     private boolean linkageFlag;
     private EanUpcAddOn addOn;
@@ -90,6 +91,24 @@ public class Upc extends Symbol {
      */
     public Mode getMode() {
         return mode;
+    }
+
+    /**
+     * Sets whether or not to show the check digit in the human-readable text.
+     *
+     * @param showCheckDigit whether or not to show the check digit in the human-readable text
+     */
+    public void setShowCheckDigit(boolean showCheckDigit) {
+        this.showCheckDigit = showCheckDigit;
+    }
+
+    /**
+     * Returns whether or not to show the check digit in the human-readable text.
+     *
+     * @return whether or not to show the check digit in the human-readable text
+     */
+    public boolean getShowCheckDigit() {
+        return showCheckDigit;
     }
 
     /**
@@ -352,11 +371,15 @@ public class Upc extends Symbol {
                 texts.add(new TextBox(scale(-6), baseline, scale(6), readable.substring(0, 1), humanReadableAlignment));
                 texts.add(new TextBox(scale(12), baseline, scale(32), readable.substring(1, 6), humanReadableAlignment));
                 texts.add(new TextBox(scale(51), baseline, scale(32), readable.substring(6, 11), humanReadableAlignment));
-                texts.add(new TextBox(scale(95), baseline, scale(6), readable.substring(11, 12), humanReadableAlignment));
+                if (showCheckDigit) {
+                    texts.add(new TextBox(scale(95), baseline, scale(6), readable.substring(11, 12), humanReadableAlignment));
+                }
             } else { // UPCE
                 texts.add(new TextBox(scale(-6), baseline, scale(6), readable.substring(0, 1), humanReadableAlignment));
                 texts.add(new TextBox(scale(5), baseline, scale(39), readable.substring(1, 7), humanReadableAlignment));
-                texts.add(new TextBox(scale(51), baseline, scale(6), readable.substring(7, 8), humanReadableAlignment));
+                if (showCheckDigit) {
+                    texts.add(new TextBox(scale(51), baseline, scale(6), readable.substring(7, 8), humanReadableAlignment));
+                }
             }
         } else if (humanReadableLocation == TOP) {
             double baseline = fontSize;

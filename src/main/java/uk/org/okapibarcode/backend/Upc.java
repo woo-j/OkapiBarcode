@@ -368,17 +368,17 @@ public class Upc extends Symbol {
             symbol_height -= guardPatternExtraHeight;
             double baseline = symbol_height + fontSize;
             if (mode == Mode.UPCA) {
-                texts.add(new TextBox(scale(-6), baseline, scale(6), readable.substring(0, 1), humanReadableAlignment));
+                texts.add(new TextBox(scale(-9), baseline, scale(4), readable.substring(0, 1), HumanReadableAlignment.RIGHT));
                 texts.add(new TextBox(scale(12), baseline, scale(32), readable.substring(1, 6), humanReadableAlignment));
                 texts.add(new TextBox(scale(51), baseline, scale(32), readable.substring(6, 11), humanReadableAlignment));
                 if (showCheckDigit) {
-                    texts.add(new TextBox(scale(95), baseline, scale(6), readable.substring(11, 12), humanReadableAlignment));
+                    texts.add(new TextBox(scale(97), baseline, scale(4), readable.substring(11, 12), HumanReadableAlignment.LEFT));
                 }
             } else { // UPCE
-                texts.add(new TextBox(scale(-6), baseline, scale(6), readable.substring(0, 1), humanReadableAlignment));
+                texts.add(new TextBox(scale(-9), baseline, scale(4), readable.substring(0, 1), HumanReadableAlignment.RIGHT));
                 texts.add(new TextBox(scale(5), baseline, scale(39), readable.substring(1, 7), humanReadableAlignment));
                 if (showCheckDigit) {
-                    texts.add(new TextBox(scale(51), baseline, scale(6), readable.substring(7, 8), humanReadableAlignment));
+                    texts.add(new TextBox(scale(53), baseline, scale(4), readable.substring(7, 8), HumanReadableAlignment.LEFT));
                 }
             }
         } else if (humanReadableLocation == TOP) {

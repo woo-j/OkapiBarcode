@@ -316,7 +316,7 @@ public class Ean extends Symbol {
             symbol_height -= guardPatternExtraHeight;
             double baseline = symbol_height + fontSize;
             if (mode == Mode.EAN13) {
-                texts.add(new TextBox(scale(-6), baseline, scale(6),  readable.substring(0, 1), humanReadableAlignment));
+                texts.add(new TextBox(scale(-9), baseline, scale(4),  readable.substring(0, 1), HumanReadableAlignment.RIGHT));
                 texts.add(new TextBox(scale(5),  baseline, scale(39), readable.substring(1, 7), humanReadableAlignment));
                 texts.add(new TextBox(scale(51), baseline, scale(39), readable.substring(7, 13), humanReadableAlignment));
             } else { // EAN8

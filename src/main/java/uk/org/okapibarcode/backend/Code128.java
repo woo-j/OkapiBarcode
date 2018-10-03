@@ -224,20 +224,23 @@ public class Code128 extends Symbol {
         }
 
         /* Resolve odd length LATCHC blocks */
-        int cs = 0, nums = 0;
+        int cs = 0, nums = 0, fncs = 0;
         for (i = 0; i < read; i++) {
             if (set[i] == Mode.LATCHC) {
                 cs++;
                 if (inputData[i] >= '0' && inputData[i] <= '9') {
                     nums++;
+                } else if (inputData[i] == FNC1) {
+                    fncs++;
                 }
             } else {
-                resolveOddCs(set, i, cs, nums);
+                resolveOddCs(set, i, cs, nums, fncs);
                 cs = 0;
                 nums = 0;
+                fncs = 0;
             }
         }
-        resolveOddCs(set, i, cs, nums);
+        resolveOddCs(set, i, cs, nums, fncs);
 
         /* Adjust for strings which start with shift characters - make them latch instead */
         if (set[0] == Mode.SHIFTA) {
@@ -615,11 +618,11 @@ public class Code128 extends Symbol {
                 .replace(FNC4_STRING, "");
     }
 
-    private void resolveOddCs(Mode[] set, int i, int cs, int nums) {
+    private void resolveOddCs(Mode[] set, int i, int cs, int nums, int fncs) {
         if ((nums & 1) != 0) {
             int index;
             Mode m;
-            if (i - cs == 0) {
+            if (i - cs == 0 || fncs > 0) {
                 // Rule 2: first block -> swap last digit to A or B
                 index = i - 1;
                 if (index + 1 < set.length && set[index + 1] != null && set[index + 1] != Mode.LATCHC) {
@@ -631,6 +634,8 @@ public class Code128 extends Symbol {
                 }
             } else {
                 // Rule 3b: subsequent block -> swap first digit to A or B
+                // Note that we make an exception for C blocks which contain one (or more) FNC1 characters,
+                // since swapping the first digit would place the FNC1 in an invalid position in the block
                 index = i - nums;
                 if (index - 1 >= 0 && set[index - 1] != null && set[index - 1] != Mode.LATCHC) {
                     // previous block is either A or B -- match it

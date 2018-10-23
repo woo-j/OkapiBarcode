@@ -306,7 +306,7 @@ public class AztecCode extends Symbol {
     private int preferredEccLevel = 2;
 
     /**
-     * Sets a preferred symbol size. This value may be ignored if data string is
+     * <p>Sets a preferred symbol size. This value may be ignored if data string is
      * too large to fit in the specified symbol size. Values correspond to symbol
      * sizes as shown in the following table:
      *
@@ -333,6 +333,9 @@ public class AztecCode extends Symbol {
      * <tr><td>18   </td><td>75 x 75    </td><td>36   </td><td>151 x 151  </td></tr>
      * </tbody>
      * </table>
+     *
+     * <p> Note that sizes 1 to 4 are the "compact" Aztec Code symbols; sizes 5 to 36
+     * are the "full-range" Aztec Code symbols.
      *
      * @param size an integer in the range 1 - 36
      */

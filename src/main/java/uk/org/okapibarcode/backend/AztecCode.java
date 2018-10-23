@@ -61,12 +61,15 @@ public class AztecCode extends Symbol {
     private static final int[][] AZTEC_MAP = new int[151][151];
 
     /* From Table 2:
+     *
      * 1 = upper
      * 2 = lower
      * 4 = mixed
      * 8 = punctuation
      * 16 = digits
      * 32 = binary
+     *
+     * Values can be OR'ed, so e.g. 12 = 4 | 8, and 23 = 1 | 2 | 4 | 16
      */
     private static final int[] AZTEC_CODE_SET = {
         32, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 12, 32, 32, 32, 32, 32, 32,

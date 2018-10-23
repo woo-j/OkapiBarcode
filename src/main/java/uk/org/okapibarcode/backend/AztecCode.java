@@ -439,9 +439,6 @@ public class AztecCode extends Symbol {
         }
 
         String binaryString = generateAztecBinary();
-        if (binaryString == null) {
-            throw new OkapiException("Input too long or too many extended ASCII characters");
-        }
 
         // Set the error correction level
         ecc_level = preferredEccLevel;

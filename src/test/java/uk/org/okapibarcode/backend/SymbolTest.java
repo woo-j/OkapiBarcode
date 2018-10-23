@@ -272,9 +272,11 @@ public class SymbolTest {
             return new CodaBarReader();
         } else if (symbol instanceof AztecCode &&
                    symbol.getDataType() != DataType.GS1 &&
-                   symbol.getEciMode() == 3) {
+                   symbol.getEciMode() == 3 &&
+                  !symbol.getReaderInit()) {
             // ZXing does not currently support GS1 in Aztec Code symbols
             // ZXing does not currently support ECI in Aztec Code symbols
+            // ZXing does not currently support reader initialization in Aztec Code symbols
             return new AztecReader();
         } else if (symbol instanceof QrCode) {
             return new QRCodeReader();

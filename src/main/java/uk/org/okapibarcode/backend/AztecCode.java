@@ -1122,7 +1122,7 @@ public class AztecCode extends Symbol {
         /* Look for double character encoding possibilities */
         i = 0;
         do {
-            if (((charmap[i] == 300) && (charmap[i + 1] == 11)) && ((typemap[i] == 8 /*PUNC */) && (typemap[i + 1] == 8 /*PUNC*/))) {
+            if (((charmap[i] == 300) && (charmap[i + 1] == 11)) && ((typemap[i] == 12) && (typemap[i + 1] == 4))) {
                 /* CR LF combination */
                 charmap[i] = 2;
                 typemap[i] = 8; // PUNC

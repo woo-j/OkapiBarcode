@@ -571,22 +571,26 @@ public class SymbolTest {
 
         Object paramValue;
 
-        Class< ? > paramType = setter.getParameterTypes()[0];
-        if (String.class.equals(paramType)) {
-            paramValue = parameter.toString();
-        } else if (boolean.class.equals(paramType)) {
-            paramValue = Boolean.valueOf(parameter.toString());
-        } else if (int.class.equals(paramType)) {
-            paramValue = Integer.parseInt(parameter.toString());
-        } else if (double.class.equals(paramType)) {
-            paramValue = Double.parseDouble(parameter.toString());
-        } else if (Character.class.equals(paramType)) {
-            paramValue = parameter.toString().charAt(0);
-        } else if (paramType.isEnum()) {
-            Class< E > e = (Class< E >) paramType;
-            paramValue = Enum.valueOf(e, parameter.toString());
+        if (parameter == null) {
+            paramValue = null;
         } else {
-            throw new RuntimeException("Unknown setter type: " + paramType);
+            Class< ? > paramType = setter.getParameterTypes()[0];
+            if (String.class.equals(paramType)) {
+                paramValue = parameter.toString();
+            } else if (boolean.class.equals(paramType)) {
+                paramValue = Boolean.valueOf(parameter.toString());
+            } else if (int.class.equals(paramType)) {
+                paramValue = Integer.parseInt(parameter.toString());
+            } else if (double.class.equals(paramType)) {
+                paramValue = Double.parseDouble(parameter.toString());
+            } else if (Character.class.equals(paramType)) {
+                paramValue = parameter.toString().charAt(0);
+            } else if (paramType.isEnum()) {
+                Class< E > e = (Class< E >) paramType;
+                paramValue = Enum.valueOf(e, parameter.toString());
+            } else {
+                throw new RuntimeException("Unknown setter type: " + paramType);
+            }
         }
 
         setter.invoke(object, paramValue);
@@ -735,6 +739,9 @@ public class SymbolTest {
                             if (index != -1) {
                                 String name = line.substring(0, index);
                                 String value = Strings.replacePlaceholders(line.substring(index + 1), true);
+                                if ("null".equals(value)) {
+                                    value = null;
+                                }
                                 properties.put(name, value);
                             } else {
                                 String path = file.getAbsolutePath();

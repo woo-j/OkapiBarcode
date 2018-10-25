@@ -15,6 +15,9 @@
  */
 package uk.org.okapibarcode.backend;
 
+import static java.nio.charset.StandardCharsets.US_ASCII;
+import static uk.org.okapibarcode.util.Arrays.insertArray;
+
 /**
  * <p>Implements Aztec Code bar code symbology According to ISO/IEC 24778:2008.
  *
@@ -322,6 +325,9 @@ public class AztecCode extends Symbol {
 
     private int preferredSize = 0;
     private int preferredEccLevel = 2;
+    private String structuredAppendMessageId;
+    private int structuredAppendPosition = 1;
+    private int structuredAppendTotal = 1;
 
     /**
      * <p>Sets a preferred symbol size. This value may be ignored if data string is
@@ -406,6 +412,81 @@ public class AztecCode extends Symbol {
         return preferredEccLevel;
     }
 
+    /**
+     * If this Aztec Code symbol is part of a series of Aztec Code symbols appended in a structured
+     * format, this method sets the position of this symbol in the series. Valid values are 1 through
+     * 26 inclusive.
+     *
+     * @param position the position of this Aztec Code symbol in the structured append series
+     */
+    public void setStructuredAppendPosition(int position) {
+        if (position < 1 || position > 26) {
+            throw new IllegalArgumentException("Invalid Aztec Code structured append position: " + position);
+        }
+        this.structuredAppendPosition = position;
+    }
+
+    /**
+     * Returns the position of this Aztec Code symbol in a series of symbols using structured append.
+     * If this symbol is not part of such a series, this method will return <code>1</code>.
+     *
+     * @return the position of this Aztec Code symbol in a series of symbols using structured append
+     */
+    public int getStructuredAppendPosition() {
+        return structuredAppendPosition;
+    }
+
+    /**
+     * If this Aztec Code symbol is part of a series of Aztec Code symbols appended in a structured
+     * format, this method sets the total number of symbols in the series. Valid values are
+     * 1 through 26 inclusive. A value of 1 indicates that this symbol is not part of a structured
+     * append series.
+     *
+     * @param total the total number of Aztec Code symbols in the structured append series
+     */
+    public void setStructuredAppendTotal(int total) {
+        if (total < 1 || total > 26) {
+            throw new IllegalArgumentException("Invalid Aztec Code structured append total: " + total);
+        }
+        this.structuredAppendTotal = total;
+    }
+
+    /**
+     * Returns the size of the series of Aztec Code symbols using structured append that this symbol
+     * is part of. If this symbol is not part of a structured append series, this method will return
+     * <code>1</code>.
+     *
+     * @return size of the series that this symbol is part of
+     */
+    public int getStructuredAppendTotal() {
+        return structuredAppendTotal;
+    }
+
+    /**
+     * If this Aztec Code symbol is part of a series of Aztec Code symbols appended in a structured format,
+     * this method sets the unique message ID for the series. Values may not contain spaces and must contain
+     * only printable ASCII characters. Message IDs are optional.
+     *
+     * @param messageId the unique message ID for the series that this symbol is part of
+     */
+    public void setStructuredAppendMessageId(String messageId) {
+        if (messageId != null && !messageId.matches("^[\\x21-\\x7F]+$")) {
+            throw new IllegalArgumentException("Invalid Aztec Code structured append message ID: " + messageId);
+        }
+        this.structuredAppendMessageId = messageId;
+    }
+
+    /**
+     * Returns the unique message ID of the series of Aztec Code symbols using structured append that this
+     * symbol is part of. If this symbol is not part of a structured append series, this method will return
+     * <code>null</code>.
+     *
+     * @return the unique message ID for the series that this symbol is part of
+     */
+    public String getStructuredAppendMessageId() {
+        return structuredAppendMessageId;
+    }
+
     @Override
     protected boolean gs1Supported() {
         return true;
@@ -436,6 +517,19 @@ public class AztecCode extends Symbol {
         }
 
         eciProcess(); // Get ECI mode
+
+        /* Optional structured append (Section 8 of spec) */
+        /* ML + UL start flag handled later, not part of data */
+        if (structuredAppendTotal != 1) {
+            StringBuilder prefix = new StringBuilder();
+            if (structuredAppendMessageId != null) {
+                prefix.append(' ').append(structuredAppendMessageId).append(' ');
+            }
+            prefix.append((char) (structuredAppendPosition + 64)); // 1-26 as A-Z
+            prefix.append((char) (structuredAppendTotal + 64)); // 1-26 as A-Z
+            int[] prefixArray = toBytes(prefix.toString(), US_ASCII);
+            inputData = insertArray(inputData, 0, prefixArray);
+        }
 
         if (inputDataType == DataType.GS1 && readerInit) {
             throw new OkapiException("Cannot encode in GS1 and Reader Initialisation mode at the same time");
@@ -1064,8 +1158,8 @@ public class AztecCode extends Symbol {
         /* Lookup input string in encoding table */
         maplength = 0;
 
+        /* Add FNC1 to beginning of GS1 messages */
         if (inputDataType == DataType.GS1) {
-            /* Add FNC1 to beginning of GS1 messages */
             charmap[maplength] = 0; // FLG
             typemap[maplength++] = 8; // PUNC
             charmap[maplength] = 400; // (0)
@@ -1366,12 +1460,18 @@ public class AztecCode extends Symbol {
 //        }
 
         StringBuilder binaryString = new StringBuilder();
-
         encodeInfo += "Encoding: ";
-
         curtable = 1; /* start with 1 table */
-
         lasttable = 1;
+
+        /* Optional structured append start flag (Section 8 of spec) */
+        if (structuredAppendTotal != 1) {
+            binaryString.append(PENTBIT[29]);
+            encodeInfo += "ML ";
+            binaryString.append(PENTBIT[29]);
+            encodeInfo += "UL ";
+        }
+
         for (i = 0; i < maplength; i++) {
             newtable = curtable;
             if ((typemap[i] != curtable) && (charmap[i] < 400)) {

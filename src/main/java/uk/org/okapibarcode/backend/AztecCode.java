@@ -1930,15 +1930,12 @@ public class AztecCode extends Symbol {
     }
 
     private String eciToBinary() {
-        String binary = "";
         String eciNumber = Integer.toString(eciMode);
-        int i;
-
-        for (i = 0; i < eciNumber.length(); i++) {
-            binary += QUADBIT[(eciNumber.charAt(i) - '0') + 2];
+        StringBuilder binary = new StringBuilder(4 * eciNumber.length());
+        for (int i = 0; i < eciNumber.length(); i++) {
+            binary.append(QUADBIT[(eciNumber.charAt(i) - '0') + 2]);
             encodeInfo += Character.toString(eciNumber.charAt(i)) + " ";
         }
-
-        return binary;
+        return binary.toString();
     }
 }

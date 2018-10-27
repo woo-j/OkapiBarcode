@@ -273,10 +273,12 @@ public class SymbolTest {
         } else if (symbol instanceof AztecCode &&
                    symbol.getDataType() != DataType.GS1 &&
                    symbol.getEciMode() == 3 &&
-                  !symbol.getReaderInit()) {
+                  !symbol.getReaderInit() &&
+                  !symbol.getContent().isEmpty()) {
             // ZXing does not currently support GS1 in Aztec Code symbols
             // ZXing does not currently support ECI in Aztec Code symbols
             // ZXing does not currently support reader initialization in Aztec Code symbols
+            // ZXing cannot find symbols if they don't contain any actual data
             return new AztecReader();
         } else if (symbol instanceof QrCode) {
             return new QRCodeReader();

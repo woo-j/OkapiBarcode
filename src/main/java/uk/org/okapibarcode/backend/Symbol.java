@@ -86,6 +86,7 @@ public abstract class Symbol {
     protected HumanReadableLocation humanReadableLocation = BOTTOM;
     protected HumanReadableAlignment humanReadableAlignment = CENTER;
     protected boolean debug = false;
+    protected boolean emptyContentAllowed = false;
 
     // internal state calculated when setContent() is called
 
@@ -479,6 +480,25 @@ public abstract class Symbol {
     }
 
     /**
+     * Sets whether or not empty content is allowed. Some symbologies may be able to generate empty symbols when no data is
+     * present, though this is not usually desired behavior. The default value is <code>false</code> (no empty content allowed).
+     *
+     * @param emptyContentAllowed whether or not empty content is allowed
+     */
+    public void setEmptyContentAllowed(boolean emptyContentAllowed) {
+        this.emptyContentAllowed = emptyContentAllowed;
+    }
+
+    /**
+     * Returns whether or not empty content is allowed.
+     *
+     * @return whether or not empty content is allowed
+     */
+    public boolean getEmptyContentAllowed() {
+        return emptyContentAllowed;
+    }
+
+    /**
      * Sets the data to be encoded and triggers encoding. Input data will be assumed
      * to be of the type set by {@link #setDataType(DataType)}.
      *
@@ -486,6 +506,10 @@ public abstract class Symbol {
      * @throws OkapiException if no data or data is invalid
      */
     public void setContent(String data) {
+
+        if (data == null) {
+            data = "";
+        }
 
         encodeInfo = "";
 
@@ -502,7 +526,7 @@ public abstract class Symbol {
                 break;
         }
 
-        if (content.isEmpty()) {
+        if (content.isEmpty() && !emptyContentAllowed) {
             throw new OkapiException("No input data");
         }
 

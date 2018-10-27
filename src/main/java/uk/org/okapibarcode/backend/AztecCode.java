@@ -642,10 +642,7 @@ public class AztecCode extends Symbol {
                     codeword_size = 12;
                 }
 
-                j = 0;
-                i = 0;
-
-                do {
+                for (i = 0, j = 0; i < data_length; ) {
                     if ((j + 1) % codeword_size == 0) {
                         /* Last bit of codeword */
                         done = false;
@@ -680,7 +677,7 @@ public class AztecCode extends Symbol {
                         j++;
                         i++;
                     }
-                } while (i < data_length);
+                }
 
                 adjusted_length = adjusted_string.length();
                 adjustment_size = adjusted_length - data_length;
@@ -699,7 +696,7 @@ public class AztecCode extends Symbol {
                 adjusted_length = adjusted_string.length();
 
                 count = 0;
-                for (i = (adjusted_length - codeword_size); i < adjusted_length; i++) {
+                for (i = Math.max(adjusted_length - codeword_size, 0); i < adjusted_length; i++) {
                     if (adjusted_string.charAt(i) == '1') {
                         count++;
                     }
@@ -750,9 +747,7 @@ public class AztecCode extends Symbol {
             if (layers >= 23) {
                 codeword_size = 12;
             }
-            j = 0;
-            i = 0;
-            do {
+            for (i = 0, j = 0; i < binaryString.length(); ) {
                 if (((j + 1) % codeword_size) == 0) {
                     /* Last bit of codeword */
                     done = false;
@@ -787,7 +782,7 @@ public class AztecCode extends Symbol {
                     j++;
                     i++;
                 }
-            } while (i < binaryString.length());
+            }
 
             adjusted_length = adjusted_string.length();
             remainder = adjusted_length % codeword_size;
@@ -803,7 +798,7 @@ public class AztecCode extends Symbol {
             adjusted_length = adjusted_string.length();
             count = 0;
 
-            for (i = (adjusted_length - codeword_size); i < adjusted_length; i++) {
+            for (i = Math.max(adjusted_length - codeword_size, 0); i < adjusted_length; i++) {
                 if (adjusted_string.charAt(i) == '1') {
                     count++;
                 }
@@ -1217,8 +1212,7 @@ public class AztecCode extends Symbol {
         }
 
         /* Look for double character encoding possibilities */
-        i = 0;
-        do {
+        for (i = 0; i < (maplength - 1); i++) {
             if (((charmap[i] == 300) && (charmap[i + 1] == 11)) && ((typemap[i] == 12) && (typemap[i + 1] == 4))) {
                 /* CR LF combination */
                 charmap[i] = 2;
@@ -1270,16 +1264,12 @@ public class AztecCode extends Symbol {
                 }
                 maplength--;
             }
-
-            i++;
-        } while (i < (maplength - 1));
+        }
 
         /* look for blocks of characters which use the same table */
-        blocks = 1;
-        blockType[0] = typemap[0];
-        blockLength[0] = 1;
-        for (i = 1; i < maplength; i++) {
-            if (typemap[i] == typemap[i - 1]) {
+        blocks = 0;
+        for (i = 0; i < maplength; i++) {
+            if (i > 0 && typemap[i] == typemap[i - 1]) {
                 blockLength[blocks - 1]++;
             } else {
                 blocks++;
@@ -1396,7 +1386,7 @@ public class AztecCode extends Symbol {
         }
 
         /* Don't shift an initial capital letter */
-        if (typemap[0] == 65) {
+        if (maplength > 0 && typemap[0] == 65) {
             typemap[0] = 1;
         }
 

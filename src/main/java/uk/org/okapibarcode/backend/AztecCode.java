@@ -495,25 +495,12 @@ public class AztecCode extends Symbol {
     @Override
     protected void encode() {
 
-        int i, ecc_level, data_length, layers, data_maxsize;
-        int adjustment_size, codeword_size;
-        int j, count, adjusted_length, padbits, remainder;
-        String adjusted_string = "", bit_pattern = "";
-        int comp_loop = 4;
-        int data_blocks, ecc_blocks, total_bits;
+        int layers;
         boolean compact;
-        ReedSolomon rs = new ReedSolomon();
-        ReedSolomon rs2 = new ReedSolomon();
-        String descriptor = "";
-        int[] desc_data = new int[4];
-        int[] desc_ecc = new int[6];
-        int y, x, weight;
-        String bin;
-        int t;
-        boolean done;
+        StringBuilder adjustedString;
 
-        if (readerInit) {
-            comp_loop = 1;
+        if (inputDataType == DataType.GS1 && readerInit) {
+            throw new OkapiException("Cannot encode in GS1 and Reader Initialisation mode at the same time");
         }
 
         eciProcess(); // Get ECI mode
@@ -531,610 +518,193 @@ public class AztecCode extends Symbol {
             inputData = insertArray(inputData, 0, prefixArray);
         }
 
-        if (inputDataType == DataType.GS1 && readerInit) {
-            throw new OkapiException("Cannot encode in GS1 and Reader Initialisation mode at the same time");
-        }
-
         String binaryString = generateAztecBinary();
+        int dataLength = binaryString.length();
 
-        // Set the error correction level
-        ecc_level = preferredEccLevel;
+        if (preferredSize == 0) {
 
-        data_length = binaryString.length();
+            /* The size of the symbol can be determined by Okapi */
 
-        layers = 0; /* Keep compiler happy! */
-
-        data_maxsize = 0; /* Keep compiler happy! */
-
-        adjustment_size = 0;
-
-        if (preferredSize == 0) { /* The size of the symbol can be determined by Okapi */
+            int dataMaxSize = 0;
+            int compLoop = (readerInit ? 1 : 4);
 
             do {
                 /* Decide what size symbol to use - the smallest that fits the data */
-                compact = false; /* 1 = Aztec Compact, 0 = Normal Aztec */
 
-                layers = 0;
+                int[] dataSizes;
+                int[] compactDataSizes;
 
-                switch (ecc_level) {
-                    /* For each level of error correction work out the smallest symbol which
-                     the data will fit in */
+                switch (preferredEccLevel) {
+                    /* For each level of error correction work out the smallest symbol which the data will fit in */
                     case 1:
-                        for (i = 32; i > 0; i--) {
-                            if ((data_length + adjustment_size) < AZTEC_10_DATA_SIZES[i - 1]) {
-                                layers = i;
-                                compact = false;
-                                data_maxsize = AZTEC_10_DATA_SIZES[i - 1];
-                            }
-                        }
-                        for (i = comp_loop; i > 0; i--) {
-                            if ((data_length + adjustment_size) < AZTEC_COMPACT_10_DATA_SIZES[i - 1]) {
-                                layers = i;
-                                compact = true;
-                                data_maxsize = AZTEC_COMPACT_10_DATA_SIZES[i - 1];
-                            }
-                        }
+                        dataSizes = AZTEC_10_DATA_SIZES;
+                        compactDataSizes = AZTEC_COMPACT_10_DATA_SIZES;
                         break;
                     case 2:
-                        for (i = 32; i > 0; i--) {
-                            if ((data_length + adjustment_size) < AZTEC_23_DATA_SIZES[i - 1]) {
-                                layers = i;
-                                compact = false;
-                                data_maxsize = AZTEC_23_DATA_SIZES[i - 1];
-                            }
-                        }
-                        for (i = comp_loop; i > 0; i--) {
-                            if ((data_length + adjustment_size) < AZTEC_COMPACT_23_DATA_SIZES[i - 1]) {
-                                layers = i;
-                                compact = true;
-                                data_maxsize = AZTEC_COMPACT_23_DATA_SIZES[i - 1];
-                            }
-                        }
+                        dataSizes = AZTEC_23_DATA_SIZES;
+                        compactDataSizes = AZTEC_COMPACT_23_DATA_SIZES;
                         break;
                     case 3:
-                        for (i = 32; i > 0; i--) {
-                            if ((data_length + adjustment_size) < AZTEC_36_DATA_SIZES[i - 1]) {
-                                layers = i;
-                                compact = false;
-                                data_maxsize = AZTEC_36_DATA_SIZES[i - 1];
-                            }
-                        }
-                        for (i = comp_loop; i > 0; i--) {
-                            if ((data_length + adjustment_size) < AZTEC_COMPACT_36_DATA_SIZES[i - 1]) {
-                                layers = i;
-                                compact = true;
-                                data_maxsize = AZTEC_COMPACT_36_DATA_SIZES[i - 1];
-                            }
-                        }
+                        dataSizes = AZTEC_36_DATA_SIZES;
+                        compactDataSizes = AZTEC_COMPACT_36_DATA_SIZES;
                         break;
                     case 4:
-                        for (i = 32; i > 0; i--) {
-                            if ((data_length + adjustment_size) < AZTEC_50_DATA_SIZES[i - 1]) {
-                                layers = i;
-                                compact = false;
-                                data_maxsize = AZTEC_50_DATA_SIZES[i - 1];
-                            }
-                        }
-                        for (i = comp_loop; i > 0; i--) {
-                            if ((data_length + adjustment_size) < AZTEC_COMPACT_50_DATA_SIZES[i - 1]) {
-                                layers = i;
-                                compact = true;
-                                data_maxsize = AZTEC_COMPACT_50_DATA_SIZES[i - 1];
-                            }
-                        }
+                        dataSizes = AZTEC_50_DATA_SIZES;
+                        compactDataSizes = AZTEC_COMPACT_50_DATA_SIZES;
                         break;
+                    default:
+                        throw new OkapiException("Unrecognized ECC level: " + preferredEccLevel);
                 }
 
-                if (layers == 0) { /* Couldn't find a symbol which fits the data */
+                layers = 0;
+                compact = false;
+
+                for (int i = 32; i > 0; i--) {
+                    if (dataLength < dataSizes[i - 1]) {
+                        layers = i;
+                        compact = false;
+                        dataMaxSize = dataSizes[i - 1];
+                    }
+                }
+
+                for (int i = compLoop; i > 0; i--) {
+                    if (dataLength < compactDataSizes[i - 1]) {
+                        layers = i;
+                        compact = true;
+                        dataMaxSize = compactDataSizes[i - 1];
+                    }
+                }
+
+                if (layers == 0) {
+                    /* Couldn't find a symbol which fits the data */
                     throw new OkapiException("Input too long (too many bits for selected ECC)");
                 }
 
-                /* Determine codeword bit length - Table 3 */
-                codeword_size = 6; /* if (layers <= 2) */
+                adjustedString = adjustBinaryString(binaryString, compact, layers);
 
-                if ((layers >= 3) && (layers <= 8)) {
-                    codeword_size = 8;
-                }
-                if ((layers >= 9) && (layers <= 22)) {
-                    codeword_size = 10;
-                }
-                if (layers >= 23) {
-                    codeword_size = 12;
-                }
-
-                for (i = 0, j = 0; i < data_length; ) {
-                    if ((j + 1) % codeword_size == 0) {
-                        /* Last bit of codeword */
-                        done = false;
-                        count = 0;
-
-                        /* Discover how many '1's in current codeword */
-                        for (t = 0; t < (codeword_size - 1); t++) {
-                            if (binaryString.charAt((i - (codeword_size - 1)) + t) == '1') {
-                                count++;
-                            }
-                        }
-
-                        if (count == (codeword_size - 1)) {
-                            adjusted_string += '0';
-                            j++;
-                            done = true;
-                        }
-
-                        if (count == 0) {
-                            adjusted_string += '1';
-                            j++;
-                            done = true;
-                        }
-
-                        if (!done) {
-                            adjusted_string += binaryString.charAt(i);
-                            j++;
-                            i++;
-                        }
-                    } else {
-                        adjusted_string += binaryString.charAt(i);
-                        j++;
-                        i++;
-                    }
-                }
-
-                adjusted_length = adjusted_string.length();
-                adjustment_size = adjusted_length - data_length;
-
-                /* Add padding */
-                remainder = adjusted_length % codeword_size;
-
-                padbits = codeword_size - remainder;
-                if (padbits == codeword_size) {
-                    padbits = 0;
-                }
-
-                for (i = 0; i < padbits; i++) {
-                    adjusted_string += "1";
-                }
-                adjusted_length = adjusted_string.length();
-
-                count = 0;
-                for (i = Math.max(adjusted_length - codeword_size, 0); i < adjusted_length; i++) {
-                    if (adjusted_string.charAt(i) == '1') {
-                        count++;
-                    }
-                }
-                if (count == codeword_size) {
-                    adjusted_string = adjusted_string.substring(0, adjusted_length - 1) + '0';
-                }
-
-                encodeInfo += "Codewords: ";
-                for (i = 0; i < (adjusted_length / codeword_size); i++) {
-                    int l = 0, m = (1 << (codeword_size - 1));
-                    for (j = 0; j < codeword_size; j++) {
-                        if (adjusted_string.charAt((i * codeword_size) + j) == '1') {
-                            l += m;
-                        }
-                        m = m >> 1;
-                    }
-                    encodeInfo += Integer.toString(l) + " ";
-                }
-                encodeInfo += "\n";
-
-            } while (adjusted_length > data_maxsize);
+            } while (adjustedString.length() > dataMaxSize);
             /* This loop will only repeat on the rare occasions when the rule about not having all 1s or all 0s
              means that the binary string has had to be lengthened beyond the maximum number of bits that can
              be encoded in a symbol of the selected size */
+
         } else {
+
             /* The size of the symbol has been specified by the user */
-            compact = false;
-            if ((readerInit) && ((preferredSize >= 2) && (preferredSize <= 4))) {
+
+            if (readerInit && preferredSize >= 2 && preferredSize <= 4) {
                 preferredSize = 5;
             }
-            if ((preferredSize >= 1) && (preferredSize <= 4)) {
+
+            if (preferredSize >= 1 && preferredSize <= 4) {
                 compact = true;
                 layers = preferredSize;
-            }
-            if ((preferredSize >= 5) && (preferredSize <= 36)) {
+            } else {
+                compact = false;
                 layers = preferredSize - 4;
             }
 
-            /* Determine codeword bitlength - Table 3 */
-            codeword_size = 6;
-            if ((layers >= 3) && (layers <= 8)) {
-                codeword_size = 8;
-            }
-            if ((layers >= 9) && (layers <= 22)) {
-                codeword_size = 10;
-            }
-            if (layers >= 23) {
-                codeword_size = 12;
-            }
-            for (i = 0, j = 0; i < binaryString.length(); ) {
-                if (((j + 1) % codeword_size) == 0) {
-                    /* Last bit of codeword */
-                    done = false;
-                    count = 0;
-
-                    /* Discover how many '1's in current codeword */
-                    for (t = 0; t < (codeword_size - 1); t++) {
-                        if (binaryString.charAt((i - (codeword_size - 1)) + t) == '1') {
-                            count++;
-                        }
-                    }
-
-                    if (count == (codeword_size - 1)) {
-                        adjusted_string += '0';
-                        j++;
-                        done = true;
-                    }
-
-                    if (count == 0) {
-                        adjusted_string += '1';
-                        j++;
-                        done = true;
-                    }
-
-                    if (!done) {
-                        adjusted_string += binaryString.charAt(i);
-                        j++;
-                        i++;
-                    }
-                } else {
-                    adjusted_string += binaryString.charAt(i);
-                    j++;
-                    i++;
-                }
-            }
-
-            adjusted_length = adjusted_string.length();
-            remainder = adjusted_length % codeword_size;
-            padbits = codeword_size - remainder;
-
-            if (padbits == codeword_size) {
-                padbits = 0;
-            }
-            for (i = 0; i < padbits; i++) {
-                adjusted_string += "1";
-            }
-
-            adjusted_length = adjusted_string.length();
-            count = 0;
-
-            for (i = Math.max(adjusted_length - codeword_size, 0); i < adjusted_length; i++) {
-                if (adjusted_string.charAt(i) == '1') {
-                    count++;
-                }
-            }
-
-            if (count == codeword_size) {
-                adjusted_string = adjusted_string.substring(0, adjusted_length - 1) + '0';
-            }
-
-            /* Check if the data actually fits into the selected symbol size */
-            if (compact) {
-                data_maxsize = codeword_size * (AZTEC_COMPACT_SIZES[layers - 1] - 3);
-            } else {
-                data_maxsize = codeword_size * (AZTEC_SIZES[layers - 1] - 3);
-            }
-
-            if (adjusted_length > data_maxsize) {
-                throw new OkapiException("Data too long for specified Aztec Code symbol size");
-            }
-
-            encodeInfo += "Codewords: ";
-            for (i = 0; i < (adjusted_length / codeword_size); i++) {
-                int l = 0, m = (1 << (codeword_size - 1));
-                for (j = 0; j < codeword_size; j++) {
-                    if (adjusted_string.charAt((i * codeword_size) + j) == '1') {
-                        l += m;
-                    }
-                    m = m >> 1;
-                }
-                encodeInfo += Integer.toString(l) + " ";
-            }
-            encodeInfo += "\n";
+            adjustedString = adjustBinaryString(binaryString, compact, layers);
         }
 
         if (readerInit && layers > 22) {
             throw new OkapiException("Data too long for reader initialisation symbol");
         }
 
-        data_blocks = adjusted_length / codeword_size;
+        int codewordSize = getCodewordSize(layers);
+        int dataBlocks = adjustedString.length() / codewordSize;
 
+        int eccBlocks;
         if (compact) {
-            ecc_blocks = AZTEC_COMPACT_SIZES[layers - 1] - data_blocks;
+            eccBlocks = AZTEC_COMPACT_SIZES[layers - 1] - dataBlocks;
         } else {
-            ecc_blocks = AZTEC_SIZES[layers - 1] - data_blocks;
+            eccBlocks = AZTEC_SIZES[layers - 1] - dataBlocks;
         }
 
         encodeInfo += "Compact Mode: " + compact + "\n";
         encodeInfo += "Layers: " + layers + '\n';
-        encodeInfo += "Codeword Length: " + codeword_size + " bits\n";
-        encodeInfo += "Data Codewords: " + data_blocks + '\n';
-        encodeInfo += "ECC Codewords: " + ecc_blocks + '\n';
+        encodeInfo += "Codeword Length: " + codewordSize + " bits\n";
+        encodeInfo += "Data Codewords: " + dataBlocks + '\n';
+        encodeInfo += "ECC Codewords: " + eccBlocks + '\n';
 
-        int[] data_part = new int[data_blocks + 3];
-        int[] ecc_part = new int[ecc_blocks + 3];
-
-        /* Split into codewords and calculate Reed-Solomon error correction codes */
-        switch (codeword_size) {
-            case 6:
-                for (i = 0; i < data_blocks; i++) {
-                    for (weight = 0; weight < 6; weight++) {
-                        if (adjusted_string.charAt((i * codeword_size) + weight) == '1') {
-                            data_part[i] += (32 >> weight);
-                        }
-                    }
-                }
-                rs.init_gf(0x43);
-                rs.init_code(ecc_blocks, 1);
-                rs.encode(data_blocks, data_part);
-                for (i = 0; i < ecc_blocks; i++) {
-                    ecc_part[i] = rs.getResult(i);
-                }
-                for (i = (ecc_blocks - 1); i >= 0; i--) {
-                    for (weight = 0x20; weight > 0; weight = weight >> 1) {
-                        if ((ecc_part[i] & weight) != 0) {
-                            adjusted_string += "1";
-                        } else {
-                            adjusted_string += "0";
-                        }
-                    }
-                }
-                break;
-            case 8:
-                for (i = 0; i < data_blocks; i++) {
-                    for (weight = 0; weight < 8; weight++) {
-                        if (adjusted_string.charAt((i * codeword_size) + weight) == '1') {
-                            data_part[i] += (128 >> weight);
-                        }
-                    }
-                }
-                rs.init_gf(0x12d);
-                rs.init_code(ecc_blocks, 1);
-                rs.encode(data_blocks, data_part);
-                for (i = 0; i < ecc_blocks; i++) {
-                    ecc_part[i] = rs.getResult(i);
-                }
-                for (i = (ecc_blocks - 1); i >= 0; i--) {
-                    for (weight = 0x80; weight > 0; weight = weight >> 1) {
-                        if ((ecc_part[i] & weight) != 0) {
-                            adjusted_string += "1";
-                        } else {
-                            adjusted_string += "0";
-                        }
-                    }
-                }
-                break;
-            case 10:
-                for (i = 0; i < data_blocks; i++) {
-                    for (weight = 0; weight < 10; weight++) {
-                        if (adjusted_string.charAt((i * codeword_size) + weight) == '1') {
-                            data_part[i] += (512 >> weight);
-                        }
-                    }
-                }
-                rs.init_gf(0x409);
-                rs.init_code(ecc_blocks, 1);
-                rs.encode(data_blocks, data_part);
-                for (i = 0; i < ecc_blocks; i++) {
-                    ecc_part[i] = rs.getResult(i);
-                }
-                for (i = (ecc_blocks - 1); i >= 0; i--) {
-                    for (weight = 0x200; weight > 0; weight = weight >> 1) {
-                        if ((ecc_part[i] & weight) != 0) {
-                            adjusted_string += "1";
-                        } else {
-                            adjusted_string += "0";
-                        }
-                    }
-                }
-                break;
-            case 12:
-                for (i = 0; i < data_blocks; i++) {
-                    for (weight = 0; weight < 12; weight++) {
-                        if (adjusted_string.charAt((i * codeword_size) + weight) == '1') {
-                            data_part[i] += (2048 >> weight);
-                        }
-                    }
-                }
-                rs.init_gf(0x1069);
-                rs.init_code(ecc_blocks, 1);
-                rs.encode(data_blocks, data_part);
-                for (i = 0; i < ecc_blocks; i++) {
-                    ecc_part[i] = rs.getResult(i);
-                }
-                for (i = (ecc_blocks - 1); i >= 0; i--) {
-                    for (weight = 0x800; weight > 0; weight = weight >> 1) {
-                        if ((ecc_part[i] & weight) != 0) {
-                            adjusted_string += "1";
-                        } else {
-                            adjusted_string += "0";
-                        }
-                    }
-                }
-                break;
-        }
+        /** Add ECC data to the adjusted string */
+        addErrorCorrection(adjustedString, codewordSize, dataBlocks, eccBlocks);
 
         /* Invert the data so that actual data is on the outside and reed-solomon on the inside */
-        total_bits = (data_blocks + ecc_blocks) * codeword_size;
-        for (i = 0; i < total_bits; i++) {
-            bit_pattern += adjusted_string.charAt(total_bits - i - 1);
+        for (int i = 0; i < adjustedString.length() / 2; i++) {
+            int mirror = adjustedString.length() - i - 1;
+            char c = adjustedString.charAt(i);
+            adjustedString.setCharAt(i, adjustedString.charAt(mirror));
+            adjustedString.setCharAt(mirror, c);
         }
 
-        if (compact) {
-            /* The first 2 bits represent the number of layers minus 1 */
-            if (((layers - 1) & 0x02) != 0) {
-                descriptor += '1';
-            } else {
-                descriptor += '0';
-            }
-            if (((layers - 1) & 0x01) != 0) {
-                descriptor += '1';
-            } else {
-                descriptor += '0';
-            }
-            /* The next 6 bits represent the number of data blocks minus 1 */
-            if (readerInit) {
-                descriptor += '1';
-            } else {
-                if (((data_blocks - 1) & 0x20) != 0) {
-                    descriptor += '1';
-                } else {
-                    descriptor += '0';
-                }
-            }
-            for (i = 0x10; i > 0; i = i >> 1) {
-                if (((data_blocks - 1) & i) != 0) {
-                    descriptor += '1';
-                } else {
-                    descriptor += '0';
-                }
-            }
-            encodeInfo += "Mode Message: " + descriptor + "\n";
-            j = 2;
-        } else {
-            /* The first 5 bits represent the number of layers minus 1 */
-            for (i = 0x10; i > 0; i = i >> 1) {
-                if (((layers - 1) & i) != 0) {
-                    descriptor += '1';
-                } else {
-                    descriptor += '0';
-                }
-            }
-
-            /* The next 11 bits represent the number of data blocks minus 1 */
-            if (readerInit) {
-                descriptor += '1';
-            } else {
-                if (((data_blocks - 1) & 0x400) != 0) {
-                    descriptor += '1';
-                } else {
-                    descriptor += '0';
-                }
-            }
-            for (i = 0x200; i > 0; i = i >> 1) {
-                if (((data_blocks - 1) & i) != 0) {
-                    descriptor += '1';
-                } else {
-                    descriptor += '0';
-                }
-            }
-
-            encodeInfo += "Mode Message: " + descriptor + "\n";
-            j = 4;
-        }
-
-        /* Split into 4-bit codewords */
-        for (i = 0; i < j; i++) {
-            for (weight = 0; weight < 4; weight++) {
-                if (descriptor.charAt((i * 4) + weight) == '1') {
-                    desc_data[i] += (8 >> weight);
-                }
-            }
-        }
-
-        /* Add reed-solomon error correction with Galois field GF(16) and prime modulus
-         x^4 + x + 1 (section 7.2.3)*/
-        rs2.init_gf(0x13);
-        if (compact) {
-            rs2.init_code(5, 1);
-            rs2.encode(2, desc_data);
-            for (j = 0; j < 5; j++) {
-                desc_ecc[j] = rs2.getResult(j);
-            }
-            for (i = 0; i < 5; i++) {
-                for (weight = 0x08; weight > 0; weight = weight >> 1) {
-                    if ((desc_ecc[4 - i] & weight) != 0) {
-                        descriptor += '1';
-                    } else {
-                        descriptor += '0';
-                    }
-                }
-            }
-        } else {
-            rs2.init_code(6, 1);
-            rs2.encode(4, desc_data);
-            for (j = 0; j < 6; j++) {
-                desc_ecc[j] = rs2.getResult(j);
-            }
-            for (i = 0; i < 6; i++) {
-                for (weight = 0x08; weight > 0; weight = weight >> 1) {
-                    if ((desc_ecc[5 - i] & weight) != 0) {
-                        descriptor += '1';
-                    } else {
-                        descriptor += '0';
-                    }
-                }
-            }
-        }
-
-        readable = "";
+        /* Create the descriptor / mode message */
+        String descriptor = createDescriptor(compact, layers, dataBlocks);
 
         /* Plot all of the data into the symbol in pre-defined spiral pattern */
         if (compact) {
 
+            readable = "";
             row_count = 27 - (2 * AZTEC_COMPACT_OFFSET[layers - 1]);
             row_height = new int[row_count];
             row_height[0] = -1;
             pattern = new String[row_count];
-            bin = "";
-            for (y = AZTEC_COMPACT_OFFSET[layers - 1]; y < (27 - AZTEC_COMPACT_OFFSET[layers - 1]); y++) {
-                for (x = AZTEC_COMPACT_OFFSET[layers - 1]; x < (27 - AZTEC_COMPACT_OFFSET[layers - 1]); x++) {
-                    j = COMPACT_AZTEC_MAP[(y * 27) + x];
-
+            for (int y = AZTEC_COMPACT_OFFSET[layers - 1]; y < (27 - AZTEC_COMPACT_OFFSET[layers - 1]); y++) {
+                StringBuilder bin = new StringBuilder(27);
+                for (int x = AZTEC_COMPACT_OFFSET[layers - 1]; x < (27 - AZTEC_COMPACT_OFFSET[layers - 1]); x++) {
+                    int j = COMPACT_AZTEC_MAP[(y * 27) + x];
                     if (j == 0) {
-                        bin += "0";
+                        bin.append('0');
                     }
                     if (j == 1) {
-                        bin += "1";
+                        bin.append('1');
                     }
-
                     if (j >= 2) {
-                        if ((j - 2) < bit_pattern.length()) {
-                            bin += bit_pattern.charAt(j - 2);
+                        if (j - 2 < adjustedString.length()) {
+                            bin.append(adjustedString.charAt(j - 2));
                         } else {
                             if (j > 2000) {
-                                bin += descriptor.charAt(j - 2000);
+                                bin.append(descriptor.charAt(j - 2000));
                             } else {
-                                bin += "0";
+                                bin.append('0');
                             }
                         }
                     }
                 }
                 row_height[y - AZTEC_COMPACT_OFFSET[layers - 1]] = 1;
-                pattern[y - AZTEC_COMPACT_OFFSET[layers - 1]] = bin2pat(bin);
-                bin = "";
+                pattern[y - AZTEC_COMPACT_OFFSET[layers - 1]] = bin2pat(bin.toString());
             }
 
         } else {
+
+            readable = "";
             row_count = 151 - (2 * AZTEC_OFFSET[layers - 1]);
             row_height = new int[row_count];
             row_height[0] = -1;
             pattern = new String[row_count];
-            bin = "";
-            for (y = AZTEC_OFFSET[layers - 1]; y < (151 - AZTEC_OFFSET[layers - 1]); y++) {
-                for (x = AZTEC_OFFSET[layers - 1]; x < (151 - AZTEC_OFFSET[layers - 1]); x++) {
-                    j = AZTEC_MAP[x][y];
+            for (int y = AZTEC_OFFSET[layers - 1]; y < (151 - AZTEC_OFFSET[layers - 1]); y++) {
+                StringBuilder bin = new StringBuilder(151);
+                for (int x = AZTEC_OFFSET[layers - 1]; x < (151 - AZTEC_OFFSET[layers - 1]); x++) {
+                    int j = AZTEC_MAP[x][y];
                     if (j == 1) {
-                        bin += "1";
+                        bin.append('1');
                     }
                     if (j == 0) {
-                        bin += "0";
+                        bin.append('0');
                     }
                     if (j >= 2) {
-                        if ((j - 2) < bit_pattern.length()) {
-                            bin += bit_pattern.charAt(j - 2);
+                        if (j - 2 < adjustedString.length()) {
+                            bin.append(adjustedString.charAt(j - 2));
                         } else {
                             if (j > 20000) {
-                                bin += descriptor.charAt(j - 20000);
+                                bin.append(descriptor.charAt(j - 20000));
                             } else {
-                                bin += "0";
+                                bin.append('0');
                             }
                         }
                     }
                 }
                 row_height[y - AZTEC_OFFSET[layers - 1]] = 1;
-                pattern[y - AZTEC_OFFSET[layers - 1]] = bin2pat(bin);
-                bin = "";
+                pattern[y - AZTEC_OFFSET[layers - 1]] = bin2pat(bin.toString());
             }
         }
     }
@@ -1148,7 +718,6 @@ public class AztecCode extends Symbol {
         int[] typemap = new int[2 * inputData.length];
         int[] blockType = new int[inputData.length + 1];
         int[] blockLength = new int[inputData.length + 1];
-        int weight;
 
         /* Lookup input string in encoding table */
         maplength = 0;
@@ -1336,7 +905,7 @@ public class AztecCode extends Symbol {
                 }
             }
 
-            /* if less than 4 characters are preceeded and followed by binary blocks
+            /* if less than 4 characters are preceded and followed by binary blocks
                then it is more efficient to also encode these in binary
             */
 
@@ -1434,20 +1003,6 @@ public class AztecCode extends Symbol {
                 }
             }
         }
-
-//        if (debug) {
-//            System.out.printf("Charmap: ");
-//            for (i = 0; i < maplength; i++) {
-//                System.out.printf("%d ", charmap[i]);
-//            }
-//            System.out.printf("\n");
-//
-//            System.out.printf("Typemap: ");
-//            for (i = 0; i < maplength; i++) {
-//                System.out.printf("%d ", typemap[i]);
-//            }
-//            System.out.printf("\n");
-//        }
 
         StringBuilder binaryString = new StringBuilder();
         encodeInfo += "Encoding: ";
@@ -1848,19 +1403,19 @@ public class AztecCode extends Symbol {
                                 throw new OkapiException("Input too long");
                             }
 
-                            if (bytes > 31) { /* Put 00000 followed by 11-bit number of bytes less 31 */
-
+                            if (bytes > 31) {
+                                /* Put 00000 followed by 11-bit number of bytes less 31 */
                                 binaryString.append("00000");
-                                for (weight = 0x400; weight > 0; weight = weight >> 1) {
+                                for (int weight = 0x400; weight > 0; weight = weight >> 1) {
                                     if (((bytes - 31) & weight) != 0) {
                                         binaryString.append("1");
                                     } else {
                                         binaryString.append("0");
                                     }
                                 }
-                            } else { /* Put 5-bit number of bytes */
-
-                                for (weight = 0x10; weight > 0; weight = weight >> 1) {
+                            } else {
+                                /* Put 5-bit number of bytes */
+                                for (int weight = 0x10; weight > 0; weight = weight >> 1) {
                                     if ((bytes & weight) != 0) {
                                         binaryString.append("1");
                                     } else {
@@ -1901,7 +1456,7 @@ public class AztecCode extends Symbol {
                     encodeInfo += Integer.toString(charmap[i]) + " ";
                     break;
                 case 32:
-                    for (weight = 0x80; weight > 0; weight = weight >> 1) {
+                    for (int weight = 0x80; weight > 0; weight = weight >> 1) {
                         if ((charmap[i] & weight) != 0) {
                             binaryString.append("1");
                         } else {
@@ -1919,6 +1474,98 @@ public class AztecCode extends Symbol {
         return binaryString.toString();
     }
 
+    /** Adjusts bit stream so that no codewords are all 0s or all 1s, per Section 7.3.1.2 */
+    private StringBuilder adjustBinaryString(String binaryString, boolean compact, int layers) {
+
+        StringBuilder adjustedString = new StringBuilder();
+        int codewordSize = getCodewordSize(layers);
+
+        for (int i = 0, j = 0; i < binaryString.length(); ) {
+            if (((j + 1) % codewordSize) == 0) {
+                /* Last bit of codeword */
+                boolean done = false;
+                int ones = 0;
+                for (int t = 0; t < (codewordSize - 1); t++) {
+                    if (binaryString.charAt((i - (codewordSize - 1)) + t) == '1') {
+                        ones++;
+                    }
+                }
+                if (ones == (codewordSize - 1)) {
+                    adjustedString.append('0');
+                    j++;
+                    done = true;
+                }
+                if (ones == 0) {
+                    adjustedString.append('1');
+                    j++;
+                    done = true;
+                }
+                if (!done) {
+                    adjustedString.append(binaryString.charAt(i));
+                    j++;
+                    i++;
+                }
+            } else {
+                adjustedString.append(binaryString.charAt(i));
+                j++;
+                i++;
+            }
+        }
+
+        int adjustedLength = adjustedString.length();
+        int remainder = adjustedLength % codewordSize;
+
+        /* Add padding */
+        int padBits = codewordSize - remainder;
+        if (padBits == codewordSize) {
+            padBits = 0;
+        }
+        for (int i = 0; i < padBits; i++) {
+            adjustedString.append('1');
+        }
+        adjustedLength = adjustedString.length();
+
+        /* Make sure padding didn't create an invalid (all 1s) codeword */
+        int count = 0;
+        for (int i = Math.max(adjustedLength - codewordSize, 0); i < adjustedLength; i++) {
+            if (adjustedString.charAt(i) == '1') {
+                count++;
+            }
+        }
+        if (count == codewordSize) {
+            adjustedString.setCharAt(adjustedLength - 1, '0');
+        }
+
+        /* Check if the data actually fits into the selected symbol size */
+        int dataMaxSize;
+        if (compact) {
+            dataMaxSize = codewordSize * (AZTEC_COMPACT_SIZES[layers - 1] - 3);
+        } else {
+            dataMaxSize = codewordSize * (AZTEC_SIZES[layers - 1] - 3);
+        }
+
+        if (adjustedLength > dataMaxSize) {
+            throw new OkapiException("Data too long for specified Aztec Code symbol size");
+        }
+
+        /* Log the codewords */
+        encodeInfo += "Codewords: ";
+        for (int i = 0; i < (adjustedLength / codewordSize); i++) {
+            int l = 0, m = (1 << (codewordSize - 1));
+            for (int j = 0; j < codewordSize; j++) {
+                if (adjustedString.charAt((i * codewordSize) + j) == '1') {
+                    l += m;
+                }
+                m = m >> 1;
+            }
+            encodeInfo += Integer.toString(l) + " ";
+        }
+        encodeInfo += "\n";
+
+        /* Return the adjusted bit string */
+        return adjustedString;
+    }
+
     private String eciToBinary() {
         String eciNumber = Integer.toString(eciMode);
         StringBuilder binary = new StringBuilder(4 * eciNumber.length());
@@ -1927,5 +1574,199 @@ public class AztecCode extends Symbol {
             encodeInfo += Character.toString(eciNumber.charAt(i)) + " ";
         }
         return binary.toString();
+    }
+
+    /** Creates the descriptor / mode message, per Section 7.2 */
+    private String createDescriptor(boolean compact, int layers, int dataBlocks) {
+
+        StringBuilder descriptor = new StringBuilder();
+        int descDataSize;
+
+        if (compact) {
+            /* The first 2 bits represent the number of layers minus 1 */
+            if (((layers - 1) & 0x02) != 0) {
+                descriptor.append('1');
+            } else {
+                descriptor.append('0');
+            }
+            if (((layers - 1) & 0x01) != 0) {
+                descriptor.append('1');
+            } else {
+                descriptor.append('0');
+            }
+            /* The next 6 bits represent the number of data blocks minus 1 */
+            if (readerInit) {
+                descriptor.append('1');
+            } else {
+                if (((dataBlocks - 1) & 0x20) != 0) {
+                    descriptor.append('1');
+                } else {
+                    descriptor.append('0');
+                }
+            }
+            for (int i = 0x10; i > 0; i = i >> 1) {
+                if (((dataBlocks - 1) & i) != 0) {
+                    descriptor.append('1');
+                } else {
+                    descriptor.append('0');
+                }
+            }
+            descDataSize = 2;
+        } else {
+            /* The first 5 bits represent the number of layers minus 1 */
+            for (int i = 0x10; i > 0; i = i >> 1) {
+                if (((layers - 1) & i) != 0) {
+                    descriptor.append('1');
+                } else {
+                    descriptor.append('0');
+                }
+            }
+
+            /* The next 11 bits represent the number of data blocks minus 1 */
+            if (readerInit) {
+                descriptor.append('1');
+            } else {
+                if (((dataBlocks - 1) & 0x400) != 0) {
+                    descriptor.append('1');
+                } else {
+                    descriptor.append('0');
+                }
+            }
+            for (int i = 0x200; i > 0; i = i >> 1) {
+                if (((dataBlocks - 1) & i) != 0) {
+                    descriptor.append('1');
+                } else {
+                    descriptor.append('0');
+                }
+            }
+            descDataSize = 4;
+        }
+
+        encodeInfo += "Mode Message: " + descriptor + "\n";
+
+        /* Split into 4-bit codewords */
+        int[] desc_data = new int[descDataSize];
+        for (int i = 0; i < descDataSize; i++) {
+            for (int weight = 0; weight < 4; weight++) {
+                if (descriptor.charAt((i * 4) + weight) == '1') {
+                    desc_data[i] += (8 >> weight);
+                }
+            }
+        }
+
+        /* Add Reed-Solomon error correction with Galois Field GF(16) and prime modulus x^4 + x + 1 (Section 7.2.3) */
+        ReedSolomon rs = new ReedSolomon();
+        rs.init_gf(0x13);
+        if (compact) {
+            rs.init_code(5, 1);
+            rs.encode(2, desc_data);
+            int[] desc_ecc = new int[6];
+            for (int i = 0; i < 5; i++) {
+                desc_ecc[i] = rs.getResult(i);
+            }
+            for (int i = 0; i < 5; i++) {
+                for (int weight = 0x08; weight > 0; weight = weight >> 1) {
+                    if ((desc_ecc[4 - i] & weight) != 0) {
+                        descriptor.append('1');
+                    } else {
+                        descriptor.append('0');
+                    }
+                }
+            }
+        } else {
+            rs.init_code(6, 1);
+            rs.encode(4, desc_data);
+            int[] desc_ecc = new int[6];
+            for (int i = 0; i < 6; i++) {
+                desc_ecc[i] = rs.getResult(i);
+            }
+            for (int i = 0; i < 6; i++) {
+                for (int weight = 0x08; weight > 0; weight = weight >> 1) {
+                    if ((desc_ecc[5 - i] & weight) != 0) {
+                        descriptor.append('1');
+                    } else {
+                        descriptor.append('0');
+                    }
+                }
+            }
+        }
+
+        return descriptor.toString();
+    }
+
+    /** Adds error correction data to the specified binary string, which already contains the primary data */
+    private void addErrorCorrection(StringBuilder adjustedString, int codewordSize, int dataBlocks, int eccBlocks) {
+
+        int x, poly, startWeight;
+
+        /* Split into codewords and calculate Reed-Solomon error correction codes */
+        switch (codewordSize) {
+            case 6:
+                x = 32;
+                poly = 0x43;
+                startWeight = 0x20;
+                break;
+            case 8:
+                x = 128;
+                poly = 0x12d;
+                startWeight = 0x80;
+                break;
+            case 10:
+                x = 512;
+                poly = 0x409;
+                startWeight = 0x200;
+                break;
+            case 12:
+                x = 2048;
+                poly = 0x1069;
+                startWeight = 0x800;
+                break;
+            default:
+                throw new OkapiException("Unrecognized codeword size: " + codewordSize);
+        }
+
+        ReedSolomon rs = new ReedSolomon();
+        int[] data = new int[dataBlocks + 3];
+        int[] ecc = new int[eccBlocks + 3];
+
+        for (int i = 0; i < dataBlocks; i++) {
+            for (int weight = 0; weight < codewordSize; weight++) {
+                if (adjustedString.charAt((i * codewordSize) + weight) == '1') {
+                    data[i] += (x >> weight);
+                }
+            }
+        }
+
+        rs.init_gf(poly);
+        rs.init_code(eccBlocks, 1);
+        rs.encode(dataBlocks, data);
+
+        for (int i = 0; i < eccBlocks; i++) {
+            ecc[i] = rs.getResult(i);
+        }
+
+        for (int i = (eccBlocks - 1); i >= 0; i--) {
+            for (int weight = startWeight; weight > 0; weight = weight >> 1) {
+                if ((ecc[i] & weight) != 0) {
+                    adjustedString.append('1');
+                } else {
+                    adjustedString.append('0');
+                }
+            }
+        }
+    }
+
+    /** Determines codeword bit length - Table 3 */
+    private static int getCodewordSize(int layers) {
+        if (layers >= 23) {
+            return 12;
+        } else if (layers >= 9 && layers <= 22) {
+            return 10;
+        } else if (layers >= 3 && layers <= 8) {
+            return 8;
+        } else {
+            assert layers <= 2;
+            return 6;
+        }
     }
 }

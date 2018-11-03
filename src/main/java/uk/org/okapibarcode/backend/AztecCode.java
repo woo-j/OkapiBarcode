@@ -591,10 +591,6 @@ public class AztecCode extends Symbol {
 
             /* The size of the symbol has been specified by the user */
 
-            if (readerInit && preferredSize >= 2 && preferredSize <= 4) {
-                preferredSize = 5;
-            }
-
             if (preferredSize >= 1 && preferredSize <= 4) {
                 compact = true;
                 layers = preferredSize;
@@ -606,8 +602,12 @@ public class AztecCode extends Symbol {
             adjustedString = adjustBinaryString(binaryString, compact, layers);
         }
 
+        if (readerInit && compact && layers > 1) {
+            throw new OkapiException("Symbol is too large for reader initialization");
+        }
+
         if (readerInit && layers > 22) {
-            throw new OkapiException("Data too long for reader initialisation symbol");
+            throw new OkapiException("Symbol is too large for reader initialization");
         }
 
         int codewordSize = getCodewordSize(layers);

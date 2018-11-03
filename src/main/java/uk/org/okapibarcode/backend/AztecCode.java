@@ -695,7 +695,7 @@ public class AztecCode extends Symbol {
                         if (j - 2 < adjustedString.length()) {
                             bin.append(adjustedString.charAt(j - 2));
                         } else {
-                            if (j > 20000) {
+                            if (j >= 20000) {
                                 bin.append(descriptor.charAt(j - 20000));
                             } else {
                                 bin.append('0');

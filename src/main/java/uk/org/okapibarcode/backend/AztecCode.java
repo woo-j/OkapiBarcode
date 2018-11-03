@@ -662,7 +662,7 @@ public class AztecCode extends Symbol {
                         if (j - 2 < adjustedString.length()) {
                             bin.append(adjustedString.charAt(j - 2));
                         } else {
-                            if (j > 2000) {
+                            if (j >= 2000) {
                                 bin.append(descriptor.charAt(j - 2000));
                             } else {
                                 bin.append('0');

@@ -232,7 +232,13 @@ public class Upc extends Symbol {
         row_height = new int[] { -1 };
     }
 
-    /** Expands the zero-compressed UPCE code to make a UPCA equivalent (EN Table 5). */
+    /**
+     * Expands the zero-compressed UPC-E code to make a UPC-A equivalent (EN Table 5).
+     *
+     * @param content the UPC-E code to expand
+     * @param validate whether or not to validate the input
+     * @return the UPC-A equivalent of the specified UPC-E code
+     */
     protected String expandToEquivalentUpcA(String content, boolean validate) {
 
         char[] upce = content.toCharArray();

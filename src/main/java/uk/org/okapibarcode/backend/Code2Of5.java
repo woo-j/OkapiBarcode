@@ -128,16 +128,16 @@ public class Code2Of5 extends Symbol {
     protected void encode() {
         switch (mode) {
             case MATRIX:
-                dataMatrixTof();
+                dataMatrix();
                 break;
             case INDUSTRIAL:
-                industrialTof();
+                industrial();
                 break;
             case IATA:
-                iataTof();
+                iata();
                 break;
             case INTERLEAVED:
-                interleavedTof();
+                interleaved();
                 break;
             case DATA_LOGIC:
                 dataLogic();
@@ -154,7 +154,7 @@ public class Code2Of5 extends Symbol {
         }
     }
 
-    private void dataMatrixTof() {
+    private void dataMatrix() {
 
         if (!content.matches("[0-9]+")) {
             throw new OkapiException("Invalid characters in input");
@@ -173,7 +173,7 @@ public class Code2Of5 extends Symbol {
         row_height = new int[] { -1 };
     }
 
-    private void industrialTof() {
+    private void industrial() {
 
         if (!content.matches("[0-9]+")) {
             throw new OkapiException("Invalid characters in input");
@@ -193,7 +193,7 @@ public class Code2Of5 extends Symbol {
         row_height = new int[] { -1 };
     }
 
-    private void iataTof() {
+    private void iata() {
 
         if (!content.matches("[0-9]+")) {
             throw new OkapiException("Invalid characters in input");
@@ -233,7 +233,7 @@ public class Code2Of5 extends Symbol {
         row_height = new int[] { -1 };
     }
 
-    private void interleavedTof() {
+    private void interleaved() {
         int i;
         String dest;
 

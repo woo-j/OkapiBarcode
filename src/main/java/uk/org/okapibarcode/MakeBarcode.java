@@ -217,7 +217,7 @@ public class MakeBarcode {
                 case 21:
                     // Leitcode
                     Code2Of5 dpLeit = new Code2Of5();
-                    dpLeit.setMode(ToFMode.DPLEIT);
+                    dpLeit.setMode(ToFMode.DP_LEITCODE);
                     dpLeit.setHumanReadableLocation(hrtLocation);
                     dpLeit.setContent(dataInput);
                     symbol = dpLeit;
@@ -225,7 +225,7 @@ public class MakeBarcode {
                 case 22:
                     // Identcode
                     Code2Of5 dpIdent = new Code2Of5();
-                    dpIdent.setMode(ToFMode.DPIDENT);
+                    dpIdent.setMode(ToFMode.DP_IDENTCODE);
                     dpIdent.setHumanReadableLocation(hrtLocation);
                     dpIdent.setContent(dataInput);
                     symbol = dpIdent;

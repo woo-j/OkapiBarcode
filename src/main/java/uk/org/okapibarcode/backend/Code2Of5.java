@@ -62,11 +62,11 @@ public class Code2Of5 extends Symbol {
         /**
          * Deutsche Post Leitcode. Requires a 13-digit numerical input. Check digit is calculated.
          */
-        DPLEIT,
+        DP_LEITCODE,
         /**
          * Deutsche Post Identcode. Requires an 11-digit numerical input. Check digit is calculated.
          */
-        DPIDENT
+        DP_IDENTCODE
     }
 
     private static final String[] C25_MATRIX_TABLE = {
@@ -145,10 +145,10 @@ public class Code2Of5 extends Symbol {
             case ITF14:
                 itf14();
                 break;
-            case DPLEIT:
+            case DP_LEITCODE:
                 deutschePostLeitcode();
                 break;
-            case DPIDENT:
+            case DP_IDENTCODE:
                 deutschePostIdentcode();
                 break;
         }

@@ -2628,14 +2628,14 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 return c25logic;
             case DP_LEITCODE:
                 Code2Of5 dpLeit = new Code2Of5();
-                dpLeit.setMode(ToFMode.DPLEIT);
+                dpLeit.setMode(ToFMode.DP_LEITCODE);
                 dpLeit.setHumanReadableLocation(hrtLoc);
                 dpLeit.setContent(dataInput);
                 setUniversals(dpLeit);
                 return dpLeit;
             case DP_IDENTCODE:
                 Code2Of5 dpIdent = new Code2Of5();
-                dpIdent.setMode(ToFMode.DPIDENT);
+                dpIdent.setMode(ToFMode.DP_IDENTCODE);
                 dpIdent.setHumanReadableLocation(hrtLoc);
                 dpIdent.setContent(dataInput);
                 setUniversals(dpIdent);

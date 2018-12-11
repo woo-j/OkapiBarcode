@@ -397,10 +397,11 @@ public class SymbolTest {
 
         byte[] bytes = Files.readAllBytes(config.file.toPath());
         String content = decode(bytes, UTF_8);
+        String newline = System.lineSeparator();
         boolean propertiesFileNeedsModification =
-            !content.contains(ReadMode.CODEWORDS.name()) &&
-            !content.contains(ReadMode.LOG.name()) &&
-            !content.contains(ReadMode.ERROR.name());
+            !content.contains(newline + ReadMode.CODEWORDS.name() + newline) &&
+            !content.contains(newline + ReadMode.LOG.name() + newline) &&
+            !content.contains(newline + ReadMode.ERROR.name() + newline);
 
         if (actualError != null && !actualError.isEmpty()) {
             if (propertiesFileNeedsModification) {

@@ -36,6 +36,7 @@ import uk.org.okapibarcode.backend.Code11;
 import uk.org.okapibarcode.backend.Code128;
 import uk.org.okapibarcode.backend.Code16k;
 import uk.org.okapibarcode.backend.Code2Of5;
+import uk.org.okapibarcode.backend.Code2Of5.ToFMode;
 import uk.org.okapibarcode.backend.Code32;
 import uk.org.okapibarcode.backend.Code3Of9;
 import uk.org.okapibarcode.backend.Code3Of9Extended;
@@ -110,7 +111,7 @@ public class MakeBarcode {
                 case 2:
                     // Code 2 of 5
                     Code2Of5 c25matrix = new Code2Of5();
-                    c25matrix.setMatrixMode();
+                    c25matrix.setMode(ToFMode.MATRIX);
                     c25matrix.setHumanReadableLocation(hrtLocation);
                     c25matrix.setContent(dataInput);
                     symbol = c25matrix;
@@ -118,7 +119,7 @@ public class MakeBarcode {
                 case 3:
                     //Interleaved 2 of 5
                     Code2Of5 c25inter = new Code2Of5();
-                    c25inter.setInterleavedMode();
+                    c25inter.setMode(ToFMode.INTERLEAVED);
                     c25inter.setHumanReadableLocation(hrtLocation);
                     c25inter.setContent(dataInput);
                     symbol = c25inter;
@@ -126,7 +127,7 @@ public class MakeBarcode {
                 case 4:
                     // IATA 2 of 5
                     Code2Of5 c25iata = new Code2Of5();
-                    c25iata.setIATAMode();
+                    c25iata.setMode(ToFMode.IATA);
                     c25iata.setHumanReadableLocation(hrtLocation);
                     c25iata.setContent(dataInput);
                     symbol = c25iata;
@@ -134,7 +135,7 @@ public class MakeBarcode {
                 case 6:
                     // Data Logic
                     Code2Of5 c25logic = new Code2Of5();
-                    c25logic.setDataLogicMode();
+                    c25logic.setMode(ToFMode.DATA_LOGIC);
                     c25logic.setHumanReadableLocation(hrtLocation);
                     c25logic.setContent(dataInput);
                     symbol = c25logic;
@@ -142,7 +143,7 @@ public class MakeBarcode {
                 case 7:
                     // Industrial 2 of 5
                     Code2Of5 c25ind = new Code2Of5();
-                    c25ind.setIndustrialMode();
+                    c25ind.setMode(ToFMode.INDUSTRIAL);
                     c25ind.setHumanReadableLocation(hrtLocation);
                     c25ind.setContent(dataInput);
                     symbol = c25ind;
@@ -216,7 +217,7 @@ public class MakeBarcode {
                 case 21:
                     // Leitcode
                     Code2Of5 dpLeit = new Code2Of5();
-                    dpLeit.setDPLeitMode();
+                    dpLeit.setMode(ToFMode.DPLEIT);
                     dpLeit.setHumanReadableLocation(hrtLocation);
                     dpLeit.setContent(dataInput);
                     symbol = dpLeit;
@@ -224,7 +225,7 @@ public class MakeBarcode {
                 case 22:
                     // Identcode
                     Code2Of5 dpIdent = new Code2Of5();
-                    dpIdent.setDPIdentMode();
+                    dpIdent.setMode(ToFMode.DPIDENT);
                     dpIdent.setHumanReadableLocation(hrtLocation);
                     dpIdent.setContent(dataInput);
                     symbol = dpIdent;
@@ -550,7 +551,7 @@ public class MakeBarcode {
                 case 89:
                     // ITF-14
                     Code2Of5 itf14 = new Code2Of5();
-                    itf14.setITF14Mode();
+                    itf14.setMode(ToFMode.ITF14);
                     itf14.setHumanReadableLocation(hrtLocation);
                     itf14.setContent(dataInput);
                     symbol = itf14;

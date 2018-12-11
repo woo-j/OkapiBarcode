@@ -52,6 +52,7 @@ import uk.org.okapibarcode.backend.Code11;
 import uk.org.okapibarcode.backend.Code128;
 import uk.org.okapibarcode.backend.Code16k;
 import uk.org.okapibarcode.backend.Code2Of5;
+import uk.org.okapibarcode.backend.Code2Of5.ToFMode;
 import uk.org.okapibarcode.backend.Code32;
 import uk.org.okapibarcode.backend.Code3Of9;
 import uk.org.okapibarcode.backend.Code3Of9Extended;
@@ -2444,7 +2445,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 return ean;
             case ITF14:
                 Code2Of5 itf14 = new Code2Of5();
-                itf14.setITF14Mode();
+                itf14.setMode(ToFMode.ITF14);
                 itf14.setHumanReadableLocation(hrtLoc);
                 itf14.setContent(dataInput);
                 setUniversals(itf14);
@@ -2478,21 +2479,21 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 return codabar;
             case CODE25_MATRIX:
                 Code2Of5 c25matrix = new Code2Of5();
-                c25matrix.setMatrixMode();
+                c25matrix.setMode(ToFMode.MATRIX);
                 c25matrix.setHumanReadableLocation(hrtLoc);
                 c25matrix.setContent(dataInput);
                 setUniversals(c25matrix);
                 return c25matrix;
             case CODE25_INDUSTRY:
                 Code2Of5 c25ind = new Code2Of5();
-                c25ind.setIndustrialMode();
+                c25ind.setMode(ToFMode.INDUSTRIAL);
                 c25ind.setHumanReadableLocation(hrtLoc);
                 c25ind.setContent(dataInput);
                 setUniversals(c25ind);
                 return c25ind;
             case CODE25_INTERLEAVED:
                 Code2Of5 c25inter = new Code2Of5();
-                c25inter.setInterleavedMode();
+                c25inter.setMode(ToFMode.INTERLEAVED);
                 c25inter.setHumanReadableLocation(hrtLoc);
                 c25inter.setContent(dataInput);
                 setUniversals(c25inter);
@@ -2613,28 +2614,28 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 return code16k;
             case CODE25_IATA:
                 Code2Of5 c25iata = new Code2Of5();
-                c25iata.setIATAMode();
+                c25iata.setMode(ToFMode.IATA);
                 c25iata.setHumanReadableLocation(hrtLoc);
                 c25iata.setContent(dataInput);
                 setUniversals(c25iata);
                 return c25iata;
             case CODE25_DATALOGIC:
                 Code2Of5 c25logic = new Code2Of5();
-                c25logic.setDataLogicMode();
+                c25logic.setMode(ToFMode.DATA_LOGIC);
                 c25logic.setHumanReadableLocation(hrtLoc);
                 c25logic.setContent(dataInput);
                 setUniversals(c25logic);
                 return c25logic;
             case DP_LEITCODE:
                 Code2Of5 dpLeit = new Code2Of5();
-                dpLeit.setDPLeitMode();
+                dpLeit.setMode(ToFMode.DPLEIT);
                 dpLeit.setHumanReadableLocation(hrtLoc);
                 dpLeit.setContent(dataInput);
                 setUniversals(dpLeit);
                 return dpLeit;
             case DP_IDENTCODE:
                 Code2Of5 dpIdent = new Code2Of5();
-                dpIdent.setDPIdentMode();
+                dpIdent.setMode(ToFMode.DPIDENT);
                 dpIdent.setHumanReadableLocation(hrtLoc);
                 dpIdent.setContent(dataInput);
                 setUniversals(dpIdent);

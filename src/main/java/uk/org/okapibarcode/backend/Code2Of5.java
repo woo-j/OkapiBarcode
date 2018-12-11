@@ -27,8 +27,46 @@ import java.awt.geom.Rectangle2D;
  */
 public class Code2Of5 extends Symbol {
 
-    private enum ToFMode {
-        MATRIX, INDUSTRIAL, IATA, DATA_LOGIC, INTERLEAVED, ITF14, DPLEIT, DPIDENT
+    public enum ToFMode {
+        /**
+         * Standard Code 2 of 5 mode, also known as Code 2 of 5 Matrix. Encodes any
+         * length numeric input (digits 0-9). This is the default mode.
+         */
+        MATRIX,
+        /**
+         * Industrial Code 2 of 5 which can encode any length numeric input (digits 0-9)
+         * and does not include a check digit.
+         */
+        INDUSTRIAL,
+        /**
+         * International Air Transport Agency variation of Code 2 of 5. Encodes any length
+         * numeric input (digits 0-9) and does not include a check digit.
+         */
+        IATA,
+        /**
+         * Code 2 of 5 Data Logic. Encodes any length numeric input (digits 0-9) and does
+         * not include a check digit.
+         */
+        DATA_LOGIC,
+        /**
+         * Interleaved Code 2 of 5. encodes pairs of numbers, and so can only encode an even
+         * number of digits (0-9). If an odd number of digits is entered a leading zero is added.
+         * No check digit is calculated.
+         */
+        INTERLEAVED,
+        /**
+         * ITF-14, also known as UPC Shipping Container Symbol or Case Code. Requires a 13-digit
+         * numeric input (digits 0-9). One modulo-10 check digit is calculated.
+         */
+        ITF14,
+        /**
+         * Deutsche Post Leitcode. Requires a 13-digit numerical input. Check digit is calculated.
+         */
+        DPLEIT,
+        /**
+         * Deutsche Post Identcode. Requires an 11-digit numerical input. Check digit is calculated.
+         */
+        DPIDENT
     }
 
     private static final String[] C25_MATRIX_TABLE = {
@@ -50,6 +88,24 @@ public class Code2Of5 extends Symbol {
     private double moduleWidthRatio = 3;
 
     /**
+     * Sets the 2-of-5 mode. The default value is {@link ToFMode#MATRIX}.
+     *
+     * @param mode the 2-of-5 mode
+     */
+    public void setMode(ToFMode mode) {
+        this.mode = mode;
+    }
+
+    /**
+     * Returns the 2-of-5 mode.
+     *
+     * @return the 2-of-5 mode
+     */
+    public ToFMode getMode() {
+        return mode;
+    }
+
+    /**
      * Sets the ratio of wide bar width to narrow bar width. Valid values are usually
      * between {@code 2} and {@code 3}. The default value is {@code 3}.
      *
@@ -66,73 +122,6 @@ public class Code2Of5 extends Symbol {
      */
     public double getModuleWidthRatio() {
         return moduleWidthRatio;
-    }
-
-    /**
-     * Select Standard Code 2 of 5 mode, also known as Code 2 of 5 Matrix. (default)
-     * Encodes any length numeric input (digits 0-9).
-     */
-    public void setMatrixMode() {
-        mode = ToFMode.MATRIX;
-    }
-
-    /**
-     * Select Industrial Code 2 of 5 which can encode any length numeric input
-     * (digits 0-9) and does not include a check digit.
-     */
-    public void setIndustrialMode() {
-        mode = ToFMode.INDUSTRIAL;
-    }
-
-    /**
-     * Select International Air Transport Agency variation of Code 2 of 5.
-     * Encodes any length numeric input (digits 0-9) and does not include
-     * a check digit.
-     */
-    public void setIATAMode() {
-        mode = ToFMode.IATA;
-    }
-
-    /**
-     * Select Code 2 of 5 Data Logic. Encodes any length numeric input
-     * (digits 0-9) and does not include a check digit.
-     */
-    public void setDataLogicMode() {
-        mode = ToFMode.DATA_LOGIC;
-    }
-
-    /**
-     * Select Interleaved Code 2 of 5. encodes pairs of numbers, and so can
-     * only encode an even number of digits (0-9). If an odd number of digits
-     * is entered a leading zero is added. No check digit is calculated.
-     */
-    public void setInterleavedMode() {
-        mode = ToFMode.INTERLEAVED;
-    }
-
-    /**
-     * Select ITF-14, also known as UPC Shipping Container Symbol or Case Code.
-     * Requires a 13 digit numeric input (digits 0-9). One modulo-10 check
-     * digit is calculated.
-     */
-    public void setITF14Mode() {
-        mode = ToFMode.ITF14;
-    }
-
-    /**
-     * Select Deutsche Post Leitcode. Requires a 13-digit numerical input.
-     * Check digit is calculated.
-     */
-    public void setDPLeitMode() {
-        mode = ToFMode.DPLEIT;
-    }
-
-    /**
-     * Select Deutsche Post Identcode. Requires an 11-digit numerical input.
-     * Check digit is calculated.
-     */
-    public void setDPIdentMode() {
-        mode = ToFMode.DPIDENT;
     }
 
     @Override

@@ -49,22 +49,24 @@ public class Code2Of5 extends Symbol {
          */
         DATA_LOGIC,
         /**
-         * Interleaved Code 2 of 5. encodes pairs of numbers, and so can only encode an even
-         * number of digits (0-9). If an odd number of digits is entered a leading zero is added.
-         * No check digit is calculated.
+         * Interleaved Code 2 of 5. Encodes pairs of numbers, and so can only encode an even
+         * number of digits (0-9). If an odd number of digits is entered a leading zero is
+         * added. No check digit is calculated.
          */
         INTERLEAVED,
         /**
-         * ITF-14, also known as UPC Shipping Container Symbol or Case Code. Requires a 13-digit
-         * numeric input (digits 0-9). One modulo-10 check digit is calculated.
+         * ITF-14, also known as UPC Shipping Container Symbol or Case Code. Requires a
+         * 13-digit numeric input (digits 0-9). One modulo-10 check digit is calculated.
          */
         ITF14,
         /**
-         * Deutsche Post Leitcode. Requires a 13-digit numerical input. Check digit is calculated.
+         * Deutsche Post Leitcode. Requires a 13-digit numerical input. Check digit is
+         * calculated.
          */
         DP_LEITCODE,
         /**
-         * Deutsche Post Identcode. Requires an 11-digit numerical input. Check digit is calculated.
+         * Deutsche Post Identcode. Requires an 11-digit numerical input. Check digit is
+         * calculated.
          */
         DP_IDENTCODE
     }
@@ -156,12 +158,11 @@ public class Code2Of5 extends Symbol {
 
     private void dataMatrix() {
 
-        if (!content.matches("[0-9]+")) {
+        if (!content.matches("[0-9]*")) {
             throw new OkapiException("Invalid characters in input");
         }
 
         String dest = "311111";
-
         for (int i = 0; i < content.length(); i++) {
             dest += C25_MATRIX_TABLE[Character.getNumericValue(content.charAt(i))];
         }
@@ -175,19 +176,17 @@ public class Code2Of5 extends Symbol {
 
     private void industrial() {
 
-        if (!content.matches("[0-9]+")) {
+        if (!content.matches("[0-9]*")) {
             throw new OkapiException("Invalid characters in input");
         }
 
         String dest = "313111";
-        readable = content;
-
-        for (int i = 0; i < readable.length(); i++) {
-            dest += C25_INDUSTRIAL_TABLE[Character.getNumericValue(readable.charAt(i))];
+        for (int i = 0; i < content.length(); i++) {
+            dest += C25_INDUSTRIAL_TABLE[Character.getNumericValue(content.charAt(i))];
         }
-
         dest += "31113";
 
+        readable = content;
         pattern = new String[] { dest };
         row_count = 1;
         row_height = new int[] { -1 };
@@ -195,19 +194,17 @@ public class Code2Of5 extends Symbol {
 
     private void iata() {
 
-        if (!content.matches("[0-9]+")) {
+        if (!content.matches("[0-9]*")) {
             throw new OkapiException("Invalid characters in input");
         }
 
         String dest = "1111";
-        readable = content;
-
-        for (int i = 0; i < readable.length(); i++) {
-            dest += C25_INDUSTRIAL_TABLE[Character.getNumericValue(readable.charAt(i))];
+        for (int i = 0; i < content.length(); i++) {
+            dest += C25_INDUSTRIAL_TABLE[Character.getNumericValue(content.charAt(i))];
         }
-
         dest += "311";
 
+        readable = content;
         pattern = new String[] { dest };
         row_count = 1;
         row_height = new int[] { -1 };
@@ -215,19 +212,17 @@ public class Code2Of5 extends Symbol {
 
     private void dataLogic() {
 
-        if (!content.matches("[0-9]+")) {
+        if (!content.matches("[0-9]*")) {
             throw new OkapiException("Invalid characters in input");
         }
 
         String dest = "1111";
-        readable = content;
-
-        for (int i = 0; i < readable.length(); i++) {
-            dest += C25_MATRIX_TABLE[Character.getNumericValue(readable.charAt(i))];
+        for (int i = 0; i < content.length(); i++) {
+            dest += C25_MATRIX_TABLE[Character.getNumericValue(content.charAt(i))];
         }
-
         dest += "311";
 
+        readable = content;
         pattern = new String[] { dest };
         row_count = 1;
         row_height = new int[] { -1 };
@@ -242,16 +237,15 @@ public class Code2Of5 extends Symbol {
         } else {
             readable = "0" + content;
         }
-        if (!readable.matches("[0-9]+")) {
+
+        if (!readable.matches("[0-9]*")) {
             throw new OkapiException("Invalid characters in input");
         }
 
         dest = "1111";
-
         for (i = 0; i < readable.length(); i += 2) {
             dest += interlace(i, i + 1);
         }
-
         dest += "311";
 
         pattern = new String[] { dest };
@@ -265,22 +259,22 @@ public class Code2Of5 extends Symbol {
 
         String one = C25_INTERLEAVED_TABLE[Character.getNumericValue(a)];
         String two = C25_INTERLEAVED_TABLE[Character.getNumericValue(b)];
-        String f = "";
 
+        StringBuilder f = new StringBuilder(10);
         for (int i = 0; i < 5; i++) {
-            f += one.charAt(i);
-            f += two.charAt(i);
+            f.append(one.charAt(i));
+            f.append(two.charAt(i));
         }
 
-        return f;
+        return f.toString();
     }
 
     private void itf14() {
-        int i, count = 0;
+        int i;
         int input_length = content.length();
         String dest;
 
-        if (!content.matches("[0-9]+")) {
+        if (!content.matches("[0-9]*")) {
             throw new OkapiException("Invalid characters in input");
         }
 
@@ -292,26 +286,16 @@ public class Code2Of5 extends Symbol {
         for (i = input_length; i < 13; i++) {
             readable += "0";
         }
-
         readable += content;
-        for (i = 12; i >= 0; i--) {
-            count += readable.charAt(i) - '0';
 
-            if ((i & 1) == 0) {
-                count += 2 * (readable.charAt(i) - '0');
-            }
-        }
-
-        readable += (char)(((10 - (count % 10)) % 10) + '0');
-        encodeInfo += "Check Digit: " + (char)(((10 - (count % 10)) % 10) + '0');
-        encodeInfo += '\n';
+        char checkDigit = checkDigit(readable, 1, 3);
+        readable += checkDigit;
+        encodeInfo += "Check Digit: " + checkDigit + '\n';
 
         dest = "1111";
-
         for (i = 0; i < readable.length(); i += 2) {
             dest += interlace(i, i + 1);
         }
-
         dest += "311";
 
         pattern = new String[] { dest };
@@ -320,11 +304,11 @@ public class Code2Of5 extends Symbol {
     }
 
     private void deutschePostLeitcode() {
-        int i, count = 0;
+        int i;
         int input_length = content.length();
         String dest;
 
-        if (!content.matches("[0-9]+")) {
+        if (!content.matches("[0-9]*")) {
             throw new OkapiException("Invalid characters in input");
         }
 
@@ -336,27 +320,16 @@ public class Code2Of5 extends Symbol {
         for (i = input_length; i < 13; i++) {
             readable += "0";
         }
-
         readable += content;
 
-        for (i = 12; i >= 0; i--) {
-            count += 4 * (readable.charAt(i) - '0');
-
-            if ((i & 1) != 0) {
-                count += 5 * (readable.charAt(i) - '0');
-            }
-        }
-
-        readable += (char)(((10 - (count % 10)) % 10) + '0');
-        encodeInfo += "Check digit: " + (char)(((10 - (count % 10)) % 10) + '0');
-        encodeInfo += '\n';
+        char checkDigit = checkDigit(readable, 9, 4);
+        readable += checkDigit;
+        encodeInfo += "Check digit: " + checkDigit + '\n';
 
         dest = "1111";
-
         for (i = 0; i < readable.length(); i += 2) {
             dest += interlace(i, i + 1);
         }
-
         dest += "311";
 
         pattern = new String[] { dest };
@@ -365,11 +338,11 @@ public class Code2Of5 extends Symbol {
     }
 
     private void deutschePostIdentcode() {
-        int i, count = 0;
+        int i;
         int input_length = content.length();
         String dest;
 
-        if (!content.matches("[0-9]+")) {
+        if (!content.matches("[0-9]*")) {
             throw new OkapiException("Invalid characters in input");
         }
 
@@ -381,31 +354,33 @@ public class Code2Of5 extends Symbol {
         for (i = input_length; i < 11; i++) {
             readable += "0";
         }
-
         readable += content;
-        for (i = 10; i >= 0; i--) {
-            count += 4 * (readable.charAt(i) - '0');
 
-            if ((i & 1) != 0) {
-                count += 5 * (readable.charAt(i) - '0');
-            }
-        }
-
-        readable += (char)(((10 - (count % 10)) % 10) + '0');
-        encodeInfo += "Check Digit: " + (char)(((10 - (count % 10)) % 10) + '0');
-        encodeInfo += '\n';
+        char checkDigit = checkDigit(readable, 9, 4);
+        readable += checkDigit;
+        encodeInfo += "Check Digit: " + checkDigit + '\n';
 
         dest = "1111";
-
         for (i = 0; i < readable.length(); i += 2) {
             dest += interlace(i, i + 1);
         }
-
         dest += "311";
 
         pattern = new String[] { dest };
         row_count = 1;
         row_height = new int[] { -1 };
+    }
+
+    private static char checkDigit(String s, int oddMultiplier, int evenMultiplier) {
+        int count = 0;
+        for (int i = s.length() - 1; i >= 0; i--) {
+            if ((i & 1) != 0) {
+                count += oddMultiplier * (s.charAt(i) - '0');
+            } else {
+                count += evenMultiplier * (s.charAt(i) - '0');
+            }
+        }
+        return (char) (((10 - (count % 10)) % 10) + '0');
     }
 
     @Override

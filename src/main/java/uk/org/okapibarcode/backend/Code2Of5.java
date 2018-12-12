@@ -55,6 +55,12 @@ public class Code2Of5 extends Symbol {
          */
         INTERLEAVED,
         /**
+         * Interleaved Code 2 of 5 with check digit. Encodes pairs of numbers, and so can
+         * only encode an even number of digits (0-9). If adding the check digit results
+         * in an odd number of digits then a leading zero is added.
+         */
+        INTERLEAVED_WITH_CHECK_DIGIT,
+        /**
          * ITF-14, also known as UPC Shipping Container Symbol or Case Code. Requires a
          * 13-digit numeric input (digits 0-9). One modulo-10 check digit is calculated.
          */
@@ -139,7 +145,10 @@ public class Code2Of5 extends Symbol {
                 iata();
                 break;
             case INTERLEAVED:
-                interleaved();
+                interleaved(false);
+                break;
+            case INTERLEAVED_WITH_CHECK_DIGIT:
+                interleaved(true);
                 break;
             case DATA_LOGIC:
                 dataLogic();
@@ -228,18 +237,24 @@ public class Code2Of5 extends Symbol {
         row_height = new int[] { -1 };
     }
 
-    private void interleaved() {
+    private void interleaved(boolean addCheckDigit) {
         int i;
         String dest;
 
-        if ((content.length() & 1) == 0) {
-            readable = content;
-        } else {
-            readable = "0" + content;
-        }
+        readable = content;
 
         if (!readable.matches("[0-9]*")) {
             throw new OkapiException("Invalid characters in input");
+        }
+
+        if (addCheckDigit) {
+            char checkDigit = checkDigit(readable, 1, 3);
+            readable += checkDigit;
+            encodeInfo += "Check Digit: " + checkDigit + '\n';
+        }
+
+        if ((readable.length() & 1) != 0) {
+            readable = "0" + readable;
         }
 
         dest = "1111";
@@ -371,13 +386,13 @@ public class Code2Of5 extends Symbol {
         row_height = new int[] { -1 };
     }
 
-    private static char checkDigit(String s, int oddMultiplier, int evenMultiplier) {
+    private static char checkDigit(String s, int multiplier1, int multiplier2) {
         int count = 0;
         for (int i = s.length() - 1; i >= 0; i--) {
             if ((i & 1) != 0) {
-                count += oddMultiplier * (s.charAt(i) - '0');
+                count += multiplier1 * (s.charAt(i) - '0');
             } else {
-                count += evenMultiplier * (s.charAt(i) - '0');
+                count += multiplier2 * (s.charAt(i) - '0');
             }
         }
         return (char) (((10 - (count % 10)) % 10) + '0');

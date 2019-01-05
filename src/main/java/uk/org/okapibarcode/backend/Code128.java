@@ -60,9 +60,6 @@ public class Code128 extends Symbol {
         "211232", "2331112"
     };
 
-    private Mode[] mode_type = new Mode[200];
-    private int[] mode_length = new int[200];
-    private int index_point = 0, read = 0;
     private boolean suppressModeC = false;
     private Composite compositeMode = Composite.OFF;
 
@@ -114,20 +111,13 @@ public class Code128 extends Symbol {
         double glyph_count;
         int bar_characters = 0, total_sum = 0;
         FMode f_state = FMode.LATCHN;
+        Mode[] mode_type = new Mode[200];
+        int[] mode_length = new int[200];
         int[] values = new int[200];
         int c;
         int linkage_flag = 0;
-
-        index_point = 0;
-        read = 0;
-
-        for (i = 0; i < mode_type.length; i++) {
-            mode_type[i] = null;
-        }
-
-        for (i = 0; i < mode_length.length; i++) {
-            mode_length[i] = 0;
-        }
+        int index_point = 0;
+        int read = 0;
 
         inputData = toBytes(content, ISO_8859_1);
         if (inputData == null) {
@@ -212,7 +202,7 @@ public class Code128 extends Symbol {
             }
         }
         index_point++;
-        reduceSubsetChanges();
+        index_point = reduceSubsetChanges(mode_type, mode_length, index_point);
 
         /* Put set data into set[] */
         read = 0;
@@ -696,7 +686,9 @@ public class Code128 extends Symbol {
         }
     }
 
-    private void reduceSubsetChanges() { /* Implements rules from ISO 15417 Annex E */
+    /** Implements rules from ISO 15417 Annex E. Returns the updated index point. */
+    private int reduceSubsetChanges(Mode[] mode_type, int[] mode_length, int index_point) {
+
         int totalLength = 0;
         int i, length;
         Mode current, last, next;
@@ -819,33 +811,28 @@ public class Code128 extends Symbol {
             totalLength += mode_length[i];
         }
 
-        combineSubsetBlocks();
+        return combineSubsetBlocks(mode_type, mode_length, index_point);
     }
 
-    private void combineSubsetBlocks() {
-        int i, j;
-
+    /** Modifies the specified mode and length arrays to combine adjacent modes of the same type, returning the updated index point. */
+    private int combineSubsetBlocks(Mode[] mode_type, int[] mode_length, int index_point) {
         /* bring together same type blocks */
         if (index_point > 1) {
-            i = 1;
-            while (i < index_point) {
+            for (int i = 1; i < index_point; i++) {
                 if (mode_type[i - 1] == mode_type[i]) {
                     /* bring together */
                     mode_length[i - 1] = mode_length[i - 1] + mode_length[i];
-                    j = i + 1;
-
                     /* decrease the list */
-                    while (j < index_point) {
+                    for (int j = i + 1; j < index_point; j++) {
                         mode_length[j - 1] = mode_length[j];
                         mode_type[j - 1] = mode_type[j];
-                        j++;
                     }
                     index_point--;
                     i--;
                 }
-                i++;
             }
         }
+        return index_point;
     }
 
     /** {@inheritDoc} */

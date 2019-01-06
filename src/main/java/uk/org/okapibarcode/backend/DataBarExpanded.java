@@ -51,7 +51,8 @@ public class DataBarExpanded extends Symbol {
         2, 4, 5, 6, 8
     };
 
-    private static final int[] CHECKSUM_WEIGHT_EXP = { /* Table 14 */
+    /** Table 14 */
+    private static final int[] CHECKSUM_WEIGHT_EXP = {
         1, 3, 9, 27, 81, 32, 96, 77, 20, 60, 180, 118, 143, 7, 21, 63, 189,
         145, 13, 39, 117, 140, 209, 205, 193, 157, 49, 147, 19, 57, 171, 91,
         62, 186, 136, 197, 169, 85, 44, 132, 185, 133, 188, 142, 4, 12, 36,
@@ -66,13 +67,15 @@ public class DataBarExpanded extends Symbol {
         73, 8, 24, 72, 5, 15, 45, 135, 194, 160, 58, 174, 100, 89
     };
 
-    private static final int[] FINDER_PATTERN_EXP = { /* Table 15 */
+    /** Table 15 */
+    private static final int[] FINDER_PATTERN_EXP = {
         1, 8, 4, 1, 1, 1, 1, 4, 8, 1, 3, 6, 4, 1, 1, 1, 1, 4, 6, 3, 3, 4, 6, 1,
         1, 1, 1, 6, 4, 3, 3, 2, 8, 1, 1, 1, 1, 8, 2, 3, 2, 6, 5, 1, 1, 1, 1, 5,
         6, 2, 2, 2, 9, 1, 1, 1, 1, 9, 2, 2
     };
 
-    private static final int[] FINDER_SEQUENCE = { /* Table 16 */
+    /** Table 16 */
+    private static final int[] FINDER_SEQUENCE = {
         1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 4, 3, 0, 0, 0, 0, 0, 0, 0, 0, 1, 6,
         3, 8, 0, 0, 0, 0, 0, 0, 0, 1, 10, 3, 8, 5, 0, 0, 0, 0, 0, 0, 1, 10, 3,
         8, 7, 12, 0, 0, 0, 0, 0, 1, 10, 3, 8, 9, 12, 11, 0, 0, 0, 0, 1, 2, 3,
@@ -97,13 +100,14 @@ public class DataBarExpanded extends Symbol {
         NUMERIC, ALPHA, ISOIEC, INVALID_CHAR, ANY_ENC, ALPHA_OR_ISO
     };
 
+    private boolean linkageFlag;
+    private int preferredColumns;
+    private boolean stacked = true;
+
     private String source;
     private String binaryString;
     private String generalField;
     private EncodeMode[] generalFieldType;
-    private boolean linkageFlag;
-    private int preferredColumns;
-    private boolean stacked = true;
 
     public DataBarExpanded() {
         inputDataType = DataType.GS1;

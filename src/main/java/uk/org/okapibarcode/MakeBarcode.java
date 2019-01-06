@@ -272,7 +272,7 @@ public class MakeBarcode {
                 case 31:
                     // Databar Expanded
                     DataBarExpanded dataBarE = new DataBarExpanded();
-                    dataBarE.setNotStacked();
+                    dataBarE.setStacked(false);
                     dataBarE.setHumanReadableLocation(hrtLocation);
                     dataBarE.setContent(dataInput);
                     symbol = dataBarE;
@@ -504,8 +504,8 @@ public class MakeBarcode {
                 case 81:
                     // Databar Expanded Stacked
                     DataBarExpanded dataBarES = new DataBarExpanded();
-                    dataBarES.setNoOfColumns(settings.getSymbolColumns());
-                    dataBarES.setStacked();
+                    dataBarES.setPreferredColumns(settings.getSymbolColumns());
+                    dataBarES.setStacked(true);
                     dataBarES.setContent(dataInput);
                     symbol = dataBarES;
                     break;

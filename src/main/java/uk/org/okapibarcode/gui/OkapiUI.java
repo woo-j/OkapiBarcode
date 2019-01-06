@@ -2946,14 +2946,14 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 return dataBarLimited;
             case DB_EXPANDED:
                 DataBarExpanded dataBarE = new DataBarExpanded();
-                dataBarE.setNotStacked();
+                dataBarE.setStacked(false);
                 dataBarE.setContent(dataInput);
                 setUniversals(dataBarE);
                 return dataBarE;
             case DB_EXPANDED_STACKED:
                 DataBarExpanded dataBarES = new DataBarExpanded();
-                dataBarES.setNoOfColumns(databarColumnsCombo.getSelectedIndex());
-                dataBarES.setStacked();
+                dataBarES.setPreferredColumns(databarColumnsCombo.getSelectedIndex());
+                dataBarES.setStacked(true);
                 dataBarES.setContent(dataInput);
                 setUniversals(dataBarES);
                 return dataBarES;

@@ -18,8 +18,8 @@ package uk.org.okapibarcode.backend;
 import static uk.org.okapibarcode.backend.DataBarLimited.getWidths;
 
 /**
- * <p>Implements GS1 DataBar Expanded Omnidirectional and GS1 Expanded Stacked Omnidirectional
- * according to ISO/IEC 24724:2011.
+ * <p>Implements GS1 DataBar Expanded Omnidirectional and GS1 DataBar Expanded Stacked
+ * Omnidirectional according to ISO/IEC 24724:2011.
  *
  * <p>DataBar expanded encodes GS1 data in either a linear or stacked format.
  *
@@ -93,10 +93,6 @@ public class DataBarExpanded extends Symbol {
         13, 14, 11, 12, 17, 18, 15, 16, 21, 22, 19, 20
     };
 
-    private enum Mode {
-        UNSTACKED, STACKED
-    };
-
     private enum EncodeMode {
         NUMERIC, ALPHA, ISOIEC, INVALID_CHAR, ANY_ENC, ALPHA_OR_ISO
     };
@@ -106,8 +102,8 @@ public class DataBarExpanded extends Symbol {
     private String generalField;
     private EncodeMode[] generalFieldType;
     private boolean linkageFlag;
-    private int preferredNoOfColumns;
-    private Mode symbolType = Mode.STACKED;
+    private int preferredColumns;
+    private boolean stacked = true;
 
     public DataBarExpanded() {
         inputDataType = DataType.GS1;
@@ -126,34 +122,43 @@ public class DataBarExpanded extends Symbol {
     }
 
     /**
-     * Set the width of a stacked symbol by selecting the number
-     * of "columns" or symbol segments in each row of data.
-     * @param columns Number of segments in each row
+     * Sets the preferred width of a stacked symbol by selecting the number of "columns" or symbol segments in each row of data.
+     *
+     * @param columns the number of segments in each row
      */
-    public void setNoOfColumns(int columns) {
-        preferredNoOfColumns = columns;
+    public void setPreferredColumns(int columns) {
+        preferredColumns = columns;
     }
 
     /**
-     * Set symbology to DataBar Expanded Stacked
+     * Returns the preferred width of a stacked symbol by selecting the number of "columns" or symbol segments in each row of data.
+     *
+     * @return the number of segments in each row
      */
-    public void setStacked() {
-        symbolType = Mode.STACKED;
+    public int getPreferredColumns() {
+        return preferredColumns;
     }
 
     /**
-     * Set symbology to DataBar Expanded
+     * Sets whether or not this symbology is stacked.
+     *
+     * @param stacked <tt>true</tt> for GS1 DataBar Expanded Stacked Omnidirectional, <tt>false</tt> for GS1 DataBar Expanded Omnidirectional
      */
-    public void setNotStacked() {
-        symbolType = Mode.UNSTACKED;
+    public void setStacked(boolean stacked) {
+        this.stacked = stacked;
     }
 
-    protected void setLinkageFlag() {
-        linkageFlag = true;
+    /**
+     * Returns whether or not this symbology is stacked.
+     *
+     * @return <tt>true</tt> for GS1 DataBar Expanded Stacked Omnidirectional, <tt>false</tt> for GS1 DataBar Expanded Omnidirectional
+     */
+    public boolean isStacked() {
+        return stacked;
     }
 
-    protected void unsetLinkageFlag() {
-        linkageFlag = false;
+    protected void setLinkageFlag(boolean linkageFlag) {
+        this.linkageFlag = linkageFlag;
     }
 
     @Override
@@ -216,9 +221,6 @@ public class DataBarExpanded extends Symbol {
                     vs[i] += 2048 >> j;
                 }
             }
-//            if (debug) {
-//                System.out.println("Data character (vs[" + i + "]) is " + vs[i]);
-//            }
             encodeInfo += Integer.toString(vs[i]) + " ";
         }
         encodeInfo += "\n";
@@ -256,8 +258,7 @@ public class DataBarExpanded extends Symbol {
         }
 
         /* 7.2.6 Check character */
-        /* The checksum value is equal to the mod 211 residue of the weighted sum of the widths of the
-	   elements in the data characters. */
+        /* The checksum value is equal to the mod 211 residue of the weighted sum of the widths of the elements in the data characters. */
         checksum = 0;
         for (i = 0; i < data_chars; i++) {
             row = WEIGHT_ROWS[(((data_chars - 2) / 2) * 21) + i];
@@ -338,8 +339,7 @@ public class DataBarExpanded extends Symbol {
             }
         }
 
-
-        if (symbolType == Mode.UNSTACKED) {
+        if (!stacked) {
             /* Copy elements into symbol */
             row_count = 1 + compositeOffset;
             row_height = new int[1 + compositeOffset];
@@ -384,7 +384,7 @@ public class DataBarExpanded extends Symbol {
             /* RSS Expanded Stacked */
             codeblocks = (data_chars + 1) / 2 + ((data_chars + 1) % 2);
 
-            blocksPerRow = preferredNoOfColumns;
+            blocksPerRow = preferredColumns;
             if ((blocksPerRow < 1) || (blocksPerRow > 10)) {
                 blocksPerRow = 2;
             }
@@ -570,24 +570,20 @@ public class DataBarExpanded extends Symbol {
 
         read_posn = 0;
 
-        /* Decide whether a compressed data field is required and if so what
-	method to use - method 2 = no compressed data field */
+        /* Decide whether a compressed data field is required and if so what method to use - method 2 = no compressed data field */
 
         if ((source.length() >= 16) && ((source.charAt(0) == '0')
                 && (source.charAt(1) == '1'))) {
             /* (01) and other AIs */
             encoding_method = 1;
-//            if (debug) System.out.printf("Choosing Method 1\n");
         } else {
             /* any AIs */
             encoding_method = 2;
-//            if (debug) System.out.printf("Choosing Mehod 2\n");
         }
 
         if (((source.length() >= 20) && (encoding_method == 1))
                 && ((source.charAt(2) == '9') && (source.charAt(16) == '3'))) {
             /* Possibly encoding method > 2 */
-//            if (debug) System.out.printf("Checking for other methods\n");
 
             if ((source.length() >= 26) && (source.charAt(17) == '1')) {
                 /* Methods 3, 7, 9, 11 and 13 */
@@ -636,7 +632,6 @@ public class DataBarExpanded extends Symbol {
                         }
                     }
                 }
-//                if (debug) System.out.printf("Now using method %d\n", encoding_method);
             }
 
             if ((source.length() >= 26) && (source.charAt(17) == '2')) {
@@ -695,8 +690,6 @@ public class DataBarExpanded extends Symbol {
                         }
                     }
                 }
-//                if (debug) System.out.printf("Now using method %d\n", encoding_method);
-
             }
 
             if (source.charAt(17) == '9') {
@@ -711,7 +704,6 @@ public class DataBarExpanded extends Symbol {
                     /* (01) and (393x) */
                     encoding_method = 6;
                 }
-//                if (debug) System.out.printf("Now using method %d\n", encoding_method);
             }
         }
 
@@ -774,14 +766,10 @@ public class DataBarExpanded extends Symbol {
             read_posn = source.length();
             break;
         }
-//        if (debug) System.out.printf("Setting binary = %s\n", binary_string);
 
+        /* Variable length symbol bit field is just given a place holder (XX) for the time being */
 
-        /* Variable length symbol bit field is just given a place holder (XX)
-	for the time being */
-
-        /* Verify that the data to be placed in the compressed data field is all
-	numeric data before carrying out compression */
+        /* Verify that the data to be placed in the compressed data field is all numeric data before carrying out compression */
         for (i = 0; i < read_posn; i++) {
             if ((source.charAt(i) < '0') || (source.charAt(i) > '9')) {
                 if ((source.charAt(i) != '[') && (source.charAt(i) != ']')) {
@@ -792,8 +780,6 @@ public class DataBarExpanded extends Symbol {
         }
 
         /* Now encode the compressed data field */
-
-//        if (debug) System.out.printf("Proceeding to encode data\n");
         if (encoding_method == 1) {
             /* Encoding method field "1" - general item identification data */
             group_val = source.charAt(2) - '0';
@@ -822,8 +808,7 @@ public class DataBarExpanded extends Symbol {
         }
 
         if (encoding_method == 3) {
-            /* Encoding method field "0100" - variable weight item
-		(0,001 kilogram icrements) */
+            /* Encoding method field "0100" - variable weight item (0,001 kilogram increments) */
 
             for (i = 1; i < 5; i++) {
                 group_val = 100 * (source.charAt(i * 3) - '0');
@@ -855,8 +840,7 @@ public class DataBarExpanded extends Symbol {
         }
 
         if (encoding_method == 4) {
-            /* Encoding method field "0101" - variable weight item (0,01 or
-		0,001 pound increment) */
+            /* Encoding method field "0101" - variable weight item (0,01 or 0,001 pound increment) */
 
             for (i = 1; i < 5; i++) {
                 group_val = 100 * (source.charAt(i * 3) - '0');
@@ -893,8 +877,7 @@ public class DataBarExpanded extends Symbol {
         }
 
         if ((encoding_method >= 7) && (encoding_method <= 14)) {
-            /* Encoding method fields "0111000" through "0111111" - variable
-		weight item plus date */
+            /* Encoding method fields "0111000" through "0111111" - variable weight item plus date */
 
             for (i = 1; i < 5; i++) {
                 group_val = 100 * (source.charAt(i * 3) - '0');
@@ -980,8 +963,7 @@ public class DataBarExpanded extends Symbol {
         }
 
         if (encoding_method == 6) {
-            /* Encoding method "01101" - variable measure item and price with ISO 4217
-		Currency Code */
+            /* Encoding method "01101" - variable measure item and price with ISO 4217 currency code */
 
             for (i = 1; i < 5; i++) {
                 group_val = 100 * (source.charAt(i * 3) - '0');
@@ -1027,12 +1009,10 @@ public class DataBarExpanded extends Symbol {
             }
         }
 
-        /* The compressed data field has been processed if appropriate - the
-	rest of the data (if any) goes into a general-purpose data compaction field */
+        /* The compressed data field has been processed if appropriate - the rest of the data (if any) goes into a general-purpose data compaction field */
 
         generalField = source.substring(read_posn);
         generalFieldType = new EncodeMode[generalField.length()];
-//        if (debug) System.out.printf("General field data = %s\n", general_field);
 
         if (generalField.length() != 0) {
             latch = false;
@@ -1118,9 +1098,6 @@ public class DataBarExpanded extends Symbol {
                 }
             }
 
-//            if (debug) {
-//                System.out.println("General field length = " + general_field.length());
-//            }
             latch = applyGeneralFieldRules();
 
             /* Set initial mode if not NUMERIC */
@@ -1136,18 +1113,12 @@ public class DataBarExpanded extends Symbol {
 
             i = 0;
             do {
-//                if (debug) System.out.printf("Processing character %d ", i);
                 switch (generalFieldType[i]) {
                 case NUMERIC:
-//                    if (debug) System.out.printf("as NUMERIC:");
-
                     if (last_mode != EncodeMode.NUMERIC) {
                         binaryString += "000"; /* Numeric latch */
-//                        if (debug) System.out.printf("<NUMERIC LATCH>\n");
                     }
 
-//                    if (debug) System.out.printf("  %c%c > ", general_field.charAt(i),
-//                            general_field.charAt(i + 1));
                     if (generalField.charAt(i) != '[') {
                         d1 = generalField.charAt(i) - '0';
                     } else {
@@ -1165,20 +1136,16 @@ public class DataBarExpanded extends Symbol {
                     for (j = 0; j < 7; j++) {
                         if ((value & (0x40 >> j)) != 0) {
                             binaryString += "1";
-//                            if (debug) System.out.print("1");
                         } else {
                             binaryString += "0";
-//                            if (debug) System.out.print("0");
                         }
                     }
 
                     i += 2;
-//                    if (debug) System.out.printf("\n");
                     last_mode = EncodeMode.NUMERIC;
                     break;
 
                 case ALPHA:
-//                    if (debug) System.out.printf("as ALPHA\n");
                     if (i != 0) {
                         if (last_mode == EncodeMode.NUMERIC) {
                             binaryString += "0000"; /* Alphanumeric latch */
@@ -1229,7 +1196,6 @@ public class DataBarExpanded extends Symbol {
                     break;
 
                 case ISOIEC:
-//                    if (debug) System.out.printf("as ISOIEC\n");
                     if (i != 0) {
                         if (last_mode == EncodeMode.NUMERIC) {
                             binaryString += "0000"; /* Alphanumeric latch */
@@ -1317,15 +1283,11 @@ public class DataBarExpanded extends Symbol {
                     current_length++;
                 }
             } while (current_length < generalField.length());
-//            if (debug) System.out.printf("Resultant binary = %s\n", binary_string);
-//            if (debug) System.out.printf("\tLength: %d\n", binary_string.length());
 
-            remainder = calculateRemainder (binaryString.length());
+            remainder = calculateRemainder(binaryString.length());
 
             if (latch) {
                 /* There is still one more numeric digit to encode */
-//                if (debug) System.out.printf("Adding extra (odd) numeric digit\n");
-
                 if (last_mode == EncodeMode.NUMERIC) {
                     if ((remainder >= 4) && (remainder <= 6)) {
                         value = generalField.charAt(i) - '0';
@@ -1363,9 +1325,6 @@ public class DataBarExpanded extends Symbol {
                         }
                     }
                 }
-
-//                if (debug) System.out.printf("Resultant binary = %s\n", binary_string);
-//                if (debug) System.out.printf("\tLength: %d\n", binary_string.length());
             }
         }
 
@@ -1373,7 +1332,7 @@ public class DataBarExpanded extends Symbol {
             throw new OkapiException("Input too long");
         }
 
-        remainder = calculateRemainder (binaryString.length());
+        remainder = calculateRemainder(binaryString.length());
 
         /* Now add padding to binary string (7.2.5.5.4) */
         i = remainder;
@@ -1417,8 +1376,6 @@ public class DataBarExpanded extends Symbol {
 
         encodeInfo += "Binary Length: " + binaryString.length() + "\n";
         displayBinaryString();
-//        if (debug) System.out.printf("Resultant binary = %s\n", binary_string);
-//        if (debug) System.out.printf("\tLength: %d\n", binary_string.length());
     }
 
     private static int calculateRemainder ( int binaryStringLength ) {
@@ -1472,8 +1429,7 @@ public class DataBarExpanded extends Symbol {
     }
 
     private boolean applyGeneralFieldRules() {
-        /* Attempts to apply encoding rules from secions 7.2.5.5.1 to 7.2.5.5.3
-	of ISO/IEC 24724:2006 */
+        /* Attempts to apply encoding rules from sections 7.2.5.5.1 to 7.2.5.5.3 of ISO/IEC 24724:2006 */
 
         int block_count, i, j, k;
         EncodeMode current, next, last;
@@ -1579,10 +1535,8 @@ public class DataBarExpanded extends Symbol {
             }
         }
 
-        if ((blockType[block_count - 1] == EncodeMode.NUMERIC)
-                && ((blockLength[block_count - 1] & 1) != 0)) {
-            /* If the last block is numeric and an odd size, further
-		processing needs to be done outside this procedure */
+        if (blockType[block_count - 1] == EncodeMode.NUMERIC && (blockLength[block_count - 1] & 1) != 0) {
+            /* If the last block is numeric and an odd size, further processing needs to be done outside this procedure */
             return true;
         } else {
             return false;

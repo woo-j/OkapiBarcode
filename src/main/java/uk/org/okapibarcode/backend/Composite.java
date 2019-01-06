@@ -686,8 +686,8 @@ public class Composite extends Symbol {
                 break;
             case DATABAR_EXPANDED:
                 DataBarExpanded dataBarExpanded = new DataBarExpanded();
-                dataBarExpanded.setLinkageFlag();
-                dataBarExpanded.setNotStacked();
+                dataBarExpanded.setLinkageFlag(true);
+                dataBarExpanded.setStacked(false);
                 dataBarExpanded.setContent(linearContent);
                 linear_rect = dataBarExpanded.rectangles;
                 linear_txt = dataBarExpanded.texts;
@@ -697,8 +697,8 @@ public class Composite extends Symbol {
                 break;
             case DATABAR_EXPANDED_STACK:
                 DataBarExpanded dataBarExpandedS = new DataBarExpanded();
-                dataBarExpandedS.setLinkageFlag();
-                dataBarExpandedS.setStacked();
+                dataBarExpandedS.setLinkageFlag(true);
+                dataBarExpandedS.setStacked(true);
                 dataBarExpandedS.setContent(linearContent);
                 linear_rect = dataBarExpandedS.rectangles;
                 linear_txt = dataBarExpandedS.texts;

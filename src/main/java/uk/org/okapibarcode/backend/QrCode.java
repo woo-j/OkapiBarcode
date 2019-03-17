@@ -1228,7 +1228,6 @@ public class QrCode extends Symbol {
         }
     }
 
-    // TODO: third parameter name is different from Zint, need to make sure this is correct; https://sourceforge.net/p/zint/tickets/109/
     private static void populateGrid(byte[] grid, int size, int[] fullstream, int cw) {
 
         boolean goingUp = true;

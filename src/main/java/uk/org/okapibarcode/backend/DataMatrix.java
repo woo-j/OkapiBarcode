@@ -124,6 +124,7 @@ public class DataMatrix extends Symbol {
     private int structuredAppendFileId = 1;
     private int structuredAppendPosition = 1;
     private int structuredAppendTotal = 1;
+    private boolean useGs;
 
     // internal state calculated when setContent() is called
 
@@ -136,6 +137,15 @@ public class DataMatrix extends Symbol {
     private int process_p;
     private int[] process_buffer = new int[8];
     private int codewordCount;
+
+    /**
+     * select the separator character to use, if true use GS(=>29) else use FNC1(=>232)
+     *
+     * @param useGs if true use GS(=>29) else use FNC1(=>232) as separator character
+     */
+    public void setUseGs(boolean useGs) {
+      this.useGs = useGs;
+    }
 
     /**
      * Forces the symbol to be either square or rectangular (non-square).
@@ -675,8 +685,14 @@ public class DataMatrix extends Symbol {
                             binary_length++;
                         } else {
                             if (inputData[sp] == FNC1) {
+                              if(useGs) {
+                                target[tp] = 29 + 1; /* GS */
+                                encodeInfo += "GS ";
+                              }
+                              else {
                                 target[tp] = 232; /* FNC1 */
                                 encodeInfo += "FNC1 ";
+                              }
                             } else {
                                 target[tp] = inputData[sp] + 1;
                                 encodeInfo += Integer.toString(target[tp] - 1) + " ";
@@ -709,8 +725,13 @@ public class DataMatrix extends Symbol {
                     encodeInfo += "ASC ";
                 } else {
                     if (inputData[sp] == FNC1) {
+                      if(useGs) {
+                        shift_set = 1;
+                        value = 29; /* GS */
+                      }else {
                         shift_set = 2;
                         value = 27; /* FNC1 */
+                      }
                     } else if (inputData[sp] > 127) {
                         process_buffer[process_p] = 1;
                         process_p++;
@@ -779,8 +800,13 @@ public class DataMatrix extends Symbol {
                     encodeInfo += "ASC ";
                 } else {
                     if (inputData[sp] == FNC1) {
+                      if(useGs) {
+                        shift_set = 1;
+                        value = 29; /* GS */
+                      }else {
                         shift_set = 2;
                         value = 27; /* FNC1 */
+                      }
                     } else if (inputData[sp] > 127) {
                         process_buffer[process_p] = 1;
                         process_p++;

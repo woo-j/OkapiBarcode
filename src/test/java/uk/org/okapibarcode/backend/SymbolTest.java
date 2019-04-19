@@ -27,7 +27,7 @@ import java.nio.charset.CodingErrorAction;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,6 +65,7 @@ import com.google.zxing.oned.EAN13Reader;
 import com.google.zxing.oned.EAN8Reader;
 import com.google.zxing.oned.UPCAReader;
 import com.google.zxing.oned.UPCEReader;
+import com.google.zxing.oned.rss.expanded.RSSExpandedReader;
 import com.google.zxing.pdf417.PDF417Reader;
 import com.google.zxing.qrcode.QRCodeReader;
 
@@ -242,7 +243,9 @@ public class SymbolTest {
         if (zxingReader != null) {
             LuminanceSource source = new BufferedImageLuminanceSource(actual);
             BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
-            Map< DecodeHintType, Boolean > hints = Collections.singletonMap(DecodeHintType.PURE_BARCODE, Boolean.TRUE);
+            Map< DecodeHintType, Boolean > hints = new HashMap<>();
+            hints.put(DecodeHintType.PURE_BARCODE, Boolean.TRUE);
+            hints.put(DecodeHintType.TRY_HARDER, Boolean.TRUE);
             Result result = zxingReader.decode(bitmap, hints);
             String zxingData = massageZXingData(result.getText(), symbol);
             String okapiData = massageOkapiData(symbol.getContent(), symbol);
@@ -307,6 +310,8 @@ public class SymbolTest {
             } else {
                 return new UPCEReader();
             }
+        } else if (symbol instanceof DataBarExpanded) {
+            return new RSSExpandedReader();
         }
 
         // no corresponding ZXing reader exists, or it behaves badly so we don't use it for testing

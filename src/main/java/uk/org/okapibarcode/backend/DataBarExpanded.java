@@ -17,6 +17,9 @@ package uk.org.okapibarcode.backend;
 
 import static uk.org.okapibarcode.backend.DataBarLimited.getWidths;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+
 /**
  * <p>Implements GS1 DataBar Expanded Omnidirectional and GS1 DataBar Expanded Stacked
  * Omnidirectional according to ISO/IEC 24724:2011.
@@ -103,11 +106,6 @@ public class DataBarExpanded extends Symbol {
     private boolean linkageFlag;
     private int preferredColumns = 2;
     private boolean stacked = true;
-
-    private String source;
-    private String binaryString;
-    private String generalField;
-    private EncodeMode[] generalFieldType;
 
     public DataBarExpanded() {
         inputDataType = DataType.GS1;
@@ -206,17 +204,21 @@ public class DataBarExpanded extends Symbol {
         boolean left_to_right;
         int compositeOffset;
 
-        source = content;
+        inputData = toBytes(content, StandardCharsets.US_ASCII);
+
+        StringBuilder binaryString = new StringBuilder(inputData.length * 8);
 
         if (linkageFlag) {
-            binaryString = "1";
+            binaryString.append('1');
             compositeOffset = 1;
         } else {
-            binaryString = "0";
+            binaryString.append('0');
             compositeOffset = 0;
         }
 
-        calculateBinaryString();
+        int encodingMethod = calculateBinaryString(inputData, binaryString); // updates binaryString
+        encodeInfo += "Encoding Method: " + encodingMethod + "\n";
+        logBinaryStringInfo(binaryString);
 
         data_chars = binaryString.length() / 12;
 
@@ -552,7 +554,7 @@ public class DataBarExpanded extends Symbol {
     }
 
     /** Handles all data encodation from section 7.2.5 of ISO/IEC 24724. */
-    private void calculateBinaryString() {
+    private static int calculateBinaryString(int[] inputData, StringBuilder binaryString) {
 
         EncodeMode last_mode = EncodeMode.NUMERIC;
         int encoding_method, i, j, read_posn;
@@ -562,13 +564,12 @@ public class DataBarExpanded extends Symbol {
         double weight;
         int group_val;
         int current_length;
-        String patch;
 
         read_posn = 0;
 
         /* Decide whether a compressed data field is required and if so what method to use - method 2 = no compressed data field */
 
-        if (source.length() >= 16 && source.charAt(0) == '0' && source.charAt(1) == '1') {
+        if (inputData.length >= 16 && inputData[0] == '0' && inputData[1] == '1') {
             /* (01) and other AIs */
             encoding_method = 1;
         } else {
@@ -576,25 +577,25 @@ public class DataBarExpanded extends Symbol {
             encoding_method = 2;
         }
 
-        if (source.length() >= 20 && encoding_method == 1 && source.charAt(2) == '9' && source.charAt(16) == '3') {
+        if (inputData.length >= 20 && encoding_method == 1 && inputData[2] == '9' && inputData[16] == '3') {
             /* Possibly encoding method > 2 */
 
-            if (source.length() >= 26 && source.charAt(17) == '1') {
+            if (inputData.length >= 26 && inputData[17] == '1') {
                 /* Methods 3, 7, 9, 11 and 13 */
 
-                if (source.charAt(18) == '0') {
+                if (inputData[18] == '0') {
                     /* (01) and (310x) */
                     /* In kilos */
 
                     weight = 0.0;
                     for (i = 0; i < 6; i++) {
                         weight *= 10;
-                        weight += (source.charAt(20 + i) - '0');
+                        weight += (inputData[20 + i] - '0');
                     }
 
                     if (weight < 99999.0) { /* Maximum weight = 99999 */
 
-                        if (source.charAt(19) == '3' && source.length() == 26) {
+                        if (inputData[19] == '3' && inputData.length == 26) {
                             /* (01) and (3103) */
                             weight /= 1000.0;
                             if (weight <= 32.767) {
@@ -602,20 +603,20 @@ public class DataBarExpanded extends Symbol {
                             }
                         }
 
-                        if (source.length() == 34) {
-                            if (source.charAt(26) == '1' && source.charAt(27) == '1') {
+                        if (inputData.length == 34) {
+                            if (inputData[26] == '1' && inputData[27] == '1') {
                                 /* (01), (310x) and (11) - metric weight and production date */
                                 encoding_method = 7;
                             }
-                            if (source.charAt(26) == '1' && source.charAt(27) == '3') {
+                            if (inputData[26] == '1' && inputData[27] == '3') {
                                 /* (01), (310x) and (13) - metric weight and packaging date */
                                 encoding_method = 9;
                             }
-                            if (source.charAt(26) == '1' && source.charAt(27) == '5') {
+                            if (inputData[26] == '1' && inputData[27] == '5') {
                                 /* (01), (310x) and (15) - metric weight and "best before" date */
                                 encoding_method = 11;
                             }
-                            if (source.charAt(26) == '1' && source.charAt(27) == '7') {
+                            if (inputData[26] == '1' && inputData[27] == '7') {
                                 /* (01), (310x) and (17) - metric weight and expiration date */
                                 encoding_method = 13;
                             }
@@ -624,26 +625,26 @@ public class DataBarExpanded extends Symbol {
                 }
             }
 
-            if (source.length() >= 26 && source.charAt(17) == '2') {
+            if (inputData.length >= 26 && inputData[17] == '2') {
                 /* Methods 4, 8, 10, 12 and 14 */
 
-                if (source.charAt(18) == '0') {
+                if (inputData[18] == '0') {
                     /* (01) and (320x) */
                     /* In pounds */
 
                     weight = 0.0;
                     for (i = 0; i < 6; i++) {
                         weight *= 10;
-                        weight += (source.charAt(20 + i) - '0');
+                        weight += (inputData[20 + i] - '0');
                     }
 
                     if (weight < 99999.0) { /* Maximum weight = 99999 */
 
-                        if (((source.charAt(19) == '2') || (source.charAt(19) == '3'))
-                                && (source.length() == 26)) {
+                        if (((inputData[19] == '2') || (inputData[19] == '3'))
+                                && (inputData.length == 26)) {
                             /* (01) and (3202)/(3203) */
 
-                            if (source.charAt(19) == '3') {
+                            if (inputData[19] == '3') {
                                 weight /= 1000.0;
                                 if (weight <= 22.767) {
                                     encoding_method = 4;
@@ -657,20 +658,20 @@ public class DataBarExpanded extends Symbol {
 
                         }
 
-                        if (source.length() == 34) {
-                            if (source.charAt(26) == '1' && source.charAt(27) == '1') {
+                        if (inputData.length == 34) {
+                            if (inputData[26] == '1' && inputData[27] == '1') {
                                 /* (01), (320x) and (11) - English weight and production date */
                                 encoding_method = 8;
                             }
-                            if (source.charAt(26) == '1' && source.charAt(27) == '3') {
+                            if (inputData[26] == '1' && inputData[27] == '3') {
                                 /* (01), (320x) and (13) - English weight and packaging date */
                                 encoding_method = 10;
                             }
-                            if (source.charAt(26) == '1' && source.charAt(27) == '5') {
+                            if (inputData[26] == '1' && inputData[27] == '5') {
                                 /* (01), (320x) and (15) - English weight and "best before" date */
                                 encoding_method = 12;
                             }
-                            if (source.charAt(26) == '1' && source.charAt(27) == '7') {
+                            if (inputData[26] == '1' && inputData[27] == '7') {
                                 /* (01), (320x) and (17) - English weight and expiration date */
                                 encoding_method = 14;
                             }
@@ -679,76 +680,75 @@ public class DataBarExpanded extends Symbol {
                 }
             }
 
-            if (source.charAt(17) == '9') {
+            if (inputData[17] == '9') {
                 /* Methods 5 and 6 */
-                if (source.charAt(18) == '2' && source.charAt(19) >= '0' && source.charAt(19) <= '3') {
+                if (inputData[18] == '2' && inputData[19] >= '0' && inputData[19] <= '3') {
                     /* (01) and (392x) */
                     encoding_method = 5;
                 }
-                if (source.charAt(18) == '3' && source.charAt(19) >= '0' && source.charAt(19) <= '3') {
+                if (inputData[18] == '3' && inputData[19] >= '0' && inputData[19] <= '3') {
                     /* (01) and (393x) */
                     encoding_method = 6;
                 }
             }
         }
 
-        encodeInfo += "Encoding Method: " + Integer.toString(encoding_method) + "\n";
         switch (encoding_method) { /* Encoding method - Table 10 */
         case 1:
-            binaryString += "1XX";
+            binaryString.append("1XX");
             read_posn = 16;
             break;
         case 2:
-            binaryString += "00XX";
+            binaryString.append("00XX");
             read_posn = 0;
             break;
         case 3:
-            binaryString += "0100";
-            read_posn = source.length();
+            binaryString.append("0100");
+            read_posn = inputData.length;
             break;
         case 4:
-            binaryString += "0101";
-            read_posn = source.length();
+            binaryString.append("0101");
+            read_posn = inputData.length;
             break;
         case 5:
-            binaryString += "01100XX";
+            binaryString.append("01100XX");
             read_posn = 20;
             break;
         case 6:
-            binaryString += "01101XX";
+            binaryString.append("01101XX");
             read_posn = 23;
             break;
         case 7:
-            binaryString += "0111000";
-            read_posn = source.length();
+            binaryString.append("0111000");
+            read_posn = inputData.length;
             break;
         case 8:
-            binaryString += "0111001";
-            read_posn = source.length();
+            binaryString.append("0111001");
+            read_posn = inputData.length;
             break;
         case 9:
-            binaryString += "0111010";
-            read_posn = source.length();
+            binaryString.append("0111010");
+            read_posn = inputData.length;
             break;
         case 10:
-            binaryString += "0111011";
-            read_posn = source.length();
+            binaryString.append("0111011");
+            read_posn = inputData.length;
             break;
         case 11:
-            binaryString += "0111100";
-            read_posn = source.length();
+            binaryString.append("0111100");
+            read_posn = inputData.length;
             break;
         case 12:
-            binaryString += "0111101";
-            read_posn = source.length();
+            binaryString.append("0111101");
+            read_posn = inputData.length;
             break;
         case 13:
-            binaryString += "0111110";
-            read_posn = source.length();
+            binaryString.append("0111110");
+            read_posn = inputData.length;
             break;
         case 14:
-            binaryString += "0111111";
-            read_posn = source.length();
+            binaryString.append("0111111");
+            read_posn = inputData.length;
             break;
         }
 
@@ -756,37 +756,35 @@ public class DataBarExpanded extends Symbol {
 
         /* Verify that the data to be placed in the compressed data field is all numeric data before carrying out compression */
         for (i = 0; i < read_posn; i++) {
-            if (source.charAt(i) < '0' || source.charAt(i) > '9') {
-                if (source.charAt(i) != '[' && source.charAt(i) != ']') {
-                    /* Something is wrong */
-                    throw new OkapiException("Invalid characters in input data");
-                }
+            if (inputData[i] < '0' || inputData[i] > '9') {
+                /* Something is wrong */
+                throw new OkapiException("Invalid characters in input data");
             }
         }
 
         /* Now encode the compressed data field */
         if (encoding_method == 1) {
             /* Encoding method field "1" - general item identification data */
-            group_val = source.charAt(2) - '0';
+            group_val = inputData[2] - '0';
 
             for (j = 0; j < 4; j++) {
                 if ((group_val & (0x08 >> j)) == 0) {
-                    binaryString += "0";
+                    binaryString.append('0');
                 } else {
-                    binaryString += "1";
+                    binaryString.append('1');
                 }
             }
 
             for (i = 1; i < 5; i++) {
-                group_val = 100 * (source.charAt(i * 3) - '0');
-                group_val += 10 * (source.charAt((i * 3) + 1) - '0');
-                group_val += source.charAt((i * 3) + 2) - '0';
+                group_val = 100 * (inputData[i * 3] - '0');
+                group_val += 10 * (inputData[(i * 3) + 1] - '0');
+                group_val += inputData[(i * 3) + 2] - '0';
 
                 for (j = 0; j < 10; j++) {
                     if ((group_val & (0x200 >> j)) == 0) {
-                        binaryString += "0";
+                        binaryString.append('0');
                     } else {
-                        binaryString += "1";
+                        binaryString.append('1');
                     }
                 }
             }
@@ -796,15 +794,15 @@ public class DataBarExpanded extends Symbol {
             /* Encoding method field "0100" - variable weight item (0,001 kilogram increments) */
 
             for (i = 1; i < 5; i++) {
-                group_val = 100 * (source.charAt(i * 3) - '0');
-                group_val += 10 * (source.charAt((i * 3) + 1) - '0');
-                group_val += (source.charAt((i * 3) + 2) - '0');
+                group_val = 100 * (inputData[i * 3] - '0');
+                group_val += 10 * (inputData[(i * 3) + 1] - '0');
+                group_val += (inputData[(i * 3) + 2] - '0');
 
                 for (j = 0; j < 10; j++) {
                     if ((group_val & (0x200 >> j)) == 0) {
-                        binaryString += "0";
+                        binaryString.append('0');
                     } else {
-                        binaryString += "1";
+                        binaryString.append('1');
                     }
                 }
             }
@@ -812,14 +810,14 @@ public class DataBarExpanded extends Symbol {
             group_val = 0;
             for (i = 0; i < 6; i++) {
                 group_val *= 10;
-                group_val += source.charAt(20 + i) - '0';
+                group_val += inputData[20 + i] - '0';
             }
 
             for (j = 0; j < 15; j++) {
                 if ((group_val & (0x4000 >> j)) == 0) {
-                    binaryString += "0";
+                    binaryString.append('0');
                 } else {
-                    binaryString += "1";
+                    binaryString.append('1');
                 }
             }
         }
@@ -828,15 +826,15 @@ public class DataBarExpanded extends Symbol {
             /* Encoding method field "0101" - variable weight item (0,01 or 0,001 pound increment) */
 
             for (i = 1; i < 5; i++) {
-                group_val = 100 * (source.charAt(i * 3) - '0');
-                group_val += 10 * (source.charAt((i * 3) + 1) - '0');
-                group_val += (source.charAt((i * 3) + 2) - '0');
+                group_val = 100 * (inputData[i * 3] - '0');
+                group_val += 10 * (inputData[(i * 3) + 1] - '0');
+                group_val += (inputData[(i * 3) + 2] - '0');
 
                 for (j = 0; j < 10; j++) {
                     if ((group_val & (0x200 >> j)) == 0) {
-                        binaryString += "0";
+                        binaryString.append('0');
                     } else {
-                        binaryString += "1";
+                        binaryString.append('1');
                     }
                 }
             }
@@ -845,18 +843,18 @@ public class DataBarExpanded extends Symbol {
             group_val = 0;
             for (i = 0; i < 6; i++) {
                 group_val *= 10;
-                group_val += source.charAt(20 + i) - '0';
+                group_val += inputData[20 + i] - '0';
             }
 
-            if (source.charAt(19) == '3') {
+            if (inputData[19] == '3') {
                 group_val = group_val + 10000;
             }
 
             for (j = 0; j < 15; j++) {
                 if ((group_val & (0x4000 >> j)) == 0) {
-                    binaryString += "0";
+                    binaryString.append('0');
                 } else {
-                    binaryString += "1";
+                    binaryString.append('1');
                 }
             }
         }
@@ -865,51 +863,48 @@ public class DataBarExpanded extends Symbol {
             /* Encoding method fields "0111000" through "0111111" - variable weight item plus date */
 
             for (i = 1; i < 5; i++) {
-                group_val = 100 * (source.charAt(i * 3) - '0');
-                group_val += 10 * (source.charAt((i * 3) + 1) - '0');
-                group_val += (source.charAt((i * 3) + 2) - '0');
+                group_val = 100 * (inputData[i * 3] - '0');
+                group_val += 10 * (inputData[(i * 3) + 1] - '0');
+                group_val += (inputData[(i * 3) + 2] - '0');
 
                 for (j = 0; j < 10; j++) {
                     if ((group_val & (0x200 >> j)) == 0) {
-                        binaryString += "0";
+                        binaryString.append('0');
                     } else {
-                        binaryString += "1";
+                        binaryString.append('1');
                     }
                 }
             }
 
-            group_val = source.charAt(19) - '0';
+            group_val = inputData[19] - '0';
 
             for (i = 0; i < 5; i++) {
                 group_val *= 10;
-                group_val += source.charAt(21 + i) - '0';
+                group_val += inputData[21 + i] - '0';
             }
 
             for (j = 0; j < 20; j++) {
                 if ((group_val & (0x80000 >> j)) == 0) {
-                    binaryString += "0";
+                    binaryString.append('0');
                 } else {
-                    binaryString += "1";
+                    binaryString.append('1');
                 }
             }
 
-            if (source.length() == 34) {
+            if (inputData.length == 34) {
                 /* Date information is included */
-                group_val = ((10 * (source.charAt(28) - '0'))
-                        + (source.charAt(29) - '0')) * 384;
-                group_val += (((10 * (source.charAt(30) - '0'))
-                        + (source.charAt(31) - '0')) - 1) * 32;
-                group_val += (10 * (source.charAt(32) - '0'))
-                        + (source.charAt(33) - '0');
+                group_val = ((10 * (inputData[28] - '0')) + (inputData[29] - '0')) * 384;
+                group_val += (((10 * (inputData[30] - '0')) + (inputData[31] - '0')) - 1) * 32;
+                group_val += (10 * (inputData[32] - '0')) + (inputData[33] - '0');
             } else {
                 group_val = 38400;
             }
 
             for (j = 0; j < 16; j++) {
                 if ((group_val & (0x8000 >> j)) == 0) {
-                    binaryString += "0";
+                    binaryString.append('0');
                 } else {
-                    binaryString += "1";
+                    binaryString.append('1');
                 }
             }
         }
@@ -918,32 +913,32 @@ public class DataBarExpanded extends Symbol {
             /* Encoding method field "01100" - variable measure item and price */
 
             for (i = 1; i < 5; i++) {
-                group_val = 100 * (source.charAt(i * 3) - '0');
-                group_val += 10 * (source.charAt((i * 3) + 1) - '0');
-                group_val += (source.charAt((i * 3) + 2) - '0');
+                group_val = 100 * (inputData[i * 3] - '0');
+                group_val += 10 * (inputData[(i * 3) + 1] - '0');
+                group_val += (inputData[(i * 3) + 2] - '0');
 
                 for (j = 0; j < 10; j++) {
                     if ((group_val & (0x200 >> j)) == 0) {
-                        binaryString += "0";
+                        binaryString.append('0');
                     } else {
-                        binaryString += "1";
+                        binaryString.append('1');
                     }
                 }
             }
 
-            switch (source.charAt(19)) {
-            case '0':
-                binaryString += "00";
-                break;
-            case '1':
-                binaryString += "01";
-                break;
-            case '2':
-                binaryString += "10";
-                break;
-            case '3':
-                binaryString += "11";
-                break;
+            switch (inputData[19]) {
+                case '0':
+                    binaryString.append("00");
+                    break;
+                case '1':
+                    binaryString.append("01");
+                    break;
+                case '2':
+                    binaryString.append("10");
+                    break;
+                case '3':
+                    binaryString.append("11");
+                    break;
             }
         }
 
@@ -951,146 +946,109 @@ public class DataBarExpanded extends Symbol {
             /* Encoding method "01101" - variable measure item and price with ISO 4217 currency code */
 
             for (i = 1; i < 5; i++) {
-                group_val = 100 * (source.charAt(i * 3) - '0');
-                group_val += 10 * (source.charAt((i * 3) + 1) - '0');
-                group_val += (source.charAt((i * 3) + 2) - '0');
+                group_val = 100 * (inputData[i * 3] - '0');
+                group_val += 10 * (inputData[(i * 3) + 1] - '0');
+                group_val += (inputData[(i * 3) + 2] - '0');
 
                 for (j = 0; j < 10; j++) {
                     if ((group_val & (0x200 >> j)) == 0) {
-                        binaryString += "0";
+                        binaryString.append('0');
                     } else {
-                        binaryString += "1";
+                        binaryString.append('1');
                     }
                 }
             }
 
-            switch (source.charAt(19)) {
-            case '0':
-                binaryString += "00";
-                break;
-            case '1':
-                binaryString += "01";
-                break;
-            case '2':
-                binaryString += "10";
-                break;
-            case '3':
-                binaryString += "11";
-                break;
+            switch (inputData[19]) {
+                case '0':
+                    binaryString.append("00");
+                    break;
+                case '1':
+                    binaryString.append("01");
+                    break;
+                case '2':
+                    binaryString.append("10");
+                    break;
+                case '3':
+                    binaryString.append("11");
+                    break;
             }
 
             group_val = 0;
             for (i = 0; i < 3; i++) {
                 group_val *= 10;
-                group_val += source.charAt(20 + i) - '0';
+                group_val += inputData[20 + i] - '0';
             }
 
             for (j = 0; j < 10; j++) {
                 if ((group_val & (0x200 >> j)) == 0) {
-                    binaryString += "0";
+                    binaryString.append('0');
                 } else {
-                    binaryString += "1";
+                    binaryString.append('1');
                 }
             }
         }
 
         /* The compressed data field has been processed if appropriate - the rest of the data (if any) goes into a general-purpose data compaction field */
 
-        generalField = source.substring(read_posn);
-        generalFieldType = new EncodeMode[generalField.length()];
+        int[] generalField = Arrays.copyOfRange(inputData, read_posn, inputData.length);
+        EncodeMode[] generalFieldType = new EncodeMode[generalField.length];
 
-        if (generalField.length() != 0) {
+        if (generalField.length != 0) {
+
             latch = false;
-            for (i = 0; i < generalField.length(); i++) {
-                /* Table 13 - ISO/IEC 646 encodation */
-                if (generalField.charAt(i) < ' ' || generalField.charAt(i) > 'z') {
-                    generalFieldType[i] = EncodeMode.INVALID_CHAR;
-                    latch = true;
+            for (i = 0; i < generalField.length; i++) {
+                /* Tables 11, 12, 13 - ISO/IEC 646 encodation */
+                int c = generalField[i];
+                EncodeMode mode;
+                if (c == FNC1) {
+                    // FNC1 can be encoded in any system
+                    mode = EncodeMode.ANY_ENC;
+                } else if (c >= '0' && c <= '9') {
+                    // numbers can be encoded in any system, but will usually narrow down to numeric encodation
+                    mode = EncodeMode.ANY_ENC;
+                } else if ((c >= 'A' && c <= 'Z') || c == '*' || c == ',' || c == '-' || c == '.' || c == '/') {
+                    // alphanumeric encodation or ISO/IEC encodation
+                    mode = EncodeMode.ALPHA_OR_ISO;
+                } else if ((c >= 'a' && c <= 'z') || c == '!' || c == '"' || c == '%' || c == '&' || c == '\'' ||
+                            c == '(' || c == ')' || c == '+' || c == ':' || c == ';' || c == '<' || c == '=' ||
+                            c == '>' || c == '?' || c == '_' || c == ' ') {
+                    // ISO/IEC encodation
+                    mode = EncodeMode.ISOIEC;
                 } else {
-                    generalFieldType[i] = EncodeMode.ISOIEC;
-                }
-
-                if (generalField.charAt(i) == '#') {
-                    generalFieldType[i] = EncodeMode.INVALID_CHAR;
+                    // unable to encode this character
+                    mode = EncodeMode.INVALID_CHAR;
                     latch = true;
                 }
-                if (generalField.charAt(i) == '$') {
-                    generalFieldType[i] = EncodeMode.INVALID_CHAR;
-                    latch = true;
-                }
-                if (generalField.charAt(i) == '@') {
-                    generalFieldType[i] = EncodeMode.INVALID_CHAR;
-                    latch = true;
-                }
-                if (generalField.charAt(i) == 92) {
-                    generalFieldType[i] = EncodeMode.INVALID_CHAR;
-                    latch = true;
-                }
-                if (generalField.charAt(i) == '^') {
-                    generalFieldType[i] = EncodeMode.INVALID_CHAR;
-                    latch = true;
-                }
-                if (generalField.charAt(i) == 96) {
-                    generalFieldType[i] = EncodeMode.INVALID_CHAR;
-                    latch = true;
-                }
-
-                /* Table 12 - Alphanumeric encodation */
-                if (generalField.charAt(i) >= 'A' && generalField.charAt(i) <= 'Z') {
-                    generalFieldType[i] = EncodeMode.ALPHA_OR_ISO;
-                }
-                if (generalField.charAt(i) == '*') {
-                    generalFieldType[i] = EncodeMode.ALPHA_OR_ISO;
-                }
-                if (generalField.charAt(i) == ',') {
-                    generalFieldType[i] = EncodeMode.ALPHA_OR_ISO;
-                }
-                if (generalField.charAt(i) == '-') {
-                    generalFieldType[i] = EncodeMode.ALPHA_OR_ISO;
-                }
-                if (generalField.charAt(i) == '.') {
-                    generalFieldType[i] = EncodeMode.ALPHA_OR_ISO;
-                }
-                if (generalField.charAt(i) == '/') {
-                    generalFieldType[i] = EncodeMode.ALPHA_OR_ISO;
-                }
-
-                /* Numeric encodation */
-                if (generalField.charAt(i) >= '0' && generalField.charAt(i) <= '9') {
-                    generalFieldType[i] = EncodeMode.ANY_ENC;
-                }
-                if (generalField.charAt(i) == '[') {
-                    /* FNC1 can be encoded in any system */
-                    generalFieldType[i] = EncodeMode.ANY_ENC;
-                }
+                generalFieldType[i] = mode;
             }
 
             if (latch) {
                 throw new OkapiException("Invalid characters in input data");
             }
 
-            for (i = 0; i < generalField.length() - 1; i++) {
-                if (generalFieldType[i] == EncodeMode.ISOIEC && generalField.charAt(i + 1) == '[') {
+            for (i = 0; i < generalField.length - 1; i++) {
+                if (generalFieldType[i] == EncodeMode.ISOIEC && generalField[i + 1] == FNC1) {
                     generalFieldType[i + 1] = EncodeMode.ISOIEC;
                 }
             }
 
-            for (i = 0; i < generalField.length() - 1; i++) {
-                if (generalFieldType[i] == EncodeMode.ALPHA_OR_ISO && generalField.charAt(i + 1) == '[') {
+            for (i = 0; i < generalField.length - 1; i++) {
+                if (generalFieldType[i] == EncodeMode.ALPHA_OR_ISO && generalField[i + 1] == FNC1) {
                     generalFieldType[i + 1] = EncodeMode.ALPHA_OR_ISO;
                 }
             }
 
-            latch = applyGeneralFieldRules();
+            latch = applyGeneralFieldRules(generalFieldType); // modifies generalFieldType
 
             /* Set initial mode if not NUMERIC */
             if (generalFieldType[0] == EncodeMode.ALPHA) {
-                binaryString += "0000"; /* Alphanumeric latch */
+                binaryString.append("0000"); /* Alphanumeric latch */
                 last_mode = EncodeMode.ALPHA;
             }
             if (generalFieldType[0] == EncodeMode.ISOIEC) {
-                binaryString += "0000"; /* Alphanumeric latch */
-                binaryString += "00100"; /* ISO/IEC 646 latch */
+                binaryString.append("0000"); /* Alphanumeric latch */
+                binaryString.append("00100"); /* ISO/IEC 646 latch */
                 last_mode = EncodeMode.ISOIEC;
             }
 
@@ -1099,17 +1057,17 @@ public class DataBarExpanded extends Symbol {
                 switch (generalFieldType[i]) {
                 case NUMERIC:
                     if (last_mode != EncodeMode.NUMERIC) {
-                        binaryString += "000"; /* Numeric latch */
+                        binaryString.append("000"); /* Numeric latch */
                     }
 
-                    if (generalField.charAt(i) != '[') {
-                        d1 = generalField.charAt(i) - '0';
+                    if (generalField[i] != FNC1) {
+                        d1 = generalField[i] - '0';
                     } else {
                         d1 = 10;
                     }
 
-                    if (generalField.charAt(i + 1) != '[') {
-                        d2 = generalField.charAt(i + 1) - '0';
+                    if (generalField[i + 1] != FNC1) {
+                        d2 = generalField[i + 1] - '0';
                     } else {
                         d2 = 10;
                     }
@@ -1118,9 +1076,9 @@ public class DataBarExpanded extends Symbol {
 
                     for (j = 0; j < 7; j++) {
                         if ((value & (0x40 >> j)) != 0) {
-                            binaryString += "1";
+                            binaryString.append('1');
                         } else {
-                            binaryString += "0";
+                            binaryString.append('0');
                         }
                     }
 
@@ -1131,49 +1089,50 @@ public class DataBarExpanded extends Symbol {
                 case ALPHA:
                     if (i != 0) {
                         if (last_mode == EncodeMode.NUMERIC) {
-                            binaryString += "0000"; /* Alphanumeric latch */
+                            binaryString.append("0000"); /* Alphanumeric latch */
                         }
                         if (last_mode == EncodeMode.ISOIEC) {
-                            binaryString += "00100"; /* Alphanumeric latch */
+                            binaryString.append("00100"); /* Alphanumeric latch */
                         }
                     }
 
-                    if ((generalField.charAt(i) >= '0') && (generalField.charAt(i) <= '9')) {
+                    if ((generalField[i] >= '0') && (generalField[i] <= '9')) {
 
-                        value = generalField.charAt(i) - 43;
+                        value = generalField[i] - 43;
 
                         for (j = 0; j < 5; j++) {
                             if ((value & (0x10 >> j)) != 0) {
-                                binaryString += "1";
+                                binaryString.append('1');
                             } else {
-                                binaryString += "0";
+                                binaryString.append('0');
                             }
                         }
                     }
 
-                    if ((generalField.charAt(i) >= 'A') && (generalField.charAt(i) <= 'Z')) {
+                    if ((generalField[i] >= 'A') && (generalField[i] <= 'Z')) {
 
-                        value = generalField.charAt(i) - 33;
+                        value = generalField[i] - 33;
 
                         for (j = 0; j < 6; j++) {
                             if ((value & (0x20 >> j)) != 0) {
-                                binaryString += "1";
+                                binaryString.append('1');
                             } else {
-                                binaryString += "0";
+                                binaryString.append('0');
                             }
                         }
                     }
 
                     last_mode = EncodeMode.ALPHA;
-                    if (generalField.charAt(i) == '[') {
-                        binaryString += "01111";
+                    if (generalField[i] == FNC1) {
+                        binaryString.append("01111");
                         last_mode = EncodeMode.NUMERIC;
                     } /* FNC1/Numeric latch */
-                    if (generalField.charAt(i) == '*') binaryString += "111010"; /* asterisk */
-                    if (generalField.charAt(i) == ',') binaryString += "111011"; /* comma */
-                    if (generalField.charAt(i) == '-') binaryString += "111100"; /* minus or hyphen */
-                    if (generalField.charAt(i) == '.') binaryString += "111101"; /* period or full stop */
-                    if (generalField.charAt(i) == '/') binaryString += "111110"; /* slash or solidus */
+
+                    if (generalField[i] == '*') binaryString.append("111010"); /* asterisk */
+                    if (generalField[i] == ',') binaryString.append("111011"); /* comma */
+                    if (generalField[i] == '-') binaryString.append("111100"); /* minus or hyphen */
+                    if (generalField[i] == '.') binaryString.append("111101"); /* period or full stop */
+                    if (generalField[i] == '/') binaryString.append("111110"); /* slash or solidus */
 
                     i++;
                     break;
@@ -1181,82 +1140,83 @@ public class DataBarExpanded extends Symbol {
                 case ISOIEC:
                     if (i != 0) {
                         if (last_mode == EncodeMode.NUMERIC) {
-                            binaryString += "0000"; /* Alphanumeric latch */
-                            binaryString += "00100"; /* ISO/IEC 646 latch */
+                            binaryString.append("0000"); /* Alphanumeric latch */
+                            binaryString.append("00100"); /* ISO/IEC 646 latch */
                         }
                         if (last_mode == EncodeMode.ALPHA) {
-                            binaryString += "00100"; /* ISO/IEC 646 latch */
+                            binaryString.append("00100"); /* ISO/IEC 646 latch */
                         }
                     }
 
-                    if ((generalField.charAt(i) >= '0')
-                            && (generalField.charAt(i) <= '9')) {
+                    if ((generalField[i] >= '0')
+                            && (generalField[i] <= '9')) {
 
-                        value = generalField.charAt(i) - 43;
+                        value = generalField[i] - 43;
 
                         for (j = 0; j < 5; j++) {
                             if ((value & (0x10 >> j)) != 0) {
-                                binaryString += "1";
+                                binaryString.append('1');
                             } else {
-                                binaryString += "0";
+                                binaryString.append('0');
                             }
                         }
                     }
 
-                    if ((generalField.charAt(i) >= 'A')
-                            && (generalField.charAt(i) <= 'Z')) {
+                    if ((generalField[i] >= 'A')
+                            && (generalField[i] <= 'Z')) {
 
-                        value = generalField.charAt(i) - 1;
+                        value = generalField[i] - 1;
 
                         for (j = 0; j < 7; j++) {
                             if ((value & (0x40 >> j)) != 0) {
-                                binaryString += "1";
+                                binaryString.append('1');
                             } else {
-                                binaryString += "0";
+                                binaryString.append('0');
                             }
                         }
                     }
 
-                    if ((generalField.charAt(i) >= 'a')
-                            && (generalField.charAt(i) <= 'z')) {
+                    if ((generalField[i] >= 'a')
+                            && (generalField[i] <= 'z')) {
 
-                        value = generalField.charAt(i) - 7;
+                        value = generalField[i] - 7;
 
                         for (j = 0; j < 7; j++) {
                             if ((value & (0x40 >> j)) != 0) {
-                                binaryString += "1";
+                                binaryString.append('1');
                             } else {
-                                binaryString += "0";
+                                binaryString.append('0');
                             }
                         }
                     }
 
                     last_mode = EncodeMode.ISOIEC;
-                    if (generalField.charAt(i) == '[') {
-                        binaryString += "01111";
+                    if (generalField[i] == FNC1) {
+                        binaryString.append("01111");
                         last_mode = EncodeMode.NUMERIC;
                     } /* FNC1/Numeric latch */
-                    if (generalField.charAt(i) == '!') binaryString += "11101000"; /* exclamation mark */
-                    if (generalField.charAt(i) == 34) binaryString += "11101001"; /* quotation mark */
-                    if (generalField.charAt(i) == 37) binaryString += "11101010"; /* percent sign */
-                    if (generalField.charAt(i) == '&') binaryString += "11101011"; /* ampersand */
-                    if (generalField.charAt(i) == 39) binaryString += "11101100"; /* apostrophe */
-                    if (generalField.charAt(i) == '(') binaryString += "11101101"; /* left parenthesis */
-                    if (generalField.charAt(i) == ')') binaryString += "11101110"; /* right parenthesis */
-                    if (generalField.charAt(i) == '*') binaryString += "11101111"; /* asterisk */
-                    if (generalField.charAt(i) == '+') binaryString += "11110000"; /* plus sign */
-                    if (generalField.charAt(i) == ',') binaryString += "11110001"; /* comma */
-                    if (generalField.charAt(i) == '-') binaryString += "11110010"; /* minus or hyphen */
-                    if (generalField.charAt(i) == '.') binaryString += "11110011"; /* period or full stop */
-                    if (generalField.charAt(i) == '/') binaryString += "11110100"; /* slash or solidus */
-                    if (generalField.charAt(i) == ':') binaryString += "11110101"; /* colon */
-                    if (generalField.charAt(i) == ';') binaryString += "11110110"; /* semicolon */
-                    if (generalField.charAt(i) == '<') binaryString += "11110111"; /* less-than sign */
-                    if (generalField.charAt(i) == '=') binaryString += "11111000"; /* equals sign */
-                    if (generalField.charAt(i) == '>') binaryString += "11111001"; /* greater-than sign */
-                    if (generalField.charAt(i) == '?') binaryString += "11111010"; /* question mark */
-                    if (generalField.charAt(i) == '_') binaryString += "11111011"; /* underline or low line */
-                    if (generalField.charAt(i) == ' ') binaryString += "11111100"; /* space */
+
+                    if (generalField[i] == '!') binaryString.append("11101000"); /* exclamation mark */
+                    if (generalField[i] == 34)  binaryString.append("11101001"); /* quotation mark */
+                    if (generalField[i] == 37)  binaryString.append("11101010"); /* percent sign */
+                    if (generalField[i] == '&') binaryString.append("11101011"); /* ampersand */
+                    if (generalField[i] == 39)  binaryString.append("11101100"); /* apostrophe */
+                    if (generalField[i] == '(') binaryString.append("11101101"); /* left parenthesis */
+                    if (generalField[i] == ')') binaryString.append("11101110"); /* right parenthesis */
+                    if (generalField[i] == '*') binaryString.append("11101111"); /* asterisk */
+                    if (generalField[i] == '+') binaryString.append("11110000"); /* plus sign */
+                    if (generalField[i] == ',') binaryString.append("11110001"); /* comma */
+                    if (generalField[i] == '-') binaryString.append("11110010"); /* minus or hyphen */
+                    if (generalField[i] == '.') binaryString.append("11110011"); /* period or full stop */
+                    if (generalField[i] == '/') binaryString.append("11110100"); /* slash or solidus */
+                    if (generalField[i] == ':') binaryString.append("11110101"); /* colon */
+                    if (generalField[i] == ';') binaryString.append("11110110"); /* semicolon */
+                    if (generalField[i] == '<') binaryString.append("11110111"); /* less-than sign */
+                    if (generalField[i] == '=') binaryString.append("11111000"); /* equals sign */
+                    if (generalField[i] == '>') binaryString.append("11111001"); /* greater-than sign */
+                    if (generalField[i] == '?') binaryString.append("11111010"); /* question mark */
+                    if (generalField[i] == '_') binaryString.append("11111011"); /* underline or low line */
+                    if (generalField[i] == ' ') binaryString.append("11111100"); /* space */
 
                     i++;
                     break;
@@ -1265,7 +1225,7 @@ public class DataBarExpanded extends Symbol {
                 if (latch) {
                     current_length++;
                 }
-            } while (current_length < generalField.length());
+            } while (current_length < generalField.length);
 
             remainder = calculateRemainder(binaryString.length());
 
@@ -1273,38 +1233,38 @@ public class DataBarExpanded extends Symbol {
                 /* There is still one more numeric digit to encode */
                 if (last_mode == EncodeMode.NUMERIC) {
                     if ((remainder >= 4) && (remainder <= 6)) {
-                        value = generalField.charAt(i) - '0';
+                        value = generalField[i] - '0';
                         value++;
 
                         for (j = 0; j < 4; j++) {
                             if ((value & (0x08 >> j)) != 0) {
-                                binaryString += "1";
+                                binaryString.append('1');
                             } else {
-                                binaryString += "0";
+                                binaryString.append('0');
                             }
                         }
                     } else {
-                        d1 = generalField.charAt(i) - '0';
+                        d1 = generalField[i] - '0';
                         d2 = 10;
 
                         value = (11 * d1) + d2 + 8;
 
                         for (j = 0; j < 7; j++) {
                             if ((value & (0x40 >> j)) != 0) {
-                                binaryString += "1";
+                                binaryString.append('1');
                             } else {
-                                binaryString += "0";
+                                binaryString.append('0');
                             }
                         }
                     }
                 } else {
-                    value = generalField.charAt(i) - 43;
+                    value = generalField[i] - 43;
 
                     for (j = 0; j < 5; j++) {
                         if ((value & (0x10 >> j)) != 0) {
-                            binaryString += "1";
+                            binaryString.append('1');
                         } else {
-                            binaryString += "0";
+                            binaryString.append('0');
                         }
                     }
                 }
@@ -1319,7 +1279,7 @@ public class DataBarExpanded extends Symbol {
 
         /* Now add padding to binary string (7.2.5.5.4) */
         i = remainder;
-        if ((generalField.length() != 0) && (last_mode == EncodeMode.NUMERIC)) {
+        if ((generalField.length != 0) && (last_mode == EncodeMode.NUMERIC)) {
             padstring = "0000";
             i -= 4;
         } else {
@@ -1329,39 +1289,38 @@ public class DataBarExpanded extends Symbol {
             padstring += "00100";
         }
 
-        binaryString += padstring.substring(0, remainder);
+        binaryString.append(padstring.substring(0, remainder));
 
         /* Patch variable length symbol bit field */
-        patch = "";
+        char patchEvenOdd, patchSize;
         if ((((binaryString.length() / 12) + 1) & 1) == 0) {
-            patch += "0";
+            patchEvenOdd = '0';
         } else {
-            patch += "1";
+            patchEvenOdd = '1';
         }
         if (binaryString.length() <= 156) {
-            patch += "0";
+            patchSize = '0';
         } else {
-            patch += "1";
+            patchSize = '1';
         }
 
         if (encoding_method == 1) {
-            binaryString = binaryString.substring(0, 2) + patch
-                    + binaryString.substring(4);
+            binaryString.setCharAt(2, patchEvenOdd);
+            binaryString.setCharAt(3, patchSize);
         }
         if (encoding_method == 2) {
-            binaryString = binaryString.substring(0, 3) + patch
-                    + binaryString.substring(5);
+            binaryString.setCharAt(3, patchEvenOdd);
+            binaryString.setCharAt(4, patchSize);
         }
-        if ((encoding_method == 5) || (encoding_method == 6)) {
-            binaryString = binaryString.substring(0, 6) + patch
-                    + binaryString.substring(8);
+        if (encoding_method == 5 || encoding_method == 6) {
+            binaryString.setCharAt(6, patchEvenOdd);
+            binaryString.setCharAt(7, patchSize);
         }
 
-        encodeInfo += "Binary Length: " + binaryString.length() + "\n";
-        displayBinaryString();
+        return encoding_method;
     }
 
-    private static int calculateRemainder ( int binaryStringLength ) {
+    private static int calculateRemainder(int binaryStringLength) {
         int remainder = 12 - (binaryStringLength % 12);
         if (remainder == 12) {
             remainder = 0;
@@ -1372,13 +1331,14 @@ public class DataBarExpanded extends Symbol {
         return remainder;
     }
 
-    /** Display binary string as hexadecimal */
-    private void displayBinaryString() {
-        int i, nibble;
+    /** Logs binary string as hexadecimal */
+    private void logBinaryStringInfo(StringBuilder binaryString) {
 
+        encodeInfo += "Binary Length: " + binaryString.length() + "\n";
         encodeInfo += "Binary String: ";
-        nibble = 0;
-        for(i = 0; i < binaryString.length(); i++) {
+
+        int nibble = 0;
+        for (int i = 0; i < binaryString.length(); i++) {
             switch (i % 4) {
                 case 0:
                     if (binaryString.charAt(i) == '1') {
@@ -1408,11 +1368,12 @@ public class DataBarExpanded extends Symbol {
         if ((binaryString.length() % 4) != 0) {
             encodeInfo += Integer.toHexString(nibble);
         }
+
         encodeInfo += "\n";
     }
 
     /** Attempts to apply encoding rules from sections 7.2.5.5.1 to 7.2.5.5.3 of ISO/IEC 24724:2006 */
-    private boolean applyGeneralFieldRules() {
+    private static boolean applyGeneralFieldRules(EncodeMode[] generalFieldType) {
 
         int block_count, i, j, k;
         EncodeMode current, next, last;
@@ -1424,7 +1385,7 @@ public class DataBarExpanded extends Symbol {
         blockLength[block_count] = 1;
         blockType[block_count] = generalFieldType[0];
 
-        for (i = 1; i < generalField.length(); i++) {
+        for (i = 1; i < generalFieldType.length; i++) {
             current = generalFieldType[i];
             last = generalFieldType[i - 1];
 
@@ -1503,7 +1464,7 @@ public class DataBarExpanded extends Symbol {
         }
 
         for (i = 0; i < block_count - 1; i++) {
-            if ((blockType[i] == EncodeMode.NUMERIC) && ((blockLength[i] & 1) != 0)) {
+            if (blockType[i] == EncodeMode.NUMERIC && (blockLength[i] & 1) != 0) {
                 /* Odd size numeric block */
                 blockLength[i] = blockLength[i] - 1;
                 blockLength[i + 1] = blockLength[i + 1] + 1;

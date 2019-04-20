@@ -101,7 +101,7 @@ public class DataBarExpanded extends Symbol {
     };
 
     private boolean linkageFlag;
-    private int preferredColumns;
+    private int preferredColumns = 2;
     private boolean stacked = true;
 
     private String source;
@@ -131,6 +131,9 @@ public class DataBarExpanded extends Symbol {
      * @param columns the number of segments in each row
      */
     public void setPreferredColumns(int columns) {
+        if (columns < 1 || columns > 10) {
+            throw new IllegalArgumentException("Invalid column count: " + columns);
+        }
         preferredColumns = columns;
     }
 
@@ -389,9 +392,6 @@ public class DataBarExpanded extends Symbol {
             codeblocks = (data_chars + 1) / 2 + ((data_chars + 1) % 2);
 
             blocksPerRow = preferredColumns;
-            if ((blocksPerRow < 1) || (blocksPerRow > 10)) {
-                blocksPerRow = 2;
-            }
 
             if (linkageFlag && (blocksPerRow == 1)) {
                 /* "There shall be a minimum of four symbol characters in the

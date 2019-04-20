@@ -346,6 +346,9 @@ public class SymbolTest {
             String messageId = ((AztecCode) symbol).getStructuredAppendMessageId();
             int skip = 2 + (messageId != null ? messageId.length() + 2 : 0);
             return s.substring(skip);
+        } else if (symbol instanceof DataBarExpanded) {
+            // remove parenthesis around the GS1 AIs
+            return s.replaceAll("[\\(\\)]", "");
         } else {
             // no massaging
             return s;
@@ -372,6 +375,9 @@ public class SymbolTest {
         } else if (symbol instanceof UspsPackage) {
             // remove AI brackets, since ZXing doesn't include them
             return s.replaceAll("[\\[\\]]", "");
+        } else if (symbol instanceof DataBarExpanded) {
+            // remove explicit FNC1s, since ZXing doesn't include them
+            return s.replace(Symbol.FNC1_STRING, "");
         } else {
             // no massaging
             return s;
@@ -537,6 +543,10 @@ public class SymbolTest {
             if (!"content".equals(name)) {
                 String getterName = "get" + setterName.substring(3);
                 Method getter = getMethod(symbol.getClass(), getterName);
+                if (getter == null) {
+                    getterName = "is" + setterName.substring(3);
+                    getter = getMethod(symbol.getClass(), getterName);
+                }
                 if (getter != null) {
                     Object getterValue = getter.invoke(symbol);
                     assertEquals(setterValue, getterValue);
@@ -555,6 +565,11 @@ public class SymbolTest {
      */
     private static Method getMethod(Class< ? > clazz, String name) {
         for (Method method : clazz.getMethods()) {
+            if (method.getName().equals(name)) {
+                return method;
+            }
+        }
+        for (Method method : clazz.getDeclaredMethods()) {
             if (method.getName().equals(name)) {
                 return method;
             }

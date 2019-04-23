@@ -1125,7 +1125,6 @@ public class DataBarExpanded extends Symbol {
                     last_mode = EncodeMode.ALPHA;
                     if (generalField[i] == FNC1) {
                         binaryString.append("01111");
-                        last_mode = EncodeMode.NUMERIC;
                     } /* FNC1 / Numeric latch */
 
                     if (generalField[i] == '*') binaryString.append("111010"); /* asterisk */
@@ -1190,7 +1189,6 @@ public class DataBarExpanded extends Symbol {
                     last_mode = EncodeMode.ISOIEC;
                     if (generalField[i] == FNC1) {
                         binaryString.append("01111");
-                        last_mode = EncodeMode.NUMERIC;
                     } /* FNC1 / Numeric latch */
 
                     if (generalField[i] == '!') binaryString.append("11101000"); /* exclamation mark */

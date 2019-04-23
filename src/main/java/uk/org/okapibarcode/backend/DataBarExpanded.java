@@ -230,7 +230,7 @@ public class DataBarExpanded extends Symbol {
                     vs[i] += 2048 >> j;
                 }
             }
-            encodeInfo += Integer.toString(vs[i]) + " ";
+            encodeInfo += vs[i] + " ";
         }
         encodeInfo += "\n";
 
@@ -279,7 +279,7 @@ public class DataBarExpanded extends Symbol {
 
         check_char = (211 * ((data_chars + 1) - 4)) + (checksum % 211);
 
-        encodeInfo += "Check Character: " + Integer.toString(check_char) + "\n";
+        encodeInfo += "Check Character: " + check_char + "\n";
 
         c_group = 1;
         if ((check_char >= 348) && (check_char <= 1387)) {
@@ -1096,7 +1096,7 @@ public class DataBarExpanded extends Symbol {
                         }
                     }
 
-                    if ((generalField[i] >= '0') && (generalField[i] <= '9')) {
+                    if (generalField[i] >= '0' && generalField[i] <= '9') {
 
                         value = generalField[i] - 43;
 
@@ -1109,7 +1109,7 @@ public class DataBarExpanded extends Symbol {
                         }
                     }
 
-                    if ((generalField[i] >= 'A') && (generalField[i] <= 'Z')) {
+                    if (generalField[i] >= 'A' && generalField[i] <= 'Z') {
 
                         value = generalField[i] - 33;
 
@@ -1126,7 +1126,7 @@ public class DataBarExpanded extends Symbol {
                     if (generalField[i] == FNC1) {
                         binaryString.append("01111");
                         last_mode = EncodeMode.NUMERIC;
-                    } /* FNC1/Numeric latch */
+                    } /* FNC1 / Numeric latch */
 
                     if (generalField[i] == '*') binaryString.append("111010"); /* asterisk */
                     if (generalField[i] == ',') binaryString.append("111011"); /* comma */
@@ -1148,8 +1148,7 @@ public class DataBarExpanded extends Symbol {
                         }
                     }
 
-                    if ((generalField[i] >= '0')
-                            && (generalField[i] <= '9')) {
+                    if (generalField[i] >= '0' && generalField[i] <= '9') {
 
                         value = generalField[i] - 43;
 
@@ -1162,8 +1161,7 @@ public class DataBarExpanded extends Symbol {
                         }
                     }
 
-                    if ((generalField[i] >= 'A')
-                            && (generalField[i] <= 'Z')) {
+                    if (generalField[i] >= 'A' && generalField[i] <= 'Z') {
 
                         value = generalField[i] - 1;
 
@@ -1176,8 +1174,7 @@ public class DataBarExpanded extends Symbol {
                         }
                     }
 
-                    if ((generalField[i] >= 'a')
-                            && (generalField[i] <= 'z')) {
+                    if (generalField[i] >= 'a' && generalField[i] <= 'z') {
 
                         value = generalField[i] - 7;
 
@@ -1194,7 +1191,7 @@ public class DataBarExpanded extends Symbol {
                     if (generalField[i] == FNC1) {
                         binaryString.append("01111");
                         last_mode = EncodeMode.NUMERIC;
-                    } /* FNC1/Numeric latch */
+                    } /* FNC1 / Numeric latch */
 
                     if (generalField[i] == '!') binaryString.append("11101000"); /* exclamation mark */
                     if (generalField[i] == 34)  binaryString.append("11101001"); /* quotation mark */

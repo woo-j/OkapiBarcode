@@ -73,8 +73,7 @@ public class DataBar14 extends Symbol {
     };
 
     private boolean linkageFlag;
-    private Mode symbolType = Mode.LINEAR;
-    private boolean[][] grid = new boolean[5][100];
+    private Mode mode = Mode.LINEAR;
 
     @Override
     public void setDataType(DataType dummy) {
@@ -104,7 +103,7 @@ public class DataBar14 extends Symbol {
      * @param mode the symbol mode
      */
     public void setMode(Mode mode) {
-        this.symbolType = mode;
+        this.mode = mode;
     }
 
     /**
@@ -113,11 +112,13 @@ public class DataBar14 extends Symbol {
      * @return the symbol mode
      */
     public Mode getMode() {
-        return symbolType;
+        return mode;
     }
 
     @Override
     protected void encode() {
+
+        boolean[][] grid = new boolean[5][100];
         BigInteger accum;
         BigInteger left_reg;
         BigInteger right_reg;
@@ -136,7 +137,6 @@ public class DataBar14 extends Symbol {
         int j;
         int count;
         int check_digit;
-        String hrt;
         String bin;
         int compositeOffset = 0;
 
@@ -170,72 +170,63 @@ public class DataBar14 extends Symbol {
 
         encodeInfo += "Data Characters: ";
         for (i = 0; i < 4; i++) {
-            encodeInfo += Integer.toString(data_character[i]) + " ";
+            encodeInfo += data_character[i] + " ";
         }
         encodeInfo += "\n";
 
-//        if (debug) {
-//            System.out.println("left " + left_reg.toString());
-//            System.out.println("right " + right_reg.toString());
-//            System.out.println("data1 " + data_character[0]);
-//            System.out.println("data2 " + data_character[1]);
-//            System.out.println("data3 " + data_character[2]);
-//            System.out.println("data4 " + data_character[3]);
-//        }
-
         /* Calculate odd and even subset values */
-        if ((data_character[0] >= 0) && (data_character[0] <= 160)) {
+        if (data_character[0] >= 0 && data_character[0] <= 160) {
             data_group[0] = 0;
         }
-        if ((data_character[0] >= 161) && (data_character[0] <= 960)) {
+        if (data_character[0] >= 161 && data_character[0] <= 960) {
             data_group[0] = 1;
         }
-        if ((data_character[0] >= 961) && (data_character[0] <= 2014)) {
+        if (data_character[0] >= 961 && data_character[0] <= 2014) {
             data_group[0] = 2;
         }
-        if ((data_character[0] >= 2015) && (data_character[0] <= 2714)) {
+        if (data_character[0] >= 2015 && data_character[0] <= 2714) {
             data_group[0] = 3;
         }
-        if ((data_character[0] >= 2715) && (data_character[0] <= 2840)) {
+        if (data_character[0] >= 2715 && data_character[0] <= 2840) {
             data_group[0] = 4;
         }
-        if ((data_character[1] >= 0) && (data_character[1] <= 335)) {
+        if (data_character[1] >= 0 && data_character[1] <= 335) {
             data_group[1] = 5;
         }
-        if ((data_character[1] >= 336) && (data_character[1] <= 1035)) {
+        if (data_character[1] >= 336 && data_character[1] <= 1035) {
             data_group[1] = 6;
         }
-        if ((data_character[1] >= 1036) && (data_character[1] <= 1515)) {
+        if (data_character[1] >= 1036 && data_character[1] <= 1515) {
             data_group[1] = 7;
         }
-        if ((data_character[1] >= 1516) && (data_character[1] <= 1596)) {
+        if (data_character[1] >= 1516 && data_character[1] <= 1596) {
             data_group[1] = 8;
         }
-        if ((data_character[3] >= 0) && (data_character[3] <= 335)) {
+        if (data_character[3] >= 0 && data_character[3] <= 335) {
             data_group[3] = 5;
         }
-        if ((data_character[3] >= 336) && (data_character[3] <= 1035)) {
+        if (data_character[3] >= 336 && data_character[3] <= 1035) {
             data_group[3] = 6;
         }
-        if ((data_character[3] >= 1036) && (data_character[3] <= 1515)) {
+        if (data_character[3] >= 1036 && data_character[3] <= 1515) {
             data_group[3] = 7;
         }
-        if ((data_character[3] >= 1516) && (data_character[3] <= 1596)) {
+        if (data_character[3] >= 1516 && data_character[3] <= 1596) {
             data_group[3] = 8;
         }
-        if ((data_character[2] >= 0) && (data_character[2] <= 160)) {
+        if (data_character[2] >= 0 && data_character[2] <= 160) {
             data_group[2] = 0;
         }
-        if ((data_character[2] >= 161) && (data_character[2] <= 960)) {
+        if (data_character[2] >= 161 && data_character[2] <= 960) {
             data_group[2] = 1;
         }
-        if ((data_character[2] >= 961) && (data_character[2] <= 2014)) {
+        if (data_character[2] >= 961 && data_character[2] <= 2014) {
             data_group[2] = 2;
         }
-        if ((data_character[2] >= 2015) && (data_character[2] <= 2714)) {
+        if (data_character[2] >= 2015 && data_character[2] <= 2714) {
             data_group[2] = 3;
         }
-        if ((data_character[2] >= 2715) && (data_character[2] <= 2840)) {
+        if (data_character[2] >= 2715 && data_character[2] <= 2840) {
             data_group[2] = 4;
         }
 
@@ -247,12 +238,6 @@ public class DataBar14 extends Symbol {
         v_even[3] = (data_character[3] - G_SUM_TABLE[data_group[3]]) / T_TABLE[data_group[3]];
         v_odd[2] = (data_character[2] - G_SUM_TABLE[data_group[2]]) / T_TABLE[data_group[2]];
         v_even[2] = (data_character[2] - G_SUM_TABLE[data_group[2]]) % T_TABLE[data_group[2]];
-
-//        if (debug) {
-//            for (i = 0; i < 4; i++) {
-//                System.out.println("Vodd[" + i + "] = " + v_odd[i] + "  Veven[" + i + "] = " + v_even[i]);
-//            }
-//        }
 
         /* Use RSS subset width algorithm */
         for (i = 0; i < 4; i++) {
@@ -281,18 +266,8 @@ public class DataBar14 extends Symbol {
             }
         }
 
-//        if (debug) {
-//            for (i = 0; i < 4; i++) {
-//                System.out.print("Data " + i + " widths ");
-//                for(j = 0; j < 8; j++) {
-//                    System.out.print(data_widths[j][i]);
-//                }
-//                System.out.println();
-//            }
-//        }
-
-        checksum = 0;
         /* Calculate the checksum */
+        checksum = 0;
         for (i = 0; i < 8; i++) {
             checksum += CHECKSUM_WEIGHT[i] * data_widths[i][0];
             checksum += CHECKSUM_WEIGHT[i + 8] * data_widths[i][1];
@@ -311,13 +286,7 @@ public class DataBar14 extends Symbol {
         c_left = checksum / 9;
         c_right = checksum % 9;
 
-        encodeInfo += "Checksum: " + Integer.toString(checksum) + "\n";
-
-//        if (debug) {
-//            System.out.println("checksum " + checksum);
-//            System.out.println("left check " + c_left);
-//            System.out.println("right check " + c_right);
-//        }
+        encodeInfo += "Checksum: " + checksum + "\n";
 
         /* Put element widths together */
         total_widths[0] = 1;
@@ -343,13 +312,13 @@ public class DataBar14 extends Symbol {
         }
 
         /* Put this data into the symbol */
-        if (symbolType == Mode.LINEAR) {
+        if (mode == Mode.LINEAR) {
             writer = 0;
             latch = '0';
             for (i = 0; i < 46; i++) {
                 for (j = 0; j < total_widths[i]; j++) {
                     if (latch == '1') {
-                        setGridModule(row_count, writer);
+                        grid[row_count][writer] = true;
                     }
                     writer++;
                 }
@@ -370,7 +339,7 @@ public class DataBar14 extends Symbol {
                 }
                 latch = '1';
                 for(i = 16; i < 32; i++) {
-                    if (!(grid[0][i])) {
+                    if (!grid[0][i]) {
                         if (latch == '1') {
                             separator[i] = true;
                             latch = '0';
@@ -385,7 +354,7 @@ public class DataBar14 extends Symbol {
                 }
                 latch = '1';
                 for(i = 63; i < 78; i++) {
-                    if (!(grid[0][i])) {
+                    if (!grid[0][i]) {
                         if (latch == '1') {
                             separator[i] = true;
                             latch = '0';
@@ -405,43 +374,33 @@ public class DataBar14 extends Symbol {
             check_digit = 0;
 
             /* Calculate check digit from Annex A and place human readable text */
-            readable = "(01)";
-            hrt = "";
+            StringBuilder hrt = new StringBuilder(14);
             for (i = content.length(); i < 13; i++) {
-                hrt += "0";
+                hrt.append('0');
             }
-            hrt += content;
-
+            hrt.append(content);
             for (i = 0; i < 13; i++) {
                 count += hrt.charAt(i) - '0';
-
                 if ((i & 1) == 0) {
                     count += 2 * (hrt.charAt(i) - '0');
                 }
             }
-
             check_digit = 10 - (count % 10);
             if (check_digit == 10) {
                 check_digit = 0;
             }
-            hrt += (char)(check_digit + '0');
-
             encodeInfo += "Check Digit: " + check_digit + "\n";
-
-            readable += hrt;
+            hrt.append((char) (check_digit + '0'));
+            readable = "(01)" + hrt;
         }
 
-        if (symbolType == Mode.STACKED) {
+        if (mode == Mode.STACKED) {
             /* top row */
             writer = 0;
             latch = '0';
             for (i = 0; i < 23; i++) {
                 for (j = 0; j < total_widths[i]; j++) {
-                    if (latch == '1') {
-                        setGridModule(row_count, writer);
-                    } else {
-                        unsetGridModule(row_count, writer);
-                    }
+                    grid[row_count][writer] = (latch == '1');
                     writer++;
                 }
                 if (latch == '1') {
@@ -450,22 +409,18 @@ public class DataBar14 extends Symbol {
                     latch = '1';
                 }
             }
-            setGridModule(row_count, writer);
-            unsetGridModule(row_count, writer + 1);
+            grid[row_count][writer] = true;
+            grid[row_count][writer + 1] = false;
 
             /* bottom row */
             row_count = row_count + 2;
-            setGridModule(row_count, 0);
-            unsetGridModule(row_count, 1);
+            grid[row_count][0] = true;
+            grid[row_count][1] = false;
             writer = 0;
             latch = '1';
             for (i = 23; i < 46; i++) {
                 for (j = 0; j < total_widths[i]; j++) {
-                    if (latch == '1') {
-                        setGridModule(row_count, writer + 2);
-                    } else {
-                        unsetGridModule(row_count, writer + 2);
-                    }
+                    grid[row_count][writer + 2] = (latch == '1');
                     writer++;
                 }
                 if (latch == '1') {
@@ -477,25 +432,25 @@ public class DataBar14 extends Symbol {
 
             /* separator pattern */
             for (i = 4; i < 46; i++) {
-                if (gridModuleIsSet(row_count - 2, i) == gridModuleIsSet(row_count, i)) {
-                    if (!(gridModuleIsSet(row_count - 2, i))) {
-                        setGridModule(row_count - 1, i);
+                if (grid[row_count - 2][i] == grid[row_count][i]) {
+                    if (!grid[row_count - 2][i]) {
+                        grid[row_count - 1][i] = true;
                     }
                 } else {
-                    if (!(gridModuleIsSet(row_count - 1, i - 1))) {
-                        setGridModule(row_count - 1, i);
+                    if (!grid[row_count - 1][i - 1]) {
+                        grid[row_count - 1][i] = true;
                     }
                 }
             }
 
-            if(linkageFlag) {
+            if (linkageFlag) {
                 /* separator pattern for composite symbol */
                 for(i = 4; i < 46; i++) {
-                    separator[i] = (!(grid[0][i]));
+                    separator[i] = !grid[0][i];
                 }
                 latch = '1';
                 for(i = 16; i < 32; i++) {
-                    if (!(grid[0][i])) {
+                    if (!grid[0][i]) {
                         if (latch == '1') {
                             separator[i] = true;
                             latch = '0';
@@ -515,37 +470,29 @@ public class DataBar14 extends Symbol {
             }
         }
 
-        if (symbolType == Mode.OMNI) {
+        if (mode == Mode.OMNI) {
             /* top row */
             writer = 0;
             latch = '0';
             for (i = 0; i < 23; i++) {
                 for (j = 0; j < total_widths[i]; j++) {
-                    if (latch == '1') {
-                        setGridModule(row_count, writer);
-                    } else {
-                        unsetGridModule(row_count, writer);
-                    }
+                    grid[row_count][writer] = (latch == '1');
                     writer++;
                 }
                 latch = (latch == '1' ? '0' : '1');
             }
-            setGridModule(row_count, writer);
-            unsetGridModule(row_count, writer + 1);
+            grid[row_count][writer] = true;
+            grid[row_count][writer + 1] = false;
 
             /* bottom row */
             row_count = row_count + 4;
-            setGridModule(row_count, 0);
-            unsetGridModule(row_count, 1);
+            grid[row_count][0] = true;
+            grid[row_count][1] = false;
             writer = 0;
             latch = '1';
             for (i = 23; i < 46; i++) {
                 for (j = 0; j < total_widths[i]; j++) {
-                    if (latch == '1') {
-                        setGridModule(row_count, writer + 2);
-                    } else {
-                        unsetGridModule(row_count, writer + 2);
-                    }
+                    grid[row_count][writer + 2] = (latch == '1');
                     writer++;
                 }
                 if (latch == '1') {
@@ -557,49 +504,49 @@ public class DataBar14 extends Symbol {
 
             /* middle separator */
             for (i = 5; i < 46; i += 2) {
-                setGridModule(row_count - 2, i);
+                grid[row_count - 2][i] = true;
             }
 
             /* top separator */
             for (i = 4; i < 46; i++) {
-                if (!(gridModuleIsSet(row_count - 4, i))) {
-                    setGridModule(row_count - 3, i);
+                if (!grid[row_count - 4][i]) {
+                    grid[row_count - 3][i] = true;
                 }
             }
             latch = '1';
             for (i = 17; i < 33; i++) {
-                if (!(gridModuleIsSet(row_count - 4, i))) {
+                if (!grid[row_count - 4][i]) {
                     if (latch == '1') {
-                        setGridModule(row_count - 3, i);
+                        grid[row_count - 3][i] = true;
                         latch = '0';
                     } else {
-                        unsetGridModule(row_count - 3, i);
+                        grid[row_count - 3][i] = false;
                         latch = '1';
                     }
                 } else {
-                    unsetGridModule(row_count - 3, i);
+                    grid[row_count - 3][i] = false;
                     latch = '1';
                 }
             }
 
             /* bottom separator */
             for (i = 4; i < 46; i++) {
-                if (!(gridModuleIsSet(row_count, i))) {
-                    setGridModule(row_count - 1, i);
+                if (!grid[row_count][i]) {
+                    grid[row_count - 1][i] = true;
                 }
             }
             latch = '1';
             for (i = 16; i < 32; i++) {
-                if (!(gridModuleIsSet(row_count, i))) {
+                if (!grid[row_count][i]) {
                     if (latch == '1') {
-                        setGridModule(row_count - 1, i);
+                        grid[row_count - 1][i] = true;
                         latch = '0';
                     } else {
-                        unsetGridModule(row_count - 1, i);
+                        grid[row_count - 1][i] = false;
                         latch = '1';
                     }
                 } else {
-                    unsetGridModule(row_count - 1, i);
+                    grid[row_count - 1][i] = false;
                     latch = '1';
                 }
             }
@@ -607,14 +554,14 @@ public class DataBar14 extends Symbol {
             if (symbol_width < 50) {
                 symbol_width = 50;
             }
-            if(linkageFlag) {
+            if (linkageFlag) {
                 /* separator pattern for composite symbol */
-                for(i = 4; i < 46; i++) {
-                    separator[i] = (!(grid[0][i]));
+                for (i = 4; i < 46; i++) {
+                    separator[i] = !grid[0][i];
                 }
                 latch = '1';
                 for(i = 16; i < 32; i++) {
-                    if (!(grid[0][i])) {
+                    if (!grid[0][i]) {
                         if (latch == '1') {
                             separator[i] = true;
                             latch = '0';
@@ -659,15 +606,15 @@ public class DataBar14 extends Symbol {
             pattern[i + compositeOffset] = bin2pat(bin);
         }
 
-        if (symbolType == Mode.LINEAR) {
+        if (mode == Mode.LINEAR) {
             row_height[0 + compositeOffset] = -1;
         }
-        if (symbolType == Mode.STACKED) {
+        if (mode == Mode.STACKED) {
             row_height[0 + compositeOffset] = 5;
             row_height[1 + compositeOffset] = 1;
             row_height[2 + compositeOffset] = 7;
         }
-        if (symbolType == Mode.OMNI) {
+        if (mode == Mode.OMNI) {
             row_height[0 + compositeOffset] = -1;
             row_height[1 + compositeOffset] = 1;
             row_height[2 + compositeOffset] = 1;
@@ -678,17 +625,5 @@ public class DataBar14 extends Symbol {
         if (linkageFlag) {
             row_count++;
         }
-    }
-
-    private void setGridModule(int row, int column) {
-        grid[row][column] = true;
-    }
-
-    private void unsetGridModule(int row, int column) {
-        grid[row][column] = false;
-    }
-
-    private boolean gridModuleIsSet(int row, int column) {
-        return grid[row][column];
     }
 }

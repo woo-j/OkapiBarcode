@@ -45,6 +45,7 @@ import uk.org.okapibarcode.backend.Code93;
 import uk.org.okapibarcode.backend.CodeOne;
 import uk.org.okapibarcode.backend.Composite;
 import uk.org.okapibarcode.backend.DataBar14;
+import uk.org.okapibarcode.backend.DataBar14.Mode;
 import uk.org.okapibarcode.backend.DataBarExpanded;
 import uk.org.okapibarcode.backend.DataBarLimited;
 import uk.org.okapibarcode.backend.DataMatrix;
@@ -257,7 +258,7 @@ public class MakeBarcode {
                 case 29:
                     // Databar-14
                     DataBar14 dataBar14 = new DataBar14();
-                    dataBar14.setLinearMode();
+                    dataBar14.setMode(Mode.LINEAR);
                     dataBar14.setHumanReadableLocation(hrtLocation);
                     dataBar14.setContent(dataInput);
                     symbol = dataBar14;
@@ -490,14 +491,14 @@ public class MakeBarcode {
                 case 79:
                     // Databar-14 Stacked
                     DataBar14 dataBar14s = new DataBar14();
-                    dataBar14s.setStackedMode();
+                    dataBar14s.setMode(Mode.STACKED);
                     dataBar14s.setContent(dataInput);
                     symbol = dataBar14s;
                     break;
                 case 80:
                     // Databar-14 Stacked Omnidirectional
                     DataBar14 dataBar14so = new DataBar14();
-                    dataBar14so.setOmnidirectionalMode();
+                    dataBar14so.setMode(Mode.OMNI);
                     dataBar14so.setContent(dataInput);
                     symbol = dataBar14so;
                     break;

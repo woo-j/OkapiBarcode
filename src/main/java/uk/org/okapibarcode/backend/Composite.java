@@ -22,6 +22,8 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
+import uk.org.okapibarcode.backend.DataBar14.Mode;
+
 /**
  * <p>Implements GS1 Composite symbology according to ISO/IEC 24723:2010.
  *
@@ -643,8 +645,8 @@ public class Composite extends Symbol {
                 break;
             case DATABAR_14:
                 DataBar14 dataBar14 = new DataBar14();
-                dataBar14.setLinkageFlag();
-                dataBar14.setLinearMode();
+                dataBar14.setLinkageFlag(true);
+                dataBar14.setMode(Mode.LINEAR);
                 dataBar14.setContent(linearContent);
                 linear_rect = dataBar14.rectangles;
                 linear_txt = dataBar14.texts;
@@ -654,8 +656,8 @@ public class Composite extends Symbol {
                 break;
             case DATABAR_14_STACK_OMNI:
                 DataBar14 dataBar14SO = new DataBar14();
-                dataBar14SO.setLinkageFlag();
-                dataBar14SO.setOmnidirectionalMode();
+                dataBar14SO.setLinkageFlag(true);
+                dataBar14SO.setMode(Mode.OMNI);
                 dataBar14SO.setContent(linearContent);
                 linear_rect = dataBar14SO.rectangles;
                 linear_txt = dataBar14SO.texts;
@@ -665,8 +667,8 @@ public class Composite extends Symbol {
                 break;
             case DATABAR_14_STACK:
                 DataBar14 dataBar14S = new DataBar14();
-                dataBar14S.setLinkageFlag();
-                dataBar14S.setStackedMode();
+                dataBar14S.setLinkageFlag(true);
+                dataBar14S.setMode(Mode.STACKED);
                 dataBar14S.setContent(linearContent);
                 linear_rect = dataBar14S.rectangles;
                 linear_txt = dataBar14S.texts;

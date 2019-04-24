@@ -65,6 +65,7 @@ import com.google.zxing.oned.EAN13Reader;
 import com.google.zxing.oned.EAN8Reader;
 import com.google.zxing.oned.UPCAReader;
 import com.google.zxing.oned.UPCEReader;
+import com.google.zxing.oned.rss.RSS14Reader;
 import com.google.zxing.oned.rss.expanded.RSSExpandedReader;
 import com.google.zxing.pdf417.PDF417Reader;
 import com.google.zxing.qrcode.QRCodeReader;
@@ -312,6 +313,8 @@ public class SymbolTest {
             }
         } else if (symbol instanceof DataBarExpanded) {
             return new RSSExpandedReader();
+        } else if (symbol instanceof DataBar14 && !((DataBar14) symbol).getLinkageFlag()) {
+            return new RSS14Reader();
         }
 
         // no corresponding ZXing reader exists, or it behaves badly so we don't use it for testing
@@ -349,6 +352,9 @@ public class SymbolTest {
         } else if (symbol instanceof DataBarExpanded) {
             // remove parenthesis around the GS1 AIs
             return s.replaceAll("[\\(\\)]", "");
+        } else if (symbol instanceof DataBar14) {
+            // remove the checksum from the barcode content, and also remove left padding 0s
+            return s.substring(0, s.length() - 1).replaceFirst("^0+", "");
         } else {
             // no massaging
             return s;

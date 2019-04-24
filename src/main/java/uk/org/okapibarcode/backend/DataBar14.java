@@ -29,6 +29,15 @@ import java.math.BigInteger;
  */
 public class DataBar14 extends Symbol {
 
+    public enum Mode {
+        /** DataBar-14 */
+        LINEAR,
+        /** DataBar-14 Omnidirectional */
+        OMNI,
+        /** DataBar-14 Omnidirectional Stacked */
+        STACKED
+    };
+
     private static final int[] G_SUM_TABLE = {
         0, 161, 961, 2015, 2715, 0, 336, 1036, 1516
     };
@@ -63,10 +72,6 @@ public class DataBar14 extends Symbol {
         1, 1, 2, 5, 6, 1, 1, 2, 3, 8, 1, 1, 1, 5, 7, 1, 1, 1, 3, 9, 1, 1
     };
 
-    private enum Mode {
-        LINEAR, OMNI, STACKED
-    };
-
     private boolean linkageFlag;
     private Mode symbolType = Mode.LINEAR;
     private boolean[][] grid = new boolean[5][100];
@@ -85,33 +90,30 @@ public class DataBar14 extends Symbol {
         return false;
     }
 
-    protected void setLinkageFlag() {
-        linkageFlag = true;
+    protected void setLinkageFlag(boolean linkageFlag) {
+        this.linkageFlag = linkageFlag;
     }
 
-    protected void unsetLinkageFlag() {
-        linkageFlag = false;
-    }
-
-    /**
-     * Set symbol type to DataBar-14
-     */
-    public void setLinearMode() {
-        symbolType = Mode.LINEAR;
+    protected boolean getLinkageFlag() {
+        return linkageFlag;
     }
 
     /**
-     * Set symbol type to DataBar-14 Omnidirectional
+     * Sets the symbol mode. The default is {@link Mode#LINEAR}.
+     *
+     * @param mode the symbol mode
      */
-    public void setOmnidirectionalMode() {
-        symbolType = Mode.OMNI;
+    public void setMode(Mode mode) {
+        this.symbolType = mode;
     }
 
     /**
-     * Set symbol type to DataBar-14 Omnidirectional Stacked
+     * Returns the symbol mode.
+     *
+     * @return the symbol mode
      */
-    public void setStackedMode() {
-        symbolType = Mode.STACKED;
+    public Mode getMode() {
+        return symbolType;
     }
 
     @Override
@@ -423,6 +425,8 @@ public class DataBar14 extends Symbol {
                 check_digit = 0;
             }
             hrt += (char)(check_digit + '0');
+
+            encodeInfo += "Check Digit: " + check_digit + "\n";
 
             readable += hrt;
         }

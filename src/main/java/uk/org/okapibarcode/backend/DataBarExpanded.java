@@ -1125,6 +1125,10 @@ public class DataBarExpanded extends Symbol {
                     last_mode = EncodeMode.ALPHA;
                     if (generalField[i] == FNC1) {
                         binaryString.append("01111");
+                        // TODO: FNC1 should act as an implicit numeric latch, so the commented out line below should be correct, but ZXing cannot
+                        // read barcodes which use FNC1 as an implicit numeric latch... so for now, and in order to achieve widest compatibility,
+                        // we waste 3 bits and don't perform the implicit mode change (see https://sourceforge.net/p/zint/tickets/145/)
+                        // last_mode = EncodeMode.NUMERIC;
                     } /* FNC1 / Numeric latch */
 
                     if (generalField[i] == '*') binaryString.append("111010"); /* asterisk */
@@ -1189,6 +1193,10 @@ public class DataBarExpanded extends Symbol {
                     last_mode = EncodeMode.ISOIEC;
                     if (generalField[i] == FNC1) {
                         binaryString.append("01111");
+                        // TODO: FNC1 should act as an implicit numeric latch, so the commented out line below should be correct, but ZXing cannot
+                        // read barcodes which use FNC1 as an implicit numeric latch... so for now, and in order to achieve widest compatibility,
+                        // we waste 3 bits and don't perform the implicit mode change (see https://sourceforge.net/p/zint/tickets/145/)
+                        // last_mode = EncodeMode.NUMERIC;
                     } /* FNC1 / Numeric latch */
 
                     if (generalField[i] == '!') binaryString.append("11101000"); /* exclamation mark */

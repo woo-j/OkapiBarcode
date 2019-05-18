@@ -84,7 +84,7 @@ public class Logmars extends Symbol {
     @Override
     protected void encode() {
 
-        if (!content.matches("[0-9A-Z\\. \\-$/+%]+")) {
+        if (!content.matches("[0-9A-Z\\. \\-$/+%]*")) {
             throw new OkapiException("Invalid characters in input");
         }
 

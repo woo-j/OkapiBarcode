@@ -408,23 +408,21 @@ public class MaxiCode extends Symbol {
                 postcode = postcode.substring(0, index);
             }
         } else {
-            // if (mode == 3)
+            assert mode == 3;
             postcode = primaryData.substring(0, 6);
         }
 
         int country = Integer.parseInt(primaryData.substring(9, 12));
         int service = Integer.parseInt(primaryData.substring(12, 15));
 
-        if (debug) {
-            System.out.println("Using mode " + mode);
-            System.out.println("     Postcode: " + postcode);
-            System.out.println("     Country Code: " + country);
-            System.out.println("     Service: " + service);
-        }
+        encodeInfo += "Postal Code: " + postcode + "\n";
+        encodeInfo += "Country Code: " + country + "\n";
+        encodeInfo += "Service: " + service + "\n";
 
         if (mode == 2) {
             return getMode2PrimaryCodewords(postcode, country, service);
-        } else { // mode == 3
+        } else {
+            assert mode == 3;
             return getMode3PrimaryCodewords(postcode, country, service);
         }
     }

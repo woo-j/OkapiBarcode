@@ -181,7 +181,7 @@ public class GridMatrix extends Symbol {
 
     private enum Mode {
         NULL, GM_NUMBER, GM_LOWER, GM_UPPER, GM_MIXED, GM_CONTROL, GM_BYTE, GM_CHINESE
-    };
+    }
 
     private String binary;
     private int[] word = new int[1460];
@@ -1265,17 +1265,11 @@ public class GridMatrix extends Symbol {
                     lastSegment = true;
                 }
 
-//                System.out.printf("\nSegment %d %s %s [%d] %s [%d] %s [%d]\n", i, modeToString(pm),
-//                        modeToString(tm), tl, modeToString(nm), nl, modeToString(lm), ll);
-
                 segmentType[i] = getBestMode(pm, tm, nm, lm, tl, nl, ll, position, lastSegment);
 
                 if (segmentType[i] == Mode.GM_CONTROL) {
                     segmentType[i] = segmentType[i - 1];
                 }
-
-//                System.out.printf("Best fit %s %s %s\n", modeToString(segmentType[i]),
-//                        modeToString(appxDnextSection), modeToString(appxDlastSection));
             }
 
             segmentType[i] = appxDnextSection;
@@ -1415,7 +1409,6 @@ public class GridMatrix extends Symbol {
                         for (lmi = 1; lmi < 8; lmi++) {
                             if (isTransitionValid(lm, intToMode(lmi))) {
                                 binaryLength = getBinaryLength(pm, intToMode(tmi), intToMode(nmi), intToMode(lmi), tl, nl, ll, position, lastSegment);
-
                                 if (binaryLength <= bestBinaryLength) {
                                     bestMode = intToMode(tmi);
                                     appxDnextSection = intToMode(nmi);
@@ -1432,45 +1425,9 @@ public class GridMatrix extends Symbol {
         return bestMode;
     }
 
-//    private String modeToString(gmMode mode) {
-//        String output;
-//
-//        switch (mode) {
-//            case GM_CHINESE:
-//                output = "CHINESE";
-//                break;
-//            case GM_NUMBER:
-//                output = "NUMBER";
-//                break;
-//            case GM_LOWER:
-//                output = "LOWER";
-//                break;
-//            case GM_UPPER:
-//                output = "UPPER";
-//                break;
-//            case GM_MIXED:
-//                output = "MIXED";
-//                break;
-//            case GM_CONTROL:
-//                output = "CONTROL";
-//                break;
-//            case GM_BYTE:
-//                output = "BYTE";
-//                break;
-//            default:
-//                output = "NULL";
-//                break;
-//        }
-//
-//        return output;
-//    }
-
     private int getBinaryLength(Mode pm, Mode tm, Mode nm, Mode lm, int tl, int nl, int ll, int position, boolean lastSegment) {
-        int binaryLength;
 
-//        System.out.printf("P %s, T %s, N %s, L %s ", modeToString(pm), modeToString(tm), modeToString(nm), modeToString(lm));
-
-        binaryLength = getChunkLength(pm, tm, tl, position);
+        int binaryLength = getChunkLength(pm, tm, tl, position);
         binaryLength += getChunkLength(tm, nm, nl, (position + tl));
         binaryLength += getChunkLength(nm, lm, ll, (position + tl + nl));
 
@@ -1493,10 +1450,7 @@ public class GridMatrix extends Symbol {
                     binaryLength += 4;
                     break;
             }
-//            System.out.printf("LAST ");
         }
-
-//        System.out.printf(" = %db\n", binaryLength);
 
         return binaryLength;
     }
@@ -1590,8 +1544,6 @@ public class GridMatrix extends Symbol {
         if ((lastMode != Mode.GM_NUMBER) && (thisMode == Mode.GM_NUMBER)) {
             byteLength += 2;
         }
-
-//        System.out.printf("%db ", byteLength);
 
         return byteLength;
     }

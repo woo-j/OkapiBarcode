@@ -43,11 +43,11 @@ public class Pdf417 extends Symbol {
         TRUNCATED,
         /** MicroPDF417. */
         MICRO
-    };
+    }
 
     private enum EncodingMode {
         FALSE, TEX, BYT, NUM
-    };
+    }
 
     private int[] codeWords = new int[2700];
     private int codeWordCount;
@@ -707,7 +707,7 @@ public class Pdf417 extends Symbol {
         int selectedECCLevel;
         String bin;
 
-        List< Block > blocks = createBlocks(inputData, debug);
+        List< Block > blocks = createBlocks(inputData);
 
         /* now compress the data */
         codeWordCount = 0;
@@ -895,14 +895,6 @@ public class Pdf417 extends Symbol {
             throw new OkapiException("Too many codewords required (" + codeWordCount + ", but max is 929)");
         }
 
-//        if (debug) {
-//            System.out.printf("\nFull codeword stream:\n");
-//            for (i = 0; i < codeWordCount; i++) {
-//                System.out.printf("%d ", codeWords[i]);
-//            }
-//            System.out.printf("\n\n");
-//        }
-
         /* 818 - The CW string is finished */
         c1 = (rows - 1) / 3;
         c2 = (selectedECCLevel * 3) + (rows - 1) % 3;
@@ -969,7 +961,7 @@ public class Pdf417 extends Symbol {
 
         /* Encoding starts out the same as PDF417, so use the same code */
 
-        List< Block > blocks = createBlocks(inputData, debug);
+        List< Block > blocks = createBlocks(inputData);
 
         /* 541 - now compress the data */
         codeWordCount = 0;
@@ -1077,13 +1069,6 @@ public class Pdf417 extends Symbol {
         int padding = longueur - codeWordCount; /* amount of padding required */
         offset = MICRO_VARIANTS[variant + 102]; /* coefficient offset */
 
-//        if (debug) {
-//            System.out.printf("\nChoose symbol size:\n");
-//            System.out.printf("%d columns x %d rows\n", selectedSymbolWidth, rows);
-//            System.out.printf("%d data codewords (including %d pads), %d ecc codewords\n", longueur, i, k);
-//            System.out.printf("\n");
-//        }
-
         encodeInfo += "Data Codewords: " + longueur + "\n";
         encodeInfo += "ECC Codewords: " + k + "\n";
 
@@ -1121,14 +1106,6 @@ public class Pdf417 extends Symbol {
             codeWords[codeWordCount] = mccorrection[i];
             codeWordCount++;
         }
-//
-//        if (debug) {
-//            System.out.printf("Encoded Data Stream with ECC:\n");
-//            for (i = 0; i < codeWordCount; i++) {
-//                System.out.printf("0x%02X ", codeWords[i]);
-//            }
-//            System.out.printf("\n");
-//        }
 
         /* Now get the RAP (Row Address Pattern) start values */
         LeftRAPStart = RAP_TABLE[variant];
@@ -1150,11 +1127,7 @@ public class Pdf417 extends Symbol {
 
         encodeInfo += "Grid Size: " + columns + " X " + row_count + "\n";
 
-//        if (debug)
-//            System.out.printf("\nInternal row representation:\n");
         for (int i = 0; i < rows; i++) {
-//            if (debug)
-//                System.out.printf("row %d: ", i);
             codebarre = "";
             offset = 929 * Cluster;
             for (j = 0; j < 5; j++) {
@@ -1162,8 +1135,6 @@ public class Pdf417 extends Symbol {
             }
             for (j = 0; j < columns; j++) {
                 dummy[j + 1] = codeWords[i * columns + j];
-//                if (debug)
-//                    System.out.printf("[%d] ", dummy[j + 1]);
             }
 
             /* Copy the data into codebarre */
@@ -1194,8 +1165,6 @@ public class Pdf417 extends Symbol {
             }
             codebarre += RAPLR[RightRAP];
             codebarre += "1"; /* stop */
-//            if (debug)
-//                System.out.printf("%s\n", codebarre);
 
             /* Now codebarre is a mixture of letters and numbers */
 
@@ -1291,7 +1260,7 @@ public class Pdf417 extends Symbol {
     }
 
     /** Determines the encoding block groups for the specified data. */
-    private static List< Block > createBlocks(int[] data, boolean debug) {
+    private static List< Block > createBlocks(int[] data) {
 
         List< Block > blocks = new ArrayList<>();
         Block current = null;
@@ -1307,15 +1276,7 @@ public class Pdf417 extends Symbol {
             }
         }
 
-        if (debug) {
-            System.out.println("Initial block pattern: " + blocks);
-        }
-
         smoothBlocks(blocks);
-
-        if (debug) {
-            System.out.println("Final block pattern: " + blocks);
-        }
 
         return blocks;
     }

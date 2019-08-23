@@ -459,7 +459,7 @@ public class Composite extends Symbol {
 
     private static enum GeneralFieldMode {
         NUMERIC, ALPHA, ISOIEC, INVALID_CHAR, ANY_ENC, ALPHA_OR_ISO
-    };
+    }
 
     public static enum CompositeMode {
         CC_A, CC_B, CC_C
@@ -1118,7 +1118,7 @@ public class Composite extends Symbol {
                 if (codewords_used % cc_width != 0) {
                     rows++;
                 }
-            };
+            }
 
             codewords_total = cc_width * rows;
 
@@ -1249,10 +1249,6 @@ public class Composite extends Symbol {
 
             ninety = content.substring(2, j - 1);
 
-//            if (debug) {
-//                System.out.println("          AI90 substring: " + ninety);
-//            }
-
             /* Find out if the AI 90 data is alphabetic or numeric or both */
 
             alpha = 0;
@@ -1289,19 +1285,6 @@ public class Composite extends Symbol {
                 }
             }
 
-//            if (debug) {
-//                System.out.print("          AI90 is ");
-//                if (alphanum > 0) {
-//                    System.out.println("alphanumeric");
-//                } else {
-//                    if (alpha > 0) {
-//                        System.out.println("alphabetic");
-//                    } else {
-//                        System.out.println("numeric");
-//                    }
-//                }
-//            }
-
             /* must start with 0, 1, 2 or 3 digits followed by an uppercase character */
             test1 = -1;
             for (i = 3; i >= 0; i--) {
@@ -1325,9 +1308,6 @@ public class Composite extends Symbol {
 
             if ((test1 != -1) && (test2 != 1) && (test3 == 0)) {
                 /* Encodation method "11" can be used */
-//                if (debug) {
-//                    System.out.println("          Using encoding method 11");
-//                }
                 binary_string += "11";
 
                 numeric -= test1;
@@ -1488,9 +1468,6 @@ public class Composite extends Symbol {
 
                 read_posn = test1 + 3;
             } else {
-//                if (debug) {
-//                    System.out.println("          AI90 compression rejected, use general field");
-//                }
                 /* Use general field encodation instead */
                 binary_string += "0";
                 read_posn = 0;
@@ -1581,10 +1558,6 @@ public class Composite extends Symbol {
             read_posn += (2 * ai_crop);
         }
 
-//        if (debug) {
-//            System.out.println("     Compressed binary: " + binary_string);
-//        }
-
         /* The compressed data field has been processed if appropriate - the
          rest of the data (if any) goes into a general-purpose data compaction field */
 
@@ -1597,10 +1570,6 @@ public class Composite extends Symbol {
         }
 
         general_field += content.substring(read_posn);
-
-//        if (debug) {
-//            System.out.println("     General field: " + general_field);
-//        }
 
         latch = false;
         if (general_field.length() != 0) {
@@ -2747,23 +2716,17 @@ public class Composite extends Symbol {
 
         length = binary_string.length() / 8;
 
-        System.out.printf("Binlen: %d, bin: %s\n", binary_string.length(), binary_string);
-
         for (i = 0; i < length; i++) {
             binloc = i * 8;
-
             inputData[i] = 0;
             for (j = 0; j < 8; j++) {
                 if (binary_string.charAt(binloc + j) == '1') {
                     inputData[i] += 0x80 >> j;
                 }
             }
-            System.out.printf("%d ", inputData[i]);
         }
-        System.out.printf("\n");
 
         codeWordCount = 0;
-
         codeWords[codeWordCount] = 0; /* space for length descriptor */
         codeWordCount++;
         codeWords[codeWordCount] = 920; /* CC-C identifier */

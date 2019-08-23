@@ -219,11 +219,6 @@ public class DataBarLimited extends Symbol {
         left_reg = accum.divide(new BigInteger("2013571"));
         right_reg = accum.mod(new BigInteger("2013571"));
 
-//        if (debug) {
-//            System.out.println("left " + left_reg.toString());
-//            System.out.println("right " + right_reg.toString());
-//        }
-
         left_group = 0;
         if (left_reg.compareTo(new BigInteger("183063")) == 1) {
             left_group = 1;
@@ -266,11 +261,6 @@ public class DataBarLimited extends Symbol {
 
         encodeInfo += "Data Characters: " + Integer.toString(left_group + 1) +
                 " " + Integer.toString(right_group + 1) + "\n";
-
-//        if (debug) {
-//            System.out.println("left group " + (left_group + 1));
-//            System.out.println("right group " + (right_group + 1));
-//        }
 
         switch(left_group) {
             case 1:
@@ -322,15 +312,6 @@ public class DataBarLimited extends Symbol {
         right_odd = right_character / T_EVEN_LTD[right_group];
         right_even = right_character % T_EVEN_LTD[right_group];
 
-//        if (debug) {
-//            System.out.println("left char " + left_character);
-//            System.out.println("right char " + right_character);
-//            System.out.println("left even " + left_even);
-//            System.out.println("right even " + right_even);
-//            System.out.println("left odd " + left_odd);
-//            System.out.println("right odd " + right_odd);
-//        }
-
         int[] widths = getWidths(left_odd, MODULES_ODD_LTD[left_group], 7, WIDEST_ODD_LTD[left_group], 1);
         left_widths[0] = widths[0];
         left_widths[2] = widths[1];
@@ -376,10 +357,6 @@ public class DataBarLimited extends Symbol {
         checksum %= 89;
 
         encodeInfo += "Checksum: " + Integer.toString(checksum) + "\n";
-
-//        if (debug) {
-//            System.out.println("checksum " + checksum);
-//        }
 
         for(i = 0; i < 14; i++) {
                 check_elements[i] = FINDER_PATTERN_LTD[i + (checksum * 14)];

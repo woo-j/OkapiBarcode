@@ -103,7 +103,7 @@ public class CodeOne extends Symbol {
 
     private enum Mode {
         C1_ASCII, C1_C40, C1_DECIMAL, C1_TEXT, C1_EDI, C1_BYTE
-    };
+    }
 
     private Version preferredVersion = Version.NONE;
 
@@ -1779,10 +1779,6 @@ public class CodeOne extends Symbol {
                 best_scheme = Mode.C1_BYTE;
             }
         }
-
-//        if(debug) {
-//            System.out.printf("> scores: ASCII %.2f  C40 %.2f  TEXT %.2f  EDI %.2f  BYTE %.2f\n", ascii_count, c40_count, text_count, edi_count, byte_count);
-//        }
 
         return best_scheme;
     }

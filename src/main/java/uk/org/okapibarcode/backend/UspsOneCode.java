@@ -274,10 +274,6 @@ public class UspsOneCode extends Symbol {
             accum = accum.add(BigInteger.valueOf(Character.getNumericValue(tracker.charAt(i))));
         }
 
-//        if (debug) {
-//            System.out.println("Binary data 1: " + accum.toString(16));
-//        }
-
         /* *** Step 2 - Generation of 11-bit CRC on Binary Data *** */
 
         int[] byte_array = new int[13];
@@ -288,9 +284,6 @@ public class UspsOneCode extends Symbol {
         }
 
         usps_crc = USPS_MSB_Math_CRC11GenerateFrameCheckSequence(byte_array);
-//        if (debug) {
-//            System.out.printf("FCS 2: %d\n", usps_crc);
-//        }
 
         /* *** Step 3 - Conversion from Binary Data to Codewords *** */
         /* start with codeword J which is base 636 */
@@ -312,14 +305,6 @@ public class UspsOneCode extends Symbol {
                 codeword[i] = 0;
             }
         }
-
-//        if (debug) {
-//            System.out.print("Codewords  3: ");
-//            for (i = 0; i < 10; i++) {
-//                System.out.print(codeword[i] + " ");
-//            }
-//            System.out.println();
-//        }
 
         /* *** Step 4 - Inserting Additional Information into Codewords *** */
         codeword[9] = codeword[9] * 2;
@@ -344,27 +329,11 @@ public class UspsOneCode extends Symbol {
             }
         }
 
-//        if (debug) {
-//            System.out.print("Characters 5a: ");
-//            for (i = 0; i < 10; i++) {
-//                System.out.print(characters[i] + " ");
-//            }
-//            System.out.println();
-//        }
-
         for (i = 0; i < 10; i++) {
             if ((usps_crc & (1 << i)) != 0) {
                 characters[i] = 0x1FFF - characters[i];
             }
         }
-
-//        if (debug) {
-//            System.out.print("Characters 5b: ");
-//            for (i = 0; i < 10; i++) {
-//                System.out.print(characters[i] + " ");
-//            }
-//            System.out.println();
-//        }
 
         /* *** Step 6 - Conversion from Characters to the Intelligent Mail Barcode *** */
 

@@ -1098,7 +1098,6 @@ public class MicroQrCode extends Symbol {
         }
 
         encodeInfo += "Codewords: ";
-        System.out.printf("\tCodewords: ");
         for (i = 0; i < data_codewords; i++) {
             encodeInfo += Integer.toString(data_blocks[i]) + " ";
         }
@@ -1236,7 +1235,6 @@ public class MicroQrCode extends Symbol {
         }
 
         encodeInfo += "Codewords: ";
-        System.out.printf("\tCodewords: ");
         for (i = 0; i < data_codewords; i++) {
             encodeInfo += Integer.toString(data_blocks[i]) + " ";
         }
@@ -1333,7 +1331,6 @@ public class MicroQrCode extends Symbol {
         }
 
         encodeInfo += "Codewords: ";
-        System.out.printf("\tCodewords: ");
         for (i = 0; i < data_codewords; i++) {
             encodeInfo += Integer.toString(data_blocks[i]) + " ";
         }

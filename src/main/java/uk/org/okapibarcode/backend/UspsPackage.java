@@ -29,10 +29,6 @@ public class UspsPackage extends Symbol {
     @Override
     protected void encode() {
 
-        if (debug) {
-            System.out.printf("IM Package Data Content = \"%s\"\n", content);
-        }
-
         if (!content.matches("[0-9\\[\\]]+")) {
             /* Input must be numeric only */
             throw new OkapiException("Invalid IMpb data");

@@ -85,7 +85,6 @@ public abstract class Symbol {
     protected int fontSize = 8;
     protected HumanReadableLocation humanReadableLocation = BOTTOM;
     protected HumanReadableAlignment humanReadableAlignment = CENTER;
-    protected boolean debug = false;
     protected boolean emptyContentAllowed = false;
 
     // internal state calculated when setContent() is called

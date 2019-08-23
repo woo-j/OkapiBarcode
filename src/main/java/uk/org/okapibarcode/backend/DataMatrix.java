@@ -1023,20 +1023,11 @@ public class DataMatrix extends Symbol {
         }
 
         encodeInfo += "\n";
-
         encodeInfo += "Codewords: ";
         for (i = 0; i < tp; i++) {
             encodeInfo += Integer.toString(target[i]) + " ";
         }
         encodeInfo += "\n";
-
-//        if (debug) {
-//            System.out.printf("\nHex Data: ");
-//            for (i = 0; i < tp; i++) {
-//                System.out.printf("%02X ", target[i]);
-//            }
-//            System.out.printf("\n");
-//        }
 
         last_mode = current_mode;
         return tp;

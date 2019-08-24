@@ -138,6 +138,7 @@ public class CodeOne extends Symbol {
 
     @Override
     protected void encode() {
+
         int size = 1, i, j, data_blocks;
         int row, col;
         int sub_version = 0;
@@ -191,9 +192,13 @@ public class CodeOne extends Symbol {
                 data[codewords - i - 1] = codewordValue.intValue();
             }
 
+            logCodewords(codewords);
+
             rs.init_gf(0x25);
             rs.init_code(codewords, 1);
             rs.encode(codewords, data);
+
+            encodeInfo += "ECC Codeword Count: " + codewords + "\n";
 
             for (i = 0; i < codewords; i++) {
                 stream[i] = data[i];
@@ -243,6 +248,8 @@ public class CodeOne extends Symbol {
                 }
             }
 
+            encodeInfo += "Grid Size: " + block_width + " X " + 2 + "\n";
+
             size = 9;
             row_count = 8;
             symbol_width = 10 * sub_version + 1;
@@ -280,6 +287,8 @@ public class CodeOne extends Symbol {
                 block_width = 4;
             }
 
+            logCodewords(data_length);
+
             for (i = data_length; i < data_cw; i++) {
                 data[i] = 129; /* Pad */
             }
@@ -288,6 +297,8 @@ public class CodeOne extends Symbol {
             rs.init_gf(0x12d);
             rs.init_code(ecc_cw, 1);
             rs.encode(data_cw, data);
+
+            encodeInfo += "ECC Codeword Count: " + ecc_cw + "\n";
 
             /* "Stream" combines data and error correction data */
             for (i = 0; i < data_cw; i++) {
@@ -334,6 +345,8 @@ public class CodeOne extends Symbol {
                 }
             }
 
+            encodeInfo += "Grid Size: " + block_width + " X " + 5 + "\n";
+
             row_count = 16;
             symbol_width = (sub_version * 16) + 1;
         }
@@ -356,12 +369,7 @@ public class CodeOne extends Symbol {
             }
 
             encodeInfo += "Version: " + (char)((size - 1) + 'A') + "\n";
-
-            encodeInfo += "Codewords: ";
-            for(i = 0; i < data_length; i++) {
-                encodeInfo += Integer.toString(data[i]) + " ";
-            }
-            encodeInfo += "\n";
+            logCodewords(data_length);
 
             for (i = data_length; i < C1_DATA_LENGTH[size - 1]; i++) {
                 data[i] = 129; /* Pad */
@@ -431,8 +439,7 @@ public class CodeOne extends Symbol {
                 }
             }
 
-            encodeInfo += "Grid Size: " + C1_GRID_WIDTH[size - 1] + " X " +
-                    C1_GRID_HEIGHT[size - 1] + "\n";
+            encodeInfo += "Grid Size: " + C1_GRID_WIDTH[size - 1] + " X " + C1_GRID_HEIGHT[size - 1] + "\n";
 
             row_count = C1_HEIGHT[size - 1];
             symbol_width = C1_WIDTH[size - 1];
@@ -728,6 +735,14 @@ public class CodeOne extends Symbol {
             pattern[i] = bin2pat(bin);
             row_height[i] = 1;
         }
+    }
+
+    private void logCodewords(int count) {
+        encodeInfo += "Codewords: ";
+        for (int i = 0; i < count; i++) {
+            encodeInfo += Integer.toString(data[i]) + " ";
+        }
+        encodeInfo += "\n";
     }
 
     private int encodeAsCode1Data() {
@@ -1842,9 +1857,7 @@ public class CodeOne extends Symbol {
     }
 
     private void plotCentralFinder(int start_row, int row_count, int full_rows) {
-        int i;
-
-        for (i = 0; i < row_count; i++) {
+        for (int i = 0; i < row_count; i++) {
             if (i < full_rows) {
                 plotHorizontalBar(start_row + (i * 2), 1);
             } else {
@@ -1858,49 +1871,40 @@ public class CodeOne extends Symbol {
     }
 
     private void plotHorizontalBar(int row_no, int full) {
-        int i;
-
         if (full != 0) {
-            for (i = 0; i < symbol_width; i++) {
+            for (int i = 0; i < symbol_width; i++) {
                 setGridModule(row_no, i);
             }
         } else {
-            for (i = 1; i < symbol_width - 1; i++) {
+            for (int i = 1; i < symbol_width - 1; i++) {
                 setGridModule(row_no, i);
             }
         }
     }
 
     private void plotVerticalBar(int column, int height, int top) {
-        int i;
-
         if (top != 0) {
-            for (i = 0; i < height; i++) {
+            for (int i = 0; i < height; i++) {
                 setGridModule(i, column);
             }
         } else {
-            for (i = 0; i < height; i++) {
+            for (int i = 0; i < height; i++) {
                 setGridModule(row_count - i - 1, column);
             }
         }
     }
 
     private void plotSpigot(int row_no) {
-        int i;
-
-        for (i = symbol_width - 1; i > 0; i--) {
+        for (int i = symbol_width - 1; i > 0; i--) {
             if (outputGrid[row_no][i - 1]) {
                 setGridModule(row_no, i);
             }
         }
     }
 
-    private void plotDataBlock(int start_row, int start_col, int height,
-            int width, int row_offset, int col_offset) {
-        int i, j;
-
-        for (i = start_row; i < (start_row + height); i++) {
-            for (j = start_col; j < (start_col + width); j++) {
+    private void plotDataBlock(int start_row, int start_col, int height, int width, int row_offset, int col_offset) {
+        for (int i = start_row; i < (start_row + height); i++) {
+            for (int j = start_col; j < (start_col + width); j++) {
                 if (datagrid[i][j] == '1') {
                     setGridModule(i + row_offset, j + col_offset);
                 }
@@ -1916,36 +1920,26 @@ public class CodeOne extends Symbol {
         outputGrid[row][column] = false;
     }
 
-    private int getSize(Version version) {
-        int size = 0;
-
+    private static int getSize(Version version) {
         switch(version) {
             case A:
-                size = 1;
-                break;
+                return 1;
             case B:
-                size = 2;
-                break;
+                return 2;
             case C:
-                size = 3;
-                break;
+                return 3;
             case D:
-                size = 4;
-                break;
+                return 4;
             case E:
-                size = 5;
-                break;
+                return 5;
             case F:
-                size = 6;
-                break;
+                return 6;
             case G:
-                size = 7;
-                break;
+                return 7;
             case H:
-                size = 8;
-                break;
+                return 8;
+            default:
+                return 0;
         }
-
-        return size;
     }
 }

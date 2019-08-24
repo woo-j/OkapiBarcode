@@ -85,6 +85,7 @@ public class ReedSolomon {
         for (i = 0; i < rlen; i++) {
             res[i] = 0;
         }
+
         for (i = 0; i < len; i++) {
             m = res[rlen - 1] ^ data[i];
             for (k = rlen - 1; k > 0; k--) {

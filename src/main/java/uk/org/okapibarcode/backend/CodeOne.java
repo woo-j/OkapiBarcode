@@ -142,8 +142,6 @@ public class CodeOne extends Symbol {
         int row, col;
         int sub_version = 0;
         int codewords;
-        BigInteger elreg;
-        BigInteger codewordValue;
         int[] ecc = new int[600];
         int[] stream = new int[2100];
         int block_width;
@@ -185,11 +183,11 @@ public class CodeOne extends Symbol {
                 block_width = 2;
             } /* Version S-10 */
 
-            elreg = new BigInteger(content);
+            BigInteger elreg = new BigInteger(content);
 
             for (i = 0; i < codewords; i++) {
-                codewordValue = elreg.shiftRight(5 * i);
-                codewordValue = codewordValue.or(BigInteger.valueOf(32));
+                BigInteger codewordValue = elreg.shiftRight(5 * i);
+                codewordValue = codewordValue.and(BigInteger.valueOf(0b11111));
                 data[codewords - i - 1] = codewordValue.intValue();
             }
 
@@ -378,13 +376,11 @@ public class CodeOne extends Symbol {
             rs.init_code(C1_ECC_BLOCKS[size - 1], 0);
             for (i = 0; i < data_blocks; i++) {
                 for (j = 0; j < C1_DATA_BLOCKS[size - 1]; j++) {
-
                     sub_data[j] = data[j * data_blocks + i];
                 }
                 rs.encode(C1_DATA_BLOCKS[size - 1], sub_data);
                 for (j = 0; j < C1_ECC_BLOCKS[size - 1]; j++) {
-                    ecc[C1_ECC_LENGTH[size - 1] - (j * data_blocks + i) - 1]
-                            = rs.getResult(j);
+                    ecc[C1_ECC_LENGTH[size - 1] - (j * data_blocks + i) - 1] = rs.getResult(j);
                 }
             }
 

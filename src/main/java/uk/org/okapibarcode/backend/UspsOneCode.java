@@ -35,7 +35,8 @@ public class UspsOneCode extends Symbol {
 
     /* The following lookup tables were generated using the code in Appendix C */
 
-    private static final int[] APPX_D_I = { /* Appendix D Table 1 - 5 of 13 characters */
+    /** Appendix D Table 1 - 5 of 13 characters */
+    private static final int[] APPX_D_I = {
         0x001F, 0x1F00, 0x002F, 0x1E80, 0x0037, 0x1D80, 0x003B, 0x1B80, 0x003D, 0x1780,
         0x003E, 0x0F80, 0x004F, 0x1E40, 0x0057, 0x1D40, 0x005B, 0x1B40, 0x005D, 0x1740,
         0x005E, 0x0F40, 0x0067, 0x1CC0, 0x006B, 0x1AC0, 0x006D, 0x16C0, 0x006E, 0x0EC0,
@@ -167,7 +168,8 @@ public class UspsOneCode extends Symbol {
         0x08E2, 0x064C, 0x0554, 0x04E4, 0x0358, 0x02E8, 0x01F0
     };
 
-    private static final int[] APPX_D_II = { /* Appendix D Table II - 2 of 13 characters */
+    /** Appendix D Table II - 2 of 13 characters */
+    private static final int[] APPX_D_II = {
         0x0003, 0x1800, 0x0005, 0x1400, 0x0006, 0x0C00, 0x0009, 0x1200, 0x000A, 0x0A00,
         0x000C, 0x0600, 0x0011, 0x1100, 0x0012, 0x0900, 0x0014, 0x0500, 0x0018, 0x0300,
         0x0021, 0x1080, 0x0022, 0x0880, 0x0024, 0x0480, 0x0028, 0x0280, 0x0030, 0x0180,
@@ -178,7 +180,8 @@ public class UspsOneCode extends Symbol {
         0x0801, 0x1002, 0x1001, 0x0802, 0x0404, 0x0208, 0x0110, 0x00A0
     };
 
-    private static final int[] APPX_D_IV = { /* Appendix D Table IV - Bar-to-Character Mapping (reverse lookup) */
+    /** Appendix D Table IV - Bar-to-Character Mapping (reverse lookup) */
+    private static final int[] APPX_D_IV = {
         67, 6, 78, 16, 86, 95, 34, 40, 45, 113, 117, 121, 62, 87, 18, 104, 41, 76, 57, 119, 115, 72, 97,
         2, 127, 26, 105, 35, 122, 52, 114, 7, 24, 82, 68, 63, 94, 44, 77, 112, 70, 100, 39, 30, 107,
         15, 125, 85, 10, 65, 54, 88, 20, 106, 46, 66, 8, 116, 29, 61, 99, 80, 90, 37, 123, 51, 25, 84,
@@ -190,6 +193,7 @@ public class UspsOneCode extends Symbol {
     public UspsOneCode() {
         this.default_height = 8;
         this.humanReadableLocation = HumanReadableLocation.NONE;
+        this.humanReadableAlignment = HumanReadableAlignment.LEFT; // spec section 2.4.2
     }
 
     @Override
@@ -241,6 +245,7 @@ public class UspsOneCode extends Symbol {
         }
 
         /* *** Step 1 - Conversion of Data Fields into Binary Data *** */
+
         /* Routing code first */
         if (zip.length() > 0) {
             x_reg = new BigInteger(zip);
@@ -286,8 +291,8 @@ public class UspsOneCode extends Symbol {
         usps_crc = USPS_MSB_Math_CRC11GenerateFrameCheckSequence(byte_array);
 
         /* *** Step 3 - Conversion from Binary Data to Codewords *** */
-        /* start with codeword J which is base 636 */
 
+        /* start with codeword J which is base 636 */
         x_reg = accum.mod(BigInteger.valueOf(636));
         codeword[9] = x_reg.intValue();
         accum = accum.subtract(x_reg);
@@ -307,6 +312,7 @@ public class UspsOneCode extends Symbol {
         }
 
         /* *** Step 4 - Inserting Additional Information into Codewords *** */
+
         codeword[9] = codeword[9] * 2;
 
         if (usps_crc >= 1024) {
@@ -347,7 +353,7 @@ public class UspsOneCode extends Symbol {
             }
         }
 
-        readable = content;
+        readable = formatHumanReadableText(content);
         pattern = new String[1];
         row_count = 1;
         row_height = new int[1];
@@ -371,7 +377,7 @@ public class UspsOneCode extends Symbol {
         encodeInfo += "Encoding: " + pattern[0] + "\n";
     }
 
-    private int USPS_MSB_Math_CRC11GenerateFrameCheckSequence(int[] bytes) {
+    private static int USPS_MSB_Math_CRC11GenerateFrameCheckSequence(int[] bytes) {
 
         int generatorPolynomial = 0x0F35;
         int frameCheckSequence = 0x07FF;
@@ -407,6 +413,58 @@ public class UspsOneCode extends Symbol {
         }
 
         return frameCheckSequence;
+    }
+
+    /**
+     * <p>From section 2.4.3 of the spec:
+     *
+     * <p>The human-readable information, when required, shall consist of the 20-digit tracking code and the 5-, 9-, or 11-digit
+     * routing code, if present. The fields of the tracking code, as defined in 2.1.3, shall be separated with a space added
+     * between data fields. When the barcode contains a routing code, the 5-digit ZIP Code, the 4-digit add-on, and the
+     * remaining 2 digits shall be separated with a space added between data fields.
+     *
+     * <p>Appendix F contains a good overview of the different IMb constructs / formats.
+     */
+    protected static String formatHumanReadableText(String content) {
+        StringBuilder hrt = new StringBuilder(50);
+        boolean mid9 = false; // 9-digit mailer ID instead of 6-digit mailer ID
+        boolean tracing = true; // STID indicates Origin IMb Tracing Services (050, 052)
+        boolean pimb = true; // barcode identifier (BI) is 94, indicating pIMb
+        boolean mpe5 = false; // if MPE = 5, it's a CFS/RFS variant of pIMb
+        int i = 0;
+        for (char c : content.toCharArray()) {
+            if (c < '0' || c > '9') {
+                continue;
+            }
+            if (i == 5 && c == '9') {
+                mid9 = true;
+            }
+            if ((i == 2 && c != '0') || (i == 3 && c != '5') || (i == 4 && c != '0' && c != '2')) {
+                tracing = false;
+            }
+            if ((i == 0 && c != '9') || (i == 1 && c != '4')) {
+                pimb = false;
+            }
+            if (i == 5 && c == '5') {
+                mpe5 = true;
+            }
+            if ((i == 2) // BI -> STID
+             || (i == 5) // STID -> ...
+             || (i == 6 && pimb)
+             || (i == 10 && pimb)
+             || (i == 13 && pimb && !mpe5)
+             || (i == 15 && pimb && !mpe5)
+             || (i == 11 && !mid9 && !tracing && !pimb)
+             || (i == 14 && mid9 && !tracing && !pimb)
+             || (i == 20) // ... -> zip-5
+             || (i == 25) // zip-5 -> zip-4
+             || (i == 29)) { // zip-4 -> zip-2
+                hrt.append(' ');
+            }
+            hrt.append(c);
+            i++;
+        }
+        return hrt.toString().trim();
     }
 
     @Override

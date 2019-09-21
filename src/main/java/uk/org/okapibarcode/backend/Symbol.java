@@ -112,12 +112,9 @@ public abstract class Symbol {
      * <p>Valid values are:
      *
      * <ul>
-     * <li><code>UTF8</code> (default) Unicode encoding
-     * <li><code>LATIN1</code> ISO 8859-1 (Latin-1) encoding
-     * <li><code>BINARY</code> Byte encoding mode
+     * <li><code>ECI</code> Extended Channel Interpretations (default)
      * <li><code>GS1</code> Application Identifier and data pairs in "[AI]DATA" format
      * <li><code>HIBC</code> Health Industry Bar Code number (without check digit)
-     * <li><code>ECI</code> Extended Channel Interpretations
      * </ul>
      *
      * @param dataType the type of input data

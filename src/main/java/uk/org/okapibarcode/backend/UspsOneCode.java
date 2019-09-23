@@ -416,7 +416,7 @@ public class UspsOneCode extends Symbol {
     }
 
     /**
-     * <p>From section 2.4.3 of the spec:
+     * <p>Formats the barcode content into the correct human-readable format, per section 2.4.3 of the spec:
      *
      * <p>The human-readable information, when required, shall consist of the 20-digit tracking code and the 5-, 9-, or 11-digit
      * routing code, if present. The fields of the tracking code, as defined in 2.1.3, shall be separated with a space added
@@ -424,6 +424,9 @@ public class UspsOneCode extends Symbol {
      * remaining 2 digits shall be separated with a space added between data fields.
      *
      * <p>Appendix F contains a good overview of the different IMb constructs / formats.
+     *
+     * @param content the content to be formatted
+     * @return the formatted content
      */
     protected static String formatHumanReadableText(String content) {
         StringBuilder hrt = new StringBuilder(50);

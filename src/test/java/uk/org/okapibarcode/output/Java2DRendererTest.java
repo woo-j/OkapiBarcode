@@ -21,7 +21,9 @@ import java.awt.Font;
 import java.awt.GradientPaint;
 import java.awt.Graphics2D;
 import java.awt.font.TextAttribute;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.Collections;
 
 import javax.imageio.ImageIO;
@@ -30,6 +32,7 @@ import org.junit.Test;
 
 import uk.org.okapibarcode.backend.Code128;
 import uk.org.okapibarcode.backend.DataMatrix;
+import uk.org.okapibarcode.backend.HumanReadableAlignment;
 import uk.org.okapibarcode.backend.MaxiCode;
 import uk.org.okapibarcode.backend.SymbolTest;
 
@@ -83,12 +86,27 @@ public class Java2DRendererTest {
     }
 
     @Test
-    public void testCustomFont() throws Exception {
+    public void testCustomFontStrikethrough() throws Exception {
 
         Font font = SymbolTest.DEJA_VU_SANS.deriveFont((float) 18);
         font = font.deriveFont(Collections.singletonMap(TextAttribute.STRIKETHROUGH, TextAttribute.STRIKETHROUGH_ON));
 
+        testFont(font, HumanReadableAlignment.CENTER, "java-2d-custom-font-strikethrough.png");
+    }
+
+    @Test
+    public void testCustomFontJustifyAndTransform() throws Exception {
+
+        Font font = SymbolTest.DEJA_VU_SANS.deriveFont((float) 3);
+        font = font.deriveFont(AffineTransform.getScaleInstance(5, 1));
+
+        testFont(font, HumanReadableAlignment.JUSTIFY, "java-2d-custom-font-justify-transform.png");
+    }
+
+    private static void testFont(Font font, HumanReadableAlignment alignment, String filename) throws IOException {
+
         Code128 code128 = new Code128();
+        code128.setHumanReadableAlignment(alignment);
         code128.setFont(font);
         code128.setContent("123456");
 
@@ -102,10 +120,8 @@ public class Java2DRendererTest {
         Java2DRenderer renderer = new Java2DRenderer(g2d, magnification, Color.WHITE, Color.BLACK);
         renderer.render(code128);
 
-        String filename = "java-2d-custom-font.png";
-        BufferedImage expected = ImageIO.read(getClass().getResourceAsStream(filename));
+        BufferedImage expected = ImageIO.read(Java2DRendererTest.class.getResourceAsStream(filename));
         String dirName = filename.substring(0, filename.lastIndexOf('.'));
         SymbolTest.assertEqual(expected, image, dirName);
     }
-
 }

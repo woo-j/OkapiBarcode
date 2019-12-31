@@ -166,7 +166,8 @@ public class Java2DRenderer implements SymbolRenderer {
         double originalWidth = baseFont.getStringBounds(text, frc).getWidth();
         double extraSpace = maxTextWidth - originalWidth;
         double extraSpacePerGap = extraSpace / (text.length() - 1);
-        double tracking = extraSpacePerGap / baseFont.getSize2D();
+        double scaleX = (baseFont.isTransformed() ? baseFont.getTransform().getScaleX() : 1);
+        double tracking = extraSpacePerGap / (baseFont.getSize2D() * scaleX);
         return baseFont.deriveFont(Collections.singletonMap(TextAttribute.TRACKING, tracking));
     }
 }

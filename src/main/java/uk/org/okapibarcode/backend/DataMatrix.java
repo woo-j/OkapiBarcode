@@ -731,7 +731,7 @@ public class DataMatrix extends Symbol {
                     process_buffer[process_p] = value;
                     process_p++;
 
-                    if (process_p >= 3) {
+                    while (process_p >= 3) {
                         int iv;
 
                         iv = (1600 * process_buffer[0]) + (40 * process_buffer[1])
@@ -801,7 +801,7 @@ public class DataMatrix extends Symbol {
                     process_buffer[process_p] = value;
                     process_p++;
 
-                    if (process_p >= 3) {
+                    while (process_p >= 3) {
                         int iv;
 
                         iv = (1600 * process_buffer[0]) + (40 * process_buffer[1])
@@ -870,7 +870,7 @@ public class DataMatrix extends Symbol {
                     process_buffer[process_p] = value;
                     process_p++;
 
-                    if (process_p >= 3) {
+                    while (process_p >= 3) {
                         int iv;
 
                         iv = (1600 * process_buffer[0]) + (40 * process_buffer[1])
@@ -925,7 +925,7 @@ public class DataMatrix extends Symbol {
                     sp++;
                 }
 
-                if (process_p >= 4) {
+                while (process_p >= 4) {
                     target[tp] = (process_buffer[0] << 2)
                             + ((process_buffer[1] & 0x30) >> 4);
                     tp++;

@@ -581,10 +581,10 @@ public class DataMatrix extends Symbol {
                     && inputData[6] == '\u001d'
                     && inputData[inputlen - 2] == '\u001e'
                     && inputData[inputlen - 1] == '\u0004') {
-                /* Output macro Codeword */
+                /* Output macro codeword */
                 if (inputData[5] == '5') {
                     target[tp] = 236;
-                    encodeInfo += "Micro05 ";
+                    encodeInfo += "Macro05 ";
                 } else {
                     target[tp] = 237;
                     encodeInfo += "Macro06 ";

@@ -581,8 +581,8 @@ public class Composite extends Symbol {
         List < TextBox > combine_txt = new ArrayList<>();
         String linear_encodeInfo = null;
         int linear_height = 0;
-        int top_shift = 0;
-        int bottom_shift = 0;
+        int top_shift = 0; // 2D component x-coordinate shift
+        int bottom_shift = 0; // linear component x-coordinate shift
         int max_x = 0;
         int i;
         linearWidth = 0;
@@ -701,6 +701,7 @@ public class Composite extends Symbol {
                 linear_height = dataBarLimited.symbol_height;
                 linear_encodeInfo = dataBarLimited.encodeInfo;
                 top_shift = 1;
+                bottom_shift = 10;
                 break;
             case DATABAR_EXPANDED:
                 DataBarExpanded dataBarExpanded = new DataBarExpanded();

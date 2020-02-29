@@ -394,19 +394,6 @@ public class DataBarLimited extends Symbol {
             }
         }
 
-        if (symbol_width < (writer + 20)) {
-            symbol_width = writer + 20;
-        }
-
-//    /* add separator pattern if composite symbol */
-//    if(symbol->symbology == BARCODE_RSS_LTD_CC) {
-//        for(i = 4; i < 70; i++) {
-//                if(!(module_is_set(symbol, separator_row + 1, i))) {
-//                    set_module(symbol, separator_row, i);
-//                }
-//            }
-//    }
-
         /* Calculate check digit from Annex A and place human readable text */
 
         readable = "(01)";
@@ -439,13 +426,13 @@ public class DataBarLimited extends Symbol {
         row_height = new int[1 + compositeOffset];
         row_height[0 + compositeOffset] = -1;
         pattern = new String[1 + compositeOffset];
-        pattern[0 + compositeOffset] = "0:" + bin2pat(bin);
+        pattern[0 + compositeOffset] = bin2pat(bin);
 
         if (linkageFlag) {
             // Add composite symbol separator
             notbin = notbin.substring(4, 70);
             row_height[0] = 1;
-            pattern[0] = "0:04" + bin2pat(notbin);
+            pattern[0] = "04" + bin2pat(notbin);
         }
     }
 

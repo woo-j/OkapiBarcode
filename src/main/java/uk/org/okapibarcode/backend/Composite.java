@@ -54,7 +54,8 @@ public class Composite extends Symbol {
         CC_B,
         /**
          * Indicates that the composite symbol uses a PDF417 symbol as the 2D component, starting with a codeword of 920.
-         * Of the 2D component choices, this one holds the most amount of data.
+         * Of the 2D component choices, this one holds the most amount of data. May only be used if the linear component
+         * is {@link LinearEncoding#CODE_128 Code 128}.
          */
         CC_C
     }

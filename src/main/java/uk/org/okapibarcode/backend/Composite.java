@@ -34,6 +34,35 @@ import uk.org.okapibarcode.backend.DataBar14.Mode;
  */
 public class Composite extends Symbol {
 
+    /** The linear component choices available. */
+    public static enum LinearEncoding {
+        UPCA, UPCE, EAN, CODE_128, DATABAR_14, DATABAR_14_STACK,
+        DATABAR_14_STACK_OMNI, DATABAR_LIMITED, DATABAR_EXPANDED,
+        DATABAR_EXPANDED_STACK
+    }
+
+    /** The 2D component choices available. */
+    public static enum CompositeMode {
+        /**
+         * Indicates that the composite symbol uses a MicroPDF417 variant as the 2D component.
+         * Of the 2D component choices, this one holds the least amount of data.
+         */
+        CC_A,
+        /**
+         * Indicates that the composite symbol uses a MicroPDF417 symbol as the 2D component, starting with a codeword of 920.
+         */
+        CC_B,
+        /**
+         * Indicates that the composite symbol uses a PDF417 symbol as the 2D component, starting with a codeword of 920.
+         * Of the 2D component choices, this one holds the most amount of data.
+         */
+        CC_C
+    }
+
+    private static enum GeneralFieldMode {
+        NUMERIC, ALPHA, ISOIEC, INVALID_CHAR, ANY_ENC, ALPHA_OR_ISO
+    }
+
     /* CC-A component coefficients from ISO/IEC 24728:2006 Annex F */
     private static final int[] CCA_COEFFS = {
         /* k = 4 */
@@ -450,20 +479,6 @@ public class Composite extends Symbol {
         9, 8, 36, 19, 17, 33, 1, 9, 8, 36, 19, 17, 35, 1, 7, 15, 25, 37, 33, 17, 37, 47, 49, 43, 1, 7, 15, 25, 37, 33, 17, 37, 47, 49,
         0, 3, 6, 0, 6, 0, 0, 0, 3, 6, 0, 6, 6, 0, 0, 6, 0, 0, 0, 0, 6, 6, 0, 3, 0, 0, 6, 0, 0, 0, 0, 6, 6, 0
     };
-
-    public static enum LinearEncoding {
-        UPCA, UPCE, EAN, CODE_128, DATABAR_14, DATABAR_14_STACK,
-        DATABAR_14_STACK_OMNI, DATABAR_LIMITED, DATABAR_EXPANDED,
-        DATABAR_EXPANDED_STACK
-    }
-
-    private static enum GeneralFieldMode {
-        NUMERIC, ALPHA, ISOIEC, INVALID_CHAR, ANY_ENC, ALPHA_OR_ISO
-    }
-
-    public static enum CompositeMode {
-        CC_A, CC_B, CC_C
-    }
 
     private String binary_string;
     private int ecc;

@@ -24,7 +24,6 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
-import java.awt.Rectangle;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextAttribute;
 import java.awt.geom.Area;
@@ -103,7 +102,7 @@ public class Java2DRenderer implements SymbolRenderer {
             double y = (rect.y * magnification) + marginY;
             double w = rect.width * magnification;
             double h = rect.height * magnification;
-            g2d.fill(new Rectangle((int) x, (int) y, (int) w, (int) h));
+            g2d.fillRect((int) x, (int) y, (int) w, (int) h);
         }
 
         for (TextBox text : symbol.getTexts()) {

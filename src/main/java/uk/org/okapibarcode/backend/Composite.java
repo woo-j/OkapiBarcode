@@ -575,16 +575,14 @@ public class Composite extends Symbol {
     @Override
     protected void encode() {
 
-        List < Rectangle2D.Double > linear_rect = new ArrayList<>();
-        List < TextBox > linear_txt = new ArrayList<>();
+        List < Rectangle2D.Double > linear_rect;
+        List < TextBox > linear_txt;
         List < Rectangle2D.Double > combine_rect = new ArrayList<>();
         List < TextBox > combine_txt = new ArrayList<>();
-        String linear_encodeInfo = null;
-        int linear_height = 0;
+        String linear_encodeInfo;
+        int linear_height;
         int top_shift = 0; // 2D component x-coordinate shift
         int bottom_shift = 0; // linear component x-coordinate shift
-        int max_x = 0;
-        int i;
         linearWidth = 0;
 
         if (linearContent.isEmpty()) {
@@ -746,30 +744,23 @@ public class Composite extends Symbol {
             }
         }
 
-        for (i = 0; i < rectangles.size(); i++) {
-            Rectangle2D.Double comprect = new Rectangle2D.Double(rectangles.get(i).x + top_shift, rectangles.get(i).y, rectangles.get(i).width, rectangles.get(i).height);
-            if ((rectangles.get(i).x + top_shift + rectangles.get(i).width) > max_x) {
-                max_x = (int) (rectangles.get(i).x + top_shift + rectangles.get(i).width);
-            }
-            combine_rect.add(comprect);
+        for (Rectangle2D.Double orig : rectangles) {
+            combine_rect.add(new Rectangle2D.Double(orig.x + top_shift, orig.y, orig.width, orig.height));
         }
 
-        for (i = 0; i < linear_rect.size(); i++) {
-            Rectangle2D.Double linrect = new Rectangle2D.Double(linear_rect.get(i).x + bottom_shift, linear_rect.get(i).y, linear_rect.get(i).width, linear_rect.get(i).height);
-            linrect.y += symbol_height;
-            if ((linear_rect.get(i).x + bottom_shift + linear_rect.get(i).width) > max_x) {
-                max_x = (int) (linear_rect.get(i).x + bottom_shift + linear_rect.get(i).width);
-            }
-            combine_rect.add(linrect);
+        for (Rectangle2D.Double orig : linear_rect) {
+            combine_rect.add(new Rectangle2D.Double(orig.x + bottom_shift, orig.y + symbol_height, orig.width, orig.height));
         }
 
-        for (i = 0; i < linear_txt.size(); i++) {
-            double x = linear_txt.get(i).x + bottom_shift;
-            double y = linear_txt.get(i).y + symbol_height;
-            double width = linear_txt.get(i).width;
-            String text = linear_txt.get(i).text;
-            TextBox lintxt = new TextBox(x, y, width, text, humanReadableAlignment);
-            combine_txt.add(lintxt);
+        int max_x = 0;
+        for (Rectangle2D.Double rect : combine_rect) {
+            if (rect.x + rect.width > max_x) {
+                max_x = (int) Math.ceil(rect.x + rect.width);
+            }
+        }
+
+        for (TextBox orig : linear_txt) {
+            combine_txt.add(new TextBox(orig.x + bottom_shift, orig.y + symbol_height, orig.width, orig.text, humanReadableAlignment));
         }
 
         rectangles = combine_rect;

@@ -539,10 +539,15 @@ public class SymbolTest {
      * @throws ReflectiveOperationException if there is any reflection error
      */
     private static void setProperties(Symbol symbol, Map< String, String > properties) throws ReflectiveOperationException {
+        boolean contentHasBeenSet = false;
         for (Map.Entry< String, String > entry : properties.entrySet()) {
-            // set each symbol property using the corresponding setter method
             String name = entry.getKey();
             String value = entry.getValue();
+            // content should only be set once, and it should be the last property set
+            if (contentHasBeenSet) {
+                throw new OkapiException("Test should set " + name + " before content has been set, not after");
+            }
+            // set each symbol property using the corresponding setter method
             String setterName = "set" + name.substring(0, 1).toUpperCase() + name.substring(1);
             Method setter = getMethod(symbol.getClass(), setterName);
             assertNotNull("unable to find method " + setterName, setter);
@@ -559,6 +564,8 @@ public class SymbolTest {
                     Object getterValue = getter.invoke(symbol);
                     assertEquals(setterValue, getterValue);
                 }
+            } else {
+                contentHasBeenSet = true;
             }
         }
     }

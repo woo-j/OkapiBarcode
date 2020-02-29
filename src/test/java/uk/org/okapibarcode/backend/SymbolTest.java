@@ -12,6 +12,8 @@ import java.awt.FontFormatException;
 import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBuffer;
+import java.awt.image.DataBufferByte;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -42,11 +44,6 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.reflections.Reflections;
 
-import uk.org.okapibarcode.backend.Code3Of9.CheckDigit;
-import uk.org.okapibarcode.backend.Symbol.DataType;
-import uk.org.okapibarcode.output.Java2DRenderer;
-import uk.org.okapibarcode.util.Strings;
-
 import com.google.zxing.BinaryBitmap;
 import com.google.zxing.DecodeHintType;
 import com.google.zxing.LuminanceSource;
@@ -69,6 +66,11 @@ import com.google.zxing.oned.rss.RSS14Reader;
 import com.google.zxing.oned.rss.expanded.RSSExpandedReader;
 import com.google.zxing.pdf417.PDF417Reader;
 import com.google.zxing.qrcode.QRCodeReader;
+
+import uk.org.okapibarcode.backend.Code3Of9.CheckDigit;
+import uk.org.okapibarcode.backend.Symbol.DataType;
+import uk.org.okapibarcode.output.Java2DRenderer;
+import uk.org.okapibarcode.util.Strings;
 
 /**
  * <p>Scans the test resources for file-based barcode tests.
@@ -671,20 +673,34 @@ public class SymbolTest {
             throw new ComparisonFailure("image height", String.valueOf(h), String.valueOf(actual.getHeight()));
         }
 
-        int[] expectedPixels = new int[w * h];
-        expected.getRGB(0, 0, w, h, expectedPixels, 0, w);
+        DataBuffer expectedBuffer = expected.getRaster().getDataBuffer();
+        DataBuffer actualBuffer = actual.getRaster().getDataBuffer();
 
-        int[] actualPixels = new int[w * h];
-        actual.getRGB(0, 0, w, h, actualPixels, 0, w);
-
-        for (int i = 0; i < expectedPixels.length; i++) {
-            int expectedPixel = expectedPixels[i];
-            int actualPixel = actualPixels[i];
-            if (expectedPixel != actualPixel) {
-                writeImageFilesToFailureDirectory(expected, actual, failureDirectory);
-                int x = i % w;
-                int y = i / w;
-                throw new ComparisonFailure("pixel at " + x + ", " + y, toHexString(expectedPixel), toHexString(actualPixel));
+        if (expectedBuffer instanceof DataBufferByte && actualBuffer instanceof DataBufferByte) {
+            // optimize for the 99% case
+            byte[] expectedData = ((DataBufferByte) expectedBuffer).getData();
+            byte[] actualData = ((DataBufferByte) actualBuffer).getData();
+            for (int i = 0; i < expectedData.length; i++) {
+                byte expectedByte = expectedData[i];
+                byte actualByte = actualData[i];
+                if (expectedByte != actualByte) {
+                    writeImageFilesToFailureDirectory(expected, actual, failureDirectory);
+                    throw new ComparisonFailure("byte " + i, toHexString(expectedByte), toHexString(actualByte));
+                }
+            }
+        } else {
+            // fall back for the 1% case
+            int[] expectedPixels = new int[w * h];
+            expected.getRGB(0, 0, w, h, expectedPixels, 0, w);
+            int[] actualPixels = new int[w * h];
+            actual.getRGB(0, 0, w, h, actualPixels, 0, w);
+            for (int i = 0; i < expectedPixels.length; i++) {
+                int expectedPixel = expectedPixels[i];
+                int actualPixel = actualPixels[i];
+                if (expectedPixel != actualPixel) {
+                    writeImageFilesToFailureDirectory(expected, actual, failureDirectory);
+                    throw new ComparisonFailure("pixel " + i, toHexString(expectedPixel), toHexString(actualPixel));
+                }
             }
         }
     }

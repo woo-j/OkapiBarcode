@@ -36,7 +36,7 @@ public class DataBar14 extends Symbol {
         OMNI,
         /** DataBar-14 Omnidirectional Stacked */
         STACKED
-    };
+    }
 
     private static final int[] G_SUM_TABLE = {
         0, 161, 961, 2015, 2715, 0, 336, 1036, 1516
@@ -431,7 +431,7 @@ public class DataBar14 extends Symbol {
             }
 
             /* separator pattern */
-            for (i = 4; i < 46; i++) {
+            for (i = 1; i < 46; i++) {
                 if (grid[row_count - 2][i] == grid[row_count][i]) {
                     if (!grid[row_count - 2][i]) {
                         grid[row_count - 1][i] = true;
@@ -441,6 +441,9 @@ public class DataBar14 extends Symbol {
                         grid[row_count - 1][i] = true;
                     }
                 }
+            }
+            for (i = 0; i < 4; i++) {
+                grid[row_count - 1][i] = false;
             }
 
             if (linkageFlag) {

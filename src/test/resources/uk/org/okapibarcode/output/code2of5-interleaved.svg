@@ -1,0 +1,38 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="99" height="50" version="1.1" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg">
+<desc>123456789</desc>
+<g id="barcode" fill="#000000">
+<rect x="0" y="0" width="99" height="50" fill="#FFFFFF" />
+<rect x="0.00" y="0.00" width="1.00" height="40.00" />
+<rect x="2.00" y="0.00" width="1.00" height="40.00" />
+<rect x="4.00" y="0.00" width="1.00" height="40.00" />
+<rect x="8.00" y="0.00" width="1.00" height="40.00" />
+<rect x="10.00" y="0.00" width="3.00" height="40.00" />
+<rect x="14.00" y="0.00" width="3.00" height="40.00" />
+<rect x="18.00" y="0.00" width="1.00" height="40.00" />
+<rect x="22.00" y="0.00" width="1.00" height="40.00" />
+<rect x="26.00" y="0.00" width="3.00" height="40.00" />
+<rect x="32.00" y="0.00" width="1.00" height="40.00" />
+<rect x="34.00" y="0.00" width="1.00" height="40.00" />
+<rect x="36.00" y="0.00" width="3.00" height="40.00" />
+<rect x="40.00" y="0.00" width="1.00" height="40.00" />
+<rect x="44.00" y="0.00" width="1.00" height="40.00" />
+<rect x="46.00" y="0.00" width="3.00" height="40.00" />
+<rect x="52.00" y="0.00" width="1.00" height="40.00" />
+<rect x="54.00" y="0.00" width="3.00" height="40.00" />
+<rect x="58.00" y="0.00" width="1.00" height="40.00" />
+<rect x="60.00" y="0.00" width="3.00" height="40.00" />
+<rect x="64.00" y="0.00" width="3.00" height="40.00" />
+<rect x="68.00" y="0.00" width="1.00" height="40.00" />
+<rect x="72.00" y="0.00" width="1.00" height="40.00" />
+<rect x="76.00" y="0.00" width="3.00" height="40.00" />
+<rect x="80.00" y="0.00" width="1.00" height="40.00" />
+<rect x="84.00" y="0.00" width="1.00" height="40.00" />
+<rect x="86.00" y="0.00" width="3.00" height="40.00" />
+<rect x="92.00" y="0.00" width="1.00" height="40.00" />
+<rect x="94.00" y="0.00" width="3.00" height="40.00" />
+<rect x="98.00" y="0.00" width="1.00" height="40.00" />
+<text x="49.50" y="48.00" text-anchor="middle" font-family="Helvetica" font-size="8.00" fill="#000000">0123456789</text>
+</g>
+</svg>

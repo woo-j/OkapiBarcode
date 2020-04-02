@@ -45,9 +45,6 @@
       <rect x="115.00" y="5.00" width="1.00" height="40.00" />
       <rect x="117.00" y="5.00" width="4.00" height="40.00" />
       <rect x="122.00" y="5.00" width="1.00" height="40.00" />
-      <text x="64.00" y="53.00" text-anchor="middle"
-         font-family="Helvetica" font-size="8.00" fill="#FF0000">
-         123456789Od
-      </text>
+      <text x="64.00" y="53.00" text-anchor="middle" font-family="Helvetica" font-size="8.00" fill="#FF0000">123456789Od</text>
    </g>
 </svg>

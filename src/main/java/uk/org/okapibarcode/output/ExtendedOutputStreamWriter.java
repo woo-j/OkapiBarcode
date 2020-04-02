@@ -25,7 +25,7 @@ import java.util.Locale;
 /**
  * {@link OutputStreamWriter} extension which provides some convenience methods for writing numbers.
  */
-class ExtendedOutputStreamWriter extends OutputStreamWriter {
+public class ExtendedOutputStreamWriter extends OutputStreamWriter {
 
     /** Format to use when writing doubles to the stream. */
     private final String doubleFormat;
@@ -76,6 +76,18 @@ class ExtendedOutputStreamWriter extends OutputStreamWriter {
      */
     public ExtendedOutputStreamWriter appendInt(int i) throws IOException {
         super.append(String.valueOf(i));
+        return this;
+    }
+
+    /**
+     * Writes the specified line to the stream.
+     *
+     * @param str the line to write to the stream
+     * @return this writer
+     * @throws IOException if an I/O error occurs
+     */
+    public ExtendedOutputStreamWriter appendLine(String str) throws IOException {
+        super.append(str).append('\n');
         return this;
     }
 }

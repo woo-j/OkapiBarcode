@@ -17,6 +17,7 @@
 package uk.org.okapibarcode.output;
 
 import static org.junit.Assert.assertEquals;
+import static uk.org.okapibarcode.backend.Code2Of5.ToFMode.INTERLEAVED;
 
 import java.awt.Color;
 import java.io.BufferedReader;
@@ -31,10 +32,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import uk.org.okapibarcode.backend.Code2Of5;
 import uk.org.okapibarcode.backend.Code93;
 import uk.org.okapibarcode.backend.HumanReadableAlignment;
+import uk.org.okapibarcode.backend.HumanReadableLocation;
 import uk.org.okapibarcode.backend.MaxiCode;
 import uk.org.okapibarcode.backend.Symbol;
+import uk.org.okapibarcode.output.SvgRenderer.ShapeRendering;
 
 /**
  * Tests for {@link SvgRenderer}.
@@ -43,11 +47,15 @@ public class SvgRendererTest {
 
     private Locale originalDefaultLocale;
 
+    private SvgRenderer renderer;
+
     @Before
     public void before() {
         // ensure use of correct decimal separator (period), regardless of default locale
         originalDefaultLocale = Locale.getDefault();
         Locale.setDefault(Locale.GERMANY);
+        // instantiated before each test
+        renderer = new SvgRenderer(new ByteArrayOutputStream(), 1, Color.WHITE, Color.BLACK);
     }
 
     @After
@@ -61,7 +69,7 @@ public class SvgRendererTest {
         code93.setQuietZoneHorizontal(5);
         code93.setQuietZoneVertical(5);
         code93.setContent("123456789");
-        test(code93, 1, Color.WHITE, Color.BLACK, "code93-basic.svg");
+        test(code93, "code93-basic.svg");
     }
 
     @Test
@@ -71,7 +79,7 @@ public class SvgRendererTest {
         code93.setQuietZoneVertical(5);
         code93.setHumanReadableAlignment(HumanReadableAlignment.LEFT);
         code93.setContent("123456789");
-        test(code93, 1, Color.WHITE, Color.BLACK, "code93-alignment-left.svg");
+        test(code93, "code93-alignment-left.svg");
     }
 
     @Test
@@ -81,7 +89,7 @@ public class SvgRendererTest {
         code93.setQuietZoneVertical(5);
         code93.setHumanReadableAlignment(HumanReadableAlignment.RIGHT);
         code93.setContent("123456789");
-        test(code93, 1, Color.WHITE, Color.BLACK, "code93-alignment-right.svg");
+        test(code93, "code93-alignment-right.svg");
     }
 
     @Test
@@ -91,7 +99,7 @@ public class SvgRendererTest {
         code93.setQuietZoneVertical(5);
         code93.setHumanReadableAlignment(HumanReadableAlignment.JUSTIFY);
         code93.setContent("123456789");
-        test(code93, 1, Color.WHITE, Color.BLACK, "code93-alignment-justify.svg");
+        test(code93, "code93-alignment-justify.svg");
     }
 
     @Test
@@ -100,7 +108,7 @@ public class SvgRendererTest {
         code93.setQuietZoneHorizontal(20);
         code93.setQuietZoneVertical(20);
         code93.setContent("123456789");
-        test(code93, 1, Color.WHITE, Color.BLACK, "code93-margin-size-20.svg");
+        test(code93, "code93-margin-size-20.svg");
     }
 
     @Test
@@ -109,7 +117,8 @@ public class SvgRendererTest {
         code93.setQuietZoneHorizontal(5);
         code93.setQuietZoneVertical(5);
         code93.setContent("123456789");
-        test(code93, 2, Color.WHITE, Color.BLACK, "code93-magnification-2.svg");
+        renderer = new SvgRenderer(new ByteArrayOutputStream(), 2, Color.WHITE, Color.BLACK);
+        test(code93, "code93-magnification-2.svg");
     }
 
     @Test
@@ -118,7 +127,8 @@ public class SvgRendererTest {
         code93.setQuietZoneHorizontal(5);
         code93.setQuietZoneVertical(5);
         code93.setContent("123456789");
-        test(code93, 1, Color.GREEN, Color.RED, "code93-colors.svg");
+        renderer = new SvgRenderer(new ByteArrayOutputStream(), 1, Color.GREEN, Color.RED);
+        test(code93, "code93-colors.svg");
     }
 
     @Test
@@ -129,7 +139,7 @@ public class SvgRendererTest {
         code93.setFontName("Arial");
         code93.setFontSize(26);
         code93.setContent("123456789");
-        test(code93, 1, Color.WHITE, Color.BLACK, "code93-custom-font.svg");
+        test(code93, "code93-custom-font.svg");
     }
 
     @Test
@@ -139,7 +149,7 @@ public class SvgRendererTest {
         maxicode.setQuietZoneVertical(5);
         maxicode.setMode(4);
         maxicode.setContent("123456789");
-        test(maxicode, 1, Color.WHITE, Color.BLACK, "maxicode-basic.svg");
+        test(maxicode, "maxicode-basic.svg");
     }
 
     @Test
@@ -149,21 +159,58 @@ public class SvgRendererTest {
         maxicode.setQuietZoneVertical(5);
         maxicode.setMode(4);
         maxicode.setContent("x\u001dx>x<x/x&x");
-        test(maxicode, 1, Color.WHITE, Color.BLACK, "maxicode-nasty-chars.svg");
+        test(maxicode, "maxicode-nasty-chars.svg");
     }
 
-    private void test(Symbol symbol, double magnification, Color paper, Color ink, String expectationFile) throws IOException {
+    @Test
+    public void testCode25InterleavedWithCrispEdges() throws IOException {
+        Code2Of5 code2of5 = new Code2Of5();
+        code2of5.setMode(INTERLEAVED);
+        code2of5.setContent("123456789");
+        renderer = new SvgRenderer(new ByteArrayOutputStream(), 1, Color.WHITE, Color.BLACK, ShapeRendering.CRISP_EDGES);
+        test(code2of5, "code2of5-interleaved.svg");
+    }
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        SvgRenderer renderer = new SvgRenderer(baos, magnification, paper, ink);
+    @Test
+    public void testCode25Inline() throws IOException {
+        Code2Of5 code2of5 = new Code2Of5();
+        code2of5.setHumanReadableLocation(HumanReadableLocation.NONE);
+        code2of5.setContent("123456789");
+        renderer = new SvgRenderer(new ByteArrayOutputStream(), 1, Color.WHITE, Color.BLACK) {
+            @Override
+            protected void appendHeader(ExtendedOutputStreamWriter writer) throws IOException {
+                // no-op
+            }
+
+            @Override
+            protected ExtendedOutputStreamWriter createWriter() {
+                return new ExtendedOutputStreamWriter(out, "%.2f") {
+                    @Override
+                    public ExtendedOutputStreamWriter appendLine(String str) throws IOException {
+                        // omits LF
+                        return super.append(str);
+                    }
+                };
+            }
+        };
+        test(code2of5, "code2of5-inline.svg");
+    }
+
+    private void test(Symbol symbol, String expectationFile) throws IOException {
+
+        ByteArrayOutputStream baos = (ByteArrayOutputStream) renderer.out;
         renderer.render(symbol);
         String actual = new String(baos.toByteArray(), StandardCharsets.UTF_8);
         BufferedReader actualReader = new BufferedReader(new StringReader(actual));
 
+        String docType = "\"-//W3C//DTD SVG 1.1//EN\"";
         InputStream is = getClass().getResourceAsStream(expectationFile);
         byte[] expectedBytes = new byte[is.available()];
         is.read(expectedBytes);
-        String expected = new String(expectedBytes, StandardCharsets.UTF_8);
+        String expected = new String(expectedBytes, StandardCharsets.UTF_8)
+                // removes formatting
+                .replace(docType + "\n", docType + " ")
+                .replace("   ", "");
         BufferedReader expectedReader = new BufferedReader(new StringReader(expected));
 
         int line = 1;

@@ -52,31 +52,74 @@ import uk.org.okapibarcode.backend.TextBox;
  */
 public class SvgRenderer implements SymbolRenderer {
 
+    public enum ShapeRendering {
+        AUTO("auto"),
+        /**
+         * Indicates that the user agent shall emphasize rendering speed over
+         * geometric precision and crisp edges.
+         */
+        OPTIMIZE_SPEED("optimizeSpeed"),
+        /**
+         * Indicates that the user agent shall attempt to emphasize the contrast
+         * between clean edges of artwork over rendering speed and geometric precision.
+         */
+        CRISP_EDGES("crispEdges"),
+        /**
+         * Indicates that the user agent shall emphasize geometric precision over speed
+         * and crisp edges.
+         */
+        GEOMETRIC_PRECISION("geometricPrecision")
+        ;
+
+        private final String attr;
+
+        ShapeRendering(String shareRendering) {
+            this.attr = shareRendering;
+        }
+    }
+
     /** The output stream to render to. */
-    private final OutputStream out;
+    protected final OutputStream out;
 
     /** The magnification factor to apply. */
-    private final double magnification;
+    protected final double magnification;
 
     /** The paper (background) color. */
-    private final Color paper;
+    protected final Color paper;
 
     /** The ink (foreground) color. */
-    private final Color ink;
+    protected final Color ink;
+
+    /** SVG rendering (experimental) */
+    protected final ShapeRendering shapeRendering;
+
+    public SvgRenderer(OutputStream out, double magnification, Color paper, Color ink) {
+        this(out, magnification, paper, ink, null);
+    }
 
     /**
      * Creates a new SVG renderer.
      *
-     * @param out the output stream to render to
      * @param magnification the magnification factor to apply
      * @param paper the paper (background) color
      * @param ink the ink (foreground) color
+     * @param shapeRendering experimental rendering method
      */
-    public SvgRenderer(OutputStream out, double magnification, Color paper, Color ink) {
+    public SvgRenderer(OutputStream out, double magnification, Color paper, Color ink, ShapeRendering shapeRendering) {
         this.out = out;
         this.magnification = magnification;
         this.paper = paper;
         this.ink = ink;
+        this.shapeRendering = shapeRendering;
+    }
+
+    /**
+     * XML header, override when using inline SVG (HTML5)
+     */
+    protected void appendHeader(ExtendedOutputStreamWriter writer) throws IOException {
+        writer.appendLine("<?xml version=\"1.0\" standalone=\"no\"?>");
+        writer.append("<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\"");
+        writer.appendLine(" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">");
     }
 
     /** {@inheritDoc} */
@@ -104,30 +147,31 @@ public class SvgRenderer implements SymbolRenderer {
                         + String.format("%02X", paper.getGreen())
                         + String.format("%02X", paper.getBlue());
 
-        try (ExtendedOutputStreamWriter writer = new ExtendedOutputStreamWriter(out, "%.2f")) {
+        try (ExtendedOutputStreamWriter writer = createWriter()) {
 
             // Header
-            writer.append("<?xml version=\"1.0\" standalone=\"no\"?>\n");
-            writer.append("<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\"\n");
-            writer.append("   \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n");
+            appendHeader(writer);
             writer.append("<svg width=\"").appendInt(width)
                   .append("\" height=\"").appendInt(height)
-                  .append("\" version=\"1.1")
-                  .append("\" xmlns=\"http://www.w3.org/2000/svg\">\n");
-            writer.append("   <desc>").append(clean(title)).append("</desc>\n");
-            writer.append("   <g id=\"barcode\" fill=\"#").append(fgColour).append("\">\n");
-            writer.append("      <rect x=\"0\" y=\"0\" width=\"").appendInt(width)
+                  .append("\" version=\"1.1\"");
+            if (shapeRendering != null) {
+                writer.append(" shape-rendering=\"").append(shapeRendering.attr).append("\"");
+            }
+            writer.appendLine(" xmlns=\"http://www.w3.org/2000/svg\">");
+            writer.append("<desc>").append(clean(title)).appendLine("</desc>");
+            writer.append("<g id=\"barcode\" fill=\"#").append(fgColour).appendLine("\">");
+            writer.append("<rect x=\"0\" y=\"0\" width=\"").appendInt(width)
                   .append("\" height=\"").appendInt(height)
-                  .append("\" fill=\"#").append(bgColour).append("\" />\n");
+                  .append("\" fill=\"#").append(bgColour).appendLine("\" />");
 
             // Rectangles
             for (int i = 0; i < symbol.getRectangles().size(); i++) {
                 Rectangle2D.Double rect = symbol.getRectangles().get(i);
-                writer.append("      <rect x=\"").append((rect.x * magnification) + marginX)
+                writer.append("<rect x=\"").append((rect.x * magnification) + marginX)
                       .append("\" y=\"").append((rect.y * magnification) + marginY)
                       .append("\" width=\"").append(rect.width * magnification)
                       .append("\" height=\"").append(rect.height * magnification)
-                      .append("\" />\n");
+                      .appendLine("\" />");
             }
 
             // Text
@@ -153,19 +197,19 @@ public class SvgRenderer implements SymbolRenderer {
                     default:
                         throw new IllegalStateException("Unknown alignment: " + alignment);
                 }
-                writer.append("      <text x=\"").append(x)
+                writer.append("<text x=\"").append(x)
                       .append("\" y=\"").append((text.y * magnification) + marginY)
-                      .append("\" text-anchor=\"").append(anchor).append("\"\n");
+                      .append("\" text-anchor=\"").append(anchor).append("\"");
                 if (alignment == JUSTIFY) {
-                    writer.append("         textLength=\"")
+                    writer.append(" textLength=\"")
                           .append(text.width * magnification)
-                          .append("\" lengthAdjust=\"spacing\"\n");
+                          .append("\" lengthAdjust=\"spacing\"");
                 }
-                writer.append("         font-family=\"").append(clean(symbol.getFontName()))
+                writer.append(" font-family=\"").append(clean(symbol.getFontName()))
                       .append("\" font-size=\"").append(symbol.getFontSize() * magnification)
-                      .append("\" fill=\"#").append(fgColour).append("\">\n");
-                writer.append("         ").append(clean(text.text)).append("\n");
-                writer.append("      </text>\n");
+                      .append("\" fill=\"#").append(fgColour).append("\">");
+                writer.append(clean(text.text));
+                writer.appendLine("</text>");
             }
 
             // Circles
@@ -177,16 +221,16 @@ public class SvgRenderer implements SymbolRenderer {
                 } else {
                     color = bgColour;
                 }
-                writer.append("      <circle cx=\"").append(((ellipse.x + (ellipse.width / 2)) * magnification) + marginX)
+                writer.append("<circle cx=\"").append(((ellipse.x + (ellipse.width / 2)) * magnification) + marginX)
                       .append("\" cy=\"").append(((ellipse.y + (ellipse.width / 2)) * magnification) + marginY)
                       .append("\" r=\"").append((ellipse.width / 2) * magnification)
-                      .append("\" fill=\"#").append(color).append("\" />\n");
+                      .append("\" fill=\"#").append(color).appendLine("\" />");
             }
 
             // Hexagons
             for (int i = 0; i < symbol.getHexagons().size(); i++) {
                 Hexagon hexagon = symbol.getHexagons().get(i);
-                writer.append("      <path d=\"");
+                writer.append("<path d=\"");
                 for (int j = 0; j < 6; j++) {
                     if (j == 0) {
                         writer.append("M ");
@@ -196,12 +240,12 @@ public class SvgRenderer implements SymbolRenderer {
                     writer.append((hexagon.pointX[j] * magnification) + marginX).append(" ")
                           .append((hexagon.pointY[j] * magnification) + marginY).append(" ");
                 }
-                writer.append("Z\" />\n");
+                writer.appendLine("Z\" />");
             }
 
             // Footer
-            writer.append("   </g>\n");
-            writer.append("</svg>\n");
+            writer.appendLine("</g>");
+            writer.appendLine("</svg>");
         }
     }
 
@@ -231,5 +275,12 @@ public class SvgRenderer implements SymbolRenderer {
         } catch (ParserConfigurationException | TransformerException | TransformerFactoryConfigurationError e) {
             return s;
         }
+    }
+
+    /**
+     * @return outputStream extended writer
+     */
+    protected ExtendedOutputStreamWriter createWriter() {
+        return new ExtendedOutputStreamWriter(out, "%.2f");
     }
 }

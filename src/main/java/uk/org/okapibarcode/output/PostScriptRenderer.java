@@ -85,7 +85,7 @@ public class PostScriptRenderer implements SymbolRenderer {
             title = content;
         }
 
-        try (ExtendedOutputStreamWriter writer = new ExtendedOutputStreamWriter(out, "%.2f")) {
+        try (ExtendedOutputStreamWriter writer = createWriter()) {
 
             // Header
             writer.append("%!PS-Adobe-3.0 EPSF-3.0\n");
@@ -237,5 +237,12 @@ public class PostScriptRenderer implements SymbolRenderer {
             // Footer
             writer.append("\nshowpage\n");
         }
+    }
+
+    /**
+     * @return outputStream extended writer
+     */
+    protected ExtendedOutputStreamWriter createWriter() {
+        return new ExtendedOutputStreamWriter(out, "%.2f");
     }
 }

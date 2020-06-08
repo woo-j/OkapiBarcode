@@ -336,7 +336,7 @@ public abstract class Symbol {
      * @return the height of the human-readable text
      */
     public int getHumanReadableHeight() {
-        if (texts.isEmpty()) {
+        if (texts.isEmpty() || humanReadableLocation == NONE) {
             return 0;
         } else {
             return getTheoreticalHumanReadableHeight();

@@ -355,8 +355,10 @@ public class SymbolTest {
             // remove parenthesis around the GS1 AIs
             return s.replaceAll("[\\(\\)]", "");
         } else if (symbol instanceof DataBar14) {
-            // remove the checksum from the barcode content, and also remove left padding 0s
-            return s.substring(0, s.length() - 1).replaceFirst("^0+", "");
+            // remove the checksum from the barcode content
+            s = s.substring(0, s.length() - 1);
+            // also remove left padding 0s (unless it's all zeroes)
+            return s.matches("^0+$") ? s : s.replaceFirst("^0+", "");
         } else {
             // no massaging
             return s;

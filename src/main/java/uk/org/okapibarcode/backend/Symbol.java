@@ -709,6 +709,9 @@ public abstract class Symbol {
      * number of rectangles needed to describe a symbol.
      */
     protected void mergeVerticalBlocks() {
+
+        int before = rectangles.size();
+
         for(int i = 0; i < rectangles.size() - 1; i++) {
             for(int j = i + 1; j < rectangles.size(); j++) {
                 Rectangle2D.Double firstRect = rectangles.get(i);
@@ -718,9 +721,15 @@ public abstract class Symbol {
                         firstRect.height += secondRect.height;
                         rectangles.set(i, firstRect);
                         rectangles.remove(j);
+                        j--;
                     }
                 }
             }
+        }
+
+        int after = rectangles.size();
+        if (before != after) {
+            encodeInfo += "Blocks Merged: " + before + " -> " + after + "\n";
         }
     }
 

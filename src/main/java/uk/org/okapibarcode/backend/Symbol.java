@@ -704,24 +704,31 @@ public abstract class Symbol {
     }
 
     /**
-     * Search for rectangles which have the same width and x position, and
-     * which join together vertically and merge them together to reduce the
-     * number of rectangles needed to describe a symbol.
+     * Search for rectangles which have the same width and x position, and which join together vertically
+     * and merge them together to reduce the number of rectangles needed to describe a symbol. This can
+     * actually take a non-trivial amount of time for symbols with a large number of rectangles (like
+     * large PDF417 symbols) so we exploit the fact that the rectangles are ordered by rows (and within
+     * the rows that they are ordered by x position).
      */
     protected void mergeVerticalBlocks() {
 
         int before = rectangles.size();
 
-        for(int i = 0; i < rectangles.size() - 1; i++) {
-            for(int j = i + 1; j < rectangles.size(); j++) {
-                Rectangle2D.Double firstRect = rectangles.get(i);
-                Rectangle2D.Double secondRect = rectangles.get(j);
-                if (roughlyEqual(firstRect.x, secondRect.x) && roughlyEqual(firstRect.width, secondRect.width)) {
-                    if (roughlyEqual(firstRect.y + firstRect.height, secondRect.y)) {
-                        firstRect.height += secondRect.height;
-                        rectangles.set(i, firstRect);
-                        rectangles.remove(j);
-                        j--;
+        for (int i = rectangles.size() - 1; i >= 0; i--) {
+            Rectangle2D.Double rect1 = rectangles.get(i);
+            for (int j = i - 1; j >= 0; j--) {
+                Rectangle2D.Double rect2 = rectangles.get(j);
+                if (roughlyEqual(rect1.y, rect2.y + rect2.height)) {
+                    // rect2 is in the segment of rectangles for the row directly above rect1
+                    if (roughlyEqual(rect1.x, rect2.x) && roughlyEqual(rect1.width, rect2.width)) {
+                        // we've found a match; merge the rectangles
+                        rect2.height += rect1.height;
+                        rectangles.remove(i);
+                        break;
+                    }
+                    if (rect2.x < rect1.x) {
+                        // we've moved past any rectangles that might be directly above rect1
+                        break;
                     }
                 }
             }

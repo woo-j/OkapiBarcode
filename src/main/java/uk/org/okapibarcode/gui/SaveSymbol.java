@@ -38,8 +38,8 @@ public class SaveSymbol extends JPanel {
     /** {@inheritDoc} */
     @Override
     public Dimension getPreferredSize() {
-        int w = OkapiUI.symbol.getWidth();
-        int h = OkapiUI.symbol.getHeight();
+        int w = OkapiUI.symbol.getWidth() * OkapiUI.factor;
+        int h = OkapiUI.symbol.getHeight() * OkapiUI.factor;
         return new Dimension(w, h);
     }
 

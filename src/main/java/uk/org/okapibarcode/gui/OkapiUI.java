@@ -1663,23 +1663,14 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
     }//GEN-LAST:event_batchFileButtonActionPerformed
 
     private void runBatchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_runBatchButtonActionPerformed
-        // Perform batch encoding
-        String thisData = "";
-        String extension;
-        String fullFileName;
-        String outputCount;
-        int inputCount = 0;
-        String errorLog;
-        String progressLog = "";
-        int i, k;
-        int lineCount = 0;
-        double percentage;
-        int countLength, currentLength;
 
-        errorLog = "Starting batch process..." + '\n';
+        // Perform batch encoding
+        String progressLog = "";
+        String errorLog = "Starting batch process...\n";
         batchOutputArea.setText(errorLog);
 
-        switch(outFormatCombo.getSelectedIndex()) {
+        String extension;
+        switch (outFormatCombo.getSelectedIndex()) {
             case 0:
                 extension = ".png";
                 break;
@@ -1701,72 +1692,76 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 break;
         }
 
-        for(i = 0; i < sequenceArea.getText().length(); i++) {
-            if (sequenceArea.getText().charAt(i) == '\n') {
+        int inputCount = 0;
+        char[] chars = sequenceArea.getText().toCharArray();
+        for (char c : chars) {
+            if (c == '\n') {
                 inputCount++;
             }
         }
 
-        countLength = Integer.toString(inputCount + 1).length();
+        int line = 1;
+        String thisData = "";
+        String oldData = symbol.getContent();
+        int digits = Integer.toString(inputCount + 1).length();
 
-        for(i = 0; i < sequenceArea.getText().length(); i++) {
-            if (sequenceArea.getText().charAt(i) == '\n') {
-                currentLength = Integer.toString(lineCount + 1).length();
-                outputCount = "";
-                for (k = 0; k < (countLength - currentLength); k++) {
+        for (char c : chars) {
+            if (c == '\n') {
+                int currentLength = Integer.toString(line).length();
+                String outputCount = "";
+                for (int i = currentLength; i < digits; i++) {
                     // Add leading zeroes to file name
                     outputCount += "0";
                 }
-                outputCount += Integer.toString(lineCount + 1);
-                if (!thisData.equals("")) {
+                outputCount += Integer.toString(line);
+                if (!thisData.isEmpty()) {
+                    String filename;
                     if (outFilenameCombo.getSelectedIndex() == 0) {
-                        fullFileName = folderField.getText() + prefixField.getText()
-                            + osFriendly(thisData) + extension;
+                        filename = prefixField.getText() + osFriendly(thisData) + extension;
                     } else {
-                        fullFileName = folderField.getText()
-                                + prefixField.getText() + outputCount + extension;
+                        filename = prefixField.getText() + outputCount + extension;
                     }
-                    File file = new File(fullFileName);
+                    dataInput = thisData;
+                    encodeData(); // updates OkapiUI.symbol
                     SaveSymbol saveSymbol = new SaveSymbol();
-
                     saveSymbol.removeAll();
-
                     saveSymbol.setSize(saveSymbol.getPreferredSize());
                     saveSymbol.setBorder(BorderFactory.createEmptyBorder());
                     saveSymbol.setBackground(paperColour);
                     try {
                         SaveImage saveImage = new SaveImage();
                         if (errorLabel.getText().isEmpty()) {
+                            File file = new File(folderField.getText(), filename);
                             saveImage.save(file, saveSymbol);
                         } else {
-                            errorLog += errorLabel.getText() + " at line " + (lineCount + 1) + '\n';
+                            errorLog += errorLabel.getText() + " at line " + line + '\n';
                         }
                     } catch (IOException e) {
-                        errorLog += "I/O exception writing to " + fullFileName
-                                + " at line " + (lineCount + 1) + ": " + e.getMessage() + '\n';
+                        errorLog += "I/O exception writing to " + filename + " at line " + line + ": " + e.getMessage() + '\n';
                     }
                 }
-                lineCount++;
-                percentage = (double)(lineCount) / (double)(inputCount);
-                percentage *= 100;
-                progressLog = "Completed line " + lineCount + " of "
-                        + inputCount + " (" + (int)(percentage) + "% done)";
+                int percentage = (int) (100 * ((double) line) / (inputCount));
+                progressLog = "Completed line " + line + " of " + inputCount + " (" + percentage + "% done)";
                 batchOutputArea.setText(errorLog + progressLog);
                 thisData = "";
+                line++;
             } else {
-                char currentChar = sequenceArea.getText().charAt(i);
-
-                if ((currentChar != 0x0D) && (currentChar != 0x0A)) {
-                    thisData += sequenceArea.getText().charAt(i);
+                if (c != 0x0D && c != 0x0A) {
+                    thisData += c;
                 }
             }
         }
-        progressLog += '\n' + "Finished!";
+
+        dataInput = oldData;
+        encodeData(); // updates OkapiUI.symbol
+
+        progressLog += "\nFinished!";
         batchOutputArea.setText(errorLog + progressLog);
+
     }//GEN-LAST:event_runBatchButtonActionPerformed
 
     private String osFriendly(String data) {
-        /* Allow only permissable characters to be used in filenames */
+        /* Allow only permissible characters to be used in filenames */
 
         String dataCopy = "";
         char c;

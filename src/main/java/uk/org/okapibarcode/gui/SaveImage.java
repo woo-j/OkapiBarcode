@@ -47,7 +47,9 @@ public class SaveImage {
             case "gif":
             case "jpg":
             case "bmp":
-                BufferedImage bi = new BufferedImage(OkapiUI.symbol.getWidth(), OkapiUI.symbol.getHeight(), BufferedImage.TYPE_INT_ARGB);
+                int w = OkapiUI.symbol.getWidth() * OkapiUI.factor;
+                int h = OkapiUI.symbol.getHeight() * OkapiUI.factor;
+                BufferedImage bi = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
                 panel.paint(bi.getGraphics());
                 ImageIO.write(bi, extension, file);
                 break;

@@ -39,7 +39,7 @@ public class Code128 extends Symbol {
 
     private enum Composite {
         OFF, CCA, CCB, CCC
-    };
+    }
 
     protected static final String[] CODE128_TABLE = {
         "212222", "222122", "222221", "121223", "121322", "131222", "122213",
@@ -574,7 +574,7 @@ public class Code128 extends Symbol {
         encodeInfo += "Check Digit: " + checkDigit + '\n';
 
         /* Build pattern string */
-        StringBuilder dest = new StringBuilder(bar_characters + 2);
+        StringBuilder dest = new StringBuilder((6 * bar_characters) + 6 + 7);
         for (i = 0; i < bar_characters; i++) {
             dest.append(CODE128_TABLE[values[i]]);
         }

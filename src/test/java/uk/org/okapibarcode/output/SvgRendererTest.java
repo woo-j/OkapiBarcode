@@ -61,7 +61,16 @@ public class SvgRendererTest {
         code93.setQuietZoneHorizontal(5);
         code93.setQuietZoneVertical(5);
         code93.setContent("123456789");
-        test(code93, 1, Color.WHITE, Color.BLACK, "code93-basic.svg");
+        test(code93, 1, Color.WHITE, Color.BLACK, "code93-basic.svg", true);
+    }
+
+    @Test
+    public void testCode93BasicNoProlog() throws IOException {
+        Code93 code93 = new Code93();
+        code93.setQuietZoneHorizontal(5);
+        code93.setQuietZoneVertical(5);
+        code93.setContent("123456789");
+        test(code93, 1, Color.WHITE, Color.BLACK, "code93-basic-no-prolog.svg", false);
     }
 
     @Test
@@ -71,7 +80,7 @@ public class SvgRendererTest {
         code93.setQuietZoneVertical(5);
         code93.setHumanReadableAlignment(HumanReadableAlignment.LEFT);
         code93.setContent("123456789");
-        test(code93, 1, Color.WHITE, Color.BLACK, "code93-alignment-left.svg");
+        test(code93, 1, Color.WHITE, Color.BLACK, "code93-alignment-left.svg", true);
     }
 
     @Test
@@ -81,7 +90,7 @@ public class SvgRendererTest {
         code93.setQuietZoneVertical(5);
         code93.setHumanReadableAlignment(HumanReadableAlignment.RIGHT);
         code93.setContent("123456789");
-        test(code93, 1, Color.WHITE, Color.BLACK, "code93-alignment-right.svg");
+        test(code93, 1, Color.WHITE, Color.BLACK, "code93-alignment-right.svg", true);
     }
 
     @Test
@@ -91,7 +100,7 @@ public class SvgRendererTest {
         code93.setQuietZoneVertical(5);
         code93.setHumanReadableAlignment(HumanReadableAlignment.JUSTIFY);
         code93.setContent("123456789");
-        test(code93, 1, Color.WHITE, Color.BLACK, "code93-alignment-justify.svg");
+        test(code93, 1, Color.WHITE, Color.BLACK, "code93-alignment-justify.svg", true);
     }
 
     @Test
@@ -100,7 +109,7 @@ public class SvgRendererTest {
         code93.setQuietZoneHorizontal(20);
         code93.setQuietZoneVertical(20);
         code93.setContent("123456789");
-        test(code93, 1, Color.WHITE, Color.BLACK, "code93-margin-size-20.svg");
+        test(code93, 1, Color.WHITE, Color.BLACK, "code93-margin-size-20.svg", true);
     }
 
     @Test
@@ -109,7 +118,7 @@ public class SvgRendererTest {
         code93.setQuietZoneHorizontal(5);
         code93.setQuietZoneVertical(5);
         code93.setContent("123456789");
-        test(code93, 2, Color.WHITE, Color.BLACK, "code93-magnification-2.svg");
+        test(code93, 2, Color.WHITE, Color.BLACK, "code93-magnification-2.svg", true);
     }
 
     @Test
@@ -118,7 +127,7 @@ public class SvgRendererTest {
         code93.setQuietZoneHorizontal(5);
         code93.setQuietZoneVertical(5);
         code93.setContent("123456789");
-        test(code93, 1, Color.GREEN, Color.RED, "code93-colors.svg");
+        test(code93, 1, Color.GREEN, Color.RED, "code93-colors.svg", true);
     }
 
     @Test
@@ -129,7 +138,7 @@ public class SvgRendererTest {
         code93.setFontName("Arial");
         code93.setFontSize(26);
         code93.setContent("123456789");
-        test(code93, 1, Color.WHITE, Color.BLACK, "code93-custom-font.svg");
+        test(code93, 1, Color.WHITE, Color.BLACK, "code93-custom-font.svg", true);
     }
 
     @Test
@@ -139,7 +148,7 @@ public class SvgRendererTest {
         maxicode.setQuietZoneVertical(5);
         maxicode.setMode(4);
         maxicode.setContent("123456789");
-        test(maxicode, 1, Color.WHITE, Color.BLACK, "maxicode-basic.svg");
+        test(maxicode, 1, Color.WHITE, Color.BLACK, "maxicode-basic.svg", true);
     }
 
     @Test
@@ -149,13 +158,13 @@ public class SvgRendererTest {
         maxicode.setQuietZoneVertical(5);
         maxicode.setMode(4);
         maxicode.setContent("x\u001dx>x<x/x&x");
-        test(maxicode, 1, Color.WHITE, Color.BLACK, "maxicode-nasty-chars.svg");
+        test(maxicode, 1, Color.WHITE, Color.BLACK, "maxicode-nasty-chars.svg", true);
     }
 
-    private void test(Symbol symbol, double magnification, Color paper, Color ink, String expectationFile) throws IOException {
+    private void test(Symbol symbol, double magnification, Color paper, Color ink, String expectationFile, boolean xmlProlog) throws IOException {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        SvgRenderer renderer = new SvgRenderer(baos, magnification, paper, ink);
+        SvgRenderer renderer = new SvgRenderer(baos, magnification, paper, ink, xmlProlog);
         renderer.render(symbol);
         String actual = new String(baos.toByteArray(), StandardCharsets.UTF_8);
         BufferedReader actualReader = new BufferedReader(new StringReader(actual));

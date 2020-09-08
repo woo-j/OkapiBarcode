@@ -811,7 +811,7 @@ public class MakeBarcode {
                     }
                     break;
                 case "svg":
-                    SvgRenderer svg = new SvgRenderer(new FileOutputStream(file), 1, paper, ink);
+                    SvgRenderer svg = new SvgRenderer(new FileOutputStream(file), 1, paper, ink, true);
                     svg.render(symbol);
                     break;
                 case "eps":

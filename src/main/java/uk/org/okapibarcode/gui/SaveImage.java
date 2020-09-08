@@ -52,7 +52,7 @@ public class SaveImage {
                 ImageIO.write(bi, extension, file);
                 break;
             case "svg":
-                SvgRenderer svg = new SvgRenderer(new FileOutputStream(file), OkapiUI.factor, OkapiUI.paperColour, OkapiUI.inkColour);
+                SvgRenderer svg = new SvgRenderer(new FileOutputStream(file), OkapiUI.factor, OkapiUI.paperColour, OkapiUI.inkColour, true);
                 svg.render(OkapiUI.symbol);
                 break;
             case "eps":

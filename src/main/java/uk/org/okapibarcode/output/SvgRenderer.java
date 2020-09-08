@@ -64,6 +64,9 @@ public class SvgRenderer implements SymbolRenderer {
     /** The ink (foreground) color. */
     private final Color ink;
 
+    /** Whether or not to include the XML prolog in the output. */
+    private final boolean xmlProlog;
+
     /**
      * Creates a new SVG renderer.
      *
@@ -71,12 +74,15 @@ public class SvgRenderer implements SymbolRenderer {
      * @param magnification the magnification factor to apply
      * @param paper the paper (background) color
      * @param ink the ink (foreground) color
+     * @param xmlProlog whether or not to include the XML prolog in the output (usually {@code true} for
+     *        standalone SVG documents, {@code false} for SVG content embedded directly in HTML documents)
      */
-    public SvgRenderer(OutputStream out, double magnification, Color paper, Color ink) {
+    public SvgRenderer(OutputStream out, double magnification, Color paper, Color ink, boolean xmlProlog) {
         this.out = out;
         this.magnification = magnification;
         this.paper = paper;
         this.ink = ink;
+        this.xmlProlog = xmlProlog;
     }
 
     /** {@inheritDoc} */
@@ -106,10 +112,14 @@ public class SvgRenderer implements SymbolRenderer {
 
         try (ExtendedOutputStreamWriter writer = new ExtendedOutputStreamWriter(out, "%.2f")) {
 
+            // XML Prolog
+            if(xmlProlog) {
+                writer.append("<?xml version=\"1.0\" standalone=\"no\"?>\n");
+                writer.append("<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\"\n");
+                writer.append("   \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n");
+            }
+
             // Header
-            writer.append("<?xml version=\"1.0\" standalone=\"no\"?>\n");
-            writer.append("<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\"\n");
-            writer.append("   \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n");
             writer.append("<svg width=\"").appendInt(width)
                   .append("\" height=\"").appendInt(height)
                   .append("\" version=\"1.1")

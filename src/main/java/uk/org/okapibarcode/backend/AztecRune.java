@@ -142,7 +142,7 @@ public class AztecRune extends Symbol {
             }
         }
 
-        encodeInfo += "Binary: " + reversedBinaryDataStream + "\n";
+        infoLine("Binary: " + reversedBinaryDataStream);
 
         readable = "";
         pattern = new String[11];

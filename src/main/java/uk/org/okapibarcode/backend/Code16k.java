@@ -534,10 +534,10 @@ public class Code16k extends Symbol {
         row_count = rows_needed;
         row_height = new int[rows_needed];
 
-        encodeInfo += "Symbol Rows: " + rows_needed + "\n";
-        encodeInfo += "First Check Digit: " + first_check + "\n";
-        encodeInfo += "Second Check Digit: " + second_check + "\n";
-        encodeInfo += "Codewords: ";
+        infoLine("Symbol Rows: " + rows_needed);
+        infoLine("First Check Digit: " + first_check);
+        infoLine("Second Check Digit: " + second_check);
+        info("Codewords: ");
 
         for (current_row = 0; current_row < rows_needed; current_row++) {
 
@@ -546,14 +546,14 @@ public class Code16k extends Symbol {
             width_pattern += "1";
             for (i = 0; i < 5; i++) {
                 width_pattern += C16K_TABLE[values[(current_row * 5) + i]];
-                encodeInfo += Integer.toString(values[(current_row * 5) + i]) + " ";
+                info(values[(current_row * 5) + i] + " ");
             }
             width_pattern += C16K_START_STOP[C16K_STOP_VALUES[current_row]];
 
             pattern[current_row] = width_pattern;
             row_height[current_row] = 10;
         }
-        encodeInfo += "\n";
+        infoLine();
     }
 
     private void getValueSubsetA(int source, int[] values, int bar_chars) {

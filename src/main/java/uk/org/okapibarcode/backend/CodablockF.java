@@ -211,12 +211,12 @@ public class CodablockF extends Symbol {
         pattern = new String[row_count];
         row_height = new int[row_count];
 
-        encodeInfo += "Grid Size: " + columns_needed + " X " + rows_needed + '\n';
-        encodeInfo += "K1 Check Digit: " + k1_check + "\n";
-        encodeInfo += "K2 Check Digit: " + k2_check + "\n";
+        infoLine("Grid Size: " + columns_needed + " X " + rows_needed);
+        infoLine("K1 Check Digit: " + k1_check);
+        infoLine("K2 Check Digit: " + k2_check);
 
         /* Resolve the data into patterns and place in symbol structure */
-        encodeInfo += "Encoding: ";
+        info("Encoding: ");
         for(i = 0; i < rows_needed; i++) {
 
             row_pattern = "";
@@ -226,27 +226,27 @@ public class CodablockF extends Symbol {
             switch (subset_selector[i]) {
                 case MODEA:
                     row_pattern += C_128_TABLE[98];
-                    encodeInfo += "MODEA ";
+                    info("MODEA ");
                     break;
                 case MODEB:
                     row_pattern += C_128_TABLE[100];
-                    encodeInfo += "MODEB ";
+                    info("MODEB ");
                     break;
                 case MODEC:
                     row_pattern += C_128_TABLE[99];
-                    encodeInfo += "MODEC ";
+                    info("MODEC ");
                     break;
             }
             row_pattern += C_128_TABLE[row_indicator[i]];
-            encodeInfo += Integer.toString(row_indicator[i]) + " ";
+            info(row_indicator[i] + " ");
 
             for(j = 0; j < columns_needed; j++) {
                     row_pattern += C_128_TABLE[blockmatrix[i][j]];
-                    encodeInfo += Integer.toString(blockmatrix[i][j]) + " ";
+                    info(blockmatrix[i][j] + " ");
             }
 
             row_pattern += C_128_TABLE[row_check[i]];
-            encodeInfo += "(" + Integer.toString(row_check[i]) + ") ";
+            info("(" + row_check[i] + ") ");
 
             /* Stop character */
             row_pattern += C_128_TABLE[106];
@@ -255,7 +255,7 @@ public class CodablockF extends Symbol {
             pattern[i] = row_pattern;
             row_height[i] = 15;
         }
-        encodeInfo += "\n";
+        infoLine();
 
         symbol_height = rows_needed * 15;
     }

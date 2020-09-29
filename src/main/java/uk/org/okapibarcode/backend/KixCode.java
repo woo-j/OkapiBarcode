@@ -62,7 +62,7 @@ public class KixCode extends Symbol {
         }
 
         String dest = sb.toString();
-        encodeInfo += "Encoding: " + dest + "\n";
+        infoLine("Encoding: " + dest);
 
         readable = "";
         pattern = new String[] { dest };

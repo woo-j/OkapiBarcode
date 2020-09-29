@@ -56,7 +56,7 @@ public class AustraliaPost extends Symbol {
         "332", "333"
     };
 
-    private enum ausMode {AUSPOST, AUSREPLY, AUSROUTE, AUSREDIRECT};
+    private enum ausMode {AUSPOST, AUSREPLY, AUSROUTE, AUSREDIRECT}
 
     private ausMode mode;
 
@@ -202,7 +202,7 @@ public class AustraliaPost extends Symbol {
                 break;
         }
 
-        encodeInfo += "FCC: " + formatControlCode + '\n';
+        infoLine("FCC: " + formatControlCode);
 
         if(mode != ausMode.AUSPOST) {
             for (i = content.length(); i < 8; i++) {
@@ -222,7 +222,7 @@ public class AustraliaPost extends Symbol {
             throw new OkapiException("Invalid characters in DPID");
         }
 
-        encodeInfo += "DPID: " + deliveryPointId + '\n';
+        infoLine("DPID: " + deliveryPointId);
 
         /* Start */
         barStateValues = "13";
@@ -268,25 +268,25 @@ public class AustraliaPost extends Symbol {
         /* Stop character */
         barStateValues += "13";
 
-        encodeInfo += "Total Length: " + barStateValues.length() + '\n';
-        encodeInfo += "Encoding: ";
+        infoLine("Total Length: " + barStateValues.length());
+        info("Encoding: ");
         for (i = 0; i < barStateValues.length(); i++) {
             switch (barStateValues.charAt(i)) {
                 case '1':
-                    encodeInfo += "A";
+                    info("A");
                     break;
                 case '2':
-                    encodeInfo += "D";
+                    info("D");
                     break;
                 case '0':
-                    encodeInfo += "F";
+                    info("F");
                     break;
                 case '3':
-                    encodeInfo += "T";
+                    info("T");
                     break;
             }
         }
-        encodeInfo += "\n";
+        infoLine();
 
         readable = "";
         pattern = new String[1];

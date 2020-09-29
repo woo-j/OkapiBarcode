@@ -107,7 +107,7 @@ public class ChannelCode extends Symbol {
             throw new OkapiException("Value out of range");
         }
 
-        encodeInfo += "Channels Used: " + channels + '\n';
+        infoLine("Channels Used: " + channels);
 
         for (i = 0; i < 11; i++) {
             bar[i] = 0;

@@ -61,7 +61,7 @@ public class Pharmazentralnummer extends Symbol {
             throw new OkapiException("Not a valid PZN identifier");
         }
 
-        encodeInfo += "Check Digit: " + check_digit + "\n";
+        infoLine("Check Digit: " + check_digit);
 
         localstr += (char)(check_digit + '0');
 

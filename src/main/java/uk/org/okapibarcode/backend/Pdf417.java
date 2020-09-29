@@ -769,11 +769,11 @@ public class Pdf417 extends Symbol {
 
         addMacroCodewords();
 
-        encodeInfo += "Codewords: ";
+        info("Codewords: ");
         for (int i = 0; i < codeWordCount; i++) {
-            encodeInfo += Integer.toString(codeWords[i]) + " ";
+            info(codeWords[i] + " ");
         }
-        encodeInfo += "\n";
+        infoLine();
 
         /* Now take care of the number of CWs per row */
 
@@ -882,8 +882,8 @@ public class Pdf417 extends Symbol {
             mccorrection[0] = (929 - (total * COEFRS[offset + j]) % 929) % 929;
         }
 
-        encodeInfo += "Data Codewords: " + codeWordCount + "\n";
-        encodeInfo += "ECC Codewords: " + k + "\n";
+        infoLine("Data Codewords: " + codeWordCount);
+        infoLine("ECC Codewords: " + k);
 
         /* we add these codes to the string */
         for (int i = k - 1; i >= 0; i--) {
@@ -904,7 +904,7 @@ public class Pdf417 extends Symbol {
         row_count = rows;
         pattern = new String[rows];
         row_height = new int[rows];
-        encodeInfo += "Grid Size: " + columns + " X " + rows + "\n";
+        infoLine("Grid Size: " + columns + " X " + rows);
 
         /* we now encode each row */
         for (int i = 0; i < rows; i++) {
@@ -1021,11 +1021,11 @@ public class Pdf417 extends Symbol {
 
         addMacroCodewords();
 
-        encodeInfo += "Codewords: ";
+        info("Codewords: ");
         for (int i = 0; i < codeWordCount; i++) {
-            encodeInfo += Integer.toString(codeWords[i]) + " ";
+            info(codeWords[i] + " ");
         }
-        encodeInfo += "\n";
+        infoLine();
 
         /* This is where it all changes! */
 
@@ -1069,8 +1069,8 @@ public class Pdf417 extends Symbol {
         int padding = longueur - codeWordCount; /* amount of padding required */
         offset = MICRO_VARIANTS[variant + 102]; /* coefficient offset */
 
-        encodeInfo += "Data Codewords: " + longueur + "\n";
-        encodeInfo += "ECC Codewords: " + k + "\n";
+        infoLine("Data Codewords: " + longueur);
+        infoLine("ECC Codewords: " + k);
 
         /* We add the padding */
         while (padding > 0) {
@@ -1125,7 +1125,7 @@ public class Pdf417 extends Symbol {
         row_count = rows;
         row_height = new int[rows];
 
-        encodeInfo += "Grid Size: " + columns + " X " + row_count + "\n";
+        infoLine("Grid Size: " + columns + " X " + row_count);
 
         for (int i = 0; i < rows; i++) {
             codebarre = "";

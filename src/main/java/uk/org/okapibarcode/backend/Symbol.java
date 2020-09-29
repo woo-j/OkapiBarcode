@@ -98,7 +98,7 @@ public abstract class Symbol {
     protected int[] row_height;
     protected int symbol_height = 0;
     protected int symbol_width = 0;
-    protected String encodeInfo = "";
+    protected StringBuilder encodeInfo = new StringBuilder();
     protected List< Rectangle2D.Double > rectangles = new ArrayList<>(); // note positions do not account for quiet zones (handled in renderers)
     protected List< TextBox > texts = new ArrayList<>();                 // note positions do not account for quiet zones (handled in renderers)
     protected List< Hexagon > hexagons = new ArrayList<>();              // note positions do not account for quiet zones (handled in renderers)
@@ -358,7 +358,7 @@ public abstract class Symbol {
      * @return a human readable summary of the decisions made by the encoder when creating a symbol
      */
     public String getEncodeInfo() {
-        return encodeInfo;
+        return encodeInfo.toString();
     }
 
     /**
@@ -507,7 +507,7 @@ public abstract class Symbol {
             data = "";
         }
 
-        encodeInfo = "";
+        encodeInfo.setLength(0); // clear
 
         switch (inputDataType) {
             case GS1:
@@ -583,8 +583,8 @@ public abstract class Symbol {
         eciMode = eci.mode;
         inputData = toBytes(content, eci.charset);
 
-        encodeInfo += "ECI Mode: " + eci.mode + "\n";
-        encodeInfo += "ECI Charset: " + eci.charset.name() + "\n";
+        infoLine("ECI Mode: " + eci.mode);
+        infoLine("ECI Charset: " + eci.charset.name());
     }
 
     protected static int[] toBytes(String s, Charset charset, int... suffix) {
@@ -736,7 +736,7 @@ public abstract class Symbol {
 
         int after = rectangles.size();
         if (before != after) {
-            encodeInfo += "Blocks Merged: " + before + " -> " + after + "\n";
+            infoLine("Blocks Merged: " + before + " -> " + after);
         }
     }
 
@@ -765,8 +765,8 @@ public abstract class Symbol {
 
         char checkDigit = HIBC_CHAR_TABLE[counter];
 
-        encodeInfo += "HIBC Check Digit Counter: " + counter + "\n";
-        encodeInfo += "HIBC Check Digit: " + checkDigit + "\n";
+        infoLine("HIBC Check Digit Counter: " + counter);
+        infoLine("HIBC Check Digit: " + checkDigit);
 
         return "+" + source + checkDigit;
     }
@@ -807,5 +807,17 @@ public abstract class Symbol {
             }
             return codewords;
         }
+    }
+
+    protected void info(CharSequence s) {
+        encodeInfo.append(s);
+    }
+
+    protected void infoLine(String s) {
+        encodeInfo.append(s).append('\n');
+    }
+
+    protected void infoLine() {
+        encodeInfo.append('\n');
     }
 }

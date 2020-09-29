@@ -310,13 +310,13 @@ public class MaxiCode extends Symbol {
             codewords[20 + secondaryMax + (2 * i)] = secondaryECEven[i];
         }
 
-        encodeInfo += "Mode: " + mode + "\n";
-        encodeInfo += "ECC Codewords: " + secondaryECMax + "\n";
-        encodeInfo += "Codewords: ";
+        infoLine("Mode: " + mode);
+        infoLine("ECC Codewords: " + secondaryECMax);
+        info("Codewords: ");
         for (int i = 0; i < codewords.length; i++) {
-            encodeInfo += Integer.toString(codewords[i]) + " ";
+            info(codewords[i] + " ");
         }
-        encodeInfo += "\n";
+        infoLine();
 
         // copy data into symbol grid
         int[] bit_pattern = new int[7];
@@ -415,9 +415,9 @@ public class MaxiCode extends Symbol {
         int country = Integer.parseInt(primaryData.substring(9, 12));
         int service = Integer.parseInt(primaryData.substring(12, 15));
 
-        encodeInfo += "Postal Code: " + postcode + "\n";
-        encodeInfo += "Country Code: " + country + "\n";
-        encodeInfo += "Service: " + service + "\n";
+        infoLine("Postal Code: " + postcode);
+        infoLine("Country Code: " + country);
+        infoLine("Service: " + service);
 
         if (mode == 2) {
             return getMode2PrimaryCodewords(postcode, country, service);

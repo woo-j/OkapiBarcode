@@ -106,7 +106,7 @@ public class Telepen extends Symbol {
 
         p += TELE_TABLE[check_digit];
 
-        encodeInfo += "Check Digit: " + check_digit + "\n";
+        infoLine("Check Digit: " + check_digit);
 
         dest += p;
         dest += TELE_TABLE['z']; // Stop
@@ -171,7 +171,7 @@ public class Telepen extends Symbol {
 
         p += TELE_TABLE[check_digit];
 
-        encodeInfo += "Check Digit: " + check_digit + "\n";
+        infoLine("Check Digit: " + check_digit);
 
         dest += p;
         dest += TELE_TABLE['z']; // Stop

@@ -254,8 +254,7 @@ public class DataBarLimited extends Symbol {
             right_group = 6;
         }
 
-        encodeInfo += "Data Characters: " + Integer.toString(left_group + 1) +
-                " " + Integer.toString(right_group + 1) + "\n";
+        infoLine("Data Characters: " + (left_group + 1) + " " + (right_group + 1));
 
         switch(left_group) {
             case 1:
@@ -351,7 +350,7 @@ public class DataBarLimited extends Symbol {
         }
         checksum %= 89;
 
-        encodeInfo += "Checksum: " + Integer.toString(checksum) + "\n";
+        infoLine("Checksum: " + checksum);
 
         for(i = 0; i < 14; i++) {
                 check_elements[i] = FINDER_PATTERN_LTD[i + (checksum * 14)];

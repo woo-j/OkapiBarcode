@@ -217,12 +217,12 @@ public class DataBarExpanded extends Symbol {
         }
 
         int encodingMethod = calculateBinaryString(inputData, binaryString); // updates binaryString
-        encodeInfo += "Encoding Method: " + encodingMethod + "\n";
+        infoLine("Encoding Method: " + encodingMethod);
         logBinaryStringInfo(binaryString);
 
         data_chars = binaryString.length() / 12;
 
-        encodeInfo += "Data Characters: ";
+        info("Data Characters: ");
         for (i = 0; i < data_chars; i++) {
             vs[i] = 0;
             for (j = 0; j < 12; j++) {
@@ -230,9 +230,9 @@ public class DataBarExpanded extends Symbol {
                     vs[i] += 2048 >> j;
                 }
             }
-            encodeInfo += vs[i] + " ";
+            info(vs[i] + " ");
         }
-        encodeInfo += "\n";
+        infoLine();
 
         for (i = 0; i < data_chars; i++) {
             if (vs[i] <= 347) {
@@ -279,7 +279,7 @@ public class DataBarExpanded extends Symbol {
 
         check_char = (211 * ((data_chars + 1) - 4)) + (checksum % 211);
 
-        encodeInfo += "Check Character: " + check_char + "\n";
+        infoLine("Check Character: " + check_char);
 
         c_group = 1;
         if ((check_char >= 348) && (check_char <= 1387)) {
@@ -1337,8 +1337,8 @@ public class DataBarExpanded extends Symbol {
     /** Logs binary string as hexadecimal */
     private void logBinaryStringInfo(StringBuilder binaryString) {
 
-        encodeInfo += "Binary Length: " + binaryString.length() + "\n";
-        encodeInfo += "Binary String: ";
+        infoLine("Binary Length: " + binaryString.length());
+        info("Binary String: ");
 
         int nibble = 0;
         for (int i = 0; i < binaryString.length(); i++) {
@@ -1362,17 +1362,17 @@ public class DataBarExpanded extends Symbol {
                     if (binaryString.charAt(i) == '1') {
                         nibble += 1;
                     }
-                    encodeInfo += Integer.toHexString(nibble);
+                    info(Integer.toHexString(nibble));
                     nibble = 0;
                     break;
             }
         }
 
         if ((binaryString.length() % 4) != 0) {
-            encodeInfo += Integer.toHexString(nibble);
+            info(Integer.toHexString(nibble));
         }
 
-        encodeInfo += "\n";
+        infoLine();
     }
 
     /** Attempts to apply encoding rules from sections 7.2.5.5.1 to 7.2.5.5.3 of ISO/IEC 24724:2006 */

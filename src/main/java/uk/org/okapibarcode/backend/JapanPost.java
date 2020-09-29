@@ -105,8 +105,8 @@ public class JapanPost extends Symbol {
         dest += JAPAN_TABLE[positionOf(CH_KASUT_SET[check], KASUT_SET)];
         dest += "DF";
 
-        encodeInfo += "Encoding: " + dest + "\n";
-        encodeInfo += "Check Digit: " + check + "\n";
+        infoLine("Encoding: " + dest);
+        infoLine("Check Digit: " + check);
 
         readable = "";
         pattern = new String[] { dest };

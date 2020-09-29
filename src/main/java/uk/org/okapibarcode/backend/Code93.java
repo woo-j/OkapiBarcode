@@ -145,8 +145,8 @@ public class Code93 extends Symbol {
             readable = startStopDelimiter + readable + startStopDelimiter;
         }
 
-        encodeInfo += "Check Digit C: " + c + "\n";
-        encodeInfo += "Check Digit K: " + k + "\n";
+        infoLine("Check Digit C: " + c);
+        infoLine("Check Digit K: " + k);
         pattern = new String[] { toPattern(values) };
         row_count = 1;
         row_height = new int[] { -1 };

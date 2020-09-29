@@ -1188,7 +1188,7 @@ public class Code49 extends Symbol {
             throw new OkapiException("Input too long");
         }
 
-        encodeInfo += "Starting Mode (M): " + M + "\n";
+        infoLine("Starting Mode (M): " + M);
 
         /* Place codewords in code character array (c grid) */
         rows = 0;
@@ -1262,8 +1262,7 @@ public class Code49 extends Symbol {
         c_grid[rows - 1][4] = (x_count % 2401) / 49;
         c_grid[rows - 1][5] = (x_count % 2401) % 49;
 
-        encodeInfo += "Check Characters: " + Integer.toString(z_count % 2401) + " " +
-                Integer.toString(y_count % 2401) + "\n";
+        infoLine("Check Characters: " + (z_count % 2401) + " " + (y_count % 2401));
 
         /* Add last row check character */
         j = 0;
@@ -1272,27 +1271,26 @@ public class Code49 extends Symbol {
         }
         c_grid[rows - 1][7] = j % 49;
 
-        encodeInfo += "Codewords: ";
+        info("Codewords: ");
         /* Transfer data to symbol character array (w grid) */
         for (i = 0; i < rows; i++) {
             for (j = 0; j < 4; j++) {
                 w_grid[i][j] = (c_grid[i][2 * j] * 49) + c_grid[i][(2 * j) + 1];
-                encodeInfo += Integer.toString(c_grid[i][2 * j]) + " " +
-                        Integer.toString(c_grid[i][(2 * j) + 1]) + " ";
+                info(c_grid[i][2 * j] + " " + c_grid[i][(2 * j) + 1] + " ");
             }
         }
-        encodeInfo += "\n";
+        infoLine();
 
         readable = "";
         pattern = new String[rows];
         row_count = rows;
         row_height = new int[rows];
 
-        encodeInfo += "Symbol Characters: ";
+        info("Symbol Characters: ");
         for (i = 0; i < rows; i++) {
             localpattern = "11"; /* Start character */
             for (j = 0; j < 4; j++) {
-                encodeInfo += Integer.toString(w_grid[i][j]) + " ";
+                info(w_grid[i][j] + " ");
                 if (i != (rows - 1)) {
                     if (C49_TABLE4[i].charAt(j) == 'E') {
                         /* Even Parity */
@@ -1312,7 +1310,7 @@ public class Code49 extends Symbol {
             row_height[i] = 10;
 
         }
-        encodeInfo += "\n";
+        infoLine();
     }
 
     @Override

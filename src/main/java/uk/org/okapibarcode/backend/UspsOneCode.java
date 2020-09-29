@@ -319,11 +319,11 @@ public class UspsOneCode extends Symbol {
             codeword[0] += 659;
         }
 
-        encodeInfo += "Codewords: ";
+        info("Codewords: ");
         for (i = 0; i < 10; i++) {
-            encodeInfo += Integer.toString(codeword[i]) + " ";
+            info(codeword[i] + " ");
         }
-        encodeInfo += "\n";
+        infoLine();
 
         /* *** Step 5 - Conversion from Codewords to Characters *** */
 
@@ -374,7 +374,7 @@ public class UspsOneCode extends Symbol {
             pattern[0] += c;
         }
 
-        encodeInfo += "Encoding: " + pattern[0] + "\n";
+        infoLine("Encoding: " + pattern[0]);
     }
 
     private static int USPS_MSB_Math_CRC11GenerateFrameCheckSequence(int[] bytes) {

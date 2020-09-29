@@ -57,7 +57,7 @@ public class KoreaPost extends Symbol {
         if (checkd == 10) {
             checkd = 0;
         }
-        encodeInfo += "Check Digit: " + checkd + "\n";
+        infoLine("Check Digit: " + checkd);
         accumulator += KOREA_TABLE[checkd];
 
         readable = padded + checkd;

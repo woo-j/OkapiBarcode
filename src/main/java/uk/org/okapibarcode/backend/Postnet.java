@@ -97,12 +97,12 @@ public class Postnet extends Symbol {
         }
 
         check_digit = (10 - (sum % 10)) % 10;
-        encodeInfo += "Check Digit: " + check_digit + "\n";
+        infoLine("Check Digit: " + check_digit);
 
         dest += table[check_digit];
         dest += "L";
 
-        encodeInfo += "Encoding: " + dest + "\n";
+        infoLine("Encoding: " + dest);
         readable = content;
         pattern = new String[] { dest };
         row_count = 1;

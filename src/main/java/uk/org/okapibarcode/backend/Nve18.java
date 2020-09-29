@@ -63,7 +63,7 @@ public class Nve18 extends Symbol {
             cdigit = 0;
         }
 
-        encodeInfo += "NVE Check Digit: " + cdigit + "\n";
+        infoLine("NVE Check Digit: " + cdigit);
 
         content = "[00]" + gs1Equivalent + cdigit;
 
@@ -79,8 +79,9 @@ public class Nve18 extends Symbol {
         row_height = code128.row_height;
         symbol_height = code128.symbol_height;
         symbol_width = code128.symbol_width;
-        encodeInfo += code128.encodeInfo;
         rectangles = code128.rectangles;
         texts = code128.texts;
+
+        info(code128.encodeInfo);
     }
 }

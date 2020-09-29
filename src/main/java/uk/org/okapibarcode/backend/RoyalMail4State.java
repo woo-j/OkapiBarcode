@@ -73,15 +73,14 @@ public class RoyalMail4State extends Symbol {
         if (column == -1) {
             column = 5;
         }
-
-        dest += ROYAL_TABLE[(6 * row) + column];
-
-        encodeInfo += "Check Digit: " + ((6 * row) + column) + "\n";
+        int check = (6 * row) + column;
+        dest += ROYAL_TABLE[check];
+        infoLine("Check Digit: " + check);
 
         /* Stop character */
         dest += "F";
 
-        encodeInfo += "Encoding: " + dest + "\n";
+        infoLine("Encoding: " + dest);
         readable = "";
         pattern = new String[1];
         pattern[0] = dest;

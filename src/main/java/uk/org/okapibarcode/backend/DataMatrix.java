@@ -446,9 +446,9 @@ public class DataMatrix extends Symbol {
             row_height[(H - y) - 1] = moduleWidth;
         }
 
-        encodeInfo += "Grid Size: " + W + " X " + H + "\n";
-        encodeInfo += "Data Codewords: " + datablock + "\n";
-        encodeInfo += "ECC Codewords: " + rsblock + "\n";
+        infoLine("Grid Size: " + W + " X " + H);
+        infoLine("Data Codewords: " + datablock);
+        infoLine("ECC Codewords: " + rsblock);
     }
 
     @Override
@@ -461,7 +461,7 @@ public class DataMatrix extends Symbol {
         /* Supports encoding FNC1 in supporting systems */
         /* Supports ECI encoding for whole message only, not inline switching */
 
-        encodeInfo += "Encoding: ";
+        info("Encoding: ");
         int sp, tp, i;
         Mode current_mode, next_mode;
         int inputlen = inputData.length;
@@ -486,7 +486,7 @@ public class DataMatrix extends Symbol {
             tp++;
             binary[binary_length] = ' ';
             binary_length++;
-            encodeInfo += "FNC2 ";
+            info("FNC2 ");
 
             /* symbol sequence indicator (position + total) */
             int ssi = ((structuredAppendPosition - 1) << 4) | (17 - structuredAppendTotal);
@@ -494,7 +494,7 @@ public class DataMatrix extends Symbol {
             tp++;
             binary[binary_length] = ' ';
             binary_length++;
-            encodeInfo += ssi + " ";
+            info(ssi + " ");
 
             /* file identification codeword 1 (valid values 1 - 254) */
             int id1 = 1 + ((structuredAppendFileId - 1) / 254);
@@ -502,7 +502,7 @@ public class DataMatrix extends Symbol {
             tp++;
             binary[binary_length] = ' ';
             binary_length++;
-            encodeInfo += id1 + " ";
+            info(id1 + " ");
 
             /* file identification codeword 2 (valid values 1 - 254) */
             int id2 = 1 + ((structuredAppendFileId - 1) % 254);
@@ -510,7 +510,7 @@ public class DataMatrix extends Symbol {
             tp++;
             binary[binary_length] = ' ';
             binary_length++;
-            encodeInfo += id2 + " ";
+            info(id2 + " ");
         }
 
         if (inputDataType == DataType.GS1) {
@@ -518,7 +518,7 @@ public class DataMatrix extends Symbol {
             tp++;
             binary[binary_length] = ' ';
             binary_length++;
-            encodeInfo += "FNC1 ";
+            info("FNC1 ");
         } /* FNC1 */
 
         if (readerInit) {
@@ -529,7 +529,7 @@ public class DataMatrix extends Symbol {
                 tp++; /* Reader Programming */
                 binary[binary_length] = ' ';
                 binary_length++;
-                encodeInfo += "RP ";
+                info("RP ");
             }
         }
 
@@ -568,7 +568,7 @@ public class DataMatrix extends Symbol {
                 binary[binary_length] = ' ';
                 binary_length++;
             }
-            encodeInfo += "ECI " + eciMode + " ";
+            info("ECI " + eciMode + " ");
         }
 
         /* Check for Macro05/Macro06 */
@@ -584,10 +584,10 @@ public class DataMatrix extends Symbol {
                 /* Output macro codeword */
                 if (inputData[5] == '5') {
                     target[tp] = 236;
-                    encodeInfo += "Macro05 ";
+                    info("Macro05 ");
                 } else {
                     target[tp] = 237;
-                    encodeInfo += "Macro06 ";
+                    info("Macro06 ");
                 }
                 tp++;
                 binary[binary_length] = ' ';
@@ -614,7 +614,7 @@ public class DataMatrix extends Symbol {
                 if (isTwoDigits(sp)) {
                     target[tp] = (10 * Character.getNumericValue(inputData[sp]))
                             + Character.getNumericValue(inputData[sp + 1]) + 130;
-                    encodeInfo += Integer.toString(target[tp] - 130) + " ";
+                    info((target[tp] - 130) + " ");
                     tp++;
                     binary[binary_length] = ' ';
                     binary_length++;
@@ -629,45 +629,45 @@ public class DataMatrix extends Symbol {
                                 tp++;
                                 binary[binary_length] = ' ';
                                 binary_length++;
-                                encodeInfo += "C40 ";
+                                info("C40 ");
                                 break;
                             case DM_TEXT:
                                 target[tp] = 239;
                                 tp++;
                                 binary[binary_length] = ' ';
                                 binary_length++;
-                                encodeInfo += "TEX ";
+                                info("TEX ");
                                 break;
                             case DM_X12:
                                 target[tp] = 238;
                                 tp++;
                                 binary[binary_length] = ' ';
                                 binary_length++;
-                                encodeInfo += "X12 ";
+                                info("X12 ");
                                 break;
                             case DM_EDIFACT:
                                 target[tp] = 240;
                                 tp++;
                                 binary[binary_length] = ' ';
                                 binary_length++;
-                                encodeInfo += "EDI ";
+                                info("EDI ");
                                 break;
                             case DM_BASE256:
                                 target[tp] = 231;
                                 tp++;
                                 binary[binary_length] = ' ';
                                 binary_length++;
-                                encodeInfo += "BAS ";
+                                info("BAS ");
                                 break;
                         }
                     } else {
                         if (inputData[sp] > 127) {
                             target[tp] = 235; /* FNC4 */
 
-                            encodeInfo += "FNC4 ";
+                            info("FNC4 ");
                             tp++;
                             target[tp] = (inputData[sp] - 128) + 1;
-                            encodeInfo += Integer.toString(target[tp] - 1) + " ";
+                            info((target[tp] - 1) + " ");
                             tp++;
                             binary[binary_length] = ' ';
                             binary_length++;
@@ -676,10 +676,10 @@ public class DataMatrix extends Symbol {
                         } else {
                             if (inputData[sp] == FNC1) {
                                 target[tp] = 232; /* FNC1 */
-                                encodeInfo += "FNC1 ";
+                                info("FNC1 ");
                             } else {
                                 target[tp] = inputData[sp] + 1;
-                                encodeInfo += Integer.toString(target[tp] - 1) + " ";
+                                info((target[tp] - 1) + " ");
                             }
                             tp++;
                             binary[binary_length] = ' ';
@@ -706,7 +706,7 @@ public class DataMatrix extends Symbol {
                     binary_length++; /* Unlatch */
 
                     next_mode = Mode.DM_ASCII;
-                    encodeInfo += "ASC ";
+                    info("ASC ");
                 } else {
                     if (inputData[sp] == FNC1) {
                         shift_set = 2;
@@ -744,9 +744,7 @@ public class DataMatrix extends Symbol {
                         binary_length++;
                         binary[binary_length] = ' ';
                         binary_length++;
-                        encodeInfo += "(" + Integer.toString(process_buffer[0]) +
-                                " " + Integer.toString(process_buffer[1]) + " " +
-                                Integer.toString(process_buffer[2]) + ") ";
+                        info("(" + process_buffer[0] + " " + process_buffer[1] + " " + process_buffer[2] + ") ");
 
                         process_buffer[0] = process_buffer[3];
                         process_buffer[1] = process_buffer[4];
@@ -776,7 +774,7 @@ public class DataMatrix extends Symbol {
                     binary_length++; /* Unlatch */
 
                     next_mode = Mode.DM_ASCII;
-                    encodeInfo += "ASC ";
+                    info("ASC ");
                 } else {
                     if (inputData[sp] == FNC1) {
                         shift_set = 2;
@@ -814,9 +812,7 @@ public class DataMatrix extends Symbol {
                         binary_length++;
                         binary[binary_length] = ' ';
                         binary_length++;
-                        encodeInfo += "(" + Integer.toString(process_buffer[0]) +
-                                " " + Integer.toString(process_buffer[1]) + " " +
-                                Integer.toString(process_buffer[2]) + ") ";
+                        info("(" + process_buffer[0] + " " + process_buffer[1] + " " + process_buffer[2] + ") ");
 
                         process_buffer[0] = process_buffer[3];
                         process_buffer[1] = process_buffer[4];
@@ -846,7 +842,7 @@ public class DataMatrix extends Symbol {
                     binary_length++; /* Unlatch */
 
                     next_mode = Mode.DM_ASCII;
-                    encodeInfo += "ASC ";
+                    info("ASC ");
                 } else {
                     if (inputData[sp] == 13) {
                         value = 0;
@@ -883,9 +879,7 @@ public class DataMatrix extends Symbol {
                         binary_length++;
                         binary[binary_length] = ' ';
                         binary_length++;
-                        encodeInfo += "(" + Integer.toString(process_buffer[0]) +
-                                " " + Integer.toString(process_buffer[1]) + " " +
-                                Integer.toString(process_buffer[2]) + ") ";
+                        info("(" + process_buffer[0] + " " + process_buffer[1] + " " + process_buffer[2] + ") ");
 
                         process_buffer[0] = process_buffer[3];
                         process_buffer[1] = process_buffer[4];
@@ -941,9 +935,7 @@ public class DataMatrix extends Symbol {
                     binary_length++;
                     binary[binary_length] = ' ';
                     binary_length++;
-                    encodeInfo += "(" + Integer.toString(process_buffer[0]) +
-                            " " + Integer.toString(process_buffer[1]) + " " +
-                            Integer.toString(process_buffer[2]) + ") ";
+                    info("(" + process_buffer[0] + " " + process_buffer[1] + " " + process_buffer[2] + ") ");
 
                     process_buffer[0] = process_buffer[4];
                     process_buffer[1] = process_buffer[5];
@@ -963,14 +955,14 @@ public class DataMatrix extends Symbol {
 
                 if (next_mode == Mode.DM_BASE256) {
                     target[tp] = inputData[sp];
-                    encodeInfo += Integer.toString(target[tp]) + " ";
+                    info(target[tp] + " ");
                     tp++;
                     sp++;
                     binary[binary_length] = 'b';
                     binary_length++;
                 } else {
                     next_mode = Mode.DM_ASCII;
-                    encodeInfo += "ASC ";
+                    info("ASC ");
                 }
             }
 
@@ -1022,12 +1014,12 @@ public class DataMatrix extends Symbol {
             }
         }
 
-        encodeInfo += "\n";
-        encodeInfo += "Codewords: ";
+        infoLine();
+        info("Codewords: ");
         for (i = 0; i < tp; i++) {
-            encodeInfo += Integer.toString(target[i]) + " ";
+            info(target[i] + " ");
         }
-        encodeInfo += "\n";
+        infoLine();
 
         last_mode = current_mode;
         return tp;

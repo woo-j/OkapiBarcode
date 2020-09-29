@@ -321,22 +321,22 @@ public class MicroQrCode extends Symbol {
         switch (version) {
         case 0:
             generateM1Symbol();
-            encodeInfo += "Version: M1\n";
+            infoLine("Version: M1");
             break;
         case 1:
             generateM2Symbol(ecc_level);
-            encodeInfo += "Version: M2\n";
-            encodeInfo += "ECC Level: " + levelToLetter(ecc_level) + "\n";
+            infoLine("Version: M2");
+            infoLine("ECC Level: " + levelToLetter(ecc_level));
             break;
         case 2:
             generateM3Symbol(ecc_level);
-            encodeInfo += "Version: M3\n";
-            encodeInfo += "ECC Level: " + levelToLetter(ecc_level) + "\n";
+            infoLine("Version: M3");
+            infoLine("ECC Level: " + levelToLetter(ecc_level));
             break;
         case 3:
             generateM4Symbol(ecc_level);
-            encodeInfo += "Version: M4\n";
-            encodeInfo += "ECC Level: " + levelToLetter(ecc_level) + "\n";
+            infoLine("Version: M4");
+            infoLine("ECC Level: " + levelToLetter(ecc_level));
             break;
         }
 
@@ -354,7 +354,7 @@ public class MicroQrCode extends Symbol {
         populateBitGrid(size);
         bitmask = applyBitmask(size);
 
-        encodeInfo += "Mask Pattern: " + Integer.toBinaryString(bitmask) + "\n";
+        infoLine("Mask Pattern: " + Integer.toBinaryString(bitmask));
 
         /* Add format data */
         format = 0;
@@ -710,7 +710,7 @@ public class MicroQrCode extends Symbol {
         byte[] jisBytes;
         int count, first, second, third;
 
-        encodeInfo += "Encoding: ";
+        info("Encoding: ");
 
         do {
             data_block = inputMode[position];
@@ -736,7 +736,7 @@ public class MicroQrCode extends Symbol {
                 /* Character count indicator */
                 binary += toBinary(blockLength, 1 << version); /* version = 2..3 */
 
-                encodeInfo += "KANJ (" + Integer.toString(blockLength) + ") ";
+                info("KANJ (" + blockLength + ") ");
 
                 /* Character representation */
                 for (i = 0; i < blockLength; i++) {
@@ -763,7 +763,7 @@ public class MicroQrCode extends Symbol {
 
                     binary += toBinary(prod, 0x1000);
 
-                    encodeInfo += Integer.toString(prod) + " ";
+                    info(prod + " ");
                 }
 
                 break;
@@ -782,15 +782,13 @@ public class MicroQrCode extends Symbol {
                 /* Character count indicator */
                 binary += toBinary(blockLength, 2 << version); /* version = 2..3 */
 
-                encodeInfo += "BYTE (" + Integer.toString(blockLength) + ") ";
+                info("BYTE (" + blockLength + ") ");
 
                 /* Character representation */
                 for (i = 0; i < blockLength; i++) {
                     int lbyte = content.charAt(position + i);
-
                     binary += toBinary(lbyte, 0x80);
-
-                    encodeInfo += Integer.toString(lbyte) + " ";
+                    info(lbyte + " ");
                 }
 
                 break;
@@ -812,7 +810,7 @@ public class MicroQrCode extends Symbol {
                 /* Character count indicator */
                 binary += toBinary(blockLength, 2 << version); /* version = 1..3 */
 
-                encodeInfo += "ALPH (" + Integer.toString(blockLength) + ") ";
+                info("ALPH (" + blockLength + ") ");
 
                 /* Character representation */
                 i = 0;
@@ -821,7 +819,7 @@ public class MicroQrCode extends Symbol {
                     count = 1;
                     prod = first;
 
-                    if ((i + 1) < blockLength) {
+                    if (i + 1 < blockLength) {
                         if (inputMode[position + i + 1] == qrMode.ALPHANUM) {
                             second = positionOf(content.charAt(position + i + 1), RHODIUM);
                             count = 2;
@@ -831,7 +829,7 @@ public class MicroQrCode extends Symbol {
 
                     binary += toBinary(prod, 1 << (5 * count)); /* count = 1..2 */
 
-                    encodeInfo += Integer.toString(prod) + " ";
+                    info(prod + " ");
 
                     i += 2;
                 }
@@ -855,7 +853,7 @@ public class MicroQrCode extends Symbol {
                 /* Character count indicator */
                 binary += toBinary(blockLength, 4 << version); /* version = 0..3 */
 
-                encodeInfo += "NUMB (" + Integer.toString(blockLength) + ") ";
+                info("NUMB (" + blockLength + ") ");
 
                 /* Character representation */
                 i = 0;
@@ -882,7 +880,7 @@ public class MicroQrCode extends Symbol {
 
                     binary += toBinary(prod, 1 << (3 * count)); /* count = 1..3 */
 
-                    encodeInfo += Integer.toString(prod) + " ";
+                    info(prod + " ");
 
                     i += 3;
                 }
@@ -914,7 +912,7 @@ public class MicroQrCode extends Symbol {
                 break;
         }
 
-        encodeInfo += "\n";
+        infoLine();
     }
 
     private void generateM1Symbol() {
@@ -1007,12 +1005,11 @@ public class MicroQrCode extends Symbol {
             data_blocks[2] += 0x01;
         }
 
-        encodeInfo += "Codewords: ";
-
+        info("Codewords: ");
         for (i = 0; i < data_codewords; i++) {
-            encodeInfo += Integer.toString(data_blocks[i]) + " ";
+            info(data_blocks[i] + " ");
         }
-        encodeInfo += "\n";
+        infoLine();
 
         /* Calculate Reed-Solomon error codewords */
         rs.init_gf(0x11d);
@@ -1097,11 +1094,11 @@ public class MicroQrCode extends Symbol {
             }
         }
 
-        encodeInfo += "Codewords: ";
+        info("Codewords: ");
         for (i = 0; i < data_codewords; i++) {
-            encodeInfo += Integer.toString(data_blocks[i]) + " ";
+            info(data_blocks[i] + " ");
         }
-        encodeInfo += "\n";
+        infoLine();
 
         /* Calculate Reed-Solomon error codewords */
         rs.init_gf(0x11d);
@@ -1234,11 +1231,11 @@ public class MicroQrCode extends Symbol {
             }
         }
 
-        encodeInfo += "Codewords: ";
+        info("Codewords: ");
         for (i = 0; i < data_codewords; i++) {
-            encodeInfo += Integer.toString(data_blocks[i]) + " ";
+            info(data_blocks[i] + " ");
         }
-        encodeInfo += "\n";
+        infoLine();
 
         /* Calculate Reed-Solomon error codewords */
         rs.init_gf(0x11d);
@@ -1330,11 +1327,11 @@ public class MicroQrCode extends Symbol {
             }
         }
 
-        encodeInfo += "Codewords: ";
+        info("Codewords: ");
         for (i = 0; i < data_codewords; i++) {
-            encodeInfo += Integer.toString(data_blocks[i]) + " ";
+            info(data_blocks[i] + " ");
         }
-        encodeInfo += "\n";
+        infoLine();
 
         /* Calculate Reed-Solomon error codewords */
         rs.init_gf(0x11d);

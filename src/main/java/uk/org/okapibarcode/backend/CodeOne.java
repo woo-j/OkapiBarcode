@@ -160,7 +160,7 @@ public class CodeOne extends Symbol {
         if (preferredVersion == Version.S) {
             /* Version S */
 
-            encodeInfo += "Version: S\n";
+            infoLine("Version: S");
 
             if (length > 18) {
                 throw new OkapiException("Input data too long");
@@ -198,7 +198,7 @@ public class CodeOne extends Symbol {
             rs.init_code(codewords, 1);
             rs.encode(codewords, data);
 
-            encodeInfo += "ECC Codeword Count: " + codewords + "\n";
+            infoLine("ECC Codeword Count: " + codewords);
 
             for (i = 0; i < codewords; i++) {
                 stream[i] = data[i];
@@ -248,7 +248,7 @@ public class CodeOne extends Symbol {
                 }
             }
 
-            encodeInfo += "Grid Size: " + block_width + " X " + 2 + "\n";
+            infoLine("Grid Size: " + block_width + " X " + 2);
 
             size = 9;
             row_count = 8;
@@ -258,7 +258,7 @@ public class CodeOne extends Symbol {
         if (preferredVersion == Version.T) {
             /* Version T */
 
-            encodeInfo += "Version: T\n";
+            infoLine("Version: T");
 
             for (i = 0; i < 40; i++) {
                 data[i] = 0;
@@ -298,7 +298,7 @@ public class CodeOne extends Symbol {
             rs.init_code(ecc_cw, 1);
             rs.encode(data_cw, data);
 
-            encodeInfo += "ECC Codeword Count: " + ecc_cw + "\n";
+            infoLine("ECC Codeword Count: " + ecc_cw);
 
             /* "Stream" combines data and error correction data */
             for (i = 0; i < data_cw; i++) {
@@ -345,7 +345,7 @@ public class CodeOne extends Symbol {
                 }
             }
 
-            encodeInfo += "Grid Size: " + block_width + " X " + 5 + "\n";
+            infoLine("Grid Size: " + block_width + " X " + 5);
 
             row_count = 16;
             symbol_width = (sub_version * 16) + 1;
@@ -368,7 +368,8 @@ public class CodeOne extends Symbol {
                 size = getSize(preferredVersion);
             }
 
-            encodeInfo += "Version: " + (char)((size - 1) + 'A') + "\n";
+            char version = (char) ((size - 1) + 'A');
+            infoLine("Version: " + version);
             logCodewords(data_length);
 
             for (i = data_length; i < C1_DATA_LENGTH[size - 1]; i++) {
@@ -392,7 +393,7 @@ public class CodeOne extends Symbol {
                 }
             }
 
-            encodeInfo += "ECC Codeword Count: " + C1_ECC_LENGTH[size - 1] + "\n";
+            infoLine("ECC Codeword Count: " + C1_ECC_LENGTH[size - 1]);
 
             /* "Stream" combines data and error correction data */
             for (i = 0; i < data_length; i++) {
@@ -439,7 +440,7 @@ public class CodeOne extends Symbol {
                 }
             }
 
-            encodeInfo += "Grid Size: " + C1_GRID_WIDTH[size - 1] + " X " + C1_GRID_HEIGHT[size - 1] + "\n";
+            infoLine("Grid Size: " + C1_GRID_WIDTH[size - 1] + " X " + C1_GRID_HEIGHT[size - 1]);
 
             row_count = C1_HEIGHT[size - 1];
             symbol_width = C1_WIDTH[size - 1];
@@ -738,11 +739,11 @@ public class CodeOne extends Symbol {
     }
 
     private void logCodewords(int count) {
-        encodeInfo += "Codewords: ";
+        info("Codewords: ");
         for (int i = 0; i < count; i++) {
-            encodeInfo += Integer.toString(data[i]) + " ";
+            info(data[i] + " ");
         }
-        encodeInfo += "\n";
+        infoLine();
     }
 
     private int encodeAsCode1Data() {

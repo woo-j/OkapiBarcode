@@ -168,11 +168,11 @@ public class DataBar14 extends Symbol {
         accum = right_reg.mod(new BigInteger("1597"));
         data_character[3] = accum.intValue();
 
-        encodeInfo += "Data Characters: ";
+        info("Data Characters: ");
         for (i = 0; i < 4; i++) {
-            encodeInfo += data_character[i] + " ";
+            info(data_character[i] + " ");
         }
-        encodeInfo += "\n";
+        infoLine();
 
         /* Calculate odd and even subset values */
         if (data_character[0] >= 0 && data_character[0] <= 160) {
@@ -286,7 +286,7 @@ public class DataBar14 extends Symbol {
         c_left = checksum / 9;
         c_right = checksum % 9;
 
-        encodeInfo += "Checksum: " + checksum + "\n";
+        infoLine("Checksum: " + checksum);
 
         /* Put element widths together */
         total_widths[0] = 1;
@@ -389,7 +389,7 @@ public class DataBar14 extends Symbol {
             if (check_digit == 10) {
                 check_digit = 0;
             }
-            encodeInfo += "Check Digit: " + check_digit + "\n";
+            infoLine("Check Digit: " + check_digit);
             hrt.append((char) (check_digit + '0'));
             readable = "(01)" + hrt;
         }

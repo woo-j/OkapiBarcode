@@ -151,12 +151,12 @@ public class Ean extends Symbol {
         content = validateAndPad(content, 12);
 
         char check = calcDigit(content);
-        encodeInfo += "Check Digit: " + check + "\n";
+        infoLine("Check Digit: " + check);
 
         String hrt = content + check;
         char parityChar = hrt.charAt(0);
         String parity = EAN13_PARITY[parityChar - '0'];
-        encodeInfo += "Parity Digit: " + parityChar + "\n";
+        infoLine("Parity Digit: " + parityChar);
 
         StringBuilder dest = new StringBuilder("111");
         for (int i = 1; i < 13; i++) {
@@ -186,7 +186,7 @@ public class Ean extends Symbol {
         content = validateAndPad(content, 7);
 
         char check = calcDigit(content);
-        encodeInfo += "Check Digit: " + check + "\n";
+        infoLine("Check Digit: " + check);
 
         String hrt = content + check;
 

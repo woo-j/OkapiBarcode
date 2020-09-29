@@ -275,7 +275,7 @@ public class GridMatrix extends Symbol {
                         length++;
                     }
                 }
-                encodeInfo += "Using GB2312 character encoding\n";
+                infoLine("Using GB2312 character encoding");
                 eciMode = 29;
             } else {
                 /* GB2312 encoding won't work, use other ECI mode */
@@ -386,12 +386,11 @@ public class GridMatrix extends Symbol {
         size = 6 + (layers * 12);
         modules = 1 + (layers * 2);
 
-        encodeInfo += "Layers: " + layers + "\n";
-        encodeInfo += "ECC Level: " + ecc_level + "\n";
-        encodeInfo += "Data Codewords: " + data_cw + "\n";
-        encodeInfo += "ECC Codewords: " + GM_DATA_CODEWORDS[((layers - 1) * 5)
-                + (ecc_level - 1)] + "\n";
-        encodeInfo += "Grid Size: " + modules + " X " + modules + "\n";
+        infoLine("Layers: " + layers);
+        infoLine("ECC Level: " + ecc_level);
+        infoLine("Data Codewords: " + data_cw);
+        infoLine("ECC Codewords: " + GM_DATA_CODEWORDS[((layers - 1) * 5) + (ecc_level - 1)]);
+        infoLine("Grid Size: " + modules + " X " + modules);
 
         grid = new boolean[size * size];
 
@@ -466,11 +465,11 @@ public class GridMatrix extends Symbol {
         current_mode = Mode.NULL;
         number_pad_posn = 0;
 
-        encodeInfo += "Encoding: ";
+        info("Encoding: ");
 
         if (reader) {
             binary += "1010"; /* FNC3 - Reader Initialisation */
-            encodeInfo += "INIT ";
+            info("INIT ");
         }
 
         if ((eciMode != 3) && (eciMode != 29)) {
@@ -509,7 +508,7 @@ public class GridMatrix extends Symbol {
                 }
             }
 
-            encodeInfo += "ECI " + Integer.toString(eciMode) + " ";
+            info("ECI " + eciMode + " ");
         }
 
         do {
@@ -659,22 +658,22 @@ public class GridMatrix extends Symbol {
 
                 switch (next_mode) {
                     case GM_CHINESE:
-                        encodeInfo += "CHIN ";
+                        info("CHIN ");
                         break;
                     case GM_NUMBER:
-                        encodeInfo += "NUMB ";
+                        info("NUMB ");
                         break;
                     case GM_LOWER:
-                        encodeInfo += "LOWR ";
+                        info("LOWR ");
                         break;
                     case GM_UPPER:
-                        encodeInfo += "UPPR ";
+                        info("UPPR ");
                         break;
                     case GM_MIXED:
-                        encodeInfo += "MIXD ";
+                        info("MIXD ");
                         break;
                     case GM_BYTE:
-                        encodeInfo += "BYTE ";
+                        info("BYTE ");
                         break;
                 }
 
@@ -722,7 +721,7 @@ public class GridMatrix extends Symbol {
                         glyph = 7777 + inputData[sp];
                     }
 
-                    encodeInfo += Integer.toString(glyph) + " ";
+                    info(glyph + " ");
 
                     for (i = 0x1000; i > 0; i = i >> 1) {
                         if ((glyph & i) != 0) {
@@ -797,7 +796,7 @@ public class GridMatrix extends Symbol {
                         glyph += ppos;
                         glyph += 1000;
 
-                        encodeInfo += Integer.toString(glyph) + " ";
+                        info(glyph + " ");
 
                         for (i = 0x200; i > 0; i = i >> 1) {
                             if ((glyph & i) != 0) {
@@ -809,7 +808,7 @@ public class GridMatrix extends Symbol {
                     }
 
                     glyph = (100 * (numbuf[0] - '0')) + (10 * (numbuf[1] - '0')) + (numbuf[2] - '0');
-                    encodeInfo += Integer.toString(glyph) + " ";
+                    info(glyph + " ");
 
                     for (i = 0x200; i > 0; i = i >> 1) {
                         if ((glyph & i) != 0) {
@@ -834,7 +833,7 @@ public class GridMatrix extends Symbol {
                     }
 
                     glyph = inputData[sp];
-                    encodeInfo += Integer.toString(glyph) + " ";
+                    info(glyph + " ");
                     for (i = 0x80; i > 0; i = i >> 1) {
                         if ((glyph & i) != 0) {
                             binary += "1";
@@ -864,7 +863,7 @@ public class GridMatrix extends Symbol {
                     if (shift == 0) {
                         /* Mixed Mode character */
                         glyph = positionOf((char) inputData[sp], MIXED_ALPHANUM_SET);
-                        encodeInfo += Integer.toString(glyph) + " ";
+                        info(glyph + " ");
 
                         for (i = 0x20; i > 0; i = i >> 1) {
                             if ((glyph & i) != 0) {
@@ -899,7 +898,7 @@ public class GridMatrix extends Symbol {
                             // Space character
                             glyph = 26;
                         }
-                        encodeInfo += Integer.toString(glyph) + " ";
+                        info(glyph + " ");
 
                         for (i = 0x10; i > 0; i = i >> 1) {
                             if ((glyph & i) != 0) {
@@ -931,7 +930,7 @@ public class GridMatrix extends Symbol {
                     if (shift == 0) {
                         /* Lower Case character */
                         glyph = positionOf((char) inputData[sp], MIXED_ALPHANUM_SET) - 36;
-                        encodeInfo += Integer.toString(glyph) + " ";
+                        info(glyph + " ");
 
                         for (i = 0x10; i > 0; i = i >> 1) {
                             if ((glyph & i) != 0) {
@@ -957,7 +956,7 @@ public class GridMatrix extends Symbol {
 
         } while (sp < length);
 
-        encodeInfo += "\n";
+        infoLine();
 
         if (current_mode == Mode.GM_NUMBER) {
             /* add numeric block padding value */
@@ -1689,7 +1688,7 @@ public class GridMatrix extends Symbol {
             }
         }
 
-        encodeInfo += "SHT/" + Integer.toString(glyph) + " ";
+        info("SHT/" + glyph + " ");
 
         for (i = 0x20; i > 0; i = i >> 1) {
             if ((glyph & i) != 0) {
@@ -1725,11 +1724,11 @@ public class GridMatrix extends Symbol {
             }
         }
 
-        encodeInfo += "Codewords: ";
+        info("Codewords: ");
         for (i = 0; i < data_posn; i++) {
-            encodeInfo += Integer.toString(data[i]) + " ";
+            info(data[i] + " ");
         }
-        encodeInfo += "\n";
+        infoLine();
 
         /* Add padding codewords */
         data[data_posn] = 0x00;

@@ -181,7 +181,7 @@ public class Upc extends Symbol {
         content = validateAndPad(content, 11);
 
         char check = calcDigit(content);
-        encodeInfo += "Check Digit: " + check + "\n";
+        infoLine("Check Digit: " + check);
 
         String hrt = content + check;
 
@@ -205,10 +205,10 @@ public class Upc extends Symbol {
         content = validateAndPad(content, 7);
 
         String expanded = expandToEquivalentUpcA(content, true);
-        encodeInfo += "UPC-A Equivalent: " + expanded + "\n";
+        infoLine("UPC-A Equivalent: " + expanded);
 
         char check = calcDigit(expanded);
-        encodeInfo += "Check Digit: " + check + "\n";
+        infoLine("Check Digit: " + check);
 
         String hrt = content + check;
 

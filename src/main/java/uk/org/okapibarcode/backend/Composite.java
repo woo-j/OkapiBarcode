@@ -602,7 +602,7 @@ public class Composite extends Symbol {
                 linear_rect = upca.rectangles;
                 linear_txt = upca.texts;
                 linear_height = upca.symbol_height;
-                linear_encodeInfo = upca.encodeInfo;
+                linear_encodeInfo = upca.getEncodeInfo();
                 bottom_shift = 6;
                 top_shift = 3;
                 break;
@@ -614,7 +614,7 @@ public class Composite extends Symbol {
                 linear_rect = upce.rectangles;
                 linear_txt = upce.texts;
                 linear_height = upce.symbol_height;
-                linear_encodeInfo = upce.encodeInfo;
+                linear_encodeInfo = upce.getEncodeInfo();
                 bottom_shift = 6;
                 top_shift = 3;
                 break;
@@ -633,7 +633,7 @@ public class Composite extends Symbol {
                 linear_rect = ean.rectangles;
                 linear_txt = ean.texts;
                 linear_height = ean.symbol_height;
-                linear_encodeInfo = ean.encodeInfo;
+                linear_encodeInfo = ean.getEncodeInfo();
                 break;
             case CODE_128:
                 Code128 code128 = new Code128();
@@ -655,7 +655,7 @@ public class Composite extends Symbol {
                 linear_rect = code128.rectangles;
                 linear_txt = code128.texts;
                 linear_height = code128.symbol_height;
-                linear_encodeInfo = code128.encodeInfo;
+                linear_encodeInfo = code128.getEncodeInfo();
                 break;
             case DATABAR_14:
                 DataBar14 dataBar14 = new DataBar14();
@@ -665,7 +665,7 @@ public class Composite extends Symbol {
                 linear_rect = dataBar14.rectangles;
                 linear_txt = dataBar14.texts;
                 linear_height = dataBar14.symbol_height;
-                linear_encodeInfo = dataBar14.encodeInfo;
+                linear_encodeInfo = dataBar14.getEncodeInfo();
                 bottom_shift = 4;
                 break;
             case DATABAR_14_STACK_OMNI:
@@ -676,7 +676,7 @@ public class Composite extends Symbol {
                 linear_rect = dataBar14SO.rectangles;
                 linear_txt = dataBar14SO.texts;
                 linear_height = dataBar14SO.symbol_height;
-                linear_encodeInfo = dataBar14SO.encodeInfo;
+                linear_encodeInfo = dataBar14SO.getEncodeInfo();
                 top_shift = 1;
                 break;
             case DATABAR_14_STACK:
@@ -687,7 +687,7 @@ public class Composite extends Symbol {
                 linear_rect = dataBar14S.rectangles;
                 linear_txt = dataBar14S.texts;
                 linear_height = dataBar14S.symbol_height;
-                linear_encodeInfo = dataBar14S.encodeInfo;
+                linear_encodeInfo = dataBar14S.getEncodeInfo();
                 top_shift = 1;
                 break;
             case DATABAR_LIMITED:
@@ -697,7 +697,7 @@ public class Composite extends Symbol {
                 linear_rect = dataBarLimited.rectangles;
                 linear_txt = dataBarLimited.texts;
                 linear_height = dataBarLimited.symbol_height;
-                linear_encodeInfo = dataBarLimited.encodeInfo;
+                linear_encodeInfo = dataBarLimited.getEncodeInfo();
                 top_shift = 1;
                 bottom_shift = 10;
                 break;
@@ -709,7 +709,7 @@ public class Composite extends Symbol {
                 linear_rect = dataBarExpanded.rectangles;
                 linear_txt = dataBarExpanded.texts;
                 linear_height = dataBarExpanded.symbol_height;
-                linear_encodeInfo = dataBarExpanded.encodeInfo;
+                linear_encodeInfo = dataBarExpanded.getEncodeInfo();
                 top_shift = 2;
                 break;
             case DATABAR_EXPANDED_STACK:
@@ -720,7 +720,7 @@ public class Composite extends Symbol {
                 linear_rect = dataBarExpandedS.rectangles;
                 linear_txt = dataBarExpandedS.texts;
                 linear_height = dataBarExpandedS.symbol_height;
-                linear_encodeInfo = dataBarExpandedS.encodeInfo;
+                linear_encodeInfo = dataBarExpandedS.getEncodeInfo();
                 top_shift = 2;
                 break;
             default:
@@ -734,7 +734,7 @@ public class Composite extends Symbol {
             rectangles.clear();
             symbol_height = 0;
             symbol_width = 0;
-            encodeInfo = "";
+            encodeInfo.setLength(0);
             encodeComposite();
         }
 
@@ -767,7 +767,7 @@ public class Composite extends Symbol {
         texts = combine_txt;
         symbol_height += linear_height;
         symbol_width = max_x;
-        encodeInfo += linear_encodeInfo;
+        info(linear_encodeInfo);
     }
 
     private void encodeComposite() {
@@ -809,7 +809,7 @@ public class Composite extends Symbol {
                 break;
         }
 
-        encodeInfo += "Composite Width: " + Integer.toString(cc_width) + "\n";
+        infoLine("Composite Width: " + cc_width);
 
         if (cc_mode == CompositeMode.CC_A && !cc_binary_string()) {
             cc_mode = CompositeMode.CC_B;
@@ -836,15 +836,15 @@ public class Composite extends Symbol {
         switch (cc_mode) { /* Note that ecc_level is only relevant to CC-C */
             case CC_A:
                 cc_a();
-                encodeInfo += "Composite Type: CC-A\n";
+                infoLine("Composite Type: CC-A");
                 break;
             case CC_B:
                 cc_b();
-                encodeInfo += "Composite Type: CC-B\n";
+                infoLine("Composite Type: CC-B");
                 break;
             case CC_C:
                 cc_c();
-                encodeInfo += "Composite Type: CC-C\n";
+                infoLine("Composite Type: CC-C");
                 break;
         }
 
@@ -1176,16 +1176,16 @@ public class Composite extends Symbol {
             encoding_method = 3;
         }
 
-        encodeInfo += "Composite Encodation: ";
+        info("Composite Encodation: ");
         switch (encoding_method) {
             case 1:
-                encodeInfo += "0\n";
+                infoLine("0");
                 break;
             case 2:
-                encodeInfo += "10\n";
+                infoLine("10");
                 break;
             case 3:
-                encodeInfo += "11\n";
+                infoLine("11");
                 break;
         }
 
@@ -1948,7 +1948,7 @@ public class Composite extends Symbol {
             return false;
         }
 
-        encodeInfo += "Composite Binary Length: " + Integer.toString(binary_string.length()) + "\n";
+        infoLine("Composite Binary Length: " + binary_string.length());
         displayBinaryString();
 
         if (binary_string.length() < target_bitsize) {
@@ -1977,7 +1977,7 @@ public class Composite extends Symbol {
         int i, nibble;
         /* Display binary string as hexadecimal */
 
-        encodeInfo += "Composite Binary String: ";
+        info("Composite Binary String: ");
         nibble = 0;
         for(i = 0; i < binary_string.length(); i++) {
             switch (i % 4) {
@@ -2000,16 +2000,16 @@ public class Composite extends Symbol {
                     if (binary_string.charAt(i) == '1') {
                         nibble += 1;
                     }
-                    encodeInfo += Integer.toHexString(nibble);
+                    info(Integer.toHexString(nibble));
                     nibble = 0;
                     break;
             }
         }
 
         if ((binary_string.length() % 4) != 0) {
-            encodeInfo += Integer.toHexString(nibble);
+            info(Integer.toHexString(nibble));
         }
-        encodeInfo += "\n";
+        infoLine();
     }
 
     private boolean applyGeneralFieldRules() {
@@ -2245,7 +2245,7 @@ public class Composite extends Symbol {
             rsCodeWords[i] = 0;
         }
         total = 0;
-        encodeInfo += "Composite Codewords: ";
+        info("Composite Codewords: ");
         for (i = 0; i < cwCnt; i++) {
             total = (codeWords[i] + rsCodeWords[k - 1]) % 929;
             for (j = k - 1; j >= 0; j--) {
@@ -2255,9 +2255,9 @@ public class Composite extends Symbol {
                     rsCodeWords[j] = (rsCodeWords[j - 1] + 929 - (total * CCA_COEFFS[offset + j]) % 929) % 929;
                 }
             }
-            encodeInfo += Integer.toString(codeWords[i]) + " ";
+            info(codeWords[i] + " ");
         }
-        encodeInfo += "\n";
+        infoLine();
 
         for (j = 0; j < k; j++) {
             if (rsCodeWords[j] != 0) {
@@ -2582,7 +2582,7 @@ public class Composite extends Symbol {
             mccorrection[loop] = 0;
         }
         total = 0;
-        encodeInfo += "Composite Codewords: ";
+        info("Composite Codewords: ");
         for (i = 0; i < longueur; i++) {
             total = (codeWords[i] + mccorrection[k - 1]) % 929;
             for (j = k - 1; j >= 0; j--) {
@@ -2592,9 +2592,9 @@ public class Composite extends Symbol {
                     mccorrection[j] = (mccorrection[j - 1] + 929 - (total * MICROCOEFFS[offset + j]) % 929) % 929;
                 }
             }
-            encodeInfo += Integer.toString(codeWords[i]) + " ";
+            info(codeWords[i] + " ");
         }
-        encodeInfo += "\n";
+        infoLine();
 
         for (j = 0; j < k; j++) {
             if (mccorrection[j] != 0) {
@@ -2785,7 +2785,7 @@ public class Composite extends Symbol {
             mccorrection[loop] = 0;
         }
         total = 0;
-        encodeInfo += "Composite Codewords: ";
+        info("Composite Codewords: ");
         for (i = 0; i < longueur; i++) {
             total = (codeWords[i] + mccorrection[k - 1]) % 929;
             for (j = k - 1; j >= 0; j--) {
@@ -2795,9 +2795,9 @@ public class Composite extends Symbol {
                     mccorrection[j] = (mccorrection[j - 1] + 929 - (total * COEFRS[offset + j]) % 929) % 929;
                 }
             }
-            encodeInfo += Integer.toString(codeWords[i]) + " ";
+            info(codeWords[i] + " ");
         }
-        encodeInfo += "\n";
+        infoLine();
 
         for (j = 0; j < k; j++) {
             if (mccorrection[j] != 0) {

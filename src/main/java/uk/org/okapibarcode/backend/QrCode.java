@@ -462,8 +462,8 @@ public class QrCode extends Symbol {
 
         byte[] grid = new byte[size * size];
 
-        encodeInfo += "Version: " + version + "\n";
-        encodeInfo += "ECC Level: " + ecc_level.name() + "\n";
+        infoLine("Version: " + version);
+        infoLine("ECC Level: " + ecc_level.name());
 
         setupGrid(grid, size, version);
         populateGrid(grid, size, fullstream, QR_TOTAL_CODEWORDS[version - 1]);
@@ -473,7 +473,7 @@ public class QrCode extends Symbol {
         }
 
         bitmask = applyBitmask(grid, size, ecc_level);
-        encodeInfo += "Mask Pattern: " + Integer.toBinaryString(bitmask) + "\n";
+        infoLine("Mask Pattern: " + Integer.toBinaryString(bitmask));
         addFormatInfo(grid, size, ecc_level, bitmask);
 
         readable = "";
@@ -830,7 +830,7 @@ public class QrCode extends Symbol {
             }
         }
 
-        encodeInfo += "Encoding: ";
+        info("Encoding: ");
 
         do {
             data_block = inputMode[position];
@@ -850,7 +850,7 @@ public class QrCode extends Symbol {
                     /* Character count indicator */
                     binaryAppend(short_data_block_length, tribus(version, 8, 10, 12), binary);
 
-                    encodeInfo += "KNJI ";
+                    info("KNJI ");
 
                     /* Character representation */
                     for (i = 0; i < short_data_block_length; i++) {
@@ -862,7 +862,7 @@ public class QrCode extends Symbol {
                         }
                         int prod = ((jis >> 8) * 0xc0) + (jis & 0xff);
                         binaryAppend(prod, 13, binary);
-                        encodeInfo += Integer.toString(prod) + " ";
+                        info(prod + " ");
                     }
 
                     break;
@@ -875,7 +875,7 @@ public class QrCode extends Symbol {
                     /* Character count indicator */
                     binaryAppend(short_data_block_length, tribus(version, 8, 16, 16), binary);
 
-                    encodeInfo += "BYTE ";
+                    info("BYTE ");
 
                     /* Character representation */
                     for (i = 0; i < short_data_block_length; i++) {
@@ -884,7 +884,7 @@ public class QrCode extends Symbol {
                             b = 0x1d; /* FNC1 */
                         }
                         binaryAppend(b, 8, binary);
-                        encodeInfo += Integer.toString(b) + " ";
+                        info(b + " ");
                     }
 
                     break;
@@ -921,7 +921,7 @@ public class QrCode extends Symbol {
                     /* Character count indicator */
                     binaryAppend(inputExpanded.length, tribus(version, 9, 11, 13), binary);
 
-                    encodeInfo += "ALPH ";
+                    info("ALPH ");
 
                     /* Character representation */
                     for (i = 0; i + 1 < inputExpanded.length; i += 2) {
@@ -930,14 +930,14 @@ public class QrCode extends Symbol {
                         int prod = (first * 45) + second;
                         int count = 2;
                         binaryAppend(prod, 1 + (5 * count), binary);
-                        encodeInfo += Integer.toString(prod) + " ";
+                        info(prod + " ");
                     }
                     if (inputExpanded.length % 2 != 0) {
                         int first = positionOf((char) inputExpanded[inputExpanded.length - 1], RHODIUM);
                         int prod = first;
                         int count = 1;
                         binaryAppend(prod, 1 + (5 * count), binary);
-                        encodeInfo += Integer.toString(prod) + " ";
+                        info(prod + " ");
                     }
 
                     break;
@@ -950,7 +950,7 @@ public class QrCode extends Symbol {
                     /* Character count indicator */
                     binaryAppend(short_data_block_length, tribus(version, 10, 12, 14), binary);
 
-                    encodeInfo += "NUMB ";
+                    info("NUMB ");
 
                     /* Character representation */
                     i = 0;
@@ -974,10 +974,10 @@ public class QrCode extends Symbol {
 
                         binaryAppend(prod, 1 + (3 * count), binary);
 
-                        encodeInfo += Integer.toString(prod) + " ";
+                        info(prod + " ");
 
                         i += count;
-                    };
+                    }
 
                     break;
             }
@@ -986,7 +986,7 @@ public class QrCode extends Symbol {
 
         } while (position < inputMode.length);
 
-        encodeInfo += "\n";
+        infoLine();
 
         /* Terminator */
         binary.append("0000");
@@ -1025,11 +1025,11 @@ public class QrCode extends Symbol {
             }
         }
 
-        encodeInfo += "Codewords: ";
+        info("Codewords: ");
         for (i = 0; i < target_binlen; i++) {
-            encodeInfo += Integer.toString(datastream[i]) + " ";
+            info(datastream[i] + " ");
         }
-        encodeInfo += "\n";
+        infoLine();
     }
 
     private static void binaryAppend(int value, int length, StringBuilder binary) {

@@ -102,7 +102,7 @@ public class Logmars extends Symbol {
 
         counter = counter % 43;
         checkDigit = LOOKUP[counter];
-        encodeInfo += "Check Digit: " + checkDigit + "\n";
+        infoLine("Check Digit: " + checkDigit);
         p += CODE39LM[counter];
 
         readable = content + checkDigit;

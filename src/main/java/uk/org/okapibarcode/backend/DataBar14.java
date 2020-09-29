@@ -137,7 +137,7 @@ public class DataBar14 extends Symbol {
         int j;
         int count;
         int check_digit;
-        String bin;
+        StringBuilder bin = new StringBuilder();
         int compositeOffset = 0;
 
         if (content.length() > 13) {
@@ -585,12 +585,12 @@ public class DataBar14 extends Symbol {
         row_height = new int[row_count + compositeOffset];
 
         if (linkageFlag) {
-            bin = "";
+            bin.setLength(0);
             for (j = 0; j < symbol_width; j++) {
                 if (separator[j]) {
-                    bin += "1";
+                    bin.append('1');
                 } else {
-                    bin += "0";
+                    bin.append('0');
                 }
             }
             pattern[0] = bin2pat(bin);
@@ -598,12 +598,12 @@ public class DataBar14 extends Symbol {
         }
 
         for (i = 0; i < row_count; i++) {
-            bin = "";
+            bin.setLength(0);
             for (j = 0; j < symbol_width; j++) {
                 if (grid[i][j]) {
-                    bin += "1";
+                    bin.append('1');
                 } else {
-                    bin += "0";
+                    bin.append('0');
                 }
             }
             pattern[i + compositeOffset] = bin2pat(bin);

@@ -445,7 +445,7 @@ public abstract class Symbol {
         return target;
     }
 
-    protected static String bin2pat(String bin) {
+    protected static String bin2pat(CharSequence bin) {
 
         int len = 0;
         boolean black = true;

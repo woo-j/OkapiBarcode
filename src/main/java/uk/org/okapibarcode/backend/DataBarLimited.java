@@ -182,8 +182,6 @@ public class DataBarLimited extends Symbol {
         int checksum;
         int[] check_elements = new int[14];
         int[] total_widths = new int[46];
-        String bin;
-        String notbin;
         boolean bar_latch;
         int writer;
         int check_digit = 0;
@@ -366,18 +364,18 @@ public class DataBarLimited extends Symbol {
                 total_widths[i + 30] = right_widths[i];
         }
 
-        bin = "";
-        notbin = "";
+        StringBuilder bin = new StringBuilder();
+        StringBuilder notbin = new StringBuilder();
         writer = 0;
         bar_latch = false;
         for (i = 0; i < 46; i++) {
             for (j = 0; j < total_widths[i]; j++) {
                 if (bar_latch) {
-                    bin += "1";
-                    notbin += "0";
+                    bin.append('1');
+                    notbin.append('0');
                 } else {
-                    bin += "0";
-                    notbin += "1";
+                    bin.append('0');
+                    notbin.append('1');
                 }
                 writer++;
             }
@@ -424,7 +422,8 @@ public class DataBarLimited extends Symbol {
 
         if (linkageFlag) {
             // Add composite symbol separator
-            notbin = notbin.substring(4, 70);
+            notbin.delete(70, notbin.length());
+            notbin.delete(0, 4);
             row_height[0] = 1;
             pattern[0] = "04" + bin2pat(notbin);
         }

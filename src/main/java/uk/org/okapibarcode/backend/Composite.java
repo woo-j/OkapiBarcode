@@ -2138,7 +2138,7 @@ public class Composite extends Symbol {
         int[] dummy = new int[5];
         int flip, loop;
         String codebarre;
-        String bin;
+        StringBuilder bin = new StringBuilder();
         String local_source; /* A copy of source but with padding zeroes to make 208 bits */
 
         variant = 0;
@@ -2327,14 +2327,14 @@ public class Composite extends Symbol {
             /* Now codebarre is a mixture of letters and numbers */
 
             flip = 1;
-            bin = "";
+            bin.setLength(0);
             for (loop = 0; loop < codebarre.length(); loop++) {
                 if ((codebarre.charAt(loop) >= '0') && (codebarre.charAt(loop) <= '9')) {
                     for (k = 0; k < codebarre.charAt(loop) - '0'; k++) {
                         if (flip == 0) {
-                            bin += '0';
+                            bin.append('0');
                         } else {
-                            bin += '1';
+                            bin.append('1');
                         }
                     }
                     if (flip == 0) {
@@ -2343,7 +2343,7 @@ public class Composite extends Symbol {
                         flip = 0;
                     }
                 } else {
-                    bin += PDF_TTF[positionOf(codebarre.charAt(loop), BR_SET)];
+                    bin.append(PDF_TTF[positionOf(codebarre.charAt(loop), BR_SET)]);
                 }
             }
 
@@ -2442,7 +2442,7 @@ public class Composite extends Symbol {
         int total;
         int[] dummy = new int[5];
         String codebarre;
-        String bin;
+        StringBuilder bin = new StringBuilder();
         int variant, LeftRAPStart, CentreRAPStart, RightRAPStart, StartCluster;
         int LeftRAP, CentreRAP, RightRAP, Cluster, flip, loop;
         int option_2, rows;
@@ -2666,14 +2666,14 @@ public class Composite extends Symbol {
             /* Now codebarre is a mixture of letters and numbers */
 
             flip = 1;
-            bin = "";
+            bin.setLength(0);
             for (loop = 0; loop < codebarre.length(); loop++) {
                 if ((codebarre.charAt(loop) >= '0') && (codebarre.charAt(loop) <= '9')) {
                     for (k = 0; k < codebarre.charAt(loop) - '0'; k++) {
                         if (flip == 0) {
-                            bin += '0';
+                            bin.append('0');
                         } else {
-                            bin += '1';
+                            bin.append('1');
                         }
                     }
                     if (flip == 0) {
@@ -2682,7 +2682,7 @@ public class Composite extends Symbol {
                         flip = 0;
                     }
                 } else {
-                    bin += PDF_TTF[positionOf(codebarre.charAt(loop), BR_SET)];
+                    bin.append(PDF_TTF[positionOf(codebarre.charAt(loop), BR_SET)]);
                 }
             }
 
@@ -2719,7 +2719,7 @@ public class Composite extends Symbol {
         int c1, c2, c3;
         int[] dummy = new int[35];
         String codebarre;
-        String bin;
+        StringBuilder bin = new StringBuilder();
         inputData = new int[(binary_string.length() / 8) + 4];
 
         length = binary_string.length() / 8;
@@ -2862,9 +2862,9 @@ public class Composite extends Symbol {
             }
             codebarre += "-";
 
-            bin = "";
+            bin.setLength(0);
             for (loop = 0; loop < codebarre.length(); loop++) {
-                bin += PDF_TTF[positionOf(codebarre.charAt(loop), BR_SET)];
+                bin.append(PDF_TTF[positionOf(codebarre.charAt(loop), BR_SET)]);
             }
             pattern[i] = bin2pat(bin);
             row_height[i] = 3;

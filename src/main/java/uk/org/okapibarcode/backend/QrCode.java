@@ -489,7 +489,7 @@ public class QrCode extends Symbol {
                     bin.append('0');
                 }
             }
-            pattern[i] = bin2pat(bin.toString());
+            pattern[i] = bin2pat(bin);
             row_height[i] = 1;
         }
     }

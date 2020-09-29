@@ -162,7 +162,7 @@ public class AztecRune extends Symbol {
                     rowBinary.append(reversedBinaryDataStream.charAt(BIT_PLACEMENT_MAP[(row * 11) + column] - 2));
                 }
             }
-            pattern[row] = bin2pat(rowBinary.toString());
+            pattern[row] = bin2pat(rowBinary);
             row_height[row] = 1;
         }
     }

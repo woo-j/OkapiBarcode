@@ -671,7 +671,7 @@ public class AztecCode extends Symbol {
                     }
                 }
                 row_height[y - AZTEC_COMPACT_OFFSET[layers - 1]] = 1;
-                pattern[y - AZTEC_COMPACT_OFFSET[layers - 1]] = bin2pat(bin.toString());
+                pattern[y - AZTEC_COMPACT_OFFSET[layers - 1]] = bin2pat(bin);
             }
 
         } else {
@@ -704,7 +704,7 @@ public class AztecCode extends Symbol {
                     }
                 }
                 row_height[y - AZTEC_OFFSET[layers - 1]] = 1;
-                pattern[y - AZTEC_OFFSET[layers - 1]] = bin2pat(bin.toString());
+                pattern[y - AZTEC_OFFSET[layers - 1]] = bin2pat(bin);
             }
         }
     }

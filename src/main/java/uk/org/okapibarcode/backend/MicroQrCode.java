@@ -154,7 +154,7 @@ public class MicroQrCode extends Symbol {
         int version, autoversion;
         int bitmask;
         int format, format_full;
-        String bin;
+        StringBuilder bin = new StringBuilder();
         boolean byteModeUsed;
         boolean alphanumModeUsed;
         boolean kanjiModeUsed;
@@ -447,12 +447,12 @@ public class MicroQrCode extends Symbol {
         row_count = size;
         row_height = new int[size];
         for (i = 0; i < size; i++) {
-            bin = "";
+            bin.setLength(0);
             for (j = 0; j < size; j++) {
                 if ((grid[(i * size) + j] & 0x01) != 0) {
-                    bin += "1";
+                    bin.append('1');
                 } else {
-                    bin += "0";
+                    bin.append('0');
                 }
             }
             pattern[i] = bin2pat(bin);

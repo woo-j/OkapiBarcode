@@ -320,7 +320,7 @@ public class DataMatrix extends Symbol {
         int H, W, FH, FW, datablock, bytes, rsblock;
         int x, y, NC, NR, v;
         int[] grid;
-        String bin;
+        StringBuilder bin = new StringBuilder();
 
         eciProcess(); // Get ECI mode
 
@@ -434,12 +434,12 @@ public class DataMatrix extends Symbol {
         row_count = H;
         row_height = new int[H];
         for (y = H - 1; y >= 0; y--) {
-            bin = "";
+            bin.setLength(0);
             for (x = 0; x < W; x++) {
                 if (grid[W * y + x] == 1) {
-                    bin += "1";
+                    bin.append('1');
                 } else {
-                    bin += "0";
+                    bin.append('0');
                 }
             }
             pattern[(H - y) - 1] = bin2pat(bin);

@@ -703,9 +703,9 @@ public class Pdf417 extends Symbol {
         int total;
         int c1, c2, c3;
         int[] dummy = new int[35];
-        String codebarre;
         int selectedECCLevel;
-        String bin;
+        StringBuilder codebarre = new StringBuilder();
+        StringBuilder bin = new StringBuilder();
 
         List< Block > blocks = createBlocks(inputData);
 
@@ -929,19 +929,20 @@ public class Pdf417 extends Symbol {
                     dummy[columns + 1] = k + c2; // right row indicator
                     break;
             }
-            codebarre = "+*";
+            codebarre.setLength(0);
+            codebarre.append("+*");
             for (j = 0; j <= columns + 1; j++) {
                 if (!(symbolMode == Mode.TRUNCATED && j > columns)) {
-                    codebarre += CODAGEMC[offset + dummy[j]];
-                    codebarre += "*";
+                    codebarre.append(CODAGEMC[offset + dummy[j]]);
+                    codebarre.append('*');
                 }
             }
             if(symbolMode != Mode.TRUNCATED) {
-                codebarre += "-";
+                codebarre.append('-');
             }
-            bin = "";
+            bin.setLength(0);
             for (j = 0; j < codebarre.length(); j++) {
-                bin += PDF_TTF[positionOf(codebarre.charAt(j), BR_SET)];
+                bin.append(PDF_TTF[positionOf(codebarre.charAt(j), BR_SET)]);
             }
             pattern[i] = bin2pat(bin);
             row_height[i] = default_height;
@@ -954,10 +955,10 @@ public class Pdf417 extends Symbol {
         int total;
         int LeftRAPStart, CentreRAPStart, RightRAPStart, StartCluster;
         int LeftRAP, CentreRAP, RightRAP, Cluster, flip, loop;
-        String codebarre;
         int[] dummy = new int[5];
         int[] mccorrection = new int[50];
-        String bin;
+        StringBuilder codebarre = new StringBuilder();
+        StringBuilder bin = new StringBuilder();
 
         /* Encoding starts out the same as PDF417, so use the same code */
 
@@ -1128,7 +1129,7 @@ public class Pdf417 extends Symbol {
         infoLine("Grid Size: " + columns + " X " + row_count);
 
         for (int i = 0; i < rows; i++) {
-            codebarre = "";
+            codebarre.setLength(0);
             offset = 929 * Cluster;
             for (j = 0; j < 5; j++) {
                 dummy[j] = 0;
@@ -1138,45 +1139,45 @@ public class Pdf417 extends Symbol {
             }
 
             /* Copy the data into codebarre */
-            codebarre += RAPLR[LeftRAP];
-            codebarre += "1";
-            codebarre += CODAGEMC[offset + dummy[1]];
-            codebarre += "1";
+            codebarre.append(RAPLR[LeftRAP]);
+            codebarre.append('1');
+            codebarre.append(CODAGEMC[offset + dummy[1]]);
+            codebarre.append('1');
             if (columns == 3) {
-                codebarre += RAPC[CentreRAP];
+                codebarre.append(RAPC[CentreRAP]);
             }
             if (columns >= 2) {
-                codebarre += "1";
-                codebarre += CODAGEMC[offset + dummy[2]];
-                codebarre += "1";
+                codebarre.append('1');
+                codebarre.append(CODAGEMC[offset + dummy[2]]);
+                codebarre.append('1');
             }
             if (columns == 4) {
-                codebarre += RAPC[CentreRAP];
+                codebarre.append(RAPC[CentreRAP]);
             }
             if (columns >= 3) {
-                codebarre += "1";
-                codebarre += CODAGEMC[offset + dummy[3]];
-                codebarre += "1";
+                codebarre.append('1');
+                codebarre.append(CODAGEMC[offset + dummy[3]]);
+                codebarre.append('1');
             }
             if (columns == 4) {
-                codebarre += "1";
-                codebarre += CODAGEMC[offset + dummy[4]];
-                codebarre += "1";
+                codebarre.append('1');
+                codebarre.append(CODAGEMC[offset + dummy[4]]);
+                codebarre.append('1');
             }
-            codebarre += RAPLR[RightRAP];
-            codebarre += "1"; /* stop */
+            codebarre.append(RAPLR[RightRAP]);
+            codebarre.append('1'); /* stop */
 
             /* Now codebarre is a mixture of letters and numbers */
 
             flip = 1;
-            bin = "";
+            bin.setLength(0);
             for (loop = 0; loop < codebarre.length(); loop++) {
                 if ((codebarre.charAt(loop) >= '0') && (codebarre.charAt(loop) <= '9')) {
                     for (k = 0; k < Character.getNumericValue(codebarre.charAt(loop)); k++) {
                         if (flip == 0) {
-                            bin += '0';
+                            bin.append('0');
                         } else {
-                            bin += '1';
+                            bin.append('1');
                         }
                     }
                     if (flip == 0) {
@@ -1185,7 +1186,7 @@ public class Pdf417 extends Symbol {
                         flip = 0;
                     }
                 } else {
-                    bin += PDF_TTF[positionOf(codebarre.charAt(loop), BR_SET)];
+                    bin.append(PDF_TTF[positionOf(codebarre.charAt(loop), BR_SET)]);
                 }
             }
 

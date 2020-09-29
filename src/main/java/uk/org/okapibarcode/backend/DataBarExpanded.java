@@ -101,7 +101,7 @@ public class DataBarExpanded extends Symbol {
 
     private enum EncodeMode {
         NUMERIC, ALPHA, ISOIEC, INVALID_CHAR, ANY_ENC, ALPHA_OR_ISO
-    };
+    }
 
     private boolean linkageFlag;
     private int preferredColumns = 2;
@@ -198,7 +198,6 @@ public class DataBarExpanded extends Symbol {
         int[] sub_elements = new int[235];
         int l;
         int symbol_row;
-        String separator_binary;
         String separator_pattern;
         boolean black;
         boolean left_to_right;
@@ -358,28 +357,30 @@ public class DataBarExpanded extends Symbol {
             pattern[0 + compositeOffset] = "0";
             writer = 0;
             black = false;
-            separator_binary = "";
+            StringBuilder separator_binary = new StringBuilder();
             for (i = 0; i < pattern_width; i++) {
-                pattern[0 + compositeOffset] += (char)(elements[i] + '0');
+                pattern[0 + compositeOffset] += (char) (elements[i] + '0');
                 for (j = 0; j < elements[i]; j++) {
                     if (black) {
-                        separator_binary += "0";
+                        separator_binary.append('0');
                     } else {
-                        separator_binary += "1";
+                        separator_binary.append('1');
                     }
                 }
 
                 black = !(black);
                 writer += elements[i];
             }
-            separator_binary = "0000" + separator_binary.substring(4, writer - 4);
+            separator_binary.setCharAt(0, '0');
+            separator_binary.setCharAt(1, '0');
+            separator_binary.setCharAt(2, '0');
+            separator_binary.setCharAt(3, '0');
+            separator_binary.delete(writer - 4, separator_binary.length());
             for (j = 0; j < (writer / 49); j++) {
                 k = (49 * j) + 18;
                 for (i = 0; i < 15; i++) {
-                    if ((separator_binary.charAt(i + k - 1) == '1')
-                            && (separator_binary.charAt(i + k) == '1')) {
-                        separator_binary = separator_binary.substring(0, (i + k))
-                                + "0" + separator_binary.substring(i + k + 1);
+                    if (separator_binary.charAt(i + k - 1) == '1' && separator_binary.charAt(i + k) == '1') {
+                        separator_binary.setCharAt(i + k, '0');
                     }
                 }
             }
@@ -495,28 +496,32 @@ public class DataBarExpanded extends Symbol {
 
                 writer = 0;
 
-                separator_binary = "";
+                StringBuilder separator_binary = new StringBuilder();
                 for (i = 0; i < elements_in_sub; i++) {
-                    pattern[symbol_row + compositeOffset] += (char)(sub_elements[i] + '0');
+                    pattern[symbol_row + compositeOffset] += (char) (sub_elements[i] + '0');
                     for (j = 0; j < sub_elements[i]; j++) {
-                        separator_binary += black ? "0" : "1";
+                        separator_binary.append(black ? '0' : '1');
                     }
                     black = !black;
                     writer += sub_elements[i];
                 }
-                separator_binary = "0000" + separator_binary.substring(4, writer - 4);
+                separator_binary.setCharAt(0, '0');
+                separator_binary.setCharAt(1, '0');
+                separator_binary.setCharAt(2, '0');
+                separator_binary.setCharAt(3, '0');
+                separator_binary.delete(writer - 4, separator_binary.length());
                 for (j = 0; j < reader; j++) {
                     k = (49 * j) + (special_case_row ? 19 : 18);
                     if (left_to_right) {
                         for (i = 0; i < 15; i++) {
                             if (separator_binary.charAt(i + k - 1) == '1' && separator_binary.charAt(i + k) == '1') {
-                                separator_binary = separator_binary.substring(0, (i + k)) + "0" + separator_binary.substring(i + k + 1);
+                                separator_binary.setCharAt(i + k, '0');
                             }
                         }
                     } else {
                         for (i = 14; i >= 0; i--) {
                             if (separator_binary.charAt(i + k + 1) == '1' && separator_binary.charAt(i + k) == '1') {
-                                separator_binary = separator_binary.substring(0, (i + k)) + "0" + separator_binary.substring(i + k + 1);
+                                separator_binary.setCharAt(i + k, '0');
                             }
                         }
                     }

@@ -521,8 +521,6 @@ public class SymbolTest {
 
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
         Graphics2D g2d = img.createGraphics();
-        g2d.setPaint(Color.WHITE);
-        g2d.fillRect(0, 0, width, height);
 
         Java2DRenderer renderer = new Java2DRenderer(g2d, magnification, Color.WHITE, Color.BLACK);
         renderer.render(symbol);

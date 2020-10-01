@@ -170,7 +170,7 @@ public class SymbolTest {
     @Test
     public void test() throws Exception {
 
-        Symbol symbol = symbolType.newInstance();
+        Symbol symbol = symbolType.getDeclaredConstructor().newInstance();
         symbol.setFontName(DEJA_VU_SANS.getFontName());
 
         String actualError;

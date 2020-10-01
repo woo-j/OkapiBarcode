@@ -156,7 +156,7 @@ public class QrCode extends Symbol {
         0x355f, 0x3068, 0x3f31, 0x3a06, 0x24b4, 0x2183, 0x2eda, 0x2bed
     };
 
-    private static final long[] QR_ANNEX_D = {
+    private static final int[] QR_ANNEX_D = {
         /* Version information bit sequences */
         0x07c94, 0x085bc, 0x09a99, 0x0a4d3, 0x0bbf6, 0x0c762, 0x0d847, 0x0e60d, 0x0f928, 0x10b78,
         0x1145d, 0x12a17, 0x13532, 0x149a6, 0x15683, 0x168c9, 0x177ec, 0x18ec4, 0x191e1, 0x1afab,
@@ -460,7 +460,7 @@ public class QrCode extends Symbol {
 
         size = QR_SIZES[version - 1];
 
-        byte[] grid = new byte[size * size];
+        int[] grid = new int[size * size];
 
         infoLine("Version: " + version);
         infoLine("ECC Level: " + ecc_level.name());
@@ -1107,7 +1107,7 @@ public class QrCode extends Symbol {
         }
     }
 
-    private static void setupGrid(byte[] grid, int size, int version) {
+    private static void setupGrid(int[] grid, int size, int version) {
 
         int i;
         boolean toggle = true;
@@ -1181,7 +1181,7 @@ public class QrCode extends Symbol {
         }
     }
 
-    private static void placeFinder(byte[] grid, int size, int x, int y) {
+    private static void placeFinder(int[] grid, int size, int x, int y) {
 
         int[] finder = {
             1, 1, 1, 1, 1, 1, 1,
@@ -1204,7 +1204,7 @@ public class QrCode extends Symbol {
         }
     }
 
-    private static void placeAlign(byte[] grid, int size, int x, int y) {
+    private static void placeAlign(int[] grid, int size, int x, int y) {
 
         int[] alignment = {
             1, 1, 1, 1, 1,
@@ -1228,7 +1228,7 @@ public class QrCode extends Symbol {
         }
     }
 
-    private static void populateGrid(byte[] grid, int size, int[] fullstream, int cw) {
+    private static void populateGrid(int[] grid, int size, int[] fullstream, int cw) {
 
         boolean goingUp = true;
         int row = 0; /* right hand side */
@@ -1288,7 +1288,7 @@ public class QrCode extends Symbol {
         return ((fullstream[i / 8] & (0x80 >> (i % 8))) != 0);
     }
 
-    private static int applyBitmask(byte[] grid, int size, EccLevel ecc_level) {
+    private static int applyBitmask(int[] grid, int size, EccLevel ecc_level) {
 
         int x, y;
         char p;
@@ -1600,7 +1600,7 @@ public class QrCode extends Symbol {
     }
 
     /* Adds format information to grid. */
-    private static void addFormatInfo(byte[] grid, int size, EccLevel ecc_level, int pattern) {
+    private static void addFormatInfo(int[] grid, int size, EccLevel ecc_level, int pattern) {
 
         int format = pattern;
         int seq;
@@ -1642,9 +1642,9 @@ public class QrCode extends Symbol {
     }
 
     /** Adds version information. */
-    private static void addVersionInfo(byte[] grid, int size, int version) {
+    private static void addVersionInfo(int[] grid, int size, int version) {
         // TODO: Zint masks with 0x41 instead of 0x01; which is correct? https://sourceforge.net/p/zint/tickets/110/
-        long version_data = QR_ANNEX_D[version - 7];
+        int version_data = QR_ANNEX_D[version - 7];
         for (int i = 0; i < 6; i++) {
             grid[((size - 11) * size) + i] += (version_data >> (i * 3)) & 0x01;
             grid[((size - 10) * size) + i] += (version_data >> ((i * 3) + 1)) & 0x01;

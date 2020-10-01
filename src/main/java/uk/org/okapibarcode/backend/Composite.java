@@ -2410,8 +2410,8 @@ public class Composite extends Symbol {
             }
             for (i = cwCnt - 1; i > 0; i--) {
                 /* add "carries" */
-                codeWords[cwNdx + i - 1] += codeWords[cwNdx + i] / 928L;
-                codeWords[cwNdx + i] %= 928L;
+                codeWords[cwNdx + i - 1] += codeWords[cwNdx + i] / 928;
+                codeWords[cwNdx + i] %= 928;
             }
         }
         return (cwLng);

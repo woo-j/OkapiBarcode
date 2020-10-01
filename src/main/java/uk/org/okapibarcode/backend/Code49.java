@@ -1345,7 +1345,7 @@ public class Code49 extends Symbol {
                 } else {
                     black = true;
                 }
-                x += (double) (pattern[yBlock].charAt(xBlock) - '0');
+                x += pattern[yBlock].charAt(xBlock) - '0';
             }
             y += h;
             if (y > symbol_height) {

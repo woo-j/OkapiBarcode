@@ -765,7 +765,7 @@ public class QrCode extends Symbol {
 
         do {
             count++;
-        } while (((i + count) < inputMode.length) && (inputMode[i + count] == mode));
+        } while ((i + count) < inputMode.length && inputMode[i + count] == mode);
 
         return count;
     }
@@ -1305,28 +1305,28 @@ public class QrCode extends Symbol {
                 // all eight bit mask variants are encoded in the 8 bits of the bytes that make up the mask array
                 if ((grid[(y * size) + x] & 0xf0) == 0) { // exclude areas not to be masked
                     if (((y + x) & 1) == 0) {
-                        mask[(y * size) + x] += 0x01;
+                        mask[(y * size) + x] += (byte) 0x01;
                     }
                     if ((y & 1) == 0) {
-                        mask[(y * size) + x] += 0x02;
+                        mask[(y * size) + x] += (byte) 0x02;
                     }
                     if ((x % 3) == 0) {
-                        mask[(y * size) + x] += 0x04;
+                        mask[(y * size) + x] += (byte) 0x04;
                     }
                     if (((y + x) % 3) == 0) {
-                        mask[(y * size) + x] += 0x08;
+                        mask[(y * size) + x] += (byte) 0x08;
                     }
                     if ((((y / 2) + (x / 3)) & 1) == 0) {
-                        mask[(y * size) + x] += 0x10;
+                        mask[(y * size) + x] += (byte) 0x10;
                     }
                     if ((((y * x) & 1) + ((y * x) % 3)) == 0) {
-                        mask[(y * size) + x] += 0x20;
+                        mask[(y * size) + x] += (byte) 0x20;
                     }
                     if (((((y * x) & 1) + ((y * x) % 3)) & 1) == 0) {
-                        mask[(y * size) + x] += 0x40;
+                        mask[(y * size) + x] += (byte) 0x40;
                     }
                     if (((((y + x) & 1) + ((y * x) % 3)) & 1) == 0) {
-                        mask[(y * size) + x] += 0x80;
+                        mask[(y * size) + x] += (byte) 0x80;
                     }
                 }
             }

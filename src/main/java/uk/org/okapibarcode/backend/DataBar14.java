@@ -170,7 +170,7 @@ public class DataBar14 extends Symbol {
 
         info("Data Characters: ");
         for (i = 0; i < 4; i++) {
-            info(data_character[i] + " ");
+            infoSpace(data_character[i]);
         }
         infoLine();
 

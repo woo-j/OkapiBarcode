@@ -321,7 +321,7 @@ public class UspsOneCode extends Symbol {
 
         info("Codewords: ");
         for (i = 0; i < 10; i++) {
-            info(codeword[i] + " ");
+            infoSpace(codeword[i]);
         }
         infoLine();
 

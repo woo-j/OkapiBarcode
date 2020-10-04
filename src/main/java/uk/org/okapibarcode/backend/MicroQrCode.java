@@ -763,7 +763,7 @@ public class MicroQrCode extends Symbol {
 
                     binary += toBinary(prod, 0x1000);
 
-                    info(prod + " ");
+                    infoSpace(prod);
                 }
 
                 break;
@@ -788,7 +788,7 @@ public class MicroQrCode extends Symbol {
                 for (i = 0; i < blockLength; i++) {
                     int lbyte = content.charAt(position + i);
                     binary += toBinary(lbyte, 0x80);
-                    info(lbyte + " ");
+                    infoSpace(lbyte);
                 }
 
                 break;
@@ -829,7 +829,7 @@ public class MicroQrCode extends Symbol {
 
                     binary += toBinary(prod, 1 << (5 * count)); /* count = 1..2 */
 
-                    info(prod + " ");
+                    infoSpace(prod);
 
                     i += 2;
                 }
@@ -880,7 +880,7 @@ public class MicroQrCode extends Symbol {
 
                     binary += toBinary(prod, 1 << (3 * count)); /* count = 1..3 */
 
-                    info(prod + " ");
+                    infoSpace(prod);
 
                     i += 3;
                 }
@@ -1007,7 +1007,7 @@ public class MicroQrCode extends Symbol {
 
         info("Codewords: ");
         for (i = 0; i < data_codewords; i++) {
-            info(data_blocks[i] + " ");
+            infoSpace(data_blocks[i]);
         }
         infoLine();
 
@@ -1096,7 +1096,7 @@ public class MicroQrCode extends Symbol {
 
         info("Codewords: ");
         for (i = 0; i < data_codewords; i++) {
-            info(data_blocks[i] + " ");
+            infoSpace(data_blocks[i]);
         }
         infoLine();
 
@@ -1233,7 +1233,7 @@ public class MicroQrCode extends Symbol {
 
         info("Codewords: ");
         for (i = 0; i < data_codewords; i++) {
-            info(data_blocks[i] + " ");
+            infoSpace(data_blocks[i]);
         }
         infoLine();
 
@@ -1329,7 +1329,7 @@ public class MicroQrCode extends Symbol {
 
         info("Codewords: ");
         for (i = 0; i < data_codewords; i++) {
-            info(data_blocks[i] + " ");
+            infoSpace(data_blocks[i]);
         }
         infoLine();
 

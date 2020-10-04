@@ -1276,7 +1276,8 @@ public class Code49 extends Symbol {
         for (i = 0; i < rows; i++) {
             for (j = 0; j < 4; j++) {
                 w_grid[i][j] = (c_grid[i][2 * j] * 49) + c_grid[i][(2 * j) + 1];
-                info(c_grid[i][2 * j] + " " + c_grid[i][(2 * j) + 1] + " ");
+                infoSpace(c_grid[i][2 * j]);
+                infoSpace(c_grid[i][(2 * j) + 1]);
             }
         }
         infoLine();
@@ -1290,7 +1291,7 @@ public class Code49 extends Symbol {
         for (i = 0; i < rows; i++) {
             localpattern = "11"; /* Start character */
             for (j = 0; j < 4; j++) {
-                info(w_grid[i][j] + " ");
+                infoSpace(w_grid[i][j]);
                 if (i != (rows - 1)) {
                     if (C49_TABLE4[i].charAt(j) == 'E') {
                         /* Even Parity */

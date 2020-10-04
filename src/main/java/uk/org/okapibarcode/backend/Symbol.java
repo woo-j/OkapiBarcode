@@ -813,6 +813,14 @@ public abstract class Symbol {
         encodeInfo.append(s);
     }
 
+    protected void infoSpace(int i) {
+        encodeInfo.append(i).append(' ');
+    }
+
+    protected void infoSpace(char c) {
+        encodeInfo.append(c).append(' ');
+    }
+
     protected void infoLine(String s) {
         encodeInfo.append(s).append('\n');
     }

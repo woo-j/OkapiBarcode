@@ -229,7 +229,7 @@ public class DataBarExpanded extends Symbol {
                     vs[i] += 2048 >> j;
                 }
             }
-            info(vs[i] + " ");
+            infoSpace(vs[i]);
         }
         infoLine();
 

@@ -314,7 +314,7 @@ public class MaxiCode extends Symbol {
         infoLine("ECC Codewords: " + secondaryECMax);
         info("Codewords: ");
         for (int i = 0; i < codewords.length; i++) {
-            info(codewords[i] + " ");
+            infoSpace(codewords[i]);
         }
         infoLine();
 

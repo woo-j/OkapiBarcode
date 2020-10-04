@@ -771,7 +771,7 @@ public class Pdf417 extends Symbol {
 
         info("Codewords: ");
         for (int i = 0; i < codeWordCount; i++) {
-            info(codeWords[i] + " ");
+            infoSpace(codeWords[i]);
         }
         infoLine();
 
@@ -1024,7 +1024,7 @@ public class Pdf417 extends Symbol {
 
         info("Codewords: ");
         for (int i = 0; i < codeWordCount; i++) {
-            info(codeWords[i] + " ");
+            infoSpace(codeWords[i]);
         }
         infoLine();
 

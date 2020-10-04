@@ -546,7 +546,7 @@ public class Code16k extends Symbol {
             width_pattern += "1";
             for (i = 0; i < 5; i++) {
                 width_pattern += C16K_TABLE[values[(current_row * 5) + i]];
-                info(values[(current_row * 5) + i] + " ");
+                infoSpace(values[(current_row * 5) + i]);
             }
             width_pattern += C16K_START_STOP[C16K_STOP_VALUES[current_row]];
 

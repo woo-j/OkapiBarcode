@@ -862,7 +862,7 @@ public class QrCode extends Symbol {
                         }
                         int prod = ((jis >> 8) * 0xc0) + (jis & 0xff);
                         binaryAppend(prod, 13, binary);
-                        info(prod + " ");
+                        infoSpace(prod);
                     }
 
                     break;
@@ -884,7 +884,7 @@ public class QrCode extends Symbol {
                             b = 0x1d; /* FNC1 */
                         }
                         binaryAppend(b, 8, binary);
-                        info(b + " ");
+                        infoSpace(b);
                     }
 
                     break;
@@ -930,14 +930,14 @@ public class QrCode extends Symbol {
                         int prod = (first * 45) + second;
                         int count = 2;
                         binaryAppend(prod, 1 + (5 * count), binary);
-                        info(prod + " ");
+                        infoSpace(prod);
                     }
                     if (inputExpanded.length % 2 != 0) {
                         int first = positionOf((char) inputExpanded[inputExpanded.length - 1], RHODIUM);
                         int prod = first;
                         int count = 1;
                         binaryAppend(prod, 1 + (5 * count), binary);
-                        info(prod + " ");
+                        infoSpace(prod);
                     }
 
                     break;
@@ -974,7 +974,7 @@ public class QrCode extends Symbol {
 
                         binaryAppend(prod, 1 + (3 * count), binary);
 
-                        info(prod + " ");
+                        infoSpace(prod);
 
                         i += count;
                     }
@@ -1027,7 +1027,7 @@ public class QrCode extends Symbol {
 
         info("Codewords: ");
         for (i = 0; i < target_binlen; i++) {
-            info(datastream[i] + " ");
+            infoSpace(datastream[i]);
         }
         infoLine();
     }

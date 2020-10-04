@@ -1448,12 +1448,12 @@ public class AztecCode extends Symbol {
                         }
                     } else {
                         binaryString.append(PENTBIT[charmap[i]]);
-                        info(charmap[i] + " ");
+                        infoSpace(charmap[i]);
                     }
                     break;
                 case 16:
                     binaryString.append(QUADBIT[charmap[i]]);
-                    info(charmap[i] + " ");
+                    infoSpace(charmap[i]);
                     break;
                 case 32:
                     for (int weight = 0x80; weight > 0; weight = weight >> 1) {
@@ -1463,7 +1463,7 @@ public class AztecCode extends Symbol {
                             binaryString.append("0");
                         }
                     }
-                    info(charmap[i] + " ");
+                    infoSpace(charmap[i]);
                     break;
             }
         }
@@ -1557,7 +1557,7 @@ public class AztecCode extends Symbol {
                 }
                 m = m >> 1;
             }
-            info(l + " ");
+            infoSpace(l);
         }
         infoLine();
 
@@ -1570,7 +1570,7 @@ public class AztecCode extends Symbol {
         StringBuilder binary = new StringBuilder(4 * eciNumber.length());
         for (int i = 0; i < eciNumber.length(); i++) {
             binary.append(QUADBIT[(eciNumber.charAt(i) - '0') + 2]);
-            info(eciNumber.charAt(i) + " ");
+            infoSpace(eciNumber.charAt(i));
         }
         return binary.toString();
     }

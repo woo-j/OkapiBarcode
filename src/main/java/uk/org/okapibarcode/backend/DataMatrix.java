@@ -494,7 +494,7 @@ public class DataMatrix extends Symbol {
             tp++;
             binary[binary_length] = ' ';
             binary_length++;
-            info(ssi + " ");
+            infoSpace(ssi);
 
             /* file identification codeword 1 (valid values 1 - 254) */
             int id1 = 1 + ((structuredAppendFileId - 1) / 254);
@@ -502,7 +502,7 @@ public class DataMatrix extends Symbol {
             tp++;
             binary[binary_length] = ' ';
             binary_length++;
-            info(id1 + " ");
+            infoSpace(id1);
 
             /* file identification codeword 2 (valid values 1 - 254) */
             int id2 = 1 + ((structuredAppendFileId - 1) % 254);
@@ -510,7 +510,7 @@ public class DataMatrix extends Symbol {
             tp++;
             binary[binary_length] = ' ';
             binary_length++;
-            info(id2 + " ");
+            infoSpace(id2);
         }
 
         if (inputDataType == DataType.GS1) {
@@ -614,7 +614,7 @@ public class DataMatrix extends Symbol {
                 if (isTwoDigits(sp)) {
                     target[tp] = (10 * Character.getNumericValue(inputData[sp]))
                             + Character.getNumericValue(inputData[sp + 1]) + 130;
-                    info((target[tp] - 130) + " ");
+                    infoSpace(target[tp] - 130);
                     tp++;
                     binary[binary_length] = ' ';
                     binary_length++;
@@ -667,7 +667,7 @@ public class DataMatrix extends Symbol {
                             info("FNC4 ");
                             tp++;
                             target[tp] = (inputData[sp] - 128) + 1;
-                            info((target[tp] - 1) + " ");
+                            infoSpace(target[tp] - 1);
                             tp++;
                             binary[binary_length] = ' ';
                             binary_length++;
@@ -679,7 +679,7 @@ public class DataMatrix extends Symbol {
                                 info("FNC1 ");
                             } else {
                                 target[tp] = inputData[sp] + 1;
-                                info((target[tp] - 1) + " ");
+                                infoSpace(target[tp] - 1);
                             }
                             tp++;
                             binary[binary_length] = ' ';
@@ -955,7 +955,7 @@ public class DataMatrix extends Symbol {
 
                 if (next_mode == Mode.DM_BASE256) {
                     target[tp] = inputData[sp];
-                    info(target[tp] + " ");
+                    infoSpace(target[tp]);
                     tp++;
                     sp++;
                     binary[binary_length] = 'b';
@@ -1017,7 +1017,7 @@ public class DataMatrix extends Symbol {
         infoLine();
         info("Codewords: ");
         for (i = 0; i < tp; i++) {
-            info(target[i] + " ");
+            infoSpace(target[i]);
         }
         infoLine();
 

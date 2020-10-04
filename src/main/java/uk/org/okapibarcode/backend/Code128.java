@@ -473,14 +473,14 @@ public class Code128 extends Symbol {
                         } else {
                             values[bar_characters] = (c - 128) - 32;
                         }
-                        info(values[bar_characters] + " ");
+                        infoSpace(values[bar_characters]);
                     } else {
                         if (c < 32) {
                             values[bar_characters] = c + 64;
                         } else {
                             values[bar_characters] = c - 32;
                         }
-                        info(values[bar_characters] + " ");
+                        infoSpace(values[bar_characters]);
                     }
                     bar_characters++;
                     read++;
@@ -501,10 +501,10 @@ public class Code128 extends Symbol {
                         info("FNC4 ");
                     } else if (c > 127) {
                         values[bar_characters] = c - 32 - 128;
-                        info(values[bar_characters] + " ");
+                        infoSpace(values[bar_characters]);
                     } else {
                         values[bar_characters] = c - 32;
-                        info(values[bar_characters] + " ");
+                        infoSpace(values[bar_characters]);
                     }
                     bar_characters++;
                     read++;
@@ -519,7 +519,7 @@ public class Code128 extends Symbol {
                         int d = inputData[read + 1];
                         int weight = (10 * (c - '0')) + (d - '0');
                         values[bar_characters] = weight;
-                        info(values[bar_characters] + " ");
+                        infoSpace(values[bar_characters]);
                         bar_characters++;
                         read += 2;
                     }

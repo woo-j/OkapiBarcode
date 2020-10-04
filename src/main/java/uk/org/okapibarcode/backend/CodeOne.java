@@ -741,7 +741,7 @@ public class CodeOne extends Symbol {
     private void logCodewords(int count) {
         info("Codewords: ");
         for (int i = 0; i < count; i++) {
-            info(data[i] + " ");
+            infoSpace(data[i]);
         }
         infoLine();
     }

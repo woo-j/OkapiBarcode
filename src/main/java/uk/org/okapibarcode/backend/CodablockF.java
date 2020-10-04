@@ -238,11 +238,11 @@ public class CodablockF extends Symbol {
                     break;
             }
             row_pattern += C_128_TABLE[row_indicator[i]];
-            info(row_indicator[i] + " ");
+            infoSpace(row_indicator[i]);
 
-            for(j = 0; j < columns_needed; j++) {
-                    row_pattern += C_128_TABLE[blockmatrix[i][j]];
-                    info(blockmatrix[i][j] + " ");
+            for (j = 0; j < columns_needed; j++) {
+                row_pattern += C_128_TABLE[blockmatrix[i][j]];
+                infoSpace(blockmatrix[i][j]);
             }
 
             row_pattern += C_128_TABLE[row_check[i]];

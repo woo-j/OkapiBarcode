@@ -508,7 +508,8 @@ public class GridMatrix extends Symbol {
                 }
             }
 
-            info("ECI " + eciMode + " ");
+            info("ECI ");
+            infoSpace(eciMode);
         }
 
         do {
@@ -721,7 +722,7 @@ public class GridMatrix extends Symbol {
                         glyph = 7777 + inputData[sp];
                     }
 
-                    info(glyph + " ");
+                    infoSpace(glyph);
 
                     for (i = 0x1000; i > 0; i = i >> 1) {
                         if ((glyph & i) != 0) {
@@ -796,7 +797,7 @@ public class GridMatrix extends Symbol {
                         glyph += ppos;
                         glyph += 1000;
 
-                        info(glyph + " ");
+                        infoSpace(glyph);
 
                         for (i = 0x200; i > 0; i = i >> 1) {
                             if ((glyph & i) != 0) {
@@ -808,7 +809,7 @@ public class GridMatrix extends Symbol {
                     }
 
                     glyph = (100 * (numbuf[0] - '0')) + (10 * (numbuf[1] - '0')) + (numbuf[2] - '0');
-                    info(glyph + " ");
+                    infoSpace(glyph);
 
                     for (i = 0x200; i > 0; i = i >> 1) {
                         if ((glyph & i) != 0) {
@@ -833,7 +834,7 @@ public class GridMatrix extends Symbol {
                     }
 
                     glyph = inputData[sp];
-                    info(glyph + " ");
+                    infoSpace(glyph);
                     for (i = 0x80; i > 0; i = i >> 1) {
                         if ((glyph & i) != 0) {
                             binary += "1";
@@ -863,7 +864,7 @@ public class GridMatrix extends Symbol {
                     if (shift == 0) {
                         /* Mixed Mode character */
                         glyph = positionOf((char) inputData[sp], MIXED_ALPHANUM_SET);
-                        info(glyph + " ");
+                        infoSpace(glyph);
 
                         for (i = 0x20; i > 0; i = i >> 1) {
                             if ((glyph & i) != 0) {
@@ -898,7 +899,7 @@ public class GridMatrix extends Symbol {
                             // Space character
                             glyph = 26;
                         }
-                        info(glyph + " ");
+                        infoSpace(glyph);
 
                         for (i = 0x10; i > 0; i = i >> 1) {
                             if ((glyph & i) != 0) {
@@ -930,7 +931,7 @@ public class GridMatrix extends Symbol {
                     if (shift == 0) {
                         /* Lower Case character */
                         glyph = positionOf((char) inputData[sp], MIXED_ALPHANUM_SET) - 36;
-                        info(glyph + " ");
+                        infoSpace(glyph);
 
                         for (i = 0x10; i > 0; i = i >> 1) {
                             if ((glyph & i) != 0) {
@@ -1688,7 +1689,8 @@ public class GridMatrix extends Symbol {
             }
         }
 
-        info("SHT/" + glyph + " ");
+        info("SHT/");
+        infoSpace(glyph);
 
         for (i = 0x20; i > 0; i = i >> 1) {
             if ((glyph & i) != 0) {
@@ -1726,7 +1728,7 @@ public class GridMatrix extends Symbol {
 
         info("Codewords: ");
         for (i = 0; i < data_posn; i++) {
-            info(data[i] + " ");
+            infoSpace(data[i]);
         }
         infoLine();
 

@@ -2255,7 +2255,7 @@ public class Composite extends Symbol {
                     rsCodeWords[j] = (rsCodeWords[j - 1] + 929 - (total * CCA_COEFFS[offset + j]) % 929) % 929;
                 }
             }
-            info(codeWords[i] + " ");
+            infoSpace(codeWords[i]);
         }
         infoLine();
 
@@ -2592,7 +2592,7 @@ public class Composite extends Symbol {
                     mccorrection[j] = (mccorrection[j - 1] + 929 - (total * MICROCOEFFS[offset + j]) % 929) % 929;
                 }
             }
-            info(codeWords[i] + " ");
+            infoSpace(codeWords[i]);
         }
         infoLine();
 
@@ -2795,7 +2795,7 @@ public class Composite extends Symbol {
                     mccorrection[j] = (mccorrection[j - 1] + 929 - (total * COEFRS[offset + j]) % 929) % 929;
                 }
             }
-            info(codeWords[i] + " ");
+            infoSpace(codeWords[i]);
         }
         infoLine();
 

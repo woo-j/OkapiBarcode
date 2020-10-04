@@ -1359,17 +1359,13 @@ public class Pdf417 extends Symbol {
     }
 
     private void processText(int start, int length, boolean skipLatch) {
-        int j, blockIndext, curtable, wnet;
+        int j, blockIndext, curtable;
         int codeascii;
-        int[] listet0 = new int[5000];
-        int[] listet1 = new int[5000];
+        int wnet = 0;
+        int[] listet0 = new int[length];
+        int[] listet1 = new int[length];
         int[] chainet = new int[5000];
 
-        wnet = 0;
-
-        for (j = 0; j < 1000; j++) {
-            listet0[j] = 0;
-        }
         /* listet will contain the table numbers and the value of each characters */
         for (blockIndext = 0; blockIndext < length; blockIndext++) {
             codeascii = inputData[start + blockIndext];
@@ -1559,9 +1555,7 @@ public class Pdf417 extends Symbol {
         }
 
         for (j = 0; j < wnet; j += 2) {
-            int cw_number;
-
-            cw_number = (30 * chainet[j]) + chainet[j + 1];
+            int cw_number = (30 * chainet[j]) + chainet[j + 1];
             codeWords[codeWordCount] = cw_number;
             codeWordCount++;
         }

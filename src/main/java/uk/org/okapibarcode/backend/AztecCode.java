@@ -581,8 +581,9 @@ public class AztecCode extends Symbol {
                 }
 
                 adjustedString = adjustBinaryString(binaryString, compact, layers);
+                dataLength = adjustedString.length();
 
-            } while (adjustedString.length() > dataMaxSize);
+            } while (dataLength > dataMaxSize);
             /* This loop will only repeat on the rare occasions when the rule about not having all 1s or all 0s
              means that the binary string has had to be lengthened beyond the maximum number of bits that can
              be encoded in a symbol of the selected size */
@@ -600,6 +601,14 @@ public class AztecCode extends Symbol {
             }
 
             adjustedString = adjustBinaryString(binaryString, compact, layers);
+
+            /* Check if the data actually fits into the selected symbol size */
+            int codewordSize = getCodewordSize(layers);
+            int[] sizes = (compact ? AZTEC_COMPACT_SIZES : AZTEC_SIZES);
+            int dataMaxSize = codewordSize * (sizes[layers - 1] - 3);
+            if (adjustedString.length() > dataMaxSize) {
+                throw new OkapiException("Data too long for specified Aztec Code symbol size");
+            }
         }
 
         if (readerInit && compact && layers > 1) {
@@ -626,7 +635,7 @@ public class AztecCode extends Symbol {
         infoLine("Data Codewords: " + dataBlocks);
         infoLine("ECC Codewords: " + eccBlocks);
 
-        /** Add ECC data to the adjusted string */
+        /* Add ECC data to the adjusted string */
         addErrorCorrection(adjustedString, codewordSize, dataBlocks, eccBlocks);
 
         /* Invert the data so that actual data is on the outside and reed-solomon on the inside */
@@ -1478,43 +1487,35 @@ public class AztecCode extends Symbol {
 
         StringBuilder adjustedString = new StringBuilder();
         int codewordSize = getCodewordSize(layers);
+        int ones = 0;
 
-        for (int i = 0, j = 0; i < binaryString.length(); ) {
-            if (((j + 1) % codewordSize) == 0) {
-                /* Last bit of codeword */
-                boolean done = false;
-                int ones = 0;
-                for (int t = 0; t < (codewordSize - 1); t++) {
-                    if (binaryString.charAt((i - (codewordSize - 1)) + t) == '1') {
-                        ones++;
-                    }
-                }
-                if (ones == (codewordSize - 1)) {
+        /* Insert dummy digits needed to prevent codewords of all 0s or all 1s */
+        for (int i = 0; i < binaryString.length(); i++) {
+            if ((adjustedString.length() + 1) % codewordSize == 0) {
+                if (ones == codewordSize - 1) {
+                    // codeword of B-1 1s, add dummy 0
                     adjustedString.append('0');
-                    j++;
-                    done = true;
-                }
-                if (ones == 0) {
+                    i--;
+                } else if (ones == 0) {
+                    // codeword of B-1 0s, add dummy 1
                     adjustedString.append('1');
-                    j++;
-                    done = true;
-                }
-                if (!done) {
+                    i--;
+                } else {
+                    // no dummy value needed
                     adjustedString.append(binaryString.charAt(i));
-                    j++;
-                    i++;
                 }
+                ones = 0;
             } else {
                 adjustedString.append(binaryString.charAt(i));
-                j++;
-                i++;
+                if (binaryString.charAt(i) == '1') {
+                    ones++;
+                }
             }
         }
 
+        /* Add padding */
         int adjustedLength = adjustedString.length();
         int remainder = adjustedLength % codewordSize;
-
-        /* Add padding */
         int padBits = codewordSize - remainder;
         if (padBits == codewordSize) {
             padBits = 0;
@@ -1525,26 +1526,14 @@ public class AztecCode extends Symbol {
         adjustedLength = adjustedString.length();
 
         /* Make sure padding didn't create an invalid (all 1s) codeword */
-        int count = 0;
-        for (int i = Math.max(adjustedLength - codewordSize, 0); i < adjustedLength; i++) {
+        ones = 0;
+        for (int i = adjustedLength - codewordSize; i < adjustedLength && i >= 0; i++) {
             if (adjustedString.charAt(i) == '1') {
-                count++;
+                ones++;
             }
         }
-        if (count == codewordSize) {
+        if (ones == codewordSize) {
             adjustedString.setCharAt(adjustedLength - 1, '0');
-        }
-
-        /* Check if the data actually fits into the selected symbol size */
-        int dataMaxSize;
-        if (compact) {
-            dataMaxSize = codewordSize * (AZTEC_COMPACT_SIZES[layers - 1] - 3);
-        } else {
-            dataMaxSize = codewordSize * (AZTEC_SIZES[layers - 1] - 3);
-        }
-
-        if (adjustedLength > dataMaxSize) {
-            throw new OkapiException("Data too long for specified Aztec Code symbol size");
         }
 
         /* Log the codewords */

@@ -31,98 +31,12 @@ import java.io.UnsupportedEncodingException;
  */
 public class MicroQrCode extends Symbol {
 
-    private enum qrMode {
-        NULL, KANJI, BINARY, ALPHANUM, NUMERIC
-    }
     public enum EccMode {
         L, M, Q, H
     }
 
-    private qrMode[] inputMode;
-    private String binary;
-    private int[] binaryCount = new int[4];
-    private int[] grid;
-    private int[] eval;
-    private int preferredVersion;
-
-    /**
-     * Sets the preferred symbol size. This value may be ignored if the
-     * data string is too large to fit into the specified symbol. Input
-     * values correspond to symbol sizes as shown in the following table.
-     * <table summary="Range of Micro QR symbol sizes">
-     * <tbody>
-     * <tr>
-     * <th>Input</th>
-     * <th>Version</th>
-     * <th>Symbol Size</th>
-     * </tr>
-     * <tr>
-     * <td>1</td>
-     * <td>M1</td>
-     * <td>11 x 11</td>
-     * </tr>
-     * <tr>
-     * <td>2</td>
-     * <td>M2</td>
-     * <td>13 x 13</td>
-     * </tr>
-     * <tr>
-     * <td>3</td>
-     * <td>M3</td>
-     * <td>15 x 15</td>
-     * </tr>
-     * <tr>
-     * <td>4</td>
-     * <td>M4</td>
-     * <td>17 x 17</td>
-     * </tr>
-     * </tbody>
-     * </table>
-     *
-     * @param version Symbol size
-     */
-    public void setPreferredVersion(int version) {
-        preferredVersion = version;
-    }
-
-    private EccMode preferredEccLevel = EccMode.L;
-
-    /**
-     * Set the amount of symbol space allocated to error correction.
-     * Levels are predefined according to the following table:
-     * <table summary="Micro QR Error correction levels">
-     * <tbody>
-     * <tr>
-     * <th>ECC Level</th>
-     * <th>Error Correction Capacity</th>
-     * <th>Recovery Capacity</th>
-     * </tr>
-     * <tr>
-     * <td>L (default)</td>
-     * <td>Approx 20% of symbol</td>
-     * <td>Approx 7%</td>
-     * </tr>
-     * <tr>
-     * <td>M</td>
-     * <td>Approx 37% of symbol</td>
-     * <td>Approx 15%</td>
-     * </tr>
-     * <tr>
-     * <td>Q</td>
-     * <td>Approx 55% of symbol</td>
-     * <td>Approx 25%</td>
-     * </tr>
-     * <tr>
-     * <td>H</td>
-     * <td>Approx 65% of symbol</td>
-     * <td>Approx 30%</td>
-     * </tr>
-     * </tbody>
-     * </table>
-     * @param eccMode Error correction level
-     */
-    public void setEccMode (EccMode eccMode) {
-        preferredEccLevel = eccMode;
+    private enum qrMode {
+        NULL, KANJI, BINARY, ALPHANUM, NUMERIC
     }
 
     /* Table 5 - Encoding/Decoding table for Alphanumeric mode */
@@ -141,9 +55,84 @@ public class MicroQrCode extends Symbol {
         0x2a51, 0x34e3, 0x31d4, 0x3e8d, 0x3bba
     };
 
-    private static final int[] MICRO_QR_SIZES = {
-        11, 13, 15, 17
-    };
+    private static final int[] MICRO_QR_SIZES = { 11, 13, 15, 17 };
+
+    // user-specified values and settings
+
+    private int preferredVersion;
+    private EccMode preferredEccLevel = EccMode.L;
+
+    // internal state calculated when setContent() is called
+
+    private qrMode[] inputMode;
+    private String binary;
+    private int[] binaryCount = new int[4];
+    private int[] grid;
+    private int[] eval;
+
+    /**
+     * <p>Sets the preferred symbol size. This value may be ignored if the
+     * data string is too large to fit into the specified symbol. Input
+     * values correspond to symbol sizes as shown in the following table.
+     *
+     * <table summary="Range of Micro QR symbol sizes">
+     * <tbody>
+     * <tr><th>Input</th><th>Version</th><th>Symbol Size</th></tr>
+     * <tr><td>1    </td><td>M1     </td><td>11 x 11    </td></tr>
+     * <tr><td>2    </td><td>M2     </td><td>13 x 13    </td></tr>
+     * <tr><td>3    </td><td>M3     </td><td>15 x 15    </td></tr>
+     * <tr><td>4    </td><td>M4     </td><td>17 x 17    </td></tr>
+     * </tbody>
+     * </table>
+     *
+     * @param version symbol size
+     */
+    public void setPreferredVersion(int version) {
+        if (version < 0 || version > 4) { // TODO: min 1
+            throw new IllegalArgumentException("Invalid version: " + version);
+        }
+        preferredVersion = version;
+    }
+
+    /**
+     * Returns the preferred symbol size.
+     *
+     * @return the preferred symbol size
+     * @see #setPreferredVersion(int)
+     */
+    public int getPreferredVersion() {
+        return preferredVersion;
+    }
+
+    /**
+     * <p>Set the amount of symbol space allocated to error correction. Levels are
+     * predefined according to the following table:
+     *
+     * <table summary="Micro QR Error correction levels">
+     * <tbody>
+     * <tr><th>ECC Level  </th><th>Error Correction Capacity</th><th>Recovery Capacity</th></tr>
+     * <tr><td>L (default)</td><td>Approx 20% of symbol     </td><td>Approx 7%        </td></tr>
+     * <tr><td>M          </td><td>Approx 37% of symbol     </td><td>Approx 15%       </td></tr>
+     * <tr><td>Q          </td><td>Approx 55% of symbol     </td><td>Approx 25%       </td></tr>
+     * <tr><td>H          </td><td>Approx 65% of symbol     </td><td>Approx 30%       </td></tr>
+     * </tbody>
+     * </table>
+     *
+     * @param eccMode error correction level
+     */
+    public void setEccMode(EccMode eccMode) {
+        preferredEccLevel = eccMode;
+    }
+
+    /**
+     * Returns the preferred ECC mode (error correction level).
+     *
+     * @return the preferred ECC mode
+     * @see #setEccMode(EccMode)
+     */
+    public EccMode getEccMode() {
+        return preferredEccLevel;
+    }
 
     @Override
     protected void encode() {
@@ -217,7 +206,7 @@ public class MicroQrCode extends Symbol {
 
         getBinaryLength();
 
-        /* Eliminate possivle versions depending on type of content */
+        /* Eliminate possible versions depending on type of content */
         if (byteModeUsed) {
             version_valid[0] = false;
             version_valid[1] = false;
@@ -288,9 +277,9 @@ public class MicroQrCode extends Symbol {
 
         version = autoversion;
         /* Get version from user */
-        if((preferredVersion >= 1) && (preferredVersion <= 4)) {
-            if(preferredVersion >= autoversion) {
-                version = preferredVersion;
+        if(preferredVersion >= 1 && preferredVersion <= 4) {
+            if(preferredVersion - 1 >= autoversion) {
+                version = preferredVersion - 1;
             }
         }
 
@@ -750,7 +739,10 @@ public class MicroQrCode extends Symbol {
                         throw new OkapiException("Character encoding error");
                     }
 
-                    jis = ((jisBytes[0] & 0xFF) << 8) + (jisBytes[1] & 0xFF);
+                    jis = ((jisBytes[0] & 0xFF) << 8);
+                    if (jisBytes.length > 1) {
+                        jis += (jisBytes[1] & 0xFF);
+                    }
 
                     if (jis > 0x9fff) {
                         jis -= 0xc140;

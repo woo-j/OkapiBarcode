@@ -354,12 +354,12 @@ public class DataBarExpanded extends Symbol {
             row_height[0 + compositeOffset] = -1;
             pattern = new String[1 + compositeOffset];
 
-            pattern[0 + compositeOffset] = "0";
             writer = 0;
             black = false;
+            StringBuilder pat = new StringBuilder("0");
             StringBuilder separator_binary = new StringBuilder();
             for (i = 0; i < pattern_width; i++) {
-                pattern[0 + compositeOffset] += (char) (elements[i] + '0');
+                pat.append((char) (elements[i] + '0'));
                 for (j = 0; j < elements[i]; j++) {
                     if (black) {
                         separator_binary.append('0');
@@ -367,10 +367,11 @@ public class DataBarExpanded extends Symbol {
                         separator_binary.append('1');
                     }
                 }
-
-                black = !(black);
+                black = !black;
                 writer += elements[i];
             }
+            pattern[0 + compositeOffset] = pat.toString();
+
             separator_binary.setCharAt(0, '0');
             separator_binary.setCharAt(1, '0');
             separator_binary.setCharAt(2, '0');
@@ -475,12 +476,12 @@ public class DataBarExpanded extends Symbol {
                 sub_elements[elements_in_sub + 1] = 1;
                 elements_in_sub += 2;
 
-                pattern[symbol_row + compositeOffset] = "";
                 black = true;
+                StringBuilder pat = new StringBuilder();
                 row_height[symbol_row + compositeOffset] = -1;
 
                 if ((current_row & 1) != 0) {
-                    pattern[symbol_row + compositeOffset] = "0";
+                    pat.append('0');
                     black = false;
                 } else {
                     if ((current_row == stack_rows)
@@ -489,7 +490,7 @@ public class DataBarExpanded extends Symbol {
                         /* Special case bottom row */
                         special_case_row = true;
                         sub_elements[0] = 2;
-                        pattern[symbol_row + compositeOffset] = "0";
+                        pat.append('0');
                         black = false;
                     }
                 }
@@ -498,13 +499,14 @@ public class DataBarExpanded extends Symbol {
 
                 StringBuilder separator_binary = new StringBuilder();
                 for (i = 0; i < elements_in_sub; i++) {
-                    pattern[symbol_row + compositeOffset] += (char) (sub_elements[i] + '0');
+                    pat.append((char) (sub_elements[i] + '0'));
                     for (j = 0; j < sub_elements[i]; j++) {
                         separator_binary.append(black ? '0' : '1');
                     }
                     black = !black;
                     writer += sub_elements[i];
                 }
+                pattern[symbol_row + compositeOffset] = pat.toString();
                 separator_binary.setCharAt(0, '0');
                 separator_binary.setCharAt(1, '0');
                 separator_binary.setCharAt(2, '0');
@@ -536,10 +538,11 @@ public class DataBarExpanded extends Symbol {
 
                 if (current_row != 1) {
                     /* middle separator pattern (above current row) */
-                    pattern[symbol_row - 2 + compositeOffset] = "05";
+                    pat = new StringBuilder("05");
                     for (j = 5; j < (49 * blocksPerRow); j += 2) {
-                        pattern[symbol_row - 2 + compositeOffset] += "11";
+                        pat.append("11");
                     }
+                    pattern[symbol_row - 2 + compositeOffset] = pat.toString();
                     row_height[symbol_row - 2 + compositeOffset] = 1;
                     /* bottom separator pattern (above current row) */
                     row_height[symbol_row - 1 + compositeOffset] = 1;

@@ -589,16 +589,15 @@ public class MicroQrCode extends Symbol {
     }
 
     private String toBinary(int data, int h) {
-        String argument = "";
-        for (;
-        (h != 0); h >>= 1) {
+        StringBuilder binary = new StringBuilder();
+        for (; h != 0; h >>= 1) {
             if ((data & h) != 0) {
-                argument += "1";
+                binary.append('1');
             } else {
-                argument += "0";
+                binary.append('0');
             }
         }
-        return argument;
+        return binary.toString();
     }
 
     private void getBinaryLength() {

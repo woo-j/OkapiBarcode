@@ -42,6 +42,7 @@ public class GridMatrix extends Symbol {
     private static final int[] GM_RECOMMEND_CW = {
         9, 30, 59, 114, 170, 237, 315, 405, 506, 618, 741, 875, 1021
     };
+
     private static final int[] GM_MAX_CW = {
         11, 40, 79, 146, 218, 305, 405, 521, 650, 794, 953, 1125, 1313
     };

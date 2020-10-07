@@ -1364,7 +1364,7 @@ public class Pdf417 extends Symbol {
         int wnet = 0;
         int[] listet0 = new int[length];
         int[] listet1 = new int[length];
-        int[] chainet = new int[5000];
+        int[] chainet = new int[length * 4];
 
         /* listet will contain the table numbers and the value of each characters */
         for (blockIndext = 0; blockIndext < length; blockIndext++) {

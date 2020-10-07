@@ -1417,18 +1417,18 @@ public class AztecCode extends Symbol {
                                 binaryString.append("00000");
                                 for (int weight = 0x400; weight > 0; weight = weight >> 1) {
                                     if (((bytes - 31) & weight) != 0) {
-                                        binaryString.append("1");
+                                        binaryString.append('1');
                                     } else {
-                                        binaryString.append("0");
+                                        binaryString.append('0');
                                     }
                                 }
                             } else {
                                 /* Put 5-bit number of bytes */
                                 for (int weight = 0x10; weight > 0; weight = weight >> 1) {
                                     if ((bytes & weight) != 0) {
-                                        binaryString.append("1");
+                                        binaryString.append('1');
                                     } else {
-                                        binaryString.append("0");
+                                        binaryString.append('0');
                                     }
                                 }
                             }
@@ -1467,9 +1467,9 @@ public class AztecCode extends Symbol {
                 case 32:
                     for (int weight = 0x80; weight > 0; weight = weight >> 1) {
                         if ((charmap[i] & weight) != 0) {
-                            binaryString.append("1");
+                            binaryString.append('1');
                         } else {
-                            binaryString.append("0");
+                            binaryString.append('0');
                         }
                     }
                     infoSpace(charmap[i]);

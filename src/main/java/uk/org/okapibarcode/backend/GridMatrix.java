@@ -183,7 +183,7 @@ public class GridMatrix extends Symbol {
         NULL, GM_NUMBER, GM_LOWER, GM_UPPER, GM_MIXED, GM_CONTROL, GM_BYTE, GM_CHINESE
     }
 
-    private String binary;
+    private StringBuilder binary;
     private int[] word = new int[1460];
     private boolean[] grid;
     private Mode appxDnextSection = Mode.NULL;
@@ -456,10 +456,9 @@ public class GridMatrix extends Symbol {
         int byte_count_posn = 0, byte_count = 0;
         int shift, i;
         int[] numbuf = new int[3];
-        String temp_binary;
         Mode[] modeMap = calculateModeMap(length);
 
-        binary = "";
+        binary = new StringBuilder();
 
         sp = 0;
         current_mode = Mode.NULL;
@@ -468,42 +467,42 @@ public class GridMatrix extends Symbol {
         info("Encoding: ");
 
         if (reader) {
-            binary += "1010"; /* FNC3 - Reader Initialisation */
+            binary.append("1010"); /* FNC3 - Reader Initialisation */
             info("INIT ");
         }
 
         if ((eciMode != 3) && (eciMode != 29)) {
-            binary += "1100"; /* ECI */
+            binary.append("1100"); /* ECI */
 
             if ((eciMode >= 0) && (eciMode <= 1023)) {
-                binary += "0";
+                binary.append('0');
                 for (i = 0x200; i > 0; i = i >> 1) {
                     if ((eciMode & i) != 0) {
-                        binary += "1";
+                        binary.append('1');
                     } else {
-                        binary += "0";
+                        binary.append('0');
                     }
                 }
             }
 
             if ((eciMode >= 1024) && (eciMode <= 32767)) {
-                binary += "10";
+                binary.append("10");
                 for (i = 0x4000; i > 0; i = i >> 1) {
                     if ((eciMode & i) != 0) {
-                        binary += "1";
+                        binary.append('1');
                     } else {
-                        binary += "0";
+                        binary.append('0');
                     }
                 }
             }
 
             if ((eciMode >= 32768) && (eciMode <= 811799)) {
-                binary += "11";
+                binary.append("11");
                 for (i = 0x80000; i > 0; i = i >> 1) {
                     if ((eciMode & i) != 0) {
-                        binary += "1";
+                        binary.append('1');
                     } else {
-                        binary += "0";
+                        binary.append('0');
                     }
                 }
             }
@@ -520,76 +519,73 @@ public class GridMatrix extends Symbol {
                     case NULL:
                         switch (next_mode) {
                             case GM_CHINESE:
-                                binary += "0001";
+                                binary.append("0001");
                                 break;
                             case GM_NUMBER:
-                                binary += "0010";
+                                binary.append("0010");
                                 break;
                             case GM_LOWER:
-                                binary += "0011";
+                                binary.append("0011");
                                 break;
                             case GM_UPPER:
-                                binary += "0100";
+                                binary.append("0100");
                                 break;
                             case GM_MIXED:
-                                binary += "0101";
+                                binary.append("0101");
                                 break;
                             case GM_BYTE:
-                                binary += "0111";
+                                binary.append("0111");
                                 break;
                         }
                         break;
                     case GM_CHINESE:
                         switch (next_mode) {
                             case GM_NUMBER:
-                                binary += "1111111100001";
+                                binary.append("1111111100001");
                                 break; // 8161
                             case GM_LOWER:
-                                binary += "1111111100010";
+                                binary.append("1111111100010");
                                 break; // 8162
                             case GM_UPPER:
-                                binary += "1111111100011";
+                                binary.append("1111111100011");
                                 break; // 8163
                             case GM_MIXED:
-                                binary += "1111111100100";
+                                binary.append("1111111100100");
                                 break; // 8164
                             case GM_BYTE:
-                                binary += "1111111100101";
+                                binary.append("1111111100101");
                                 break; // 8165
                         }
                         break;
                     case GM_NUMBER:
                         /* add numeric block padding value */
-                        temp_binary = binary.substring(0, number_pad_posn);
                         switch (p) {
                             case 1:
-                                temp_binary += "10";
+                                binary.insert(number_pad_posn, "10");
                                 break; // 2 pad digits
                             case 2:
-                                temp_binary += "01";
+                                binary.insert(number_pad_posn, "01");
                                 break; // 1 pad digit
                             case 3:
-                                temp_binary += "00";
+                                binary.insert(number_pad_posn, "00");
                                 break; // 0 pad digits
                         }
-                        temp_binary += binary.substring(number_pad_posn, binary.length());
-                        binary = temp_binary;
 
                         switch (next_mode) {
                             case GM_CHINESE:
-                                binary += "1111111011";
+                                binary.append("1111111011");
                                 break; // 1019
                             case GM_LOWER:
-                                binary += "1111111100";
+                                binary.append("1111111100");
                                 break; // 1020
                             case GM_UPPER:
-                                binary += "1111111101";
+                                binary.append("1111111101");
                                 break; // 1021
                             case GM_MIXED:
-                                binary += "1111111110";
+                                binary.append("1111111110");
                                 break; // 1022
                             case GM_BYTE:
-                                binary += "1111111111";
+                                binary.append("1111111111");
                                 break; // 1023
                         }
                         break;
@@ -597,39 +593,39 @@ public class GridMatrix extends Symbol {
                     case GM_UPPER:
                         switch (next_mode) {
                             case GM_CHINESE:
-                                binary += "11100";
+                                binary.append("11100");
                                 break; // 28
                             case GM_NUMBER:
-                                binary += "11101";
+                                binary.append("11101");
                                 break; // 29
                             case GM_LOWER:
                             case GM_UPPER:
-                                binary += "11110";
+                                binary.append("11110");
                                 break; // 30
                             case GM_MIXED:
-                                binary += "1111100";
+                                binary.append("1111100");
                                 break; // 124
                             case GM_BYTE:
-                                binary += "1111110";
+                                binary.append("1111110");
                                 break; // 126
                         }
                         break;
                     case GM_MIXED:
                         switch (next_mode) {
                             case GM_CHINESE:
-                                binary += "1111110001";
+                                binary.append("1111110001");
                                 break; // 1009
                             case GM_NUMBER:
-                                binary += "1111110010";
+                                binary.append("1111110010");
                                 break; // 1010
                             case GM_LOWER:
-                                binary += "1111110011";
+                                binary.append("1111110011");
                                 break; // 1011
                             case GM_UPPER:
-                                binary += "1111110100";
+                                binary.append("1111110100");
                                 break; // 1012
                             case GM_BYTE:
-                                binary += "1111110111";
+                                binary.append("1111110111");
                                 break; // 1015
                         }
                         break;
@@ -639,19 +635,19 @@ public class GridMatrix extends Symbol {
                         byte_count = 0;
                         switch (next_mode) {
                             case GM_CHINESE:
-                                binary += "0001";
+                                binary.append("0001");
                                 break; // 1
                             case GM_NUMBER:
-                                binary += "0010";
+                                binary.append("0010");
                                 break; // 2
                             case GM_LOWER:
-                                binary += "0011";
+                                binary.append("0011");
                                 break; // 3
                             case GM_UPPER:
-                                binary += "0100";
+                                binary.append("0100");
                                 break; // 4
                             case GM_MIXED:
-                                binary += "0101";
+                                binary.append("0101");
                                 break; // 5
                         }
                         break;
@@ -726,9 +722,9 @@ public class GridMatrix extends Symbol {
 
                     for (i = 0x1000; i > 0; i = i >> 1) {
                         if ((glyph & i) != 0) {
-                            binary += "1";
+                            binary.append('1');
                         } else {
-                            binary += "0";
+                            binary.append('0');
                         }
                     }
                     sp++;
@@ -801,9 +797,9 @@ public class GridMatrix extends Symbol {
 
                         for (i = 0x200; i > 0; i = i >> 1) {
                             if ((glyph & i) != 0) {
-                                binary += "1";
+                                binary.append('1');
                             } else {
-                                binary += "0";
+                                binary.append('0');
                             }
                         }
                     }
@@ -813,9 +809,9 @@ public class GridMatrix extends Symbol {
 
                     for (i = 0x200; i > 0; i = i >> 1) {
                         if ((glyph & i) != 0) {
-                            binary += "1";
+                            binary.append('1');
                         } else {
-                            binary += "0";
+                            binary.append('0');
                         }
                     }
                     break;
@@ -828,7 +824,7 @@ public class GridMatrix extends Symbol {
                     if (byte_count == 512) {
                         /* Maximum byte block size is 512 bytes. If longer is needed then start a new block */
                         addByteCount(byte_count_posn, byte_count);
-                        binary += "0111";
+                        binary.append("0111");
                         byte_count_posn = binary.length();
                         byte_count = 0;
                     }
@@ -837,9 +833,9 @@ public class GridMatrix extends Symbol {
                     infoSpace(glyph);
                     for (i = 0x80; i > 0; i = i >> 1) {
                         if ((glyph & i) != 0) {
-                            binary += "1";
+                            binary.append('1');
                         } else {
-                            binary += "0";
+                            binary.append('0');
                         }
                     }
                     sp++;
@@ -868,14 +864,14 @@ public class GridMatrix extends Symbol {
 
                         for (i = 0x20; i > 0; i = i >> 1) {
                             if ((glyph & i) != 0) {
-                                binary += "1";
+                                binary.append('1');
                             } else {
-                                binary += "0";
+                                binary.append('0');
                             }
                         }
                     } else {
                         /* Shift Mode character */
-                        binary += "1111110110"; /* 1014 - shift indicator */
+                        binary.append("1111110110"); /* 1014 - shift indicator */
 
                         addShiftCharacter(inputData[sp]);
                     }
@@ -903,15 +899,15 @@ public class GridMatrix extends Symbol {
 
                         for (i = 0x10; i > 0; i = i >> 1) {
                             if ((glyph & i) != 0) {
-                                binary += "1";
+                                binary.append('1');
                             } else {
-                                binary += "0";
+                                binary.append('0');
                             }
                         }
 
                     } else {
                         /* Shift Mode character */
-                        binary += "1111101"; /* 127 - shift indicator */
+                        binary.append("1111101"); /* 127 - shift indicator */
 
                         addShiftCharacter(inputData[sp]);
                     }
@@ -935,15 +931,15 @@ public class GridMatrix extends Symbol {
 
                         for (i = 0x10; i > 0; i = i >> 1) {
                             if ((glyph & i) != 0) {
-                                binary += "1";
+                                binary.append('1');
                             } else {
-                                binary += "0";
+                                binary.append('0');
                             }
                         }
 
                     } else {
                         /* Shift Mode character */
-                        binary += "1111101"; /* 127 - shift indicator */
+                        binary.append("1111101"); /* 127 - shift indicator */
 
                         addShiftCharacter(inputData[sp]);
                     }
@@ -961,20 +957,17 @@ public class GridMatrix extends Symbol {
 
         if (current_mode == Mode.GM_NUMBER) {
             /* add numeric block padding value */
-            temp_binary = binary.substring(0, number_pad_posn);
             switch (p) {
                 case 1:
-                    temp_binary += "10";
+                    binary.insert(number_pad_posn, "10");
                     break; // 2 pad digits
                 case 2:
-                    temp_binary += "01";
+                    binary.insert(number_pad_posn, "01");
                     break; // 1 pad digit
                 case 3:
-                    temp_binary += "00";
+                    binary.insert(number_pad_posn, "00");
                     break; // 0 pad digits
             }
-            temp_binary += binary.substring(number_pad_posn, binary.length());
-            binary = temp_binary;
         }
 
         if (current_mode == Mode.GM_BYTE) {
@@ -985,20 +978,20 @@ public class GridMatrix extends Symbol {
         /* Add "end of data" character */
         switch (current_mode) {
             case GM_CHINESE:
-                binary += "1111111100000";
+                binary.append("1111111100000");
                 break; // 8160
             case GM_NUMBER:
-                binary += "1111111010";
+                binary.append("1111111010");
                 break; // 1018
             case GM_LOWER:
             case GM_UPPER:
-                binary += "11011";
+                binary.append("11011");
                 break; // 27
             case GM_MIXED:
-                binary += "1111110000";
+                binary.append("1111110000");
                 break; // 1008
             case GM_BYTE:
-                binary += "0000";
+                binary.append("0000");
                 break; // 0
         }
 
@@ -1008,7 +1001,7 @@ public class GridMatrix extends Symbol {
             p = 0;
         }
         for (i = 0; i < p; i++) {
-            binary += "0";
+            binary.append('0');
         }
 
         if (binary.length() > 9191) {
@@ -1663,19 +1656,13 @@ public class GridMatrix extends Symbol {
 
     private void addByteCount(int byte_count_posn, int byte_count) {
         /* Add the length indicator for byte encoded blocks */
-        int i;
-        String temp_binary;
-
-        temp_binary = binary.substring(0, byte_count_posn);
-        for (i = 0; i < 9; i++) {
+        for (int i = 0; i < 9; i++) {
             if ((byte_count & (0x100 >> i)) != 0) {
-                temp_binary += "0";
+                binary.insert(byte_count_posn + i, '0');
             } else {
-                temp_binary += "1";
+                binary.insert(byte_count_posn + i, '1');
             }
         }
-        temp_binary += binary.substring(byte_count_posn, binary.length());
-        binary = temp_binary;
     }
 
     void addShiftCharacter(int shifty) {
@@ -1694,9 +1681,9 @@ public class GridMatrix extends Symbol {
 
         for (i = 0x20; i > 0; i = i >> 1) {
             if ((glyph & i) != 0) {
-                binary += "1";
+                binary.append('1');
             } else {
-                binary += "0";
+                binary.append('0');
             }
         }
     }

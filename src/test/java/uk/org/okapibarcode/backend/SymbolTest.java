@@ -789,7 +789,7 @@ public class SymbolTest {
                             int index = line.indexOf('=');
                             if (index != -1) {
                                 String name = line.substring(0, index);
-                                String value = Strings.replacePlaceholders(line.substring(index + 1), true);
+                                String value = Strings.unescape(line.substring(index + 1), true);
                                 if ("null".equals(value)) {
                                     value = null;
                                 }

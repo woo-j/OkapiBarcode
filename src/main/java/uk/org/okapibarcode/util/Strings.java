@@ -16,6 +16,8 @@
 
 package uk.org.okapibarcode.util;
 
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
+
 import java.nio.charset.StandardCharsets;
 
 import uk.org.okapibarcode.backend.OkapiException;
@@ -32,14 +34,81 @@ public final class Strings {
     }
 
     /**
+     * Replaces raw values with special placeholders, where applicable.
+     *
+     * @param s the string to add placeholders to
+     * @return the specified string, with placeholders added
+     * @see <a href="http://www.zint.org.uk/Manual.aspx?type=p&page=4">Zint placeholders</a>
+     * @see #unescape(String, boolean)
+     */
+    public static String escape(String s) {
+        StringBuilder sb = new StringBuilder(s.length() + 10);
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            switch (c) {
+                case '\u0000':
+                    sb.append("\\0"); // null
+                    break;
+                case '\u0004':
+                    sb.append("\\E"); // end of transmission
+                    break;
+                case '\u0007':
+                    sb.append("\\a"); // bell
+                    break;
+                case '\u0008':
+                    sb.append("\\b"); // backspace
+                    break;
+                case '\u0009':
+                    sb.append("\\t"); // horizontal tab
+                    break;
+                case '\n':
+                    sb.append("\\n"); // line feed
+                    break;
+                case '\u000b':
+                    sb.append("\\v"); // vertical tab
+                    break;
+                case '\u000c':
+                    sb.append("\\f"); // form feed
+                    break;
+                case '\r':
+                    sb.append("\\r"); // carriage return
+                    break;
+                case '\u001b':
+                    sb.append("\\e"); // escape
+                    break;
+                case '\u001d':
+                    sb.append("\\G"); // group separator
+                    break;
+                case '\u001e':
+                    sb.append("\\R"); // record separator
+                    break;
+                case '\\':
+                    sb.append("\\\\"); // escape the escape character
+                    break;
+                default:
+                    if (c >= 32 && c <= 126) {
+                        sb.append(c); // printable ASCII
+                    } else {
+                        byte[] bytes = String.valueOf(c).getBytes(ISO_8859_1);
+                        String hex = String.format("%02X", bytes[0] & 0xFF);
+                        sb.append("\\x").append(hex);
+                    }
+                    break;
+            }
+        }
+        return sb.toString();
+    }
+
+    /**
      * Replaces any special placeholders with their raw values (not including FNC values).
      *
      * @param s the string to check for placeholders
      * @param lenient whether or not to be lenient with unrecognized escape sequences
      * @return the specified string, with placeholders replaced
      * @see <a href="http://www.zint.org.uk/Manual.aspx?type=p&page=4">Zint placeholders</a>
+     * @see #escape(String)
      */
-    public static String replacePlaceholders(String s, boolean lenient) {
+    public static String unescape(String s, boolean lenient) {
         StringBuilder sb = new StringBuilder(s.length());
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);

@@ -65,7 +65,7 @@ public class MicroQrCode extends Symbol {
     // internal state calculated when setContent() is called
 
     private qrMode[] inputMode;
-    private String binary;
+    private StringBuilder binary;
     private int[] binaryCount = new int[4];
     private int[] grid;
     private int[] eval;
@@ -301,7 +301,7 @@ public class MicroQrCode extends Symbol {
             ecc_level = EccMode.M;
         }
 
-        binary = "";
+        binary = new StringBuilder();
         generateBinary(version);
         if (binary.length() > 128) {
             throw new OkapiException("Input data too long");
@@ -715,15 +715,15 @@ public class MicroQrCode extends Symbol {
                 /* Mode indicator */
                 switch (version) {
                 case 2:
-                    binary += "11";
+                    binary.append("11");
                     break;
                 case 3:
-                    binary += "011";
+                    binary.append("011");
                     break;
                 }
 
                 /* Character count indicator */
-                binary += toBinary(blockLength, 1 << version); /* version = 2..3 */
+                binary.append(toBinary(blockLength, 1 << version)); /* version = 2..3 */
 
                 info("KANJ (" + blockLength + ") ");
 
@@ -753,7 +753,7 @@ public class MicroQrCode extends Symbol {
                     lsb = (jis & 0xff);
                     prod = (msb * 0xc0) + lsb;
 
-                    binary += toBinary(prod, 0x1000);
+                    binary.append(toBinary(prod, 0x1000));
 
                     infoSpace(prod);
                 }
@@ -764,22 +764,22 @@ public class MicroQrCode extends Symbol {
                 /* Mode indicator */
                 switch (version) {
                 case 2:
-                    binary += "10";
+                    binary.append("10");
                     break;
                 case 3:
-                    binary += "010";
+                    binary.append("010");
                     break;
                 }
 
                 /* Character count indicator */
-                binary += toBinary(blockLength, 2 << version); /* version = 2..3 */
+                binary.append(toBinary(blockLength, 2 << version)); /* version = 2..3 */
 
                 info("BYTE (" + blockLength + ") ");
 
                 /* Character representation */
                 for (i = 0; i < blockLength; i++) {
                     int lbyte = content.charAt(position + i);
-                    binary += toBinary(lbyte, 0x80);
+                    binary.append(toBinary(lbyte, 0x80));
                     infoSpace(lbyte);
                 }
 
@@ -789,18 +789,18 @@ public class MicroQrCode extends Symbol {
                 /* Mode indicator */
                 switch (version) {
                 case 1:
-                    binary += "1";
+                    binary.append("1");
                     break;
                 case 2:
-                    binary += "01";
+                    binary.append("01");
                     break;
                 case 3:
-                    binary += "001";
+                    binary.append("001");
                     break;
                 }
 
                 /* Character count indicator */
-                binary += toBinary(blockLength, 2 << version); /* version = 1..3 */
+                binary.append(toBinary(blockLength, 2 << version)); /* version = 1..3 */
 
                 info("ALPH (" + blockLength + ") ");
 
@@ -819,7 +819,7 @@ public class MicroQrCode extends Symbol {
                         }
                     }
 
-                    binary += toBinary(prod, 1 << (5 * count)); /* count = 1..2 */
+                    binary.append(toBinary(prod, 1 << (5 * count))); /* count = 1..2 */
 
                     infoSpace(prod);
 
@@ -832,18 +832,18 @@ public class MicroQrCode extends Symbol {
                 /* Mode indicator */
                 switch (version) {
                 case 1:
-                    binary += "0";
+                    binary.append("0");
                     break;
                 case 2:
-                    binary += "00";
+                    binary.append("00");
                     break;
                 case 3:
-                    binary += "000";
+                    binary.append("000");
                     break;
                 }
 
                 /* Character count indicator */
-                binary += toBinary(blockLength, 4 << version); /* version = 0..3 */
+                binary.append(toBinary(blockLength, 4 << version)); /* version = 0..3 */
 
                 info("NUMB (" + blockLength + ") ");
 
@@ -870,7 +870,7 @@ public class MicroQrCode extends Symbol {
                         }
                     }
 
-                    binary += toBinary(prod, 1 << (3 * count)); /* count = 1..3 */
+                    binary.append(toBinary(prod, 1 << (3 * count))); /* count = 1..3 */
 
                     infoSpace(prod);
 
@@ -885,21 +885,21 @@ public class MicroQrCode extends Symbol {
         /* Add terminator */
         switch(version) {
             case 0:
-                binary += "000";
+                binary.append("000");
                 break;
             case 1:
                 if (binary.length() < 37) {
-                    binary += "00000";
+                    binary.append("00000");
                 }
                 break;
             case 2:
                 if (binary.length() < 81) {
-                    binary += "0000000";
+                    binary.append("0000000");
                 }
                 break;
             case 3:
                 if (binary.length() < 125) {
-                    binary += "000000000";
+                    binary.append("000000000");
                 }
                 break;
         }
@@ -922,7 +922,7 @@ public class MicroQrCode extends Symbol {
         bits_left = bits_total - binary.length();
         if (bits_left <= 4) {
             for (i = 0; i < bits_left; i++) {
-                binary += "0";
+                binary.append("0");
             }
             latch = 1;
         }
@@ -934,7 +934,7 @@ public class MicroQrCode extends Symbol {
                 remainder = 0;
             }
             for (i = 0; i < remainder; i++) {
-                binary += "0";
+                binary.append("0");
             }
 
             /* Add padding */
@@ -943,13 +943,13 @@ public class MicroQrCode extends Symbol {
                 remainder = (bits_left - 4) / 8;
                 for (i = 0; i < remainder; i++) {
                     if ((i & 1) != 0) {
-                        binary += "00010001";
+                        binary.append("00010001");
                     } else {
-                        binary += "11101100";
+                        binary.append("11101100");
                     }
                 }
             }
-            binary += "0000";
+            binary.append("0000");
         }
 
         data_codewords = 3;
@@ -1013,7 +1013,7 @@ public class MicroQrCode extends Symbol {
 
         /* Add Reed-Solomon codewords to binary data */
         for (i = 0; i < ecc_codewords; i++) {
-            binary += toBinary(ecc_blocks[ecc_codewords - i - 1], 0x80);
+            binary.append(toBinary(ecc_blocks[ecc_codewords - i - 1], 0x80));
         }
     }
 
@@ -1036,7 +1036,7 @@ public class MicroQrCode extends Symbol {
             remainder = 0;
         }
         for (i = 0; i < remainder; i++) {
-            binary += "0";
+            binary.append("0");
         }
 
         /* Add padding */
@@ -1044,9 +1044,9 @@ public class MicroQrCode extends Symbol {
         remainder = bits_left / 8;
         for (i = 0; i < remainder; i++) {
             if ((i & 1) != 0) {
-                binary += "00010001";
+                binary.append("00010001");
             } else {
-                binary += "11101100";
+                binary.append("11101100");
             }
         }
 
@@ -1102,7 +1102,7 @@ public class MicroQrCode extends Symbol {
 
         /* Add Reed-Solomon codewords to binary data */
         for (i = 0; i < ecc_codewords; i++) {
-            binary += toBinary(ecc_blocks[ecc_codewords - i - 1], 0x80);
+            binary.append(toBinary(ecc_blocks[ecc_codewords - i - 1], 0x80));
         }
     }
 
@@ -1125,7 +1125,7 @@ public class MicroQrCode extends Symbol {
         bits_left = bits_total - binary.length();
         if (bits_left <= 4) {
             for (i = 0; i < bits_left; i++) {
-                binary += "0";
+                binary.append("0");
             }
             latch = 1;
         }
@@ -1137,7 +1137,7 @@ public class MicroQrCode extends Symbol {
                 remainder = 0;
             }
             for (i = 0; i < remainder; i++) {
-                binary += "0";
+                binary.append("0");
             }
 
             /* Add padding */
@@ -1146,13 +1146,13 @@ public class MicroQrCode extends Symbol {
                 remainder = (bits_left - 4) / 8;
                 for (i = 0; i < remainder; i++) {
                     if ((i & 1) != 0) {
-                        binary += "00010001";
+                        binary.append("00010001");
                     } else {
-                        binary += "11101100";
+                        binary.append("11101100");
                     }
                 }
             }
-            binary += "0000";
+            binary.append("0000");
         }
 
         data_codewords = 11;
@@ -1239,7 +1239,7 @@ public class MicroQrCode extends Symbol {
 
         /* Add Reed-Solomon codewords to binary data */
         for (i = 0; i < ecc_codewords; i++) {
-            binary += toBinary(ecc_blocks[ecc_codewords - i - 1], 0x80);
+            binary.append(toBinary(ecc_blocks[ecc_codewords - i - 1], 0x80));
         }
     }
 
@@ -1265,7 +1265,7 @@ public class MicroQrCode extends Symbol {
             remainder = 0;
         }
         for (i = 0; i < remainder; i++) {
-            binary += "0";
+            binary.append("0");
         }
 
         /* Add padding */
@@ -1273,9 +1273,9 @@ public class MicroQrCode extends Symbol {
         remainder = bits_left / 8;
         for (i = 0; i < remainder; i++) {
             if ((i & 1) != 0) {
-                binary += "00010001";
+                binary.append("00010001");
             } else {
-                binary += "11101100";
+                binary.append("11101100");
             }
         }
 
@@ -1335,7 +1335,7 @@ public class MicroQrCode extends Symbol {
 
         /* Add Reed-Solomon codewords to binary data */
         for (i = 0; i < ecc_codewords; i++) {
-            binary += toBinary(ecc_blocks[ecc_codewords - i - 1], 0x80);
+            binary.append(toBinary(ecc_blocks[ecc_codewords - i - 1], 0x80));
         }
     }
 

@@ -46,6 +46,18 @@ jar {
     )
 }
 
+// Enable JaCoCo XML output for Codecov, and exclude GUI classes from the coverage reports
+jacocoTestReport {
+    reports {
+        xml.enabled true
+    }
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: ['uk/org/okapibarcode/*.class', 'uk/org/okapibarcode/gui/**/*.class'])
+        }))
+    }
+}
+
 wrapper {
     gradleVersion = '6.7'
 }

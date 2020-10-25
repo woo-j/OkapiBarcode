@@ -821,7 +821,7 @@ public abstract class Symbol {
         encodeInfo.append(c).append(' ');
     }
 
-    protected void infoLine(String s) {
+    protected void infoLine(CharSequence s) {
         encodeInfo.append(s).append('\n');
     }
 

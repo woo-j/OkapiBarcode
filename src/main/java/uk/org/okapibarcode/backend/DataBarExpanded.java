@@ -16,6 +16,7 @@
 package uk.org.okapibarcode.backend;
 
 import static uk.org.okapibarcode.backend.DataBarLimited.getWidths;
+import static uk.org.okapibarcode.util.Strings.binaryAppend;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -565,68 +566,60 @@ public class DataBarExpanded extends Symbol {
     private static int calculateBinaryString(int[] inputData, StringBuilder binaryString) {
 
         EncodeMode last_mode = EncodeMode.NUMERIC;
-        int encoding_method, i, j, read_posn;
+        int i, j;
         boolean latch;
         int remainder, d1, d2, value;
         String padstring;
-        double weight;
-        int group_val;
         int current_length;
 
-        read_posn = 0;
+        /* Decide whether a compressed data field is required and if so what method to use: method 2 = no compressed data field */
 
-        /* Decide whether a compressed data field is required and if so what method to use - method 2 = no compressed data field */
-
+        int encodingMethod;
         if (inputData.length >= 16 && inputData[0] == '0' && inputData[1] == '1') {
             /* (01) and other AIs */
-            encoding_method = 1;
+            encodingMethod = 1;
         } else {
             /* any AIs */
-            encoding_method = 2;
+            encodingMethod = 2;
         }
 
-        if (inputData.length >= 20 && encoding_method == 1 && inputData[2] == '9' && inputData[16] == '3') {
+        if (inputData.length >= 20 && encodingMethod == 1 && inputData[2] == '9' && inputData[16] == '3') {
+
             /* Possibly encoding method > 2 */
 
             if (inputData.length >= 26 && inputData[17] == '1') {
                 /* Methods 3, 7, 9, 11 and 13 */
-
                 if (inputData[18] == '0') {
-                    /* (01) and (310x) */
-                    /* In kilos */
-
-                    weight = 0.0;
+                    /* (01) and (310x), weight in kilos */
+                    double weight = 0;
                     for (i = 0; i < 6; i++) {
                         weight *= 10;
                         weight += (inputData[20 + i] - '0');
                     }
-
-                    if (weight < 99999.0) { /* Maximum weight = 99999 */
-
+                    if (weight < 99_999) { /* Maximum weight = 99999 */
                         if (inputData[19] == '3' && inputData.length == 26) {
                             /* (01) and (3103) */
                             weight /= 1000.0;
                             if (weight <= 32.767) {
-                                encoding_method = 3;
+                                encodingMethod = 3;
                             }
                         }
-
                         if (inputData.length == 34) {
                             if (inputData[26] == '1' && inputData[27] == '1') {
                                 /* (01), (310x) and (11) - metric weight and production date */
-                                encoding_method = 7;
+                                encodingMethod = 7;
                             }
                             if (inputData[26] == '1' && inputData[27] == '3') {
                                 /* (01), (310x) and (13) - metric weight and packaging date */
-                                encoding_method = 9;
+                                encodingMethod = 9;
                             }
                             if (inputData[26] == '1' && inputData[27] == '5') {
                                 /* (01), (310x) and (15) - metric weight and "best before" date */
-                                encoding_method = 11;
+                                encodingMethod = 11;
                             }
                             if (inputData[26] == '1' && inputData[27] == '7') {
                                 /* (01), (310x) and (17) - metric weight and expiration date */
-                                encoding_method = 13;
+                                encodingMethod = 13;
                             }
                         }
                     }
@@ -635,53 +628,44 @@ public class DataBarExpanded extends Symbol {
 
             if (inputData.length >= 26 && inputData[17] == '2') {
                 /* Methods 4, 8, 10, 12 and 14 */
-
                 if (inputData[18] == '0') {
-                    /* (01) and (320x) */
-                    /* In pounds */
-
-                    weight = 0.0;
+                    /* (01) and (320x), weight in pounds */
+                    double weight = 0;
                     for (i = 0; i < 6; i++) {
                         weight *= 10;
                         weight += (inputData[20 + i] - '0');
                     }
-
-                    if (weight < 99999.0) { /* Maximum weight = 99999 */
-
-                        if (((inputData[19] == '2') || (inputData[19] == '3'))
-                                && (inputData.length == 26)) {
+                    if (weight < 99_999) { /* Maximum weight = 99999 */
+                        if ((inputData[19] == '2' || inputData[19] == '3') && (inputData.length == 26)) {
                             /* (01) and (3202)/(3203) */
-
                             if (inputData[19] == '3') {
                                 weight /= 1000.0;
                                 if (weight <= 22.767) {
-                                    encoding_method = 4;
+                                    encodingMethod = 4;
                                 }
                             } else {
                                 weight /= 100.0;
                                 if (weight <= 99.99) {
-                                    encoding_method = 4;
+                                    encodingMethod = 4;
                                 }
                             }
-
                         }
-
                         if (inputData.length == 34) {
                             if (inputData[26] == '1' && inputData[27] == '1') {
                                 /* (01), (320x) and (11) - English weight and production date */
-                                encoding_method = 8;
+                                encodingMethod = 8;
                             }
                             if (inputData[26] == '1' && inputData[27] == '3') {
                                 /* (01), (320x) and (13) - English weight and packaging date */
-                                encoding_method = 10;
+                                encodingMethod = 10;
                             }
                             if (inputData[26] == '1' && inputData[27] == '5') {
                                 /* (01), (320x) and (15) - English weight and "best before" date */
-                                encoding_method = 12;
+                                encodingMethod = 12;
                             }
                             if (inputData[26] == '1' && inputData[27] == '7') {
                                 /* (01), (320x) and (17) - English weight and expiration date */
-                                encoding_method = 14;
+                                encodingMethod = 14;
                             }
                         }
                     }
@@ -692,75 +676,48 @@ public class DataBarExpanded extends Symbol {
                 /* Methods 5 and 6 */
                 if (inputData[18] == '2' && inputData[19] >= '0' && inputData[19] <= '3') {
                     /* (01) and (392x) */
-                    encoding_method = 5;
+                    encodingMethod = 5;
                 }
                 if (inputData[18] == '3' && inputData[19] >= '0' && inputData[19] <= '3') {
                     /* (01) and (393x) */
-                    encoding_method = 6;
+                    encodingMethod = 6;
                 }
             }
         }
 
-        switch (encoding_method) { /* Encoding method - Table 10 */
-        case 1:
-            binaryString.append("1XX");
-            read_posn = 16;
-            break;
-        case 2:
-            binaryString.append("00XX");
-            read_posn = 0;
-            break;
-        case 3:
-            binaryString.append("0100");
-            read_posn = inputData.length;
-            break;
-        case 4:
-            binaryString.append("0101");
-            read_posn = inputData.length;
-            break;
-        case 5:
-            binaryString.append("01100XX");
-            read_posn = 20;
-            break;
-        case 6:
-            binaryString.append("01101XX");
-            read_posn = 23;
-            break;
-        case 7:
-            binaryString.append("0111000");
-            read_posn = inputData.length;
-            break;
-        case 8:
-            binaryString.append("0111001");
-            read_posn = inputData.length;
-            break;
-        case 9:
-            binaryString.append("0111010");
-            read_posn = inputData.length;
-            break;
-        case 10:
-            binaryString.append("0111011");
-            read_posn = inputData.length;
-            break;
-        case 11:
-            binaryString.append("0111100");
-            read_posn = inputData.length;
-            break;
-        case 12:
-            binaryString.append("0111101");
-            read_posn = inputData.length;
-            break;
-        case 13:
-            binaryString.append("0111110");
-            read_posn = inputData.length;
-            break;
-        case 14:
-            binaryString.append("0111111");
-            read_posn = inputData.length;
-            break;
-        }
-
+        /* Encoding method - Table 10 */
         /* Variable length symbol bit field is just given a place holder (XX) for the time being */
+        int read_posn;
+        switch (encodingMethod) {
+            case 1:
+                binaryString.append("1XX");
+                read_posn = 16;
+                break;
+            case 2:
+                binaryString.append("00XX");
+                read_posn = 0;
+                break;
+            case 3:
+                binaryString.append("0100");
+                read_posn = inputData.length;
+                break;
+            case 4:
+                binaryString.append("0101");
+                read_posn = inputData.length;
+                break;
+            case 5:
+                binaryString.append("01100XX");
+                read_posn = 20;
+                break;
+            case 6:
+                binaryString.append("01101XX");
+                read_posn = 23;
+                break;
+            default: /* modes 7 (0111000) to 14 (0111111) */
+                binaryString.append("0" + Integer.toBinaryString(56 + encodingMethod - 7));
+                read_posn = inputData.length;
+                break;
+        }
 
         /* Verify that the data to be placed in the compressed data field is all numeric data before carrying out compression */
         for (i = 0; i < read_posn; i++) {
@@ -771,230 +728,66 @@ public class DataBarExpanded extends Symbol {
         }
 
         /* Now encode the compressed data field */
-        if (encoding_method == 1) {
+
+        if (encodingMethod == 1) {
             /* Encoding method field "1" - general item identification data */
-            group_val = inputData[2] - '0';
-
-            for (j = 0; j < 4; j++) {
-                if ((group_val & (0x08 >> j)) == 0) {
-                    binaryString.append('0');
-                } else {
-                    binaryString.append('1');
-                }
-            }
-
+            binaryAppend(binaryString, inputData[2] - '0', 4);
             for (i = 1; i < 5; i++) {
-                group_val = 100 * (inputData[i * 3] - '0');
-                group_val += 10 * (inputData[(i * 3) + 1] - '0');
-                group_val += inputData[(i * 3) + 2] - '0';
-
-                for (j = 0; j < 10; j++) {
-                    if ((group_val & (0x200 >> j)) == 0) {
-                        binaryString.append('0');
-                    } else {
-                        binaryString.append('1');
-                    }
-                }
+                int group = parseInt(inputData, i * 3, 3);
+                binaryAppend(binaryString, group, 10);
             }
         }
 
-        if (encoding_method == 3) {
+        if (encodingMethod == 3 || encodingMethod == 4) {
             /* Encoding method field "0100" - variable weight item (0,001 kilogram increments) */
-
-            for (i = 1; i < 5; i++) {
-                group_val = 100 * (inputData[i * 3] - '0');
-                group_val += 10 * (inputData[(i * 3) + 1] - '0');
-                group_val += (inputData[(i * 3) + 2] - '0');
-
-                for (j = 0; j < 10; j++) {
-                    if ((group_val & (0x200 >> j)) == 0) {
-                        binaryString.append('0');
-                    } else {
-                        binaryString.append('1');
-                    }
-                }
-            }
-
-            group_val = 0;
-            for (i = 0; i < 6; i++) {
-                group_val *= 10;
-                group_val += inputData[20 + i] - '0';
-            }
-
-            for (j = 0; j < 15; j++) {
-                if ((group_val & (0x4000 >> j)) == 0) {
-                    binaryString.append('0');
-                } else {
-                    binaryString.append('1');
-                }
-            }
-        }
-
-        if (encoding_method == 4) {
             /* Encoding method field "0101" - variable weight item (0,01 or 0,001 pound increment) */
-
             for (i = 1; i < 5; i++) {
-                group_val = 100 * (inputData[i * 3] - '0');
-                group_val += 10 * (inputData[(i * 3) + 1] - '0');
-                group_val += (inputData[(i * 3) + 2] - '0');
-
-                for (j = 0; j < 10; j++) {
-                    if ((group_val & (0x200 >> j)) == 0) {
-                        binaryString.append('0');
-                    } else {
-                        binaryString.append('1');
-                    }
-                }
+                int group = parseInt(inputData, i * 3, 3);
+                binaryAppend(binaryString, group, 10);
             }
-
-
-            group_val = 0;
-            for (i = 0; i < 6; i++) {
-                group_val *= 10;
-                group_val += inputData[20 + i] - '0';
+            int group = parseInt(inputData, 20, 6);
+            if (encodingMethod == 4 && inputData[19] == '3') {
+                group += 10_000;
             }
+            binaryAppend(binaryString, group, 15);
+        }
 
-            if (inputData[19] == '3') {
-                group_val = group_val + 10000;
+        if (encodingMethod == 5 || encodingMethod == 6) {
+            /* Encoding method field "01100" - variable measure item and price */
+            /* Encoding method "01101" - variable measure item and price with ISO 4217 currency code */
+            for (i = 1; i < 5; i++) {
+                int group = parseInt(inputData, i * 3, 3);
+                binaryAppend(binaryString, group, 10);
             }
-
-            for (j = 0; j < 15; j++) {
-                if ((group_val & (0x4000 >> j)) == 0) {
-                    binaryString.append('0');
-                } else {
-                    binaryString.append('1');
-                }
+            binaryAppend(binaryString, inputData[19] - '0', 2);
+            if (encodingMethod == 6) {
+                int currency = parseInt(inputData, 20, 3);
+                binaryAppend(binaryString, currency, 10);
             }
         }
 
-        if (encoding_method >= 7 && encoding_method <= 14) {
+        if (encodingMethod >= 7 && encodingMethod <= 14) {
             /* Encoding method fields "0111000" through "0111111" - variable weight item plus date */
-
             for (i = 1; i < 5; i++) {
-                group_val = 100 * (inputData[i * 3] - '0');
-                group_val += 10 * (inputData[(i * 3) + 1] - '0');
-                group_val += (inputData[(i * 3) + 2] - '0');
-
-                for (j = 0; j < 10; j++) {
-                    if ((group_val & (0x200 >> j)) == 0) {
-                        binaryString.append('0');
-                    } else {
-                        binaryString.append('1');
-                    }
-                }
+                int group = parseInt(inputData, i * 3, 3);
+                binaryAppend(binaryString, group, 10);
             }
-
-            group_val = inputData[19] - '0';
-
+            int weight = inputData[19] - '0';
             for (i = 0; i < 5; i++) {
-                group_val *= 10;
-                group_val += inputData[21 + i] - '0';
+                weight *= 10;
+                weight += inputData[21 + i] - '0';
             }
-
-            for (j = 0; j < 20; j++) {
-                if ((group_val & (0x80000 >> j)) == 0) {
-                    binaryString.append('0');
-                } else {
-                    binaryString.append('1');
-                }
-            }
-
+            binaryAppend(binaryString, weight, 20);
+            int date;
             if (inputData.length == 34) {
                 /* Date information is included */
-                group_val = ((10 * (inputData[28] - '0')) + (inputData[29] - '0')) * 384;
-                group_val += (((10 * (inputData[30] - '0')) + (inputData[31] - '0')) - 1) * 32;
-                group_val += (10 * (inputData[32] - '0')) + (inputData[33] - '0');
+                date = parseInt(inputData, 28, 2) * 384;
+                date += (parseInt(inputData, 30, 2) - 1) * 32;
+                date += parseInt(inputData, 32, 2);
             } else {
-                group_val = 38400;
+                date = 38_400;
             }
-
-            for (j = 0; j < 16; j++) {
-                if ((group_val & (0x8000 >> j)) == 0) {
-                    binaryString.append('0');
-                } else {
-                    binaryString.append('1');
-                }
-            }
-        }
-
-        if (encoding_method == 5) {
-            /* Encoding method field "01100" - variable measure item and price */
-
-            for (i = 1; i < 5; i++) {
-                group_val = 100 * (inputData[i * 3] - '0');
-                group_val += 10 * (inputData[(i * 3) + 1] - '0');
-                group_val += (inputData[(i * 3) + 2] - '0');
-
-                for (j = 0; j < 10; j++) {
-                    if ((group_val & (0x200 >> j)) == 0) {
-                        binaryString.append('0');
-                    } else {
-                        binaryString.append('1');
-                    }
-                }
-            }
-
-            switch (inputData[19]) {
-                case '0':
-                    binaryString.append("00");
-                    break;
-                case '1':
-                    binaryString.append("01");
-                    break;
-                case '2':
-                    binaryString.append("10");
-                    break;
-                case '3':
-                    binaryString.append("11");
-                    break;
-            }
-        }
-
-        if (encoding_method == 6) {
-            /* Encoding method "01101" - variable measure item and price with ISO 4217 currency code */
-
-            for (i = 1; i < 5; i++) {
-                group_val = 100 * (inputData[i * 3] - '0');
-                group_val += 10 * (inputData[(i * 3) + 1] - '0');
-                group_val += (inputData[(i * 3) + 2] - '0');
-
-                for (j = 0; j < 10; j++) {
-                    if ((group_val & (0x200 >> j)) == 0) {
-                        binaryString.append('0');
-                    } else {
-                        binaryString.append('1');
-                    }
-                }
-            }
-
-            switch (inputData[19]) {
-                case '0':
-                    binaryString.append("00");
-                    break;
-                case '1':
-                    binaryString.append("01");
-                    break;
-                case '2':
-                    binaryString.append("10");
-                    break;
-                case '3':
-                    binaryString.append("11");
-                    break;
-            }
-
-            group_val = 0;
-            for (i = 0; i < 3; i++) {
-                group_val *= 10;
-                group_val += inputData[20 + i] - '0';
-            }
-
-            for (j = 0; j < 10; j++) {
-                if ((group_val & (0x200 >> j)) == 0) {
-                    binaryString.append('0');
-                } else {
-                    binaryString.append('1');
-                }
-            }
+            binaryAppend(binaryString, date, 16);
         }
 
         /* The compressed data field has been processed if appropriate - the rest of the data (if any) goes into a general-purpose data compaction field */
@@ -1315,20 +1108,20 @@ public class DataBarExpanded extends Symbol {
             patchSize = '1';
         }
 
-        if (encoding_method == 1) {
+        if (encodingMethod == 1) {
             binaryString.setCharAt(2, patchEvenOdd);
             binaryString.setCharAt(3, patchSize);
         }
-        if (encoding_method == 2) {
+        if (encodingMethod == 2) {
             binaryString.setCharAt(3, patchEvenOdd);
             binaryString.setCharAt(4, patchSize);
         }
-        if (encoding_method == 5 || encoding_method == 6) {
+        if (encodingMethod == 5 || encodingMethod == 6) {
             binaryString.setCharAt(6, patchEvenOdd);
             binaryString.setCharAt(7, patchSize);
         }
 
-        return encoding_method;
+        return encodingMethod;
     }
 
     private static int calculateRemainder(int binaryStringLength) {
@@ -1496,5 +1289,16 @@ public class DataBarExpanded extends Symbol {
         } else {
             return false;
         }
+    }
+
+    private static int parseInt(int[] chars, int index, int length) {
+        int val = 0;
+        int pow = (int) Math.pow(10, length - 1);
+        for (int i = 0; i < length; i++) {
+            int c = chars[index + i];
+            val += (c - '0') * pow;
+            pow /= 10;
+        }
+        return val;
     }
 }

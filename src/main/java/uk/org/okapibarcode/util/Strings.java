@@ -206,4 +206,22 @@ public final class Strings {
     private static boolean isHex(char c) {
         return (c >= '0' && c <= '9') || (c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f');
     }
+
+    /**
+     * Appends the specific integer to the specified string, in binary format, padded to the specified number of digits.
+     *
+     * @param s the string to append to
+     * @param value the value to append, in binary format
+     * @param digits the number of digits to pad to
+     */
+    public static void binaryAppend(StringBuilder s, int value, int digits) {
+        int start = 0x01 << (digits - 1);
+        for (int i = 0; i < digits; i++) {
+            if ((value & (start >> i)) == 0) {
+                s.append('0');
+            } else {
+                s.append('1');
+            }
+        }
+    }
 }

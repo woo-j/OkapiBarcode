@@ -793,11 +793,12 @@ public class DataBarExpanded extends Symbol {
         /* The compressed data field has been processed if appropriate - the rest of the data (if any) goes into a general-purpose data compaction field */
 
         int[] generalField = Arrays.copyOfRange(inputData, read_posn, inputData.length);
-        EncodeMode[] generalFieldType = new EncodeMode[generalField.length];
 
         if (generalField.length != 0) {
 
             latch = false;
+            EncodeMode[] generalFieldType = new EncodeMode[generalField.length];
+
             for (i = 0; i < generalField.length; i++) {
                 /* Tables 11, 12, 13 - ISO/IEC 646 encodation */
                 int c = generalField[i];
@@ -860,29 +861,18 @@ public class DataBarExpanded extends Symbol {
                     if (last_mode != EncodeMode.NUMERIC) {
                         binaryString.append("000"); /* Numeric latch */
                     }
-
                     if (generalField[i] != FNC1) {
                         d1 = generalField[i] - '0';
                     } else {
                         d1 = 10;
                     }
-
                     if (generalField[i + 1] != FNC1) {
                         d2 = generalField[i + 1] - '0';
                     } else {
                         d2 = 10;
                     }
-
                     value = (11 * d1) + d2 + 8;
-
-                    for (j = 0; j < 7; j++) {
-                        if ((value & (0x40 >> j)) != 0) {
-                            binaryString.append('1');
-                        } else {
-                            binaryString.append('0');
-                        }
-                    }
-
+                    binaryAppend(binaryString, value, 7);
                     i += 2;
                     last_mode = EncodeMode.NUMERIC;
                     break;
@@ -896,33 +886,14 @@ public class DataBarExpanded extends Symbol {
                             binaryString.append("00100"); /* Alphanumeric latch */
                         }
                     }
-
                     if (generalField[i] >= '0' && generalField[i] <= '9') {
-
                         value = generalField[i] - 43;
-
-                        for (j = 0; j < 5; j++) {
-                            if ((value & (0x10 >> j)) != 0) {
-                                binaryString.append('1');
-                            } else {
-                                binaryString.append('0');
-                            }
-                        }
+                        binaryAppend(binaryString, value, 5);
                     }
-
                     if (generalField[i] >= 'A' && generalField[i] <= 'Z') {
-
                         value = generalField[i] - 33;
-
-                        for (j = 0; j < 6; j++) {
-                            if ((value & (0x20 >> j)) != 0) {
-                                binaryString.append('1');
-                            } else {
-                                binaryString.append('0');
-                            }
-                        }
+                        binaryAppend(binaryString, value, 6);
                     }
-
                     last_mode = EncodeMode.ALPHA;
                     if (generalField[i] == FNC1) {
                         binaryString.append("01111");
@@ -931,13 +902,11 @@ public class DataBarExpanded extends Symbol {
                         // we waste 3 bits and don't perform the implicit mode change (see https://sourceforge.net/p/zint/tickets/145/)
                         // last_mode = EncodeMode.NUMERIC;
                     } /* FNC1 / Numeric latch */
-
                     if (generalField[i] == '*') binaryString.append("111010"); /* asterisk */
                     if (generalField[i] == ',') binaryString.append("111011"); /* comma */
                     if (generalField[i] == '-') binaryString.append("111100"); /* minus or hyphen */
                     if (generalField[i] == '.') binaryString.append("111101"); /* period or full stop */
                     if (generalField[i] == '/') binaryString.append("111110"); /* slash or solidus */
-
                     i++;
                     break;
 
@@ -951,46 +920,18 @@ public class DataBarExpanded extends Symbol {
                             binaryString.append("00100"); /* ISO/IEC 646 latch */
                         }
                     }
-
                     if (generalField[i] >= '0' && generalField[i] <= '9') {
-
                         value = generalField[i] - 43;
-
-                        for (j = 0; j < 5; j++) {
-                            if ((value & (0x10 >> j)) != 0) {
-                                binaryString.append('1');
-                            } else {
-                                binaryString.append('0');
-                            }
-                        }
+                        binaryAppend(binaryString, value, 5);
                     }
-
                     if (generalField[i] >= 'A' && generalField[i] <= 'Z') {
-
                         value = generalField[i] - 1;
-
-                        for (j = 0; j < 7; j++) {
-                            if ((value & (0x40 >> j)) != 0) {
-                                binaryString.append('1');
-                            } else {
-                                binaryString.append('0');
-                            }
-                        }
+                        binaryAppend(binaryString, value, 7);
                     }
-
                     if (generalField[i] >= 'a' && generalField[i] <= 'z') {
-
                         value = generalField[i] - 7;
-
-                        for (j = 0; j < 7; j++) {
-                            if ((value & (0x40 >> j)) != 0) {
-                                binaryString.append('1');
-                            } else {
-                                binaryString.append('0');
-                            }
-                        }
+                        binaryAppend(binaryString, value, 7);
                     }
-
                     last_mode = EncodeMode.ISOIEC;
                     if (generalField[i] == FNC1) {
                         binaryString.append("01111");
@@ -999,7 +940,6 @@ public class DataBarExpanded extends Symbol {
                         // we waste 3 bits and don't perform the implicit mode change (see https://sourceforge.net/p/zint/tickets/145/)
                         // last_mode = EncodeMode.NUMERIC;
                     } /* FNC1 / Numeric latch */
-
                     if (generalField[i] == '!') binaryString.append("11101000"); /* exclamation mark */
                     if (generalField[i] == 34)  binaryString.append("11101001"); /* quotation mark */
                     if (generalField[i] == 37)  binaryString.append("11101010"); /* percent sign */
@@ -1021,14 +961,15 @@ public class DataBarExpanded extends Symbol {
                     if (generalField[i] == '?') binaryString.append("11111010"); /* question mark */
                     if (generalField[i] == '_') binaryString.append("11111011"); /* underline or low line */
                     if (generalField[i] == ' ') binaryString.append("11111100"); /* space */
-
                     i++;
                     break;
                 }
+
                 current_length = i;
                 if (latch) {
                     current_length++;
                 }
+
             } while (current_length < generalField.length);
 
             remainder = calculateRemainder(binaryString.length());
@@ -1036,41 +977,19 @@ public class DataBarExpanded extends Symbol {
             if (latch) {
                 /* There is still one more numeric digit to encode */
                 if (last_mode == EncodeMode.NUMERIC) {
-                    if ((remainder >= 4) && (remainder <= 6)) {
+                    if (remainder >= 4 && remainder <= 6) {
                         value = generalField[i] - '0';
                         value++;
-
-                        for (j = 0; j < 4; j++) {
-                            if ((value & (0x08 >> j)) != 0) {
-                                binaryString.append('1');
-                            } else {
-                                binaryString.append('0');
-                            }
-                        }
+                        binaryAppend(binaryString, value, 4);
                     } else {
                         d1 = generalField[i] - '0';
                         d2 = 10;
-
                         value = (11 * d1) + d2 + 8;
-
-                        for (j = 0; j < 7; j++) {
-                            if ((value & (0x40 >> j)) != 0) {
-                                binaryString.append('1');
-                            } else {
-                                binaryString.append('0');
-                            }
-                        }
+                        binaryAppend(binaryString, value, 7);
                     }
                 } else {
                     value = generalField[i] - 43;
-
-                    for (j = 0; j < 5; j++) {
-                        if ((value & (0x10 >> j)) != 0) {
-                            binaryString.append('1');
-                        } else {
-                            binaryString.append('0');
-                        }
-                    }
+                    binaryAppend(binaryString, value, 5);
                 }
             }
         }

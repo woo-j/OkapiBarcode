@@ -502,7 +502,7 @@ public final class Gs1 {
             }
 
             if (ai_value[i] == 421) { // SHIP TO POST
-                if ((data_length[i] < 4) || (data_length[i] > 12)) {
+                if ((data_length[i] < 3) || (data_length[i] > 12)) {
                     error_latch = 1;
                 } else {
                     error_latch = 0;

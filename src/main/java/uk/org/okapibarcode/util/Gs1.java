@@ -414,7 +414,7 @@ public final class Gs1 {
             }
 
             if (ai_value[i] == 253) { // GDTI
-                if ((data_length[i] < 14) || (data_length[i] > 30)) {
+                if (data_length[i] < 13 || data_length[i] > 30) {
                     error_latch = 1;
                 } else {
                     error_latch = 0;
@@ -422,14 +422,14 @@ public final class Gs1 {
             }
 
             if (ai_value[i] == 255) { // GCN
-                if ((data_length[i] < 14) || (data_length[i] > 25)) {
+                if (data_length[i] < 13 || data_length[i] > 25) {
                     error_latch = 1;
                 } else {
                     error_latch = 0;
                 }
             }
 
-            if ((ai_value[i] >= 3100) && (ai_value[i] <= 3169)) {
+            if (ai_value[i] >= 3100 && ai_value[i] <= 3169) {
                 if (data_length[i] != 6) {
                     error_latch = 1;
                 } else {
@@ -437,7 +437,7 @@ public final class Gs1 {
                 }
             }
 
-            if ((ai_value[i] >= 3200) && (ai_value[i] <= 3379)) {
+            if (ai_value[i] >= 3200 && ai_value[i] <= 3379) {
                 if (data_length[i] != 6) {
                     error_latch = 1;
                 } else {
@@ -445,7 +445,7 @@ public final class Gs1 {
                 }
             }
 
-            if ((ai_value[i] >= 3400) && (ai_value[i] <= 3579)) {
+            if (ai_value[i] >= 3400 && ai_value[i] <= 3579) {
                 if (data_length[i] != 6) {
                     error_latch = 1;
                 } else {
@@ -453,7 +453,7 @@ public final class Gs1 {
                 }
             }
 
-            if ((ai_value[i] >= 3600) && (ai_value[i] <= 3699)) {
+            if (ai_value[i] >= 3600 && ai_value[i] <= 3699) {
                 if (data_length[i] != 6) {
                     error_latch = 1;
                 } else {
@@ -461,7 +461,7 @@ public final class Gs1 {
                 }
             }
 
-            if ((ai_value[i] >= 3900) && (ai_value[i] <= 3909)) { // AMOUNT
+            if (ai_value[i] >= 3900 && ai_value[i] <= 3909) { // AMOUNT
                 if (data_length[i] > 15) {
                     error_latch = 1;
                 } else {
@@ -469,15 +469,15 @@ public final class Gs1 {
                 }
             }
 
-            if ((ai_value[i] >= 3910) && (ai_value[i] <= 3919)) { // AMOUNT
-                if ((data_length[i] < 4) || (data_length[i] > 18)) {
+            if (ai_value[i] >= 3910 && ai_value[i] <= 3919) { // AMOUNT
+                if (data_length[i] < 3 || data_length[i] > 18) {
                     error_latch = 1;
                 } else {
                     error_latch = 0;
                 }
             }
 
-            if ((ai_value[i] >= 3920) && (ai_value[i] <= 3929)) { // PRICE
+            if (ai_value[i] >= 3920 && ai_value[i] <= 3929) { // PRICE
                 if (data_length[i] > 15) {
                     error_latch = 1;
                 } else {
@@ -485,15 +485,15 @@ public final class Gs1 {
                 }
             }
 
-            if ((ai_value[i] >= 3930) && (ai_value[i] <= 3939)) { // PRICE
-                if ((data_length[i] < 4) || (data_length[i] > 18)) {
+            if (ai_value[i] >= 3930 && ai_value[i] <= 3939) { // PRICE
+                if (data_length[i] < 3 || data_length[i] > 18) {
                     error_latch = 1;
                 } else {
                     error_latch = 0;
                 }
             }
 
-            if ((ai_value[i] >= 3940) && (ai_value[i] <= 3949)) { // PRCNT OFF
+            if (ai_value[i] >= 3940 && ai_value[i] <= 3949) { // PRCNT OFF
                 if (data_length[i] != 4) {
                     error_latch = 1;
                 } else {
@@ -502,16 +502,15 @@ public final class Gs1 {
             }
 
             if (ai_value[i] == 421) { // SHIP TO POST
-                if ((data_length[i] < 3) || (data_length[i] > 12)) {
+                if (data_length[i] < 3 || data_length[i] > 12) {
                     error_latch = 1;
                 } else {
                     error_latch = 0;
                 }
             }
 
-            if ((ai_value[i] == 423) || (ai_value[i] == 425)) {
-                // COUNTRY INITIAL PROCESS || COUNTRY DISASSEMBLY
-                if ((data_length[i] < 4) || (data_length[i] > 15)) {
+            if (ai_value[i] == 423 || ai_value[i] == 425) { // COUNTRY INITIAL PROCESS || COUNTRY DISASSEMBLY
+                if (data_length[i] < 3 || data_length[i] > 15) {
                     error_latch = 1;
                 } else {
                     error_latch = 0;
@@ -519,15 +518,15 @@ public final class Gs1 {
             }
 
             if (ai_value[i] == 7007) { // HARVEST DATE
-                if ((data_length[i] < 6) || (data_length[i] > 12)) {
+                if (data_length[i] < 6 || data_length[i] > 12) {
                     error_latch = 1;
                 } else {
                     error_latch = 0;
                 }
             }
 
-            if ((ai_value[i] >= 7030) && (ai_value[i] <= 7039)) { // PROCESSOR #
-                if ((data_length[i] < 4) || (data_length[i] > 30)) {
+            if (ai_value[i] >= 7030 && ai_value[i] <= 7039) { // PROCESSOR #
+                if (data_length[i] < 3 || data_length[i] > 30) {
                     error_latch = 1;
                 } else {
                     error_latch = 0;
@@ -535,7 +534,7 @@ public final class Gs1 {
             }
 
             if (ai_value[i] == 8003) { // GRAI
-                if ((data_length[i] < 15) || (data_length[i] > 30)) {
+                if (data_length[i] < 14 || data_length[i] > 30) {
                     error_latch = 1;
                 } else {
                     error_latch = 0;
@@ -543,14 +542,14 @@ public final class Gs1 {
             }
 
             if (ai_value[i] == 8008) { // PROD TIME
-                if ((data_length[i] < 9) || (data_length[i] > 12)) {
+                if (data_length[i] < 8 || data_length[i] > 12) {
                     error_latch = 1;
                 } else {
                     error_latch = 0;
                 }
             }
 
-            if ((ai_value[i] >= 91) && (ai_value[i] <= 99)) { // INTERNAL
+            if (ai_value[i] >= 91 && ai_value[i] <= 99) { // INTERNAL
                 if (data_length[i] > 90) {
                     error_latch = 1;
                 } else {

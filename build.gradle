@@ -11,10 +11,10 @@ repositories {
 }
 
 dependencies {
-    compile 'com.beust:jcommander:1.48'
-    testCompile 'junit:junit:4.12'
-    testCompile 'com.google.zxing:javase:3.3.0'
-    testCompile 'org.reflections:reflections:0.9.10'
+    implementation 'com.beust:jcommander:1.78'
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'com.google.zxing:javase:3.3.0'
+    testImplementation 'org.reflections:reflections:0.9.10'
 }
 
 sourceCompatibility = 7

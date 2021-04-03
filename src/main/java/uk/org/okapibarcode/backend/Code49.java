@@ -1000,10 +1000,8 @@ public class Code49 extends Symbol {
 
     @Override
     protected void encode() {
-        int i, codeword_count = 0, h, j, M, rows, pad_count = 0;
+        int codeword_count = 0, pad_count = 0;
         int x_count, y_count, z_count, posn_val, local_value;
-        String intermediate = "";
-        String localpattern = "";
         int[] codewords = new int[170];
         int[][] c_grid = new int[8][8];
         int[][] w_grid = new int[8][4];
@@ -1014,40 +1012,42 @@ public class Code49 extends Symbol {
 
         inputData = toBytes(content, StandardCharsets.US_ASCII);
 
+        StringBuilder intermediate = new StringBuilder(inputData.length + 8);
         if (inputDataType == DataType.GS1) {
-            intermediate += "*"; // FNC1
+            intermediate.append('*'); // FNC1
         }
-
-        for (i = 0; i < inputData.length; i++) {
+        for (int i = 0; i < inputData.length; i++) {
             int c = inputData[i];
             if (c == FNC1) {
-                intermediate += "*"; // FNC1
+                intermediate.append('*'); // FNC1
             } else {
-                intermediate += C49_TABLE7[c];
+                intermediate.append(C49_TABLE7[c]);
             }
         }
 
-        h = intermediate.length();
+        int h = intermediate.length();
+        int i = 0;
 
-        i = 0;
         do {
-            if ((intermediate.charAt(i) >= '0') && (intermediate.charAt(i) <= '9')) {
+            if (intermediate.charAt(i) >= '0' && intermediate.charAt(i) <= '9') {
 
                 /* Numeric data */
                 int latch = 0;
-                j = 0;
+                int j = 0;
                 do {
                     if ((i + j) >= h) {
                         latch = 1;
                     } else {
-                        if ((intermediate.charAt(i + j) >= '0') && (intermediate.charAt(i + j) <= '9')) {
+                        if (intermediate.charAt(i + j) >= '0' && intermediate.charAt(i + j) <= '9') {
                             j++;
                         } else {
                             latch = 1;
                         }
                     }
                 } while (latch == 0);
+
                 if (j >= 5) {
+
                     /* Use Numeric Encodation Method */
                     int block_count, c;
                     int block_remain;
@@ -1162,19 +1162,20 @@ public class Code49 extends Symbol {
             }
         } while (i < h);
 
+        int M;
         switch (codewords[0]) { /* Set starting mode value */
-        case 48:
-            M = 2;
-            break;
-        case 43:
-            M = 4;
-            break;
-        case 44:
-            M = 5;
-            break;
-        default:
-            M = 0;
-            break;
+            case 48:
+                M = 2;
+                break;
+            case 43:
+                M = 4;
+                break;
+            case 44:
+                M = 5;
+                break;
+            default:
+                M = 0;
+                break;
         }
 
         if (M != 0) {
@@ -1191,7 +1192,7 @@ public class Code49 extends Symbol {
         infoLine("Starting Mode (M): " + M);
 
         /* Place codewords in code character array (c grid) */
-        rows = 0;
+        int rows = 0;
         do {
             for (i = 0; i < 7; i++) {
                 if (((rows * 7) + i) < codeword_count) {
@@ -1218,8 +1219,7 @@ public class Code49 extends Symbol {
         /* Add row check character */
         for (i = 0; i < rows - 1; i++) {
             int row_sum = 0;
-
-            for (j = 0; j < 7; j++) {
+            for (int j = 0; j < 7; j++) {
                 row_sum += c_grid[i][j];
             }
             c_grid[i][7] = row_sum % 49;
@@ -1231,7 +1231,7 @@ public class Code49 extends Symbol {
         y_count = c_grid[rows - 1][6] * 16;
         z_count = c_grid[rows - 1][6] * 38;
         for (i = 0; i < rows - 1; i++) {
-            for (j = 0; j < 4; j++) {
+            for (int j = 0; j < 4; j++) {
                 local_value = (c_grid[i][2 * j] * 49) + c_grid[i][(2 * j) + 1];
                 x_count += C49_X_WEIGHT[posn_val] * local_value;
                 y_count += C49_Y_WEIGHT[posn_val] * local_value;
@@ -1265,16 +1265,16 @@ public class Code49 extends Symbol {
         infoLine("Check Characters: " + (z_count % 2401) + " " + (y_count % 2401));
 
         /* Add last row check character */
-        j = 0;
+        int sum = 0;
         for (i = 0; i < 7; i++) {
-            j += c_grid[rows - 1][i];
+            sum += c_grid[rows - 1][i];
         }
-        c_grid[rows - 1][7] = j % 49;
+        c_grid[rows - 1][7] = sum % 49;
 
         info("Codewords: ");
         /* Transfer data to symbol character array (w grid) */
         for (i = 0; i < rows; i++) {
-            for (j = 0; j < 4; j++) {
+            for (int j = 0; j < 4; j++) {
                 w_grid[i][j] = (c_grid[i][2 * j] * 49) + c_grid[i][(2 * j) + 1];
                 infoSpace(c_grid[i][2 * j]);
                 infoSpace(c_grid[i][(2 * j) + 1]);
@@ -1289,27 +1289,26 @@ public class Code49 extends Symbol {
 
         info("Symbol Characters: ");
         for (i = 0; i < rows; i++) {
-            localpattern = "11"; /* Start character */
-            for (j = 0; j < 4; j++) {
+            StringBuilder rowPattern = new StringBuilder(3 + (4 * 8));
+            rowPattern.append("11"); /* Start character */
+            for (int j = 0; j < 4; j++) {
                 infoSpace(w_grid[i][j]);
                 if (i != (rows - 1)) {
                     if (C49_TABLE4[i].charAt(j) == 'E') {
                         /* Even Parity */
-                        localpattern += C49_APPXE_EVEN[w_grid[i][j]];
+                        rowPattern.append(C49_APPXE_EVEN[w_grid[i][j]]);
                     } else {
                         /* Odd Parity */
-                        localpattern += C49_APPXE_ODD[w_grid[i][j]];
+                        rowPattern.append(C49_APPXE_ODD[w_grid[i][j]]);
                     }
                 } else {
                     /* Last row uses all even parity */
-                    localpattern += C49_APPXE_EVEN[w_grid[i][j]];
+                    rowPattern.append(C49_APPXE_EVEN[w_grid[i][j]]);
                 }
             }
-            localpattern += "4"; /* Stop character */
-
-            pattern[i] = localpattern;
+            rowPattern.append('4'); /* Stop character */
+            pattern[i] = rowPattern.toString();
             row_height[i] = 10;
-
         }
         infoLine();
     }

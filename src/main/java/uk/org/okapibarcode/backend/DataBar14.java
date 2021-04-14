@@ -73,6 +73,7 @@ public class DataBar14 extends Symbol {
     };
 
     private boolean linkageFlag;
+    private int separatorHeight = 1;
     private Mode mode = Mode.LINEAR;
 
     @Override
@@ -113,6 +114,27 @@ public class DataBar14 extends Symbol {
      */
     public Mode getMode() {
         return mode;
+    }
+
+    /**
+     * Sets the separator height for {@link Mode#STACKED} symbols. The default value is {@code 1}.
+     *
+     * @param separatorHeight the separator height for {@link Mode#STACKED} symbols
+     */
+    public void setSeparatorHeight(int separatorHeight) {
+        if (separatorHeight < 1) {
+            throw new IllegalArgumentException("Invalid DataBar-14 Stacked separator height: " + separatorHeight);
+        }
+        this.separatorHeight = separatorHeight;
+    }
+
+    /**
+     * Returns the separator height for {@link Mode#STACKED} symbols.
+     *
+     * @return the separator height for {@link Mode#STACKED} symbols
+     */
+    public int getSeparatorHeight() {
+        return separatorHeight;
     }
 
     @Override
@@ -614,7 +636,7 @@ public class DataBar14 extends Symbol {
         }
         if (mode == Mode.STACKED) {
             row_height[0 + compositeOffset] = 5;
-            row_height[1 + compositeOffset] = 1;
+            row_height[1 + compositeOffset] = separatorHeight;
             row_height[2 + compositeOffset] = 7;
         }
         if (mode == Mode.OMNI) {

@@ -117,9 +117,9 @@ public class DataBar14 extends Symbol {
     }
 
     /**
-     * Sets the separator height for {@link Mode#STACKED} symbols. The default value is {@code 1}.
+     * Sets the separator height for {@link Mode#STACKED} and {@link Mode#OMNI} symbols. The default value is {@code 1}.
      *
-     * @param separatorHeight the separator height for {@link Mode#STACKED} symbols
+     * @param separatorHeight the separator height for {@link Mode#STACKED} and {@link Mode#OMNI} symbols
      */
     public void setSeparatorHeight(int separatorHeight) {
         if (separatorHeight < 1) {
@@ -129,9 +129,9 @@ public class DataBar14 extends Symbol {
     }
 
     /**
-     * Returns the separator height for {@link Mode#STACKED} symbols.
+     * Returns the separator height for {@link Mode#STACKED} and {@link Mode#OMNI} symbols.
      *
-     * @return the separator height for {@link Mode#STACKED} symbols
+     * @return the separator height for {@link Mode#STACKED} and {@link Mode#OMNI} symbols
      */
     public int getSeparatorHeight() {
         return separatorHeight;
@@ -641,9 +641,9 @@ public class DataBar14 extends Symbol {
         }
         if (mode == Mode.OMNI) {
             row_height[0 + compositeOffset] = -1;
-            row_height[1 + compositeOffset] = 1;
-            row_height[2 + compositeOffset] = 1;
-            row_height[3 + compositeOffset] = 1;
+            row_height[1 + compositeOffset] = separatorHeight;
+            row_height[2 + compositeOffset] = separatorHeight;
+            row_height[3 + compositeOffset] = separatorHeight;
             row_height[4 + compositeOffset] = -1;
         }
 

@@ -353,7 +353,7 @@ public class SymbolTest {
             return s.substring(skip);
         } else if (symbol instanceof DataBarExpanded) {
             // remove parenthesis around the GS1 AIs
-            return s.replaceAll("[\\(\\)]", "");
+            return s.replaceAll("\\((\\d+)\\)", "$1");
         } else if (symbol instanceof DataBar14) {
             // remove the checksum from the barcode content
             s = s.substring(0, s.length() - 1);

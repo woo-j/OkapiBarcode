@@ -113,13 +113,6 @@ public class DataBarExpanded extends Symbol {
     }
 
     @Override
-    public void setDataType(DataType dataType) {
-        if (dataType != Symbol.DataType.GS1) {
-            throw new IllegalArgumentException("Only GS1 data type is supported for DataBar Expanded symbology.");
-        }
-    }
-
-    @Override
     protected boolean gs1Supported() {
         return true;
     }

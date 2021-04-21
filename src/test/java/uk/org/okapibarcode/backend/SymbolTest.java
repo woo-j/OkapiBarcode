@@ -313,7 +313,7 @@ public class SymbolTest {
             } else {
                 return new UPCEReader();
             }
-        } else if (symbol instanceof DataBarExpanded) {
+        } else if (symbol instanceof DataBarExpanded && Character.isDigit(symbol.getContent().charAt(0))) {
             return new RSSExpandedReader();
         } else if (symbol instanceof DataBar14 && !((DataBar14) symbol).getLinkageFlag()) {
             return new RSS14Reader();

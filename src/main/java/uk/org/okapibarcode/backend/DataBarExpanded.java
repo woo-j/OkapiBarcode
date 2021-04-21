@@ -216,7 +216,7 @@ public class DataBarExpanded extends Symbol {
             compositeOffset = 0;
         }
 
-        int encodingMethod = calculateBinaryString(inputData, binaryString); // updates binaryString
+        int encodingMethod = calculateBinaryString(stacked, preferredColumns, inputData, binaryString); // updates binaryString
         infoLine("Encoding Method: " + encodingMethod);
         logBinaryStringInfo(binaryString);
 
@@ -563,7 +563,7 @@ public class DataBarExpanded extends Symbol {
     }
 
     /** Handles all data encodation from section 7.2.5 of ISO/IEC 24724. */
-    private static int calculateBinaryString(int[] inputData, StringBuilder binaryString) {
+    private static int calculateBinaryString(boolean stacked, int blocksPerRow, int[] inputData, StringBuilder binaryString) {
 
         EncodeMode last_mode = EncodeMode.NUMERIC;
         int i, j;
@@ -972,7 +972,7 @@ public class DataBarExpanded extends Symbol {
 
             } while (current_length < generalField.length);
 
-            remainder = calculateRemainder(binaryString.length());
+            remainder = calculateRemainder(binaryString.length(), stacked, blocksPerRow);
 
             if (latch) {
                 /* There is still one more numeric digit to encode */
@@ -998,11 +998,11 @@ public class DataBarExpanded extends Symbol {
             throw new OkapiException("Input too long");
         }
 
-        remainder = calculateRemainder(binaryString.length());
+        remainder = calculateRemainder(binaryString.length(), stacked, blocksPerRow);
 
         /* Now add padding to binary string (7.2.5.5.4) */
         i = remainder;
-        if ((generalField.length != 0) && (last_mode == EncodeMode.NUMERIC)) {
+        if (last_mode == EncodeMode.NUMERIC) {
             padstring = "0000";
             i -= 4;
         } else {
@@ -1011,7 +1011,6 @@ public class DataBarExpanded extends Symbol {
         for (; i > 0; i -= 5) {
             padstring += "00100";
         }
-
         binaryString.append(padstring.substring(0, remainder));
 
         /* Patch variable length symbol bit field */
@@ -1043,13 +1042,21 @@ public class DataBarExpanded extends Symbol {
         return encodingMethod;
     }
 
-    private static int calculateRemainder(int binaryStringLength) {
+    private static int calculateRemainder(int binaryStringLength, boolean stacked, int blocksPerRow) {
         int remainder = 12 - (binaryStringLength % 12);
         if (remainder == 12) {
             remainder = 0;
         }
         if (binaryStringLength < 36) {
             remainder = 36 - binaryStringLength;
+        }
+        if (stacked) {
+            int symbolChars = ((binaryStringLength + remainder) / 12) + 1; // +1 for check digit
+            int symbolCharsInLastRow = symbolChars % (blocksPerRow * 2);
+            if (symbolCharsInLastRow == 1) {
+                // 7.2.8: The last row shall contain a minimum of two symbol characters with extra padding, if needed.
+                remainder += 12;
+            }
         }
         return remainder;
     }

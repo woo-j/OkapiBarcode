@@ -497,7 +497,8 @@ public class Composite extends Symbol {
     private CompositeMode userPreferredMode = CompositeMode.CC_A;
     private int target_bitsize;
     private int remainder;
-    private int linearWidth; // Width of Code 128 linear
+    private int linearWidth; // width of Code 128 linear
+    private Integer guardPatternExtraHeight; // for UPC and EAN only
 
     public Composite() {
         inputDataType = Symbol.DataType.GS1;
@@ -572,15 +573,21 @@ public class Composite extends Symbol {
         return userPreferredMode;
     }
 
+    /**
+     * Sets the extra height used for the guard patterns. Used only when the linear component is
+     * {@link LinearEncoding#EAN}, {@link LinearEncoding#UPCA} or {@link LinearEncoding#UPCE}.
+     *
+     * @param guardPatternExtraHeight the extra height used for the guard patterns
+     */
+    public void setGuardPatternExtraHeight(int guardPatternExtraHeight) {
+        this.guardPatternExtraHeight = guardPatternExtraHeight;
+    }
+
     @Override
     protected void encode() {
 
-        List < Rectangle2D.Double > linear_rect;
-        List < TextBox > linear_txt;
         List < Rectangle2D.Double > combine_rect = new ArrayList<>();
         List < TextBox > combine_txt = new ArrayList<>();
-        String linear_encodeInfo;
-        int linear_height;
         int top_shift = 0; // 2D component x-coordinate shift
         int bottom_shift = 0; // linear component x-coordinate shift
         linearWidth = 0;
@@ -593,16 +600,16 @@ public class Composite extends Symbol {
         encodeComposite();
 
         // Then encode linear component
+        Symbol linear;
         switch (symbology) {
             case UPCA:
                 Upc upca = new Upc();
                 upca.setMode(Upc.Mode.UPCA);
                 upca.setLinkageFlag(true);
-                upca.setContent(linearContent);
-                linear_rect = upca.rectangles;
-                linear_txt = upca.texts;
-                linear_height = upca.symbol_height;
-                linear_encodeInfo = upca.getEncodeInfo();
+                if (guardPatternExtraHeight != null) {
+                    upca.setGuardPatternExtraHeight(guardPatternExtraHeight);
+                }
+                linear = upca;
                 bottom_shift = 6;
                 top_shift = 3;
                 break;
@@ -610,11 +617,10 @@ public class Composite extends Symbol {
                 Upc upce = new Upc();
                 upce.setMode(Upc.Mode.UPCE);
                 upce.setLinkageFlag(true);
-                upce.setContent(linearContent);
-                linear_rect = upce.rectangles;
-                linear_txt = upce.texts;
-                linear_height = upce.symbol_height;
-                linear_encodeInfo = upce.getEncodeInfo();
+                if (guardPatternExtraHeight != null) {
+                    upce.setGuardPatternExtraHeight(guardPatternExtraHeight);
+                }
+                linear = upce;
                 bottom_shift = 6;
                 top_shift = 3;
                 break;
@@ -629,11 +635,10 @@ public class Composite extends Symbol {
                     top_shift = 3;
                 }
                 ean.setLinkageFlag(true);
-                ean.setContent(linearContent);
-                linear_rect = ean.rectangles;
-                linear_txt = ean.texts;
-                linear_height = ean.symbol_height;
-                linear_encodeInfo = ean.getEncodeInfo();
+                if (guardPatternExtraHeight != null) {
+                    ean.setGuardPatternExtraHeight(guardPatternExtraHeight);
+                }
+                linear = ean;
                 break;
             case CODE_128:
                 Code128 code128 = new Code128();
@@ -650,54 +655,33 @@ public class Composite extends Symbol {
                         break;
                 }
                 code128.setDataType(Symbol.DataType.GS1);
-                code128.setContent(linearContent);
-                linearWidth = code128.symbol_width;
-                linear_rect = code128.rectangles;
-                linear_txt = code128.texts;
-                linear_height = code128.symbol_height;
-                linear_encodeInfo = code128.getEncodeInfo();
+                linear = code128;
                 break;
             case DATABAR_14:
                 DataBar14 dataBar14 = new DataBar14();
                 dataBar14.setLinkageFlag(true);
                 dataBar14.setMode(Mode.LINEAR);
-                dataBar14.setContent(linearContent);
-                linear_rect = dataBar14.rectangles;
-                linear_txt = dataBar14.texts;
-                linear_height = dataBar14.symbol_height;
-                linear_encodeInfo = dataBar14.getEncodeInfo();
+                linear = dataBar14;
                 bottom_shift = 4;
                 break;
             case DATABAR_14_STACK_OMNI:
                 DataBar14 dataBar14SO = new DataBar14();
                 dataBar14SO.setLinkageFlag(true);
                 dataBar14SO.setMode(Mode.OMNI);
-                dataBar14SO.setContent(linearContent);
-                linear_rect = dataBar14SO.rectangles;
-                linear_txt = dataBar14SO.texts;
-                linear_height = dataBar14SO.symbol_height;
-                linear_encodeInfo = dataBar14SO.getEncodeInfo();
+                linear = dataBar14SO;
                 top_shift = 1;
                 break;
             case DATABAR_14_STACK:
                 DataBar14 dataBar14S = new DataBar14();
                 dataBar14S.setLinkageFlag(true);
                 dataBar14S.setMode(Mode.STACKED);
-                dataBar14S.setContent(linearContent);
-                linear_rect = dataBar14S.rectangles;
-                linear_txt = dataBar14S.texts;
-                linear_height = dataBar14S.symbol_height;
-                linear_encodeInfo = dataBar14S.getEncodeInfo();
+                linear = dataBar14S;
                 top_shift = 1;
                 break;
             case DATABAR_LIMITED:
                 DataBarLimited dataBarLimited = new DataBarLimited();
                 dataBarLimited.setLinkageFlag();
-                dataBarLimited.setContent(linearContent);
-                linear_rect = dataBarLimited.rectangles;
-                linear_txt = dataBarLimited.texts;
-                linear_height = dataBarLimited.symbol_height;
-                linear_encodeInfo = dataBarLimited.getEncodeInfo();
+                linear = dataBarLimited;
                 top_shift = 1;
                 bottom_shift = 10;
                 break;
@@ -705,42 +689,37 @@ public class Composite extends Symbol {
                 DataBarExpanded dataBarExpanded = new DataBarExpanded();
                 dataBarExpanded.setLinkageFlag(true);
                 dataBarExpanded.setStacked(false);
-                dataBarExpanded.setContent(linearContent);
-                linear_rect = dataBarExpanded.rectangles;
-                linear_txt = dataBarExpanded.texts;
-                linear_height = dataBarExpanded.symbol_height;
-                linear_encodeInfo = dataBarExpanded.getEncodeInfo();
+                linear = dataBarExpanded;
                 top_shift = 2;
                 break;
             case DATABAR_EXPANDED_STACK:
                 DataBarExpanded dataBarExpandedS = new DataBarExpanded();
                 dataBarExpandedS.setLinkageFlag(true);
                 dataBarExpandedS.setStacked(true);
-                dataBarExpandedS.setContent(linearContent);
-                linear_rect = dataBarExpandedS.rectangles;
-                linear_txt = dataBarExpandedS.texts;
-                linear_height = dataBarExpandedS.symbol_height;
-                linear_encodeInfo = dataBarExpandedS.getEncodeInfo();
+                linear = dataBarExpandedS;
                 top_shift = 2;
                 break;
             default:
                 throw new OkapiException("Linear symbol not recognised");
         }
 
-        if (cc_mode == CompositeMode.CC_C && symbology == LinearEncoding.CODE_128) {
-            /* Width of composite component depends on width of linear component,
-               so recalculate. */
-            row_count = 0;
-            rectangles.clear();
-            symbol_height = 0;
-            symbol_width = 0;
-            encodeInfo.setLength(0);
-            encodeComposite();
-        }
+        copyPropertiesTo(linear);
+        linear.setContent(linearContent);
 
-        if (cc_mode != CompositeMode.CC_C && symbology == LinearEncoding.CODE_128) {
-            if (linearWidth > symbol_width) {
-                top_shift = (linearWidth - symbol_width) / 2;
+        if (symbology == LinearEncoding.CODE_128) {
+            linearWidth = linear.symbol_width;
+            if (cc_mode == CompositeMode.CC_C) {
+                /* Width of composite component depends on width of linear component, so recalculate. */
+                row_count = 0;
+                rectangles.clear();
+                symbol_height = 0;
+                symbol_width = 0;
+                encodeInfo.setLength(0);
+                encodeComposite();
+            } else {
+                if (linearWidth > symbol_width) {
+                    top_shift = (linearWidth - symbol_width) / 2;
+                }
             }
         }
 
@@ -748,7 +727,7 @@ public class Composite extends Symbol {
             combine_rect.add(new Rectangle2D.Double(orig.x + top_shift, orig.y, orig.width, orig.height));
         }
 
-        for (Rectangle2D.Double orig : linear_rect) {
+        for (Rectangle2D.Double orig : linear.rectangles) {
             combine_rect.add(new Rectangle2D.Double(orig.x + bottom_shift, orig.y + symbol_height, orig.width, orig.height));
         }
 
@@ -759,15 +738,33 @@ public class Composite extends Symbol {
             }
         }
 
-        for (TextBox orig : linear_txt) {
+        for (TextBox orig : linear.texts) {
             combine_txt.add(new TextBox(orig.x + bottom_shift, orig.y + symbol_height, orig.width, orig.text, humanReadableAlignment));
         }
 
         rectangles = combine_rect;
         texts = combine_txt;
-        symbol_height += linear_height;
+        symbol_height += linear.symbol_height;
         symbol_width = max_x;
-        info(linear_encodeInfo);
+        info(linear.getEncodeInfo());
+    }
+
+    private void copyPropertiesTo(Symbol linear) {
+
+        linear.setBarHeight(this.getBarHeight());
+        linear.setHumanReadableLocation(this.getHumanReadableLocation());
+        linear.setHumanReadableAlignment(this.getHumanReadableAlignment());
+        linear.setModuleWidth(this.getModuleWidth());
+        linear.setQuietZoneHorizontal(this.getQuietZoneHorizontal());
+        linear.setQuietZoneVertical(this.getQuietZoneVertical());
+        linear.setDataType(this.getDataType());
+
+        if (this.getFont() != null) {
+            linear.setFont(this.getFont());
+        } else {
+            linear.setFontName(this.getFontName());
+            linear.setFontSize(this.getFontSize());
+        }
     }
 
     private void encodeComposite() {

@@ -493,6 +493,7 @@ public class Composite extends Symbol {
     private int[] bitStr = new int[13];
     private int[] inputData;
     private CompositeMode cc_mode;
+    private DataType linearDataType;
     private String linearContent;
     private CompositeMode userPreferredMode = CompositeMode.CC_A;
     private int target_bitsize;
@@ -502,13 +503,6 @@ public class Composite extends Symbol {
 
     public Composite() {
         inputDataType = Symbol.DataType.GS1;
-    }
-
-    @Override
-    public void setDataType(DataType dataType) {
-        if (dataType != Symbol.DataType.GS1) {
-            throw new IllegalArgumentException("Only GS1 data type is supported for GS1 Composite symbology.");
-        }
     }
 
     @Override
@@ -533,6 +527,25 @@ public class Composite extends Symbol {
      */
     public LinearEncoding getSymbology() {
         return symbology;
+    }
+
+    /**
+     * Sets the data type of the linear component. Note that not all data types
+     * are valid for all linear component types.
+     *
+     * @param linearDataType the data type of the linear component
+     */
+    public void setLinearDataType(DataType linearDataType) {
+        this.linearDataType = linearDataType;
+    }
+
+    /**
+     * Returns the data type of the linear component.
+     *
+     * @return the data type of the linear component
+     */
+    public DataType getLinearDataType() {
+        return linearDataType;
     }
 
     /**
@@ -703,6 +716,10 @@ public class Composite extends Symbol {
                 throw new OkapiException("Linear symbol not recognised");
         }
 
+        if (linearDataType != null) {
+            linear.setDataType(linearDataType);
+        }
+
         copyPropertiesTo(linear);
         linear.setContent(linearContent);
 
@@ -757,7 +774,6 @@ public class Composite extends Symbol {
         linear.setModuleWidth(this.getModuleWidth());
         linear.setQuietZoneHorizontal(this.getQuietZoneHorizontal());
         linear.setQuietZoneVertical(this.getQuietZoneVertical());
-        linear.setDataType(this.getDataType());
 
         if (this.getFont() != null) {
             linear.setFont(this.getFont());

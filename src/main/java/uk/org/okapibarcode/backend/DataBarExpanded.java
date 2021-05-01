@@ -141,7 +141,7 @@ public class DataBarExpanded extends Symbol {
     /**
      * Sets whether or not this symbology is stacked.
      *
-     * @param stacked <tt>true</tt> for GS1 DataBar Expanded Stacked Omnidirectional, <tt>false</tt> for GS1 DataBar Expanded Omnidirectional
+     * @param stacked {@code true} for GS1 DataBar Expanded Stacked Omnidirectional, {@code false} for GS1 DataBar Expanded Omnidirectional
      */
     public void setStacked(boolean stacked) {
         this.stacked = stacked;
@@ -150,7 +150,7 @@ public class DataBarExpanded extends Symbol {
     /**
      * Returns whether or not this symbology is stacked.
      *
-     * @return <tt>true</tt> for GS1 DataBar Expanded Stacked Omnidirectional, <tt>false</tt> for GS1 DataBar Expanded Omnidirectional
+     * @return {@code true} for GS1 DataBar Expanded Stacked Omnidirectional, {@code false} for GS1 DataBar Expanded Omnidirectional
      */
     public boolean isStacked() {
         return stacked;

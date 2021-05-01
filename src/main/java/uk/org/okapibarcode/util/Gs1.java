@@ -28,7 +28,7 @@ public final class Gs1 {
     }
 
     /**
-     * Verifies that the specified data is in good GS1 format <tt>"[AI]data"</tt> pairs, and returns a reduced
+     * Verifies that the specified data is in good GS1 format {@code "[AI]data"} pairs, and returns a reduced
      * version of the input string containing FNC1 escape sequences instead of AI brackets. With a few small
      * exceptions, this code matches the Zint GS1 validation code as closely as possible, in order to make it
      * easier to keep in sync.

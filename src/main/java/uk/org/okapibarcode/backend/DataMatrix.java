@@ -160,7 +160,7 @@ public class DataMatrix extends Symbol {
      * table. Values may be ignored if the data is too big to fit in the
      * specified symbol, or if {@link #setForceMode(ForceMode)} has been invoked.
      *
-     * <table summary="Available Data Matrix symbol sizes">
+     * <table>
      * <tbody>
      * <tr><th>Input</th><th>Symbol Size</th><th>Input</th><th>Symbol Size</th></tr>
      * <tr><td>1    </td><td>10 x 10    </td><td>16</td><td>64 x 64       </td></tr>

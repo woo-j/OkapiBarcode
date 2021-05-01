@@ -55,12 +55,12 @@ public class Java2DRenderer implements SymbolRenderer {
     private final Color ink;
 
     /**
-     * Creates a new Java 2D renderer. If the specified paper color is <tt>null</tt>, the symbol is drawn without clearing the
-     * existing <tt>g2d</tt> background.
+     * Creates a new Java 2D renderer. If the specified paper color is {@code null}, the symbol is drawn without clearing the
+     * existing {@code g2d} background.
      *
      * @param g2d the graphics to render to
      * @param magnification the magnification factor to apply
-     * @param paper the paper (background) color (may be <tt>null</tt>)
+     * @param paper the paper (background) color (may be {@code null})
      * @param ink the ink (foreground) color
      */
     public Java2DRenderer(Graphics2D g2d, double magnification, Color paper, Color ink) {

@@ -334,7 +334,7 @@ public class AztecCode extends Symbol {
      * too large to fit in the specified symbol size. Values correspond to symbol
      * sizes as shown in the following table:
      *
-     * <table summary="Available Aztec Code symbol sizes">
+     * <table>
      * <tbody>
      * <tr><th>Input</th><th>Symbol Size</th><th>Input</th><th>Symbol Size</th></tr>
      * <tr><td>1    </td><td>15 x 15    </td><td>19   </td><td>79 x 79    </td></tr>
@@ -384,7 +384,7 @@ public class AztecCode extends Symbol {
      * correction. This value will be ignored if a symbol size has been set by
      * <code>setPreferredSize</code>. Valid options are:
      *
-     * <table summary="Error correction options">
+     * <table>
      * <tbody>
      * <tr><th>Mode</th><th>Error Correction Capacity</th></tr>
      * <tr><td>1   </td><td>&gt; 10% + 3 codewords    </td></tr>

@@ -29,7 +29,7 @@ import java.awt.geom.Rectangle2D;
  * whereas EAN-8 symbols are generally for internal use only. Check digit is calculated and should not
  * be in input data. Leading zeroes are added as required.
  *
- * <p>Add-on content can be appended to the main symbol content by adding a <tt>'+'</tt> character,
+ * <p>Add-on content can be appended to the main symbol content by adding a {@code '+'} character,
  * followed by the add-on content (up to 5 digits).
  *
  * @author <a href="mailto:jakel2006@me.com">Robert Elliott</a>
@@ -38,7 +38,7 @@ public class Ean extends Symbol {
 
     public enum Mode {
         EAN8, EAN13
-    };
+    }
 
     private static final String[] EAN13_PARITY = {
         "AAAAAA", "AABABB", "AABBAB", "AABBBA", "ABAABB", "ABBAAB", "ABBBAA",

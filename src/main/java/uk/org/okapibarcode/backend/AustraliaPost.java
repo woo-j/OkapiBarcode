@@ -73,7 +73,7 @@ public class AustraliaPost extends Symbol {
      * <p>
      * Input data should include a 8-digit Deliver Point ID
      * (DPID) optionally followed by customer information as shown below.
-     * <table summary="Permitted Australia Post input data">
+     * <table>
         <tbody>
           <tr>
             <th><p>Input Length</p></th>

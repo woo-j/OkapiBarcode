@@ -46,6 +46,10 @@ jar {
     )
 }
 
+javadoc {
+    options.addStringOption('Xdoclint:none', '-quiet')
+}
+
 // Enable JaCoCo XML output for Codecov, and exclude GUI classes from the coverage reports
 jacocoTestReport {
     reports {

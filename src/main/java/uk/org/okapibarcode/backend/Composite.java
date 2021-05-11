@@ -19,7 +19,9 @@ import static uk.org.okapibarcode.util.Arrays.positionOf;
 
 import java.awt.geom.Rectangle2D;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import uk.org.okapibarcode.backend.DataBar14.Mode;
@@ -484,7 +486,7 @@ public class Composite extends Symbol {
     private String binary_string;
     private int ecc;
     private LinearEncoding symbology = LinearEncoding.CODE_128;
-    private String general_field;
+    private int[] general_field;
     private GeneralFieldMode[] general_field_type;
     private int cc_width;
     private int[][] pwr928 = new int[69][7];
@@ -787,6 +789,11 @@ public class Composite extends Symbol {
 
         if (content.length() > 2990) {
             throw new OkapiException("2D component input data too long");
+        }
+
+        inputData = toBytes(content, StandardCharsets.US_ASCII);
+        if (inputData == null) {
+            throw new OkapiException("Invalid characters in input data");
         }
 
         cc_mode = userPreferredMode;
@@ -1179,12 +1186,12 @@ public class Composite extends Symbol {
         value = 0;
         target_bitsize = 0;
 
-        if (content.charAt(0) == '1' && (content.charAt(1) == '0' || content.charAt(1) == '1' || content.charAt(1) == '7') && content.length() >= 8) {
+        if (inputData[0] == '1' && (inputData[1] == '0' || inputData[1] == '1' || inputData[1] == '7') && inputData.length >= 8) {
             /* Source starts (10), (11) or (17) */
             encoding_method = 2;
         }
 
-        if (content.charAt(0) == '9' && content.charAt(1) == '0') {
+        if (inputData[0] == '9' && inputData[1] == '0') {
             /* Source starts (90) */
             encoding_method = 3;
         }
@@ -1213,15 +1220,14 @@ public class Composite extends Symbol {
 
             binary_string += "10";
 
-            if (content.charAt(1) == '0') {
+            if (inputData[1] == '0') {
                 /* No date data */
                 binary_string += "11";
-                read_posn = 2;
             } else {
                 /* Production Date (11) or Expiration Date (17) */
-                group_val = ((10 * (content.charAt(2) - '0')) + (content.charAt(3) - '0')) * 384;
-                group_val += (((10 * (content.charAt(4) - '0')) + (content.charAt(5) - '0')) - 1) * 32;
-                group_val += (10 * (content.charAt(6) - '0')) + (content.charAt(7) - '0');
+                group_val = ((10 * (inputData[2] - '0')) + (inputData[3] - '0')) * 384;
+                group_val += (((10 * (inputData[4] - '0')) + (inputData[5] - '0')) - 1) * 32;
+                group_val += (10 * (inputData[6] - '0')) + (inputData[7] - '0');
 
                 for (j = 0; j < 16; j++) {
                     if ((group_val & (0x8000 >> j)) == 0) {
@@ -1231,7 +1237,7 @@ public class Composite extends Symbol {
                     }
                 }
 
-                if (content.charAt(1) == '1') {
+                if (inputData[1] == '1') {
                     /* Production Date AI 11 */
                     binary_string += "0";
                 } else {
@@ -1242,7 +1248,7 @@ public class Composite extends Symbol {
             }
 
             if((read_posn + 2) < content.length()) {
-                if ((content.charAt(read_posn) == '1') && (content.charAt(read_posn + 1) == '0')) {
+                if ((inputData[read_posn] == '1') && (inputData[read_posn + 1] == '0')) {
                     /* Followed by AI 10 - strip this from general field */
                     read_posn += 2;
                 } else {
@@ -1263,7 +1269,7 @@ public class Composite extends Symbol {
 
             j = content.length();
             for (i = content.length(); i > 2; i--) {
-                if (content.charAt(i - 1) == '[') {
+                if (inputData[i - 1] == FNC1) {
                     j = i;
                 }
             }
@@ -1355,14 +1361,14 @@ public class Composite extends Symbol {
 
                 next_ai_posn = 2 + ninety.length();
 
-                if (content.charAt(next_ai_posn) == '[') {
+                if (inputData[next_ai_posn] == FNC1) {
                     /* There are more AIs afterwords */
-                    if ((content.charAt(next_ai_posn + 1) == '2') && (content.charAt(next_ai_posn + 2) == '1')) {
+                    if ((inputData[next_ai_posn + 1] == '2') && (inputData[next_ai_posn + 2] == '1')) {
                         /* AI 21 follows */
                         ai_crop = 1;
                     }
 
-                    if ((content.charAt(next_ai_posn + 1) == '8') && (content.charAt(next_ai_posn + 2) == '0') && (content.charAt(next_ai_posn + 3) == '0') && (content.charAt(next_ai_posn + 4) == '4')) {
+                    if ((inputData[next_ai_posn + 1] == '8') && (inputData[next_ai_posn + 2] == '0') && (inputData[next_ai_posn + 3] == '0') && (inputData[next_ai_posn + 4] == '4')) {
                         /* AI 8004 follows */
                         ai_crop = 2;
                     }
@@ -1499,9 +1505,9 @@ public class Composite extends Symbol {
             if (ai90_mode == 2) {
                 /* Alpha encodation (section 5.2.3) */
                 do {
-                    if ((content.charAt(read_posn) >= '0') && (content.charAt(read_posn) <= '9')) {
+                    if ((inputData[read_posn] >= '0') && (inputData[read_posn] <= '9')) {
                         for (j = 0; j < 5; j++) {
-                            if (((content.charAt(read_posn) + 4) & (0x10 >> j)) == 0x00) {
+                            if (((inputData[read_posn] + 4) & (0x10 >> j)) == 0x00) {
                                 binary_string += "0";
                             } else {
                                 binary_string += "1";
@@ -1509,9 +1515,9 @@ public class Composite extends Symbol {
                         }
                     }
 
-                    if ((content.charAt(read_posn) >= 'A') && (content.charAt(read_posn) <= 'Z')) {
+                    if ((inputData[read_posn] >= 'A') && (inputData[read_posn] <= 'Z')) {
                         for (j = 0; j < 6; j++) {
-                            if (((content.charAt(read_posn) - 65) & (0x20 >> j)) == 0x00) {
+                            if (((inputData[read_posn] - 65) & (0x20 >> j)) == 0x00) {
                                 binary_string += "0";
                             } else {
                                 binary_string += "1";
@@ -1519,21 +1525,21 @@ public class Composite extends Symbol {
                         }
                     }
 
-                    if (content.charAt(read_posn) == '[') {
+                    if (inputData[read_posn] == FNC1) {
                         binary_string += "11111";
                     }
 
                     read_posn++;
-                } while ((content.charAt(read_posn - 1) != '[') && (read_posn < content.length()));
+                } while ((inputData[read_posn - 1] != FNC1) && (read_posn < content.length()));
                 alpha_pad = 1; /* This is overwritten if a general field is encoded */
             }
 
             if (ai90_mode == 1) {
                 /* Alphanumeric mode */
                 do {
-                    if ((content.charAt(read_posn) >= '0') && (content.charAt(read_posn) <= '9')) {
+                    if ((inputData[read_posn] >= '0') && (inputData[read_posn] <= '9')) {
                         for (j = 0; j < 5; j++) {
-                            if (((content.charAt(read_posn) - 43) & (0x10 >> j)) == 0x00) {
+                            if (((inputData[read_posn] - 43) & (0x10 >> j)) == 0x00) {
                                 binary_string += "0";
                             } else {
                                 binary_string += "1";
@@ -1541,9 +1547,9 @@ public class Composite extends Symbol {
                         }
                     }
 
-                    if ((content.charAt(read_posn) >= 'A') && (content.charAt(read_posn) <= 'Z')) {
+                    if ((inputData[read_posn] >= 'A') && (inputData[read_posn] <= 'Z')) {
                         for (j = 0; j < 6; j++) {
-                            if (((content.charAt(read_posn) - 33) & (0x20 >> j)) == 0x00) {
+                            if (((inputData[read_posn] - 33) & (0x20 >> j)) == 0x00) {
                                 binary_string += "0";
                             } else {
                                 binary_string += "1";
@@ -1551,8 +1557,8 @@ public class Composite extends Symbol {
                         }
                     }
 
-                    switch (content.charAt(read_posn)) {
-                        case '[':
+                    switch (inputData[read_posn]) {
+                        case FNC1:
                             binary_string += "01111";
                             break;
                         case '*':
@@ -1573,7 +1579,8 @@ public class Composite extends Symbol {
                     }
 
                     read_posn++;
-                } while ((content.charAt(read_posn - 1) != '[') && (content.charAt(read_posn - 1) != '\0'));
+
+                } while ((inputData[read_posn - 1] != FNC1) && (inputData[read_posn - 1] != '\0'));
             }
 
             read_posn += (2 * ai_crop);
@@ -1583,85 +1590,84 @@ public class Composite extends Symbol {
          rest of the data (if any) goes into a general-purpose data compaction field */
 
         j = 0;
-        general_field = "";
         if (fnc1_latch == 1) {
             /* Encodation method "10" has been used but it is not followed by
              AI 10, so a FNC1 character needs to be added */
-            general_field += "[";
+            general_field = new int[inputData.length - read_posn + 1];
+            general_field[0] = FNC1;
+            System.arraycopy(inputData, read_posn, general_field, 1, general_field.length - 1);
+        } else {
+            general_field = Arrays.copyOfRange(inputData, read_posn, inputData.length);
         }
 
-        general_field += content.substring(read_posn);
-
         latch = false;
-        if (general_field.length() != 0) {
+        if (general_field.length != 0) {
             alpha_pad = 0;
 
+            general_field_type = new GeneralFieldMode[general_field.length];
 
-            general_field_type = new GeneralFieldMode[general_field.length()];
+            for (i = 0; i < general_field.length; i++) {
 
-            for (i = 0; i < general_field.length(); i++) {
                 /* Table 13 - ISO/IEC 646 encodation */
-                if ((general_field.charAt(i) < ' ') || (general_field.charAt(i) > 'z')) {
+                if (general_field[i] == FNC1) {
+                    /* FNC1 can be encoded in any system */
+                    general_field_type[i] = GeneralFieldMode.ANY_ENC;
+                } else if ((general_field[i] < ' ') || (general_field[i] > 'z')) {
                     general_field_type[i] = GeneralFieldMode.INVALID_CHAR;
                     latch = true;
                 } else {
                     general_field_type[i] = GeneralFieldMode.ISOIEC;
                 }
 
-                if (general_field.charAt(i) == '#') {
+                if (general_field[i] == '#') {
                     general_field_type[i] = GeneralFieldMode.INVALID_CHAR;
                     latch = true;
                 }
-                if (general_field.charAt(i) == '$') {
+                if (general_field[i] == '$') {
                     general_field_type[i] = GeneralFieldMode.INVALID_CHAR;
                     latch = true;
                 }
-                if (general_field.charAt(i) == '@') {
+                if (general_field[i] == '@') {
                     general_field_type[i] = GeneralFieldMode.INVALID_CHAR;
                     latch = true;
                 }
-                if (general_field.charAt(i) == 92) {
+                if (general_field[i] == 92) {
                     general_field_type[i] = GeneralFieldMode.INVALID_CHAR;
                     latch = true;
                 }
-                if (general_field.charAt(i) == '^') {
+                if (general_field[i] == '^') {
                     general_field_type[i] = GeneralFieldMode.INVALID_CHAR;
                     latch = true;
                 }
-                if (general_field.charAt(i) == 96) {
+                if (general_field[i] == 96) {
                     general_field_type[i] = GeneralFieldMode.INVALID_CHAR;
                     latch = true;
                 }
 
                 /* Table 12 - Alphanumeric encodation */
-                if ((general_field.charAt(i) >= 'A') && (general_field.charAt(i) <= 'Z')) {
+                if (general_field[i] >= 'A' && general_field[i] <= 'Z') {
                     general_field_type[i] = GeneralFieldMode.ALPHA_OR_ISO;
                 }
-                if (general_field.charAt(i) == '*') {
+                if (general_field[i] == '*') {
                     general_field_type[i] = GeneralFieldMode.ALPHA_OR_ISO;
                 }
-                if (general_field.charAt(i) == ',') {
+                if (general_field[i] == ',') {
                     general_field_type[i] = GeneralFieldMode.ALPHA_OR_ISO;
                 }
-                if (general_field.charAt(i) == '-') {
+                if (general_field[i] == '-') {
                     general_field_type[i] = GeneralFieldMode.ALPHA_OR_ISO;
                 }
-                if (general_field.charAt(i) == '.') {
+                if (general_field[i] == '.') {
                     general_field_type[i] = GeneralFieldMode.ALPHA_OR_ISO;
                 }
-                if (general_field.charAt(i) == '/') {
+                if (general_field[i] == '/') {
                     general_field_type[i] = GeneralFieldMode.ALPHA_OR_ISO;
                 }
 
                 /* Numeric encodation */
-                if ((general_field.charAt(i) >= '0') && (general_field.charAt(i) <= '9')) {
+                if (general_field[i] >= '0' && general_field[i] <= '9') {
                     general_field_type[i] = GeneralFieldMode.ANY_ENC;
                 }
-                if (general_field.charAt(i) == '[') {
-                    /* FNC1 can be encoded in any system */
-                    general_field_type[i] = GeneralFieldMode.ANY_ENC;
-                }
-
             }
 
             if (latch) {
@@ -1669,14 +1675,14 @@ public class Composite extends Symbol {
                 throw new OkapiException("Invalid characters in input data");
             }
 
-            for (i = 0; i < general_field.length() - 1; i++) {
-                if ((general_field_type[i] == GeneralFieldMode.ISOIEC) && (general_field.charAt(i + 1) == '[')) {
+            for (i = 0; i < general_field.length - 1; i++) {
+                if ((general_field_type[i] == GeneralFieldMode.ISOIEC) && (general_field[i + 1] == FNC1)) {
                     general_field_type[i + 1] = GeneralFieldMode.ISOIEC;
                 }
             }
 
-            for (i = 0; i < general_field.length() - 1; i++) {
-                if ((general_field_type[i] == GeneralFieldMode.ALPHA_OR_ISO) && (general_field.charAt(i + 1) == '[')) {
+            for (i = 0; i < general_field.length - 1; i++) {
+                if ((general_field_type[i] == GeneralFieldMode.ALPHA_OR_ISO) && (general_field[i + 1] == FNC1)) {
                     general_field_type[i + 1] = GeneralFieldMode.ALPHA_OR_ISO;
                 }
             }
@@ -1688,20 +1694,20 @@ public class Composite extends Symbol {
                 switch (general_field_type[i]) {
                     case NUMERIC:
                         if (i != 0) {
-                            if ((general_field_type[i - 1] != GeneralFieldMode.NUMERIC) && (general_field.charAt(i - 1) != '[')) {
+                            if ((general_field_type[i - 1] != GeneralFieldMode.NUMERIC) && (general_field[i - 1] != FNC1)) {
                                 binary_string += "000"; /* Numeric latch */
                             }
                         }
 
-                        if (general_field.charAt(i) != '[') {
-                            d1 = general_field.charAt(i) - '0';
+                        if (general_field[i] != FNC1) {
+                            d1 = general_field[i] - '0';
                         } else {
                             d1 = 10;
                         }
 
-                        if (i < general_field.length() - 1) {
-                            if (general_field.charAt(i + 1) != '[') {
-                                d2 = general_field.charAt(i + 1) - '0';
+                        if (i < general_field.length - 1) {
+                            if (general_field[i + 1] != FNC1) {
+                                d2 = general_field[i + 1] - '0';
                             } else {
                                 d2 = 10;
                             }
@@ -1727,7 +1733,7 @@ public class Composite extends Symbol {
 
                     case ALPHA:
                         if (i != 0) {
-                            if ((general_field_type[i - 1] == GeneralFieldMode.NUMERIC) || (general_field.charAt(i - 1) == '[')) {
+                            if ((general_field_type[i - 1] == GeneralFieldMode.NUMERIC) || (general_field[i - 1] == FNC1)) {
                                 binary_string += "0000"; /* Alphanumeric latch */
                             }
                             if (general_field_type[i - 1] == GeneralFieldMode.ISOIEC) {
@@ -1735,9 +1741,9 @@ public class Composite extends Symbol {
                             }
                         }
 
-                        if ((general_field.charAt(i) >= '0') && (general_field.charAt(i) <= '9')) {
+                        if ((general_field[i] >= '0') && (general_field[i] <= '9')) {
 
-                            value = general_field.charAt(i) - 43;
+                            value = general_field[i] - 43;
 
                             for (j = 0; j < 5; j++) {
                                 if ((value & (0x10 >> j)) == 0x00) {
@@ -1748,9 +1754,9 @@ public class Composite extends Symbol {
                             }
                         }
 
-                        if ((general_field.charAt(i) >= 'A') && (general_field.charAt(i) <= 'Z')) {
+                        if ((general_field[i] >= 'A') && (general_field[i] <= 'Z')) {
 
-                            value = general_field.charAt(i) - 33;
+                            value = general_field[i] - 33;
 
                             for (j = 0; j < 6; j++) {
                                 if ((value & (0x20 >> j)) == 0x00) {
@@ -1761,22 +1767,22 @@ public class Composite extends Symbol {
                             }
                         }
 
-                        if (general_field.charAt(i) == '[') {
+                        if (general_field[i] == FNC1) {
                             binary_string += "01111"; /* FNC1/Numeric latch */
                         }
-                        if (general_field.charAt(i) == '*') {
+                        if (general_field[i] == '*') {
                             binary_string += "111010"; /* asterisk */
                         }
-                        if (general_field.charAt(i) == ',') {
+                        if (general_field[i] == ',') {
                             binary_string += "111011"; /* comma */
                         }
-                        if (general_field.charAt(i) == '-') {
+                        if (general_field[i] == '-') {
                             binary_string += "111100"; /* minus or hyphen */
                         }
-                        if (general_field.charAt(i) == '.') {
+                        if (general_field[i] == '.') {
                             binary_string += "111101"; /* period or full stop */
                         }
-                        if (general_field.charAt(i) == '/') {
+                        if (general_field[i] == '/') {
                             binary_string += "111110"; /* slash or solidus */
                         }
 
@@ -1785,7 +1791,7 @@ public class Composite extends Symbol {
 
                     case ISOIEC:
                         if (i != 0) {
-                            if ((general_field_type[i - 1] == GeneralFieldMode.NUMERIC) || (general_field.charAt(i - 1) == '[')) {
+                            if ((general_field_type[i - 1] == GeneralFieldMode.NUMERIC) || (general_field[i - 1] == FNC1)) {
                                 binary_string += "0000"; /* Alphanumeric latch */
                                 binary_string += "00100"; /* ISO/IEC 646 latch */
                             }
@@ -1794,9 +1800,9 @@ public class Composite extends Symbol {
                             }
                         }
 
-                        if ((general_field.charAt(i) >= '0') && (general_field.charAt(i) <= '9')) {
+                        if ((general_field[i] >= '0') && (general_field[i] <= '9')) {
 
-                            value = general_field.charAt(i) - 43;
+                            value = general_field[i] - 43;
 
                             for (j = 0; j < 5; j++) {
                                 if ((value & (0x10 >> j)) == 0x00) {
@@ -1807,22 +1813,9 @@ public class Composite extends Symbol {
                             }
                         }
 
-                        if ((general_field.charAt(i) >= 'A') && (general_field.charAt(i) <= 'Z')) {
+                        if ((general_field[i] >= 'A') && (general_field[i] <= 'Z')) {
 
-                            value = general_field.charAt(i) - 1;
-
-                            for (j = 0; j < 7; j++) {
-                                if ((value & (0x40 >> j)) == 0x00) {
-                                    binary_string += "0";
-                                } else {
-                                    binary_string += "1";
-                                }
-                            }
-                        }
-
-                        if ((general_field.charAt(i) >= 'a') && (general_field.charAt(i) <= 'z')) {
-
-                            value = general_field.charAt(i) - 7;
+                            value = general_field[i] - 1;
 
                             for (j = 0; j < 7; j++) {
                                 if ((value & (0x40 >> j)) == 0x00) {
@@ -1833,70 +1826,83 @@ public class Composite extends Symbol {
                             }
                         }
 
-                        if (general_field.charAt(i) == '[') {
+                        if ((general_field[i] >= 'a') && (general_field[i] <= 'z')) {
+
+                            value = general_field[i] - 7;
+
+                            for (j = 0; j < 7; j++) {
+                                if ((value & (0x40 >> j)) == 0x00) {
+                                    binary_string += "0";
+                                } else {
+                                    binary_string += "1";
+                                }
+                            }
+                        }
+
+                        if (general_field[i] == FNC1) {
                             binary_string += "01111"; /* FNC1/Numeric latch */
                         }
-                        if (general_field.charAt(i) == '!') {
+                        if (general_field[i] == '!') {
                             binary_string += "11101000"; /* exclamation mark */
                         }
-                        if (general_field.charAt(i) == 34) {
+                        if (general_field[i] == 34) {
                             binary_string += "11101001"; /* quotation mark */
                         }
-                        if (general_field.charAt(i) == 37) {
+                        if (general_field[i] == 37) {
                             binary_string += "11101010"; /* percent sign */
                         }
-                        if (general_field.charAt(i) == '&') {
+                        if (general_field[i] == '&') {
                             binary_string += "11101011"; /* ampersand */
                         }
-                        if (general_field.charAt(i) == 39) {
+                        if (general_field[i] == 39) {
                             binary_string += "11101100"; /* apostrophe */
                         }
-                        if (general_field.charAt(i) == '(') {
+                        if (general_field[i] == '(') {
                             binary_string += "11101101"; /* left parenthesis */
                         }
-                        if (general_field.charAt(i) == ')') {
+                        if (general_field[i] == ')') {
                             binary_string += "11101110"; /* right parenthesis */
                         }
-                        if (general_field.charAt(i) == '*') {
+                        if (general_field[i] == '*') {
                             binary_string += "11101111"; /* asterisk */
                         }
-                        if (general_field.charAt(i) == '+') {
+                        if (general_field[i] == '+') {
                             binary_string += "11110000"; /* plus sign */
                         }
-                        if (general_field.charAt(i) == ',') {
+                        if (general_field[i] == ',') {
                             binary_string += "11110001"; /* comma */
                         }
-                        if (general_field.charAt(i) == '-') {
+                        if (general_field[i] == '-') {
                             binary_string += "11110010"; /* minus or hyphen */
                         }
-                        if (general_field.charAt(i) == '.') {
+                        if (general_field[i] == '.') {
                             binary_string += "11110011"; /* period or full stop */
                         }
-                        if (general_field.charAt(i) == '/') {
+                        if (general_field[i] == '/') {
                             binary_string += "11110100"; /* slash or solidus */
                         }
-                        if (general_field.charAt(i) == ':') {
+                        if (general_field[i] == ':') {
                             binary_string += "11110101"; /* colon */
                         }
-                        if (general_field.charAt(i) == ';') {
+                        if (general_field[i] == ';') {
                             binary_string += "11110110"; /* semicolon */
                         }
-                        if (general_field.charAt(i) == '<') {
+                        if (general_field[i] == '<') {
                             binary_string += "11110111"; /* less-than sign */
                         }
-                        if (general_field.charAt(i) == '=') {
+                        if (general_field[i] == '=') {
                             binary_string += "11111000"; /* equals sign */
                         }
-                        if (general_field.charAt(i) == '>') {
+                        if (general_field[i] == '>') {
                             binary_string += "11111001"; /* greater-than sign */
                         }
-                        if (general_field.charAt(i) == '?') {
+                        if (general_field[i] == '?') {
                             binary_string += "11111010"; /* question mark */
                         }
-                        if (general_field.charAt(i) == '_') {
+                        if (general_field[i] == '_') {
                             binary_string += "11111011"; /* underline or low line */
                         }
-                        if (general_field.charAt(i) == ' ') {
+                        if (general_field[i] == ' ') {
                             binary_string += "11111100"; /* space */
                         }
 
@@ -1909,7 +1915,7 @@ public class Composite extends Symbol {
                 if (latch) {
                     latchOffset = 1;
                 }
-            } while ((i + latchOffset) < general_field.length());
+            } while ((i + latchOffset) < general_field.length);
         }
 
         if (!calculateSymbolSize()) {
@@ -1917,14 +1923,14 @@ public class Composite extends Symbol {
         }
 
         if (latch) {
-            i = general_field.length() - 1;
+            i = general_field.length - 1;
             /* There is still one more numeric digit to encode */
 
-            if (general_field.charAt(i) == '[') {
+            if (general_field[i] == FNC1) {
                 binary_string += "000001111";
             } else {
                 if ((remainder >= 4) && (remainder <= 6)) {
-                    d1 = general_field.charAt(i) - '0';
+                    d1 = general_field[i] - '0';
                     d1++;
 
                     for (j = 0; j < 4; j++) {
@@ -1935,7 +1941,7 @@ public class Composite extends Symbol {
                         }
                     }
                 } else {
-                    d1 = general_field.charAt(i) - '0';
+                    d1 = general_field[i] - '0';
                     d2 = 10;
 
                     value = (11 * d1) + d2 + 8;
@@ -1972,7 +1978,7 @@ public class Composite extends Symbol {
                 /* Extra FNC1 character required after Alpha encodation (section 5.2.3) */
             }
 
-            if ((general_field.length() != 0) && (general_field_type[general_field.length() - 1] == GeneralFieldMode.NUMERIC)) {
+            if ((general_field.length != 0) && (general_field_type[general_field.length - 1] == GeneralFieldMode.NUMERIC)) {
                 binary_string += "0000";
             }
 
@@ -2039,7 +2045,7 @@ public class Composite extends Symbol {
         blockLength[block_count] = 1;
         blockType[block_count] = general_field_type[0];
 
-        for (i = 1; i < general_field.length(); i++) {
+        for (i = 1; i < general_field.length; i++) {
             current = general_field_type[i];
             last = general_field_type[i - 1];
 

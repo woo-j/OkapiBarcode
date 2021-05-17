@@ -503,6 +503,7 @@ public class Composite extends Symbol {
     private int remainder;
     private int linearWidth; // width of Code 128 linear
     private Integer guardPatternExtraHeight; // for UPC and EAN only
+    private int separatorHeight = 1; // for all except UPC and EAN
 
     public Composite() {
         inputDataType = Symbol.DataType.GS1;
@@ -599,6 +600,20 @@ public class Composite extends Symbol {
         this.guardPatternExtraHeight = guardPatternExtraHeight;
     }
 
+    /**
+     * Sets the separator height to use between the linear component and the 2D component. Used
+     * for all types of linear components <b>except</b> {@link LinearEncoding#EAN},
+     * {@link LinearEncoding#UPCA} or {@link LinearEncoding#UPCE}. The default value is {@code 1}.
+     *
+     * @param separatorHeight the separator height to use between the linear component and the 2D component
+     */
+    public void setSeparatorHeight(int separatorHeight) {
+        if (separatorHeight < 1) {
+            throw new IllegalArgumentException("Invalid Composite separator height: " + separatorHeight);
+        }
+        this.separatorHeight = separatorHeight;
+    }
+
     @Override
     protected void encode() {
 
@@ -684,6 +699,7 @@ public class Composite extends Symbol {
                 DataBar14 dataBar14SO = new DataBar14();
                 dataBar14SO.setLinkageFlag(true);
                 dataBar14SO.setMode(Mode.OMNI);
+                dataBar14SO.setSeparatorHeight(separatorHeight);
                 linear = dataBar14SO;
                 top_shift = 1;
                 break;
@@ -691,6 +707,7 @@ public class Composite extends Symbol {
                 DataBar14 dataBar14S = new DataBar14();
                 dataBar14S.setLinkageFlag(true);
                 dataBar14S.setMode(Mode.STACKED);
+                dataBar14S.setSeparatorHeight(separatorHeight);
                 linear = dataBar14S;
                 top_shift = 1;
                 break;
@@ -747,8 +764,19 @@ public class Composite extends Symbol {
             combine_rect.add(new Rectangle2D.Double(orig.x + top_shift, orig.y, orig.width, orig.height));
         }
 
+        int extraSepHeight = separatorHeight - 1;
+        if (extraSepHeight > 0 && (symbology == LinearEncoding.EAN || symbology == LinearEncoding.UPCA || symbology == LinearEncoding.UPCE)) {
+            throw new OkapiException("Composite EAN and UPC separator height cannot be changed");
+        }
+
         for (Rectangle2D.Double orig : linear.rectangles) {
-            combine_rect.add(new Rectangle2D.Double(orig.x + bottom_shift, orig.y + symbol_height, orig.width, orig.height));
+            double h = orig.height + (extraSepHeight > 0 && orig.height == 1 ? extraSepHeight : 0);
+            double y = orig.y +      (extraSepHeight > 0 && orig.height != 1 ? extraSepHeight : 0);
+            combine_rect.add(new Rectangle2D.Double(orig.x + bottom_shift, y + symbol_height, orig.width, h));
+        }
+
+        for (TextBox orig : linear.texts) {
+            combine_txt.add(new TextBox(orig.x + bottom_shift, orig.y + symbol_height + extraSepHeight, orig.width, orig.text, humanReadableAlignment));
         }
 
         int max_x = 0;
@@ -758,13 +786,9 @@ public class Composite extends Symbol {
             }
         }
 
-        for (TextBox orig : linear.texts) {
-            combine_txt.add(new TextBox(orig.x + bottom_shift, orig.y + symbol_height, orig.width, orig.text, humanReadableAlignment));
-        }
-
         rectangles = combine_rect;
         texts = combine_txt;
-        symbol_height += linear.symbol_height;
+        symbol_height += linear.symbol_height + extraSepHeight;
         symbol_width = max_x;
         info(linear.getEncodeInfo());
     }

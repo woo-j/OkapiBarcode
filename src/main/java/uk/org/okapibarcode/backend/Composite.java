@@ -591,6 +591,16 @@ public class Composite extends Symbol {
     }
 
     /**
+     * Returns the actual 2D component encoding method that was used.
+     * Only available after {@link #setContent(String)} has been called.
+     *
+     * @return the actual 2D component encoding method that was used
+     */
+    public CompositeMode getModeUsed() {
+        return cc_mode;
+    }
+
+    /**
      * Sets the extra height used for the guard patterns. Used only when the linear component is
      * {@link LinearEncoding#EAN}, {@link LinearEncoding#UPCA} or {@link LinearEncoding#UPCE}.
      *

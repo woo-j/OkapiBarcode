@@ -669,7 +669,7 @@ public class Composite extends Symbol {
                 Ean ean = new Ean();
                 if (eanCalculateVersion() == 8) {
                     ean.setMode(Ean.Mode.EAN8);
-                    bottom_shift = 14;
+                    bottom_shift = (cc_mode == CompositeMode.CC_A ? 4 : 14); // left row address pattern omitted in 3-column CC-A
                 } else {
                     ean.setMode(Ean.Mode.EAN13);
                     bottom_shift = 6;
@@ -726,7 +726,7 @@ public class Composite extends Symbol {
                 dataBarLimited.setLinkageFlag();
                 linear = dataBarLimited;
                 top_shift = 1;
-                bottom_shift = 10;
+                bottom_shift = (cc_mode == CompositeMode.CC_A ? 0 : 10); // left row address pattern omitted in 3-column CC-A
                 break;
             case DATABAR_EXPANDED:
                 DataBarExpanded dataBarExpanded = new DataBarExpanded();
@@ -2145,7 +2145,9 @@ public class Composite extends Symbol {
                 dummy[j + 1] = codeWords[i * cc_width + j];
             }
             /* Copy the data into codebarre */
-            codebarre += RAPLR[LeftRAP];
+            if (cc_width != 3) {
+                codebarre += RAPLR[LeftRAP];
+            }
             codebarre += "1";
             codebarre += CODAGEMC[offset + dummy[1]];
             codebarre += "1";

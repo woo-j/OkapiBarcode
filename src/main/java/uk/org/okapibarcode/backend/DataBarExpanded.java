@@ -853,7 +853,14 @@ public class DataBarExpanded extends Symbol {
             }
 
             i = 0;
-            do {
+
+            current_length = i;
+            if (latch) {
+                current_length++;
+            }
+
+            while (current_length < generalField.length) {
+
                 switch (generalFieldType[i]) {
                 case NUMERIC:
                     if (last_mode != EncodeMode.NUMERIC) {
@@ -967,8 +974,7 @@ public class DataBarExpanded extends Symbol {
                 if (latch) {
                     current_length++;
                 }
-
-            } while (current_length < generalField.length);
+            }
 
             remainder = calculateRemainder(binaryString.length(), stacked, blocksPerRow);
 

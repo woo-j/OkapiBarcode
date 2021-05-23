@@ -370,7 +370,7 @@ public class DataBarExpanded extends Symbol {
             separator_binary.setCharAt(1, '0');
             separator_binary.setCharAt(2, '0');
             separator_binary.setCharAt(3, '0');
-            separator_binary.delete(writer - 4, separator_binary.length());
+            separator_binary.delete(separator_binary.length() - 4, separator_binary.length());
             for (j = 0; j < (writer / 49); j++) {
                 k = (49 * j) + 18;
                 for (i = 0; i < 15; i++) {
@@ -410,9 +410,8 @@ public class DataBarExpanded extends Symbol {
 
             current_block = 0;
             for (current_row = 1; current_row <= stack_rows; current_row++) {
-                for (i = 0; i < 235; i++) {
-                    sub_elements[i] = 0;
-                }
+
+                Arrays.fill(sub_elements, 0);
                 special_case_row = false;
 
                 /* Row Start */
@@ -431,7 +430,7 @@ public class DataBarExpanded extends Symbol {
                         left_to_right = true;
                         i = 2 + (current_block * 21);
                         for (j = 0; j < 21; j++) {
-                            if ((i + j) < pattern_width) {
+                            if (i + j < pattern_width) {
                                 sub_elements[j + (reader * 21) + 2] = elements[i + j];
                                 elements_in_sub++;
                             }
@@ -443,7 +442,7 @@ public class DataBarExpanded extends Symbol {
                             /* a full row */
                             i = 2 + (((current_row * blocksPerRow) - reader - 1) * 21);
                             for (j = 0; j < 21; j++) {
-                                if ((i + j) < pattern_width) {
+                                if (i + j < pattern_width) {
                                     sub_elements[(20 - j) + (reader * 21) + 2] = elements[i + j];
                                     elements_in_sub++;
                                 }
@@ -454,7 +453,7 @@ public class DataBarExpanded extends Symbol {
                             l = (current_row * blocksPerRow) - reader - 1;
                             i = 2 + ((l - k) * 21);
                             for (j = 0; j < 21; j++) {
-                                if ((i + j) < pattern_width) {
+                                if (i + j < pattern_width) {
                                     sub_elements[(20 - j) + (reader * 21) + 2] = elements[i + j];
                                     elements_in_sub++;
                                 }
@@ -463,7 +462,7 @@ public class DataBarExpanded extends Symbol {
                     }
                     reader++;
                     current_block++;
-                } while ((reader < blocksPerRow) && (current_block < codeblocks));
+                } while (reader < blocksPerRow && current_block < codeblocks);
 
                 /* Row Stop */
                 sub_elements[elements_in_sub] = 1;
@@ -505,18 +504,22 @@ public class DataBarExpanded extends Symbol {
                 separator_binary.setCharAt(1, '0');
                 separator_binary.setCharAt(2, '0');
                 separator_binary.setCharAt(3, '0');
-                separator_binary.delete(writer - 4, separator_binary.length());
+                separator_binary.delete(separator_binary.length() - 4, separator_binary.length());
                 for (j = 0; j < reader; j++) {
                     k = (49 * j) + (special_case_row ? 19 : 18);
                     if (left_to_right) {
                         for (i = 0; i < 15; i++) {
-                            if (separator_binary.charAt(i + k - 1) == '1' && separator_binary.charAt(i + k) == '1') {
+                            if (i + k < separator_binary.length() &&
+                                separator_binary.charAt(i + k - 1) == '1' &&
+                                separator_binary.charAt(i + k) == '1') {
                                 separator_binary.setCharAt(i + k, '0');
                             }
                         }
                     } else {
                         for (i = 14; i >= 0; i--) {
-                            if (separator_binary.charAt(i + k + 1) == '1' && separator_binary.charAt(i + k) == '1') {
+                            if (i + k + 1 < separator_binary.length() &&
+                                separator_binary.charAt(i + k + 1) == '1' &&
+                                separator_binary.charAt(i + k) == '1') {
                                 separator_binary.setCharAt(i + k, '0');
                             }
                         }
@@ -549,7 +552,9 @@ public class DataBarExpanded extends Symbol {
                 }
 
                 symbol_row += 4;
-            }
+
+            } // end current_row loop
+
             readable = "";
             row_count += compositeOffset;
         }
@@ -559,7 +564,7 @@ public class DataBarExpanded extends Symbol {
     private static int calculateBinaryString(boolean stacked, int blocksPerRow, int[] inputData, StringBuilder binaryString) {
 
         EncodeMode last_mode = EncodeMode.NUMERIC;
-        int i, j;
+        int i;
         boolean latch;
         int remainder, d1, d2, value;
         String padstring;

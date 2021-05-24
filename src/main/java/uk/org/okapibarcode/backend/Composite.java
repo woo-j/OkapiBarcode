@@ -504,6 +504,7 @@ public class Composite extends Symbol {
     private int linearWidth; // width of Code 128 linear
     private Integer guardPatternExtraHeight; // for UPC and EAN only
     private int separatorHeight = 1; // for all except UPC and EAN
+    private Integer preferredColumns; // for DataBar Expanded Stacked only
 
     public Composite() {
         inputDataType = Symbol.DataType.GS1;
@@ -624,6 +625,20 @@ public class Composite extends Symbol {
         this.separatorHeight = separatorHeight;
     }
 
+    /**
+     * Sets the preferred width of a stacked symbol by selecting the number of "columns" or symbol
+     * segments in each row of data. Valid only when using a {@link LinearEncoding#DATABAR_EXPANDED_STACK}
+     * linear component.
+     *
+     * @param columns the number of segments in each row
+     */
+    public void setPreferredColumns(int columns) {
+        if (columns < 1 || columns > 10) {
+            throw new IllegalArgumentException("Invalid column count: " + columns);
+        }
+        this.preferredColumns = columns;
+    }
+
     @Override
     protected void encode() {
 
@@ -739,6 +754,9 @@ public class Composite extends Symbol {
                 DataBarExpanded dataBarExpandedS = new DataBarExpanded();
                 dataBarExpandedS.setLinkageFlag(true);
                 dataBarExpandedS.setStacked(true);
+                if (preferredColumns != null) {
+                    dataBarExpandedS.setPreferredColumns(preferredColumns);
+                }
                 linear = dataBarExpandedS;
                 top_shift = 2;
                 break;

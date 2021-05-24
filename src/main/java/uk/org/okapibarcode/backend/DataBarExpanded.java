@@ -391,7 +391,7 @@ public class DataBarExpanded extends Symbol {
 
             blocksPerRow = preferredColumns;
 
-            if (linkageFlag && (blocksPerRow == 1)) {
+            if (linkageFlag && blocksPerRow == 1) {
                 /* "There shall be a minimum of four symbol characters in the
                 first row of an RSS Expanded Stacked symbol when it is the linear
                 component of an EAN.UCC Composite symbol." */

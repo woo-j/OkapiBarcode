@@ -198,6 +198,9 @@ public class DataBarExpanded extends Symbol {
         int compositeOffset;
 
         inputData = toBytes(content, StandardCharsets.US_ASCII);
+        if (inputData == null) {
+            throw new OkapiException("Invalid characters in input data");
+        }
 
         StringBuilder binaryString = new StringBuilder(inputData.length * 8);
 

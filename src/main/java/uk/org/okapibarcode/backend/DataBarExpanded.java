@@ -20,6 +20,7 @@ import static uk.org.okapibarcode.util.Strings.binaryAppend;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * <p>Implements GS1 DataBar Expanded Omnidirectional and GS1 DataBar Expanded Stacked
@@ -188,11 +189,9 @@ public class DataBarExpanded extends Symbol {
         boolean special_case_row;
         int elements_in_sub;
         int reader;
-        int writer;
         int[] sub_elements = new int[235];
         int l;
         int symbol_row;
-        String separator_pattern;
         boolean black;
         boolean left_to_right;
         int compositeOffset;
@@ -345,55 +344,27 @@ public class DataBarExpanded extends Symbol {
         }
 
         if (!stacked) {
+
             /* Copy elements into symbol */
             row_count = 1 + compositeOffset;
             row_height = new int[1 + compositeOffset];
             row_height[0 + compositeOffset] = -1;
             pattern = new String[1 + compositeOffset];
 
-            writer = 0;
             black = false;
             StringBuilder pat = new StringBuilder("0");
-            StringBuilder separator_binary = new StringBuilder();
             for (i = 0; i < pattern_width; i++) {
                 pat.append((char) (elements[i] + '0'));
-                for (j = 0; j < elements[i]; j++) {
-                    if (black) {
-                        separator_binary.append('0');
-                    } else {
-                        separator_binary.append('1');
-                    }
-                }
                 black = !black;
-                writer += elements[i];
             }
             pattern[0 + compositeOffset] = pat.toString();
 
-            separator_binary.setCharAt(0, '0');
-            separator_binary.setCharAt(1, '0');
-            separator_binary.setCharAt(2, '0');
-            separator_binary.setCharAt(3, '0');
-            separator_binary.delete(separator_binary.length() - 4, separator_binary.length());
-            for (j = 0; j < (writer / 49); j++) {
-                k = (49 * j) + 18;
-                for (i = 0; i < 15; i++) {
-                    if (separator_binary.charAt(i + k - 1) == '1' && separator_binary.charAt(i + k) == '1') {
-                        separator_binary.setCharAt(i + k, '0');
-                    }
-                }
-            }
-            if (linkageFlag) {
-                // Add composite code separator
-                pattern[0] = bin2pat(separator_binary);
-                row_height[0] = 1;
-            }
-
         } else {
+
             /* RSS Expanded Stacked */
             codeblocks = (data_chars + 1) / 2 + ((data_chars + 1) % 2);
 
             blocksPerRow = preferredColumns;
-
             if (linkageFlag && blocksPerRow == 1) {
                 /* "There shall be a minimum of four symbol characters in the
                 first row of an RSS Expanded Stacked symbol when it is the linear
@@ -409,9 +380,11 @@ public class DataBarExpanded extends Symbol {
             row_count = (stack_rows * 4) - 3;
             row_height = new int[row_count + compositeOffset];
             pattern = new String[row_count + compositeOffset];
-            symbol_row = 0;
 
+            symbol_row = 0;
             current_block = 0;
+            AtomicBoolean v2 = new AtomicBoolean(false);
+
             for (current_row = 1; current_row <= stack_rows; current_row++) {
 
                 Arrays.fill(sub_elements, 0);
@@ -491,67 +464,30 @@ public class DataBarExpanded extends Symbol {
                     }
                 }
 
-                writer = 0;
-
-                StringBuilder separator_binary = new StringBuilder();
                 for (i = 0; i < elements_in_sub; i++) {
                     pat.append((char) (sub_elements[i] + '0'));
-                    for (j = 0; j < sub_elements[i]; j++) {
-                        separator_binary.append(black ? '0' : '1');
-                    }
                     black = !black;
-                    writer += sub_elements[i];
                 }
                 pattern[symbol_row + compositeOffset] = pat.toString();
-                separator_binary.setCharAt(0, '0');
-                separator_binary.setCharAt(1, '0');
-                separator_binary.setCharAt(2, '0');
-                separator_binary.setCharAt(3, '0');
-                separator_binary.delete(separator_binary.length() - 4, separator_binary.length());
-                for (j = 0; j < reader; j++) {
-                    k = (49 * j) + (special_case_row ? 19 : 18);
-                    if (left_to_right) {
-                        for (i = 0; i < 15; i++) {
-                            if (i + k < separator_binary.length() &&
-                                separator_binary.charAt(i + k - 1) == '1' &&
-                                separator_binary.charAt(i + k) == '1') {
-                                separator_binary.setCharAt(i + k, '0');
-                            }
-                        }
-                    } else {
-                        for (i = 14; i >= 0; i--) {
-                            if (i + k + 1 < separator_binary.length() &&
-                                separator_binary.charAt(i + k + 1) == '1' &&
-                                separator_binary.charAt(i + k) == '1') {
-                                separator_binary.setCharAt(i + k, '0');
-                            }
-                        }
-                    }
-                }
-                separator_pattern = bin2pat(separator_binary);
-
-                if (current_row == 1 && linkageFlag) {
-                    // Add composite code separator
-                    row_height[0] = 1;
-                    pattern[0] = separator_pattern;
-                }
 
                 if (current_row != 1) {
                     /* middle separator pattern (above current row) */
-                    pat = new StringBuilder("05");
+                    StringBuilder sep = new StringBuilder("05");
                     for (j = 5; j < (49 * blocksPerRow); j += 2) {
-                        pat.append("11");
+                        sep.append("11");
                     }
-                    pattern[symbol_row - 2 + compositeOffset] = pat.toString();
+                    pattern[symbol_row - 2 + compositeOffset] = sep.toString();
                     row_height[symbol_row - 2 + compositeOffset] = 1;
                     /* bottom separator pattern (above current row) */
+                    boolean odd_last_row = (current_row == stack_rows) && (data_chars % 2 == 0);
                     row_height[symbol_row - 1 + compositeOffset] = 1;
-                    pattern[symbol_row - 1 + compositeOffset] = separator_pattern;
+                    pattern[symbol_row - 1 + compositeOffset] = separator(pat, reader, false, special_case_row, left_to_right, odd_last_row, v2);
                 }
 
                 if (current_row != stack_rows) {
+                    /* top separator pattern (below current row) */
                     row_height[symbol_row + 1 + compositeOffset] = 1;
-                    pattern[symbol_row + 1 + compositeOffset] = separator_pattern;
+                    pattern[symbol_row + 1 + compositeOffset] = separator(pat, reader, true, false, left_to_right, false, v2);
                 }
 
                 symbol_row += 4;
@@ -561,6 +497,88 @@ public class DataBarExpanded extends Symbol {
             readable = "";
             row_count += compositeOffset;
         }
+
+        if (linkageFlag) {
+            // Add composite code separator
+            pattern[0] = separator(pattern[1], 4, false, false, true, false, new AtomicBoolean(false));
+            row_height[0] = 1;
+        }
+    }
+
+    private static String separator(CharSequence pattern, int cols, boolean below, boolean specialCaseRow,
+                    boolean leftToRight, boolean oddLastRow, AtomicBoolean v2mutable) {
+
+        // start with the complement of the linear symbol
+        StringBuilder linearBin = new StringBuilder();
+        StringBuilder separator = new StringBuilder();
+        boolean black = true;
+        for (int i = 0; i < pattern.length(); i++) {
+            int c = pattern.charAt(i) - '0';
+            for (int j = 0; j < c; j++) {
+                linearBin.append(black ? '1' : '0');
+                separator.append(black ? '0' : '1');
+            }
+            black = !black;
+        }
+
+        // clear first 4 and last 4 modules
+        for (int i = 0; i < 4; i++) {
+            separator.setCharAt(i, '0');
+            separator.setCharAt(separator.length() - 1 - i, '0');
+        }
+
+        // finder adjustments
+        boolean space = false;
+        boolean v2 = v2mutable.get();
+        for (int j = 0; j < cols; j++) {
+            // 49 == data (17) + finder (15) + data(17) triplet
+            // 19 == 2 (guard) + 17 (initial check/data character)
+            int k = (49 * j) + 19 + (specialCaseRow ? 1 : 0);
+            if (leftToRight) {
+                // version 1 finder: first 13 modules
+                // version 2 finder: last 13 modules
+                int start = v2 ? 2 : 0;
+                int end = v2 ? 15 : 13;
+                for (int i = start; i < end; i++) {
+                    if (i + k < linearBin.length()) {
+                        if (linearBin.charAt(i + k) == '1') {
+                            separator.setCharAt(i + k, '0');
+                            space = false;
+                        } else {
+                            separator.setCharAt(i + k, space ? '0' : '1');
+                            space = !space;
+                        }
+                    }
+                }
+            } else {
+                if (oddLastRow) {
+                    // no data char at beginning of row (ends with finder)
+                    k -= 17;
+                }
+                // version 1 finder: first 13 modules
+                // version 2 finder: last 13 modules
+                int start = v2 ? 14 : 12;
+                int end = v2 ? 2 : 0;
+                for (int i = start; i >= end; i--) {
+                    if (i + k < linearBin.length()) {
+                        if (linearBin.charAt(i + k) == '1') {
+                            separator.setCharAt(i + k, '0');
+                            space = false;
+                        } else {
+                            separator.setCharAt(i + k, space ? '0' : '1');
+                            space = !space;
+                        }
+                    }
+                }
+            }
+            v2 = !v2;
+        }
+
+        if (below) {
+            v2mutable.set(v2);
+        }
+
+        return bin2pat(separator);
     }
 
     /** Handles all data encodation from section 7.2.5 of ISO/IEC 24724. */

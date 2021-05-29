@@ -187,10 +187,10 @@ public class DataBarExpanded extends Symbol {
         int current_block;
         int current_row;
         boolean special_case_row;
+        int num_columns;
         int elements_in_sub;
         int reader;
         int[] sub_elements = new int[235];
-        int l;
         int symbol_row;
         boolean black;
         boolean left_to_right;
@@ -311,11 +311,6 @@ public class DataBarExpanded extends Symbol {
             elements[i] = 0;
         }
 
-        elements[0] = 1;
-        elements[1] = 1;
-        elements[pattern_width - 2] = 1;
-        elements[pattern_width - 1] = 1;
-
         /* Put finder patterns in element array */
         for (i = 0; i < (((data_chars + 1) / 2) + ((data_chars + 1) & 1)); i++) {
             k = ((((((data_chars + 1) - 2) / 2) + ((data_chars + 1) & 1)) - 1) * 11) + i;
@@ -344,6 +339,12 @@ public class DataBarExpanded extends Symbol {
         }
 
         if (!stacked) {
+
+            /* Add left and right guards */
+            elements[0] = 1;
+            elements[1] = 1;
+            elements[pattern_width - 2] = 1;
+            elements[pattern_width - 1] = 1;
 
             /* Copy elements into symbol */
             row_count = 1 + compositeOffset;
@@ -389,52 +390,40 @@ public class DataBarExpanded extends Symbol {
 
                 Arrays.fill(sub_elements, 0);
                 special_case_row = false;
+                num_columns = (current_row < stack_rows ? blocksPerRow : codeblocks - current_block);
 
                 /* Row Start */
                 sub_elements[0] = 1;
                 sub_elements[1] = 1;
                 elements_in_sub = 2;
 
+                left_to_right = (current_row  % 2 == 1) || // odd row
+                                (blocksPerRow % 2 == 1);   // odd number of segment pairs per row
+
+                if (!left_to_right &&              // row should be mirrored
+                    current_row == stack_rows &&   // last row
+                    num_columns != blocksPerRow && // partial width row
+                    num_columns % 2 == 1) {        // odd number of finder patterns / columns
+                    special_case_row = true;
+                    left_to_right = true;
+                    sub_elements[0] = 2;
+                } else {
+                    special_case_row = false;
+                }
+
                 /* Row Data */
                 reader = 0;
                 do {
-                    if ((((blocksPerRow & 1) != 0) || ((current_row & 1) != 0))
-                            || ((current_row == stack_rows)
-                            && (codeblocks != (current_row * blocksPerRow))
-                            && ((((current_row * blocksPerRow) - codeblocks) & 1)) != 0)) {
-                        /* left to right */
-                        left_to_right = true;
-                        i = 2 + (current_block * 21);
-                        for (j = 0; j < 21; j++) {
-                            if (i + j < pattern_width) {
+                    i = 2 + (current_block * 21);
+                    for (j = 0; j < 21; j++) {
+                        if (i + j < pattern_width) {
+                            if (left_to_right) {
                                 sub_elements[j + (reader * 21) + 2] = elements[i + j];
-                                elements_in_sub++;
+                            } else {
+                                sub_elements[(20 - j) + (num_columns - 1 - reader) * 21 + 2] = elements[i + j];
                             }
                         }
-                    } else {
-                        /* right to left */
-                        left_to_right = false;
-                        if ((current_row * blocksPerRow) < codeblocks) {
-                            /* a full row */
-                            i = 2 + (((current_row * blocksPerRow) - reader - 1) * 21);
-                            for (j = 0; j < 21; j++) {
-                                if (i + j < pattern_width) {
-                                    sub_elements[(20 - j) + (reader * 21) + 2] = elements[i + j];
-                                    elements_in_sub++;
-                                }
-                            }
-                        } else {
-                            /* a partial row */
-                            k = ((current_row * blocksPerRow) - codeblocks);
-                            l = (current_row * blocksPerRow) - reader - 1;
-                            i = 2 + ((l - k) * 21);
-                            for (j = 0; j < 21; j++) {
-                                if (i + j < pattern_width) {
-                                    sub_elements[(20 - j) + (reader * 21) + 2] = elements[i + j];
-                                    elements_in_sub++;
-                                }
-                            }
-                        }
+                        elements_in_sub++;
                     }
                     reader++;
                     current_block++;
@@ -446,24 +435,12 @@ public class DataBarExpanded extends Symbol {
                 elements_in_sub += 2;
 
                 black = true;
-                StringBuilder pat = new StringBuilder();
                 row_height[symbol_row + compositeOffset] = -1;
-
-                if ((current_row & 1) != 0) {
+                StringBuilder pat = new StringBuilder();
+                if (current_row % 2 == 1 || special_case_row) {
                     pat.append('0');
                     black = false;
-                } else {
-                    if ((current_row == stack_rows)
-                            && (codeblocks != (current_row * blocksPerRow))
-                            && ((((current_row * blocksPerRow) - codeblocks) & 1) != 0)) {
-                        /* Special case bottom row */
-                        special_case_row = true;
-                        sub_elements[0] = 2;
-                        pat.append('0');
-                        black = false;
-                    }
                 }
-
                 for (i = 0; i < elements_in_sub; i++) {
                     pat.append((char) (sub_elements[i] + '0'));
                     black = !black;

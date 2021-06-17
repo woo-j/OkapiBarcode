@@ -145,7 +145,7 @@ public class DataMatrix extends Symbol {
      * @param useGS1 if true use GS(=>29) else use FNC1(=>232) as separator character
      */
     public void setUseGS1(boolean useGS1) {
-      this.useGS1 = useGS1 ;
+      this.useGS1 = useGS1;
     }
 
     /**
@@ -688,7 +688,7 @@ public class DataMatrix extends Symbol {
                             if (inputData[sp] == FNC1) {
                               if(useGS1) {
                                 target[tp] = 29 + 1; /* GS */
-                                encodeInfo += "GS ";
+                                info ("GS ");
                               }
                               else {                                
                                 target[tp] = 232; /* FNC1 */

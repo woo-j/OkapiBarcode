@@ -124,7 +124,7 @@ public class DataMatrix extends Symbol {
     private int structuredAppendFileId = 1;
     private int structuredAppendPosition = 1;
     private int structuredAppendTotal = 1;
-    private boolean useGS1;
+    private boolean useGS1 = false;
 
     // internal state calculated when setContent() is called
 

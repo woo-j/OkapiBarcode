@@ -245,7 +245,7 @@ public class UspsOneCode extends Symbol {
     /**
      * Sets the percentage of the full symbol height used for long bars (0 - 1). The default value is {@code 0.625} (62.5% of full symbol height).
      *
-     * @param shortHeightPercentage the percentage of the full symbol height used for long bars
+     * @param longHeightPercentage the percentage of the full symbol height used for long bars
      */
     public void setLongHeightPercentage(double longHeightPercentage) {
         if (longHeightPercentage < 0 || longHeightPercentage > 1) {

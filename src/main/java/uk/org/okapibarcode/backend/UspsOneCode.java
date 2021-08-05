@@ -190,10 +190,77 @@ public class UspsOneCode extends Symbol {
         5, 74, 22, 101, 128, 58, 118, 48, 108, 38, 98, 93, 23, 83, 13, 73, 3
     };
 
+    private double moduleWidthRatio;
+    private double shortHeightPercentage;
+    private double longHeightPercentage;
+
     public UspsOneCode() {
         this.default_height = 8;
         this.humanReadableLocation = HumanReadableLocation.NONE;
         this.humanReadableAlignment = HumanReadableAlignment.LEFT; // spec section 2.4.2
+        this.moduleWidthRatio = 1.43;
+        this.shortHeightPercentage = 0.25;
+        this.longHeightPercentage = 0.625;
+    }
+
+    /**
+     * Sets the ratio of space width to bar width. The default value is {@code 1.43} (spaces are 43% wider than bars).
+     *
+     * @param moduleWidthRatio the ratio of space width to bar width
+     */
+    public void setModuleWidthRatio(double moduleWidthRatio) {
+        this.moduleWidthRatio = moduleWidthRatio;
+    }
+
+    /**
+     * Returns the ratio of space width to bar width.
+     *
+     * @return the ratio of space width to bar width
+     */
+    public double getModuleWidthRatio() {
+        return moduleWidthRatio;
+    }
+
+    /**
+     * Sets the percentage of the full symbol height used for short bars (0 - 1). The default value is {@code 0.25} (25% of full symbol height).
+     *
+     * @param shortHeightPercentage the percentage of the full symbol height used for short bars
+     */
+    public void setShortHeightPercentage(double shortHeightPercentage) {
+        if (shortHeightPercentage < 0 || shortHeightPercentage > 1) {
+            throw new IllegalArgumentException("Height percentage must be between 0 and 1.");
+        }
+        this.shortHeightPercentage = shortHeightPercentage;
+    }
+
+    /**
+     * Returns the percentage of the full symbol height used for short bars.
+     *
+     * @return the percentage of the full symbol height used for short bars
+     */
+    public double getShortHeightPercentage() {
+        return shortHeightPercentage;
+    }
+
+    /**
+     * Sets the percentage of the full symbol height used for long bars (0 - 1). The default value is {@code 0.625} (62.5% of full symbol height).
+     *
+     * @param shortHeightPercentage the percentage of the full symbol height used for long bars
+     */
+    public void setLongHeightPercentage(double longHeightPercentage) {
+        if (longHeightPercentage < 0 || longHeightPercentage > 1) {
+            throw new IllegalArgumentException("Height percentage must be between 0 and 1.");
+        }
+        this.longHeightPercentage = longHeightPercentage;
+    }
+
+    /**
+     * Returns the percentage of the full symbol height used for long bars.
+     *
+     * @return the percentage of the full symbol height used for long bars
+     */
+    public double getLongHeightPercentage() {
+        return longHeightPercentage;
     }
 
     @Override
@@ -213,7 +280,7 @@ public class UspsOneCode extends Symbol {
         char c;
 
         if (!content.matches("[0-9\u002D]+")) {
-            throw new OkapiException("Invalid characters in input data");
+            throw new OkapiException("Invalid characters in input");
         }
 
         if (length > 32) {
@@ -473,7 +540,7 @@ public class UspsOneCode extends Symbol {
     @Override
     protected void plotSymbol() {
         int xBlock, shortHeight, longHeight;
-        double x, y, w, h;
+        double x, y, w, h, dx;
 
         rectangles.clear();
         texts.clear();
@@ -489,8 +556,9 @@ public class UspsOneCode extends Symbol {
         w = moduleWidth;
         y = 0;
         h = 0;
-        shortHeight = (int) (0.25 * default_height);
-        longHeight = (int) (0.625 * default_height);
+        dx = (1 + moduleWidthRatio) * w;
+        shortHeight = (int) (shortHeightPercentage * default_height);
+        longHeight = (int) (longHeightPercentage * default_height);
         for (xBlock = 0; xBlock < pattern[0].length(); xBlock++) {
 
             switch (pattern[0].charAt(xBlock)) {
@@ -515,10 +583,10 @@ public class UspsOneCode extends Symbol {
             Rectangle2D.Double rect = new Rectangle2D.Double(x, y, w, h);
             rectangles.add(rect);
 
-            x += (2.43 * w);
+            x += dx;
         }
 
-        symbol_width = (int) Math.ceil(((pattern[0].length() - 1) * 2.43 * w) + w); // final bar doesn't need extra whitespace
+        symbol_width = (int) Math.ceil(((pattern[0].length() - 1) * dx) + w); // final bar doesn't need extra whitespace
         symbol_height = default_height;
 
         if (humanReadableLocation != NONE && !readable.isEmpty()) {

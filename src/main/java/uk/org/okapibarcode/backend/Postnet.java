@@ -34,7 +34,7 @@ public class Postnet extends Symbol {
 
     public static enum Mode {
         PLANET, POSTNET
-    };
+    }
 
     private static final String[] PN_TABLE = {
         "LLSSS", "SSSLL", "SSLSL", "SSLLS", "SLSSL", "SLSLS", "SLLSS", "LSSSL", "LSSLS", "LSLSS"
@@ -45,9 +45,11 @@ public class Postnet extends Symbol {
     };
 
     private Mode mode;
+    private double moduleWidthRatio;
 
     public Postnet() {
         this.mode = Mode.POSTNET;
+        this.moduleWidthRatio = 1.5;
         this.default_height = 12;
         this.humanReadableLocation = HumanReadableLocation.NONE;
     }
@@ -70,6 +72,24 @@ public class Postnet extends Symbol {
         return mode;
     }
 
+    /**
+     * Sets the ratio of space width to bar width. The default value is {@code 1.5} (spaces are 50% wider than bars).
+     *
+     * @param moduleWidthRatio the ratio of space width to bar width
+     */
+    public void setModuleWidthRatio(double moduleWidthRatio) {
+        this.moduleWidthRatio = moduleWidthRatio;
+    }
+
+    /**
+     * Returns the ratio of space width to bar width.
+     *
+     * @return the ratio of space width to bar width
+     */
+    public double getModuleWidthRatio() {
+        return moduleWidthRatio;
+    }
+
     @Override
     protected void encode() {
         String[] table = (mode == Mode.POSTNET ? PN_TABLE : PL_TABLE);
@@ -85,7 +105,7 @@ public class Postnet extends Symbol {
         }
 
         if (!content.matches("[0-9]+")) {
-            throw new OkapiException("Invalid characters in data");
+            throw new OkapiException("Invalid characters in input");
         }
 
         sum = 0;
@@ -112,7 +132,7 @@ public class Postnet extends Symbol {
     @Override
     protected void plotSymbol() {
         int xBlock, shortHeight;
-        double x, y, w, h;
+        double x, y, w, h, dx;
 
         rectangles.clear();
         texts.clear();
@@ -126,6 +146,7 @@ public class Postnet extends Symbol {
 
         x = 0;
         w = moduleWidth;
+        dx = (1 + moduleWidthRatio) * w;
         shortHeight = (int) (0.4 * default_height);
         for (xBlock = 0; xBlock < pattern[0].length(); xBlock++) {
             if (pattern[0].charAt(xBlock) == 'L') {
@@ -136,10 +157,10 @@ public class Postnet extends Symbol {
                 h = shortHeight;
             }
             rectangles.add(new Rectangle2D.Double(x, y, w, h));
-            x += (2.5 * w);
+            x += dx;
         }
 
-        symbol_width = (int) Math.ceil(((pattern[0].length() - 1) * 2.5 * w) + w); // final bar doesn't need extra whitespace
+        symbol_width = (int) Math.ceil(((pattern[0].length() - 1) * dx) + w); // final bar doesn't need extra whitespace
         symbol_height = default_height;
 
         if (humanReadableLocation != NONE && !readable.isEmpty()) {

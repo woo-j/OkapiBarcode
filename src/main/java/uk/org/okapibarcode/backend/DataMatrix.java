@@ -124,7 +124,7 @@ public class DataMatrix extends Symbol {
     private int structuredAppendFileId = 1;
     private int structuredAppendPosition = 1;
     private int structuredAppendTotal = 1;
-    private boolean useGS1 = false;
+    private boolean useGS = false;
 
     // internal state calculated when setContent() is called
 
@@ -142,10 +142,10 @@ public class DataMatrix extends Symbol {
      * In GS1 DataMatrix and GS1 DotCode symbology: The Function 1 Symbol Character (FNC1) or the
      * control character <GS> SHALL be the separator character.
      * 
-     * @param useGS1 if true use GS(=>29) else use FNC1(=>232) as separator character
+     * @param useGS if true use GS(=>29) else use FNC1(=>232) as separator character
      */
-    public void setUseGS1(boolean useGS1) {
-      this.useGS1 = useGS1;
+    public void setUseGS(boolean useGS) {
+      this.useGS = useGS;
     }
 
     /**
@@ -686,14 +686,14 @@ public class DataMatrix extends Symbol {
                             binary_length++;
                         } else {
                             if (inputData[sp] == FNC1) {
-                              if(useGS1) {
-                                target[tp] = 29 + 1; /* GS */
-                                info ("GS ");
-                              }
-                              else {                                
-                                target[tp] = 232; /* FNC1 */
-                                info("FNC1 ");
-                              }
+                                if (useGS) {
+                                    target[tp] = 29 + 1; /* GS */
+                                    info ("GS ");
+                                }
+                                else {                                
+                                    target[tp] = 232; /* FNC1 */
+                                    info("FNC1 ");
+                                }
                             } else {
                                 target[tp] = inputData[sp] + 1;
                                 infoSpace(target[tp] - 1);
@@ -726,13 +726,13 @@ public class DataMatrix extends Symbol {
                     info("ASC ");
                 } else {
                     if (inputData[sp] == FNC1) {
-                      if(useGS1) {
-                        shift_set = 1;
-                        value = 29; /* GS */
-                      }else {
-                        shift_set = 2;
-                        value = 27; /* FNC1 */
-                      }  
+                        if (useGS) {
+                          shift_set = 1;
+                          value = 29; /* GS */
+                        } else {
+                            shift_set = 2;
+                            value = 27; /* FNC1 */
+                        }  
                     } else if (inputData[sp] > 127) {
                         process_buffer[process_p] = 1;
                         process_p++;
@@ -799,13 +799,13 @@ public class DataMatrix extends Symbol {
                     info("ASC ");
                 } else {
                     if (inputData[sp] == FNC1) {
-                      if(useGS1) {
-                        shift_set = 1;
-                        value = 29; /* GS */
-                      } else {  
-                          shift_set = 2;
-                          value = 27; /* FNC1 */
-                      }
+                        if (useGS) {
+                            shift_set = 1;
+                            value = 29; /* GS */
+                        } else {  
+                            shift_set = 2;
+                            value = 27; /* FNC1 */
+                        }
                     } else if (inputData[sp] > 127) {
                         process_buffer[process_p] = 1;
                         process_p++;

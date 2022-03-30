@@ -179,38 +179,44 @@ public class Code128 extends Symbol {
         }
 
         /* Decide on mode using same system as PDF417 and rules of ISO 15417 Annex E */
-        int letter = inputData[input_point];
-        int numbers = (letter >= '0' && letter <= '9' ? 1 : 0);
-        mode = findSubset(letter, numbers);
-        mode_type[0] = mode;
-        mode_length[0] += length(letter, mode);
-        for (i = 1; i < sourcelen; i++) {
-            letter = inputData[i];
-            last_mode = mode;
+        if (sourcelen > 0) {
+            int letter = inputData[input_point];
+            int numbers = (letter >= '0' && letter <= '9' ? 1 : 0);
             mode = findSubset(letter, numbers);
-            if (mode == last_mode) {
-                mode_length[index_point] += length(letter, mode);
-            } else {
-                index_point++;
-                mode_type[index_point] = mode;
-                mode_length[index_point] = length(letter, mode);
+            mode_type[0] = mode;
+            mode_length[0] += length(letter, mode);
+            for (i = 1; i < sourcelen; i++) {
+                letter = inputData[i];
+                last_mode = mode;
+                mode = findSubset(letter, numbers);
+                if (mode == last_mode) {
+                    mode_length[index_point] += length(letter, mode);
+                } else {
+                    index_point++;
+                    mode_type[index_point] = mode;
+                    mode_length[index_point] = length(letter, mode);
+                }
+                if (letter >= '0' && letter <= '9') {
+                    numbers++;
+                } else {
+                    numbers = 0;
+                }
             }
-            if (letter >= '0' && letter <= '9') {
-                numbers++;
-            } else {
-                numbers = 0;
-            }
+            index_point++;
+            index_point = reduceSubsetChanges(mode_type, mode_length, index_point);
         }
-        index_point++;
-        index_point = reduceSubsetChanges(mode_type, mode_length, index_point);
 
         /* Put set data into set[] */
         read = 0;
-        for (i = 0; i < index_point; i++) {
-            for (j = 0; j < mode_length[i]; j++) {
-                set[read] = mode_type[i];
-                read++;
+        if (sourcelen > 0) {
+            for (i = 0; i < index_point; i++) {
+                for (j = 0; j < mode_length[i]; j++) {
+                    set[read] = mode_type[i];
+                    read++;
+                }
             }
+        } else {
+            set[0] = Mode.LATCHB; // empty barcode, avoid errors below
         }
 
         /* Resolve odd length LATCHC blocks */
@@ -366,7 +372,7 @@ public class Code128 extends Symbol {
 
         /* Encode the data */
         read = 0;
-        do {
+        while (read < sourcelen) {
 
             if ((read != 0) && (set[read] != current_set)) { /* Latch different code set */
                 switch (set[read]) {
@@ -526,7 +532,7 @@ public class Code128 extends Symbol {
                     break;
             }
 
-        } while (read < sourcelen);
+        }
 
         infoLine();
 

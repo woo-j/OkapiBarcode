@@ -1383,9 +1383,9 @@ public class QrCode extends Symbol {
         int i;
 
         switch(ecc_level) {
-            case L: format += 0x08; break;
-            case Q: format += 0x18; break;
-            case H: format += 0x10; break;
+            case L: format |= 0x08; break;
+            case Q: format |= 0x18; break;
+            case H: format |= 0x10; break;
         }
 
         seq = QR_ANNEX_C[format];
@@ -1606,16 +1606,10 @@ public class QrCode extends Symbol {
         int seq;
         int i;
 
-        switch (ecc_level) {
-            case L:
-                format += 0x08;
-                break;
-            case Q:
-                format += 0x18;
-                break;
-            case H:
-                format += 0x10;
-                break;
+        switch(ecc_level) {
+            case L: format |= 0x08; break;
+            case Q: format |= 0x18; break;
+            case H: format |= 0x10; break;
         }
 
         seq = QR_ANNEX_C[format];

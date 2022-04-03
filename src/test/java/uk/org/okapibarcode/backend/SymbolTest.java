@@ -400,7 +400,14 @@ public class SymbolTest {
      * @param actualError the actual error message
      */
     private void verifyError(String actualError) {
-        assertEquals(config.expectedError, actualError);
+        if (config.expectedError != null && config.expectedError.startsWith("regex:")) {
+            // treat error message as a regular expression
+            String expected = config.expectedError.substring(6);
+            assertTrue(actualError + " <-> " + expected, actualError.matches(expected));
+        } else {
+            // treat error message literally
+            assertEquals(config.expectedError, actualError);
+        }
     }
 
     /**

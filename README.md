@@ -126,14 +126,15 @@ and data.
 
 ### Recent Releases
 
-#### Okapi 0.3.1
+#### Okapi Barcode 0.3.1
 
 - Improve build times
 - Code 128: allow empty content
 - All GS1 symbols: improve GS1 AI validations
 - Data Matrix: allow use of GS as the GS1 separator
+- Data Matrix: fix data too long to fit in symbol issue
 
-#### Okapi 0.3.0
+#### Okapi Barcode 0.3.0
 
 - POSTNET: improve symbol configurability (module width ratio, short height percentage, long height percentage)
 - USPS OneCode: improve symbol configurability (module width ratio, short height percentage, long height percentage)

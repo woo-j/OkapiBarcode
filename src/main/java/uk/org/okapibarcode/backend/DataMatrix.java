@@ -356,9 +356,17 @@ public class DataMatrix extends Symbol {
             optionsize = -1;
         }
 
+        int required = binlen + process_p;
+        if (last_mode == Mode.DM_X12 && process_p == 2) {
+            // it appears that in all modes, N trailing data characters can be encoded using N codewords, thanks
+            // to implicit ASCII latches (see encodeRemainder())... *except* in X12 encodation when there are 2
+            // trailing data characters, a scenario which requires 3 codewords (explicit ASCII latch required)
+            required++;
+        }
+
         calcsize = DM_SIZES_COUNT - 1;
         for (i = DM_SIZES_COUNT - 1; i > -1; i--) {
-            if (MATRIX_BYTES[i] >= (binlen + process_p)) {
+            if (MATRIX_BYTES[i] >= required) {
                 calcsize = i;
             }
         }
@@ -390,7 +398,7 @@ public class DataMatrix extends Symbol {
             symbolsize = optionsize;
         }
 
-        // Now we know the symbol size we can handle the remaining data in the process buffer.
+        // Now that we know the symbol size we can handle the remaining data in the process buffer.
         int symbolsLeft = MATRIX_BYTES[symbolsize] - binlen;
         binlen = encodeRemainder(symbolsLeft, binlen);
 
@@ -1100,20 +1108,20 @@ public class DataMatrix extends Symbol {
                 break;
 
             case DM_X12:
-                if ((symbols_left == process_p) && (process_p == 1)) {
+                if (symbols_left == 1 && process_p == 1) {
                     // Unlatch not required!
                     target[target_length] = inputData[inputlen - 1] + 1;
                     target_length++;
                 } else {
-                    target[target_length] = (254);
-                    target_length++; // Unlatch.
+                    if (symbols_left > 0) {
+                        target[target_length] = 254; // Unlatch
+                        target_length++;
+                    }
 
                     if (process_p == 1) {
                         target[target_length] = inputData[inputlen - 1] + 1;
                         target_length++;
-                    }
-
-                    if (process_p == 2) {
+                    } else if (process_p == 2) {
                         target[target_length] = inputData[inputlen - 2] + 1;
                         target_length++;
                         target[target_length] = inputData[inputlen - 1] + 1;

@@ -133,6 +133,7 @@ and data.
 - All GS1 symbols: improve GS1 AI validations
 - Data Matrix: allow use of GS as the GS1 separator
 - Data Matrix: fix data too long to fit in symbol issue
+- Data Matrix: add trailing data characters to debug logs
 
 #### Okapi Barcode 0.3.0
 

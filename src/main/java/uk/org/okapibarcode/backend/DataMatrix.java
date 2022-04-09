@@ -982,7 +982,7 @@ public class DataMatrix extends Symbol {
                     binary_length++;
                     binary[binary_length] = ' ';
                     binary_length++;
-                    info("(" + process_buffer[0] + " " + process_buffer[1] + " " + process_buffer[2] + ") ");
+                    info("(" + process_buffer[0] + " " + process_buffer[1] + " " + process_buffer[2] + " " + process_buffer[3] + ") ");
 
                     process_buffer[0] = process_buffer[4];
                     process_buffer[1] = process_buffer[5];
@@ -1061,18 +1061,11 @@ public class DataMatrix extends Symbol {
             }
         }
 
-        infoLine();
-        info("Codewords: ");
-        for (i = 0; i < tp; i++) {
-            infoSpace(target[i]);
-        }
-        infoLine();
-
         last_mode = current_mode;
         return tp;
     }
 
-    private int encodeRemainder(int symbols_left, int target_length) {
+    private int encodeRemainder(int symbols_left, int tp) {
 
         int inputlen = inputData.length;
 
@@ -1082,104 +1075,122 @@ public class DataMatrix extends Symbol {
                 if (process_p == 1) // 1 data character left to encode.
                 {
                     if (symbols_left > 1) {
-                        target[target_length] = 254;
-                        target_length++; // Unlatch and encode remaining data in ascii.
+                        target[tp] = 254; // Unlatch and encode remaining data in ASCII
+                        tp++;
+                        info("ASC ");
                     }
-                    target[target_length] = inputData[inputlen - 1] + 1;
-                    target_length++;
-                } else if (process_p == 2) // 2 data characters left to encode.
+                    target[tp] = inputData[inputlen - 1] + 1;
+                    infoSpace(target[tp] - 1);
+                    tp++;
+                } else if (process_p == 2) // 2 data characters left to encode
                 {
                     // Pad with shift 1 value (0) and encode as double.
                     int intValue = (1600 * process_buffer[0]) + (40 * process_buffer[1]) + 1; // ie (0 + 1).
-                    target[target_length] = (intValue / 256);
-                    target_length++;
-                    target[target_length] = (intValue % 256);
-                    target_length++;
+                    target[tp] = (intValue / 256);
+                    tp++;
+                    target[tp] = (intValue % 256);
+                    tp++;
+                    info("(" + process_buffer[0] + " " + process_buffer[1] + " 0) ");
                     if (symbols_left > 2) {
-                        target[target_length] = 254; // Unlatch
-                        target_length++;
+                        target[tp] = 254; // Unlatch
+                        tp++;
+                        info("ASC ");
                     }
                 } else {
                     if (symbols_left > 0) {
-                        target[target_length] = 254; // Unlatch
-                        target_length++;
+                        target[tp] = 254; // Unlatch
+                        tp++;
+                        info("ASC ");
                     }
                 }
                 break;
 
             case DM_X12:
                 if (symbols_left == 1 && process_p == 1) {
-                    // Unlatch not required!
-                    target[target_length] = inputData[inputlen - 1] + 1;
-                    target_length++;
+                    // Unlatch not required, encode directly in ASCII
+                    target[tp] = inputData[inputlen - 1] + 1;
+                    infoSpace(target[tp] - 1);
+                    tp++;
                 } else {
                     if (symbols_left > 0) {
-                        target[target_length] = 254; // Unlatch
-                        target_length++;
+                        target[tp] = 254; // Unlatch
+                        tp++;
+                        info("ASC ");
                     }
 
                     if (process_p == 1) {
-                        target[target_length] = inputData[inputlen - 1] + 1;
-                        target_length++;
+                        target[tp] = inputData[inputlen - 1] + 1;
+                        infoSpace(target[tp] - 1);
+                        tp++;
                     } else if (process_p == 2) {
-                        target[target_length] = inputData[inputlen - 2] + 1;
-                        target_length++;
-                        target[target_length] = inputData[inputlen - 1] + 1;
-                        target_length++;
+                        target[tp] = inputData[inputlen - 2] + 1;
+                        infoSpace(target[tp] - 1);
+                        tp++;
+                        target[tp] = inputData[inputlen - 1] + 1;
+                        infoSpace(target[tp] - 1);
+                        tp++;
                     }
                 }
                 break;
 
             case DM_EDIFACT:
-                if (symbols_left <= 2) // Unlatch not required!
+                if (symbols_left <= 2) // Unlatch not required, encode directly in ASCII
                 {
                     if (process_p == 1) {
-                        target[target_length] = inputData[inputlen - 1] + 1;
-                        target_length++;
+                        target[tp] = inputData[inputlen - 1] + 1;
+                        infoSpace(target[tp] - 1);
+                        tp++;
                     }
 
                     if (process_p == 2) {
-                        target[target_length] = inputData[inputlen - 2] + 1;
-                        target_length++;
-                        target[target_length] = inputData[inputlen - 1] + 1;
-                        target_length++;
+                        target[tp] = inputData[inputlen - 2] + 1;
+                        infoSpace(target[tp] - 1);
+                        tp++;
+                        target[tp] = inputData[inputlen - 1] + 1;
+                        infoSpace(target[tp] - 1);
+                        tp++;
                     }
                 } else {
-                    // Append edifact unlatch value (31) and empty buffer
+                    // Append EDIFACT unlatch value (31) and empty buffer
                     if (process_p == 0) {
-                        target[target_length] = (31 << 2);
-                        target_length++;
-                    }
-
-                    if (process_p == 1) {
-                        target[target_length] = ((process_buffer[0] << 2) + ((31 & 0x30) >> 4));
-                        target_length++;
-                        target[target_length] = ((31 & 0x0f) << 4);
-                        target_length++;
-                    }
-
-                    if (process_p == 2) {
-                        target[target_length] = ((process_buffer[0] << 2) + ((process_buffer[1] & 0x30) >> 4));
-                        target_length++;
-                        target[target_length] = (((process_buffer[1] & 0x0f) << 4) + ((31 & 0x3c) >> 2));
-                        target_length++;
-                        target[target_length] = (((31 & 0x03) << 6));
-                        target_length++;
-                    }
-
-                    if (process_p == 3) {
-                        target[target_length] = ((process_buffer[0] << 2) + ((process_buffer[1] & 0x30) >> 4));
-                        target_length++;
-                        target[target_length] = (((process_buffer[1] & 0x0f) << 4) + ((process_buffer[2] & 0x3c) >> 2));
-                        target_length++;
-                        target[target_length] = (((process_buffer[2] & 0x03) << 6) + 31);
-                        target_length++;
+                        target[tp] = (31 << 2);
+                        tp++;
+                        info("(31 0 0 0) ");
+                    } else if (process_p == 1) {
+                        target[tp] = ((process_buffer[0] << 2) + ((31 & 0x30) >> 4));
+                        tp++;
+                        target[tp] = ((31 & 0x0f) << 4);
+                        tp++;
+                        info("(" + process_buffer[0] + " 31 0 0) ");
+                    } else if (process_p == 2) {
+                        target[tp] = ((process_buffer[0] << 2) + ((process_buffer[1] & 0x30) >> 4));
+                        tp++;
+                        target[tp] = (((process_buffer[1] & 0x0f) << 4) + ((31 & 0x3c) >> 2));
+                        tp++;
+                        target[tp] = (((31 & 0x03) << 6));
+                        tp++;
+                        info("(" + process_buffer[0] + " " + process_buffer[1] + " 31 0) ");
+                    } else if (process_p == 3) {
+                        target[tp] = ((process_buffer[0] << 2) + ((process_buffer[1] & 0x30) >> 4));
+                        tp++;
+                        target[tp] = (((process_buffer[1] & 0x0f) << 4) + ((process_buffer[2] & 0x3c) >> 2));
+                        tp++;
+                        target[tp] = (((process_buffer[2] & 0x03) << 6) + 31);
+                        tp++;
+                        info("(" + process_buffer[0] + " " + process_buffer[1] + " " + process_buffer[2] + " 31) ");
                     }
                 }
                 break;
         }
 
-        return target_length;
+        infoLine();
+        info("Codewords: ");
+        for (int i = 0; i < tp; i++) {
+            infoSpace(target[i]);
+        }
+        infoLine();
+
+        return tp;
     }
 
     private boolean isTwoDigits(int pos) {

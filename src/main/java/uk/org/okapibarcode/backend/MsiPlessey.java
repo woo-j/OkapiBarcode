@@ -30,15 +30,16 @@ public class MsiPlessey extends Symbol {
     }
 
     private final static String[] MSI_PLESS_TABLE = {
-        "12121212", "12121221", "12122112", "12122121", "12211212", "12211221",
-        "12212112", "12212121", "21121212", "21121221"
+        "12121212", "12121221", "12122112", "12122121", "12211212",
+        "12211221", "12212112", "12212121", "21121212", "21121221"
     };
 
     private CheckDigit checkDigit = CheckDigit.NONE;
+    private boolean checkDigitInHumanReadableText = true;
+    private double moduleWidthRatio = 2;
 
     /**
-     * Set the check digit scheme to use. Options are: None, Modulo-10,
-     * 2 x Modulo-10, Modulo-11 and Modulo-11 &amp; 10.
+     * Sets the check digit scheme to use. Options are: None, Modulo-10, 2 x Modulo-10, Modulo-11, or Modulo-11 &amp; 10.
      *
      * @param checkDigit the type of check digit to add to symbol
      */
@@ -55,10 +56,47 @@ public class MsiPlessey extends Symbol {
         return checkDigit;
     }
 
+    /**
+     * Sets whether or not the check digit is shown in the human-readable text. Defaults to {@code true}.
+     *
+     * @param checkDigitInHumanReadableText whether or not the check digit is shown in the human-readable text
+     */
+    public void setCheckDigitInHumanReadableText(boolean checkDigitInHumanReadableText) {
+        this.checkDigitInHumanReadableText = checkDigitInHumanReadableText;
+    }
+
+    /**
+     * Returns whether or not the check digit is shown in the human-readable text.
+     *
+     * @return whether or not the check digit is shown in the human-readable text
+     */
+    public boolean getCheckDigitInHumanReadableText() {
+        return checkDigitInHumanReadableText;
+    }
+
+    /**
+     * Sets the ratio of wide bar width to narrow bar width. Valid values are usually
+     * between {@code 2} and {@code 3}. The default value is {@code 2}.
+     *
+     * @param moduleWidthRatio the ratio of wide bar width to narrow bar width
+     */
+    public void setModuleWidthRatio(double moduleWidthRatio) {
+        this.moduleWidthRatio = moduleWidthRatio;
+    }
+
+    /**
+     * Returns the ratio of wide bar width to narrow bar width.
+     *
+     * @return the ratio of wide bar width to narrow bar width
+     */
+    public double getModuleWidthRatio() {
+        return moduleWidthRatio;
+    }
+
+    /** {@inheritDoc} */
     @Override
     protected void encode() {
 
-        String intermediate;
         int length = content.length();
         int i;
         String evenString;
@@ -70,13 +108,18 @@ public class MsiPlessey extends Symbol {
         int checkDigit1;
         int checkDigit2;
 
-        if (!content.matches("[0-9]+")) {
+        if (!content.matches("[0-9]*")) {
             throw new OkapiException("Invalid characters in input");
         }
 
-        intermediate = "21"; // Start
+        int maxExpectedLength = 2 + ((length + maxCheckDigits(checkDigit)) * 8) + 3;
+        StringBuilder intermediate = new StringBuilder(maxExpectedLength);
+        intermediate.append("21"); // Start
+
         for (i = 0; i < length; i++) {
-            intermediate += MSI_PLESS_TABLE[Character.getNumericValue(content.charAt(i))];
+            char c = content.charAt(i);
+            int n = Character.getNumericValue(c);
+            intermediate.append(MSI_PLESS_TABLE[n]);
         }
 
         readable = content;
@@ -104,7 +147,7 @@ public class MsiPlessey extends Symbol {
                 }
             }
 
-            if (oddString.length() == 0) {
+            if (oddString.isEmpty()) {
                 addupString = "0";
             } else {
                 addupString = Integer.toString(Integer.parseInt(oddString) * 2);
@@ -122,7 +165,7 @@ public class MsiPlessey extends Symbol {
                 checkDigit1 = 0;
             }
 
-            intermediate += MSI_PLESS_TABLE[checkDigit1];
+            intermediate.append(MSI_PLESS_TABLE[checkDigit1]);
             readable += checkDigit1;
         }
 
@@ -147,10 +190,10 @@ public class MsiPlessey extends Symbol {
 
             readable += checkDigit1;
             if (checkDigit1 == 10) {
-                intermediate += MSI_PLESS_TABLE[1];
-                intermediate += MSI_PLESS_TABLE[0];
+                intermediate.append(MSI_PLESS_TABLE[1]);
+                intermediate.append(MSI_PLESS_TABLE[0]);
             } else {
-                intermediate += MSI_PLESS_TABLE[checkDigit1];
+                intermediate.append(MSI_PLESS_TABLE[checkDigit1]);
             }
         }
 
@@ -177,7 +220,7 @@ public class MsiPlessey extends Symbol {
                 }
             }
 
-            if(oddString.length() == 0) {
+            if(oddString.isEmpty()) {
                 addupString = "0";
             } else {
                 addupString = Integer.toString(Integer.parseInt(oddString) * 2);
@@ -195,14 +238,37 @@ public class MsiPlessey extends Symbol {
                 checkDigit2 = 0;
             }
 
-            intermediate += MSI_PLESS_TABLE[checkDigit2];
+            intermediate.append(MSI_PLESS_TABLE[checkDigit2]);
             readable += checkDigit2;
         }
 
-        intermediate += "121"; // Stop
+        intermediate.append("121"); // Stop
+        assert maxExpectedLength >= intermediate.length();
+        assert maxExpectedLength - intermediate.length() <= 8;
 
-        pattern = new String[] { intermediate };
+        pattern = new String[] { intermediate.toString() };
         row_count = 1;
         row_height = new int[] { -1 };
+    }
+
+    private static int maxCheckDigits(CheckDigit scheme) {
+        switch (scheme) {
+            case NONE: return 0;
+            case MOD10: return 1;
+            case MOD11: return 2;
+            case MOD10_MOD10: return 2;
+            case MOD11_MOD10: return 3;
+            default: throw new IllegalStateException("Unknown check digit scheme: " + scheme);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected double getModuleWidth(int originalWidth) {
+        if (originalWidth == 1) {
+            return 1;
+        } else {
+            return moduleWidthRatio;
+        }
     }
 }

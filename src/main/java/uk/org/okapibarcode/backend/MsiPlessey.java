@@ -22,6 +22,7 @@ package uk.org.okapibarcode.backend;
  * <p>MSI Plessey can encode a string of numeric digits and has a range of check digit options.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
+ * @author Daniel Gredler
  */
 public class MsiPlessey extends Symbol {
 
@@ -97,150 +98,47 @@ public class MsiPlessey extends Symbol {
     @Override
     protected void encode() {
 
-        int length = content.length();
-        int i;
-        String data;
-        String evenString;
-        String oddString;
-        String addupString;
-        int spacer;
-        int addup;
-        int weight;
-        int checkDigit1;
-        int checkDigit2;
-
         if (!content.matches("[0-9]*")) {
             throw new OkapiException("Invalid characters in input");
         }
 
+        int length = content.length();
         int maxExpectedLength = 2 + ((length + maxCheckDigits(checkDigit)) * 8) + 3;
         StringBuilder intermediate = new StringBuilder(maxExpectedLength);
         intermediate.append("21"); // Start
 
-        for (i = 0; i < length; i++) {
+        for (int i = 0; i < length; i++) {
             char c = content.charAt(i);
             int n = Character.getNumericValue(c);
             intermediate.append(MSI_PLESS_TABLE[n]);
         }
 
-        data = content;
+        String data = content;
 
         if (checkDigit == CheckDigit.MOD10 || checkDigit == CheckDigit.MOD10_MOD10) {
-            /* Add Modulo-10 check digit */
-            evenString = "";
-            oddString = "";
-
-            spacer = content.length() & 1;
-
-            for (i = content.length() - 1; i >= 0; i--) {
-                if (spacer == 1) {
-                    if ((i & 1) != 0) {
-                        evenString = content.charAt(i) + evenString;
-                    } else {
-                        oddString = content.charAt(i) + oddString;
-                    }
-                } else {
-                    if ((i & 1) != 0) {
-                        oddString = content.charAt(i) + oddString;
-                    } else {
-                        evenString = content.charAt(i) + evenString;
-                    }
-                }
-            }
-
-            if (oddString.isEmpty()) {
-                addupString = "0";
-            } else {
-                addupString = Integer.toString(Integer.parseInt(oddString) * 2);
-            }
-
-            addupString += evenString;
-
-            addup = 0;
-            for (i = 0; i < addupString.length(); i++) {
-                addup += addupString.charAt(i) - '0';
-            }
-
-            checkDigit1 = 10 - (addup % 10);
-            if (checkDigit1 == 10) {
-                checkDigit1 = 0;
-            }
-
-            intermediate.append(MSI_PLESS_TABLE[checkDigit1]);
-            data += checkDigit1;
+            /* Add a Modulo-10 check digit */
+            int checkDigit = calcMod10(content);
+            intermediate.append(MSI_PLESS_TABLE[checkDigit]);
+            data += checkDigit;
         }
 
         if (checkDigit == CheckDigit.MOD11 || checkDigit == CheckDigit.MOD11_MOD10) {
             /* Add a Modulo-11 check digit */
-            weight = 2;
-            addup = 0;
-            for (i = content.length() - 1; i >= 0; i--) {
-                addup += (content.charAt(i) - '0') * weight;
-                weight++;
-
-                if (weight == 8) {
-                    weight = 2;
-                }
-            }
-
-            checkDigit1 = 11 - (addup % 11);
-
-            if (checkDigit1 == 11) {
-                checkDigit1 = 0;
-            }
-
-            data += checkDigit1;
-            if (checkDigit1 == 10) {
+            int checkDigit = calcMod11(content);
+            data += checkDigit;
+            if (checkDigit == 10) {
                 intermediate.append(MSI_PLESS_TABLE[1]);
                 intermediate.append(MSI_PLESS_TABLE[0]);
             } else {
-                intermediate.append(MSI_PLESS_TABLE[checkDigit1]);
+                intermediate.append(MSI_PLESS_TABLE[checkDigit]);
             }
         }
 
         if (checkDigit == CheckDigit.MOD10_MOD10 || checkDigit == CheckDigit.MOD11_MOD10) {
             /* Add a second Modulo-10 check digit */
-            evenString = "";
-            oddString = "";
-
-            spacer = data.length() & 1;
-
-            for (i = data.length() - 1; i >= 0; i--) {
-                if (spacer == 1) {
-                    if ((i & 1) != 0) {
-                        evenString = data.charAt(i) + evenString;
-                    } else {
-                        oddString = data.charAt(i) + oddString;
-                    }
-                } else {
-                    if ((i & 1) != 0) {
-                        oddString = data.charAt(i) + oddString;
-                    } else {
-                        evenString = data.charAt(i) + evenString;
-                    }
-                }
-            }
-
-            if (oddString.isEmpty()) {
-                addupString = "0";
-            } else {
-                addupString = Integer.toString(Integer.parseInt(oddString) * 2);
-            }
-
-            addupString += evenString;
-
-            addup = 0;
-            for (i = 0; i < addupString.length(); i++) {
-                addup += addupString.charAt(i) - '0';
-            }
-
-            checkDigit2 = 10 - (addup % 10);
-            if (checkDigit2 == 10) {
-                checkDigit2 = 0;
-            }
-
-            intermediate.append(MSI_PLESS_TABLE[checkDigit2]);
-            data += checkDigit2;
+            int checkDigit = calcMod10(data);
+            intermediate.append(MSI_PLESS_TABLE[checkDigit]);
+            data += checkDigit;
         }
 
         intermediate.append("121"); // Stop
@@ -263,6 +161,49 @@ public class MsiPlessey extends Symbol {
             case MOD11_MOD10: return 3;
             default: throw new IllegalStateException("Unknown check digit scheme: " + scheme);
         }
+    }
+
+    private static int calcMod10(String s) {
+
+        int sum = 0;
+        int parity = s.length() % 2;
+        for (int i = s.length() - 1; i >= 0; i--) {
+            int val = s.charAt(i) - '0';
+            if (i % 2 == parity) {
+                sum += val;
+            } else {
+                val *= 2;
+                sum += val % 10;
+                sum += val / 10;
+            }
+        }
+
+        int checkDigit = 10 - (sum % 10);
+        if (checkDigit == 10) {
+            checkDigit = 0;
+        }
+
+        return checkDigit;
+    }
+
+    private static int calcMod11(String s) {
+
+        int sum = 0;
+        int weight = 2;
+        for (int i = s.length() - 1; i >= 0; i--) {
+            sum += (s.charAt(i) - '0') * weight;
+            weight++;
+            if (weight == 8) {
+                weight = 2;
+            }
+        }
+
+        int checkDigit = 11 - (sum % 11);
+        if (checkDigit == 11) {
+            checkDigit = 0;
+        }
+
+        return checkDigit;
     }
 
     /** {@inheritDoc} */

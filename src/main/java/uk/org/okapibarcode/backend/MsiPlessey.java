@@ -99,6 +99,7 @@ public class MsiPlessey extends Symbol {
 
         int length = content.length();
         int i;
+        String data;
         String evenString;
         String oddString;
         String addupString;
@@ -122,7 +123,7 @@ public class MsiPlessey extends Symbol {
             intermediate.append(MSI_PLESS_TABLE[n]);
         }
 
-        readable = content;
+        data = content;
 
         if (checkDigit == CheckDigit.MOD10 || checkDigit == CheckDigit.MOD10_MOD10) {
             /* Add Modulo-10 check digit */
@@ -156,7 +157,7 @@ public class MsiPlessey extends Symbol {
             addupString += evenString;
 
             addup = 0;
-            for(i = 0; i < addupString.length(); i++) {
+            for (i = 0; i < addupString.length(); i++) {
                 addup += addupString.charAt(i) - '0';
             }
 
@@ -166,7 +167,7 @@ public class MsiPlessey extends Symbol {
             }
 
             intermediate.append(MSI_PLESS_TABLE[checkDigit1]);
-            readable += checkDigit1;
+            data += checkDigit1;
         }
 
         if (checkDigit == CheckDigit.MOD11 || checkDigit == CheckDigit.MOD11_MOD10) {
@@ -188,7 +189,7 @@ public class MsiPlessey extends Symbol {
                 checkDigit1 = 0;
             }
 
-            readable += checkDigit1;
+            data += checkDigit1;
             if (checkDigit1 == 10) {
                 intermediate.append(MSI_PLESS_TABLE[1]);
                 intermediate.append(MSI_PLESS_TABLE[0]);
@@ -202,25 +203,25 @@ public class MsiPlessey extends Symbol {
             evenString = "";
             oddString = "";
 
-            spacer = readable.length() & 1;
+            spacer = data.length() & 1;
 
-            for (i = readable.length() - 1; i >= 0; i--) {
+            for (i = data.length() - 1; i >= 0; i--) {
                 if (spacer == 1) {
                     if ((i & 1) != 0) {
-                        evenString = readable.charAt(i) + evenString;
+                        evenString = data.charAt(i) + evenString;
                     } else {
-                        oddString = readable.charAt(i) + oddString;
+                        oddString = data.charAt(i) + oddString;
                     }
                 } else {
                     if ((i & 1) != 0) {
-                        oddString = readable.charAt(i) + oddString;
+                        oddString = data.charAt(i) + oddString;
                     } else {
-                        evenString = readable.charAt(i) + evenString;
+                        evenString = data.charAt(i) + evenString;
                     }
                 }
             }
 
-            if(oddString.isEmpty()) {
+            if (oddString.isEmpty()) {
                 addupString = "0";
             } else {
                 addupString = Integer.toString(Integer.parseInt(oddString) * 2);
@@ -229,7 +230,7 @@ public class MsiPlessey extends Symbol {
             addupString += evenString;
 
             addup = 0;
-            for(i = 0; i < addupString.length(); i++) {
+            for (i = 0; i < addupString.length(); i++) {
                 addup += addupString.charAt(i) - '0';
             }
 
@@ -239,13 +240,15 @@ public class MsiPlessey extends Symbol {
             }
 
             intermediate.append(MSI_PLESS_TABLE[checkDigit2]);
-            readable += checkDigit2;
+            data += checkDigit2;
         }
 
         intermediate.append("121"); // Stop
+
         assert maxExpectedLength >= intermediate.length();
         assert maxExpectedLength - intermediate.length() <= 8;
 
+        readable = (checkDigitInHumanReadableText ? data : content);
         pattern = new String[] { intermediate.toString() };
         row_count = 1;
         row_height = new int[] { -1 };

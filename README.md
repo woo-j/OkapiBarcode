@@ -62,6 +62,7 @@ of work that have been invested in that project.
   * Micro PDF417
 * [Pharmacode](src/main/java/uk/org/okapibarcode/backend/Pharmacode.java)
 * [Pharmacode Two-Track](src/main/java/uk/org/okapibarcode/backend/Pharmacode2Track.java)
+* [Plessey](src/main/java/uk/org/okapibarcode/backend/Plessey.java) (UK Plessey)
 * [POSTNET / PLANET](src/main/java/uk/org/okapibarcode/backend/Postnet.java)
 * [QR Code](src/main/java/uk/org/okapibarcode/backend/QrCode.java)
 * [Royal Mail 4 State](src/main/java/uk/org/okapibarcode/backend/RoyalMail4State.java) (RM4SCC)
@@ -130,6 +131,7 @@ and data.
 
 - MSI Plessey: allow empty content
 - MSI Plessey: improve symbol configurability (module width ratio, check digit visibility)
+- Add support for the original Plessey symbology (also known as UK Plessey)
 
 #### Okapi Barcode 0.3.1
 

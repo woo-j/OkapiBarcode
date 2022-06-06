@@ -36,13 +36,13 @@ of work that have been invested in that project.
 * [Code 49](src/main/java/uk/org/okapibarcode/backend/Code49.java)
 * [Code 93](src/main/java/uk/org/okapibarcode/backend/Code93.java)
 * [Code One](src/main/java/uk/org/okapibarcode/backend/CodeOne.java)
-* [Composite](src/main/java/uk/org/okapibarcode/backend/Composite.java)
 * [Data Matrix](src/main/java/uk/org/okapibarcode/backend/DataMatrix.java)
 * [Dutch Post KIX Code](src/main/java/uk/org/okapibarcode/backend/KixCode.java)
 * [EAN](src/main/java/uk/org/okapibarcode/backend/Ean.java) variants:
   * EAN-13
   * EAN-8
 * [Grid Matrix](src/main/java/uk/org/okapibarcode/backend/GridMatrix.java)
+* [GS1 Composite](src/main/java/uk/org/okapibarcode/backend/Composite.java)
 * [GS1 DataBar](src/main/java/uk/org/okapibarcode/backend/DataBar14.java) variants:
   * GS1 DataBar
   * GS1 DataBar Stacked

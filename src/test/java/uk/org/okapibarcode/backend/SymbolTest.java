@@ -556,16 +556,16 @@ public class SymbolTest {
             }
             // set each symbol property using the corresponding setter method
             String setterName = "set" + name.substring(0, 1).toUpperCase() + name.substring(1);
-            Method setter = getMethod(symbol.getClass(), setterName);
+            Method setter = getMethod(symbol.getClass(), setterName, byte[].class);
             assertNotNull("unable to find method " + setterName, setter);
             Object setterValue = invoke(symbol, setter, value);
             // while we're here, eliminate some of the code coverage noise by checking the corresponding getter, if there is one
             if (!"content".equals(name)) {
                 String getterName = "get" + setterName.substring(3);
-                Method getter = getMethod(symbol.getClass(), getterName);
+                Method getter = getMethod(symbol.getClass(), getterName, null);
                 if (getter == null) {
                     getterName = "is" + setterName.substring(3);
-                    getter = getMethod(symbol.getClass(), getterName);
+                    getter = getMethod(symbol.getClass(), getterName, null);
                 }
                 if (getter != null) {
                     Object getterValue = getter.invoke(symbol);
@@ -583,16 +583,17 @@ public class SymbolTest {
      *
      * @param clazz the class to search in
      * @param name the name of the method to search for
+     * @param ignore parameter type that should be ignored, if any
      * @return the method with the specified name in the specified class
      */
-    private static Method getMethod(Class< ? > clazz, String name) {
+    private static Method getMethod(Class< ? > clazz, String name, Class< ? > ignore) {
         for (Method method : clazz.getMethods()) {
-            if (method.getName().equals(name)) {
+            if (method.getName().equals(name) && (ignore == null || !ignore.equals(method.getParameterTypes()[0]))) {
                 return method;
             }
         }
         for (Method method : clazz.getDeclaredMethods()) {
-            if (method.getName().equals(name)) {
+            if (method.getName().equals(name) && (ignore == null || !ignore.equals(method.getParameterTypes()[0]))) {
                 return method;
             }
         }

@@ -19,6 +19,7 @@ package uk.org.okapibarcode.backend;
 import static uk.org.okapibarcode.util.Arrays.positionOf;
 
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -678,6 +679,19 @@ public class Pdf417 extends Symbol {
 
     public Mode getMode() {
         return symbolMode;
+    }
+
+    /**
+     * <p>Sets the data to be encoded and triggers encoding. Input data will be assumed to
+     * be of the type set by {@link #setDataType(DataType)}. Use {@link #setContent(String)}
+     * instead if the data to be encoded is not binary data.
+     *
+     * @param data the data to encode
+     * @throws OkapiException if no data or data is invalid
+     * @see #setContent(String)
+     */
+    public void setContent(byte[] data) {
+        super.setContent(new String(data, StandardCharsets.ISO_8859_1));
     }
 
     @Override

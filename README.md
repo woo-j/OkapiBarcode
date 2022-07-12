@@ -130,6 +130,7 @@ and data.
 #### Okapi Barcode 0.3.3
 
 - GS1 Composite: avoid ArrayIndexOutOfBoundsException in some rare corner cases
+- Pdf417: add `setContent(byte[])` method for binary data
 
 #### Okapi Barcode 0.3.2
 

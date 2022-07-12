@@ -1236,12 +1236,12 @@ public class Composite extends Symbol {
         value = 0;
         target_bitsize = 0;
 
-        if (inputData[0] == '1' && (inputData[1] == '0' || inputData[1] == '1' || inputData[1] == '7') && inputData.length >= 8) {
+        if (inputData.length >= 8 && inputData[0] == '1' && (inputData[1] == '0' || inputData[1] == '1' || inputData[1] == '7')) {
             /* Source starts (10), (11) or (17) */
             encoding_method = 2;
         }
 
-        if (inputData[0] == '9' && inputData[1] == '0') {
+        if (inputData.length >= 2 && inputData[0] == '9' && inputData[1] == '0') {
             /* Source starts (90) */
             encoding_method = 3;
         }

@@ -127,6 +127,10 @@ and data.
 
 ### Recent Releases
 
+#### Okapi Barcode 0.3.3
+
+- GS1 Composite: avoid ArrayIndexOutOfBoundsException in some rare corner cases
+
 #### Okapi Barcode 0.3.2
 
 - MSI Plessey: allow empty content

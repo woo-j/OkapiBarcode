@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.beust:jcommander:1.78'
+    implementation 'com.beust:jcommander:1.82'
     testImplementation 'junit:junit:4.12'
     testImplementation 'com.google.zxing:javase:3.3.0'
     testImplementation 'org.reflections:reflections:0.9.10'
@@ -31,6 +31,10 @@ tasks.withType(JavaCompile) {
             options.bootClasspath = "$System.env.JDK7_HOME/jre/lib/rt.jar"
         }
     }
+}
+
+java {
+    disableAutoTargetJvm() // necessary only so long as we target JDK7 and include the JCommander dependency
 }
 
 compileJava.options.encoding = 'UTF-8'

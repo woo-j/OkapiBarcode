@@ -783,12 +783,6 @@ public class Pdf417 extends Symbol {
 
         addMacroCodewords();
 
-        info("Codewords: ");
-        for (int i = 0; i < codeWordCount; i++) {
-            infoSpace(codeWords[i]);
-        }
-        infoLine();
-
         /* Now take care of the number of CWs per row */
 
         // if we have to default the ECC level, do so per the
@@ -853,6 +847,15 @@ public class Pdf417 extends Symbol {
         codeWordCount++;
         codeWords[0] = codeWordCount;
 
+        /* add codeword info to debug output */
+        info("Codewords: ");
+        for (int i = 0; i < codeWordCount; i++) {
+            infoSpace(codeWords[i]);
+        }
+        infoLine();
+        infoLine("Data Codewords: " + codeWordCount);
+        infoLine("ECC Codewords: " + k);
+
         /* 796 - we now take care of the Reed Solomon codes */
         switch (selectedECCLevel) {
             case 1:
@@ -895,9 +898,6 @@ public class Pdf417 extends Symbol {
             }
             mccorrection[0] = (929 - (total * COEFRS[offset + j]) % 929) % 929;
         }
-
-        infoLine("Data Codewords: " + codeWordCount);
-        infoLine("ECC Codewords: " + k);
 
         /* we add these codes to the string */
         for (int i = k - 1; i >= 0; i--) {
@@ -1036,12 +1036,6 @@ public class Pdf417 extends Symbol {
 
         addMacroCodewords();
 
-        info("Codewords: ");
-        for (int i = 0; i < codeWordCount; i++) {
-            infoSpace(codeWords[i]);
-        }
-        infoLine();
-
         /* This is where it all changes! */
 
         validateRows(4, 44);
@@ -1084,15 +1078,21 @@ public class Pdf417 extends Symbol {
         int padding = longueur - codeWordCount; /* amount of padding required */
         offset = MICRO_VARIANTS[variant + 102]; /* coefficient offset */
 
-        infoLine("Data Codewords: " + longueur);
-        infoLine("ECC Codewords: " + k);
-
         /* We add the padding */
         while (padding > 0) {
             codeWords[codeWordCount] = 900;
             codeWordCount++;
             padding--;
         }
+
+        /* add codeword info to debug output */
+        info("Codewords: ");
+        for (int i = 0; i < codeWordCount; i++) {
+            infoSpace(codeWords[i]);
+        }
+        infoLine();
+        infoLine("Data Codewords: " + longueur);
+        infoLine("ECC Codewords: " + k);
 
         /* Reed-Solomon error correction */
         longueur = codeWordCount;

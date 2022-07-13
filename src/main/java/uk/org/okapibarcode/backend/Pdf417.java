@@ -21,6 +21,7 @@ import static uk.org.okapibarcode.util.Arrays.positionOf;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -781,7 +782,7 @@ public class Pdf417 extends Symbol {
             blockCount += block.length;
         }
 
-        addMacroCodewords();
+        int macroCount = addMacroCodewords();
 
         /* Now take care of the number of CWs per row */
 
@@ -832,13 +833,12 @@ public class Pdf417 extends Symbol {
         validateRows(3, 90);
         validateColumns(1, 30);
 
-        /* add the padding */
-        int paddingCount = (columns * rows) - codeWordCount - k - 1;
-        while (paddingCount > 0) {
-            codeWords[codeWordCount] = 900;
-            codeWordCount++;
-            paddingCount--;
-        }
+        /* add the padding (before the Macro PDF417 control block, if it exists) */
+        int padding = (columns * rows) - codeWordCount - k - 1;
+        int macroStart = codeWordCount - macroCount;
+        System.arraycopy(codeWords, macroStart, codeWords, macroStart + padding, macroCount);
+        Arrays.fill(codeWords, macroStart, macroStart + padding, 900);
+        codeWordCount += padding;
 
         /* add the length descriptor */
         for (int i = codeWordCount; i > 0; i--) {
@@ -1034,7 +1034,7 @@ public class Pdf417 extends Symbol {
             blockCount += block.length;
         }
 
-        addMacroCodewords();
+        int macroCount = addMacroCodewords();
 
         /* This is where it all changes! */
 
@@ -1078,12 +1078,11 @@ public class Pdf417 extends Symbol {
         int padding = longueur - codeWordCount; /* amount of padding required */
         offset = MICRO_VARIANTS[variant + 102]; /* coefficient offset */
 
-        /* We add the padding */
-        while (padding > 0) {
-            codeWords[codeWordCount] = 900;
-            codeWordCount++;
-            padding--;
-        }
+        /* add the padding (before the Macro PDF417 control block, if it exists) */
+        int macroStart = codeWordCount - macroCount;
+        System.arraycopy(codeWords, macroStart, codeWords, macroStart + padding, macroCount);
+        Arrays.fill(codeWords, macroStart, macroStart + padding, 900);
+        codeWordCount += padding;
 
         /* add codeword info to debug output */
         info("Codewords: ");
@@ -1661,13 +1660,15 @@ public class Pdf417 extends Symbol {
     }
 
     /** Adds the Macro PDF417 control block codewords (if any). */
-    private void addMacroCodewords() {
+    private int addMacroCodewords() {
 
         // if the structured append series size is 1, this isn't
         // actually part of a structured append series
         if (structuredAppendTotal == 1) {
-            return;
+            return 0;
         }
+
+        int macroStart = codeWordCount;
 
         // add the Macro marker codeword
         codeWords[codeWordCount++] = 928;
@@ -1695,6 +1696,8 @@ public class Pdf417 extends Symbol {
         if (last) {
             codeWords[codeWordCount++] = 922;
         }
+
+        return codeWordCount - macroStart;
     }
 
     private static class Block {

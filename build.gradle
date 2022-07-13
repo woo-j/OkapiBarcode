@@ -13,7 +13,7 @@ repositories {
 dependencies {
     implementation 'com.beust:jcommander:1.82'
     testImplementation 'junit:junit:4.12'
-    testImplementation 'com.google.zxing:javase:3.3.0'
+    testImplementation 'com.google.zxing:javase:3.5.0'
     testImplementation 'org.reflections:reflections:0.9.10'
 }
 

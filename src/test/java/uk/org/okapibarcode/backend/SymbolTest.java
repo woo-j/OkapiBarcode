@@ -50,6 +50,7 @@ import com.google.zxing.LuminanceSource;
 import com.google.zxing.Reader;
 import com.google.zxing.ReaderException;
 import com.google.zxing.Result;
+import com.google.zxing.ResultMetadataType;
 import com.google.zxing.aztec.AztecReader;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.HybridBinarizer;
@@ -65,6 +66,7 @@ import com.google.zxing.oned.UPCEReader;
 import com.google.zxing.oned.rss.RSS14Reader;
 import com.google.zxing.oned.rss.expanded.RSSExpandedReader;
 import com.google.zxing.pdf417.PDF417Reader;
+import com.google.zxing.pdf417.PDF417ResultMetadata;
 import com.google.zxing.qrcode.QRCodeReader;
 
 import uk.org.okapibarcode.backend.Code3Of9.CheckDigit;
@@ -253,6 +255,7 @@ public class SymbolTest {
             String zxingData = massageZXingData(result.getText(), symbol);
             String okapiData = massageOkapiData(symbol.getContent(), symbol);
             assertEquals("checking against ZXing results", okapiData, zxingData);
+            verifyMetadata(symbol, result);
         }
 
         // TODO: check against Zint?
@@ -391,6 +394,25 @@ public class SymbolTest {
         } else {
             // no massaging
             return s;
+        }
+    }
+
+    /**
+     * Verifies that the metadata in the specified ZXing result matches the information in the specified symbol, if appropriate.
+     *
+     * @param symbol the symbol to check against
+     * @param result the ZXing result to check
+     */
+    private void verifyMetadata(Symbol symbol, Result result) {
+        if (symbol instanceof Pdf417) {
+            Pdf417 pdf417 = (Pdf417) symbol;
+            if (pdf417.getStructuredAppendTotal() > 1) {
+                // verify Macro PDF417 metadata
+                PDF417ResultMetadata metadata = (PDF417ResultMetadata) result.getResultMetadata().get(ResultMetadataType.PDF417_EXTRA_METADATA);
+                assertEquals(String.valueOf(pdf417.getStructuredAppendFileId()), metadata.getFileId());
+                assertEquals(pdf417.getStructuredAppendPosition() - 1, metadata.getSegmentIndex());
+                assertEquals(pdf417.getStructuredAppendPosition() == pdf417.getStructuredAppendTotal(), metadata.isLastSegment());
+            }
         }
     }
 

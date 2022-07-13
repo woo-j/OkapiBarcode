@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import uk.org.okapibarcode.util.EciMode;
+
 /**
  * <p>Implements PDF417 bar code symbology and MicroPDF417 bar code symbology
  * according to ISO/IEC 15438:2006 and ISO/IEC 24728:2006 respectively.
@@ -60,6 +62,8 @@ public class Pdf417 extends Symbol {
     private int structuredAppendFileId = 0;
     private int structuredAppendPosition = 1;
     private int structuredAppendTotal = 1;
+    private String structuredAppendFileName;
+    private boolean structuredAppendIncludeSegmentCount;
 
     private static final int MAX_NUMERIC_COMPACTION_BLOCK_SIZE = 44;
 
@@ -674,6 +678,49 @@ public class Pdf417 extends Symbol {
         return structuredAppendFileId;
     }
 
+    /**
+     * If this PDF417 symbol is part of a series of PDF417 symbols appended in a structured format
+     * (Macro PDF417), this method sets the optional file name field for the symbol series.
+     *
+     * @param structuredAppendFileName the file name for the series that this symbol is part of
+     */
+    public void setStructuredAppendFileName(String structuredAppendFileName) {
+        this.structuredAppendFileName = structuredAppendFileName;
+    }
+
+    /**
+     * Returns the optional file name of the series of PDF417 symbols using structured append (Macro PDF417)
+     * that this symbol is part of. If this symbol is not part of a structured append series, this method
+     * will return <code>null</code>.
+     *
+     * @return the optional file name for the series that this symbol is part of
+     */
+    public String getStructuredAppendFileName() {
+        return structuredAppendFileName;
+    }
+
+    /**
+     * If this PDF417 symbol is part of a series of PDF417 symbols appended in a structured format
+     * (Macro PDF417), this method sets whether or not the optional segment count field is included
+     * in the control block. Since the segment count is optional, it is not included by default.
+     *
+     * @param structuredAppendIncludeSegmentCount whether or not the segment count is included
+     */
+    public void setStructuredAppendIncludeSegmentCount(boolean structuredAppendIncludeSegmentCount) {
+        this.structuredAppendIncludeSegmentCount = structuredAppendIncludeSegmentCount;
+    }
+
+    /**
+     * Returns whether or not the segment count is included in the control block if this symbol is part of
+     * a series of PDF417 symbols appended in a structured format (Macro PDF417). By default, the segment
+     * count is not included.
+     *
+     * @return whether or not the segment count is included
+     */
+    public boolean getStructuredAppendIncludeSegmentCount() {
+        return structuredAppendIncludeSegmentCount;
+    }
+
     public void setMode(Mode mode) {
         symbolMode = mode;
     }
@@ -732,31 +779,7 @@ public class Pdf417 extends Symbol {
             codeWordCount++;
         }
 
-        if (eciMode != 3) {
-            /* Encoding ECI assignment number, from ISO/IEC 15438 Table 8 */
-            if (eciMode <= 899) {
-                codeWords[codeWordCount] = 927;
-                codeWordCount++;
-                codeWords[codeWordCount] = eciMode;
-                codeWordCount++;
-            }
-
-            if ((eciMode >= 900) && (eciMode <= 810899)) {
-                codeWords[codeWordCount] = 926;
-                codeWordCount++;
-                codeWords[codeWordCount] = (eciMode / 900) - 1;
-                codeWordCount++;
-                codeWords[codeWordCount] = eciMode % 900;
-                codeWordCount++;
-            }
-
-            if ((eciMode >= 810900) && (eciMode <= 811799)) {
-                codeWords[codeWordCount] = 925;
-                codeWordCount++;
-                codeWords[codeWordCount] = eciMode - 810900;
-                codeWordCount++;
-            }
-        }
+        processEci(eciMode);
 
         int blockCount = 0;
         for (int i = 0; i < blocks.size(); i++) {
@@ -765,12 +788,12 @@ public class Pdf417 extends Symbol {
                 case TEX:
                     /* text mode */
                     boolean firstBlock = (i == 0);
-                    processText(blockCount, block.length, firstBlock);
+                    processText(inputData, blockCount, block.length, firstBlock);
                     break;
                 case BYT:
                     /* octet stream mode */
                     EncodingMode lastMode = (i == 0 ? EncodingMode.TEX : blocks.get(i - 1).mode);
-                    processBytes(blockCount, block.length, lastMode);
+                    processBytes(inputData, blockCount, block.length, lastMode);
                     break;
                 case NUM:
                     /* numeric mode */
@@ -985,31 +1008,7 @@ public class Pdf417 extends Symbol {
             codeWordCount++;
         }
 
-        if (eciMode != 3) {
-            /* Encoding ECI assignment number, from ISO/IEC 15438 Table 8 */
-            if (eciMode <= 899) {
-                codeWords[codeWordCount] = 927;
-                codeWordCount++;
-                codeWords[codeWordCount] = eciMode;
-                codeWordCount++;
-            }
-
-            if ((eciMode >= 900) && (eciMode <= 810899)) {
-                codeWords[codeWordCount] = 926;
-                codeWordCount++;
-                codeWords[codeWordCount] = (eciMode / 900) - 1;
-                codeWordCount++;
-                codeWords[codeWordCount] = eciMode % 900;
-                codeWordCount++;
-            }
-
-            if ((eciMode >= 810900) && (eciMode <= 811799)) {
-                codeWords[codeWordCount] = 925;
-                codeWordCount++;
-                codeWords[codeWordCount] = eciMode - 810900;
-                codeWordCount++;
-            }
-        }
+        processEci(eciMode);
 
         int blockCount = 0;
         for (int i = 0; i < blocks.size(); i++) {
@@ -1017,12 +1016,12 @@ public class Pdf417 extends Symbol {
             switch (block.mode) {
                 case TEX:
                     /* text mode */
-                    processText(blockCount, block.length, false); // TODO: this shouldn't always be false?
+                    processText(inputData, blockCount, block.length, false); // TODO: this shouldn't always be false?
                     break;
                 case BYT:
                     /* octet stream mode */
                     EncodingMode lastMode = (i == 0 ? EncodingMode.TEX : blocks.get(i - 1).mode);
-                    processBytes(blockCount, block.length, lastMode);
+                    processBytes(inputData, blockCount, block.length, lastMode);
                     break;
                 case NUM:
                     /* numeric mode */
@@ -1371,7 +1370,25 @@ public class Pdf417 extends Symbol {
         }
     }
 
-    private void processText(int start, int length, boolean skipLatch) {
+    private void processEci(int eci) {
+        if (eci == 3) {
+            return; // default, no need to specify
+        }
+        /* Encoding ECI assignment number, from ISO/IEC 15438 Table 8 */
+        if (eci <= 899) {
+            codeWords[codeWordCount++] = 927;
+            codeWords[codeWordCount++] = eci;
+        } else if (eci >= 900 && eci <= 810899) {
+            codeWords[codeWordCount++] = 926;
+            codeWords[codeWordCount++] = (eci / 900) - 1;
+            codeWords[codeWordCount++] = eci % 900;
+        } else if (eci >= 810900 && eci <= 811799) {
+            codeWords[codeWordCount++] = 925;
+            codeWords[codeWordCount++] = eci - 810900;
+        }
+    }
+
+    private void processText(int[] data, int start, int length, boolean skipLatch) {
         int j, blockIndext, curtable;
         int codeascii;
         int wnet = 0;
@@ -1381,7 +1398,7 @@ public class Pdf417 extends Symbol {
 
         /* listet will contain the table numbers and the value of each characters */
         for (blockIndext = 0; blockIndext < length; blockIndext++) {
-            codeascii = inputData[start + blockIndext];
+            codeascii = data[start + blockIndext];
             switch (codeascii) {
             case '\t':
                 listet0[blockIndext] = 12;
@@ -1574,7 +1591,7 @@ public class Pdf417 extends Symbol {
         }
     }
 
-    private void processBytes(int start, int length, EncodingMode lastMode) {
+    private void processBytes(int[] data, int start, int length, EncodingMode lastMode) {
         int len = 0;
         int chunkLen = 0;
         BigInteger mantisa;
@@ -1586,7 +1603,7 @@ public class Pdf417 extends Symbol {
 
         if (length == 1 && lastMode == EncodingMode.TEX) {
             codeWords[codeWordCount++] = 913;
-            codeWords[codeWordCount++] = inputData[start];
+            codeWords[codeWordCount++] = data[start];
         } else {
             /* select the switch for multiple of 6 bytes */
             if (length % 6 == 0) {
@@ -1603,7 +1620,7 @@ public class Pdf417 extends Symbol {
                     total = BigInteger.valueOf(0);
 
                     while ((chunkLen--) != 0) {
-                        mantisa = BigInteger.valueOf(inputData[start++]);
+                        mantisa = BigInteger.valueOf(data[start++]);
                         total = total.or(mantisa.shiftLeft(chunkLen * 8));
                     }
 
@@ -1619,7 +1636,7 @@ public class Pdf417 extends Symbol {
                 } else /* If it remain a group of less than 6 bytes */{
                     len += chunkLen;
                     while ((chunkLen--) != 0) {
-                        codeWords[codeWordCount++] = inputData[start++];
+                        codeWords[codeWordCount++] = data[start++];
                     }
                 }
             }
@@ -1659,6 +1676,17 @@ public class Pdf417 extends Symbol {
         }
     }
 
+    private void processFiveDigits(int i) {
+        assert i >= 0;
+        assert i <= 99_999;
+        int[] data = new int[5];
+        for (int x = data.length - 1; x >= 0; x--) {
+            data[x] = '0' + (i % 10);
+            i /= 10;
+        }
+        processNumbers(data, 0, data.length, true);
+    }
+
     /** Adds the Macro PDF417 control block codewords (if any). */
     private int addMacroCodewords() {
 
@@ -1676,20 +1704,28 @@ public class Pdf417 extends Symbol {
         // add the segment index, padded with leading zeros to five digits
         // use numeric compaction, but no latch
         int segmentIndex = structuredAppendPosition - 1;
-        int[] data = new int[5];
-        for (int x = data.length - 1; x >= 0; x--) {
-            data[x] = '0' + (segmentIndex % 10);
-            segmentIndex /= 10;
-        }
-        processNumbers(data, 0, data.length, true);
+        processFiveDigits(segmentIndex);
 
         // add the file ID (base 900, which is easy since we limit
         // file ID values to the range 0 to 899)
         codeWords[codeWordCount++] = structuredAppendFileId;
 
-        // NOTE: we could add the optional segment count field here, but
-        // it doesn't appear to be necessary... if we do eventually decide
-        // to add it, it will probably be [923, 001, count1, count2]
+        // optional fields: add the file name, if specified
+        if (structuredAppendFileName != null && !structuredAppendFileName.isEmpty()) {
+            codeWords[codeWordCount++] = 923;
+            codeWords[codeWordCount++] = 000;
+            EciMode eci = EciMode.of(structuredAppendFileName, "ISO8859_1", 3).or(structuredAppendFileName, "UTF8", 26);
+            int[] data2 = toBytes(structuredAppendFileName, eci.charset);
+            processEci(eci.mode);
+            processText(data2, 0, data2.length, true);
+        }
+
+        // optional fields: add segment count, if requested
+        if (structuredAppendIncludeSegmentCount) {
+            codeWords[codeWordCount++] = 923;
+            codeWords[codeWordCount++] = 001;
+            processFiveDigits(structuredAppendTotal);
+        }
 
         // add the terminator to the last symbol of the series
         boolean last = (structuredAppendPosition == structuredAppendTotal);

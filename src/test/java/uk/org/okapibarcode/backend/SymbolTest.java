@@ -412,6 +412,8 @@ public class SymbolTest {
                 assertEquals(String.valueOf(pdf417.getStructuredAppendFileId()), metadata.getFileId());
                 assertEquals(pdf417.getStructuredAppendPosition() - 1, metadata.getSegmentIndex());
                 assertEquals(pdf417.getStructuredAppendPosition() == pdf417.getStructuredAppendTotal(), metadata.isLastSegment());
+                assertEquals(pdf417.getStructuredAppendFileName(), metadata.getFileName());
+                assertEquals(pdf417.getStructuredAppendIncludeSegmentCount() ? pdf417.getStructuredAppendTotal() : -1, metadata.getSegmentCount());
             }
         }
     }

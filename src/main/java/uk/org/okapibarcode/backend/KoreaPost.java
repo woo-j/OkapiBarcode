@@ -32,18 +32,18 @@ public class KoreaPost extends Symbol {
     protected void encode() {
 
         if (!content.matches("[0-9]+")) {
-            throw new OkapiException("Invalid characters in input");
+            throw new OkapiException("Invalid characters in data");
         }
 
         if (content.length() > 6) {
             throw new OkapiException("Input data too long");
         }
 
-        String padded = "";
-        for (int i = 0; i < (6 - content.length()); i++) {
-            padded += "0";
+        StringBuilder padded = new StringBuilder(6);
+        for (int i = content.length(); i < 6; i++) {
+            padded.append('0');
         }
-        padded += content;
+        padded.append(content);
 
         int total = 0;
         String accumulator = "";
@@ -53,16 +53,17 @@ public class KoreaPost extends Symbol {
             total += j;
         }
 
-        int checkd = 10 - (total % 10);
-        if (checkd == 10) {
-            checkd = 0;
+        int check = 10 - (total % 10);
+        if (check == 10) {
+            check = 0;
         }
-        infoLine("Check Digit: " + checkd);
-        accumulator += KOREA_TABLE[checkd];
+        accumulator += KOREA_TABLE[check];
+        infoLine("Check Digit: " + check);
 
-        readable = padded + checkd;
+        readable = padded.toString() + check;
         pattern = new String[] { accumulator };
         row_count = 1;
         row_height = new int[] { -1 };
     }
+
 }

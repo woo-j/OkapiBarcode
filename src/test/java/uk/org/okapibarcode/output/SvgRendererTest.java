@@ -34,6 +34,7 @@ import org.junit.Test;
 import uk.org.okapibarcode.backend.Code93;
 import uk.org.okapibarcode.backend.HumanReadableAlignment;
 import uk.org.okapibarcode.backend.MaxiCode;
+import uk.org.okapibarcode.backend.QrCode;
 import uk.org.okapibarcode.backend.Symbol;
 
 /**
@@ -159,6 +160,15 @@ public class SvgRendererTest {
         maxicode.setMode(4);
         maxicode.setContent("x\u001dx>x<x/x&x");
         test(maxicode, 1, Color.WHITE, Color.BLACK, "maxicode-nasty-chars.svg", true);
+    }
+
+    @Test
+    public void testQrCodeBasic() throws IOException {
+        QrCode qr = new QrCode();
+        qr.setQuietZoneHorizontal(5);
+        qr.setQuietZoneVertical(5);
+        qr.setContent("123456789");
+        test(qr, 1, Color.WHITE, Color.BLACK, "qr-basic.svg", true);
     }
 
     private void test(Symbol symbol, double magnification, Color paper, Color ink, String expectationFile, boolean xmlProlog) throws IOException {

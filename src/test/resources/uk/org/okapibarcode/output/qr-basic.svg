@@ -1,0 +1,87 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+   "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="31" height="31" version="1.1" xmlns="http://www.w3.org/2000/svg">
+   <desc>123456789</desc>
+   <g id="barcode" fill="#000000">
+      <rect x="0" y="0" width="31" height="31" fill="#FFFFFF" />
+      <rect x="5.00" y="5.00" width="7.00" height="1.00" />
+      <rect x="13.00" y="5.00" width="2.00" height="1.00" />
+      <rect x="19.00" y="5.00" width="7.00" height="1.00" />
+      <rect x="5.00" y="6.00" width="1.00" height="5.00" />
+      <rect x="11.00" y="6.00" width="1.00" height="5.00" />
+      <rect x="19.00" y="6.00" width="1.00" height="5.00" />
+      <rect x="25.00" y="6.00" width="1.00" height="5.00" />
+      <rect x="7.00" y="7.00" width="3.00" height="3.00" />
+      <rect x="15.00" y="7.00" width="2.00" height="1.00" />
+      <rect x="21.00" y="7.00" width="3.00" height="3.00" />
+      <rect x="13.00" y="8.00" width="1.00" height="1.00" />
+      <rect x="16.00" y="8.00" width="2.00" height="1.00" />
+      <rect x="14.00" y="9.00" width="2.00" height="1.00" />
+      <rect x="15.00" y="10.00" width="1.00" height="2.00" />
+      <rect x="5.00" y="11.00" width="7.00" height="1.00" />
+      <rect x="13.00" y="11.00" width="1.00" height="1.00" />
+      <rect x="17.00" y="11.00" width="1.00" height="1.00" />
+      <rect x="19.00" y="11.00" width="7.00" height="1.00" />
+      <rect x="15.00" y="12.00" width="3.00" height="1.00" />
+      <rect x="7.00" y="13.00" width="1.00" height="1.00" />
+      <rect x="9.00" y="13.00" width="3.00" height="1.00" />
+      <rect x="13.00" y="13.00" width="1.00" height="1.00" />
+      <rect x="15.00" y="13.00" width="1.00" height="1.00" />
+      <rect x="18.00" y="13.00" width="1.00" height="3.00" />
+      <rect x="22.00" y="13.00" width="1.00" height="1.00" />
+      <rect x="25.00" y="13.00" width="1.00" height="2.00" />
+      <rect x="5.00" y="14.00" width="2.00" height="1.00" />
+      <rect x="10.00" y="14.00" width="1.00" height="1.00" />
+      <rect x="12.00" y="14.00" width="2.00" height="1.00" />
+      <rect x="16.00" y="14.00" width="1.00" height="1.00" />
+      <rect x="20.00" y="14.00" width="1.00" height="2.00" />
+      <rect x="5.00" y="15.00" width="1.00" height="2.00" />
+      <rect x="8.00" y="15.00" width="2.00" height="2.00" />
+      <rect x="11.00" y="15.00" width="1.00" height="1.00" />
+      <rect x="15.00" y="15.00" width="1.00" height="1.00" />
+      <rect x="22.00" y="15.00" width="1.00" height="1.00" />
+      <rect x="14.00" y="16.00" width="2.00" height="1.00" />
+      <rect x="18.00" y="16.00" width="5.00" height="1.00" />
+      <rect x="25.00" y="16.00" width="1.00" height="1.00" />
+      <rect x="7.00" y="17.00" width="1.00" height="1.00" />
+      <rect x="10.00" y="17.00" width="3.00" height="1.00" />
+      <rect x="16.00" y="17.00" width="1.00" height="1.00" />
+      <rect x="20.00" y="17.00" width="1.00" height="1.00" />
+      <rect x="24.00" y="17.00" width="2.00" height="1.00" />
+      <rect x="13.00" y="18.00" width="2.00" height="1.00" />
+      <rect x="22.00" y="18.00" width="1.00" height="1.00" />
+      <rect x="24.00" y="18.00" width="1.00" height="1.00" />
+      <rect x="5.00" y="19.00" width="7.00" height="1.00" />
+      <rect x="15.00" y="19.00" width="1.00" height="1.00" />
+      <rect x="17.00" y="19.00" width="1.00" height="1.00" />
+      <rect x="21.00" y="19.00" width="2.00" height="1.00" />
+      <rect x="24.00" y="19.00" width="2.00" height="2.00" />
+      <rect x="5.00" y="20.00" width="1.00" height="5.00" />
+      <rect x="11.00" y="20.00" width="1.00" height="5.00" />
+      <rect x="13.00" y="20.00" width="2.00" height="1.00" />
+      <rect x="16.00" y="20.00" width="1.00" height="1.00" />
+      <rect x="18.00" y="20.00" width="2.00" height="1.00" />
+      <rect x="22.00" y="20.00" width="1.00" height="1.00" />
+      <rect x="7.00" y="21.00" width="3.00" height="3.00" />
+      <rect x="13.00" y="21.00" width="3.00" height="1.00" />
+      <rect x="19.00" y="21.00" width="1.00" height="1.00" />
+      <rect x="21.00" y="21.00" width="3.00" height="1.00" />
+      <rect x="25.00" y="21.00" width="1.00" height="1.00" />
+      <rect x="15.00" y="22.00" width="1.00" height="1.00" />
+      <rect x="18.00" y="22.00" width="1.00" height="1.00" />
+      <rect x="20.00" y="22.00" width="1.00" height="2.00" />
+      <rect x="24.00" y="22.00" width="1.00" height="1.00" />
+      <rect x="13.00" y="23.00" width="2.00" height="1.00" />
+      <rect x="17.00" y="23.00" width="1.00" height="2.00" />
+      <rect x="22.00" y="23.00" width="2.00" height="1.00" />
+      <rect x="25.00" y="23.00" width="1.00" height="1.00" />
+      <rect x="14.00" y="24.00" width="2.00" height="1.00" />
+      <rect x="19.00" y="24.00" width="4.00" height="1.00" />
+      <rect x="5.00" y="25.00" width="7.00" height="1.00" />
+      <rect x="16.00" y="25.00" width="1.00" height="1.00" />
+      <rect x="18.00" y="25.00" width="3.00" height="1.00" />
+      <rect x="23.00" y="25.00" width="1.00" height="1.00" />
+      <rect x="25.00" y="25.00" width="1.00" height="1.00" />
+   </g>
+</svg>

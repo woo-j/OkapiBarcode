@@ -34,6 +34,7 @@ import org.junit.Test;
 import uk.org.okapibarcode.backend.Code93;
 import uk.org.okapibarcode.backend.HumanReadableAlignment;
 import uk.org.okapibarcode.backend.MaxiCode;
+import uk.org.okapibarcode.backend.QrCode;
 import uk.org.okapibarcode.backend.Symbol;
 
 /**
@@ -140,6 +141,15 @@ public class PostScriptRendererTest {
         maxicode.setMode(4);
         maxicode.setContent("123456789");
         test(maxicode, 5, Color.WHITE, Color.BLACK, "maxicode-basic.eps");
+    }
+
+    @Test
+    public void testQrCodeBasic() throws IOException {
+        QrCode qr = new QrCode();
+        qr.setQuietZoneHorizontal(5);
+        qr.setQuietZoneVertical(5);
+        qr.setContent("123456789");
+        test(qr, 5, Color.WHITE, Color.BLACK, "qr-basic.eps");
     }
 
     private void test(Symbol symbol, double magnification, Color paper, Color ink, String expectationFile) throws IOException {

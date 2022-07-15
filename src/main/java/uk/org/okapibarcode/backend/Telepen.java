@@ -75,111 +75,88 @@ public class Telepen extends Symbol {
     @Override
     protected void encode() {
         if (mode == Mode.NORMAL) {
-            normal_mode();
+            normalMode();
         } else {
-            numeric_mode();
+            numericMode();
         }
     }
 
-    private void normal_mode() {
-        int count = 0, asciicode, check_digit;
-        String p = "";
-        String dest;
-
-        int l = content.length();
+    private void normalMode() {
 
         if (!content.matches("[\u0000-\u007F]+")) {
-            throw new OkapiException("Invalid characters in input data");
+            throw new OkapiException("Invalid characters in data");
         }
 
-        dest = TELE_TABLE['_']; // Start
-        for (int i = 0; i < l; i++) {
-            asciicode = content.charAt(i);
-            p += TELE_TABLE[asciicode];
+        int count = 0;
+        StringBuilder dest = new StringBuilder();
+        dest.append(TELE_TABLE['_']); // Start
+        for (int i = 0; i < content.length(); i++) {
+            int asciicode = content.charAt(i);
+            dest.append(TELE_TABLE[asciicode]);
             count += asciicode;
         }
 
-        check_digit = 127 - (count % 127);
+        int check_digit = 127 - (count % 127);
         if (check_digit == 127) {
             check_digit = 0;
         }
-
-        p += TELE_TABLE[check_digit];
-
         infoLine("Check Digit: " + check_digit);
 
-        dest += p;
-        dest += TELE_TABLE['z']; // Stop
+        dest.append(TELE_TABLE[check_digit]);
+        dest.append(TELE_TABLE['z']); // Stop
 
         readable = content;
-        pattern = new String[1];
-        pattern[0] = dest;
+        pattern = new String[] { dest.toString() };
         row_count = 1;
-        row_height = new int[1];
-        row_height[0] = -1;
+        row_height = new int[] { -1 };
     }
 
-    private void numeric_mode() {
-        int count = 0, check_digit;
-        String p = "";
-        String t;
-        String dest;
-        int l = content.length();
-        int tl, glyph;
-        char c1, c2;
+    private void numericMode() {
 
-        //FIXME: Ensure no extended ASCII or Unicode characters are entered
         if (!content.matches("[0-9X]+")) {
-            throw new OkapiException("Invalid characters in input");
+            throw new OkapiException("Invalid characters in data");
         }
 
         /* If input is an odd length, add a leading zero */
-        if ((l & 1) == 1) {
+        String t;
+        if ((content.length() & 1) == 1) {
             t = "0" + content;
-            tl = l + 1;
         } else {
             t = content;
-            tl = l;
         }
 
-        dest = TELE_TABLE['_']; // Start
-        for (int i = 0; i < tl; i += 2) {
-
-            c1 = t.charAt(i);
-            c2 = t.charAt(i + 1);
-
+        int count = 0;
+        StringBuilder dest = new StringBuilder();
+        dest.append(TELE_TABLE['_']); // Start
+        for (int i = 0; i < t.length(); i += 2) {
+            char c1 = t.charAt(i);
+            char c2 = t.charAt(i + 1);
             /* Input nX is allowed, but Xn is not */
             if (c1 == 'X') {
                 throw new OkapiException("Invalid position of X in data");
             }
-
+            int glyph;
             if (c2 == 'X') {
                 glyph = (c1 - '0') + 17;
-                count += glyph;
             } else {
                 glyph = ((10 * (c1 - '0')) + (c2 - '0')) + 27;
-                count += glyph;
             }
-
-            p += TELE_TABLE[glyph];
+            count += glyph;
+            dest.append(TELE_TABLE[glyph]);
         }
 
-        check_digit = 127 - (count % 127);
+        int check_digit = 127 - (count % 127);
         if (check_digit == 127) {
             check_digit = 0;
         }
-
-        p += TELE_TABLE[check_digit];
-
         infoLine("Check Digit: " + check_digit);
 
-        dest += p;
-        dest += TELE_TABLE['z']; // Stop
+        dest.append(TELE_TABLE[check_digit]);
+        dest.append(TELE_TABLE['z']); // Stop
+
         readable = content;
-        pattern = new String[1];
-        pattern[0] = dest;
+        pattern = new String[] { dest.toString() };
         row_count = 1;
-        row_height = new int[1];
-        row_height[0] = -1;
+        row_height = new int[] { -1 };
     }
 }

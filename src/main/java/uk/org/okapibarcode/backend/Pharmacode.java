@@ -17,11 +17,11 @@
 package uk.org.okapibarcode.backend;
 
 /**
- * Implements the <a href="http://en.wikipedia.org/wiki/Pharmacode">Pharmacode</a>
+ * <p>Implements the <a href="http://en.wikipedia.org/wiki/Pharmacode">Pharmacode</a>
  * bar code symbology.
- * <br>
- * Pharmacode is used for the identification of pharmaceuticals. The symbology
- * is able to encode whole numbers between 3 and 131070.
+ *
+ * <p>Pharmacode is used for the identification of pharmaceuticals. The symbology is
+ * able to encode whole numbers between 3 and 131070.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
@@ -29,11 +29,6 @@ public class Pharmacode extends Symbol {
 
     @Override
     protected void encode() {
-        int tester = 0;
-        int i;
-
-        String inter = "";
-        String dest = "";
 
         if (content.length() > 6) {
             throw new OkapiException("Input too long");
@@ -43,38 +38,34 @@ public class Pharmacode extends Symbol {
             throw new OkapiException("Invalid characters in data");
         }
 
-        for (i = 0; i < content.length(); i++) {
-            tester *= 10;
-            tester += Character.getNumericValue(content.charAt(i));
-        }
-
+        int tester = Integer.parseInt(content);
         if (tester < 3 || tester > 131070) {
             throw new OkapiException("Data out of range");
         }
 
+        StringBuilder inter = new StringBuilder();
         do {
             if ((tester & 1) == 0) {
-                inter += "W";
+                inter.append('W');
                 tester = (tester - 2) / 2;
             } else {
-                inter += "N";
+                inter.append('N');
                 tester = (tester - 1) / 2;
             }
         } while (tester != 0);
 
-        for (i = inter.length() - 1; i >= 0; i--) {
+        StringBuilder dest = new StringBuilder(inter.length() * 2);
+        for (int i = inter.length() - 1; i >= 0; i--) {
             if (inter.charAt(i) == 'W') {
-                dest += "32";
+                dest.append("32");
             } else {
-                dest += "12";
+                dest.append("12");
             }
         }
 
         readable = "";
-        pattern = new String[1];
-        pattern[0] = dest;
+        pattern = new String[] { dest.toString() };
         row_count = 1;
-        row_height = new int[1];
-        row_height[0] = -1;
+        row_height = new int[] { -1 };
     }
 }

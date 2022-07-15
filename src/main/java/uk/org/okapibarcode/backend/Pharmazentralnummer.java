@@ -16,62 +16,53 @@
 package uk.org.okapibarcode.backend;
 
 /**
- * PZN8 is a Code 39 based symbology used by the pharmaceutical industry in
- * Germany. PZN8 encodes a 7 digit number and includes a modulo-10 check digit.
+ * <p>PZN8 is a Code 39 based symbology used by the pharmaceutical industry in
+ * Germany. PZN8 encodes a 7-digit number and includes a modulo-10 check digit.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class Pharmazentralnummer extends Symbol {
 
-    /* Pharmazentral Nummer is a Code 3 of 9 symbol with an extra
-     * check digit. Now generates PZN-8.
-     */
-
     @Override
     protected void encode() {
-        int l = content.length();
-        String localstr;
-        int zeroes, count = 0, check_digit;
-        Code3Of9 c = new Code3Of9();
 
-        if (l > 7) {
+        int len = content.length();
+        if (len > 7) {
             throw new OkapiException("Input data too long");
         }
 
         if (!content.matches("[0-9]+")) {
-            throw new OkapiException("Invalid characters in input");
+            throw new OkapiException("Invalid characters in data");
         }
 
-        localstr = "-";
-        zeroes = 7 - l + 1;
-        for (int i = 1; i < zeroes; i++)
-            localstr += '0';
+        StringBuilder localstr = new StringBuilder();
+        localstr.append('-');
+        int zeroes = 7 - len + 1;
+        for (int i = 1; i < zeroes; i++) {
+            localstr.append('0');
+        }
+        localstr.append(content);
 
-        localstr += content;
-
+        int count = 0;
         for (int i = 1; i < 8; i++) {
             count += i * Character.getNumericValue(localstr.charAt(i));
         }
 
-        check_digit = count % 11;
-        if (check_digit == 11) {
-            check_digit = 0;
-        }
+        int check_digit = count % 11;
         if (check_digit == 10) {
-            throw new OkapiException("Not a valid PZN identifier");
+            throw new OkapiException("Not a valid PZN identifier, check digit is 10");
         }
 
         infoLine("Check Digit: " + check_digit);
+        localstr.append((char) (check_digit + '0'));
 
-        localstr += (char)(check_digit + '0');
-
-        c.setContent(localstr);
+        Code3Of9 code39 = new Code3Of9();
+        code39.setContent(localstr.toString());
 
         readable = "PZN" + localstr;
         pattern = new String[1];
-        pattern[0] = c.pattern[0];
+        pattern[0] = code39.pattern[0];
         row_count = 1;
-        row_height = new int[1];
-        row_height[0] = -1;
+        row_height = new int[] { -1 };
     }
 }

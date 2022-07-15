@@ -19,9 +19,9 @@ package uk.org.okapibarcode.backend;
 import java.awt.geom.Rectangle2D;
 
 /**
- * Implements the Two-Track Pharmacode bar code symbology.
- * <br>
- * Pharmacode Two-Track is an alternative system to Pharmacode One-Track used
+ * <p>Implements the Two-Track Pharmacode bar code symbology.
+ *
+ * <p>Pharmacode Two-Track is an alternative system to Pharmacode One-Track used
  * for the identification of pharmaceuticals. The symbology is able to encode
  * whole numbers between 4 and 64570080.
  *
@@ -31,8 +31,6 @@ public class Pharmacode2Track extends Symbol {
 
     @Override
     protected void encode() {
-        int i, tester = 0;
-        String inter, dest;
 
         if (content.length() > 8) {
             throw new OkapiException("Input too long");
@@ -42,80 +40,68 @@ public class Pharmacode2Track extends Symbol {
             throw new OkapiException("Invalid characters in data");
         }
 
-        for (i = 0; i < content.length(); i++) {
-            tester *= 10;
-            tester += Character.getNumericValue(content.charAt(i));
-        }
-
+        int tester = Integer.parseInt(content);
         if (tester < 4 || tester > 64570080) {
             throw new OkapiException("Data out of range");
         }
 
-        inter = "";
+        StringBuilder dest = new StringBuilder();
         do {
             switch (tester % 3) {
-            case 0:
-                inter += "F";
-                tester = (tester - 3) / 3;
-                break;
-            case 1:
-                inter += "D";
-                tester = (tester - 1) / 3;
-                break;
-            case 2:
-                inter += "A";
-                tester = (tester - 2) / 3;
-                break;
+                case 0:
+                    dest.append('F');
+                    tester = (tester - 3) / 3;
+                    break;
+                case 1:
+                    dest.append('D');
+                    tester = (tester - 1) / 3;
+                    break;
+                case 2:
+                    dest.append('A');
+                    tester = (tester - 2) / 3;
+                    break;
             }
-        }
-        while (tester != 0);
+        } while (tester != 0);
 
-        dest = "";
-        for (i = (inter.length() - 1); i >= 0; i--) {
-            dest += inter.charAt(i);
-        }
-
+        dest.reverse();
         infoLine("Encoding: " + dest);
 
         readable = "";
-        pattern = new String[1];
-        pattern[0] = dest;
+        pattern = new String[] { dest.toString() };
         row_count = 1;
-        row_height = new int[1];
-        row_height[0] = -1;
+        row_height = new int[] { -1 };
     }
 
     @Override
     protected void plotSymbol() {
-        int xBlock;
-        int x, y, w, h;
+
+        int x = 0;
+        int w = 1;
+        int y = 0;
+        int h = 0;
 
         rectangles.clear();
-        x = 0;
-        w = 1;
-        y = 0;
-        h = 0;
-        for (xBlock = 0; xBlock < pattern[0].length(); xBlock++) {
-            switch (pattern[0].charAt(xBlock)) {
-            case 'A':
-                y = 0;
-                h = default_height / 2;
-                break;
-            case 'D':
-                y = default_height / 2;
-                h = default_height / 2;
-                break;
-            case 'F':
-                y = 0;
-                h = default_height;
-                break;
-            }
 
+        for (int xBlock = 0; xBlock < pattern[0].length(); xBlock++) {
+            switch (pattern[0].charAt(xBlock)) {
+                case 'A':
+                    y = 0;
+                    h = default_height / 2;
+                    break;
+                case 'D':
+                    y = default_height / 2;
+                    h = default_height / 2;
+                    break;
+                case 'F':
+                    y = 0;
+                    h = default_height;
+                    break;
+            }
             Rectangle2D.Double rect = new Rectangle2D.Double(x, y, w, h);
             rectangles.add(rect);
-
             x += 2;
         }
+
         symbol_width = pattern[0].length() * 2;
         symbol_height = default_height;
     }

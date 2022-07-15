@@ -47,109 +47,92 @@ public class JapanPost extends Symbol {
 
     @Override
     protected void encode() {
-        String dest;
-        String inter;
-        int i, sum, check;
-        char c;
 
         content = content.toUpperCase(Locale.ENGLISH);
-        if(!content.matches("[0-9A-Z\\-]+")) {
+        if (!content.matches("[0-9A-Z\\-]+")) {
             throw new OkapiException("Invalid characters in data");
         }
 
-        inter = "";
-
-        for (i = 0;
-        (i < content.length()) && (inter.length() < 20); i++) {
-            c = content.charAt(i);
-
-            if ((c >= '0') && (c <= '9')) {
-                inter += c;
-            }
-            if (c == '-') {
-                inter += c;
-            }
-            if ((c >= 'A') && (c <= 'J')) {
-                inter += 'a';
-                inter += CH_KASUT_SET[(c - 'A')];
-            }
-
-            if ((c >= 'K') && (c <= 'O')) {
-                inter += 'b';
-                inter += CH_KASUT_SET[(c - 'K')];
-            }
-
-            if ((c >= 'U') && (c <= 'Z')) {
-                inter += 'c';
-                inter += CH_KASUT_SET[(c - 'U')];
+        StringBuilder inter = new StringBuilder();
+        for (int i = 0; i < content.length() && inter.length() < 20; i++) {
+            char c = content.charAt(i);
+            if ((c >= '0' && c <= '9') || c == '-') {
+                inter.append(c);
+            } else if (c >= 'A' && c <= 'J') {
+                inter.append('a');
+                inter.append(CH_KASUT_SET[(c - 'A')]);
+            } else if (c >= 'K' && c <= 'O') {
+                inter.append('b');
+                inter.append(CH_KASUT_SET[(c - 'K')]);
+            } else if (c >= 'U' && c <= 'Z') {
+                inter.append('c');
+                inter.append(CH_KASUT_SET[(c - 'U')]);
             }
         }
-
-        for (i = inter.length(); i < 20; i++) {
-            inter += "d";
+        for (int i = inter.length(); i < 20; i++) {
+            inter.append('d');
         }
 
-        dest = "FD";
-
-        sum = 0;
-        for (i = 0; i < 20; i++) {
-            dest += JAPAN_TABLE[positionOf(inter.charAt(i), KASUT_SET)];
+        int sum = 0;
+        StringBuilder dest = new StringBuilder();
+        dest.append("FD");
+        for (int i = 0; i < 20; i++) {
+            dest.append(JAPAN_TABLE[positionOf(inter.charAt(i), KASUT_SET)]);
             sum += positionOf(inter.charAt(i), CH_KASUT_SET);
         }
 
         /* Calculate check digit */
-        check = 19 - (sum % 19);
+        int check = 19 - (sum % 19);
         if (check == 19) {
             check = 0;
         }
-        dest += JAPAN_TABLE[positionOf(CH_KASUT_SET[check], KASUT_SET)];
-        dest += "DF";
+        dest.append(JAPAN_TABLE[positionOf(CH_KASUT_SET[check], KASUT_SET)]);
+        dest.append("DF");
 
         infoLine("Encoding: " + dest);
         infoLine("Check Digit: " + check);
 
         readable = "";
-        pattern = new String[] { dest };
+        pattern = new String[] { dest.toString() };
         row_count = 1;
         row_height = new int[] { -1 };
     }
 
     @Override
     protected void plotSymbol() {
-        int xBlock;
-        int x, y, w, h;
+
+        int x = 0;
+        int w = 1;
+        int y = 0;
+        int h = 0;
 
         rectangles.clear();
-        x = 0;
-        w = 1;
-        y = 0;
-        h = 0;
-        for (xBlock = 0; xBlock < pattern[0].length(); xBlock++) {
-            switch (pattern[0].charAt(xBlock)) {
-            case 'A':
-                y = 0;
-                h = 5;
-                break;
-            case 'D':
-                y = 3;
-                h = 5;
-                break;
-            case 'F':
-                y = 0;
-                h = 8;
-                break;
-            case 'T':
-                y = 3;
-                h = 2;
-                break;
-            }
 
+        for (int xBlock = 0; xBlock < pattern[0].length(); xBlock++) {
+            switch (pattern[0].charAt(xBlock)) {
+                case 'A':
+                    y = 0;
+                    h = 5;
+                    break;
+                case 'D':
+                    y = 3;
+                    h = 5;
+                    break;
+                case 'F':
+                    y = 0;
+                    h = 8;
+                    break;
+                case 'T':
+                    y = 3;
+                    h = 2;
+                    break;
+            }
             Rectangle2D.Double rect = new Rectangle2D.Double(x, y, w, h);
             rectangles.add(rect);
-
             x += 2;
         }
-        symbol_width = pattern[0].length() * 3;
+
+        symbol_width = pattern[0].length() * 2;
         symbol_height = 8;
     }
 }

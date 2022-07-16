@@ -27,47 +27,43 @@ public class Nve18 extends Symbol {
     @Override
     protected void encode() {
 
-        String gs1Equivalent = "";
-        int zeroes;
-        int count = 0;
-        int c, cdigit;
-        int p = 0;
-
         if (content.length() > 17) {
             throw new OkapiException("Input data too long");
         }
 
         if (!content.matches("[0-9]+")) {
-            throw new OkapiException("Invalid characters in input");
+            throw new OkapiException("Invalid characters in data");
         }
 
-        // Add leading zeroes
-        zeroes = 17 - content.length();
-        for(int i = 0; i < zeroes; i++) {
-            gs1Equivalent += "0";
+        // add leading zeroes
+        StringBuilder gs1 = new StringBuilder();
+        int zeros = 17 - content.length();
+        for (int i = 0; i < zeros; i++) {
+            gs1.append('0');
         }
+        gs1.append(content);
 
-        gs1Equivalent += content;
-
-        // Add Modulus-10 check digit
-        for (int i = gs1Equivalent.length() - 1; i >= 0; i--) {
-            c = Character.getNumericValue(gs1Equivalent.charAt(i));
+        // add modulus-10 check digit
+        int p = 0;
+        int count = 0;
+        for (int i = gs1.length() - 1; i >= 0; i--) {
+            int c = Character.getNumericValue(gs1.charAt(i));
             if ((p % 2) == 0) {
                 c = c * 3;
             }
             count += c;
             p++;
         }
-        cdigit = 10 - (count % 10);
-        if (cdigit == 10) {
-            cdigit = 0;
+        int check = 10 - (count % 10);
+        if (check == 10) {
+            check = 0;
         }
 
-        infoLine("NVE Check Digit: " + cdigit);
+        infoLine("NVE Check Digit: " + check);
 
-        content = "[00]" + gs1Equivalent + cdigit;
+        content = "[00]" + gs1 + check;
 
-        // Defer to Code 128
+        // defer to Code 128
         Code128 code128 = new Code128();
         code128.setDataType(DataType.GS1);
         code128.setHumanReadableLocation(humanReadableLocation);
@@ -84,4 +80,5 @@ public class Nve18 extends Symbol {
 
         info(code128.encodeInfo);
     }
+
 }

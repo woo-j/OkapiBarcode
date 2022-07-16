@@ -28,8 +28,8 @@ public class ChannelCode extends Symbol {
 
     private int[] space = new int[11];
     private int[] bar = new int[11];
-    private double currentValue;
-    private double targetValue;
+    private int currentValue;
+    private int targetValue;
 
     /**
      * Sets the preferred number of channels used to encode data. This setting will be
@@ -39,7 +39,7 @@ public class ChannelCode extends Symbol {
      */
     public void setPreferredNumberOfChannels(int channels) {
         if (channels < 3 || channels > 8) {
-            throw new IllegalArgumentException("Invalid Channel Code number of channels: " + channels);
+            throw new IllegalArgumentException("Invalid number of channels: " + channels);
         }
         preferredNumberOfChannels = channels;
     }
@@ -56,26 +56,16 @@ public class ChannelCode extends Symbol {
     @Override
     protected void encode() {
 
-        int channels;
-        int i;
-        int leadingZeroCount;
-
         if (content.length() > 7) {
-            throw new OkapiException("Input too long");
+            throw new OkapiException("Input data too long");
         }
 
         if (!content.matches("[0-9]+")) {
-            throw new OkapiException("Invalid characters in input");
+            throw new OkapiException("Invalid characters in data");
         }
 
-        if (preferredNumberOfChannels <= 2 || preferredNumberOfChannels > 8) {
-            channels = 3;
-        } else {
-            channels = preferredNumberOfChannels;
-        }
-
+        int channels = preferredNumberOfChannels;
         targetValue = Integer.parseInt(content);
-
         switch (channels) {
             case 3:
                 if (targetValue > 26) {
@@ -109,7 +99,7 @@ public class ChannelCode extends Symbol {
 
         infoLine("Channels Used: " + channels);
 
-        for (i = 0; i < 11; i++) {
+        for (int i = 0; i < 11; i++) {
             bar[i] = 0;
             space[i] = 0;
         }
@@ -119,14 +109,14 @@ public class ChannelCode extends Symbol {
         pattern = new String[1];
         nextSpace(channels, 3, channels, channels);
 
-        leadingZeroCount = channels - 1 - content.length();
-
-        readable = "";
-        for (i = 0; i < leadingZeroCount; i++) {
-            readable += "0";
+        StringBuilder text = new StringBuilder();
+        int leadingZeroCount = channels - 1 - content.length();
+        for (int i = 0; i < leadingZeroCount; i++) {
+            text.append('0');
         }
-        readable += content;
+        text.append(content);
 
+        readable = text.toString();
         row_count = 1;
         row_height = new int[] { -1 };
     }

@@ -3,6 +3,7 @@ package uk.org.okapibarcode.backend;
 import static java.lang.Integer.toHexString;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -424,6 +425,7 @@ public class SymbolTest {
      * @param actualError the actual error message
      */
     private void verifyError(String actualError) {
+        assertFalse(pngFile.exists());
         if (config.expectedError != null && config.expectedError.startsWith("regex:")) {
             // treat error message as a regular expression
             String expected = config.expectedError.substring(6);

@@ -2666,25 +2666,25 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 return japanPost;
             case AUSPOST:
                 AustraliaPost auPost = new AustraliaPost();
-                auPost.setPostMode();
+                auPost.setMode(AustraliaPost.Mode.POST);
                 auPost.setContent(dataInput);
                 setUniversals(auPost);
                 return auPost;
             case AUSPOST_REPLY:
                 AustraliaPost auReply = new AustraliaPost();
-                auReply.setReplyMode();
+                auReply.setMode(AustraliaPost.Mode.REPLY);
                 auReply.setContent(dataInput);
                 setUniversals(auReply);
                 return auReply;
             case AUSPOST_REROUTE:
                 AustraliaPost auRoute = new AustraliaPost();
-                auRoute.setRouteMode();
+                auRoute.setMode(AustraliaPost.Mode.ROUTE);
                 auRoute.setContent(dataInput);
                 setUniversals(auRoute);
                 return auRoute;
             case AUSPOST_REDIRECT:
                 AustraliaPost auRedirect = new AustraliaPost();
-                auRedirect.setRedirectMode();
+                auRedirect.setMode(AustraliaPost.Mode.REDIRECT);
                 auRedirect.setContent(dataInput);
                 setUniversals(auRedirect);
                 return auRedirect;

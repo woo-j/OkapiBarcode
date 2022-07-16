@@ -406,28 +406,28 @@ public class MakeBarcode {
                 case 65: // Legacy
                     // Australia Post Standard Customer
                     AustraliaPost auPost = new AustraliaPost();
-                    auPost.setPostMode();
+                    auPost.setMode(AustraliaPost.Mode.POST);
                     auPost.setContent(dataInput);
                     symbol = auPost;
                     break;
                 case 66:
                     // Australia Post Reply Paid
                     AustraliaPost auReply = new AustraliaPost();
-                    auReply.setReplyMode();
+                    auReply.setMode(AustraliaPost.Mode.REPLY);
                     auReply.setContent(dataInput);
                     symbol = auReply;
                     break;
                 case 67:
                     // Australia Post Re-Routing
                     AustraliaPost auRoute = new AustraliaPost();
-                    auRoute.setRouteMode();
+                    auRoute.setMode(AustraliaPost.Mode.ROUTE);
                     auRoute.setContent(dataInput);
                     symbol = auRoute;
                     break;
                 case 68:
                     // Australia Post Redirection
                     AustraliaPost auRedirect = new AustraliaPost();
-                    auRedirect.setRedirectMode();
+                    auRedirect.setMode(AustraliaPost.Mode.REDIRECT);
                     auRedirect.setContent(dataInput);
                     symbol = auRedirect;
                     break;

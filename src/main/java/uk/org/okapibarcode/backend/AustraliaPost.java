@@ -27,6 +27,81 @@ import java.awt.geom.Rectangle2D;
  */
 public class AustraliaPost extends Symbol {
 
+    /**
+     * The different Australia Post barcode variants available to encode.
+     */
+    public enum Mode {
+        /**
+         * <p>Australia Post Standard Customer Barcode, Customer Barcode 2, or Customer Barcode 3
+         * (37-bar, 52-bar and 67-bar symbols) depending on input data length. Valid data characters
+         * are 0-9, A-Z, a-z, space and hash (#). A Format Control Code (FCC) is added and should not
+         * be included in the input data.
+         *
+         * <p>Input data should include a 8-digit Deliver Point ID (DPID) optionally followed by
+         * customer information as shown below.
+         *
+         * <table>
+         *   <tbody>
+         *     <tr>
+         *       <th>Input Length</th>
+         *       <th>Required Input Format</th>
+         *       <th>Symbol Length</th>
+         *       <th>FCC</th>
+         *       <th>Encoding Table</th>
+         *     </tr>
+         *     <tr>
+         *       <td>8</td>
+         *       <td>99999999</td>
+         *       <td>37-bar</td>
+         *       <td>11</td>
+         *       <td>None</td>
+         *     </tr>
+         *     <tr>
+         *       <td>13</td>
+         *       <td>99999999AAAAA</td>
+         *       <td>52-bar</td>
+         *       <td>59</td>
+         *       <td>C</td>
+         *     </tr>
+         *     <tr>
+         *       <td>16</td>
+         *       <td>9999999999999999</td>
+         *       <td>52-bar</td>
+         *       <td>59</td>
+         *       <td>N</td>
+         *     </tr>
+         *     <tr>
+         *       <td>18</td>
+         *       <td>99999999AAAAAAAAAA</td>
+         *       <td>67-bar</td>
+         *       <td>62</td>
+         *       <td>C</td>
+         *     </tr>
+         *     <tr>
+         *       <td>23</td>
+         *       <td>99999999999999999999999</td>
+         *       <td>67-bar</td>
+         *       <td>62</td>
+         *       <td>N</td>
+         *     </tr>
+         *   </tbody>
+         * </table>
+         */
+        POST,
+        /**
+         * Reply Paid version of the Australia Post 4-State Barcode (FCC 45) which requires an 8-digit DPID input.
+         */
+        REPLY,
+        /**
+         * Routing version of the Australia Post 4-State Barcode (FCC 87) which requires an 8-digit DPID input.
+         */
+        ROUTE,
+        /**
+         * Redirection version of the Australia Post 4-State Barcode (FCC 92) which requires an 8-digit DPID input.
+         */
+        REDIRECT
+    }
+
     private static final char[] CHARACTER_SET = {
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D',
         'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V',
@@ -56,146 +131,70 @@ public class AustraliaPost extends Symbol {
         "332", "333"
     };
 
-    private enum ausMode {AUSPOST, AUSREPLY, AUSROUTE, AUSREDIRECT}
+    private Mode mode = Mode.POST;
 
-    private ausMode mode;
-
-    public AustraliaPost() {
-        mode = ausMode.AUSPOST;
+    public void setMode(Mode mode) {
+        this.mode = mode;
     }
 
-    /**
-     * Specify encoding of Australia Post Standard Customer Barcode,
-     * Customer Barcode 2 or Customer Barcode 3 (37-bar, 52-bar and 67-bar
-     * symbols) depending on input data length. Valid data characters are 0-9,
-     * A-Z, a-z, space and hash (#). A Format Control Code (FCC) is added and
-     * should not be included in the input data.
-     * <p>
-     * Input data should include a 8-digit Deliver Point ID
-     * (DPID) optionally followed by customer information as shown below.
-     * <table>
-        <tbody>
-          <tr>
-            <th><p>Input Length</p></th>
-            <th><p>Required Input Format</p></th>
-            <th><p>Symbol Length</p></th>
-            <th><p>FCC</p></th>
-            <th><p>Encoding Table</p></th>
-          </tr>
-          <tr>
-            <td><p>8</p></td>
-            <td><p>99999999</p></td>
-            <td><p>37-bar</p></td>
-            <td><p>11</p></td>
-            <td><p>None</p></td>
-          </tr>
-          <tr>
-            <td><p>13</p></td>
-            <td><p>99999999AAAAA</p></td>
-            <td><p>52-bar</p></td>
-            <td><p>59</p></td>
-            <td><p>C</p></td>
-          </tr>
-          <tr>
-            <td><p>16</p></td>
-            <td><p>9999999999999999</p></td>
-            <td><p>52-bar</p></td>
-            <td><p>59</p></td>
-            <td><p>N</p></td>
-          </tr>
-          <tr>
-            <td><p>18</p></td>
-            <td><p>99999999AAAAAAAAAA</p></td>
-            <td><p>67-bar</p></td>
-            <td><p>62</p></td>
-            <td><p>C</p></td>
-          </tr>
-          <tr>
-            <td><p>23</p></td>
-            <td><p>99999999999999999999999</p></td>
-            <td><p>67-bar</p></td>
-            <td><p>62</p></td>
-            <td><p>N</p></td>
-          </tr>
-        </tbody>
-      </table>
-     */
-    public void setPostMode() {
-        mode = ausMode.AUSPOST;
-    }
-
-    /**
-     * Specify encoding of a Reply Paid version of the Australia Post
-     * 4-State Barcode (FCC 45) which requires an 8-digit DPID input.
-     */
-    public void setReplyMode() {
-        mode = ausMode.AUSREPLY;
-    }
-
-    /**
-     * Specify encoding of a Routing version of the Australia Post 4-State
-     * Barcode (FCC 87) which requires an 8-digit DPID input.
-     */
-    public void setRouteMode() {
-        mode = ausMode.AUSROUTE;
-    }
-
-    /**
-     * Specify encoding of a Redirection version of the Australia Post 4-State
-     * Barcode (FCC 92) which requires an 8-digit DPID input.
-     */
-    public void setRedirectMode() {
-        mode = ausMode.AUSREDIRECT;
+    public Mode getMode() {
+        return mode;
     }
 
     /** {@inheritDoc} */
     @Override
     protected void encode() {
-        String formatControlCode = "00";
-        String deliveryPointId;
-        String barStateValues;
-        String zeroPaddedInput = "";
-        int i;
 
-        switch(mode) {
-            case AUSPOST:
-                switch(content.length()) {
-                    case 8: formatControlCode = "11";
+        if (!content.matches("[0-9A-Za-z #]+")) {
+            throw new OkapiException("Invalid characters in data");
+        }
+
+        String formatControlCode = "00";
+        switch (mode) {
+            case POST:
+                switch (content.length()) {
+                    case 8:
+                        formatControlCode = "11";
                         break;
-                    case 13: formatControlCode = "59";
+                    case 13:
+                        formatControlCode = "59";
                         break;
-                    case 16: formatControlCode = "59";
+                    case 16:
+                        formatControlCode = "59";
                         if (!content.matches("[0-9]+")) {
                             throw new OkapiException("Invalid characters in data");
                         }
                         break;
-                    case 18: formatControlCode = "62";
+                    case 18:
+                        formatControlCode = "62";
                         break;
-                    case 23: formatControlCode = "62";
+                    case 23:
+                        formatControlCode = "62";
                         if (!content.matches("[0-9]+")) {
                             throw new OkapiException("Invalid characters in data");
                         }
                         break;
-                    default: throw new OkapiException("Auspost input is wrong length");
+                    default:
+                        throw new OkapiException("Input length must be one of 8, 13, 16, 18 or 23");
                 }
                 break;
-            case AUSREPLY:
+            case REPLY:
                 if (content.length() > 8) {
-                    throw new OkapiException("Auspost input is too long");
+                    throw new OkapiException("Input data too long");
                 } else {
                     formatControlCode = "45";
                 }
                 break;
-            case AUSROUTE:
+            case ROUTE:
                 if (content.length() > 8) {
-                    throw new OkapiException("Auspost input is too long");
+                    throw new OkapiException("Input data too long");
                 } else {
                     formatControlCode = "87";
                 }
                 break;
-            case AUSREDIRECT:
+            case REDIRECT:
                 if (content.length() > 8) {
-                    throw new OkapiException("Auspost input is too long");
+                    throw new OkapiException("Input data too long");
                 } else {
                     formatControlCode = "92";
                 }
@@ -204,101 +203,93 @@ public class AustraliaPost extends Symbol {
 
         infoLine("FCC: " + formatControlCode);
 
-        if(mode != ausMode.AUSPOST) {
-            for (i = content.length(); i < 8; i++) {
-                zeroPaddedInput += "0";
+        StringBuilder zeroPaddedInput = new StringBuilder();
+        if (mode != Mode.POST) {
+            for (int i = content.length(); i < 8; i++) {
+                zeroPaddedInput.append('0');
             }
         }
-        zeroPaddedInput += content;
-
-        if (!content.matches("[0-9A-Za-z #]+")) {
-            throw new OkapiException("Invalid characters in data");
-        }
+        zeroPaddedInput.append(content);
 
         /* Verify that the first 8 characters are numbers */
-        deliveryPointId = zeroPaddedInput.substring(0, 8);
-
+        String deliveryPointId = zeroPaddedInput.substring(0, 8);
         if (!deliveryPointId.matches("[0-9]+")) {
             throw new OkapiException("Invalid characters in DPID");
         }
-
         infoLine("DPID: " + deliveryPointId);
 
         /* Start */
-        barStateValues = "13";
+        StringBuilder barStateValues = new StringBuilder();
+        barStateValues.append("13");
 
         /* Encode the FCC */
-        for(i = 0; i < 2; i++) {
-            barStateValues += N_ENCODING_TABLE[formatControlCode.charAt(i) - '0'];
+        for (int i = 0; i < 2; i++) {
+            barStateValues.append(N_ENCODING_TABLE[formatControlCode.charAt(i) - '0']);
         }
 
         /* Delivery Point Identifier (DPID) */
-        for(i = 0; i < 8; i++) {
-            barStateValues += N_ENCODING_TABLE[deliveryPointId.charAt(i) - '0'];
+        for (int i = 0; i < 8; i++) {
+            barStateValues.append(N_ENCODING_TABLE[deliveryPointId.charAt(i) - '0']);
         }
 
         /* Customer Information */
-        switch(zeroPaddedInput.length()) {
+        switch (zeroPaddedInput.length()) {
             case 13:
             case 18:
-                for(i = 8; i < zeroPaddedInput.length(); i++) {
-                    barStateValues += C_ENCODING_TABLE[positionOf(zeroPaddedInput.charAt(i), CHARACTER_SET)];
+                for (int i = 8; i < zeroPaddedInput.length(); i++) {
+                    barStateValues.append(C_ENCODING_TABLE[positionOf(zeroPaddedInput.charAt(i), CHARACTER_SET)]);
                 }
                 break;
             case 16:
             case 23:
-                for(i = 8; i < zeroPaddedInput.length(); i++) {
-                    barStateValues += N_ENCODING_TABLE[positionOf(zeroPaddedInput.charAt(i), CHARACTER_SET)];
+                for (int i = 8; i < zeroPaddedInput.length(); i++) {
+                    barStateValues.append(N_ENCODING_TABLE[positionOf(zeroPaddedInput.charAt(i), CHARACTER_SET)]);
                 }
                 break;
         }
 
         /* Filler bar */
-        switch(barStateValues.length()) {
+        switch (barStateValues.length()) {
             case 22:
             case 37:
             case 52:
-                barStateValues += "3";
+                barStateValues.append('3');
                 break;
         }
 
         /* Reed Solomon error correction */
-        barStateValues += calcReedSolomon(barStateValues);
+        barStateValues.append(calcReedSolomon(barStateValues));
 
         /* Stop character */
-        barStateValues += "13";
+        barStateValues.append("13");
 
         infoLine("Total Length: " + barStateValues.length());
         info("Encoding: ");
-        for (i = 0; i < barStateValues.length(); i++) {
+        for (int i = 0; i < barStateValues.length(); i++) {
             switch (barStateValues.charAt(i)) {
                 case '1':
-                    info("A");
+                    info('A');
                     break;
                 case '2':
-                    info("D");
+                    info('D');
                     break;
                 case '0':
-                    info("F");
+                    info('F');
                     break;
                 case '3':
-                    info("T");
+                    info('T');
                     break;
             }
         }
         infoLine();
 
         readable = "";
-        pattern = new String[1];
-        pattern[0] = barStateValues;
+        pattern = new String[] { barStateValues.toString() };
         row_count = 1;
-        row_height = new int[1];
-        row_height[0] = -1;
+        row_height = new int[] { -1 };
     }
 
-    private String calcReedSolomon(String oldBarStateValues) {
-        ReedSolomon rs = new ReedSolomon();
-        String newBarStateValues = "";
+    private CharSequence calcReedSolomon(CharSequence oldBarStateValues) {
 
         /* Adds Reed-Solomon error correction to auspost */
 
@@ -306,40 +297,42 @@ public class AustraliaPost extends Symbol {
         int tripleValueCount = 0;
         int[] tripleValue = new int[31];
 
-        for(barStateCount = 2; barStateCount < oldBarStateValues.length(); barStateCount += 3, tripleValueCount++) {
+        for (barStateCount = 2; barStateCount < oldBarStateValues.length(); barStateCount += 3, tripleValueCount++) {
             tripleValue[tripleValueCount] = barStateToDecimal(oldBarStateValues.charAt(barStateCount), 4)
-                    + barStateToDecimal(oldBarStateValues.charAt(barStateCount + 1), 2)
-                    + barStateToDecimal(oldBarStateValues.charAt(barStateCount + 2), 0);
-	}
+                            + barStateToDecimal(oldBarStateValues.charAt(barStateCount + 1), 2)
+                            + barStateToDecimal(oldBarStateValues.charAt(barStateCount + 2), 0);
+        }
 
+        ReedSolomon rs = new ReedSolomon();
         rs.init_gf(0x43);
         rs.init_code(4, 1);
         rs.encode(tripleValueCount, tripleValue);
 
-        for(barStateCount = 4; barStateCount > 0; barStateCount--) {
-            newBarStateValues += BAR_VALUE_TABLE[rs.getResult(barStateCount - 1)];
+        StringBuilder newBarStateValues = new StringBuilder();
+        for (barStateCount = 4; barStateCount > 0; barStateCount--) {
+            newBarStateValues.append(BAR_VALUE_TABLE[rs.getResult(barStateCount - 1)]);
         }
 
         return newBarStateValues;
     }
 
-    private int barStateToDecimal (char oldBarStateValues, int shift) {
+    private int barStateToDecimal(char oldBarStateValues, int shift) {
         return (oldBarStateValues - '0') << shift;
     }
 
     /** {@inheritDoc} */
     @Override
     protected void plotSymbol() {
-        int xBlock;
-        int x, y, w, h;
+
+        int x = 0;
+        int w = 1;
+        int y = 0;
+        int h = 0;
 
         rectangles.clear();
-        x = 0;
-        w = 1;
-        y = 0;
-        h = 0;
-        for(xBlock = 0; xBlock < pattern[0].length(); xBlock++) {
-            switch(pattern[0].charAt(xBlock)) {
+
+        for (int xBlock = 0; xBlock < pattern[0].length(); xBlock++) {
+            switch (pattern[0].charAt(xBlock)) {
                 case '1':
                     y = 0;
                     h = 5;
@@ -357,10 +350,8 @@ public class AustraliaPost extends Symbol {
                     h = 2;
                     break;
             }
-
             Rectangle2D.Double rect = new Rectangle2D.Double(x, y, w, h);
             rectangles.add(rect);
-
             x += 2;
         }
 

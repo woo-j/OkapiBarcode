@@ -809,6 +809,10 @@ public abstract class Symbol {
         }
     }
 
+    protected void info(char c) {
+        encodeInfo.append(c);
+    }
+
     protected void info(CharSequence s) {
         encodeInfo.append(s);
     }

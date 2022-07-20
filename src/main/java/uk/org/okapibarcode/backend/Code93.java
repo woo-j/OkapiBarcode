@@ -117,12 +117,12 @@ public class Code93 extends Symbol {
     @Override
     protected void encode() {
 
+        if (!content.matches("[\u0000-\u007F]+")) {
+            throw new OkapiException("Invalid characters in data");
+        }
+
         char[] controlChars = toControlChars(content);
         int l = controlChars.length;
-
-        if (!content.matches("[\u0000-\u007F]+")) {
-            throw new OkapiException("Invalid characters in input data");
-        }
 
         int[] values = new int[controlChars.length + 2];
         for (int i = 0; i < l; i++) {

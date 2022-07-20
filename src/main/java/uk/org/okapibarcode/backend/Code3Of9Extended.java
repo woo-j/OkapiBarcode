@@ -25,6 +25,10 @@ package uk.org.okapibarcode.backend;
  */
 public class Code3Of9Extended extends Symbol {
 
+    public enum CheckDigit {
+        NONE, MOD43
+    }
+
     private static final String[] E_CODE_39 = {
         "%U", "$A", "$B", "$C", "$D", "$E", "$F", "$G", "$H", "$I", "$J", "$K",
         "$L", "$M", "$N", "$O", "$P", "$Q", "$R", "$S", "$T", "$U", "$V", "$W",
@@ -39,48 +43,48 @@ public class Code3Of9Extended extends Symbol {
         "%Q", "%R", "%S", "%T"
     };
 
-    public enum CheckDigit {
-        NONE, MOD43
-    }
-
-    private CheckDigit checkOption = CheckDigit.NONE;
+    private CheckDigit checkDigit = CheckDigit.NONE;
 
     /**
-     * Select addition of optional Modulo-43 check digit or encoding without check digit.
+     * Sets the check digit scheme (no check digit, or a modulo-43 check digit). By default, no check digit is added.
      *
-     * @param checkMode check digit option
+     * @param checkDigit the check digit scheme
      */
-    public void setCheckDigit(CheckDigit checkMode) {
-        checkOption = checkMode;
+    public void setCheckDigit(CheckDigit checkDigit) {
+        this.checkDigit = checkDigit;
+    }
+
+    /**
+     * Returns the check digit scheme (no check digit, or a modulo-43 check digit). By default, no check digit is added.
+     *
+     * @return the check digit scheme
+     */
+    public CheckDigit getCheckDigit() {
+        return checkDigit;
     }
 
     @Override
     protected void encode() {
-        String buffer = "";
-        int l = content.length();
-        int asciicode;
-        Code3Of9 c = new Code3Of9();
-
-        if (checkOption == CheckDigit.MOD43) {
-            c.setCheckDigit(Code3Of9.CheckDigit.MOD43);
-        }
 
         if (!content.matches("[\u0000-\u007F]+")) {
-            throw new OkapiException("Invalid characters in input data");
+            throw new OkapiException("Invalid characters in data");
         }
 
-        for (int i = 0; i < l; i++) {
-            asciicode = content.charAt(i);
-            buffer += E_CODE_39[asciicode];
+        StringBuilder s = new StringBuilder(content.length() * 2);
+        for (int i = 0; i < content.length(); i++) {
+            char c = content.charAt(i);
+            s.append(E_CODE_39[c]);
         }
 
-        c.setContent(buffer);
+        Code3Of9 code39 = new Code3Of9();
+        if (checkDigit == CheckDigit.MOD43) {
+            code39.setCheckDigit(Code3Of9.CheckDigit.MOD43);
+        }
+        code39.setContent(s.toString());
 
         readable = content;
-        pattern = new String[1];
-        pattern[0] = c.pattern[0];
+        pattern = new String[] { code39.pattern[0] };
         row_count = 1;
-        row_height = new int[1];
-        row_height[0] = -1;
+        row_height = new int[] { -1 };
     }
 }

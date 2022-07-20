@@ -71,7 +71,6 @@ import com.google.zxing.pdf417.PDF417Reader;
 import com.google.zxing.pdf417.PDF417ResultMetadata;
 import com.google.zxing.qrcode.QRCodeReader;
 
-import uk.org.okapibarcode.backend.Code3Of9.CheckDigit;
 import uk.org.okapibarcode.backend.Symbol.DataType;
 import uk.org.okapibarcode.output.Java2DRenderer;
 import uk.org.okapibarcode.util.Strings;
@@ -276,7 +275,13 @@ public class SymbolTest {
         } else if (symbol instanceof Code93) {
             return new Code93Reader();
         } else if (symbol instanceof Code3Of9) {
-            return new Code39Reader();
+            Code3Of9 code39 = (Code3Of9) symbol;
+            boolean checkDigit = (code39.getCheckDigit() == Code3Of9.CheckDigit.MOD43);
+            return new Code39Reader(checkDigit, false);
+        } else if (symbol instanceof Code3Of9Extended) {
+            Code3Of9Extended code39 = (Code3Of9Extended) symbol;
+            boolean checkDigit = (code39.getCheckDigit() == Code3Of9Extended.CheckDigit.MOD43);
+            return new Code39Reader(checkDigit, true);
         } else if (symbol instanceof Codabar) {
             return new CodaBarReader();
         } else if (symbol instanceof AztecCode &&
@@ -341,9 +346,6 @@ public class SymbolTest {
      */
     private static String massageZXingData(String s, Symbol symbol) {
         if (symbol instanceof Ean || symbol instanceof Upc) {
-            // remove the checksum from the barcode content
-            return s.substring(0, s.length() - 1);
-        } else if (symbol instanceof Code3Of9 && ((Code3Of9) symbol).getCheckDigit() == CheckDigit.MOD43) {
             // remove the checksum from the barcode content
             return s.substring(0, s.length() - 1);
         } else if (symbol instanceof DataMatrix &&

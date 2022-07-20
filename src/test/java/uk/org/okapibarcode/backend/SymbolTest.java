@@ -56,6 +56,7 @@ import com.google.zxing.aztec.AztecReader;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.datamatrix.DataMatrixReader;
+import com.google.zxing.maxicode.MaxiCodeReader;
 import com.google.zxing.oned.CodaBarReader;
 import com.google.zxing.oned.Code128Reader;
 import com.google.zxing.oned.Code39Reader;
@@ -270,8 +271,6 @@ public class SymbolTest {
      */
     private static Reader findReader(Symbol symbol) {
 
-        // TODO: see if we can massage data enough to check MaxiCode symbols against MaxiCodeReader instances
-
         if (symbol instanceof Code128 || symbol instanceof UspsPackage) {
             return new Code128Reader();
         } else if (symbol instanceof Code93) {
@@ -292,6 +291,12 @@ public class SymbolTest {
             return new AztecReader();
         } else if (symbol instanceof QrCode) {
             return new QRCodeReader();
+        } else if (symbol instanceof MaxiCode &&
+                   ((MaxiCode) symbol).getMode() != 6 &&
+                   ((MaxiCode) symbol).getStructuredAppendTotal() == 1) {
+            // ZXing does not currently support mode 6 in MaxiCode symbols
+            // ZXing does not currently support Structured Append in MaxiCode symbols
+            return new MaxiCodeReader();
         } else if (symbol instanceof DataMatrix &&
                    symbol.getEciMode() == 3 &&
                    ((DataMatrix) symbol).getStructuredAppendTotal() == 1) {
@@ -377,6 +382,7 @@ public class SymbolTest {
      * @return the massaged barcode content
      */
     private static String massageOkapiData(String s, Symbol symbol) {
+
         if (symbol instanceof Codabar) {
             // remove the start/stop characters from the specified barcode content
             return s.substring(1, s.length() - 1);
@@ -392,10 +398,25 @@ public class SymbolTest {
         } else if (symbol instanceof DataBarExpanded) {
             // remove explicit FNC1s, since ZXing doesn't include them
             return s.replace(Symbol.FNC1_STRING, "");
-        } else {
-            // no massaging
-            return s;
+        } else if (symbol instanceof MaxiCode) {
+            MaxiCode maxicode = (MaxiCode) symbol;
+            if (maxicode.getMode() == 2 || maxicode.getMode() == 3) {
+                // combine the primary message and secondary data, since ZXing combines them in the decoding result
+                String p = maxicode.getPrimary();
+                String c = maxicode.getContent();
+                char gs = '\u001D';
+                int i = (maxicode.getMode() == 2 ? 9 : 6);
+                String s2 = c.substring(0, 9) + p.substring(0, i) + gs + p.substring(9, 12) + gs + p.substring(12) + gs + c.substring(9);
+                // TODO: ZXing bug, remove hack once fix is released: https://github.com/zxing/zxing/issues/1543
+                return s2.replace('\r', '\n');
+            } else {
+                // TODO: ZXing bug, remove hack once fix is released: https://github.com/zxing/zxing/issues/1543
+                return s.replace('\r', '\n');
+            }
         }
+
+        // no massaging
+        return s;
     }
 
     /**

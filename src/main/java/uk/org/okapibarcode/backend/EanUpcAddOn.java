@@ -45,7 +45,7 @@ public class EanUpcAddOn extends Symbol {
     protected void encode() {
 
         if (!content.matches("[0-9]+")) {
-            throw new OkapiException("Invalid characters in input");
+            throw new OkapiException("Invalid characters in data");
         }
 
         if (content.length() > 5) {

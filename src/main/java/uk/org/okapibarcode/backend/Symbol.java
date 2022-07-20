@@ -121,7 +121,7 @@ public abstract class Symbol {
      */
     public void setDataType(DataType dataType) {
         if (dataType == DataType.GS1 && !gs1Supported()) {
-            throw new IllegalArgumentException("This symbology type does not support GS1 data.");
+            throw new IllegalArgumentException("This symbology type does not support GS1 data");
         }
         inputDataType = dataType;
     }

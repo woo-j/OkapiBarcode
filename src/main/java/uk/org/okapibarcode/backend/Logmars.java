@@ -85,28 +85,30 @@ public class Logmars extends Symbol {
     protected void encode() {
 
         if (!content.matches("[0-9A-Z\\. \\-$/+%]*")) {
-            throw new OkapiException("Invalid characters in input");
+            throw new OkapiException("Invalid characters in data");
         }
 
-        String p = "";
-        int l = content.length();
-        int charval, counter = 0;
-        char thischar;
-        char checkDigit;
-        for (int i = 0; i < l; i++) {
-            thischar = content.charAt(i);
-            charval = positionOf(thischar, LOOKUP);
-            counter += charval;
-            p += CODE39LM[charval];
+        int counter = 0;
+        int len = (content.length() * 10) + 29;
+        StringBuilder p = new StringBuilder(len);
+        p.append("1311313111");
+        for (int i = 0; i < content.length(); i++) {
+            char c = content.charAt(i);
+            int val = positionOf(c, LOOKUP);
+            counter += val;
+            p.append(CODE39LM[val]);
         }
 
         counter = counter % 43;
-        checkDigit = LOOKUP[counter];
+        char checkDigit = LOOKUP[counter];
         infoLine("Check Digit: " + checkDigit);
-        p += CODE39LM[counter];
+        p.append(CODE39LM[counter]);
+        p.append("131131311");
+
+        assert len == p.length();
 
         readable = content + checkDigit;
-        pattern = new String[] { "1311313111" + p + "131131311" };
+        pattern = new String[] { p.toString() };
         row_count = 1;
         row_height = new int[] { -1 };
     }

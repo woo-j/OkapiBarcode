@@ -101,7 +101,7 @@ public class Postnet extends Symbol {
         String dest;
 
         if (content.length() > 38) {
-            throw new OkapiException("Input too long");
+            throw new OkapiException("Input data too long");
         }
 
         if (!content.matches("[0-9]+")) {

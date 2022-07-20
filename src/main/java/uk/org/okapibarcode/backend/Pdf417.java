@@ -805,6 +805,7 @@ public class Pdf417 extends Symbol {
             blockCount += block.length;
         }
 
+        int dataCount = codeWordCount;
         int macroCount = addMacroCodewords();
 
         /* Now take care of the number of CWs per row */
@@ -827,7 +828,7 @@ public class Pdf417 extends Symbol {
         }
 
         int k = 1 << (selectedECCLevel + 1); // error correction codeword count
-        int dataCodeWordCount = codeWordCount + k + 1; // not including padding
+        int needed = 1 + dataCount + macroCount + k; // not including padding codewords
 
         validateRows(3, 90);
         validateColumns(1, 30);
@@ -835,21 +836,21 @@ public class Pdf417 extends Symbol {
         if (columns != null) {
             if (rows != null) {
                 // user specified both columns and rows; make sure the data fits
-                if (columns * rows < dataCodeWordCount) {
-                    throw new OkapiException("Too few rows (" + rows + ") and columns (" + columns + ") to hold codewords (" + dataCodeWordCount + ")");
+                if (columns * rows < needed) {
+                    throw new OkapiException("Too few rows (" + rows + ") and columns (" + columns + ") to hold codewords (" + needed + ")");
                 }
             } else {
                 // user only specified column count; figure out row count
-                rows = (int) Math.ceil(dataCodeWordCount / (double) columns);
+                rows = (int) Math.ceil(needed / (double) columns);
             }
         } else {
             if (rows != null) {
                 // user only specified row count; figure out column count
-                columns = (int) Math.ceil(dataCodeWordCount / (double) rows);
+                columns = (int) Math.ceil(needed / (double) rows);
             } else {
                 // user didn't specify columns or rows; figure both out
-                columns = (int) (0.5 + Math.sqrt((dataCodeWordCount - 1) / 3.0));
-                rows = (int) Math.ceil(dataCodeWordCount / (double) columns);
+                columns = (int) (0.5 + Math.sqrt((needed - 1) / 3.0));
+                rows = (int) Math.ceil(needed / (double) columns);
             }
         }
 
@@ -857,11 +858,11 @@ public class Pdf417 extends Symbol {
         validateColumns(1, 30);
 
         /* add the padding (before the Macro PDF417 control block, if it exists) */
-        int padding = (columns * rows) - codeWordCount - k - 1;
+        int padCount = (columns * rows) - codeWordCount - k - 1;
         int macroStart = codeWordCount - macroCount;
-        System.arraycopy(codeWords, macroStart, codeWords, macroStart + padding, macroCount);
-        Arrays.fill(codeWords, macroStart, macroStart + padding, 900);
-        codeWordCount += padding;
+        System.arraycopy(codeWords, macroStart, codeWords, macroStart + padCount, macroCount);
+        Arrays.fill(codeWords, macroStart, macroStart + padCount, 900);
+        codeWordCount += padCount;
 
         /* add the length descriptor */
         for (int i = codeWordCount; i > 0; i--) {
@@ -876,8 +877,12 @@ public class Pdf417 extends Symbol {
             infoSpace(codeWords[i]);
         }
         infoLine();
-        infoLine("Data Codewords: " + codeWordCount);
+        infoLine("Length Descriptor Codewords: 1");
+        infoLine("Data Codewords: " + dataCount);
+        infoLine("Padding Codewords: " + padCount);
+        infoLine("Macro Codewords: " + macroCount);
         infoLine("ECC Codewords: " + k);
+        infoLine("Total Codewords: " + (columns * rows));
 
         /* 796 - we now take care of the Reed Solomon codes */
         switch (selectedECCLevel) {
@@ -931,6 +936,9 @@ public class Pdf417 extends Symbol {
         if (codeWordCount > 929) {
             throw new OkapiException("Too many codewords required (" + codeWordCount + ", but max is 929)");
         }
+
+        assert 1 + dataCount + padCount + macroCount + k == columns * rows;
+        assert codeWordCount == columns * rows;
 
         /* 818 - The CW string is finished */
         c1 = (rows - 1) / 3;
@@ -1033,6 +1041,7 @@ public class Pdf417 extends Symbol {
             blockCount += block.length;
         }
 
+        int dataCount = codeWordCount;
         int macroCount = addMacroCodewords();
 
         /* This is where it all changes! */
@@ -1074,14 +1083,14 @@ public class Pdf417 extends Symbol {
         rows = MICRO_VARIANTS[variant + 34]; /* rows */
         k = MICRO_VARIANTS[variant + 68]; /* number of EC CWs */
         longueur = (columns * rows) - k; /* number of non-EC CWs */
-        int padding = longueur - codeWordCount; /* amount of padding required */
+        int padCount = longueur - codeWordCount; /* amount of padding required */
         offset = MICRO_VARIANTS[variant + 102]; /* coefficient offset */
 
         /* add the padding (before the Macro PDF417 control block, if it exists) */
         int macroStart = codeWordCount - macroCount;
-        System.arraycopy(codeWords, macroStart, codeWords, macroStart + padding, macroCount);
-        Arrays.fill(codeWords, macroStart, macroStart + padding, 900);
-        codeWordCount += padding;
+        System.arraycopy(codeWords, macroStart, codeWords, macroStart + padCount, macroCount);
+        Arrays.fill(codeWords, macroStart, macroStart + padCount, 900);
+        codeWordCount += padCount;
 
         /* add codeword info to debug output */
         info("Codewords: ");
@@ -1089,8 +1098,11 @@ public class Pdf417 extends Symbol {
             infoSpace(codeWords[i]);
         }
         infoLine();
-        infoLine("Data Codewords: " + longueur);
+        infoLine("Data Codewords: " + dataCount);
+        infoLine("Padding Codewords: " + padCount);
+        infoLine("Macro Codewords: " + macroCount);
         infoLine("ECC Codewords: " + k);
+        infoLine("Total Codewords: " + (columns * rows));
 
         /* Reed-Solomon error correction */
         longueur = codeWordCount;
@@ -1119,6 +1131,9 @@ public class Pdf417 extends Symbol {
             codeWords[codeWordCount] = mccorrection[i];
             codeWordCount++;
         }
+
+        assert dataCount + padCount + macroCount + k == columns * rows;
+        assert codeWordCount == columns * rows;
 
         /* Now get the RAP (Row Address Pattern) start values */
         LeftRAPStart = RAP_TABLE[variant];

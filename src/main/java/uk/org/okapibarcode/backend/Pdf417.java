@@ -841,7 +841,7 @@ public class Pdf417 extends Symbol {
                 }
             } else {
                 // user only specified column count; figure out row count
-                rows = (int) Math.ceil(needed / (double) columns);
+                rows = (int) Math.max(Math.ceil(needed / (double) columns), 3);
             }
         } else {
             if (rows != null) {

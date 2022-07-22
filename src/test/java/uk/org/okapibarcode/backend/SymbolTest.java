@@ -63,6 +63,7 @@ import com.google.zxing.oned.Code39Reader;
 import com.google.zxing.oned.Code93Reader;
 import com.google.zxing.oned.EAN13Reader;
 import com.google.zxing.oned.EAN8Reader;
+import com.google.zxing.oned.ITFReader;
 import com.google.zxing.oned.UPCAReader;
 import com.google.zxing.oned.UPCEReader;
 import com.google.zxing.oned.rss.RSS14Reader;
@@ -284,6 +285,15 @@ public class SymbolTest {
             return new Code39Reader(checkDigit, true);
         } else if (symbol instanceof Codabar) {
             return new CodaBarReader();
+        } else if (symbol instanceof Code2Of5 && !symbol.getContent().isEmpty()) {
+            Code2Of5 tof = (Code2Of5) symbol;
+            if (tof.getMode() == Code2Of5.ToFMode.INTERLEAVED ||
+                tof.getMode() == Code2Of5.ToFMode.INTERLEAVED_WITH_CHECK_DIGIT ||
+                tof.getMode() == Code2Of5.ToFMode.ITF14) {
+                // ZXing does not currently support empty content in ITF symbols
+                // ZXing does not currently support non-interleaved 2-of-5 variants
+                return new ITFReader();
+            }
         } else if (symbol instanceof AztecCode &&
                    symbol.getDataType() != DataType.GS1 &&
                    symbol.getEciMode() == 3 &&
@@ -345,6 +355,7 @@ public class SymbolTest {
      * @return the massaged barcode content
      */
     private static String massageZXingData(String s, Symbol symbol) {
+
         if (symbol instanceof Ean || symbol instanceof Upc) {
             // remove the checksum from the barcode content
             return s.substring(0, s.length() - 1);
@@ -370,10 +381,16 @@ public class SymbolTest {
             s = s.substring(0, s.length() - 1);
             // also remove left padding 0s (unless it's all zeroes)
             return s.matches("^0+$") ? s : s.replaceFirst("^0+", "");
-        } else {
-            // no massaging
-            return s;
+        } else if (symbol instanceof Code2Of5) {
+            Code2Of5 tof = (Code2Of5) symbol;
+            if (tof.getMode() == Code2Of5.ToFMode.INTERLEAVED_WITH_CHECK_DIGIT || tof.getMode() == Code2Of5.ToFMode.ITF14) {
+                // remove the checksum from the barcode content
+                return s.substring(0, s.length() - 1);
+            }
         }
+
+        // no massaging
+        return s;
     }
 
     /**
@@ -414,6 +431,18 @@ public class SymbolTest {
             } else {
                 // TODO: ZXing bug, remove hack once fix is released: https://github.com/zxing/zxing/issues/1543
                 return s.replace('\r', '\n');
+            }
+        } else if (symbol instanceof Code2Of5) {
+            Code2Of5 tof = (Code2Of5) symbol;
+            if (tof.getMode() == Code2Of5.ToFMode.INTERLEAVED && s.length() % 2 == 1) {
+                // internally this would have been converted to an even number of digits
+                return "0" + s;
+            } else if (tof.getMode() == Code2Of5.ToFMode.INTERLEAVED_WITH_CHECK_DIGIT && s.length() % 2 == 0) {
+                // internally this would have been converted to an even number of digits (odd without the check digit)
+                return "0" + s;
+            } else if (tof.getMode() == Code2Of5.ToFMode.ITF14) {
+                // internally this would have been padded out to 14 digits (13 without the check digit)
+                return String.format("%013d", Long.parseLong(s));
             }
         }
 

@@ -134,6 +134,7 @@ and data.
 - PDF417: when using structured append (Macro PDF417), place padding before control block rather than after
 - PDF417: fix auto-calculation of row count when data is very small and column count is specified
 - PDF417: add support for segment count and file name Macro PDF417 optional fields
+- Royal Mail 4-State: fix bug in check digit calculation
 
 #### Okapi Barcode 0.3.2
 

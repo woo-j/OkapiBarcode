@@ -32,16 +32,24 @@ import java.util.Locale;
 public class RoyalMail4State extends Symbol {
 
     private static final String[] ROYAL_TABLE = {
-        "TTFF", "TDAF", "TDFA", "DTAF", "DTFA", "DDAA", "TADF", "TFTF", "TFDA",
-        "DATF", "DADA", "DFTA", "TAFD", "TFAD", "TFFT", "DAAD", "DAFT", "DFAT",
-        "ATDF", "ADTF", "ADDA", "FTTF", "FTDA", "FDTA", "ATFD", "ADAD", "ADFT",
-        "FTAD", "FTFT", "FDAT", "AADD", "AFTD", "AFDT", "FATD", "FADT", "FFTT"
+        "TTFF", "TDAF", "TDFA", "DTAF", "DTFA", "DDAA", "TADF", "TFTF", "TFDA", "DATF",
+        "DADA", "DFTA", "TAFD", "TFAD", "TFFT", "DAAD", "DAFT", "DFAT", "ATDF", "ADTF",
+        "ADDA", "FTTF", "FTDA", "FDTA", "ATFD", "ADAD", "ADFT", "FTAD", "FTFT", "FDAT",
+        "AADD", "AFTD", "AFDT", "FATD", "FADT", "FFTT"
+    };
+
+    private static final int[][] ROYAL_VALUES = {
+        { 1, 1 }, { 1, 2 }, { 1, 3 }, { 1, 4 }, { 1, 5 }, { 1, 0 }, { 2, 1 }, { 2, 2 }, { 2, 3 }, { 2, 4 },
+        { 2, 5 }, { 2, 0 }, { 3, 1 }, { 3, 2 }, { 3, 3 }, { 3, 4 }, { 3, 5 }, { 3, 0 }, { 4, 1 }, { 4, 2 },
+        { 4, 3 }, { 4, 4 }, { 4, 5 }, { 4, 0 }, { 5, 1 }, { 5, 2 }, { 5, 3 }, { 5, 4 }, { 5, 5 }, { 5, 0 },
+        { 0, 1 }, { 0, 2 }, { 0, 3 }, { 0, 4 }, { 0, 5 }, { 0, 0 }
     };
 
     private static final char[] KR_SET = {
-        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D',
-        'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R',
-        'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+        'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
+        'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
+        'U', 'V', 'W', 'X', 'Y', 'Z'
     };
 
     @Override
@@ -59,8 +67,8 @@ public class RoyalMail4State extends Symbol {
         for (int i = 0; i < content.length(); i++) {
             int index = positionOf(content.charAt(i), KR_SET);
             dest.append(ROYAL_TABLE[index]);
-            top += (index + 1) % 6;
-            bottom += ((index / 6) + 1) % 6;
+            top += ROYAL_VALUES[index][0];
+            bottom += ROYAL_VALUES[index][1];
         }
 
         /* calculate check digit */

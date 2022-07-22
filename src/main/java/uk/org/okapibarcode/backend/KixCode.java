@@ -75,7 +75,8 @@ public class KixCode extends Symbol {
         int xBlock;
         int x, y, w, h;
 
-        rectangles.clear();
+        resetPlotElements();
+
         x = 0;
         w = 1;
         y = 0;

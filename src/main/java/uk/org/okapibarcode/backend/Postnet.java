@@ -134,8 +134,7 @@ public class Postnet extends Symbol {
         int xBlock, shortHeight;
         double x, y, w, h, dx;
 
-        rectangles.clear();
-        texts.clear();
+        resetPlotElements();
 
         int baseY;
         if (humanReadableLocation == TOP) {

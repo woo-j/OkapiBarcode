@@ -106,7 +106,7 @@ public class JapanPost extends Symbol {
         int y = 0;
         int h = 0;
 
-        rectangles.clear();
+        resetPlotElements();
 
         for (int xBlock = 0; xBlock < pattern[0].length(); xBlock++) {
             switch (pattern[0].charAt(xBlock)) {

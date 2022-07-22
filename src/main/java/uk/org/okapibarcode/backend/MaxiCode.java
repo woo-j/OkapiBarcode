@@ -376,8 +376,6 @@ public class MaxiCode extends Symbol {
             pattern[i] = bin2pat(bin);
             row_height[i] = 1;
         }
-        symbol_height = 72;
-        symbol_width = 74;
     }
 
     /**
@@ -886,6 +884,11 @@ public class MaxiCode extends Symbol {
     /** {@inheritDoc} */
     @Override
     protected void plotSymbol() {
+
+        resetPlotElements();
+
+        symbol_height = 72;
+        symbol_width = 74;
 
         // hexagons
         for (int row = 0; row < 33; row++) {

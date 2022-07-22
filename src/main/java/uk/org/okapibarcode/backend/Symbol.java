@@ -639,8 +639,7 @@ public abstract class Symbol {
         double x, y, w, h;
         boolean black;
 
-        rectangles.clear();
-        texts.clear();
+        resetPlotElements();
 
         int baseY;
         if (humanReadableLocation == TOP) {
@@ -690,6 +689,15 @@ public abstract class Symbol {
             }
             texts.add(new TextBox(0, baseline, symbol_width, readable, humanReadableAlignment));
         }
+    }
+
+    protected void resetPlotElements() {
+        symbol_height = 0;
+        symbol_width = 0;
+        rectangles.clear();
+        texts.clear();
+        hexagons.clear();
+        target.clear();
     }
 
     /**

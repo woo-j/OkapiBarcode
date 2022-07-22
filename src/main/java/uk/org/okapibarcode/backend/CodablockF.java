@@ -808,7 +808,8 @@ public class CodablockF extends Symbol {
         int x, y, w, h;
         boolean black;
 
-        rectangles.clear();
+        resetPlotElements();
+
         y = 1;
         h = 1;
         for (yBlock = 0; yBlock < row_count; yBlock++) {

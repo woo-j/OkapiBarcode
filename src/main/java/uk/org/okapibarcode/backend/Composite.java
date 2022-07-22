@@ -776,9 +776,7 @@ public class Composite extends Symbol {
             if (cc_mode == CompositeMode.CC_C) {
                 /* Width of composite component depends on width of linear component, so recalculate. */
                 row_count = 0;
-                rectangles.clear();
-                symbol_height = 0;
-                symbol_width = 0;
+                resetPlotElements();
                 encodeInfo.setLength(0);
                 encodeComposite();
             } else {

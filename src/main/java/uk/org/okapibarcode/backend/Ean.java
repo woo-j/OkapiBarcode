@@ -249,14 +249,14 @@ public class Ean extends Symbol {
     @Override
     protected void plotSymbol() {
 
+        resetPlotElements();
+
         int xBlock;
         int x, y, w, h;
         boolean black = true;
         int compositeOffset = (linkageFlag ? 6 : 0); // space for composite separator above
         int hrtOffset = (humanReadableLocation == TOP ? getTheoreticalHumanReadableHeight() : 0); // space for HRT above
 
-        rectangles.clear();
-        texts.clear();
         x = 0;
 
         /* Draw the bars in the symbology */

@@ -401,10 +401,7 @@ public class Code2Of5 extends Symbol {
     @Override
     protected void plotSymbol() {
 
-        int xBlock;
-
-        rectangles.clear();
-        texts.clear();
+        resetPlotElements();
 
         int baseY;
         if (humanReadableLocation == TOP) {
@@ -423,7 +420,7 @@ public class Code2Of5 extends Symbol {
             offset = 20;
         }
 
-        for (xBlock = 0; xBlock < pattern[0].length(); xBlock++) {
+        for (int xBlock = 0; xBlock < pattern[0].length(); xBlock++) {
             char c = pattern[0].charAt(xBlock);
             double w = getModuleWidth(c - '0') * moduleWidth;
             if (black) {

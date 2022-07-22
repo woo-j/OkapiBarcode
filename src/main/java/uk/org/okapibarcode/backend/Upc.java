@@ -42,7 +42,7 @@ public class Upc extends Symbol {
 
     public static enum Mode {
         UPCA, UPCE
-    };
+    }
 
     private static final String[] SET_AC = {
         "3211", "2221", "2122", "1411", "1132", "1231", "1114", "1312", "1213", "3112"
@@ -307,14 +307,14 @@ public class Upc extends Symbol {
     @Override
     protected void plotSymbol() {
 
+        resetPlotElements();
+
         int xBlock;
         int x, y, w, h;
         boolean black = true;
         int compositeOffset = (linkageFlag ? 6 : 0); // space for composite separator above
         int hrtOffset = (humanReadableLocation == TOP ? getTheoreticalHumanReadableHeight() : 0); // space for HRT above
 
-        rectangles.clear();
-        texts.clear();
         x = 0;
 
         /* Draw the bars in the symbology */

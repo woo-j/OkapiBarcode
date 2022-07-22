@@ -77,8 +77,7 @@ public class UspsPackage extends Symbol {
     @Override
     protected void plotSymbol() {
 
-        rectangles.clear();
-        texts.clear();
+        resetPlotElements();
 
         int offset = 20;
         int yoffset = 15;

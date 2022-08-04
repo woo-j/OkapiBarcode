@@ -17,7 +17,7 @@ package uk.org.okapibarcode.backend;
 
 import static uk.org.okapibarcode.util.Arrays.positionOf;
 
-import java.awt.geom.Rectangle2D;
+import uk.org.okapibarcode.graphics.shape.*;
 import java.util.Locale;
 
 /**
@@ -103,7 +103,7 @@ public class KixCode extends Symbol {
                 default:
                     throw new IllegalStateException("Unknown pattern character: " + c);
             }
-            rectangles.add(new Rectangle2D.Double(x, y, w, h));
+            rectangles.add(new Rectangle(x, y, w, h));
             x += 2;
         }
         symbol_width = ((pattern[0].length() - 1) * 2) + 1; // final bar doesn't need extra whitespace

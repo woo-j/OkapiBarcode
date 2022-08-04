@@ -18,7 +18,7 @@ package uk.org.okapibarcode.backend;
 import static uk.org.okapibarcode.util.Arrays.positionOf;
 import static uk.org.okapibarcode.util.Strings.binaryAppend;
 
-import java.awt.geom.Rectangle2D;
+import uk.org.okapibarcode.graphics.shape.*;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -642,7 +642,7 @@ public class Composite extends Symbol {
     @Override
     protected void encode() {
 
-        List < Rectangle2D.Double > combine_rect = new ArrayList<>();
+        List < Rectangle > combine_rect = new ArrayList<>();
         List < TextBox > combine_txt = new ArrayList<>();
         int top_shift = 0; // 2D component x-coordinate shift
         int bottom_shift = 0; // linear component x-coordinate shift
@@ -786,8 +786,8 @@ public class Composite extends Symbol {
             }
         }
 
-        for (Rectangle2D.Double orig : rectangles) {
-            combine_rect.add(new Rectangle2D.Double(orig.x + top_shift, orig.y, orig.width, orig.height));
+        for (Rectangle orig : rectangles) {
+            combine_rect.add(new Rectangle(orig.x + top_shift, orig.y, orig.width, orig.height));
         }
 
         int extraSepHeight = separatorHeight - 1;
@@ -795,10 +795,10 @@ public class Composite extends Symbol {
             throw new OkapiException("Composite EAN and UPC separator height cannot be changed");
         }
 
-        for (Rectangle2D.Double orig : linear.rectangles) {
+        for (Rectangle orig : linear.rectangles) {
             double h = orig.height + (extraSepHeight > 0 && orig.height == 1 ? extraSepHeight : 0);
             double y = orig.y +      (extraSepHeight > 0 && orig.height != 1 ? extraSepHeight : 0);
-            combine_rect.add(new Rectangle2D.Double(orig.x + bottom_shift, y + symbol_height, orig.width, h));
+            combine_rect.add(new Rectangle(orig.x + bottom_shift, y + symbol_height, orig.width, h));
         }
 
         for (TextBox orig : linear.texts) {
@@ -806,7 +806,7 @@ public class Composite extends Symbol {
         }
 
         int max_x = 0;
-        for (Rectangle2D.Double rect : combine_rect) {
+        for (Rectangle rect : combine_rect) {
             if (rect.x + rect.width > max_x) {
                 max_x = (int) Math.ceil(rect.x + rect.width);
             }

@@ -15,7 +15,7 @@
  */
 package uk.org.okapibarcode.backend;
 
-import java.awt.geom.Rectangle2D;
+import uk.org.okapibarcode.graphics.shape.*;
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -825,7 +825,7 @@ public class CodablockF extends Symbol {
                         h = row_height[yBlock];
                     }
                     if (w != 0 && h != 0) {
-                        Rectangle2D.Double rect = new Rectangle2D.Double(x, y, w, h);
+                        Rectangle rect = new Rectangle(x, y, w, h);
                         rectangles.add(rect);
                     }
                     if ((x + w) > symbol_width) {
@@ -842,15 +842,15 @@ public class CodablockF extends Symbol {
             }
             /* Add bars between rows */
             if (yBlock != (row_count - 1)) {
-                Rectangle2D.Double rect = new Rectangle2D.Double(11, y - 1, (symbol_width - 24), 2);
+                Rectangle rect = new Rectangle(11, y - 1, (symbol_width - 24), 2);
                 rectangles.add(rect);
             }
         }
 
         /* Add top and bottom binding bars */
-        Rectangle2D.Double top = new Rectangle2D.Double(0, 0, symbol_width, 2);
+        Rectangle top = new Rectangle(0, 0, symbol_width, 2);
         rectangles.add(top);
-        Rectangle2D.Double bottom = new Rectangle2D.Double(0, y - 1, symbol_width, 2);
+        Rectangle bottom = new Rectangle(0, y - 1, symbol_width, 2);
         rectangles.add(bottom);
         symbol_height += 1;
     }

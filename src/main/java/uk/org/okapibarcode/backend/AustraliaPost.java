@@ -16,9 +16,11 @@
 
 package uk.org.okapibarcode.backend;
 
+import uk.org.okapibarcode.graphics.shape.Rectangle;
+
 import static uk.org.okapibarcode.util.Arrays.positionOf;
 
-import java.awt.geom.Rectangle2D;
+import uk.org.okapibarcode.graphics.shape.*;
 
 /**
  * Implements the <a href="http://auspost.com.au/media/documents/a-guide-to-printing-the-4state-barcode-v31-mar2012.pdf">Australia Post 4-State barcode</a>.
@@ -350,7 +352,7 @@ public class AustraliaPost extends Symbol {
                     h = 2;
                     break;
             }
-            Rectangle2D.Double rect = new Rectangle2D.Double(x, y, w, h);
+            Rectangle rect = new Rectangle(x, y, w, h);
             rectangles.add(rect);
             x += 2;
         }

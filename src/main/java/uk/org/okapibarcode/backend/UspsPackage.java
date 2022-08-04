@@ -15,7 +15,7 @@
  */
 package uk.org.okapibarcode.backend;
 
-import java.awt.geom.Rectangle2D;
+import uk.org.okapibarcode.graphics.shape.*;
 
 /**
  * <p>Implements USPS Intelligent Mail Package Barcode (IMpb), a linear barcode based on GS1-128.
@@ -89,7 +89,7 @@ public class UspsPackage extends Symbol {
         for (int xBlock = 0; xBlock < pattern[0].length(); xBlock++) {
             int w = pattern[0].charAt(xBlock) - '0';
             if (black) {
-                Rectangle2D.Double rect = new Rectangle2D.Double(x + offset, y, w, h);
+                Rectangle rect = new Rectangle(x + offset, y, w, h);
                 rectangles.add(rect);
                 symbol_width = x + w + (2 * offset);
             }
@@ -99,8 +99,8 @@ public class UspsPackage extends Symbol {
         symbol_height = h + (2 * yoffset);
 
         // add boundary bars
-        Rectangle2D.Double topBar = new Rectangle2D.Double(0, 0, symbol_width, 2);
-        Rectangle2D.Double bottomBar = new Rectangle2D.Double(0, symbol_height - 2, symbol_width, 2);
+        Rectangle topBar = new Rectangle(0, 0, symbol_width, 2);
+        Rectangle bottomBar = new Rectangle(0, symbol_height - 2, symbol_width, 2);
         rectangles.add(topBar);
         rectangles.add(bottomBar);
 

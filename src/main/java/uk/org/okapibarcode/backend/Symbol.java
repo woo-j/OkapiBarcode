@@ -25,14 +25,12 @@ import static uk.org.okapibarcode.util.Doubles.roughlyEqual;
 
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Rectangle2D;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-
+import uk.org.okapibarcode.graphics.shape.*;
 import uk.org.okapibarcode.output.Java2DRenderer;
 import uk.org.okapibarcode.util.EciMode;
 import uk.org.okapibarcode.util.Gs1;
@@ -99,10 +97,10 @@ public abstract class Symbol {
     protected int symbol_height = 0;
     protected int symbol_width = 0;
     protected StringBuilder encodeInfo = new StringBuilder();
-    protected List< Rectangle2D.Double > rectangles = new ArrayList<>(); // note positions do not account for quiet zones (handled in renderers)
+    protected List< Rectangle > rectangles = new ArrayList<>(); // note positions do not account for quiet zones (handled in renderers)
     protected List< TextBox > texts = new ArrayList<>();                 // note positions do not account for quiet zones (handled in renderers)
     protected List< Hexagon > hexagons = new ArrayList<>();              // note positions do not account for quiet zones (handled in renderers)
-    protected List< Ellipse2D.Double > target = new ArrayList<>();       // note positions do not account for quiet zones (handled in renderers)
+    protected List< Ellipse> target = new ArrayList<>();       // note positions do not account for quiet zones (handled in renderers)
 
     /**
      * <p>Sets the type of input data. This setting influences what pre-processing is done on
@@ -414,7 +412,7 @@ public abstract class Symbol {
      *
      * @return render information about the rectangles in this symbol
      */
-    public List< Rectangle2D.Double > getRectangles() {
+    public List< Rectangle > getRectangles() {
         return rectangles;
     }
 
@@ -441,7 +439,7 @@ public abstract class Symbol {
      *
      * @return render information about the target circles in this symbol
      */
-    public List< Ellipse2D.Double > getTarget() {
+    public List< Ellipse > getTarget() {
         return target;
     }
 
@@ -664,7 +662,7 @@ public abstract class Symbol {
                         h = row_height[yBlock];
                     }
                     if (w != 0 && h != 0) {
-                        Rectangle2D.Double rect = new Rectangle2D.Double(x, y, w, h);
+                        Rectangle rect = new Rectangle(x, y, w, h);
                         rectangles.add(rect);
                     }
                     if (x + w > symbol_width) {
@@ -723,9 +721,9 @@ public abstract class Symbol {
         int before = rectangles.size();
 
         for (int i = rectangles.size() - 1; i >= 0; i--) {
-            Rectangle2D.Double rect1 = rectangles.get(i);
+            Rectangle rect1 = rectangles.get(i);
             for (int j = i - 1; j >= 0; j--) {
-                Rectangle2D.Double rect2 = rectangles.get(j);
+                Rectangle rect2 = rectangles.get(j);
                 if (roughlyEqual(rect1.y, rect2.y + rect2.height)) {
                     // rect2 is in the segment of rectangles for the row directly above rect1
                     if (roughlyEqual(rect1.x, rect2.x) && roughlyEqual(rect1.width, rect2.width)) {

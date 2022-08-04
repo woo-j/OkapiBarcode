@@ -16,20 +16,20 @@
 
 package uk.org.okapibarcode.output;
 
-import static uk.org.okapibarcode.backend.HumanReadableAlignment.CENTER;
-import static uk.org.okapibarcode.backend.HumanReadableAlignment.JUSTIFY;
-import static uk.org.okapibarcode.util.Doubles.roughlyEqual;
-
-import java.awt.Color;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Rectangle2D;
-import java.io.IOException;
-import java.io.OutputStream;
-
 import uk.org.okapibarcode.backend.Hexagon;
 import uk.org.okapibarcode.backend.HumanReadableAlignment;
 import uk.org.okapibarcode.backend.Symbol;
 import uk.org.okapibarcode.backend.TextBox;
+import uk.org.okapibarcode.graphics.shape.Ellipse;
+import uk.org.okapibarcode.graphics.shape.Rectangle;
+
+import java.awt.*;
+import java.io.IOException;
+import java.io.OutputStream;
+
+import static uk.org.okapibarcode.backend.HumanReadableAlignment.CENTER;
+import static uk.org.okapibarcode.backend.HumanReadableAlignment.JUSTIFY;
+import static uk.org.okapibarcode.util.Doubles.roughlyEqual;
 
 /**
  * Renders symbologies to EPS (Encapsulated PostScript).
@@ -115,7 +115,7 @@ public class PostScriptRenderer implements SymbolRenderer {
 
             // Rectangles
             for (int i = 0; i < symbol.getRectangles().size(); i++) {
-                Rectangle2D.Double rect = symbol.getRectangles().get(i);
+                Rectangle rect = symbol.getRectangles().get(i);
                 if (i == 0) {
                     writer.append("TE\n");
                     writer.append(ink.getRed() / 255.0).append(" ")
@@ -126,7 +126,7 @@ public class PostScriptRenderer implements SymbolRenderer {
                           .append((rect.x * magnification) + marginX).append(" ")
                           .append(rect.width * magnification).append(" TR\n");
                 } else {
-                    Rectangle2D.Double prev = symbol.getRectangles().get(i - 1);
+                    Rectangle prev = symbol.getRectangles().get(i - 1);
                     if (!roughlyEqual(rect.height, prev.height) || !roughlyEqual(rect.y, prev.y)) {
                         writer.append("TE\n");
                         writer.append(ink.getRed() / 255.0).append(" ")
@@ -196,8 +196,8 @@ public class PostScriptRenderer implements SymbolRenderer {
             // Circles
             // Because MaxiCode size is fixed, this ignores magnification
             for (int i = 0; i < symbol.getTarget().size(); i += 2) {
-                Ellipse2D.Double ellipse1 = symbol.getTarget().get(i);
-                Ellipse2D.Double ellipse2 = symbol.getTarget().get(i + 1);
+                Ellipse ellipse1 = symbol.getTarget().get(i);
+                Ellipse ellipse2 = symbol.getTarget().get(i + 1);
                 if (i == 0) {
                     writer.append("TE\n");
                     writer.append(ink.getRed() / 255.0).append(" ")

@@ -16,7 +16,7 @@
 
 package uk.org.okapibarcode.backend;
 
-import java.awt.geom.Rectangle2D;
+import uk.org.okapibarcode.graphics.shape.*;
 
 /**
  * <p>Implements the Two-Track Pharmacode bar code symbology.
@@ -97,7 +97,7 @@ public class Pharmacode2Track extends Symbol {
                     h = default_height;
                     break;
             }
-            Rectangle2D.Double rect = new Rectangle2D.Double(x, y, w, h);
+            Rectangle rect = new Rectangle(x, y, w, h);
             rectangles.add(rect);
             x += 2;
         }

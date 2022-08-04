@@ -21,7 +21,7 @@ import static uk.org.okapibarcode.backend.HumanReadableLocation.BOTTOM;
 import static uk.org.okapibarcode.backend.HumanReadableLocation.NONE;
 import static uk.org.okapibarcode.backend.HumanReadableLocation.TOP;
 
-import java.awt.geom.Rectangle2D;
+import uk.org.okapibarcode.graphics.shape.*;
 import java.util.Arrays;
 
 /**
@@ -343,7 +343,7 @@ public class Upc extends Symbol {
                         y -= 2;
                     }
                 }
-                Rectangle2D.Double rect = new Rectangle2D.Double(scale(x), y + compositeOffset + hrtOffset, scale(w), h);
+                Rectangle rect = new Rectangle(scale(x), y + compositeOffset + hrtOffset, scale(w), h);
                 rectangles.add(rect);
                 symbol_width = Math.max(symbol_width, (int) rect.getMaxX());
                 symbol_height = Math.max(symbol_height, (int) rect.getHeight());
@@ -356,15 +356,15 @@ public class Upc extends Symbol {
         /* Add separator for composite symbology, if necessary */
         if (linkageFlag) {
             if (mode == Mode.UPCA) {
-                rectangles.add(new Rectangle2D.Double(scale(0),  0, scale(1), 2));
-                rectangles.add(new Rectangle2D.Double(scale(94), 0, scale(1), 2));
-                rectangles.add(new Rectangle2D.Double(scale(-1), 2, scale(1), 2));
-                rectangles.add(new Rectangle2D.Double(scale(95), 2, scale(1), 2));
+                rectangles.add(new Rectangle(scale(0),  0, scale(1), 2));
+                rectangles.add(new Rectangle(scale(94), 0, scale(1), 2));
+                rectangles.add(new Rectangle(scale(-1), 2, scale(1), 2));
+                rectangles.add(new Rectangle(scale(95), 2, scale(1), 2));
             } else { // UPCE
-                rectangles.add(new Rectangle2D.Double(scale(0),  0, scale(1), 2));
-                rectangles.add(new Rectangle2D.Double(scale(50), 0, scale(1), 2));
-                rectangles.add(new Rectangle2D.Double(scale(-1), 2, scale(1), 2));
-                rectangles.add(new Rectangle2D.Double(scale(51), 2, scale(1), 2));
+                rectangles.add(new Rectangle(scale(0),  0, scale(1), 2));
+                rectangles.add(new Rectangle(scale(50), 0, scale(1), 2));
+                rectangles.add(new Rectangle(scale(-1), 2, scale(1), 2));
+                rectangles.add(new Rectangle(scale(51), 2, scale(1), 2));
             }
             symbol_height += 4;
         }
@@ -397,14 +397,14 @@ public class Upc extends Symbol {
         if (addOn != null) {
             int gap = 9;
             int baseX = symbol_width + scale(gap);
-            Rectangle2D.Double r1 = rectangles.get(0);
-            Rectangle2D.Double ar1 = addOn.rectangles.get(0);
+            Rectangle r1 = rectangles.get(0);
+            Rectangle ar1 = addOn.rectangles.get(0);
             int baseY = (int) (r1.y + r1.getHeight() - ar1.y - ar1.getHeight());
             for (TextBox t : addOn.getTexts()) {
                 texts.add(new TextBox(baseX + t.x, baseY + t.y, t.width, t.text, t.alignment));
             }
-            for (Rectangle2D.Double r : addOn.getRectangles()) {
-                rectangles.add(new Rectangle2D.Double(baseX + r.x, baseY + r.y, r.width, r.height));
+            for (Rectangle r : addOn.getRectangles()) {
+                rectangles.add(new Rectangle(baseX + r.x, baseY + r.y, r.width, r.height));
             }
             symbol_width += scale(gap) + addOn.symbol_width;
             pattern[0] = pattern[0] + gap + addOn.pattern[0];

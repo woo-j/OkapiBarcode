@@ -21,7 +21,7 @@ import static uk.org.okapibarcode.backend.HumanReadableAlignment.JUSTIFY;
 
 import java.awt.Color;
 import java.awt.geom.Ellipse2D;
-import java.awt.geom.Rectangle2D;
+import uk.org.okapibarcode.graphics.shape.*;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
@@ -43,6 +43,8 @@ import uk.org.okapibarcode.backend.Hexagon;
 import uk.org.okapibarcode.backend.HumanReadableAlignment;
 import uk.org.okapibarcode.backend.Symbol;
 import uk.org.okapibarcode.backend.TextBox;
+import uk.org.okapibarcode.graphics.shape.Ellipse;
+import uk.org.okapibarcode.graphics.shape.Rectangle;
 
 /**
  * Renders symbologies to SVG (Scalable Vector Graphics).
@@ -132,7 +134,7 @@ public class SvgRenderer implements SymbolRenderer {
 
             // Rectangles
             for (int i = 0; i < symbol.getRectangles().size(); i++) {
-                Rectangle2D.Double rect = symbol.getRectangles().get(i);
+                Rectangle rect = symbol.getRectangles().get(i);
                 writer.append("      <rect x=\"").append((rect.x * magnification) + marginX)
                       .append("\" y=\"").append((rect.y * magnification) + marginY)
                       .append("\" width=\"").append(rect.width * magnification)
@@ -180,7 +182,7 @@ public class SvgRenderer implements SymbolRenderer {
 
             // Circles
             for (int i = 0; i < symbol.getTarget().size(); i++) {
-                Ellipse2D.Double ellipse = symbol.getTarget().get(i);
+                Ellipse ellipse = symbol.getTarget().get(i);
                 String color;
                 if ((i & 1) == 0) {
                     color = fgColour;

@@ -16,10 +16,11 @@
 
 package uk.org.okapibarcode.backend;
 
+import uk.org.okapibarcode.graphics.shape.Ellipse;
+
 import static uk.org.okapibarcode.util.Arrays.contains;
 import static uk.org.okapibarcode.util.Arrays.insertArray;
 
-import java.awt.geom.Ellipse2D;
 import java.util.Arrays;
 
 /**
@@ -907,7 +908,7 @@ public class MaxiCode extends Symbol {
         // circles
         double[] radii = { 10.85, 8.97, 7.10, 5.22, 3.31, 1.43 };
         for (int i = 0; i < radii.length; i++) {
-            Ellipse2D.Double circle = new Ellipse2D.Double();
+            Ellipse circle = new Ellipse();
             circle.setFrameFromCenter(35.76, 35.60, 35.76 + radii[i], 35.60 + radii[i]);
             target.add(circle);
         }

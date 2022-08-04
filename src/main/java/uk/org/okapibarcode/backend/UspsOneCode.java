@@ -18,7 +18,7 @@ package uk.org.okapibarcode.backend;
 import static uk.org.okapibarcode.backend.HumanReadableLocation.NONE;
 import static uk.org.okapibarcode.backend.HumanReadableLocation.TOP;
 
-import java.awt.geom.Rectangle2D;
+import uk.org.okapibarcode.graphics.shape.*;
 import java.math.BigInteger;
 
 /**
@@ -579,7 +579,7 @@ public class UspsOneCode extends Symbol {
                 break;
             }
 
-            Rectangle2D.Double rect = new Rectangle2D.Double(x, y, w, h);
+            Rectangle rect = new Rectangle(x, y, w, h);
             rectangles.add(rect);
 
             x += dx;

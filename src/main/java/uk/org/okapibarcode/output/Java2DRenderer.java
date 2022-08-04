@@ -28,6 +28,8 @@ import java.awt.font.FontRenderContext;
 import java.awt.font.TextAttribute;
 import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
+import uk.org.okapibarcode.graphics.shape.*;
+
 import java.awt.geom.Rectangle2D;
 import java.util.Collections;
 import java.util.List;
@@ -36,6 +38,8 @@ import uk.org.okapibarcode.backend.Hexagon;
 import uk.org.okapibarcode.backend.HumanReadableAlignment;
 import uk.org.okapibarcode.backend.Symbol;
 import uk.org.okapibarcode.backend.TextBox;
+import uk.org.okapibarcode.graphics.shape.Ellipse;
+import uk.org.okapibarcode.graphics.shape.Rectangle;
 
 /**
  * Renders symbologies using the Java 2D API.
@@ -97,7 +101,7 @@ public class Java2DRenderer implements SymbolRenderer {
 
         g2d.setColor(ink);
 
-        for (Rectangle2D.Double rect : symbol.getRectangles()) {
+        for (Rectangle rect : symbol.getRectangles()) {
             double x = (rect.x * magnification) + marginX;
             double y = (rect.y * magnification) + marginY;
             double w = rect.width * magnification;
@@ -139,12 +143,12 @@ public class Java2DRenderer implements SymbolRenderer {
             g2d.fill(polygon);
         }
 
-        List< Ellipse2D.Double > target = symbol.getTarget();
+        List<Ellipse> target = symbol.getTarget();
         for (int i = 0; i + 1 < target.size(); i += 2) {
-            Ellipse2D.Double outer = adjust(target.get(i), magnification, marginX, marginY);
-            Ellipse2D.Double inner = adjust(target.get(i + 1), magnification, marginX, marginY);
-            Area area = new Area(outer);
-            area.subtract(new Area(inner));
+            Ellipse outer = adjust(target.get(i), magnification, marginX, marginY);
+            Ellipse inner = adjust(target.get(i + 1), magnification, marginX, marginY);
+            Area area = new Area(new Ellipse2D.Double(outer.x,outer.y,outer.width,outer.height));
+            area.subtract(new Area(new Ellipse2D.Double(inner.x,inner.y,inner.width,inner.height)));
             g2d.fill(area);
         }
 
@@ -152,12 +156,12 @@ public class Java2DRenderer implements SymbolRenderer {
         g2d.setColor(oldColor);
     }
 
-    private static Ellipse2D.Double adjust(Ellipse2D.Double ellipse, double magnification, int marginX, int marginY) {
+    private static Ellipse adjust(Ellipse ellipse, double magnification, int marginX, int marginY) {
         double x = (ellipse.x * magnification) + marginX;
         double y = (ellipse.y * magnification) + marginY;
         double w = (ellipse.width * magnification) + marginX;
         double h = (ellipse.height * magnification) + marginY;
-        return new Ellipse2D.Double(x, y, w, h);
+        return new Ellipse(x, y, w, h);
     }
 
     private static Font addTracking(Font baseFont, double maxTextWidth, String text, Graphics2D g2d) {

@@ -28,7 +28,6 @@ import java.awt.font.FontRenderContext;
 import java.awt.font.TextAttribute;
 import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
-import uk.org.okapibarcode.graphics.shape.*;
 
 import java.awt.geom.Rectangle2D;
 import java.util.Collections;
@@ -57,21 +56,32 @@ public class Java2DRenderer implements SymbolRenderer {
 
     /** The ink (foreground) color. */
     private final Color ink;
+    /** The ink (foreground) color.*/
+    private final Font font;
 
     /**
      * Creates a new Java 2D renderer. If the specified paper color is {@code null}, the symbol is drawn without clearing the
      * existing {@code g2d} background.
      *
-     * @param g2d the graphics to render to
+     * @param g2d           the graphics to render to
      * @param magnification the magnification factor to apply
-     * @param paper the paper (background) color (may be {@code null})
-     * @param ink the ink (foreground) color
+     * @param paper         the paper (background) color (may be {@code null})
+     * @param ink           the ink (foreground) color
+     * @param font
      */
+    public Java2DRenderer(Graphics2D g2d, double magnification, Color paper, Color ink, Font font) {
+        this.g2d = g2d;
+        this.magnification = magnification;
+        this.paper = paper;
+        this.ink = ink;
+        this.font = font;
+    }
     public Java2DRenderer(Graphics2D g2d, double magnification, Color paper, Color ink) {
         this.g2d = g2d;
         this.magnification = magnification;
         this.paper = paper;
         this.ink = ink;
+        this.font = null;
     }
 
     /** {@inheritDoc} */
@@ -81,7 +91,7 @@ public class Java2DRenderer implements SymbolRenderer {
         int marginX = (int) (symbol.getQuietZoneHorizontal() * magnification);
         int marginY = (int) (symbol.getQuietZoneVertical() * magnification);
 
-        Font f = symbol.getFont();
+        Font f = font;
         if (f != null) {
             f = f.deriveFont((float) (f.getSize2D() * magnification));
         } else {

@@ -63,7 +63,7 @@ public class Java2DRendererTest {
         g2d.setPaint(new GradientPaint(0, 0, Color.ORANGE, width, height, Color.GREEN));
         g2d.fillRect(0, 0, width, height);
 
-        Java2DRenderer renderer = new Java2DRenderer(g2d, 4, null, Color.BLACK);
+        Java2DRenderer renderer = new Java2DRenderer(g2d, 4, null, Color.BLACK, null);
         g2d.translate(25, 25);
         renderer.render(code128);
         g2d.translate(300, 0);
@@ -71,7 +71,7 @@ public class Java2DRendererTest {
         g2d.translate(100, 0);
         renderer.render(maxicode);
 
-        Java2DRenderer renderer2 = new Java2DRenderer(g2d, 4, Color.WHITE, Color.BLACK);
+        Java2DRenderer renderer2 = new Java2DRenderer(g2d, 4, Color.WHITE, Color.BLACK, null);
         g2d.translate(-400, 300);
         renderer2.render(code128);
         g2d.translate(300, 0);
@@ -107,7 +107,9 @@ public class Java2DRendererTest {
 
         Code128 code128 = new Code128();
         code128.setHumanReadableAlignment(alignment);
-        code128.setFont(font);
+//        code128.setFont(font);
+        code128.setFontName(font.getFontName());
+        code128.setFontSize(font.getSize());
         code128.setContent("123456");
 
         int magnification = 4;
@@ -117,7 +119,7 @@ public class Java2DRendererTest {
         BufferedImage image = new BufferedImage(w, h, BufferedImage.TYPE_BYTE_GRAY);
         Graphics2D g2d = image.createGraphics();
 
-        Java2DRenderer renderer = new Java2DRenderer(g2d, magnification, Color.WHITE, Color.BLACK);
+        Java2DRenderer renderer = new Java2DRenderer(g2d, magnification, Color.WHITE, Color.BLACK, font);
         renderer.render(code128);
 
         BufferedImage expected = ImageIO.read(Java2DRendererTest.class.getResourceAsStream(filename));

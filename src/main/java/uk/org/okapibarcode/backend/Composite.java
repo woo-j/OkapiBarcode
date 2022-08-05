@@ -828,12 +828,8 @@ public class Composite extends Symbol {
         linear.setQuietZoneHorizontal(this.getQuietZoneHorizontal());
         linear.setQuietZoneVertical(this.getQuietZoneVertical());
 
-        if (this.getFont() != null) {
-            linear.setFont(this.getFont());
-        } else {
-            linear.setFontName(this.getFontName());
-            linear.setFontSize(this.getFontSize());
-        }
+        linear.setFontName(this.getFontName());
+        linear.setFontSize(this.getFontSize());
     }
 
     private void encodeComposite() {

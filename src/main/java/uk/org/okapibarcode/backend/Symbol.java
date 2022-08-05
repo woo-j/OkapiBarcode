@@ -15,25 +15,22 @@
  */
 package uk.org.okapibarcode.backend;
 
-import static uk.org.okapibarcode.backend.HumanReadableAlignment.CENTER;
-import static uk.org.okapibarcode.backend.HumanReadableLocation.BOTTOM;
-import static uk.org.okapibarcode.backend.HumanReadableLocation.NONE;
-import static uk.org.okapibarcode.backend.HumanReadableLocation.TOP;
-import static uk.org.okapibarcode.util.Arrays.containsAt;
-import static uk.org.okapibarcode.util.Arrays.positionOf;
-import static uk.org.okapibarcode.util.Doubles.roughlyEqual;
+import uk.org.okapibarcode.graphics.shape.Ellipse;
+import uk.org.okapibarcode.graphics.shape.Rectangle;
+import uk.org.okapibarcode.util.EciMode;
+import uk.org.okapibarcode.util.Gs1;
 
-import java.awt.Font;
-import java.awt.GraphicsEnvironment;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import uk.org.okapibarcode.graphics.shape.*;
-import uk.org.okapibarcode.output.Java2DRenderer;
-import uk.org.okapibarcode.util.EciMode;
-import uk.org.okapibarcode.util.Gs1;
+
+import static uk.org.okapibarcode.backend.HumanReadableAlignment.CENTER;
+import static uk.org.okapibarcode.backend.HumanReadableLocation.*;
+import static uk.org.okapibarcode.util.Arrays.containsAt;
+import static uk.org.okapibarcode.util.Arrays.positionOf;
+import static uk.org.okapibarcode.util.Doubles.roughlyEqual;
 
 /**
  * Generic barcode symbology class.
@@ -78,7 +75,6 @@ public abstract class Symbol {
     protected int quietZoneHorizontal = 0;
     protected int quietZoneVertical = 0;
     protected int moduleWidth = 1;
-    protected Font font;
     protected String fontName = "Helvetica";
     protected int fontSize = 8;
     protected HumanReadableLocation humanReadableLocation = BOTTOM;
@@ -233,46 +229,38 @@ public abstract class Symbol {
         return quietZoneVertical;
     }
 
-    /**
-     * <p>Sets the font to use to render the human-readable text. This is an alternative to setting the
-     * {@link #setFontName(String) font name} and {@link #setFontSize(int) font size} separately. May
-     * allow some applications to avoid the use of {@link GraphicsEnvironment#registerFont(Font)}
-     * when using the {@link Java2DRenderer}.
-     *
-     * <p>Do not use this method in combination with {@link #setFontName(String)} or {@link #setFontSize(int)}.
-     *
-     * @param font the font to use to render the human-readable text
-     */
-    public void setFont(Font font) {
-        this.font = font;
-        this.fontName = font.getFontName();
-        this.fontSize = font.getSize();
-    }
+//    /**
+//     * <p>Sets the font to use to render the human-readable text. This is an alternative to setting the
+//     * {@link #setFontName(String) font name} and {@link #setFontSize(int) font size} separately. May
+//     * allow some applications to avoid the use of {@link GraphicsEnvironment#registerFont(Font)}
+//     * when using the {@link Java2DRenderer}.
+//     *
+//     * <p>Do not use this method in combination with {@link #setFontName(String)} or {@link #setFontSize(int)}.
+//     *
+//     * @param font the font to use to render the human-readable text
+//     */
+//    public void setFont(Font font) {
+//        this.font = font;
+//        this.fontName = font.getFontName();
+//        this.fontSize = font.getSize();
+//    }
 
-    /**
-     * Returns the font to use to render the human-readable text.
-     *
-     * @return the font to use to render the human-readable text
-     */
-    public Font getFont() {
-        return font;
-    }
+//    /**
+//     * Returns the font to use to render the human-readable text.
+//     *
+//     * @return the font to use to render the human-readable text
+//     */
+//    public Font getFont() {
+//        return font;
+//    }
 
     /**
      * <p>Sets the name of the font to use to render the human-readable text (default value is <code>Helvetica</code>).
-     * The specified font name needs to be registered via {@link GraphicsEnvironment#registerFont(Font)} if you are
-     * using the {@link Java2DRenderer}. In order to set the font without registering the font with the graphics
-     * environment when using the {@link Java2DRenderer}, you may need to use {@link #setFont(Font)} instead.
      *
-     * <p>Use this method in combination with {@link #setFontSize(int)}.
-     *
-     * <p>Do not use this method in combination with {@link #setFont(Font)}.
-     *
-     * @param fontName the name of the font to use to render the human-readable text
      */
     public void setFontName(String fontName) {
         this.fontName = Objects.requireNonNull(fontName, "font name may not be null");
-        this.font = null;
+//        this.font = null;
     }
 
     /**
@@ -289,13 +277,11 @@ public abstract class Symbol {
      *
      * <p>Use this method in combination with {@link #setFontName(String)}.
      *
-     * <p>Do not use this method in combination with {@link #setFont(Font)}.
      *
      * @param fontSize the size of the font to use to render the human-readable text
      */
     public void setFontSize(int fontSize) {
         this.fontSize = fontSize;
-        this.font = null;
     }
 
     /**

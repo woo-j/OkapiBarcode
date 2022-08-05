@@ -165,7 +165,7 @@ public class Upc extends Symbol {
         } else {
             // there is a '+' in the input data, use an add-on EAN2 or EAN5
             addOn = new EanUpcAddOn();
-            addOn.font = this.font;
+//            addOn.font = this.font;
             addOn.fontName = this.fontName;
             addOn.fontSize = this.fontSize;
             addOn.humanReadableLocation = (this.humanReadableLocation == NONE ? NONE : TOP);

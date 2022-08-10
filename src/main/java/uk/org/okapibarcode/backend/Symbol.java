@@ -16,6 +16,7 @@
 package uk.org.okapibarcode.backend;
 
 import uk.org.okapibarcode.graphics.shape.Ellipse;
+import uk.org.okapibarcode.graphics.shape.Hexagon;
 import uk.org.okapibarcode.graphics.shape.Rectangle;
 import uk.org.okapibarcode.util.EciMode;
 import uk.org.okapibarcode.util.Gs1;
@@ -95,7 +96,7 @@ public abstract class Symbol {
     protected StringBuilder encodeInfo = new StringBuilder();
     protected List< Rectangle > rectangles = new ArrayList<>(); // note positions do not account for quiet zones (handled in renderers)
     protected List< TextBox > texts = new ArrayList<>();                 // note positions do not account for quiet zones (handled in renderers)
-    protected List< Hexagon > hexagons = new ArrayList<>();              // note positions do not account for quiet zones (handled in renderers)
+    protected List<Hexagon> hexagons = new ArrayList<>();              // note positions do not account for quiet zones (handled in renderers)
     protected List< Ellipse> target = new ArrayList<>();       // note positions do not account for quiet zones (handled in renderers)
 
     /**

@@ -20,8 +20,6 @@ import static uk.org.okapibarcode.backend.HumanReadableAlignment.CENTER;
 import static uk.org.okapibarcode.backend.HumanReadableAlignment.JUSTIFY;
 
 import java.awt.Color;
-import java.awt.geom.Ellipse2D;
-import uk.org.okapibarcode.graphics.shape.*;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
@@ -39,7 +37,7 @@ import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 import org.w3c.dom.Text;
 
-import uk.org.okapibarcode.backend.Hexagon;
+import uk.org.okapibarcode.graphics.shape.Hexagon;
 import uk.org.okapibarcode.backend.HumanReadableAlignment;
 import uk.org.okapibarcode.backend.Symbol;
 import uk.org.okapibarcode.backend.TextBox;

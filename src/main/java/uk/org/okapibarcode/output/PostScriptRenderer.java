@@ -16,7 +16,7 @@
 
 package uk.org.okapibarcode.output;
 
-import uk.org.okapibarcode.backend.Hexagon;
+import uk.org.okapibarcode.graphics.shape.Hexagon;
 import uk.org.okapibarcode.backend.HumanReadableAlignment;
 import uk.org.okapibarcode.backend.Symbol;
 import uk.org.okapibarcode.backend.TextBox;

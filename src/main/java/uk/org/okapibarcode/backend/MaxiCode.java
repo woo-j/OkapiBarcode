@@ -17,6 +17,7 @@
 package uk.org.okapibarcode.backend;
 
 import uk.org.okapibarcode.graphics.shape.Ellipse;
+import uk.org.okapibarcode.graphics.shape.Hexagon;
 
 import static uk.org.okapibarcode.util.Arrays.contains;
 import static uk.org.okapibarcode.util.Arrays.insertArray;

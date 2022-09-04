@@ -24,7 +24,7 @@ package uk.org.okapibarcode.backend;
  */
 public class ChannelCode extends Symbol {
 
-    private int preferredNumberOfChannels;
+    private int preferredNumberOfChannels = 3;
 
     private int[] space = new int[11];
     private int[] bar = new int[11];

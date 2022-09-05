@@ -1,0 +1,25 @@
+name: Gradle CI Build
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+    - uses: actions/checkout@v2
+    - name: Setup Java
+      uses: actions/setup-java@v2
+      with:
+        distribution: 'temurin'
+        java-version: 17
+    - name: Build with Gradle
+      run: |
+        cd $GITHUB_WORKSPACE
+        ./gradlew build jacocoTestReport
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3

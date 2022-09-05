@@ -1,10 +1,10 @@
-apply plugin: 'java'
+apply plugin: 'java-library'
 apply plugin: 'eclipse'
 apply plugin: 'jacoco'
 
 group = 'uk.org.okapibarcode'
 archivesBaseName = 'okapibarcode'
-version = '0.3.3'
+version = '0.4.0'
 
 repositories {
     mavenCentral()
@@ -17,124 +17,103 @@ dependencies {
     testImplementation 'org.reflections:reflections:0.9.10'
 }
 
-sourceCompatibility = 7
-targetCompatibility = 7
-
-// When using JDK8+ as the primary JDK, JDK7 should be installed as a secondary JDK to compile
-// against (to make sure that we're not inadvertently using newer APIs), and the JDK7_HOME
-// environment variable should be set to the home directory of this secondary JDK
-// https://blogs.oracle.com/darcy/entry/bootclasspath_older_source
-tasks.withType(JavaCompile) {
-    doFirst {
-        if (System.env.JDK7_HOME != null) {
-            options.fork = true
-            options.bootClasspath = "$System.env.JDK7_HOME/jre/lib/rt.jar"
-        }
-    }
-}
-
-java {
-    disableAutoTargetJvm() // necessary only so long as we target JDK7 and include the JCommander dependency
-}
-
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+compileJava.options.release = 8
 compileJava.options.encoding = 'UTF-8'
 compileTestJava.options.encoding = 'UTF-8'
 javadoc.options.encoding = 'UTF-8'
+javadoc.options.addStringOption('Xdoclint:none', '-quiet')
 
 jar {
     dependsOn 'check'
     manifest.attributes(
         'Main-Class': 'uk.org.okapibarcode.OkapiBarcode',
         'Implementation-Title': 'Okapi Barcode',
-        'Implementation-Version': version
+        'Implementation-Version': project.version
     )
 }
 
-javadoc {
-    options.addStringOption('Xdoclint:none', '-quiet')
-}
-
-// Enable JaCoCo XML output for Codecov, and exclude GUI classes from the coverage reports
+// enable JaCoCo XML output for Codecov, and exclude GUI classes from the coverage reports
 jacocoTestReport {
     reports {
-        xml.enabled true
+        xml.required = true
     }
     afterEvaluate {
         classDirectories.setFrom(files(classDirectories.files.collect {
-            fileTree(dir: it, exclude: ['uk/org/okapibarcode/*.class', 'uk/org/okapibarcode/gui/**/*.class'])
+            fileTree(dir: it, exclude: [
+                'uk/org/okapibarcode/*.class',
+                'uk/org/okapibarcode/gui/**/*.class'
+            ])
         }))
     }
 }
 
 wrapper {
-    gradleVersion = '6.7'
+    gradleVersion = '7.5.1'
 }
 
 /*------------------------------------------------------------------------------------------------*/
 /*                         CONFIGURATION FOR UPLOAD TO MAVEN CENTRAL REPO                         */
 /*                                                                                                */
 /* The signing credentials and Sonatype OSSRH credentials must be in the gradle.properties file.  */
-/* Upload to Maven Central with the command "gradlew uploadArchives".                             */
-/* http://central.sonatype.org/pages/gradle.html                                                  */
-/* http://central.sonatype.org/pages/ossrh-guide.html                                             */
+/* Upload to Maven Central with the command "gradlew publish".                                    */
+/* - https://docs.gradle.org/current/userguide/publishing_maven.html                              */
+/* - http://central.sonatype.org/pages/ossrh-guide.html                                           */
+/* - http://central.sonatype.org/pages/gradle.html                                                */
 /*                                                                                                */
 /*------------------------------------------------------------------------------------------------*/
 
-apply plugin: 'maven'
+apply plugin: 'maven-publish'
 apply plugin: 'signing'
 
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc
+java {
+    withJavadocJar()
+    withSourcesJar()
 }
 
-task sourcesJar(type: Jar) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
-
-artifacts {
-    archives javadocJar, sourcesJar
-}
-
-signing {
-    sign configurations.archives
-}
-
-uploadArchives {
-    repositories.mavenDeployer {
-        beforeDeployment {
-            MavenDeployment deployment -> signing.signPom(deployment)
-        }
-        repository(url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2/') {
-            authentication(userName: sonatypeUsername, password: sonatypePassword)
-        }
-        pom.project {
-            name 'Okapi Barcode'
-            description 'Okapi Barcode is an open-source barcode generator written entirely in Java, ' +
-                        'supporting over 50 encoding standards including all ISO standards.'
-            packaging 'jar'
-            url 'https://github.com/woo-j/OkapiBarcode'
-            scm {
-                connection 'scm:git:git://github.com/woo-j/OkapiBarcode.git'
-                url 'https://github.com/woo-j/OkapiBarcode'
-            }
-            licenses {
-                license {
-                    name 'The Apache License, Version 2.0'
-                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = 'okapibarcode'
+            from components.java
+            pom {
+                name = 'Okapi Barcode'
+                description = 'An open-source barcode generator written entirely in Java, supporting over 50 encoding standards including all ISO standards.'
+                url = 'https://github.com/woo-j/OkapiBarcode'
+                scm {
+                    connection = 'scm:git:git://github.com/woo-j/OkapiBarcode.git'
+                    url = 'https://github.com/woo-j/OkapiBarcode'
                 }
-            }
-            developers {
-                developer {
-                    id 'woo-j'
-                    name 'Robin Stuart'
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
                 }
-                developer {
-                    id 'gredler'
-                    name 'Daniel Gredler'
+                developers {
+                    developer {
+                        id = 'woo-j'
+                        name = 'Robin Stuart'
+                    }
+                    developer {
+                        id = 'gredler'
+                        name = 'Daniel Gredler'
+                    }
                 }
             }
         }
     }
+    repositories {
+        maven {
+            url = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
+            credentials {
+                username = sonatypeUsername
+                password = sonatypePassword
+            }
+        }
+    }
+}
+
+signing {
+    sign publishing.publications.mavenJava
 }

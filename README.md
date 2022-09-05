@@ -128,6 +128,7 @@ and data.
 #### Okapi Barcode 0.4.0
 - Update minimum Java runtime requirement from Java 7 to Java 8
 - Update build Java runtime from Java 8 to Java 17
+- Channel Code: fix `NullPointerException` when channel count not specified
 
 #### Okapi Barcode 0.3.3
 

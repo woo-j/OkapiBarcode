@@ -9,17 +9,25 @@ on:
 jobs:
   build:
     runs-on: ubuntu-22.04
+    permissions:
+      security-events: write # for CodeQL
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: Setup Java
       uses: actions/setup-java@v2
       with:
         distribution: 'temurin'
         java-version: 17
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v2
+      with:
+        languages: java
     - name: Build with Gradle
       run: |
         cd $GITHUB_WORKSPACE
-        ./gradlew javaToolchains build jacocoTestReport
+        ./gradlew build jacocoTestReport
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v2

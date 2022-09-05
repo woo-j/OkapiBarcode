@@ -20,6 +20,6 @@ jobs:
     - name: Build with Gradle
       run: |
         cd $GITHUB_WORKSPACE
-        ./gradlew build jacocoTestReport
+        ./gradlew javaToolchains build jacocoTestReport
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3

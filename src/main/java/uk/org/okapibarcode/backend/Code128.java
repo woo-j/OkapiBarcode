@@ -374,7 +374,28 @@ public class Code128 extends Symbol {
         read = 0;
         while (read < sourcelen) {
 
-            if ((read != 0) && (set[read] != current_set)) { /* Latch different code set */
+            if (read != 0) {
+                if ((fset[read] == FMode.LATCHN) && (f_state == FMode.LATCHF)) {
+                    /* Latch end of extended mode */
+                    switch (current_set) {
+                        case LATCHA:
+                            values[bar_characters] = 101;
+                            values[bar_characters + 1] = 101;
+                            info("FNC4 FNC4 ");
+                            break;
+                        case LATCHB:
+                            values[bar_characters] = 100;
+                            values[bar_characters + 1] = 100;
+                            info("FNC4 FNC4 ");
+                            break;
+                    }
+                    bar_characters += 2;
+                    f_state = FMode.LATCHN;
+                }
+            }
+
+            if ((read != 0) && (set[read] != current_set)) {
+                /* Latch different code set */
                 switch (set[read]) {
                     case LATCHA:
                         values[bar_characters] = 101;
@@ -414,23 +435,6 @@ public class Code128 extends Symbol {
                     }
                     bar_characters += 2;
                     f_state = FMode.LATCHF;
-                }
-                if ((fset[read] == FMode.LATCHN) && (f_state == FMode.LATCHF)) {
-                    /* Latch end of extended mode */
-                    switch (current_set) {
-                        case LATCHA:
-                            values[bar_characters] = 101;
-                            values[bar_characters + 1] = 101;
-                            info("FNC4 FNC4 ");
-                            break;
-                        case LATCHB:
-                            values[bar_characters] = 100;
-                            values[bar_characters + 1] = 100;
-                            info("FNC4 FNC4 ");
-                            break;
-                    }
-                    bar_characters += 2;
-                    f_state = FMode.LATCHN;
                 }
             }
 

@@ -449,7 +449,8 @@ public class Code128 extends Symbol {
                 bar_characters++;
             }
 
-            if ((set[read] == Mode.SHIFTA) || (set[read] == Mode.SHIFTB)) {
+            if ((set[read] == Mode.SHIFTA && current_set != Mode.LATCHA) ||
+                (set[read] == Mode.SHIFTB && current_set != Mode.LATCHB)) {
                 /* Insert shift character */
                 values[bar_characters] = 98;
                 info("SHFT ");

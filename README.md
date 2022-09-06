@@ -129,7 +129,8 @@ and data.
 - Update minimum Java runtime requirement from Java 7 to Java 8
 - Update build Java runtime from Java 8 to Java 17
 - Channel Code: fix `NullPointerException` when channel count not specified
-- Code 128: fix incorrect encoding of line feeds when combined with lowercase characters
+- Code 128: fix incorrect encoding of line feeds when combined with lowercase characters (found via fuzzing)
+- Code 128: fix incorrect encoding of shifted characters which also use extended encoding (found via fuzzing)
 
 #### Okapi Barcode 0.3.3
 

@@ -190,6 +190,26 @@ public final class Strings {
                                 }
                             }
                             break;
+                        case 'u':
+                            if (i + 5 >= s.length()) {
+                                String msg = "Error processing escape sequences: expected unicode hex sequence, found end of string";
+                                throw new OkapiException(msg);
+                            } else {
+                                char c3 = s.charAt(i + 2);
+                                char c4 = s.charAt(i + 3);
+                                char c5 = s.charAt(i + 4);
+                                char c6 = s.charAt(i + 5);
+                                if (isHex(c3) && isHex(c4) && isHex(c5) && isHex(c6)) {
+                                    byte b1 = (byte) Integer.parseInt("" + c3 + c4, 16);
+                                    byte b2 = (byte) Integer.parseInt("" + c5 + c6, 16);
+                                    sb.append(new String(new byte[] { b1, b2 }, StandardCharsets.UTF_16BE));
+                                    i += 5;
+                                } else {
+                                    String msg = "Error processing escape sequences: expected unicode hex sequence, found '" + c3 + c4 + c5 + c6 + "'";
+                                    throw new OkapiException(msg);
+                                }
+                            }
+                            break;
                         default:
                             if (lenient) {
                                 sb.append(c);

@@ -46,6 +46,9 @@ public class StringsTest {
         assertEquals("abc\\abc", unescape("abc\\\\abc", false));
         assertEquals("abcXabc", unescape("abc\\x58abc", false));
         assertEquals("abc\\qabc", unescape("abc\\qabc", true));
+        assertEquals("abc\u001babc", unescape("abc\\u001babc", false));
+        assertEquals("abcXabc", unescape("abc\\u0058abc", false));
+        assertEquals("abcXabc", unescape("abc\u0058abc", false));
     }
 
     @Test

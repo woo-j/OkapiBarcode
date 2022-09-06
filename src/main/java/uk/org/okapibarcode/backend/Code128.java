@@ -434,7 +434,8 @@ public class Code128 extends Symbol {
                 }
             }
 
-            if ((fset[read] == FMode.SHIFTF) || (fset[read] == FMode.SHIFTN)) {
+            if ((fset[read] == FMode.SHIFTF && f_state != FMode.LATCHF) ||
+                (fset[read] == FMode.SHIFTN && f_state != FMode.LATCHN)) {
                 /* Shift to or from extended mode */
                 switch (current_set) {
                     case LATCHA:

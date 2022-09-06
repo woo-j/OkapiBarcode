@@ -55,12 +55,17 @@ public class CanvasRenderer implements SymbolRenderer {
             canvas.fillRect(new Rectangle(0, 0, w, h));
         }
         canvas.setColor(link);
+        Rectangle rectangle = new Rectangle();
         for (Rectangle rect : symbol.getRectangles()) {
             double x = (rect.x * magnification) + marginX;
             double y = (rect.y * magnification) + marginY;
             double w = rect.width * magnification;
             double h = rect.height * magnification;
-            canvas.fillRect(new Rectangle(x, y, w, h));
+            rectangle.setX(x);
+            rectangle.setY(y);
+            rectangle.setWidth(w);
+            rectangle.setHeight(h);
+            canvas.fillRect(rectangle);
         }
         for (TextBox text : symbol.getTexts()) {
             HumanReadableAlignment alignment = (text.alignment == JUSTIFY && text.text.length() == 1 ? CENTER : text.alignment);

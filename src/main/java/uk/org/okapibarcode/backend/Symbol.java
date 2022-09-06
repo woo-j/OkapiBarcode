@@ -230,34 +230,12 @@ public abstract class Symbol {
         return quietZoneVertical;
     }
 
-//    /**
-//     * <p>Sets the font to use to render the human-readable text. This is an alternative to setting the
-//     * {@link #setFontName(String) font name} and {@link #setFontSize(int) font size} separately. May
-//     * allow some applications to avoid the use of {@link GraphicsEnvironment#registerFont(Font)}
-//     * when using the {@link Java2DRenderer}.
-//     *
-//     * <p>Do not use this method in combination with {@link #setFontName(String)} or {@link #setFontSize(int)}.
-//     *
-//     * @param font the font to use to render the human-readable text
-//     */
-//    public void setFont(Font font) {
-//        this.font = font;
-//        this.fontName = font.getFontName();
-//        this.fontSize = font.getSize();
-//    }
-
-//    /**
-//     * Returns the font to use to render the human-readable text.
-//     *
-//     * @return the font to use to render the human-readable text
-//     */
-//    public Font getFont() {
-//        return font;
-//    }
-
     /**
      * <p>Sets the name of the font to use to render the human-readable text (default value is <code>Helvetica</code>).
-     *
+     * set font method is deprecated. because you can inject font when you render with Java2DRenderer
+     * of course, fontName will be used to create font when inject font is null.
+     * @param fontName the nam of the font to use to render the human-readable text
+     * @see uk.org.okapibarcode.output.Java2DRenderer
      */
     public void setFontName(String fontName) {
         this.fontName = Objects.requireNonNull(fontName, "font name may not be null");
@@ -277,8 +255,9 @@ public abstract class Symbol {
      * <p>Sets the size of the font to use to render the human-readable text (default value is <code>8</code>).
      *
      * <p>Use this method in combination with {@link #setFontName(String)}.
-     *
-     *
+     * <p>set font method is deprecated. because you can inject font when you render with Java2DRenderer</p>
+     * of course, fontSize will be used to create font when inject font is null.
+     * @see uk.org.okapibarcode.output.Java2DRenderer
      * @param fontSize the size of the font to use to render the human-readable text
      */
     public void setFontSize(int fontSize) {

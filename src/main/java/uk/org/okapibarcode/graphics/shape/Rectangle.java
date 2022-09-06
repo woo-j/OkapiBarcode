@@ -21,6 +21,9 @@ public class Rectangle {
         this.height = height;
     }
 
+    public Rectangle() {
+    }
+
     public double getX() {
         return x;
     }

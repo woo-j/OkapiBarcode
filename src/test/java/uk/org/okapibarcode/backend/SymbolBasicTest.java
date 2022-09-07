@@ -2,7 +2,7 @@ package uk.org.okapibarcode.backend;
 
 import static java.nio.charset.StandardCharsets.US_ASCII;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static uk.org.okapibarcode.backend.Symbol.FNC1;
 import static uk.org.okapibarcode.backend.Symbol.FNC2;
 import static uk.org.okapibarcode.backend.Symbol.FNC3;
@@ -11,7 +11,7 @@ import static uk.org.okapibarcode.backend.Symbol.toBytes;
 
 import java.nio.charset.Charset;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class SymbolBasicTest {
 

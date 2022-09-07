@@ -16,7 +16,7 @@
 
 package uk.org.okapibarcode.output;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.awt.Color;
 import java.io.BufferedReader;
@@ -27,9 +27,9 @@ import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import uk.org.okapibarcode.backend.Code93;
 import uk.org.okapibarcode.backend.HumanReadableAlignment;
@@ -44,14 +44,14 @@ public class SvgRendererTest {
 
     private Locale originalDefaultLocale;
 
-    @Before
+    @BeforeEach
     public void before() {
         // ensure use of correct decimal separator (period), regardless of default locale
         originalDefaultLocale = Locale.getDefault();
         Locale.setDefault(Locale.GERMANY);
     }
 
-    @After
+    @AfterEach
     public void after() {
         Locale.setDefault(originalDefaultLocale);
     }
@@ -189,7 +189,7 @@ public class SvgRendererTest {
         String actualLine = actualReader.readLine();
         String expectedLine = expectedReader.readLine();
         while (actualLine != null && expectedLine != null) {
-            assertEquals("Line " + line, expectedLine, actualLine);
+            assertEquals(expectedLine, actualLine, "Line " + line);
             actualLine = actualReader.readLine();
             expectedLine = expectedReader.readLine();
             line++;

@@ -2,10 +2,10 @@ package uk.org.okapibarcode.backend;
 
 import static java.lang.Integer.toHexString;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -38,11 +38,9 @@ import java.util.Set;
 
 import javax.imageio.ImageIO;
 
-import org.junit.ComparisonFailure;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.opentest4j.AssertionFailedError;
 import org.reflections.Reflections;
 
 import com.google.zxing.BinaryBitmap;
@@ -117,7 +115,6 @@ import uk.org.okapibarcode.util.Strings;
  * to ZXing (when an appropriate {@link Reader} is available) to verify that ZXing can read the barcode.
  * PNG files do not exist for tests intended to verify error scenarios.
  */
-@RunWith(Parameterized.class)
 public class SymbolTest {
 
     /** The system end-of-line character sequence. */
@@ -136,43 +133,25 @@ public class SymbolTest {
             DEJA_VU_SANS = Font.createFont(Font.TRUETYPE_FONT, is);
             GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
             boolean registered = ge.registerFont(DEJA_VU_SANS);
-            assertTrue("Unable to register test font!", registered);
+            assertTrue(registered, "Unable to register test font!");
         } catch (IOException | FontFormatException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
     }
 
-    /** The type of symbology being tested. */
-    private final Class< ? extends Symbol > symbolType;
-
-    /** The test configuration read from the test properties file. */
-    private final TestConfig config;
-
-    /** The file containing the expected final rendering of the bar code, if this test verifies successful behavior. */
-    private final File pngFile;
-
     /**
-     * Creates a new test.
+     * Runs the test. If there are no expectations yet, we generate them instead of checking against them.
      *
      * @param symbolType the type of symbol being tested
      * @param config the test configuration, as read from the test properties file
      * @param pngFile the file containing the expected final rendering of the bar code, if this test verifies successful behavior
      * @param symbolName the name of the symbol type (used only for test naming)
      * @param fileBaseName the base name of the test file (used only for test naming)
-     */
-    public SymbolTest(Class< ? extends Symbol > symbolType, TestConfig config, File pngFile, String symbolName, String fileBaseName) {
-        this.symbolType = symbolType;
-        this.config = config;
-        this.pngFile = pngFile;
-    }
-
-    /**
-     * Runs the test. If there are no expectations yet, we generate them instead of checking against them.
-     *
      * @throws Exception if any error occurs during the test
      */
-    @Test
-    public void test() throws Exception {
+    @ParameterizedTest(name = "test {index}: {3}: {4}")
+    @MethodSource("data")
+    public void test(Class< ? extends Symbol > symbolType, TestConfig config, File pngFile, String symbolName, String fileBaseName) throws Exception {
 
         Symbol symbol = symbolType.getDeclaredConstructor().newInstance();
         symbol.setFontName(DEJA_VU_SANS.getFontName());
@@ -187,44 +166,46 @@ public class SymbolTest {
         }
 
         if (config.hasSuccessExpectations() && pngFile.exists()) {
-            verifySuccess(symbol, actualError);
+            verifySuccess(config, pngFile, symbol, actualError);
         } else if (config.hasErrorExpectations()) {
-            verifyError(actualError);
+            verifyError(config, pngFile, actualError);
         } else {
-            addMissingExpectations(symbol, actualError);
+            addMissingExpectations(config, pngFile, symbol, actualError);
         }
     }
 
     /**
      * Verifies that the specified symbol was encoded and rendered in a way that matches expectations.
      *
+     * @param config the test configuration, as read from the test properties file
+     * @param pngFile the file containing the expected final rendering of the bar code, if this test verifies successful behavior
      * @param symbol the symbol to check
      * @param actualError the actual error message
      * @throws IOException if there is any I/O error
      * @throws ReaderException if ZXing has an issue decoding the barcode image
      */
-    private void verifySuccess(Symbol symbol, String actualError) throws IOException, ReaderException {
+    private void verifySuccess(TestConfig config, File pngFile, Symbol symbol, String actualError) throws IOException, ReaderException {
 
-        assertEquals("error message", null, actualError);
+        assertEquals(null, actualError, "error message");
 
         // try to verify logs
         String info = symbol.getEncodeInfo();
         String[] actualLog = (!info.isEmpty() ? symbol.getEncodeInfo().split("\n") : new String[0]);
-        assertEquals("log size", config.expectedLog.size(), actualLog.length);
+        assertEquals(config.expectedLog.size(), actualLog.length, "log size");
         for (int i = 0; i < actualLog.length; i++) {
             String expected = config.expectedLog.get(i).trim();
             String actual = actualLog[i].trim();
-            assertEquals("at log line " + i, expected, actual);
+            assertEquals(expected, actual, "at log line " + i);
         }
 
         try {
             // try to verify codewords
             int[] actualCodewords = symbol.getCodewords();
-            assertEquals("codeword count", config.expectedCodewords.size(), actualCodewords.length);
+            assertEquals(config.expectedCodewords.size(), actualCodewords.length, "codeword count");
             for (int i = 0; i < actualCodewords.length; i++) {
                 int expected = Integer.parseInt(config.expectedCodewords.get(i));
                 int actual = actualCodewords[i];
-                assertEquals("at codeword index " + i, expected, actual);
+                assertEquals(expected, actual, "at codeword index " + i);
             }
         } catch (UnsupportedOperationException e) {
             // codewords aren't supported, try to verify patterns
@@ -233,7 +214,7 @@ public class SymbolTest {
             for (int i = 0; i < actualPatterns.length; i++) {
                 String expected = config.expectedCodewords.get(i);
                 String actual = actualPatterns[i];
-                assertEquals("at pattern index " + i, expected, actual);
+                assertEquals(expected, actual, "at pattern index " + i);
             }
         }
 
@@ -256,7 +237,7 @@ public class SymbolTest {
             Result result = zxingReader.decode(bitmap, hints);
             String zxingData = massageZXingData(result.getText(), symbol);
             String okapiData = massageOkapiData(symbol.getContent(), symbol);
-            assertEquals("checking against ZXing results", okapiData, zxingData);
+            assertEquals(okapiData, zxingData, "checking against ZXing results");
             verifyMetadata(symbol, result);
         }
 
@@ -474,14 +455,16 @@ public class SymbolTest {
     /**
      * Verifies that the specified symbol encountered the expected error during encoding.
      *
+     * @param config the test configuration, as read from the test properties file
+     * @param pngFile the file containing the expected final rendering of the bar code, if this test verifies successful behavior
      * @param actualError the actual error message
      */
-    private void verifyError(String actualError) {
+    private void verifyError(TestConfig config, File pngFile, String actualError) {
         assertFalse(pngFile.exists());
         if (config.expectedError != null && config.expectedError.startsWith("regex:")) {
             // treat error message as a regular expression
             String expected = config.expectedError.substring(6);
-            assertTrue(actualError + " <-> " + expected, actualError.matches(expected));
+            assertTrue(actualError.matches(expected), actualError + " <-> " + expected);
         } else {
             // treat error message literally
             assertEquals(config.expectedError, actualError);
@@ -491,11 +474,13 @@ public class SymbolTest {
     /**
      * If necessary, generates the test expectations for the specified symbol.
      *
+     * @param config the test configuration, as read from the test properties file
+     * @param pngFile the file containing the expected final rendering of the bar code, if this test verifies successful behavior
      * @param symbol the symbol to generate test expectations for
      * @param actualError the actual error message (may be <tt>null</tt> if there was no error)
      * @throws IOException if there is any I/O error
      */
-    private void addMissingExpectations(Symbol symbol, String actualError) throws IOException {
+    private void addMissingExpectations(TestConfig config, File pngFile, Symbol symbol, String actualError) throws IOException {
 
         // check the properties file on disk one more time before adding anything to it; otherwise,
         // files containing multiple test cases will generate multiple expectations sections when
@@ -510,13 +495,13 @@ public class SymbolTest {
 
         if (actualError != null && !actualError.isEmpty()) {
             if (propertiesFileNeedsModification) {
-                addExpectedError(actualError);
+                addExpectedError(config, actualError);
             }
         } else {
-            createExpectedPngFile(symbol);
+            createExpectedPngFile(pngFile, symbol);
             if (propertiesFileNeedsModification) {
-                addExpectedLog(symbol);
-                addExpectedCodewords(symbol);
+                addExpectedLog(config, symbol);
+                addExpectedCodewords(config, symbol);
             }
         }
     }
@@ -524,10 +509,11 @@ public class SymbolTest {
     /**
      * Generates the error section for the specified symbol and adds it to the test properties file.
      *
+     * @param config the test configuration, as read from the test properties file
      * @param error the error message
      * @throws IOException if there is any I/O error
      */
-    private void addExpectedError(String error) throws IOException {
+    private void addExpectedError(TestConfig config, String error) throws IOException {
         if (config.expectedError == null) {
             String append = EOL + ReadMode.ERROR.name() + EOL + EOL + error + EOL;
             Files.write(config.file.toPath(), append.getBytes(UTF_8), StandardOpenOption.APPEND);
@@ -537,10 +523,11 @@ public class SymbolTest {
     /**
      * Generates the encoding log section for the specified symbol and adds it to the test properties file.
      *
+     * @param config the test configuration, as read from the test properties file
      * @param symbol the symbol to generate the encoding log for
      * @throws IOException if there is any I/O error
      */
-    private void addExpectedLog(Symbol symbol) throws IOException {
+    private void addExpectedLog(TestConfig config, Symbol symbol) throws IOException {
         String info = symbol.getEncodeInfo();
         if (config.expectedLog.isEmpty() && info != null && !info.isEmpty()) {
             StringBuilder sb = new StringBuilder();
@@ -558,10 +545,11 @@ public class SymbolTest {
     /**
      * Generates the codeword section for the specified symbol and adds it to the test properties file.
      *
+     * @param config the test configuration, as read from the test properties file
      * @param symbol the symbol to generate codewords for
      * @throws IOException if there is any I/O error
      */
-    private void addExpectedCodewords(Symbol symbol) throws IOException {
+    private void addExpectedCodewords(TestConfig config, Symbol symbol) throws IOException {
         if (config.expectedCodewords.isEmpty()) {
             StringBuilder sb = new StringBuilder();
             sb.append(EOL).append(ReadMode.CODEWORDS.name()).append(EOL).append(EOL);
@@ -582,10 +570,11 @@ public class SymbolTest {
     /**
      * Generates the image expectation file for the specified symbol.
      *
+     * @param pngFile the file containing the expected final rendering of the bar code, if this test verifies successful behavior
      * @param symbol the symbol to draw
      * @throws IOException if there is any I/O error
      */
-    private void createExpectedPngFile(Symbol symbol) throws IOException {
+    private void createExpectedPngFile(File pngFile, Symbol symbol) throws IOException {
         if (!pngFile.exists()) {
             BufferedImage img = draw(symbol);
             ImageIO.write(img, "png", pngFile);
@@ -635,7 +624,7 @@ public class SymbolTest {
             // set each symbol property using the corresponding setter method
             String setterName = "set" + name.substring(0, 1).toUpperCase() + name.substring(1);
             Method setter = getMethod(symbol.getClass(), setterName, byte[].class);
-            assertNotNull("unable to find method " + setterName, setter);
+            assertNotNull(setter, "unable to find method " + setterName);
             Object setterValue = invoke(symbol, setter, value);
             // while we're here, eliminate some of the code coverage noise by checking the corresponding getter, if there is one
             if (!"content".equals(name)) {
@@ -758,12 +747,12 @@ public class SymbolTest {
 
         if (w != actual.getWidth()) {
             writeImageFilesToFailureDirectory(expected, actual, failureDirectory);
-            throw new ComparisonFailure("image width", String.valueOf(w), String.valueOf(actual.getWidth()));
+            throw new AssertionFailedError("image width", String.valueOf(w), String.valueOf(actual.getWidth()));
         }
 
         if (h != actual.getHeight()) {
             writeImageFilesToFailureDirectory(expected, actual, failureDirectory);
-            throw new ComparisonFailure("image height", String.valueOf(h), String.valueOf(actual.getHeight()));
+            throw new AssertionFailedError("image height", String.valueOf(h), String.valueOf(actual.getHeight()));
         }
 
         DataBuffer expectedBuffer = expected.getRaster().getDataBuffer();
@@ -778,7 +767,7 @@ public class SymbolTest {
                 byte actualByte = actualData[i];
                 if (expectedByte != actualByte) {
                     writeImageFilesToFailureDirectory(expected, actual, failureDirectory);
-                    throw new ComparisonFailure("byte " + i, toHexString(expectedByte), toHexString(actualByte));
+                    throw new AssertionFailedError("byte " + i, toHexString(expectedByte), toHexString(actualByte));
                 }
             }
         } else {
@@ -792,7 +781,7 @@ public class SymbolTest {
                 int actualPixel = actualPixels[i];
                 if (expectedPixel != actualPixel) {
                     writeImageFilesToFailureDirectory(expected, actual, failureDirectory);
-                    throw new ComparisonFailure("pixel " + i, toHexString(expectedPixel), toHexString(actualPixel));
+                    throw new AssertionFailedError("pixel " + i, toHexString(expectedPixel), toHexString(actualPixel));
                 }
             }
         }
@@ -932,7 +921,6 @@ public class SymbolTest {
      * @return the test data needed to dynamically create the test cases
      * @throws IOException if there is an error reading a file
      */
-    @Parameters(name = "test {index}: {3}: {4}")
     public static List< Object[] > data() throws IOException {
 
         clear(TEST_FAILURE_IMAGES_DIR);

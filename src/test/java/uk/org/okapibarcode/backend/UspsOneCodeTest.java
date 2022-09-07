@@ -16,10 +16,10 @@
 
 package uk.org.okapibarcode.backend;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static uk.org.okapibarcode.backend.UspsOneCode.formatHumanReadableText;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * {@link UspsOneCode} tests that can't be run via the {@link SymbolTest}.

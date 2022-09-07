@@ -16,14 +16,14 @@
 
 package uk.org.okapibarcode.backend;
 
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.nio.charset.StandardCharsets;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.google.zxing.BinaryBitmap;
 import com.google.zxing.LuminanceSource;

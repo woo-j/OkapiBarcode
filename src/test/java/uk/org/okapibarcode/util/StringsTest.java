@@ -16,11 +16,11 @@
 
 package uk.org.okapibarcode.util;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static uk.org.okapibarcode.util.Strings.escape;
 import static uk.org.okapibarcode.util.Strings.unescape;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for {@link Strings}.

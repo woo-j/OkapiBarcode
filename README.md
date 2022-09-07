@@ -131,6 +131,7 @@ and data.
 - Channel Code: fix `NullPointerException` when channel count not specified
 - Code 128: fix incorrect encoding of line feeds when combined with lowercase characters (found via fuzzing)
 - Code 128: fix incorrect encoding of shifted characters which also use extended encoding (found via fuzzing)
+- Code 128: never try to shift in or out of extended mode while in code set C (found via fuzzing)
 - Code 128: always exit extended mode before switching to code set C (found via fuzzing)
 
 #### Okapi Barcode 0.3.3

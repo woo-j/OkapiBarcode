@@ -125,57 +125,8 @@ public class Code128 extends Symbol {
         }
 
         int sourcelen = inputData.length;
-
-        FMode[] fset = new FMode[200];
-        Mode[] set = new Mode[200]; /* set[] = Calculated mode for each character */
-
         if (sourcelen > 170) {
             throw new OkapiException("Input data too long");
-        }
-
-        /* Detect extended ASCII characters */
-        for (i = 0; i < sourcelen; i++) {
-            int ch = inputData[i];
-            if (ch >= 128 && ch != FNC1 && ch != FNC2 && ch != FNC3 && ch != FNC4) {
-                fset[i] = FMode.SHIFTF;
-            } else {
-                fset[i] = FMode.LATCHN;
-            }
-        }
-
-        /* Decide when to latch to extended mode - Annex E note 3 */
-        j = 0;
-        for (i = 0; i < sourcelen; i++) {
-            if (fset[i] == FMode.SHIFTF) {
-                j++;
-            } else {
-                j = 0;
-            }
-            if (j >= 5) {
-                for (k = i; k > (i - 5); k--) {
-                    fset[k] = FMode.LATCHF;
-                }
-            }
-            if ((j >= 3) && (i == (sourcelen - 1))) {
-                for (k = i; k > (i - 3); k--) {
-                    fset[k] = FMode.LATCHF;
-                }
-            }
-        }
-
-        /* Decide if it is worth reverting to 646 encodation for a few characters as described in 4.3.4.2 (d) */
-        for (i = 1; i < sourcelen; i++) {
-            if ((fset[i - 1] == FMode.LATCHF) && (fset[i] == FMode.LATCHN)) {
-                /* Detected a change from 8859-1 to 646 - count how long for */
-                for (j = 0; (fset[i + j] == FMode.LATCHN) && ((i + j) < sourcelen); j++);
-                if ((j < 5) || ((j < 3) && ((i + j) == (sourcelen - 1)))) {
-                    /* Uses the same figures recommended by Annex E note 3 */
-                    /* Change to shifting back rather than latching back */
-                    for (k = 0; k < j; k++) {
-                        fset[i + k] = FMode.SHIFTN;
-                    }
-                }
-            }
         }
 
         /* Decide on mode using same system as PDF417 and rules of ISO 15417 Annex E */
@@ -206,7 +157,8 @@ public class Code128 extends Symbol {
             index_point = reduceSubsetChanges(mode_type, mode_length, index_point);
         }
 
-        /* Put set data into set[] */
+        /* Put set data into set[] (the calculated mode for each character) */
+        Mode[] set = new Mode[200];
         read = 0;
         if (sourcelen > 0) {
             for (i = 0; i < index_point; i++) {
@@ -252,6 +204,58 @@ public class Code128 extends Symbol {
                 set[i] = Mode.LATCHB;
                 i++;
             } while (set[i] == Mode.SHIFTB);
+        }
+
+        /* Detect extended ASCII characters */
+        FMode[] fset = new FMode[200];
+        for (i = 0; i < sourcelen; i++) {
+            int ch = inputData[i];
+            if (ch >= 128 && ch != FNC1 && ch != FNC2 && ch != FNC3 && ch != FNC4) {
+                fset[i] = FMode.SHIFTF;
+            } else {
+                fset[i] = FMode.LATCHN;
+            }
+        }
+
+        /* Decide when to latch to extended mode - Annex E note 3 */
+        j = 0;
+        for (i = 0; i < sourcelen; i++) {
+            if (fset[i] == FMode.SHIFTF) {
+                j++;
+            } else {
+                j = 0;
+            }
+            if (j >= 5) {
+                for (k = i; k > (i - 5); k--) {
+                    fset[k] = FMode.LATCHF;
+                }
+            }
+            if ((j >= 3) && (i == (sourcelen - 1))) {
+                for (k = i; k > (i - 3); k--) {
+                    fset[k] = FMode.LATCHF;
+                }
+            }
+        }
+
+        /* Decide if it is worth reverting to 646 encodation for a few characters as described in 4.3.4.2 (d) */
+        for (i = 1; i < sourcelen; i++) {
+            if ((fset[i - 1] == FMode.LATCHF) && (fset[i] == FMode.LATCHN)) {
+                /* Detected a change from 8859-1 to 646 - count how long for */
+                /* There is one exception: code set C cannot shift in and out of extended mode */
+                for (j = 0; fset[i + j] == FMode.LATCHN &&
+                            set[i + j] != Mode.LATCHC &&
+                            set[i + j] != Mode.SHIFTC &&
+                            i + j < sourcelen; j++) {
+                    // keep counting
+                }
+                if ((j < 5) || ((j < 3) && ((i + j) == (sourcelen - 1)))) {
+                    /* Uses the same figures recommended by Annex E note 3 */
+                    /* Change to shifting back rather than latching back */
+                    for (k = 0; k < j; k++) {
+                        fset[i + k] = FMode.SHIFTN;
+                    }
+                }
+            }
         }
 
         /* Now we can calculate how long the barcode is going to be - and stop it from being too long */

@@ -343,15 +343,11 @@ public class Code16k extends Symbol {
         }
 
         if(readerInit) {
-        	if(m == 2) { m = 5; }
-        	if (inputDataType == DataType.GS1) {
-        		throw new OkapiException("Cannot use both GS1 mode and Reader Initialisation");
-        	} else {
-        		if((set[0] == 'B') && (set[1] == 'C')) { m = 6; }
-        	}
-        	values[bar_characters] = (7 * (rows_needed - 2)) + m; /* see 4.3.4.2 */
-        	values[bar_characters + 1] = 96; /* FNC3 */
-        	bar_characters += 2;
+            if(m == 2) { m = 5; }
+            if((set[0] == 'B') && (set[1] == 'C')) { m = 6; }
+            values[bar_characters] = (7 * (rows_needed - 2)) + m; /* see 4.3.4.2 */
+            values[bar_characters + 1] = 96; /* FNC3 */
+            bar_characters += 2;
         } else {
             if (inputDataType == DataType.GS1) {
                 /* Integrate FNC1 */
@@ -374,11 +370,10 @@ public class Code16k extends Symbol {
         }
         values[bar_characters] = (7 * (rows_needed - 2)) + m; /* see 4.3.4.2 */
         bar_characters++;
-        //}
+
         current_set = set[0];
         f_state = false;
-        /* f_state remembers if we are in Extended ASCII mode (value 1) or
-	in ISO/IEC 646 mode (value 0) */
+        /* f_state remembers if we are in Extended ASCII mode (value 1) or in ISO/IEC 646 mode (value 0) */
         if (fset[0] == 'F') {
             switch (current_set) {
             case 'A':

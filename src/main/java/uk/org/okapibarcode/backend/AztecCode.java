@@ -499,10 +499,6 @@ public class AztecCode extends Symbol {
         boolean compact;
         StringBuilder adjustedString;
 
-        if (inputDataType == DataType.GS1 && readerInit) {
-            throw new OkapiException("Cannot encode in GS1 and Reader Initialisation mode at the same time");
-        }
-
         eciProcess(); // Get ECI mode
 
         /* Optional structured append (Section 8 of spec) */

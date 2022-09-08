@@ -503,6 +503,10 @@ public abstract class Symbol {
      */
     public void setContent(String data) {
 
+        if (readerInit && inputDataType == DataType.GS1) {
+            throw new OkapiException("Cannot use both GS1 mode and Reader Initialisation");
+        }
+
         if (data == null) {
             data = "";
         }

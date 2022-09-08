@@ -554,15 +554,11 @@ public class DataMatrix extends Symbol {
         } /* FNC1 */
 
         if (readerInit) {
-            if (inputDataType == DataType.GS1) {
-                throw new OkapiException("Cannot encode in GS1 mode and Reader Initialisation at the same time");
-            } else {
-                target[tp] = 234; /* FNC3 */
-                tp++; /* Reader Programming */
-                binary[binary_length] = ' ';
-                binary_length++;
-                info("RP ");
-            }
+            target[tp] = 234; /* FNC3 */
+            tp++; /* Reader Programming */
+            binary[binary_length] = ' ';
+            binary_length++;
+            info("RP ");
         }
 
         if (eciMode != 3) {

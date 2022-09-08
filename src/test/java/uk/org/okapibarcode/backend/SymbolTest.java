@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static uk.org.okapibarcode.util.Strings.toPrintableAscii;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -237,7 +238,7 @@ public class SymbolTest {
             Result result = zxingReader.decode(bitmap, hints);
             String zxingData = massageZXingData(result.getText(), symbol);
             String okapiData = massageOkapiData(symbol.getContent(), symbol);
-            assertEquals(okapiData, zxingData, "checking against ZXing results");
+            assertEquals(toPrintableAscii(okapiData), toPrintableAscii(zxingData), "checking against ZXing results");
             verifyMetadata(symbol, result);
         }
 

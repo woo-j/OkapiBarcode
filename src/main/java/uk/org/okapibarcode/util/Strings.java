@@ -244,4 +244,23 @@ public final class Strings {
             }
         }
     }
+
+    /**
+     * Replaces non-ASCII and non-printable characters with their Unicode-escaped equivalent.
+     *
+     * @param s the input string
+     * @return the input string, with non-ASCII and non-printable characters replaced
+     */
+    public static String toPrintableAscii(String s) {
+        StringBuilder out = new StringBuilder();
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c >= 32 && c <= 126) {
+                out.append(c);
+            } else {
+                out.append("\\u").append(String.format("%04x", (int) c));
+            }
+        }
+        return out.toString();
+    }
 }

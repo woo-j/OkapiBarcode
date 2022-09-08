@@ -583,7 +583,7 @@ public final class Gs1 {
         int[] data_length = new int[100];
 
         /* Make sure we start with an AI */
-        if (source[0] != '[') {
+        if (source.length == 0 || source[0] != '[') {
             throw new OkapiException("Data does not start with an AI");
         }
 

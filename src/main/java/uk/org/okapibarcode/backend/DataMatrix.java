@@ -873,12 +873,18 @@ public class DataMatrix extends Symbol {
             if (current_mode == Mode.DM_X12) {
                 int value = 0;
 
-                next_mode = Mode.DM_X12;
-                if (process_p == 0) {
-                    next_mode = lookAheadTest(sp, current_mode);
+                if (isX12(inputData[sp])) {
+                    next_mode = Mode.DM_X12;
+                    if (process_p == 0) {
+                        next_mode = lookAheadTest(sp, current_mode);
+                    }
+                } else {
+                    next_mode = Mode.DM_ASCII;
                 }
 
                 if (next_mode != Mode.DM_X12) {
+                    sp -= process_p; // we're about to throw away the buffer, so we'll need to re-process buffered data
+                    process_p = 0; // throw away buffer, if any
                     target[tp] = 254;
                     tp++;
                     binary[binary_length] = ' ';
@@ -1350,8 +1356,7 @@ public class DataMatrix extends Symbol {
                 }
             }
 
-
-            if (sp > (position + 3)) {
+            if (sp >= position + 3) {
                 /* 4 data characters processed ... step (r) */
 
                 /* step (r)(6) */
@@ -1463,26 +1468,12 @@ public class DataMatrix extends Symbol {
     }
 
     private boolean isX12(int source) {
-        if (source == 13) {
-            return true;
-        }
-        if (source == 42) {
-            return true;
-        }
-        if (source == 62) {
-            return true;
-        }
-        if (source == 32) {
-            return true;
-        }
-        if ((source >= '0') && (source <= '9')) {
-            return true;
-        }
-        if ((source >= 'A') && (source <= 'Z')) {
-            return true;
-        }
-
-        return false;
+        return source == 13 ||
+               source == 42 ||
+               source == 62 ||
+               source == 32 ||
+               (source >= '0' && source <= '9') ||
+               (source >= 'A' && source <= 'Z');
     }
 
     private void calculateErrorCorrection(int bytes, int datablock, int rsblock, int skew) {

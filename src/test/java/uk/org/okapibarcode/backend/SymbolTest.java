@@ -230,12 +230,7 @@ public class SymbolTest {
         // if possible, ensure an independent third party (ZXing) can read the generated barcode and agrees on what it represents
         Reader zxingReader = findReader(symbol);
         if (zxingReader != null) {
-            LuminanceSource source = new BufferedImageLuminanceSource(actual);
-            BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
-            Map< DecodeHintType, Boolean > hints = new HashMap<>();
-            hints.put(DecodeHintType.PURE_BARCODE, Boolean.TRUE);
-            hints.put(DecodeHintType.TRY_HARDER, Boolean.TRUE);
-            Result result = zxingReader.decode(bitmap, hints);
+            Result result = decode(actual, zxingReader);
             String zxingData = massageZXingData(result.getText(), symbol);
             String okapiData = massageOkapiData(symbol.getContent(), symbol);
             assertEquals(toPrintableAscii(okapiData), toPrintableAscii(zxingData), "checking against ZXing results");
@@ -603,6 +598,23 @@ public class SymbolTest {
         g2d.dispose();
 
         return img;
+    }
+
+    /**
+     * Reads the barcode in the specified image using the specified ZXing reader.
+     *
+     * @param image the barcode image
+     * @param reader the reader to use to read the barcode
+     * @return the reading result
+     * @throws ReaderException if any error occurs during reading
+     */
+    private static Result decode(BufferedImage image, Reader reader) throws ReaderException {
+        LuminanceSource source = new BufferedImageLuminanceSource(image);
+        BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
+        Map< DecodeHintType, Boolean > hints = new HashMap<>();
+        hints.put(DecodeHintType.PURE_BARCODE, Boolean.TRUE);
+        hints.put(DecodeHintType.TRY_HARDER, Boolean.TRUE);
+        return reader.decode(bitmap, hints);
     }
 
     /**

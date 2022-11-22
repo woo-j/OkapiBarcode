@@ -157,8 +157,8 @@ public class Java2DRenderer implements SymbolRenderer {
     private static Ellipse2D.Double adjust(Circle circle, double magnification, int marginX, int marginY) {
         double x = marginX + ((circle.centreX - circle.radius) * magnification);
         double y = marginY + ((circle.centreY - circle.radius) * magnification);
-        double w = marginX + (2d * circle.radius * magnification); // TODO: do we really need to add margin here?
-        double h = marginY + (2d * circle.radius * magnification); // TODO: do we really need to add margin here?
+        double w = 2d * circle.radius * magnification;
+        double h = 2d * circle.radius * magnification;
         return new Ellipse2D.Double(x, y, w, h);
     }
 

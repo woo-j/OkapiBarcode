@@ -395,7 +395,7 @@ public abstract class Symbol {
     }
 
     /**
-     * Sets the text alignment of the human-readable text (default value is {@link HumanReadableAlignment#CENTER}).
+     * Sets the text alignment of the human-readable text (default value is {@link TextAlignment#CENTER}).
      *
      * @param humanReadableAlignment the text alignment of the human-readable text
      */

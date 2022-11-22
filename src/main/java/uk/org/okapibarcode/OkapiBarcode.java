@@ -16,14 +16,16 @@
 
 package uk.org.okapibarcode;
 
-import uk.org.okapibarcode.gui.OkapiUI;
-import com.beust.jcommander.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+
+import com.beust.jcommander.JCommander;
+
+import uk.org.okapibarcode.gui.OkapiUI;
 
 /**
  * Starts the Okapi Barcode UI.
@@ -39,17 +41,16 @@ public class OkapiBarcode {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+
         Settings settings = new Settings();
-        new JCommander(settings, args);
+        JCommander cmd = new JCommander(settings);
+        cmd.parse(args);
 
         if (!settings.isGuiSupressed()) {
             OkapiUI okapiUi = new OkapiUI();
             okapiUi.setVisible(true);
         } else {
-            int returnValue;
-            
-            returnValue = commandLine(settings);
-            
+            int returnValue = commandLine(settings);
             if (returnValue != 0) {
                 System.out.println("An error occurred");
             }

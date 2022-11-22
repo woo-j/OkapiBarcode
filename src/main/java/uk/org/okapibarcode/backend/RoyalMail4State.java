@@ -17,8 +17,9 @@ package uk.org.okapibarcode.backend;
 
 import static uk.org.okapibarcode.util.Arrays.positionOf;
 
-import java.awt.geom.Rectangle2D;
 import java.util.Locale;
+
+import uk.org.okapibarcode.graphics.Rectangle;
 
 /**
  * <p>Encodes data according to the Royal Mail 4-State Country Code.
@@ -123,7 +124,7 @@ public class RoyalMail4State extends Symbol {
                     h = 2;
                     break;
             }
-            Rectangle2D.Double rect = new Rectangle2D.Double(x, y, w, h);
+            Rectangle rect = new Rectangle(x, y, w, h);
             rectangles.add(rect);
             x += 2;
         }

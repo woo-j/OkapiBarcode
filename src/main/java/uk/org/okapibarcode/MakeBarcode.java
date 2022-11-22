@@ -15,7 +15,6 @@
  */
 package uk.org.okapibarcode;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
@@ -74,6 +73,7 @@ import uk.org.okapibarcode.backend.Telepen;
 import uk.org.okapibarcode.backend.Upc;
 import uk.org.okapibarcode.backend.UspsOneCode;
 import uk.org.okapibarcode.backend.UspsPackage;
+import uk.org.okapibarcode.graphics.Color;
 import uk.org.okapibarcode.output.Java2DRenderer;
 import uk.org.okapibarcode.output.PostScriptRenderer;
 import uk.org.okapibarcode.output.SvgRenderer;

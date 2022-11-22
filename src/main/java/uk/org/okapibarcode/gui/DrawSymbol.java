@@ -23,6 +23,7 @@ import java.awt.RenderingHints;
 
 import javax.swing.JPanel;
 
+import uk.org.okapibarcode.graphics.Color;
 import uk.org.okapibarcode.output.Java2DRenderer;
 
 /**
@@ -52,7 +53,9 @@ public class DrawSymbol extends JPanel {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        Java2DRenderer renderer = new Java2DRenderer(g2d, OkapiUI.factor, OkapiUI.paperColour, OkapiUI.inkColour);
+        Color paper = new Color(OkapiUI.paperColour.getRGB());
+        Color ink = new Color(OkapiUI.inkColour.getRGB());
+        Java2DRenderer renderer = new Java2DRenderer(g2d, OkapiUI.factor, paper, ink);
         renderer.render(OkapiUI.symbol);
     }
 }

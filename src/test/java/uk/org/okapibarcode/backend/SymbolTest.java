@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.org.okapibarcode.util.Strings.toPrintableAscii;
 
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.Graphics2D;
@@ -72,6 +71,7 @@ import com.google.zxing.pdf417.PDF417ResultMetadata;
 import com.google.zxing.qrcode.QRCodeReader;
 
 import uk.org.okapibarcode.backend.Symbol.DataType;
+import uk.org.okapibarcode.graphics.Color;
 import uk.org.okapibarcode.output.Java2DRenderer;
 import uk.org.okapibarcode.util.Strings;
 

@@ -15,24 +15,27 @@
  */
 package uk.org.okapibarcode.backend;
 
-import static uk.org.okapibarcode.backend.HumanReadableAlignment.CENTER;
 import static uk.org.okapibarcode.backend.HumanReadableLocation.BOTTOM;
 import static uk.org.okapibarcode.backend.HumanReadableLocation.NONE;
 import static uk.org.okapibarcode.backend.HumanReadableLocation.TOP;
+import static uk.org.okapibarcode.graphics.TextAlignment.CENTER;
 import static uk.org.okapibarcode.util.Arrays.containsAt;
 import static uk.org.okapibarcode.util.Arrays.positionOf;
 import static uk.org.okapibarcode.util.Doubles.roughlyEqual;
 
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Rectangle2D;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+import uk.org.okapibarcode.graphics.Circle;
+import uk.org.okapibarcode.graphics.Hexagon;
+import uk.org.okapibarcode.graphics.Rectangle;
+import uk.org.okapibarcode.graphics.TextAlignment;
+import uk.org.okapibarcode.graphics.TextBox;
 import uk.org.okapibarcode.output.Java2DRenderer;
 import uk.org.okapibarcode.util.EciMode;
 import uk.org.okapibarcode.util.Gs1;
@@ -40,16 +43,16 @@ import uk.org.okapibarcode.util.Gs1;
 /**
  * Generic barcode symbology class.
  *
- * TODO: Setting attributes like module width, font size, etc should probably throw
- * an exception if set *after* encoding has already been completed.
- *
- * TODO: GS1 data is encoded slightly differently depending on whether [AI]data content
- * is used, or if FNC1 escape sequences are used. We may want to make sure that they
- * encode to the same output.
- *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public abstract class Symbol {
+
+    // TODO: Setting attributes like module width, font size, etc should probably throw
+    // an exception if set *after* encoding has already been completed.
+
+    // TODO: GS1 data is encoded slightly differently depending on whether [AI]data content
+    // is used, or if FNC1 escape sequences are used. We may want to make sure that they
+    // encode to the same output.
 
     public static enum DataType {
         ECI, GS1, HIBC
@@ -84,7 +87,7 @@ public abstract class Symbol {
     protected String fontName = "Helvetica";
     protected int fontSize = 8;
     protected HumanReadableLocation humanReadableLocation = BOTTOM;
-    protected HumanReadableAlignment humanReadableAlignment = CENTER;
+    protected TextAlignment humanReadableAlignment = CENTER;
     protected boolean emptyContentAllowed = false;
 
     // internal state calculated when setContent() is called
@@ -99,10 +102,10 @@ public abstract class Symbol {
     protected int symbol_height = 0;
     protected int symbol_width = 0;
     protected StringBuilder encodeInfo = new StringBuilder();
-    protected List< Rectangle2D.Double > rectangles = new ArrayList<>(); // note positions do not account for quiet zones (handled in renderers)
-    protected List< TextBox > texts = new ArrayList<>();                 // note positions do not account for quiet zones (handled in renderers)
-    protected List< Hexagon > hexagons = new ArrayList<>();              // note positions do not account for quiet zones (handled in renderers)
-    protected List< Ellipse2D.Double > target = new ArrayList<>();       // note positions do not account for quiet zones (handled in renderers)
+    protected List< Rectangle > rectangles = new ArrayList<>(); // note positions do not account for quiet zones (handled in renderers)
+    protected List< TextBox > texts = new ArrayList<>();        // note positions do not account for quiet zones (handled in renderers)
+    protected List< Hexagon > hexagons = new ArrayList<>();     // note positions do not account for quiet zones (handled in renderers)
+    protected List< Circle > target = new ArrayList<>();        // note positions do not account for quiet zones (handled in renderers)
 
     /**
      * <p>Sets the type of input data. This setting influences what pre-processing is done on
@@ -396,7 +399,7 @@ public abstract class Symbol {
      *
      * @param humanReadableAlignment the text alignment of the human-readable text
      */
-    public void setHumanReadableAlignment(HumanReadableAlignment humanReadableAlignment) {
+    public void setHumanReadableAlignment(TextAlignment humanReadableAlignment) {
         this.humanReadableAlignment = humanReadableAlignment;
     }
 
@@ -405,7 +408,7 @@ public abstract class Symbol {
      *
      * @return the text alignment of the human-readable text
      */
-    public HumanReadableAlignment getHumanReadableAlignment() {
+    public TextAlignment getHumanReadableAlignment() {
         return humanReadableAlignment;
     }
 
@@ -414,7 +417,7 @@ public abstract class Symbol {
      *
      * @return render information about the rectangles in this symbol
      */
-    public List< Rectangle2D.Double > getRectangles() {
+    public List< Rectangle > getRectangles() {
         return rectangles;
     }
 
@@ -441,7 +444,7 @@ public abstract class Symbol {
      *
      * @return render information about the target circles in this symbol
      */
-    public List< Ellipse2D.Double > getTarget() {
+    public List< Circle > getTarget() {
         return target;
     }
 
@@ -668,7 +671,7 @@ public abstract class Symbol {
                         h = row_height[yBlock];
                     }
                     if (w != 0 && h != 0) {
-                        Rectangle2D.Double rect = new Rectangle2D.Double(x, y, w, h);
+                        Rectangle rect = new Rectangle(x, y, w, h);
                         rectangles.add(rect);
                     }
                     if (x + w > symbol_width) {
@@ -727,9 +730,9 @@ public abstract class Symbol {
         int before = rectangles.size();
 
         for (int i = rectangles.size() - 1; i >= 0; i--) {
-            Rectangle2D.Double rect1 = rectangles.get(i);
+            Rectangle rect1 = rectangles.get(i);
             for (int j = i - 1; j >= 0; j--) {
-                Rectangle2D.Double rect2 = rectangles.get(j);
+                Rectangle rect2 = rectangles.get(j);
                 if (roughlyEqual(rect1.y, rect2.y + rect2.height)) {
                     // rect2 is in the segment of rectangles for the row directly above rect1
                     if (roughlyEqual(rect1.x, rect2.x) && roughlyEqual(rect1.width, rect2.width)) {

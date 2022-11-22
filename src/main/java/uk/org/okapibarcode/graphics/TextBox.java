@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.org.okapibarcode.backend;
+package uk.org.okapibarcode.graphics;
 
 /**
  * A simple text item class.
@@ -22,7 +22,7 @@ package uk.org.okapibarcode.backend;
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  * @author Daniel Gredler
  */
-public class TextBox {
+public final class TextBox {
 
     /** The X position of the text's left boundary. */
     public final double x;
@@ -37,7 +37,7 @@ public class TextBox {
     public final String text;
 
     /** The text alignment. */
-    public final HumanReadableAlignment alignment;
+    public final TextAlignment alignment;
 
     /**
      * Creates a new instance.
@@ -48,7 +48,7 @@ public class TextBox {
      * @param text the text value
      * @param alignment the text alignment
      */
-    public TextBox(double x, double y, double width, String text, HumanReadableAlignment alignment) {
+    public TextBox(double x, double y, double width, String text, TextAlignment alignment) {
         this.x = x;
         this.y = y;
         this.width = width;

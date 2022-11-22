@@ -16,7 +16,6 @@
 
 package uk.org.okapibarcode.output;
 
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.GradientPaint;
 import java.awt.Graphics2D;
@@ -32,9 +31,10 @@ import org.junit.jupiter.api.Test;
 
 import uk.org.okapibarcode.backend.Code128;
 import uk.org.okapibarcode.backend.DataMatrix;
-import uk.org.okapibarcode.backend.HumanReadableAlignment;
 import uk.org.okapibarcode.backend.MaxiCode;
 import uk.org.okapibarcode.backend.SymbolTest;
+import uk.org.okapibarcode.graphics.Color;
+import uk.org.okapibarcode.graphics.TextAlignment;
 
 /**
  * Tests for {@link Java2DRenderer}.
@@ -60,7 +60,7 @@ public class Java2DRendererTest {
 
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = image.createGraphics();
-        g2d.setPaint(new GradientPaint(0, 0, Color.ORANGE, width, height, Color.GREEN));
+        g2d.setPaint(new GradientPaint(0, 0, java.awt.Color.ORANGE, width, height, java.awt.Color.GREEN));
         g2d.fillRect(0, 0, width, height);
 
         Java2DRenderer renderer = new Java2DRenderer(g2d, 4, null, Color.BLACK);
@@ -91,7 +91,7 @@ public class Java2DRendererTest {
         Font font = SymbolTest.DEJA_VU_SANS.deriveFont((float) 18);
         font = font.deriveFont(Collections.singletonMap(TextAttribute.STRIKETHROUGH, TextAttribute.STRIKETHROUGH_ON));
 
-        testFont(font, HumanReadableAlignment.CENTER, "java-2d-custom-font-strikethrough.png");
+        testFont(font, TextAlignment.CENTER, "java-2d-custom-font-strikethrough.png");
     }
 
     @Test
@@ -100,10 +100,10 @@ public class Java2DRendererTest {
         Font font = SymbolTest.DEJA_VU_SANS.deriveFont((float) 3);
         font = font.deriveFont(AffineTransform.getScaleInstance(5, 1));
 
-        testFont(font, HumanReadableAlignment.JUSTIFY, "java-2d-custom-font-justify-transform.png");
+        testFont(font, TextAlignment.JUSTIFY, "java-2d-custom-font-justify-transform.png");
     }
 
-    private static void testFont(Font font, HumanReadableAlignment alignment, String filename) throws IOException {
+    private static void testFont(Font font, TextAlignment alignment, String filename) throws IOException {
 
         Code128 code128 = new Code128();
         code128.setHumanReadableAlignment(alignment);

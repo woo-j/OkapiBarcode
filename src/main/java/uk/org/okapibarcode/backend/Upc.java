@@ -21,8 +21,11 @@ import static uk.org.okapibarcode.backend.HumanReadableLocation.BOTTOM;
 import static uk.org.okapibarcode.backend.HumanReadableLocation.NONE;
 import static uk.org.okapibarcode.backend.HumanReadableLocation.TOP;
 
-import java.awt.geom.Rectangle2D;
 import java.util.Arrays;
+
+import uk.org.okapibarcode.graphics.Rectangle;
+import uk.org.okapibarcode.graphics.TextAlignment;
+import uk.org.okapibarcode.graphics.TextBox;
 
 /**
  * <p>Implements UPC bar code symbology according to BS EN 797:1996.
@@ -72,7 +75,7 @@ public class Upc extends Symbol {
 
     /** Creates a new instance. */
     public Upc() {
-        this.humanReadableAlignment = HumanReadableAlignment.JUSTIFY;
+        this.humanReadableAlignment = TextAlignment.JUSTIFY;
     }
 
     /**
@@ -343,10 +346,10 @@ public class Upc extends Symbol {
                         y -= 2;
                     }
                 }
-                Rectangle2D.Double rect = new Rectangle2D.Double(scale(x), y + compositeOffset + hrtOffset, scale(w), h);
+                Rectangle rect = new Rectangle(scale(x), y + compositeOffset + hrtOffset, scale(w), h);
                 rectangles.add(rect);
-                symbol_width = Math.max(symbol_width, (int) rect.getMaxX());
-                symbol_height = Math.max(symbol_height, (int) rect.getHeight());
+                symbol_width = Math.max(symbol_width, (int) (rect.x + rect.width));
+                symbol_height = Math.max(symbol_height, (int) rect.height);
             }
 
             black = !black;
@@ -356,15 +359,15 @@ public class Upc extends Symbol {
         /* Add separator for composite symbology, if necessary */
         if (linkageFlag) {
             if (mode == Mode.UPCA) {
-                rectangles.add(new Rectangle2D.Double(scale(0),  0, scale(1), 2));
-                rectangles.add(new Rectangle2D.Double(scale(94), 0, scale(1), 2));
-                rectangles.add(new Rectangle2D.Double(scale(-1), 2, scale(1), 2));
-                rectangles.add(new Rectangle2D.Double(scale(95), 2, scale(1), 2));
+                rectangles.add(new Rectangle(scale(0),  0, scale(1), 2));
+                rectangles.add(new Rectangle(scale(94), 0, scale(1), 2));
+                rectangles.add(new Rectangle(scale(-1), 2, scale(1), 2));
+                rectangles.add(new Rectangle(scale(95), 2, scale(1), 2));
             } else { // UPCE
-                rectangles.add(new Rectangle2D.Double(scale(0),  0, scale(1), 2));
-                rectangles.add(new Rectangle2D.Double(scale(50), 0, scale(1), 2));
-                rectangles.add(new Rectangle2D.Double(scale(-1), 2, scale(1), 2));
-                rectangles.add(new Rectangle2D.Double(scale(51), 2, scale(1), 2));
+                rectangles.add(new Rectangle(scale(0),  0, scale(1), 2));
+                rectangles.add(new Rectangle(scale(50), 0, scale(1), 2));
+                rectangles.add(new Rectangle(scale(-1), 2, scale(1), 2));
+                rectangles.add(new Rectangle(scale(51), 2, scale(1), 2));
             }
             symbol_height += 4;
         }
@@ -374,17 +377,17 @@ public class Upc extends Symbol {
             symbol_height -= guardPatternExtraHeight;
             double baseline = symbol_height + fontSize;
             if (mode == Mode.UPCA) {
-                texts.add(new TextBox(scale(-9), baseline, scale(4), readable.substring(0, 1), HumanReadableAlignment.RIGHT));
+                texts.add(new TextBox(scale(-9), baseline, scale(4), readable.substring(0, 1), TextAlignment.RIGHT));
                 texts.add(new TextBox(scale(12), baseline, scale(32), readable.substring(1, 6), humanReadableAlignment));
                 texts.add(new TextBox(scale(51), baseline, scale(32), readable.substring(6, 11), humanReadableAlignment));
                 if (showCheckDigit) {
-                    texts.add(new TextBox(scale(97), baseline, scale(4), readable.substring(11, 12), HumanReadableAlignment.LEFT));
+                    texts.add(new TextBox(scale(97), baseline, scale(4), readable.substring(11, 12), TextAlignment.LEFT));
                 }
             } else { // UPCE
-                texts.add(new TextBox(scale(-9), baseline, scale(4), readable.substring(0, 1), HumanReadableAlignment.RIGHT));
+                texts.add(new TextBox(scale(-9), baseline, scale(4), readable.substring(0, 1), TextAlignment.RIGHT));
                 texts.add(new TextBox(scale(5), baseline, scale(39), readable.substring(1, 7), humanReadableAlignment));
                 if (showCheckDigit) {
-                    texts.add(new TextBox(scale(53), baseline, scale(4), readable.substring(7, 8), HumanReadableAlignment.LEFT));
+                    texts.add(new TextBox(scale(53), baseline, scale(4), readable.substring(7, 8), TextAlignment.LEFT));
                 }
             }
         } else if (humanReadableLocation == TOP) {
@@ -397,14 +400,14 @@ public class Upc extends Symbol {
         if (addOn != null) {
             int gap = 9;
             int baseX = symbol_width + scale(gap);
-            Rectangle2D.Double r1 = rectangles.get(0);
-            Rectangle2D.Double ar1 = addOn.rectangles.get(0);
-            int baseY = (int) (r1.y + r1.getHeight() - ar1.y - ar1.getHeight());
+            Rectangle r1 = rectangles.get(0);
+            Rectangle ar1 = addOn.rectangles.get(0);
+            int baseY = (int) (r1.y + r1.height - ar1.y - ar1.height);
             for (TextBox t : addOn.getTexts()) {
                 texts.add(new TextBox(baseX + t.x, baseY + t.y, t.width, t.text, t.alignment));
             }
-            for (Rectangle2D.Double r : addOn.getRectangles()) {
-                rectangles.add(new Rectangle2D.Double(baseX + r.x, baseY + r.y, r.width, r.height));
+            for (Rectangle r : addOn.getRectangles()) {
+                rectangles.add(new Rectangle(baseX + r.x, baseY + r.y, r.width, r.height));
             }
             symbol_width += scale(gap) + addOn.symbol_width;
             pattern[0] = pattern[0] + gap + addOn.pattern[0];

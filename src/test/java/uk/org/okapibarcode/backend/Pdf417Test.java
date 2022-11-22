@@ -18,7 +18,6 @@ package uk.org.okapibarcode.backend;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.nio.charset.StandardCharsets;
@@ -32,6 +31,7 @@ import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.pdf417.PDF417Reader;
 
+import uk.org.okapibarcode.graphics.Color;
 import uk.org.okapibarcode.output.Java2DRenderer;
 
 /**

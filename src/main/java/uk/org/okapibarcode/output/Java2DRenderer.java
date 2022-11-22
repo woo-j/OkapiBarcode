@@ -16,10 +16,9 @@
 
 package uk.org.okapibarcode.output;
 
-import static uk.org.okapibarcode.backend.HumanReadableAlignment.CENTER;
-import static uk.org.okapibarcode.backend.HumanReadableAlignment.JUSTIFY;
+import static uk.org.okapibarcode.graphics.TextAlignment.CENTER;
+import static uk.org.okapibarcode.graphics.TextAlignment.JUSTIFY;
 
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
@@ -32,10 +31,13 @@ import java.awt.geom.Rectangle2D;
 import java.util.Collections;
 import java.util.List;
 
-import uk.org.okapibarcode.backend.Hexagon;
-import uk.org.okapibarcode.backend.HumanReadableAlignment;
 import uk.org.okapibarcode.backend.Symbol;
-import uk.org.okapibarcode.backend.TextBox;
+import uk.org.okapibarcode.graphics.Circle;
+import uk.org.okapibarcode.graphics.Color;
+import uk.org.okapibarcode.graphics.Hexagon;
+import uk.org.okapibarcode.graphics.Rectangle;
+import uk.org.okapibarcode.graphics.TextAlignment;
+import uk.org.okapibarcode.graphics.TextBox;
 
 /**
  * Renders symbologies using the Java 2D API.
@@ -86,18 +88,18 @@ public class Java2DRenderer implements SymbolRenderer {
         }
 
         Font oldFont = g2d.getFont();
-        Color oldColor = g2d.getColor();
+        java.awt.Color oldColor = g2d.getColor();
 
         if (paper != null) {
             int w = (int) (symbol.getWidth() * magnification);
             int h = (int) (symbol.getHeight() * magnification);
-            g2d.setColor(paper);
+            g2d.setColor(new java.awt.Color(paper.red, paper.green, paper.blue));
             g2d.fillRect(0, 0, w, h);
         }
 
-        g2d.setColor(ink);
+        g2d.setColor(new java.awt.Color(ink.red, ink.green, ink.blue));
 
-        for (Rectangle2D.Double rect : symbol.getRectangles()) {
+        for (Rectangle rect : symbol.getRectangles()) {
             double x = (rect.x * magnification) + marginX;
             double y = (rect.y * magnification) + marginY;
             double w = rect.width * magnification;
@@ -106,7 +108,7 @@ public class Java2DRenderer implements SymbolRenderer {
         }
 
         for (TextBox text : symbol.getTexts()) {
-            HumanReadableAlignment alignment = (text.alignment == JUSTIFY && text.text.length() == 1 ? CENTER : text.alignment);
+            TextAlignment alignment = (text.alignment == JUSTIFY && text.text.length() == 1 ? CENTER : text.alignment);
             Font font = (alignment != JUSTIFY ? f : addTracking(f, text.width * magnification, text.text, g2d));
             g2d.setFont(font);
             FontMetrics fm = g2d.getFontMetrics();
@@ -139,7 +141,7 @@ public class Java2DRenderer implements SymbolRenderer {
             g2d.fill(polygon);
         }
 
-        List< Ellipse2D.Double > target = symbol.getTarget();
+        List< Circle > target = symbol.getTarget();
         for (int i = 0; i + 1 < target.size(); i += 2) {
             Ellipse2D.Double outer = adjust(target.get(i), magnification, marginX, marginY);
             Ellipse2D.Double inner = adjust(target.get(i + 1), magnification, marginX, marginY);
@@ -152,11 +154,11 @@ public class Java2DRenderer implements SymbolRenderer {
         g2d.setColor(oldColor);
     }
 
-    private static Ellipse2D.Double adjust(Ellipse2D.Double ellipse, double magnification, int marginX, int marginY) {
-        double x = (ellipse.x * magnification) + marginX;
-        double y = (ellipse.y * magnification) + marginY;
-        double w = (ellipse.width * magnification) + marginX;
-        double h = (ellipse.height * magnification) + marginY;
+    private static Ellipse2D.Double adjust(Circle circle, double magnification, int marginX, int marginY) {
+        double x = marginX + ((circle.centreX - circle.radius) * magnification);
+        double y = marginY + ((circle.centreY - circle.radius) * magnification);
+        double w = marginX + (2d * circle.radius * magnification); // TODO: do we really need to add margin here?
+        double h = marginY + (2d * circle.radius * magnification); // TODO: do we really need to add margin here?
         return new Ellipse2D.Double(x, y, w, h);
     }
 

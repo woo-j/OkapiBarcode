@@ -17,8 +17,9 @@ package uk.org.okapibarcode.backend;
 
 import static uk.org.okapibarcode.util.Arrays.positionOf;
 
-import java.awt.geom.Rectangle2D;
 import java.nio.charset.StandardCharsets;
+
+import uk.org.okapibarcode.graphics.Rectangle;
 
 /**
  * <p>Implements Code 49 according to ANSI/AIM-BC6-2000.
@@ -1337,7 +1338,7 @@ public class Code49 extends Symbol {
                         h = row_height[yBlock];
                     }
                     if (w != 0 && h != 0) {
-                        Rectangle2D.Double rect = new Rectangle2D.Double(x, y, w, h);
+                        Rectangle rect = new Rectangle(x, y, w, h);
                         rectangles.add(rect);
                     }
                     if (x + w > symbol_width) {
@@ -1354,15 +1355,15 @@ public class Code49 extends Symbol {
             }
             /* Add bars between rows */
             if (yBlock != row_count - 1) {
-                Rectangle2D.Double rect = new Rectangle2D.Double(15, y - 1, symbol_width - 15, 2);
+                Rectangle rect = new Rectangle(15, y - 1, symbol_width - 15, 2);
                 rectangles.add(rect);
             }
         }
 
         /* Add top and bottom binding bars */
-        Rectangle2D.Double top = new Rectangle2D.Double(0, 0, symbol_width + 15, 2);
+        Rectangle top = new Rectangle(0, 0, symbol_width + 15, 2);
         rectangles.add(top);
-        Rectangle2D.Double bottom = new Rectangle2D.Double(0, y - 1, symbol_width + 15, 2);
+        Rectangle bottom = new Rectangle(0, y - 1, symbol_width + 15, 2);
         rectangles.add(bottom);
         symbol_width += 15;
         symbol_height += 1;

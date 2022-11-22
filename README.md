@@ -134,6 +134,8 @@ and data.
 - Code 128: never try to shift in or out of extended mode while in code set C (found via fuzzing)
 - Code 128: always exit extended mode before switching to code set C (found via fuzzing)
 - Data Matrix: fix incorrect encoding of single ASCII characters within X12 data (found via fuzzing)
+- Refactor to remove use of AWT classes in core Okapi classes, to help Android users
+- Rename `HumanReadableAlignment` to `TextAlignment` and move it to the `graphics` package (part of Android refactoring)
 
 #### Okapi Barcode 0.3.3
 

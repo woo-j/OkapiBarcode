@@ -16,12 +16,9 @@
 
 package uk.org.okapibarcode.output;
 
-import static uk.org.okapibarcode.backend.HumanReadableAlignment.CENTER;
-import static uk.org.okapibarcode.backend.HumanReadableAlignment.JUSTIFY;
+import static uk.org.okapibarcode.graphics.TextAlignment.CENTER;
+import static uk.org.okapibarcode.graphics.TextAlignment.JUSTIFY;
 
-import java.awt.Color;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
@@ -39,10 +36,13 @@ import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 import org.w3c.dom.Text;
 
-import uk.org.okapibarcode.backend.Hexagon;
-import uk.org.okapibarcode.backend.HumanReadableAlignment;
 import uk.org.okapibarcode.backend.Symbol;
-import uk.org.okapibarcode.backend.TextBox;
+import uk.org.okapibarcode.graphics.Circle;
+import uk.org.okapibarcode.graphics.Color;
+import uk.org.okapibarcode.graphics.Hexagon;
+import uk.org.okapibarcode.graphics.Rectangle;
+import uk.org.okapibarcode.graphics.TextAlignment;
+import uk.org.okapibarcode.graphics.TextBox;
 
 /**
  * Renders symbologies to SVG (Scalable Vector Graphics).
@@ -102,13 +102,13 @@ public class SvgRenderer implements SymbolRenderer {
             title = content;
         }
 
-        String fgColour = String.format("%02X", ink.getRed())
-                        + String.format("%02X", ink.getGreen())
-                        + String.format("%02X", ink.getBlue());
+        String fgColour = String.format("%02X", ink.red)
+                        + String.format("%02X", ink.green)
+                        + String.format("%02X", ink.blue);
 
-        String bgColour = String.format("%02X", paper.getRed())
-                        + String.format("%02X", paper.getGreen())
-                        + String.format("%02X", paper.getBlue());
+        String bgColour = String.format("%02X", paper.red)
+                        + String.format("%02X", paper.green)
+                        + String.format("%02X", paper.blue);
 
         try (ExtendedOutputStreamWriter writer = new ExtendedOutputStreamWriter(out, "%.2f")) {
 
@@ -132,7 +132,7 @@ public class SvgRenderer implements SymbolRenderer {
 
             // Rectangles
             for (int i = 0; i < symbol.getRectangles().size(); i++) {
-                Rectangle2D.Double rect = symbol.getRectangles().get(i);
+                Rectangle rect = symbol.getRectangles().get(i);
                 writer.append("      <rect x=\"").append((rect.x * magnification) + marginX)
                       .append("\" y=\"").append((rect.y * magnification) + marginY)
                       .append("\" width=\"").append(rect.width * magnification)
@@ -143,7 +143,7 @@ public class SvgRenderer implements SymbolRenderer {
             // Text
             for (int i = 0; i < symbol.getTexts().size(); i++) {
                 TextBox text = symbol.getTexts().get(i);
-                HumanReadableAlignment alignment = (text.alignment == JUSTIFY && text.text.length() == 1 ? CENTER : text.alignment);
+                TextAlignment alignment = (text.alignment == JUSTIFY && text.text.length() == 1 ? CENTER : text.alignment);
                 double x;
                 String anchor;
                 switch (alignment) {
@@ -180,16 +180,16 @@ public class SvgRenderer implements SymbolRenderer {
 
             // Circles
             for (int i = 0; i < symbol.getTarget().size(); i++) {
-                Ellipse2D.Double ellipse = symbol.getTarget().get(i);
+                Circle circle = symbol.getTarget().get(i);
                 String color;
                 if ((i & 1) == 0) {
                     color = fgColour;
                 } else {
                     color = bgColour;
                 }
-                writer.append("      <circle cx=\"").append(((ellipse.x + (ellipse.width / 2)) * magnification) + marginX)
-                      .append("\" cy=\"").append(((ellipse.y + (ellipse.width / 2)) * magnification) + marginY)
-                      .append("\" r=\"").append((ellipse.width / 2) * magnification)
+                writer.append("      <circle cx=\"").append((circle.centreX * magnification) + marginX)
+                      .append("\" cy=\"").append((circle.centreY * magnification) + marginY)
+                      .append("\" r=\"").append(circle.radius * magnification)
                       .append("\" fill=\"#").append(color).append("\" />\n");
             }
 

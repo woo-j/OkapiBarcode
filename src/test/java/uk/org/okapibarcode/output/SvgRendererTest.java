@@ -18,7 +18,6 @@ package uk.org.okapibarcode.output;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -32,10 +31,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import uk.org.okapibarcode.backend.Code93;
-import uk.org.okapibarcode.backend.HumanReadableAlignment;
 import uk.org.okapibarcode.backend.MaxiCode;
 import uk.org.okapibarcode.backend.QrCode;
 import uk.org.okapibarcode.backend.Symbol;
+import uk.org.okapibarcode.graphics.Color;
+import uk.org.okapibarcode.graphics.TextAlignment;
 
 /**
  * Tests for {@link SvgRenderer}.
@@ -79,7 +79,7 @@ public class SvgRendererTest {
         Code93 code93 = new Code93();
         code93.setQuietZoneHorizontal(5);
         code93.setQuietZoneVertical(5);
-        code93.setHumanReadableAlignment(HumanReadableAlignment.LEFT);
+        code93.setHumanReadableAlignment(TextAlignment.LEFT);
         code93.setContent("123456789");
         test(code93, 1, Color.WHITE, Color.BLACK, "code93-alignment-left.svg", true);
     }
@@ -89,7 +89,7 @@ public class SvgRendererTest {
         Code93 code93 = new Code93();
         code93.setQuietZoneHorizontal(5);
         code93.setQuietZoneVertical(5);
-        code93.setHumanReadableAlignment(HumanReadableAlignment.RIGHT);
+        code93.setHumanReadableAlignment(TextAlignment.RIGHT);
         code93.setContent("123456789");
         test(code93, 1, Color.WHITE, Color.BLACK, "code93-alignment-right.svg", true);
     }
@@ -99,7 +99,7 @@ public class SvgRendererTest {
         Code93 code93 = new Code93();
         code93.setQuietZoneHorizontal(5);
         code93.setQuietZoneVertical(5);
-        code93.setHumanReadableAlignment(HumanReadableAlignment.JUSTIFY);
+        code93.setHumanReadableAlignment(TextAlignment.JUSTIFY);
         code93.setContent("123456789");
         test(code93, 1, Color.WHITE, Color.BLACK, "code93-alignment-justify.svg", true);
     }

@@ -19,7 +19,8 @@ package uk.org.okapibarcode.backend;
 import static uk.org.okapibarcode.backend.HumanReadableLocation.NONE;
 import static uk.org.okapibarcode.backend.HumanReadableLocation.TOP;
 
-import java.awt.geom.Rectangle2D;
+import uk.org.okapibarcode.graphics.Rectangle;
+import uk.org.okapibarcode.graphics.TextBox;
 
 /**
  * <p>Implements <a href="http://en.wikipedia.org/wiki/POSTNET">POSTNET</a> and
@@ -155,7 +156,7 @@ public class Postnet extends Symbol {
                 y = baseY + default_height - shortHeight;
                 h = shortHeight;
             }
-            rectangles.add(new Rectangle2D.Double(x, y, w, h));
+            rectangles.add(new Rectangle(x, y, w, h));
             x += dx;
         }
 

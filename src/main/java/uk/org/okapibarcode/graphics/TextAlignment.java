@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-package uk.org.okapibarcode.backend;
+package uk.org.okapibarcode.graphics;
 
 /**
- * The text alignment of a bar code's human-readable text.
+ * Text alignment options.
  */
-public enum HumanReadableAlignment {
+public enum TextAlignment {
 
-    /** Left-align the human-readable text. */
+    /** Left-aligned text. */
     LEFT,
 
-    /** Right-align the human-readable text. */
+    /** Right-aligned text. */
     RIGHT,
 
-    /** Center the human-readable text. */
+    /** Centered text. */
     CENTER,
 
-    /** Justify the human-readable text by adjusting the spaces between the characters. */
+    /** Justify text by adjusting the space between the characters. */
     JUSTIFY
 
 }

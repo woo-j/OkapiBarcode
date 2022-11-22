@@ -18,7 +18,8 @@ package uk.org.okapibarcode.backend;
 import static uk.org.okapibarcode.backend.HumanReadableLocation.NONE;
 import static uk.org.okapibarcode.backend.HumanReadableLocation.TOP;
 
-import java.awt.geom.Rectangle2D;
+import uk.org.okapibarcode.graphics.Rectangle;
+import uk.org.okapibarcode.graphics.TextBox;
 
 /**
  * Implements the Code 2 of 5 family of barcode standards.
@@ -430,7 +431,7 @@ public class Code2Of5 extends Symbol {
                     h = row_height[0];
                 }
                 if (w != 0 && h != 0) {
-                    Rectangle2D.Double rect = new Rectangle2D.Double(x + offset, y, w, h);
+                    Rectangle rect = new Rectangle(x + offset, y, w, h);
                     rectangles.add(rect);
                 }
                 symbol_width = (int) Math.ceil(x + w + (2 * offset));
@@ -443,10 +444,10 @@ public class Code2Of5 extends Symbol {
 
         if (mode == ToFMode.ITF14) {
             // Add bounding box
-            Rectangle2D.Double topBar = new Rectangle2D.Double(0, baseY, symbol_width, 4);
-            Rectangle2D.Double bottomBar = new Rectangle2D.Double(0, baseY + symbol_height - 4, symbol_width, 4);
-            Rectangle2D.Double leftBar = new Rectangle2D.Double(0, baseY, 4, symbol_height);
-            Rectangle2D.Double rightBar = new Rectangle2D.Double(symbol_width - 4, baseY, 4, symbol_height);
+            Rectangle topBar = new Rectangle(0, baseY, symbol_width, 4);
+            Rectangle bottomBar = new Rectangle(0, baseY + symbol_height - 4, symbol_width, 4);
+            Rectangle leftBar = new Rectangle(0, baseY, 4, symbol_height);
+            Rectangle rightBar = new Rectangle(symbol_width - 4, baseY, 4, symbol_height);
             rectangles.add(topBar);
             rectangles.add(bottomBar);
             rectangles.add(leftBar);

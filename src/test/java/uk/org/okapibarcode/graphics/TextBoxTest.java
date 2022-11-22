@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.org.okapibarcode.backend;
+package uk.org.okapibarcode.graphics;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -27,12 +27,12 @@ public class TextBoxTest {
 
     @Test
     public void testTextBox() {
-        TextBox text = new TextBox(1, 2, 3, "abc", HumanReadableAlignment.RIGHT);
+        TextBox text = new TextBox(1, 2, 3, "abc", TextAlignment.RIGHT);
         assertEquals(1, text.x, 0.001);
         assertEquals(2, text.y, 0.001);
         assertEquals(3, text.width, 0.001);
         assertEquals("abc", text.text);
-        assertEquals(HumanReadableAlignment.RIGHT, text.alignment);
+        assertEquals(TextAlignment.RIGHT, text.alignment);
         assertEquals("TextBox[x=1.0, y=2.0, width=3.0, text=abc, alignment=RIGHT]", text.toString());
     }
 

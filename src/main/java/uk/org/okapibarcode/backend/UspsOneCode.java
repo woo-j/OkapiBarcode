@@ -18,8 +18,11 @@ package uk.org.okapibarcode.backend;
 import static uk.org.okapibarcode.backend.HumanReadableLocation.NONE;
 import static uk.org.okapibarcode.backend.HumanReadableLocation.TOP;
 
-import java.awt.geom.Rectangle2D;
 import java.math.BigInteger;
+
+import uk.org.okapibarcode.graphics.Rectangle;
+import uk.org.okapibarcode.graphics.TextAlignment;
+import uk.org.okapibarcode.graphics.TextBox;
 
 /**
  * <p>Implements USPS OneCode (also known as Intelligent Mail Barcode) according to USPS-B-3200F.
@@ -197,7 +200,7 @@ public class UspsOneCode extends Symbol {
     public UspsOneCode() {
         this.default_height = 8;
         this.humanReadableLocation = HumanReadableLocation.NONE;
-        this.humanReadableAlignment = HumanReadableAlignment.LEFT; // spec section 2.4.2
+        this.humanReadableAlignment = TextAlignment.LEFT; // spec section 2.4.2
         this.moduleWidthRatio = 1.43;
         this.shortHeightPercentage = 0.25;
         this.longHeightPercentage = 0.625;
@@ -579,7 +582,7 @@ public class UspsOneCode extends Symbol {
                 break;
             }
 
-            Rectangle2D.Double rect = new Rectangle2D.Double(x, y, w, h);
+            Rectangle rect = new Rectangle(x, y, w, h);
             rectangles.add(rect);
 
             x += dx;

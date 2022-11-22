@@ -16,20 +16,20 @@
 
 package uk.org.okapibarcode.output;
 
-import static uk.org.okapibarcode.backend.HumanReadableAlignment.CENTER;
-import static uk.org.okapibarcode.backend.HumanReadableAlignment.JUSTIFY;
+import static uk.org.okapibarcode.graphics.TextAlignment.CENTER;
+import static uk.org.okapibarcode.graphics.TextAlignment.JUSTIFY;
 import static uk.org.okapibarcode.util.Doubles.roughlyEqual;
 
-import java.awt.Color;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import uk.org.okapibarcode.backend.Hexagon;
-import uk.org.okapibarcode.backend.HumanReadableAlignment;
 import uk.org.okapibarcode.backend.Symbol;
-import uk.org.okapibarcode.backend.TextBox;
+import uk.org.okapibarcode.graphics.Circle;
+import uk.org.okapibarcode.graphics.Color;
+import uk.org.okapibarcode.graphics.Hexagon;
+import uk.org.okapibarcode.graphics.Rectangle;
+import uk.org.okapibarcode.graphics.TextAlignment;
+import uk.org.okapibarcode.graphics.TextBox;
 
 /**
  * Renders symbologies to EPS (Encapsulated PostScript).
@@ -105,33 +105,33 @@ public class PostScriptRenderer implements SymbolRenderer {
 
             // Background
             writer.append("newpath\n");
-            writer.append(ink.getRed() / 255.0).append(" ")
-                  .append(ink.getGreen() / 255.0).append(" ")
-                  .append(ink.getBlue() / 255.0).append(" setrgbcolor\n");
-            writer.append(paper.getRed() / 255.0).append(" ")
-                  .append(paper.getGreen() / 255.0).append(" ")
-                  .append(paper.getBlue() / 255.0).append(" setrgbcolor\n");
+            writer.append(ink.red / 255.0).append(" ")
+                  .append(ink.green / 255.0).append(" ")
+                  .append(ink.blue / 255.0).append(" setrgbcolor\n");
+            writer.append(paper.red / 255.0).append(" ")
+                  .append(paper.green / 255.0).append(" ")
+                  .append(paper.blue / 255.0).append(" setrgbcolor\n");
             writer.append(height).append(" 0.00 TB 0.00 ").append(width).append(" TR\n");
 
             // Rectangles
             for (int i = 0; i < symbol.getRectangles().size(); i++) {
-                Rectangle2D.Double rect = symbol.getRectangles().get(i);
+                Rectangle rect = symbol.getRectangles().get(i);
                 if (i == 0) {
                     writer.append("TE\n");
-                    writer.append(ink.getRed() / 255.0).append(" ")
-                          .append(ink.getGreen() / 255.0).append(" ")
-                          .append(ink.getBlue() / 255.0).append(" setrgbcolor\n");
+                    writer.append(ink.red / 255.0).append(" ")
+                          .append(ink.green / 255.0).append(" ")
+                          .append(ink.blue / 255.0).append(" setrgbcolor\n");
                     writer.append(rect.height * magnification).append(" ")
                           .append(height - ((rect.y + rect.height) * magnification) - marginY).append(" TB ")
                           .append((rect.x * magnification) + marginX).append(" ")
                           .append(rect.width * magnification).append(" TR\n");
                 } else {
-                    Rectangle2D.Double prev = symbol.getRectangles().get(i - 1);
+                    Rectangle prev = symbol.getRectangles().get(i - 1);
                     if (!roughlyEqual(rect.height, prev.height) || !roughlyEqual(rect.y, prev.y)) {
                         writer.append("TE\n");
-                        writer.append(ink.getRed() / 255.0).append(" ")
-                              .append(ink.getGreen() / 255.0).append(" ")
-                              .append(ink.getBlue() / 255.0).append(" setrgbcolor\n");
+                        writer.append(ink.red / 255.0).append(" ")
+                              .append(ink.green / 255.0).append(" ")
+                              .append(ink.blue / 255.0).append(" setrgbcolor\n");
                         writer.append(rect.height * magnification).append(" ")
                               .append(height - ((rect.y + rect.height) * magnification) - marginY).append(" ");
                     }
@@ -142,12 +142,12 @@ public class PostScriptRenderer implements SymbolRenderer {
             // Text
             for (int i = 0; i < symbol.getTexts().size(); i++) {
                 TextBox text = symbol.getTexts().get(i);
-                HumanReadableAlignment alignment = (text.alignment == JUSTIFY && text.text.length() == 1 ? CENTER : text.alignment);
+                TextAlignment alignment = (text.alignment == JUSTIFY && text.text.length() == 1 ? CENTER : text.alignment);
                 if (i == 0) {
-                    writer.append("TE\n");;
-                    writer.append(ink.getRed() / 255.0).append(" ")
-                          .append(ink.getGreen() / 255.0).append(" ")
-                          .append(ink.getBlue() / 255.0).append(" setrgbcolor\n");
+                    writer.append("TE\n");
+                    writer.append(ink.red / 255.0).append(" ")
+                          .append(ink.green / 255.0).append(" ")
+                          .append(ink.blue / 255.0).append(" setrgbcolor\n");
                 }
                 writer.append("matrix currentmatrix\n");
                 writer.append("/").append(symbol.getFontName()).append(" findfont\n");
@@ -196,23 +196,23 @@ public class PostScriptRenderer implements SymbolRenderer {
             // Circles
             // Because MaxiCode size is fixed, this ignores magnification
             for (int i = 0; i < symbol.getTarget().size(); i += 2) {
-                Ellipse2D.Double ellipse1 = symbol.getTarget().get(i);
-                Ellipse2D.Double ellipse2 = symbol.getTarget().get(i + 1);
+                Circle circle1 = symbol.getTarget().get(i);
+                Circle circle2 = symbol.getTarget().get(i + 1);
                 if (i == 0) {
                     writer.append("TE\n");
-                    writer.append(ink.getRed() / 255.0).append(" ")
-                          .append(ink.getGreen() / 255.0).append(" ")
-                          .append(ink.getBlue() / 255.0).append(" setrgbcolor\n");
-                    writer.append(ink.getRed() / 255.0).append(" ")
-                          .append(ink.getGreen() / 255.0).append(" ")
-                          .append(ink.getBlue() / 255.0).append(" setrgbcolor\n");
+                    writer.append(ink.red / 255.0).append(" ")
+                          .append(ink.green / 255.0).append(" ")
+                          .append(ink.blue / 255.0).append(" setrgbcolor\n");
+                    writer.append(ink.red / 255.0).append(" ")
+                          .append(ink.green / 255.0).append(" ")
+                          .append(ink.blue / 255.0).append(" setrgbcolor\n");
                 }
-                double x1 = ellipse1.x + (ellipse1.width / 2);
-                double x2 = ellipse2.x + (ellipse2.width / 2);
-                double y1 = height - ellipse1.y - (ellipse1.width / 2);
-                double y2 = height - ellipse2.y - (ellipse2.width / 2);
-                double r1 = ellipse1.width / 2;
-                double r2 = ellipse2.width / 2;
+                double x1 = circle1.centreX;
+                double x2 = circle2.centreX;
+                double y1 = height - circle1.centreY;
+                double y2 = height - circle2.centreY;
+                double r1 = circle1.radius;
+                double r2 = circle2.radius;
                 writer.append(x1 + marginX)
                       .append(" ").append(y1 - marginY)
                       .append(" ").append(r1)

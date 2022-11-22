@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.org.okapibarcode.backend;
+package uk.org.okapibarcode.graphics;
 
 /**
- * Calculate a set of points to make a hexagon
+ * A hexagonal shape.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
-public class Hexagon {
+public final class Hexagon {
 
     private static final double INK_SPREAD = 1.25;
 
@@ -39,5 +39,11 @@ public class Hexagon {
             pointX[i] = centreX + (OFFSET_X[i] * INK_SPREAD);
             pointY[i] = centreY + (OFFSET_Y[i] * INK_SPREAD);
         }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public String toString() {
+        return "Hexagon[centreX=" + centreX + ", centreY=" + centreY + "]";
     }
 }

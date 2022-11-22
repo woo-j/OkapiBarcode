@@ -23,6 +23,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
+import uk.org.okapibarcode.graphics.Color;
 import uk.org.okapibarcode.output.PostScriptRenderer;
 import uk.org.okapibarcode.output.SvgRenderer;
 
@@ -34,6 +35,7 @@ import uk.org.okapibarcode.output.SvgRenderer;
 public class SaveImage {
 
     public void save(File file, JPanel panel) throws IOException {
+
         String extension;
         int i = file.getName().lastIndexOf('.');
         if (i > 0) {
@@ -41,6 +43,9 @@ public class SaveImage {
         } else {
             extension = "png";
         }
+
+        Color paper = new Color(OkapiUI.paperColour.getRGB());
+        Color ink = new Color(OkapiUI.inkColour.getRGB());
 
         switch (extension) {
             case "png":
@@ -54,11 +59,11 @@ public class SaveImage {
                 ImageIO.write(bi, extension, file);
                 break;
             case "svg":
-                SvgRenderer svg = new SvgRenderer(new FileOutputStream(file), OkapiUI.factor, OkapiUI.paperColour, OkapiUI.inkColour, true);
+                SvgRenderer svg = new SvgRenderer(new FileOutputStream(file), OkapiUI.factor, paper, ink, true);
                 svg.render(OkapiUI.symbol);
                 break;
             case "eps":
-                PostScriptRenderer eps = new PostScriptRenderer(new FileOutputStream(file), OkapiUI.factor, OkapiUI.paperColour, OkapiUI.inkColour);
+                PostScriptRenderer eps = new PostScriptRenderer(new FileOutputStream(file), OkapiUI.factor, paper, ink);
                 eps.render(OkapiUI.symbol);
                 break;
             default:

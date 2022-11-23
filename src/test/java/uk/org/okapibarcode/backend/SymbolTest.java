@@ -402,12 +402,9 @@ public class SymbolTest {
                 String c = maxicode.getContent();
                 char gs = '\u001D';
                 int i = (maxicode.getMode() == 2 ? 9 : 6);
-                String s2 = c.substring(0, 9) + p.substring(0, i) + gs + p.substring(9, 12) + gs + p.substring(12) + gs + c.substring(9);
-                // TODO: ZXing bug, remove hack once fix is released: https://github.com/zxing/zxing/issues/1543
-                return s2.replace('\r', '\n');
+                return c.substring(0, 9) + p.substring(0, i) + gs + p.substring(9, 12) + gs + p.substring(12) + gs + c.substring(9);
             } else {
-                // TODO: ZXing bug, remove hack once fix is released: https://github.com/zxing/zxing/issues/1543
-                return s.replace('\r', '\n');
+                return s;
             }
         } else if (symbol instanceof Code2Of5) {
             Code2Of5 tof = (Code2Of5) symbol;

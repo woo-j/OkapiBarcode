@@ -8,7 +8,6 @@ import java.awt.image.BufferedImage;
 
 import com.code_intelligence.jazzer.api.FuzzedDataProvider;
 import com.code_intelligence.jazzer.junit.FuzzTest;
-import com.google.zxing.NotFoundException;
 import com.google.zxing.Reader;
 import com.google.zxing.Result;
 import com.google.zxing.oned.UPCAReader;
@@ -40,6 +39,7 @@ public class UpcFuzzer {
 
         Upc symbol = new Upc();
         symbol.setMode(mode);
+        symbol.setQuietZoneHorizontal(12);
         try {
             symbol.setContent(content);
         } catch (OkapiException e) {
@@ -48,15 +48,12 @@ public class UpcFuzzer {
         }
 
         BufferedImage image = draw(symbol);
+        Reader reader = (mode == Mode.UPCA ? new UPCAReader() : new UPCEReader());
+        Result result = decode(image, reader);
+        String output = result.getText();
+        output = output.substring(0, output.length() - 1); // remove check digit (wasn't part of the input but ZXing includes it)
 
-        try {
-            Reader reader = (mode == Mode.UPCA ? new UPCAReader() : new UPCEReader());
-            Result result = decode(image, reader);
-            String output = result.getText();
-            assertEqual(content, output, content, mode);
-        } catch (NotFoundException e) {
-            // expected sometimes, because we're testing UPC-A and UPC-E at the same time, and also
-            // because Okapi is more lenient about what it encodes than ZXing is about what it decodes
-        }
+        String input = symbol.getContent(); // compare against corrected input
+        assertEqual(input, output, content, mode);
     }
 }

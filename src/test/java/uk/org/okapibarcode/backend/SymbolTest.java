@@ -580,7 +580,7 @@ public class SymbolTest {
      * @param symbol the symbol to draw
      * @return the resultant image
      */
-    private static BufferedImage draw(Symbol symbol) {
+    public static BufferedImage draw(Symbol symbol) {
 
         int magnification = 10;
         int width = symbol.getWidth() * magnification;
@@ -605,7 +605,7 @@ public class SymbolTest {
      * @return the reading result
      * @throws ReaderException if any error occurs during reading
      */
-    private static Result decode(BufferedImage image, Reader reader) throws ReaderException {
+    public static Result decode(BufferedImage image, Reader reader) throws ReaderException {
         LuminanceSource source = new BufferedImageLuminanceSource(image);
         BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
         Map< DecodeHintType, Boolean > hints = new HashMap<>();
@@ -738,6 +738,35 @@ public class SymbolTest {
             return files;
         } else {
             return new File[0];
+        }
+    }
+
+    /**
+     * Verifies that the specified actual value matches the specified expected value, where the actual
+     * value was generated using the specified inputs.
+     *
+     * @param expected the expected value
+     * @param actual the actual value
+     * @param inputs the inputs used to generate the actual value
+     */
+    public static void assertEqual(String expected, String actual, Object... inputs) {
+        if (!expected.equals(actual)) {
+            StringBuilder msg = new StringBuilder(100);
+            msg.append('"').append(toPrintableAscii(expected)).append("\" != \"");
+            msg.append(toPrintableAscii(actual)).append("\" for inputs (");
+            for (int i = 0; i < inputs.length; i++) {
+                Object input = inputs[i];
+                if (input instanceof String s) {
+                    msg.append('"').append(toPrintableAscii(s)).append('"');
+                } else {
+                    msg.append(input);
+                }
+                if (i + 1 < inputs.length) {
+                    msg.append(", ");
+                }
+            }
+            msg.append(")");
+            throw new AssertionFailedError(msg.toString());
         }
     }
 

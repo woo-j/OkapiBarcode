@@ -14,6 +14,7 @@ dependencies {
     implementation 'com.beust:jcommander:1.82'
     testImplementation 'com.google.zxing:javase:3.5.1'
     testImplementation 'org.reflections:reflections:0.9.10'
+    testImplementation 'com.code-intelligence:jazzer-junit:0.16.1'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
     testImplementation 'org.junit.jupiter:junit-jupiter-params:5.9.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
@@ -37,13 +38,25 @@ jar {
 
 test {
     useJUnitPlatform()
+    // only run unit tests, not fuzz tests (even in regression mode, fuzz tests
+    // can take a long time to run with a large enough ".cifuzz-corpus" directory)
+    filter.excludeTestsMatching "*Fuzzer"
 }
 
-// enable JaCoCo XML output for Codecov, and exclude GUI classes from the coverage reports
+task fuzz(type: Test) {
+    useJUnitPlatform()
+    filter.includeTestsMatching "*Fuzzer" // only run fuzz tests, not regular unit tests
+    forkEvery = 1 // must run each fuzz test in a separate process, due to libfuzzer global state
+    environment "JAZZER_FUZZ", "1" // setting environment variable enables Jazzer's fuzzing mode
+    outputs.upToDateWhen { false } // always fuzz test when requested, even if no code has changed
+}
+
 jacocoTestReport {
+    // for Codecov: enable JaCoCo XML output
     reports {
         xml.required = true
     }
+    // for Codecov: exclude GUI classes from the coverage reports
     afterEvaluate {
         classDirectories.setFrom(files(classDirectories.files.collect {
             fileTree(dir: it, exclude: [
@@ -52,6 +65,8 @@ jacocoTestReport {
             ])
         }))
     }
+    // for fuzzing: include *all* available JaCoCo coverage data in the report, not just the standard unit test data
+    executionData { tasks.withType(Test).findAll { it.jacoco.destinationFile.exists() }*.jacoco.destinationFile }
 }
 
 wrapper {

@@ -29,8 +29,14 @@ import java.util.Arrays;
  */
 public class DataMatrix extends Symbol {
 
+    /** Whether or not to try to force the symbol to use a particular shape. */
     public enum ForceMode {
-        NONE, SQUARE, RECTANGULAR
+        /** Do not try to force the symbol to use a particular shape. */
+        NONE,
+        /** Try to force the symbol to be a square (width = height). */
+        SQUARE,
+        /** Try to force the symbol to be a rectangle (width > height). */
+        RECTANGULAR
     }
 
     private enum Mode {
@@ -139,7 +145,8 @@ public class DataMatrix extends Symbol {
     private int codewordCount;
 
     /**
-     * Forces the symbol to be either square or rectangular (non-square).
+     * Forces the symbol to be either square or rectangular (non-square). Used only
+     * if a {@link #getPreferredSize() preferred size} has not been specified.
      *
      * @param forceMode the force mode to use
      */
@@ -148,7 +155,8 @@ public class DataMatrix extends Symbol {
     }
 
     /**
-     * Returns the force mode used by this symbol.
+     * Returns the force mode used by this symbol. Used only if a
+     * {@link #getPreferredSize() preferred size} has not been specified.
      *
      * @return the force mode used by this symbol
      */
@@ -159,7 +167,7 @@ public class DataMatrix extends Symbol {
     /**
      * Sets the preferred symbol size according to the values in the following
      * table. Values may be ignored if the data is too big to fit in the
-     * specified symbol, or if {@link #setForceMode(ForceMode)} has been invoked.
+     * specified symbol.
      *
      * <table>
      * <tbody>
@@ -1074,8 +1082,7 @@ public class DataMatrix extends Symbol {
         switch (last_mode) {
             case DM_C40:
             case DM_TEXT:
-                if (process_p == 1) // 1 data character left to encode.
-                {
+                if (process_p == 1) { // 1 data character left to encode
                     if (symbols_left > 1) {
                         target[tp] = 254; // Unlatch and encode remaining data in ASCII
                         tp++;
@@ -1084,8 +1091,7 @@ public class DataMatrix extends Symbol {
                     target[tp] = inputData[inputlen - 1] + 1;
                     infoSpace(target[tp] - 1);
                     tp++;
-                } else if (process_p == 2) // 2 data characters left to encode
-                {
+                } else if (process_p == 2) { // 2 data characters left to encode
                     // Pad with shift 1 value (0) and encode as double.
                     int intValue = (1600 * process_buffer[0]) + (40 * process_buffer[1]) + 1; // ie (0 + 1).
                     target[tp] = (intValue / 256);
@@ -1119,7 +1125,6 @@ public class DataMatrix extends Symbol {
                         tp++;
                         info("ASC ");
                     }
-
                     if (process_p == 1) {
                         target[tp] = inputData[inputlen - 1] + 1;
                         infoSpace(target[tp] - 1);
@@ -1136,14 +1141,13 @@ public class DataMatrix extends Symbol {
                 break;
 
             case DM_EDIFACT:
-                if (symbols_left <= 2) // Unlatch not required, encode directly in ASCII
-                {
+                if (symbols_left <= 2) {
+                    // Unlatch not required, encode directly in ASCII
                     if (process_p == 1) {
                         target[tp] = inputData[inputlen - 1] + 1;
                         infoSpace(target[tp] - 1);
                         tp++;
                     }
-
                     if (process_p == 2) {
                         target[tp] = inputData[inputlen - 2] + 1;
                         infoSpace(target[tp] - 1);

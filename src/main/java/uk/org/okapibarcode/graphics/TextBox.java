@@ -54,8 +54,8 @@ public final class TextBox {
         this.x = x;
         this.y = y;
         this.width = width;
-        this.text = text;
-        this.alignment = alignment;
+        this.text = Objects.requireNonNull(text);
+        this.alignment = Objects.requireNonNull(alignment);
     }
 
     /** {@inheritDoc} */

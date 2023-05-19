@@ -16,6 +16,8 @@
 
 package uk.org.okapibarcode.graphics;
 
+import java.util.Objects;
+
 /**
  * A rectangular shape.
  *
@@ -48,6 +50,22 @@ public final class Rectangle {
         this.y = y;
         this.width = width;
         this.height = height;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof Rectangle)) {
+            return false;
+        }
+        Rectangle r = (Rectangle) other;
+        return x == r.x && y == r.y && width == r.width && height == r.height;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y, width, height);
     }
 
     /** {@inheritDoc} */

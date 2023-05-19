@@ -46,14 +46,17 @@ public final class Color {
         this.blue = rgb & 0xFF;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object other) {
-        return other instanceof Color
-            && ((Color) other).red == red
-            && ((Color) other).green == green
-            && ((Color) other).blue == blue;
+        if (!(other instanceof Color)) {
+            return false;
+        }
+        Color c = (Color) other;
+        return red == c.red && green == c.green && blue == c.blue;
     }
 
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         return Objects.hash(red, green, blue);

@@ -15,6 +15,8 @@
  */
 package uk.org.okapibarcode.graphics;
 
+import java.util.Objects;
+
 /**
  * A hexagonal shape.
  *
@@ -39,6 +41,22 @@ public final class Hexagon {
             pointX[i] = centreX + (OFFSET_X[i] * INK_SPREAD);
             pointY[i] = centreY + (OFFSET_Y[i] * INK_SPREAD);
         }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof Hexagon)) {
+            return false;
+        }
+        Hexagon h = (Hexagon) other;
+        return centreX == h.centreX && centreY == h.centreY;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public int hashCode() {
+        return Objects.hash(centreX, centreY);
     }
 
     /** {@inheritDoc} */

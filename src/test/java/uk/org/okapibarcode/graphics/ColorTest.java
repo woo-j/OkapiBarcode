@@ -36,8 +36,14 @@ public class ColorTest {
         Color color3 = new Color(new java.awt.Color(-16711165).getRGB());
         assertEqual(color1, color3);
 
-        Color color4 = Color.BLACK;
-        assertNotEqual(color1, color4);
+        assertNotEqual(color1, Color.BLACK);
+        assertNotEqual(color1, new Color(9, 2, 3));
+        assertNotEqual(color1, new Color(1, 9, 3));
+        assertNotEqual(color1, new Color(1, 2, 9));
+
+        Object obj = new Object();
+        assertNotEquals(color1, obj);
+        assertNotEquals(obj, color1);
     }
 
     private static void assertEqual(Color color1, Color color2) {
@@ -50,9 +56,6 @@ public class ColorTest {
     }
 
     private static void assertNotEqual(Color color1, Color color2) {
-        assertNotEquals(color1.red, color2.red);
-        assertNotEquals(color1.green, color2.green);
-        assertNotEquals(color1.blue, color2.blue);
         assertNotEquals(color1, color2);
         assertNotEquals(color1.hashCode(), color2.hashCode());
         assertNotEquals(color1.toString(), color2.toString());

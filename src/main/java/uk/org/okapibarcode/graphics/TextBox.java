@@ -16,6 +16,8 @@
 
 package uk.org.okapibarcode.graphics;
 
+import java.util.Objects;
+
 /**
  * A simple text item class.
  *
@@ -54,6 +56,22 @@ public final class TextBox {
         this.width = width;
         this.text = text;
         this.alignment = alignment;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof TextBox)) {
+            return false;
+        }
+        TextBox t = (TextBox) other;
+        return x == t.x && y == t.y && width == t.width && Objects.equals(text, t.text) && alignment == t.alignment;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y, width, text, alignment);
     }
 
     /** {@inheritDoc} */

@@ -15,6 +15,8 @@
  */
 package uk.org.okapibarcode.graphics;
 
+import java.util.Objects;
+
 /**
  * A circle.
  *
@@ -30,6 +32,22 @@ public final class Circle {
         this.centreX = centreX;
         this.centreY = centreY;
         this.radius = radius;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof Circle)) {
+            return false;
+        }
+        Circle c = (Circle) other;
+        return centreX == c.centreX && centreY == c.centreY && radius == c.radius;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public int hashCode() {
+        return Objects.hash(centreX, centreY, radius);
     }
 
     /** {@inheritDoc} */

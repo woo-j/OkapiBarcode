@@ -431,6 +431,7 @@ public class SymbolTest {
      * @param result the ZXing result to check
      */
     private void verifyMetadata(Symbol symbol, Result result) {
+
         if (symbol instanceof Pdf417) {
             Pdf417 pdf417 = (Pdf417) symbol;
             if (pdf417.getStructuredAppendTotal() > 1) {
@@ -442,6 +443,17 @@ public class SymbolTest {
                 assertEquals(pdf417.getStructuredAppendFileName(), metadata.getFileName());
                 assertEquals(pdf417.getStructuredAppendIncludeSegmentCount() ? pdf417.getStructuredAppendTotal() : -1, metadata.getSegmentCount());
             }
+        }
+
+        // TODO: remove MaxiCode check once ZXing 3.5.3 is released (see https://github.com/zxing/zxing/pull/1671)
+        Integer errors = (Integer) result.getResultMetadata().get(ResultMetadataType.ERRORS_CORRECTED);
+        if (errors != null && !(symbol instanceof MaxiCode)) {
+            assertEquals(0, errors);
+        }
+
+        Integer erasures = (Integer) result.getResultMetadata().get(ResultMetadataType.ERASURES_CORRECTED);
+        if (erasures != null) {
+            assertEquals(0, erasures);
         }
     }
 

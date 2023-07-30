@@ -8,8 +8,6 @@ import java.awt.image.BufferedImage;
 
 import com.code_intelligence.jazzer.api.FuzzedDataProvider;
 import com.code_intelligence.jazzer.junit.FuzzTest;
-import com.google.zxing.ChecksumException;
-import com.google.zxing.NotFoundException;
 import com.google.zxing.Result;
 import com.google.zxing.pdf417.PDF417Reader;
 
@@ -68,22 +66,9 @@ public class Pdf417Fuzzer {
             return;
         }
 
-        int eci = symbol.getEciMode();
-        if (eci == 8 || eci == 10 || eci == 12 || eci == 13 || eci == 16) {
-            // ZXing does not currently support these ECIs: https://github.com/zxing/zxing/pull/1625
-            return;
-        }
-
-        String output;
-        try {
-            BufferedImage image = draw(symbol);
-            Result result = decode(image, new PDF417Reader());
-            output = result.getText();
-        } catch (NotFoundException | ChecksumException e) {
-            // ZXing sometimes fails to recognize Compact PDF417: https://github.com/zxing/zxing/issues/1624
-            if (mode == Mode.TRUNCATED) return;
-            else throw e;
-        }
+        BufferedImage image = draw(symbol);
+        Result result = decode(image, new PDF417Reader());
+        String output = result.getText();
 
         String input = switch (type) {
             case ECI -> content;

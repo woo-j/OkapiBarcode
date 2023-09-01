@@ -101,7 +101,7 @@ public class DataBarExpanded extends Symbol {
         13, 14, 11, 12, 17, 18, 15, 16, 21, 22, 19, 20
     };
 
-    private enum EncodeMode {
+    protected enum EncodeMode {
         NUMERIC, ALPHA, ISOIEC, INVALID_CHAR, ANY_ENC, ALPHA_OR_ISO
     }
 
@@ -1105,7 +1105,7 @@ public class DataBarExpanded extends Symbol {
     }
 
     /** Attempts to apply encoding rules from sections 7.2.5.5.1 to 7.2.5.5.3 of ISO/IEC 24724:2006 */
-    private static boolean applyGeneralFieldRules(EncodeMode[] generalFieldType) {
+    protected static boolean applyGeneralFieldRules(EncodeMode[] generalFieldType) {
 
         int block_count, i, j, k;
         EncodeMode current, next, last;

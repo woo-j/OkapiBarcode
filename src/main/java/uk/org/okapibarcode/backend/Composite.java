@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import uk.org.okapibarcode.backend.DataBar14.Mode;
+import uk.org.okapibarcode.backend.DataBarExpanded.EncodeMode;
 import uk.org.okapibarcode.graphics.Rectangle;
 import uk.org.okapibarcode.graphics.TextBox;
 
@@ -62,10 +63,6 @@ public class Composite extends Symbol {
          * is {@link LinearEncoding#CODE_128 Code 128}.
          */
         CC_C
-    }
-
-    private static enum GeneralFieldMode {
-        NUMERIC, ALPHA, ISOIEC, INVALID_CHAR, ANY_ENC, ALPHA_OR_ISO
     }
 
     /* CC-A component coefficients from ISO/IEC 24728:2006 Annex F */
@@ -489,7 +486,7 @@ public class Composite extends Symbol {
     private int ecc;
     private LinearEncoding symbology = LinearEncoding.CODE_128;
     private int[] general_field;
-    private GeneralFieldMode[] general_field_type;
+    private EncodeMode[] general_field_type;
     private int cc_width;
     private int[][] pwr928 = new int[69][7];
     private int[] codeWords = new int[180];
@@ -1533,69 +1530,69 @@ public class Composite extends Symbol {
         if (general_field.length != 0) {
 
             alpha_pad = 0;
-            general_field_type = new GeneralFieldMode[general_field.length];
+            general_field_type = new EncodeMode[general_field.length];
 
             for (i = 0; i < general_field.length; i++) {
 
                 /* Table 13 - ISO/IEC 646 encodation */
                 if (general_field[i] == FNC1) {
                     /* FNC1 can be encoded in any system */
-                    general_field_type[i] = GeneralFieldMode.ANY_ENC;
+                    general_field_type[i] = EncodeMode.ANY_ENC;
                 } else if (general_field[i] < ' ' || general_field[i] > 'z') {
-                    general_field_type[i] = GeneralFieldMode.INVALID_CHAR;
+                    general_field_type[i] = EncodeMode.INVALID_CHAR;
                     latch = true;
                 } else {
-                    general_field_type[i] = GeneralFieldMode.ISOIEC;
+                    general_field_type[i] = EncodeMode.ISOIEC;
                 }
 
                 if (general_field[i] == '#') {
-                    general_field_type[i] = GeneralFieldMode.INVALID_CHAR;
+                    general_field_type[i] = EncodeMode.INVALID_CHAR;
                     latch = true;
                 }
                 if (general_field[i] == '$') {
-                    general_field_type[i] = GeneralFieldMode.INVALID_CHAR;
+                    general_field_type[i] = EncodeMode.INVALID_CHAR;
                     latch = true;
                 }
                 if (general_field[i] == '@') {
-                    general_field_type[i] = GeneralFieldMode.INVALID_CHAR;
+                    general_field_type[i] = EncodeMode.INVALID_CHAR;
                     latch = true;
                 }
                 if (general_field[i] == 92) {
-                    general_field_type[i] = GeneralFieldMode.INVALID_CHAR;
+                    general_field_type[i] = EncodeMode.INVALID_CHAR;
                     latch = true;
                 }
                 if (general_field[i] == '^') {
-                    general_field_type[i] = GeneralFieldMode.INVALID_CHAR;
+                    general_field_type[i] = EncodeMode.INVALID_CHAR;
                     latch = true;
                 }
                 if (general_field[i] == 96) {
-                    general_field_type[i] = GeneralFieldMode.INVALID_CHAR;
+                    general_field_type[i] = EncodeMode.INVALID_CHAR;
                     latch = true;
                 }
 
                 /* Table 12 - Alphanumeric encodation */
                 if (general_field[i] >= 'A' && general_field[i] <= 'Z') {
-                    general_field_type[i] = GeneralFieldMode.ALPHA_OR_ISO;
+                    general_field_type[i] = EncodeMode.ALPHA_OR_ISO;
                 }
                 if (general_field[i] == '*') {
-                    general_field_type[i] = GeneralFieldMode.ALPHA_OR_ISO;
+                    general_field_type[i] = EncodeMode.ALPHA_OR_ISO;
                 }
                 if (general_field[i] == ',') {
-                    general_field_type[i] = GeneralFieldMode.ALPHA_OR_ISO;
+                    general_field_type[i] = EncodeMode.ALPHA_OR_ISO;
                 }
                 if (general_field[i] == '-') {
-                    general_field_type[i] = GeneralFieldMode.ALPHA_OR_ISO;
+                    general_field_type[i] = EncodeMode.ALPHA_OR_ISO;
                 }
                 if (general_field[i] == '.') {
-                    general_field_type[i] = GeneralFieldMode.ALPHA_OR_ISO;
+                    general_field_type[i] = EncodeMode.ALPHA_OR_ISO;
                 }
                 if (general_field[i] == '/') {
-                    general_field_type[i] = GeneralFieldMode.ALPHA_OR_ISO;
+                    general_field_type[i] = EncodeMode.ALPHA_OR_ISO;
                 }
 
                 /* Numeric encodation */
                 if (general_field[i] >= '0' && general_field[i] <= '9') {
-                    general_field_type[i] = GeneralFieldMode.ANY_ENC;
+                    general_field_type[i] = EncodeMode.ANY_ENC;
                 }
             }
 
@@ -1605,24 +1602,24 @@ public class Composite extends Symbol {
             }
 
             for (i = 0; i < general_field.length - 1; i++) {
-                if (general_field_type[i] == GeneralFieldMode.ISOIEC && general_field[i + 1] == FNC1) {
-                    general_field_type[i + 1] = GeneralFieldMode.ISOIEC;
+                if (general_field_type[i] == EncodeMode.ISOIEC && general_field[i + 1] == FNC1) {
+                    general_field_type[i + 1] = EncodeMode.ISOIEC;
                 }
             }
 
             for (i = 0; i < general_field.length - 1; i++) {
-                if (general_field_type[i] == GeneralFieldMode.ALPHA_OR_ISO && general_field[i + 1] == FNC1) {
-                    general_field_type[i + 1] = GeneralFieldMode.ALPHA_OR_ISO;
+                if (general_field_type[i] == EncodeMode.ALPHA_OR_ISO && general_field[i + 1] == FNC1) {
+                    general_field_type[i + 1] = EncodeMode.ALPHA_OR_ISO;
                 }
             }
 
-            latch = applyGeneralFieldRules();
+            latch = DataBarExpanded.applyGeneralFieldRules(general_field_type); // modifies input parameter
 
             i = 0;
             do {
                 switch (general_field_type[i]) {
                     case NUMERIC:
-                        if (i != 0 && general_field_type[i - 1] != GeneralFieldMode.NUMERIC && general_field[i - 1] != FNC1) {
+                        if (i != 0 && general_field_type[i - 1] != EncodeMode.NUMERIC && general_field[i - 1] != FNC1) {
                             binary_string.append("000"); /* Numeric latch */
                         }
                         if (general_field[i] != FNC1) {
@@ -1648,9 +1645,9 @@ public class Composite extends Symbol {
                         break;
 
                     case ALPHA:
-                        if (i == 0 || general_field_type[i - 1] == GeneralFieldMode.NUMERIC || general_field[i - 1] == FNC1) {
+                        if (i == 0 || general_field_type[i - 1] == EncodeMode.NUMERIC || general_field[i - 1] == FNC1) {
                             binary_string.append("0000"); /* Alphanumeric latch */
-                        } else if (general_field_type[i - 1] == GeneralFieldMode.ISOIEC) {
+                        } else if (general_field_type[i - 1] == EncodeMode.ISOIEC) {
                             binary_string.append("00100"); /* ISO/IEC 646 latch */
                         }
                         if (general_field[i] >= '0' && general_field[i] <= '9') {
@@ -1671,10 +1668,10 @@ public class Composite extends Symbol {
                         break;
 
                     case ISOIEC:
-                        if (i == 0 || general_field_type[i - 1] == GeneralFieldMode.NUMERIC || general_field[i - 1] == FNC1) {
+                        if (i == 0 || general_field_type[i - 1] == EncodeMode.NUMERIC || general_field[i - 1] == FNC1) {
                             binary_string.append("0000"); /* Alphanumeric latch */
                             binary_string.append("00100"); /* ISO/IEC 646 latch */
-                        } else if (general_field_type[i - 1] == GeneralFieldMode.ALPHA) {
+                        } else if (general_field_type[i - 1] == EncodeMode.ALPHA) {
                             binary_string.append("00100"); /* ISO/IEC 646 latch */
                         }
                         if (general_field[i] >= '0' && general_field[i] <= '9') {
@@ -1768,7 +1765,7 @@ public class Composite extends Symbol {
                 binary_string.append("11111");
                 alpha_pad = 0;
             }
-            if (general_field.length == 0 || general_field_type[general_field.length - 1] == GeneralFieldMode.NUMERIC) {
+            if (general_field.length == 0 || general_field_type[general_field.length - 1] == EncodeMode.NUMERIC) {
                 /* Latch from numeric to alphanumeric */
                 binary_string.append("0000");
             }
@@ -1819,122 +1816,6 @@ public class Composite extends Symbol {
             info(Integer.toHexString(nibble));
         }
         infoLine();
-    }
-
-    private boolean applyGeneralFieldRules() {
-        /* Attempts to apply encoding rules from sections 7.2.5.5.1 to 7.2.5.5.3
-         of ISO/IEC 24724:2006 */
-
-        int block_count, i, j, k;
-        GeneralFieldMode current, next, last;
-        int[] blockLength = new int[200];
-        GeneralFieldMode[] blockType = new GeneralFieldMode[200];
-
-        block_count = 0;
-
-        blockLength[block_count] = 1;
-        blockType[block_count] = general_field_type[0];
-
-        for (i = 1; i < general_field.length; i++) {
-            current = general_field_type[i];
-            last = general_field_type[i - 1];
-
-            if (current == last) {
-                blockLength[block_count] = blockLength[block_count] + 1;
-            } else {
-                block_count++;
-                blockLength[block_count] = 1;
-                blockType[block_count] = general_field_type[i];
-            }
-        }
-
-        block_count++;
-
-        for (i = 0; i < block_count; i++) {
-            current = blockType[i];
-            next = blockType[i + 1];
-
-            if ((current == GeneralFieldMode.ISOIEC) && (i != (block_count - 1))) {
-                if ((next == GeneralFieldMode.ANY_ENC) && (blockLength[i + 1] >= 4)) {
-                    blockType[i + 1] = GeneralFieldMode.NUMERIC;
-                }
-                if ((next == GeneralFieldMode.ANY_ENC) && (blockLength[i + 1] < 4)) {
-                    blockType[i + 1] = GeneralFieldMode.ISOIEC;
-                }
-                if ((next == GeneralFieldMode.ALPHA_OR_ISO) && (blockLength[i + 1] >= 5)) {
-                    blockType[i + 1] = GeneralFieldMode.ALPHA;
-                }
-                if ((next == GeneralFieldMode.ALPHA_OR_ISO) && (blockLength[i + 1] < 5)) {
-                    blockType[i + 1] = GeneralFieldMode.ISOIEC;
-                }
-            }
-
-            if (current == GeneralFieldMode.ALPHA_OR_ISO) {
-                blockType[i] = GeneralFieldMode.ALPHA;
-            }
-
-            if ((current == GeneralFieldMode.ALPHA) && (i != (block_count - 1))) {
-                if ((next == GeneralFieldMode.ANY_ENC) && (blockLength[i + 1] >= 6)) {
-                    blockType[i + 1] = GeneralFieldMode.NUMERIC;
-                }
-                if ((next == GeneralFieldMode.ANY_ENC) && (blockLength[i + 1] < 6)) {
-                    if ((i == block_count - 2) && (blockLength[i + 1] >= 4)) {
-                        blockType[i + 1] = GeneralFieldMode.NUMERIC;
-                    } else {
-                        blockType[i + 1] = GeneralFieldMode.ALPHA;
-                    }
-                }
-            }
-
-            if (current == GeneralFieldMode.ANY_ENC) {
-                blockType[i] = GeneralFieldMode.NUMERIC;
-            }
-        }
-
-        if (block_count > 1) {
-            i = 1;
-            while (i < block_count) {
-                if (blockType[i - 1] == blockType[i]) {
-                    /* bring together */
-                    blockLength[i - 1] = blockLength[i - 1] + blockLength[i];
-                    j = i + 1;
-
-                    /* decrease the list */
-                    while (j < block_count) {
-                        blockLength[j - 1] = blockLength[j];
-                        blockType[j - 1] = blockType[j];
-                        j++;
-                    }
-                    block_count--;
-                    i--;
-                }
-                i++;
-            }
-        }
-
-        for (i = 0; i < block_count - 1; i++) {
-            if ((blockType[i] == GeneralFieldMode.NUMERIC) && ((blockLength[i] & 1) != 0)) {
-                /* Odd size numeric block */
-                blockLength[i] = blockLength[i] - 1;
-                blockLength[i + 1] = blockLength[i + 1] + 1;
-            }
-        }
-
-        j = 0;
-        for (i = 0; i < block_count; i++) {
-            for (k = 0; k < blockLength[i]; k++) {
-                general_field_type[j] = blockType[i];
-                j++;
-            }
-        }
-
-        if ((blockType[block_count - 1] == GeneralFieldMode.NUMERIC) && ((blockLength[block_count - 1] & 1) != 0)) {
-            /* If the last block is numeric and an odd size, further
-             processing needs to be done outside this procedure */
-            return true;
-        } else {
-            return false;
-        }
     }
 
     private void cc_a() {

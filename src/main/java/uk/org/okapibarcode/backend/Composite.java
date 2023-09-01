@@ -1661,24 +1661,12 @@ public class Composite extends Symbol {
                             value = general_field[i] - 33;
                             binaryAppend(binary_string, value, 6);
                         }
-                        if (general_field[i] == FNC1) {
-                            binary_string.append("01111"); /* FNC1/Numeric latch */
-                        }
-                        if (general_field[i] == '*') {
-                            binary_string.append("111010"); /* asterisk */
-                        }
-                        if (general_field[i] == ',') {
-                            binary_string.append("111011"); /* comma */
-                        }
-                        if (general_field[i] == '-') {
-                            binary_string.append("111100"); /* minus or hyphen */
-                        }
-                        if (general_field[i] == '.') {
-                            binary_string.append("111101"); /* period or full stop */
-                        }
-                        if (general_field[i] == '/') {
-                            binary_string.append("111110"); /* slash or solidus */
-                        }
+                        if (general_field[i] == FNC1) binary_string.append("01111");  /* FNC1/Numeric latch */
+                        if (general_field[i] == '*')  binary_string.append("111010"); /* asterisk */
+                        if (general_field[i] == ',')  binary_string.append("111011"); /* comma */
+                        if (general_field[i] == '-')  binary_string.append("111100"); /* minus or hyphen */
+                        if (general_field[i] == '.')  binary_string.append("111101"); /* period or full stop */
+                        if (general_field[i] == '/')  binary_string.append("111110"); /* slash or solidus */
                         i++;
                         break;
 
@@ -1701,72 +1689,28 @@ public class Composite extends Symbol {
                             value = general_field[i] - 7;
                             binaryAppend(binary_string, value, 7);
                         }
-                        if (general_field[i] == FNC1) {
-                            binary_string.append("01111"); /* FNC1/Numeric latch */
-                        }
-                        if (general_field[i] == '!') {
-                            binary_string.append("11101000"); /* exclamation mark */
-                        }
-                        if (general_field[i] == 34) {
-                            binary_string.append("11101001"); /* quotation mark */
-                        }
-                        if (general_field[i] == 37) {
-                            binary_string.append("11101010"); /* percent sign */
-                        }
-                        if (general_field[i] == '&') {
-                            binary_string.append("11101011"); /* ampersand */
-                        }
-                        if (general_field[i] == 39) {
-                            binary_string.append("11101100"); /* apostrophe */
-                        }
-                        if (general_field[i] == '(') {
-                            binary_string.append("11101101"); /* left parenthesis */
-                        }
-                        if (general_field[i] == ')') {
-                            binary_string.append("11101110"); /* right parenthesis */
-                        }
-                        if (general_field[i] == '*') {
-                            binary_string.append("11101111"); /* asterisk */
-                        }
-                        if (general_field[i] == '+') {
-                            binary_string.append("11110000"); /* plus sign */
-                        }
-                        if (general_field[i] == ',') {
-                            binary_string.append("11110001"); /* comma */
-                        }
-                        if (general_field[i] == '-') {
-                            binary_string.append("11110010"); /* minus or hyphen */
-                        }
-                        if (general_field[i] == '.') {
-                            binary_string.append("11110011"); /* period or full stop */
-                        }
-                        if (general_field[i] == '/') {
-                            binary_string.append("11110100"); /* slash or solidus */
-                        }
-                        if (general_field[i] == ':') {
-                            binary_string.append("11110101"); /* colon */
-                        }
-                        if (general_field[i] == ';') {
-                            binary_string.append("11110110"); /* semicolon */
-                        }
-                        if (general_field[i] == '<') {
-                            binary_string.append("11110111"); /* less-than sign */
-                        }
-                        if (general_field[i] == '=') {
-                            binary_string.append("11111000"); /* equals sign */
-                        }
-                        if (general_field[i] == '>') {
-                            binary_string.append("11111001"); /* greater-than sign */
-                        }
-                        if (general_field[i] == '?') {
-                            binary_string.append("11111010"); /* question mark */
-                        }
-                        if (general_field[i] == '_') {
-                            binary_string.append("11111011"); /* underline or low line */
-                        }
-                        if (general_field[i] == ' ') {
-                            binary_string.append("11111100"); /* space */
-                        }
+                        if (general_field[i] == FNC1) binary_string.append("01111");    /* FNC1/Numeric latch */
+                        if (general_field[i] == '!')  binary_string.append("11101000"); /* exclamation mark */
+                        if (general_field[i] == 34)   binary_string.append("11101001"); /* quotation mark */
+                        if (general_field[i] == 37)   binary_string.append("11101010"); /* percent sign */
+                        if (general_field[i] == '&')  binary_string.append("11101011"); /* ampersand */
+                        if (general_field[i] == 39)   binary_string.append("11101100"); /* apostrophe */
+                        if (general_field[i] == '(')  binary_string.append("11101101"); /* left parenthesis */
+                        if (general_field[i] == ')')  binary_string.append("11101110"); /* right parenthesis */
+                        if (general_field[i] == '*')  binary_string.append("11101111"); /* asterisk */
+                        if (general_field[i] == '+')  binary_string.append("11110000"); /* plus sign */
+                        if (general_field[i] == ',')  binary_string.append("11110001"); /* comma */
+                        if (general_field[i] == '-')  binary_string.append("11110010"); /* minus or hyphen */
+                        if (general_field[i] == '.')  binary_string.append("11110011"); /* period or full stop */
+                        if (general_field[i] == '/')  binary_string.append("11110100"); /* slash or solidus */
+                        if (general_field[i] == ':')  binary_string.append("11110101"); /* colon */
+                        if (general_field[i] == ';')  binary_string.append("11110110"); /* semicolon */
+                        if (general_field[i] == '<')  binary_string.append("11110111"); /* less-than sign */
+                        if (general_field[i] == '=')  binary_string.append("11111000"); /* equals sign */
+                        if (general_field[i] == '>')  binary_string.append("11111001"); /* greater-than sign */
+                        if (general_field[i] == '?')  binary_string.append("11111010"); /* question mark */
+                        if (general_field[i] == '_')  binary_string.append("11111011"); /* underline or low line */
+                        if (general_field[i] == ' ')  binary_string.append("11111100"); /* space */
                         i++;
                         break;
                 }

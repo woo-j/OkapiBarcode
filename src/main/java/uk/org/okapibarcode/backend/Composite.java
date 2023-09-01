@@ -485,8 +485,6 @@ public class Composite extends Symbol {
     private StringBuilder binary_string;
     private int ecc;
     private LinearEncoding symbology = LinearEncoding.CODE_128;
-    private int[] general_field;
-    private EncodeMode[] general_field_type;
     private int cc_width;
     private int[][] pwr928 = new int[69][7];
     private int[] codeWords = new int[180];
@@ -1516,120 +1514,41 @@ public class Composite extends Symbol {
          rest of the data (if any) goes into a general-purpose data compaction field */
 
         j = 0;
+        int[] generalField;
         if (fnc1_latch == 1) {
             /* Encodation method "10" has been used but it is not followed by
              AI 10, so a FNC1 character needs to be added */
-            general_field = new int[inputData.length - read_posn + 1];
-            general_field[0] = FNC1;
-            System.arraycopy(inputData, read_posn, general_field, 1, general_field.length - 1);
+            generalField = new int[inputData.length - read_posn + 1];
+            generalField[0] = FNC1;
+            System.arraycopy(inputData, read_posn, generalField, 1, generalField.length - 1);
         } else {
-            general_field = Arrays.copyOfRange(inputData, read_posn, inputData.length);
+            generalField = Arrays.copyOfRange(inputData, read_posn, inputData.length);
         }
 
         latch = false;
-        if (general_field.length != 0) {
+        EncodeMode lastMode = EncodeMode.NUMERIC;
+
+        if (generalField.length != 0) {
 
             alpha_pad = 0;
-            general_field_type = new EncodeMode[general_field.length];
-
-            for (i = 0; i < general_field.length; i++) {
-
-                /* Table 13 - ISO/IEC 646 encodation */
-                if (general_field[i] == FNC1) {
-                    /* FNC1 can be encoded in any system */
-                    general_field_type[i] = EncodeMode.ANY_ENC;
-                } else if (general_field[i] < ' ' || general_field[i] > 'z') {
-                    general_field_type[i] = EncodeMode.INVALID_CHAR;
-                    latch = true;
-                } else {
-                    general_field_type[i] = EncodeMode.ISOIEC;
-                }
-
-                if (general_field[i] == '#') {
-                    general_field_type[i] = EncodeMode.INVALID_CHAR;
-                    latch = true;
-                }
-                if (general_field[i] == '$') {
-                    general_field_type[i] = EncodeMode.INVALID_CHAR;
-                    latch = true;
-                }
-                if (general_field[i] == '@') {
-                    general_field_type[i] = EncodeMode.INVALID_CHAR;
-                    latch = true;
-                }
-                if (general_field[i] == 92) {
-                    general_field_type[i] = EncodeMode.INVALID_CHAR;
-                    latch = true;
-                }
-                if (general_field[i] == '^') {
-                    general_field_type[i] = EncodeMode.INVALID_CHAR;
-                    latch = true;
-                }
-                if (general_field[i] == 96) {
-                    general_field_type[i] = EncodeMode.INVALID_CHAR;
-                    latch = true;
-                }
-
-                /* Table 12 - Alphanumeric encodation */
-                if (general_field[i] >= 'A' && general_field[i] <= 'Z') {
-                    general_field_type[i] = EncodeMode.ALPHA_OR_ISO;
-                }
-                if (general_field[i] == '*') {
-                    general_field_type[i] = EncodeMode.ALPHA_OR_ISO;
-                }
-                if (general_field[i] == ',') {
-                    general_field_type[i] = EncodeMode.ALPHA_OR_ISO;
-                }
-                if (general_field[i] == '-') {
-                    general_field_type[i] = EncodeMode.ALPHA_OR_ISO;
-                }
-                if (general_field[i] == '.') {
-                    general_field_type[i] = EncodeMode.ALPHA_OR_ISO;
-                }
-                if (general_field[i] == '/') {
-                    general_field_type[i] = EncodeMode.ALPHA_OR_ISO;
-                }
-
-                /* Numeric encodation */
-                if (general_field[i] >= '0' && general_field[i] <= '9') {
-                    general_field_type[i] = EncodeMode.ANY_ENC;
-                }
-            }
-
-            if (latch) {
-                /* Invalid characters in input data */
-                throw new OkapiException("Invalid characters in input data");
-            }
-
-            for (i = 0; i < general_field.length - 1; i++) {
-                if (general_field_type[i] == EncodeMode.ISOIEC && general_field[i + 1] == FNC1) {
-                    general_field_type[i + 1] = EncodeMode.ISOIEC;
-                }
-            }
-
-            for (i = 0; i < general_field.length - 1; i++) {
-                if (general_field_type[i] == EncodeMode.ALPHA_OR_ISO && general_field[i + 1] == FNC1) {
-                    general_field_type[i + 1] = EncodeMode.ALPHA_OR_ISO;
-                }
-            }
-
-            latch = DataBarExpanded.applyGeneralFieldRules(general_field_type); // modifies input parameter
+            EncodeMode[] generalFieldType = DataBarExpanded.getInitialEncodeModes(generalField);
+            latch = DataBarExpanded.applyGeneralFieldRules(generalFieldType); // modifies input parameter
 
             i = 0;
             do {
-                switch (general_field_type[i]) {
+                switch (generalFieldType[i]) {
                     case NUMERIC:
-                        if (i != 0 && general_field_type[i - 1] != EncodeMode.NUMERIC && general_field[i - 1] != FNC1) {
+                        if (i != 0 && generalFieldType[i - 1] != EncodeMode.NUMERIC && generalField[i - 1] != FNC1) {
                             binary_string.append("000"); /* Numeric latch */
                         }
-                        if (general_field[i] != FNC1) {
-                            d1 = general_field[i] - '0';
+                        if (generalField[i] != FNC1) {
+                            d1 = generalField[i] - '0';
                         } else {
                             d1 = 10;
                         }
-                        if (i < general_field.length - 1) {
-                            if (general_field[i + 1] != FNC1) {
-                                d2 = general_field[i + 1] - '0';
+                        if (i < generalField.length - 1) {
+                            if (generalField[i + 1] != FNC1) {
+                                d2 = generalField[i + 1] - '0';
                             } else {
                                 d2 = 10;
                             }
@@ -1642,73 +1561,76 @@ public class Composite extends Symbol {
                             binaryAppend(binary_string, value, 7);
                             i += 2;
                         }
+                        lastMode = EncodeMode.NUMERIC;
                         break;
 
                     case ALPHA:
-                        if (i == 0 || general_field_type[i - 1] == EncodeMode.NUMERIC || general_field[i - 1] == FNC1) {
+                        if (i == 0 || generalFieldType[i - 1] == EncodeMode.NUMERIC || generalField[i - 1] == FNC1) {
                             binary_string.append("0000"); /* Alphanumeric latch */
-                        } else if (general_field_type[i - 1] == EncodeMode.ISOIEC) {
+                        } else if (generalFieldType[i - 1] == EncodeMode.ISOIEC) {
                             binary_string.append("00100"); /* ISO/IEC 646 latch */
                         }
-                        if (general_field[i] >= '0' && general_field[i] <= '9') {
-                            value = general_field[i] - 43;
+                        if (generalField[i] >= '0' && generalField[i] <= '9') {
+                            value = generalField[i] - 43;
                             binaryAppend(binary_string, value, 5);
                         }
-                        if (general_field[i] >= 'A' && general_field[i] <= 'Z') {
-                            value = general_field[i] - 33;
+                        if (generalField[i] >= 'A' && generalField[i] <= 'Z') {
+                            value = generalField[i] - 33;
                             binaryAppend(binary_string, value, 6);
                         }
-                        if (general_field[i] == FNC1) binary_string.append("01111");  /* FNC1/Numeric latch */
-                        if (general_field[i] == '*')  binary_string.append("111010"); /* asterisk */
-                        if (general_field[i] == ',')  binary_string.append("111011"); /* comma */
-                        if (general_field[i] == '-')  binary_string.append("111100"); /* minus or hyphen */
-                        if (general_field[i] == '.')  binary_string.append("111101"); /* period or full stop */
-                        if (general_field[i] == '/')  binary_string.append("111110"); /* slash or solidus */
+                        if (generalField[i] == FNC1) binary_string.append("01111");  /* FNC1/Numeric latch */
+                        if (generalField[i] == '*')  binary_string.append("111010"); /* asterisk */
+                        if (generalField[i] == ',')  binary_string.append("111011"); /* comma */
+                        if (generalField[i] == '-')  binary_string.append("111100"); /* minus or hyphen */
+                        if (generalField[i] == '.')  binary_string.append("111101"); /* period or full stop */
+                        if (generalField[i] == '/')  binary_string.append("111110"); /* slash or solidus */
                         i++;
+                        lastMode = EncodeMode.ALPHA;
                         break;
 
                     case ISOIEC:
-                        if (i == 0 || general_field_type[i - 1] == EncodeMode.NUMERIC || general_field[i - 1] == FNC1) {
+                        if (i == 0 || generalFieldType[i - 1] == EncodeMode.NUMERIC || generalField[i - 1] == FNC1) {
                             binary_string.append("0000"); /* Alphanumeric latch */
                             binary_string.append("00100"); /* ISO/IEC 646 latch */
-                        } else if (general_field_type[i - 1] == EncodeMode.ALPHA) {
+                        } else if (generalFieldType[i - 1] == EncodeMode.ALPHA) {
                             binary_string.append("00100"); /* ISO/IEC 646 latch */
                         }
-                        if (general_field[i] >= '0' && general_field[i] <= '9') {
-                            value = general_field[i] - 43;
+                        if (generalField[i] >= '0' && generalField[i] <= '9') {
+                            value = generalField[i] - 43;
                             binaryAppend(binary_string, value, 5);
                         }
-                        if (general_field[i] >= 'A' && general_field[i] <= 'Z') {
-                            value = general_field[i] - 1;
+                        if (generalField[i] >= 'A' && generalField[i] <= 'Z') {
+                            value = generalField[i] - 1;
                             binaryAppend(binary_string, value, 7);
                         }
-                        if (general_field[i] >= 'a' && general_field[i] <= 'z') {
-                            value = general_field[i] - 7;
+                        if (generalField[i] >= 'a' && generalField[i] <= 'z') {
+                            value = generalField[i] - 7;
                             binaryAppend(binary_string, value, 7);
                         }
-                        if (general_field[i] == FNC1) binary_string.append("01111");    /* FNC1/Numeric latch */
-                        if (general_field[i] == '!')  binary_string.append("11101000"); /* exclamation mark */
-                        if (general_field[i] == 34)   binary_string.append("11101001"); /* quotation mark */
-                        if (general_field[i] == 37)   binary_string.append("11101010"); /* percent sign */
-                        if (general_field[i] == '&')  binary_string.append("11101011"); /* ampersand */
-                        if (general_field[i] == 39)   binary_string.append("11101100"); /* apostrophe */
-                        if (general_field[i] == '(')  binary_string.append("11101101"); /* left parenthesis */
-                        if (general_field[i] == ')')  binary_string.append("11101110"); /* right parenthesis */
-                        if (general_field[i] == '*')  binary_string.append("11101111"); /* asterisk */
-                        if (general_field[i] == '+')  binary_string.append("11110000"); /* plus sign */
-                        if (general_field[i] == ',')  binary_string.append("11110001"); /* comma */
-                        if (general_field[i] == '-')  binary_string.append("11110010"); /* minus or hyphen */
-                        if (general_field[i] == '.')  binary_string.append("11110011"); /* period or full stop */
-                        if (general_field[i] == '/')  binary_string.append("11110100"); /* slash or solidus */
-                        if (general_field[i] == ':')  binary_string.append("11110101"); /* colon */
-                        if (general_field[i] == ';')  binary_string.append("11110110"); /* semicolon */
-                        if (general_field[i] == '<')  binary_string.append("11110111"); /* less-than sign */
-                        if (general_field[i] == '=')  binary_string.append("11111000"); /* equals sign */
-                        if (general_field[i] == '>')  binary_string.append("11111001"); /* greater-than sign */
-                        if (general_field[i] == '?')  binary_string.append("11111010"); /* question mark */
-                        if (general_field[i] == '_')  binary_string.append("11111011"); /* underline or low line */
-                        if (general_field[i] == ' ')  binary_string.append("11111100"); /* space */
+                        if (generalField[i] == FNC1) binary_string.append("01111");    /* FNC1/Numeric latch */
+                        if (generalField[i] == '!')  binary_string.append("11101000"); /* exclamation mark */
+                        if (generalField[i] == 34)   binary_string.append("11101001"); /* quotation mark */
+                        if (generalField[i] == 37)   binary_string.append("11101010"); /* percent sign */
+                        if (generalField[i] == '&')  binary_string.append("11101011"); /* ampersand */
+                        if (generalField[i] == 39)   binary_string.append("11101100"); /* apostrophe */
+                        if (generalField[i] == '(')  binary_string.append("11101101"); /* left parenthesis */
+                        if (generalField[i] == ')')  binary_string.append("11101110"); /* right parenthesis */
+                        if (generalField[i] == '*')  binary_string.append("11101111"); /* asterisk */
+                        if (generalField[i] == '+')  binary_string.append("11110000"); /* plus sign */
+                        if (generalField[i] == ',')  binary_string.append("11110001"); /* comma */
+                        if (generalField[i] == '-')  binary_string.append("11110010"); /* minus or hyphen */
+                        if (generalField[i] == '.')  binary_string.append("11110011"); /* period or full stop */
+                        if (generalField[i] == '/')  binary_string.append("11110100"); /* slash or solidus */
+                        if (generalField[i] == ':')  binary_string.append("11110101"); /* colon */
+                        if (generalField[i] == ';')  binary_string.append("11110110"); /* semicolon */
+                        if (generalField[i] == '<')  binary_string.append("11110111"); /* less-than sign */
+                        if (generalField[i] == '=')  binary_string.append("11111000"); /* equals sign */
+                        if (generalField[i] == '>')  binary_string.append("11111001"); /* greater-than sign */
+                        if (generalField[i] == '?')  binary_string.append("11111010"); /* question mark */
+                        if (generalField[i] == '_')  binary_string.append("11111011"); /* underline or low line */
+                        if (generalField[i] == ' ')  binary_string.append("11111100"); /* space */
                         i++;
+                        lastMode = EncodeMode.ISOIEC;
                         break;
                 }
 
@@ -1717,7 +1639,7 @@ public class Composite extends Symbol {
                     latchOffset = 1;
                 }
 
-            } while (i + latchOffset < general_field.length);
+            } while (i + latchOffset < generalField.length);
 
         } // end general-purpose compaction data handling
 
@@ -1727,17 +1649,17 @@ public class Composite extends Symbol {
 
         if (latch) {
             /* There is still one more numeric digit to encode */
-            i = general_field.length - 1;
-            if (general_field[i] == FNC1) {
+            i = generalField.length - 1;
+            if (generalField[i] == FNC1) {
                 binary_string.append("000001111");
             } else {
                 if (remainder >= 4 && remainder <= 6) {
                     /* ISO/IEC 24723:2010 5.4.1 c) 2) "If four to six bits remain, add 1 to the digit value and encode the result in the next four bits" */
-                    d1 = general_field[i] - '0';
+                    d1 = generalField[i] - '0';
                     value = d1 + 1;
                     binaryAppend(binary_string, value, 4);
                 } else {
-                    d1 = general_field[i] - '0';
+                    d1 = generalField[i] - '0';
                     d2 = 10;
                     value = (11 * d1) + d2 + 8;
                     binaryAppend(binary_string, value, 7);
@@ -1765,7 +1687,7 @@ public class Composite extends Symbol {
                 binary_string.append("11111");
                 alpha_pad = 0;
             }
-            if (general_field.length == 0 || general_field_type[general_field.length - 1] == EncodeMode.NUMERIC) {
+            if (generalField.length == 0 || lastMode == EncodeMode.NUMERIC) {
                 /* Latch from numeric to alphanumeric */
                 binary_string.append("0000");
             }

@@ -102,7 +102,7 @@ public class DataBarExpanded extends Symbol {
     };
 
     protected enum EncodeMode {
-        NUMERIC, ALPHA, ISOIEC, INVALID_CHAR, ANY_ENC, ALPHA_OR_ISO
+        NUMERIC, ALPHA, ISOIEC, ANY_ENC, ALPHA_OR_ISO
     }
 
     private boolean linkageFlag;
@@ -792,51 +792,7 @@ public class DataBarExpanded extends Symbol {
 
         if (generalField.length != 0) {
 
-            latch = false;
-            EncodeMode[] generalFieldType = new EncodeMode[generalField.length];
-
-            for (i = 0; i < generalField.length; i++) {
-                /* Tables 11, 12, 13 - ISO/IEC 646 encodation */
-                int c = generalField[i];
-                EncodeMode mode;
-                if (c == FNC1) {
-                    // FNC1 can be encoded in any system
-                    mode = EncodeMode.ANY_ENC;
-                } else if (c >= '0' && c <= '9') {
-                    // numbers can be encoded in any system, but will usually narrow down to numeric encodation
-                    mode = EncodeMode.ANY_ENC;
-                } else if ((c >= 'A' && c <= 'Z') || c == '*' || c == ',' || c == '-' || c == '.' || c == '/') {
-                    // alphanumeric encodation or ISO/IEC encodation
-                    mode = EncodeMode.ALPHA_OR_ISO;
-                } else if ((c >= 'a' && c <= 'z') || c == '!' || c == '"' || c == '%' || c == '&' || c == '\'' ||
-                            c == '(' || c == ')' || c == '+' || c == ':' || c == ';' || c == '<' || c == '=' ||
-                            c == '>' || c == '?' || c == '_' || c == ' ') {
-                    // ISO/IEC encodation
-                    mode = EncodeMode.ISOIEC;
-                } else {
-                    // unable to encode this character
-                    mode = EncodeMode.INVALID_CHAR;
-                    latch = true;
-                }
-                generalFieldType[i] = mode;
-            }
-
-            if (latch) {
-                throw new OkapiException("Invalid characters in input data");
-            }
-
-            for (i = 0; i < generalField.length - 1; i++) {
-                if (generalFieldType[i] == EncodeMode.ISOIEC && generalField[i + 1] == FNC1) {
-                    generalFieldType[i + 1] = EncodeMode.ISOIEC;
-                }
-            }
-
-            for (i = 0; i < generalField.length - 1; i++) {
-                if (generalFieldType[i] == EncodeMode.ALPHA_OR_ISO && generalField[i + 1] == FNC1) {
-                    generalFieldType[i + 1] = EncodeMode.ALPHA_OR_ISO;
-                }
-            }
-
+            EncodeMode[] generalFieldType = getInitialEncodeModes(generalField);
             latch = applyGeneralFieldRules(generalFieldType); // modifies generalFieldType
 
             /* Set initial mode if not NUMERIC */
@@ -1104,6 +1060,50 @@ public class DataBarExpanded extends Symbol {
         infoLine();
     }
 
+    protected static EncodeMode[] getInitialEncodeModes(int[] generalField) {
+
+        EncodeMode[] generalFieldType = new EncodeMode[generalField.length];
+
+        for (int i = 0; i < generalField.length; i++) {
+            /* Tables 11, 12, 13 - ISO/IEC 646 encodation */
+            int c = generalField[i];
+            EncodeMode mode;
+            if (c == FNC1) {
+                // FNC1 can be encoded in any system
+                mode = EncodeMode.ANY_ENC;
+            } else if (c >= '0' && c <= '9') {
+                // numbers can be encoded in any system, but will usually narrow down to numeric encodation
+                mode = EncodeMode.ANY_ENC;
+            } else if ((c >= 'A' && c <= 'Z') || c == '*' || c == ',' || c == '-' || c == '.' || c == '/') {
+                // alphanumeric encodation or ISO/IEC encodation
+                mode = EncodeMode.ALPHA_OR_ISO;
+            } else if ((c >= 'a' && c <= 'z') || c == '!' || c == '"' || c == '%' || c == '&' || c == '\'' ||
+                        c == '(' || c == ')' || c == '+' || c == ':' || c == ';' || c == '<' || c == '=' ||
+                        c == '>' || c == '?' || c == '_' || c == ' ') {
+                // ISO/IEC encodation
+                mode = EncodeMode.ISOIEC;
+            } else {
+                // unable to encode this character
+                throw new OkapiException("Invalid characters in input data");
+            }
+            generalFieldType[i] = mode;
+        }
+
+        for (int i = 0; i < generalField.length - 1; i++) {
+            if (generalFieldType[i] == EncodeMode.ISOIEC && generalField[i + 1] == FNC1) {
+                generalFieldType[i + 1] = EncodeMode.ISOIEC;
+            }
+        }
+
+        for (int i = 0; i < generalField.length - 1; i++) {
+            if (generalFieldType[i] == EncodeMode.ALPHA_OR_ISO && generalField[i + 1] == FNC1) {
+                generalFieldType[i + 1] = EncodeMode.ALPHA_OR_ISO;
+            }
+        }
+
+        return generalFieldType;
+    }
+
     /** Attempts to apply encoding rules from sections 7.2.5.5.1 to 7.2.5.5.3 of ISO/IEC 24724:2006 */
     protected static boolean applyGeneralFieldRules(EncodeMode[] generalFieldType) {
 
@@ -1136,17 +1136,17 @@ public class DataBarExpanded extends Symbol {
             current = blockType[i];
             next = blockType[i + 1];
 
-            if ((current == EncodeMode.ISOIEC) && (i != (block_count - 1))) {
-                if ((next == EncodeMode.ANY_ENC) && (blockLength[i + 1] >= 4)) {
+            if (current == EncodeMode.ISOIEC && i != (block_count - 1)) {
+                if (next == EncodeMode.ANY_ENC && blockLength[i + 1] >= 4) {
                     blockType[i + 1] = EncodeMode.NUMERIC;
                 }
-                if ((next == EncodeMode.ANY_ENC) && (blockLength[i + 1] < 4)) {
+                if (next == EncodeMode.ANY_ENC && blockLength[i + 1] < 4) {
                     blockType[i + 1] = EncodeMode.ISOIEC;
                 }
-                if ((next == EncodeMode.ALPHA_OR_ISO) && (blockLength[i + 1] >= 5)) {
+                if (next == EncodeMode.ALPHA_OR_ISO && blockLength[i + 1] >= 5) {
                     blockType[i + 1] = EncodeMode.ALPHA;
                 }
-                if ((next == EncodeMode.ALPHA_OR_ISO) && (blockLength[i + 1] < 5)) {
+                if (next == EncodeMode.ALPHA_OR_ISO && blockLength[i + 1] < 5) {
                     blockType[i + 1] = EncodeMode.ISOIEC;
                 }
             }
@@ -1156,12 +1156,12 @@ public class DataBarExpanded extends Symbol {
                 current = EncodeMode.ALPHA;
             }
 
-            if ((current == EncodeMode.ALPHA) && (i != (block_count - 1))) {
-                if ((next == EncodeMode.ANY_ENC) && (blockLength[i + 1] >= 6)) {
+            if (current == EncodeMode.ALPHA && i != (block_count - 1)) {
+                if (next == EncodeMode.ANY_ENC && blockLength[i + 1] >= 6) {
                     blockType[i + 1] = EncodeMode.NUMERIC;
                 }
-                if ((next == EncodeMode.ANY_ENC) && (blockLength[i + 1] < 6)) {
-                    if ((i == block_count - 2) && (blockLength[i + 1] >= 4)) {
+                if (next == EncodeMode.ANY_ENC && blockLength[i + 1] < 6) {
+                    if (i == block_count - 2 && blockLength[i + 1] >= 4) {
                         blockType[i + 1] = EncodeMode.NUMERIC;
                     } else {
                         blockType[i + 1] = EncodeMode.ALPHA;

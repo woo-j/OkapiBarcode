@@ -561,12 +561,9 @@ public class DataBarExpanded extends Symbol {
     /** Handles all data encodation from section 7.2.5 of ISO/IEC 24724. */
     private static int calculateBinaryString(boolean stacked, int blocksPerRow, int[] inputData, StringBuilder binaryString) {
 
-        EncodeMode last_mode = EncodeMode.NUMERIC;
-        int i;
-        boolean latch;
+        EncodeMode lastMode = EncodeMode.NUMERIC;
         int remainder, d1, d2, value;
         String padstring;
-        int current_length;
 
         /* Decide whether a compressed data field is required and if so what method to use: method 2 = no compressed data field */
 
@@ -588,7 +585,7 @@ public class DataBarExpanded extends Symbol {
                 if (inputData[18] == '0') {
                     /* (01) and (310x), weight in kilos */
                     double weight = 0;
-                    for (i = 0; i < 6; i++) {
+                    for (int i = 0; i < 6; i++) {
                         weight *= 10;
                         weight += (inputData[20 + i] - '0');
                     }
@@ -627,7 +624,7 @@ public class DataBarExpanded extends Symbol {
                 if (inputData[18] == '0') {
                     /* (01) and (320x), weight in pounds */
                     double weight = 0;
-                    for (i = 0; i < 6; i++) {
+                    for (int i = 0; i < 6; i++) {
                         weight *= 10;
                         weight += (inputData[20 + i] - '0');
                     }
@@ -716,7 +713,7 @@ public class DataBarExpanded extends Symbol {
         }
 
         /* Verify that the data to be placed in the compressed data field is all numeric data before carrying out compression */
-        for (i = 0; i < read_posn; i++) {
+        for (int i = 0; i < read_posn; i++) {
             if (inputData[i] < '0' || inputData[i] > '9') {
                 /* Something is wrong */
                 throw new OkapiException("Invalid characters in input data");
@@ -728,7 +725,7 @@ public class DataBarExpanded extends Symbol {
         if (encodingMethod == 1) {
             /* Encoding method field "1" - general item identification data */
             binaryAppend(binaryString, inputData[2] - '0', 4);
-            for (i = 1; i < 5; i++) {
+            for (int i = 1; i < 5; i++) {
                 int group = parseInt(inputData, i * 3, 3);
                 binaryAppend(binaryString, group, 10);
             }
@@ -737,7 +734,7 @@ public class DataBarExpanded extends Symbol {
         if (encodingMethod == 3 || encodingMethod == 4) {
             /* Encoding method field "0100" - variable weight item (0,001 kilogram increments) */
             /* Encoding method field "0101" - variable weight item (0,01 or 0,001 pound increment) */
-            for (i = 1; i < 5; i++) {
+            for (int i = 1; i < 5; i++) {
                 int group = parseInt(inputData, i * 3, 3);
                 binaryAppend(binaryString, group, 10);
             }
@@ -751,7 +748,7 @@ public class DataBarExpanded extends Symbol {
         if (encodingMethod == 5 || encodingMethod == 6) {
             /* Encoding method field "01100" - variable measure item and price */
             /* Encoding method "01101" - variable measure item and price with ISO 4217 currency code */
-            for (i = 1; i < 5; i++) {
+            for (int i = 1; i < 5; i++) {
                 int group = parseInt(inputData, i * 3, 3);
                 binaryAppend(binaryString, group, 10);
             }
@@ -764,12 +761,12 @@ public class DataBarExpanded extends Symbol {
 
         if (encodingMethod >= 7 && encodingMethod <= 14) {
             /* Encoding method fields "0111000" through "0111111" - variable weight item plus date */
-            for (i = 1; i < 5; i++) {
+            for (int i = 1; i < 5; i++) {
                 int group = parseInt(inputData, i * 3, 3);
                 binaryAppend(binaryString, group, 10);
             }
             int weight = inputData[19] - '0';
-            for (i = 0; i < 5; i++) {
+            for (int i = 0; i < 5; i++) {
                 weight *= 10;
                 weight += inputData[21 + i] - '0';
             }
@@ -793,148 +790,14 @@ public class DataBarExpanded extends Symbol {
         if (generalField.length != 0) {
 
             EncodeMode[] generalFieldType = getInitialEncodeModes(generalField);
-            latch = applyGeneralFieldRules(generalFieldType); // modifies generalFieldType
-
-            /* Set initial mode if not NUMERIC */
-            if (generalFieldType[0] == EncodeMode.ALPHA) {
-                binaryString.append("0000"); /* Alphanumeric latch */
-                last_mode = EncodeMode.ALPHA;
-            }
-            if (generalFieldType[0] == EncodeMode.ISOIEC) {
-                binaryString.append("0000"); /* Alphanumeric latch */
-                binaryString.append("00100"); /* ISO/IEC 646 latch */
-                last_mode = EncodeMode.ISOIEC;
-            }
-
-            i = 0;
-
-            current_length = i;
-            if (latch) {
-                current_length++;
-            }
-
-            while (current_length < generalField.length) {
-
-                switch (generalFieldType[i]) {
-                case NUMERIC:
-                    if (last_mode != EncodeMode.NUMERIC) {
-                        binaryString.append("000"); /* Numeric latch */
-                    }
-                    if (generalField[i] != FNC1) {
-                        d1 = generalField[i] - '0';
-                    } else {
-                        d1 = 10;
-                    }
-                    if (generalField[i + 1] != FNC1) {
-                        d2 = generalField[i + 1] - '0';
-                    } else {
-                        d2 = 10;
-                    }
-                    value = (11 * d1) + d2 + 8;
-                    binaryAppend(binaryString, value, 7);
-                    i += 2;
-                    last_mode = EncodeMode.NUMERIC;
-                    break;
-
-                case ALPHA:
-                    if (i != 0) {
-                        if (last_mode == EncodeMode.NUMERIC) {
-                            binaryString.append("0000"); /* Alphanumeric latch */
-                        }
-                        if (last_mode == EncodeMode.ISOIEC) {
-                            binaryString.append("00100"); /* Alphanumeric latch */
-                        }
-                    }
-                    if (generalField[i] >= '0' && generalField[i] <= '9') {
-                        value = generalField[i] - 43;
-                        binaryAppend(binaryString, value, 5);
-                    }
-                    if (generalField[i] >= 'A' && generalField[i] <= 'Z') {
-                        value = generalField[i] - 33;
-                        binaryAppend(binaryString, value, 6);
-                    }
-                    last_mode = EncodeMode.ALPHA;
-                    if (generalField[i] == FNC1) {
-                        binaryString.append("01111");
-                        // TODO: FNC1 should act as an implicit numeric latch, so the commented out line below should be correct, but ZXing cannot
-                        // read barcodes which use FNC1 as an implicit numeric latch... so for now, and in order to achieve widest compatibility,
-                        // we waste 3 bits and don't perform the implicit mode change (see https://sourceforge.net/p/zint/tickets/145/)
-                        // last_mode = EncodeMode.NUMERIC;
-                    } /* FNC1 / Numeric latch */
-                    if (generalField[i] == '*') binaryString.append("111010"); /* asterisk */
-                    if (generalField[i] == ',') binaryString.append("111011"); /* comma */
-                    if (generalField[i] == '-') binaryString.append("111100"); /* minus or hyphen */
-                    if (generalField[i] == '.') binaryString.append("111101"); /* period or full stop */
-                    if (generalField[i] == '/') binaryString.append("111110"); /* slash or solidus */
-                    i++;
-                    break;
-
-                case ISOIEC:
-                    if (i != 0) {
-                        if (last_mode == EncodeMode.NUMERIC) {
-                            binaryString.append("0000"); /* Alphanumeric latch */
-                            binaryString.append("00100"); /* ISO/IEC 646 latch */
-                        }
-                        if (last_mode == EncodeMode.ALPHA) {
-                            binaryString.append("00100"); /* ISO/IEC 646 latch */
-                        }
-                    }
-                    if (generalField[i] >= '0' && generalField[i] <= '9') {
-                        value = generalField[i] - 43;
-                        binaryAppend(binaryString, value, 5);
-                    }
-                    if (generalField[i] >= 'A' && generalField[i] <= 'Z') {
-                        value = generalField[i] - 1;
-                        binaryAppend(binaryString, value, 7);
-                    }
-                    if (generalField[i] >= 'a' && generalField[i] <= 'z') {
-                        value = generalField[i] - 7;
-                        binaryAppend(binaryString, value, 7);
-                    }
-                    last_mode = EncodeMode.ISOIEC;
-                    if (generalField[i] == FNC1) {
-                        binaryString.append("01111");
-                        // TODO: FNC1 should act as an implicit numeric latch, so the commented out line below should be correct, but ZXing cannot
-                        // read barcodes which use FNC1 as an implicit numeric latch... so for now, and in order to achieve widest compatibility,
-                        // we waste 3 bits and don't perform the implicit mode change (see https://sourceforge.net/p/zint/tickets/145/)
-                        // last_mode = EncodeMode.NUMERIC;
-                    } /* FNC1 / Numeric latch */
-                    if (generalField[i] == '!') binaryString.append("11101000"); /* exclamation mark */
-                    if (generalField[i] == 34)  binaryString.append("11101001"); /* quotation mark */
-                    if (generalField[i] == 37)  binaryString.append("11101010"); /* percent sign */
-                    if (generalField[i] == '&') binaryString.append("11101011"); /* ampersand */
-                    if (generalField[i] == 39)  binaryString.append("11101100"); /* apostrophe */
-                    if (generalField[i] == '(') binaryString.append("11101101"); /* left parenthesis */
-                    if (generalField[i] == ')') binaryString.append("11101110"); /* right parenthesis */
-                    if (generalField[i] == '*') binaryString.append("11101111"); /* asterisk */
-                    if (generalField[i] == '+') binaryString.append("11110000"); /* plus sign */
-                    if (generalField[i] == ',') binaryString.append("11110001"); /* comma */
-                    if (generalField[i] == '-') binaryString.append("11110010"); /* minus or hyphen */
-                    if (generalField[i] == '.') binaryString.append("11110011"); /* period or full stop */
-                    if (generalField[i] == '/') binaryString.append("11110100"); /* slash or solidus */
-                    if (generalField[i] == ':') binaryString.append("11110101"); /* colon */
-                    if (generalField[i] == ';') binaryString.append("11110110"); /* semicolon */
-                    if (generalField[i] == '<') binaryString.append("11110111"); /* less-than sign */
-                    if (generalField[i] == '=') binaryString.append("11111000"); /* equals sign */
-                    if (generalField[i] == '>') binaryString.append("11111001"); /* greater-than sign */
-                    if (generalField[i] == '?') binaryString.append("11111010"); /* question mark */
-                    if (generalField[i] == '_') binaryString.append("11111011"); /* underline or low line */
-                    if (generalField[i] == ' ') binaryString.append("11111100"); /* space */
-                    i++;
-                    break;
-                }
-
-                current_length = i;
-                if (latch) {
-                    current_length++;
-                }
-            }
-
+            boolean trailingDigit = applyGeneralFieldRules(generalFieldType); // modifies generalFieldType
+            lastMode = appendToBinaryString(generalField, generalFieldType, trailingDigit, false, binaryString); // modifies binaryString
             remainder = calculateRemainder(binaryString.length(), stacked, blocksPerRow);
 
-            if (latch) {
+            if (trailingDigit) {
                 /* There is still one more numeric digit to encode */
-                if (last_mode == EncodeMode.NUMERIC) {
+                int i = generalField.length - 1;
+                if (lastMode == EncodeMode.NUMERIC) {
                     if (remainder >= 4 && remainder <= 6) {
                         value = generalField[i] - '0';
                         value++;
@@ -959,8 +822,8 @@ public class DataBarExpanded extends Symbol {
         remainder = calculateRemainder(binaryString.length(), stacked, blocksPerRow);
 
         /* Now add padding to binary string (7.2.5.5.4) */
-        i = remainder;
-        if (last_mode == EncodeMode.NUMERIC) {
+        int i = remainder;
+        if (lastMode == EncodeMode.NUMERIC) {
             padstring = "0000";
             i -= 4;
         } else {
@@ -1217,6 +1080,149 @@ public class DataBarExpanded extends Symbol {
         } else {
             return false;
         }
+    }
+
+    protected static EncodeMode appendToBinaryString(int[] generalField, EncodeMode[] generalFieldType, boolean trailingDigit, boolean treatFnc1AsNumericLatch, StringBuilder binaryString) {
+
+        EncodeMode lastMode = EncodeMode.NUMERIC;
+        int value, d1, d2;
+
+        /* Set initial mode if not NUMERIC */
+        if (generalFieldType[0] == EncodeMode.ALPHA) {
+            binaryString.append("0000"); /* Alphanumeric latch */
+            lastMode = EncodeMode.ALPHA;
+        }
+        if (generalFieldType[0] == EncodeMode.ISOIEC) {
+            binaryString.append("0000"); /* Alphanumeric latch */
+            binaryString.append("00100"); /* ISO/IEC 646 latch */
+            lastMode = EncodeMode.ISOIEC;
+        }
+
+        int i = 0;
+
+        int current_length = i;
+        if (trailingDigit) {
+            current_length++;
+        }
+
+        while (current_length < generalField.length) {
+
+            switch (generalFieldType[i]) {
+            case NUMERIC:
+                if (lastMode != EncodeMode.NUMERIC) {
+                    binaryString.append("000"); /* Numeric latch */
+                }
+                if (generalField[i] != FNC1) {
+                    d1 = generalField[i] - '0';
+                } else {
+                    d1 = 10;
+                }
+                if (generalField[i + 1] != FNC1) {
+                    d2 = generalField[i + 1] - '0';
+                } else {
+                    d2 = 10;
+                }
+                value = (11 * d1) + d2 + 8;
+                binaryAppend(binaryString, value, 7);
+                i += 2;
+                lastMode = EncodeMode.NUMERIC;
+                break;
+
+            case ALPHA:
+                if (i != 0) {
+                    if (lastMode == EncodeMode.NUMERIC) {
+                        binaryString.append("0000"); /* Alphanumeric latch */
+                    }
+                    if (lastMode == EncodeMode.ISOIEC) {
+                        binaryString.append("00100"); /* Alphanumeric latch */
+                    }
+                }
+                if (generalField[i] >= '0' && generalField[i] <= '9') {
+                    value = generalField[i] - 43;
+                    binaryAppend(binaryString, value, 5);
+                }
+                if (generalField[i] >= 'A' && generalField[i] <= 'Z') {
+                    value = generalField[i] - 33;
+                    binaryAppend(binaryString, value, 6);
+                }
+                lastMode = EncodeMode.ALPHA;
+                if (generalField[i] == FNC1) {
+                    binaryString.append("01111");
+                    // TODO: FNC1 should act as an implicit numeric latch, so the commented out line below should be correct, but ZXing cannot
+                    // read barcodes which use FNC1 as an implicit numeric latch... so for now, and in order to achieve widest compatibility,
+                    // we sometimes waste 3 bits and don't perform the implicit mode change (see https://sourceforge.net/p/zint/tickets/145/)
+                    if (treatFnc1AsNumericLatch) lastMode = EncodeMode.NUMERIC;
+                } /* FNC1 / Numeric latch */
+                if (generalField[i] == '*') binaryString.append("111010"); /* asterisk */
+                if (generalField[i] == ',') binaryString.append("111011"); /* comma */
+                if (generalField[i] == '-') binaryString.append("111100"); /* minus or hyphen */
+                if (generalField[i] == '.') binaryString.append("111101"); /* period or full stop */
+                if (generalField[i] == '/') binaryString.append("111110"); /* slash or solidus */
+                i++;
+                break;
+
+            case ISOIEC:
+                if (i != 0) {
+                    if (lastMode == EncodeMode.NUMERIC) {
+                        binaryString.append("0000"); /* Alphanumeric latch */
+                        binaryString.append("00100"); /* ISO/IEC 646 latch */
+                    }
+                    if (lastMode == EncodeMode.ALPHA) {
+                        binaryString.append("00100"); /* ISO/IEC 646 latch */
+                    }
+                }
+                if (generalField[i] >= '0' && generalField[i] <= '9') {
+                    value = generalField[i] - 43;
+                    binaryAppend(binaryString, value, 5);
+                }
+                if (generalField[i] >= 'A' && generalField[i] <= 'Z') {
+                    value = generalField[i] - 1;
+                    binaryAppend(binaryString, value, 7);
+                }
+                if (generalField[i] >= 'a' && generalField[i] <= 'z') {
+                    value = generalField[i] - 7;
+                    binaryAppend(binaryString, value, 7);
+                }
+                lastMode = EncodeMode.ISOIEC;
+                if (generalField[i] == FNC1) {
+                    binaryString.append("01111");
+                    // TODO: FNC1 should act as an implicit numeric latch, so the commented out line below should be correct, but ZXing cannot
+                    // read barcodes which use FNC1 as an implicit numeric latch... so for now, and in order to achieve widest compatibility,
+                    // we sometimes waste 3 bits and don't perform the implicit mode change (see https://sourceforge.net/p/zint/tickets/145/)
+                    if (treatFnc1AsNumericLatch) lastMode = EncodeMode.NUMERIC;
+                } /* FNC1 / Numeric latch */
+                if (generalField[i] == '!') binaryString.append("11101000"); /* exclamation mark */
+                if (generalField[i] == 34)  binaryString.append("11101001"); /* quotation mark */
+                if (generalField[i] == 37)  binaryString.append("11101010"); /* percent sign */
+                if (generalField[i] == '&') binaryString.append("11101011"); /* ampersand */
+                if (generalField[i] == 39)  binaryString.append("11101100"); /* apostrophe */
+                if (generalField[i] == '(') binaryString.append("11101101"); /* left parenthesis */
+                if (generalField[i] == ')') binaryString.append("11101110"); /* right parenthesis */
+                if (generalField[i] == '*') binaryString.append("11101111"); /* asterisk */
+                if (generalField[i] == '+') binaryString.append("11110000"); /* plus sign */
+                if (generalField[i] == ',') binaryString.append("11110001"); /* comma */
+                if (generalField[i] == '-') binaryString.append("11110010"); /* minus or hyphen */
+                if (generalField[i] == '.') binaryString.append("11110011"); /* period or full stop */
+                if (generalField[i] == '/') binaryString.append("11110100"); /* slash or solidus */
+                if (generalField[i] == ':') binaryString.append("11110101"); /* colon */
+                if (generalField[i] == ';') binaryString.append("11110110"); /* semicolon */
+                if (generalField[i] == '<') binaryString.append("11110111"); /* less-than sign */
+                if (generalField[i] == '=') binaryString.append("11111000"); /* equals sign */
+                if (generalField[i] == '>') binaryString.append("11111001"); /* greater-than sign */
+                if (generalField[i] == '?') binaryString.append("11111010"); /* question mark */
+                if (generalField[i] == '_') binaryString.append("11111011"); /* underline or low line */
+                if (generalField[i] == ' ') binaryString.append("11111100"); /* space */
+                i++;
+                break;
+            }
+
+            current_length = i;
+            if (trailingDigit) {
+                current_length++;
+            }
+        }
+
+        return lastMode;
     }
 
     private static int parseInt(int[] chars, int index, int length) {

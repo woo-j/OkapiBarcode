@@ -1512,9 +1512,10 @@ public class Composite extends Symbol {
          rest of the data (if any) goes into a general-purpose data compaction field */
 
         int[] generalField;
-        if (fnc1_latch == 1) {
-            /* Encodation method "10" has been used but it is not followed by
-             AI 10, so a FNC1 character needs to be added */
+        boolean fnc1Next = (read_posn < inputData.length && inputData[read_posn] == FNC1);
+        if (fnc1_latch == 1 && !fnc1Next) {
+            /* Encodation method "10" has been used but it is not followed by AI 10, so a FNC1 character
+             needs to be added (as long as the user did not already add an explicit FNC1 somehow...) */
             generalField = new int[inputData.length - read_posn + 1];
             generalField[0] = FNC1;
             System.arraycopy(inputData, read_posn, generalField, 1, generalField.length - 1);

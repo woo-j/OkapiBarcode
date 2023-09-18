@@ -991,6 +991,9 @@ public class SymbolTest {
                 String dir = "src/test/resources/" + backend.replace('.', '/') + "/" + symbolName;
                 for (File file : getPropertiesFiles(dir)) {
                     String fileBaseName = file.getName().replaceAll(".properties", "");
+                    if ("235-mixed-example".equals(fileBaseName)) {
+                        continue; // TODO: requires ZXing 3.5.3 (not yet released)
+                    }
                     if (testNameFilter == null || testNameFilter.isEmpty() || testNameFilter.equalsIgnoreCase(fileBaseName)) {
                         File pngFile = new File(file.getParentFile(), fileBaseName + ".png");
                         for (TestConfig config : readTestConfig(file)) {

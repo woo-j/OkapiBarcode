@@ -726,26 +726,25 @@ public final class Gs1 {
             }
         }
 
-        /* Resolve AI data - put resulting string in 'reduced' */
+        /* Resolve AI data, put resulting string in 'reduced' */
         int last_ai = 0;
         boolean fixedLengthAI = true;
         for (int i = 0; i < source.length; i++) {
-            if ((source[i] != '[') && (source[i] != ']')) {
+            if (source[i] != '[' && source[i] != ']') {
                 reduced.append(source[i]);
             }
             if (source[i] == '[') {
-                /* Start of an AI string */
+                // start of an AI string
                 if (!fixedLengthAI) {
                     reduced.append(fnc1);
                 }
                 last_ai = (10 * Character.getNumericValue(source[i + 1]))
                               + Character.getNumericValue(source[i + 2]);
-                /* The following values from "GS-1 General Specification version 8.0 issue 2, May 2008"
-                figure 5.4.8.2.1 - 1 "Element Strings with Pre-Defined Length Using Application Identifiers" */
+                // The following values from "GS-1 General Specification version 8.0 issue 2, May 2008" figure 5.4.8.2.1-1
+                // "Element Strings with Pre-Defined Length Using Application Identifiers" (using first two digits of AI)
                 fixedLengthAI =
                         (last_ai >= 0 && last_ai <= 4) ||
                         (last_ai >= 11 && last_ai <= 20) ||
-                        (last_ai == 23) || /* legacy support - see 5.3.8.2.2 */
                         (last_ai >= 31 && last_ai <= 36) ||
                         (last_ai == 41);
             }

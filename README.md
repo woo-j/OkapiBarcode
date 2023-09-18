@@ -126,13 +126,16 @@ and data.
 
 ### Recent Releases
 
+#### Okapi Barcode 0.4.1
+- DataBar Expanded: various small fixes and cleanup
+
 #### Okapi Barcode 0.4.0
 - Update minimum Java runtime requirement from Java 7 to Java 8
 - Update build Java runtime from Java 8 to Java 17
 - Channel Code: fix `NullPointerException` when channel count not specified
 - MaxiCode: fix handling of custom quiet zones when rendering via `Java2DRenderer`
-- Code 128: fix incorrect encoding of line feeds when combined with lowercase characters (found via fuzzing)
-- Code 128: fix incorrect encoding of shifted characters which also use extended encoding (found via fuzzing)
+- Code 128: fix encoding of line feeds when combined with lowercase characters (found via fuzzing)
+- Code 128: fix encoding of shifted characters which also use extended encoding (found via fuzzing)
 - Code 128: never try to shift in or out of extended mode while in code set C (found via fuzzing)
 - Code 128: always exit extended mode before switching to code set C (found via fuzzing)
 - Data Matrix: fix incorrect encoding of single ASCII characters within X12 data (found via fuzzing)

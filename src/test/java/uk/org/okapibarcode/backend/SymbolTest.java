@@ -445,9 +445,8 @@ public class SymbolTest {
             }
         }
 
-        // TODO: remove MaxiCode check once ZXing 3.5.3 is released (see https://github.com/zxing/zxing/pull/1671)
         Integer errors = (Integer) result.getResultMetadata().get(ResultMetadataType.ERRORS_CORRECTED);
-        if (errors != null && !(symbol instanceof MaxiCode)) {
+        if (errors != null) {
             assertEquals(0, errors);
         }
 
@@ -991,9 +990,6 @@ public class SymbolTest {
                 String dir = "src/test/resources/" + backend.replace('.', '/') + "/" + symbolName;
                 for (File file : getPropertiesFiles(dir)) {
                     String fileBaseName = file.getName().replaceAll(".properties", "");
-                    if ("235-mixed-example".equals(fileBaseName)) {
-                        continue; // TODO: requires ZXing 3.5.3 (not yet released)
-                    }
                     if (testNameFilter == null || testNameFilter.isEmpty() || testNameFilter.equalsIgnoreCase(fileBaseName)) {
                         File pngFile = new File(file.getParentFile(), fileBaseName + ".png");
                         for (TestConfig config : readTestConfig(file)) {

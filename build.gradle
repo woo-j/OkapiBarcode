@@ -3,7 +3,6 @@ apply plugin: 'eclipse'
 apply plugin: 'jacoco'
 
 group = 'uk.org.okapibarcode'
-archivesBaseName = 'okapibarcode'
 version = '0.4.1'
 
 repositories {
@@ -26,6 +25,7 @@ compileJava.options.encoding = 'UTF-8'
 compileTestJava.options.encoding = 'UTF-8'
 javadoc.options.encoding = 'UTF-8'
 javadoc.options.addStringOption('Xdoclint:none', '-quiet')
+base.archivesName = 'okapibarcode'
 
 jar {
     dependsOn 'check'

@@ -19,6 +19,7 @@ package uk.org.okapibarcode.fuzzing;
 import static uk.org.okapibarcode.backend.SymbolTest.assertEqual;
 import static uk.org.okapibarcode.backend.SymbolTest.decode;
 import static uk.org.okapibarcode.backend.SymbolTest.draw;
+import static uk.org.okapibarcode.backend.SymbolTest.verifyMetadata;
 
 import java.awt.image.BufferedImage;
 
@@ -85,6 +86,7 @@ public class QrCodeFuzzer {
         };
 
         assertEqual(input, output, content, version, type, ecc);
+        verifyMetadata(symbol, result);
     }
 
     private static DataType deriveDataTypeFrom(String s) {

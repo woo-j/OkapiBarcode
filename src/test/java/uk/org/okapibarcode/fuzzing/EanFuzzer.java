@@ -19,6 +19,7 @@ package uk.org.okapibarcode.fuzzing;
 import static uk.org.okapibarcode.backend.SymbolTest.assertEqual;
 import static uk.org.okapibarcode.backend.SymbolTest.decode;
 import static uk.org.okapibarcode.backend.SymbolTest.draw;
+import static uk.org.okapibarcode.backend.SymbolTest.verifyMetadata;
 
 import java.awt.image.BufferedImage;
 
@@ -26,7 +27,6 @@ import com.code_intelligence.jazzer.api.FuzzedDataProvider;
 import com.code_intelligence.jazzer.junit.FuzzTest;
 import com.google.zxing.Reader;
 import com.google.zxing.Result;
-import com.google.zxing.ResultMetadataType;
 import com.google.zxing.oned.EAN13Reader;
 import com.google.zxing.oned.EAN8Reader;
 
@@ -72,9 +72,6 @@ public class EanFuzzer {
 
         String input = symbol.getContent(); // compare against corrected input
         assertEqual(input, output, content, mode);
-
-        String inputExtension = symbol.getAddOnContent();
-        String outputExtension = (String) result.getResultMetadata().get(ResultMetadataType.UPC_EAN_EXTENSION);
-        assertEqual(inputExtension, outputExtension, content, mode);
+        verifyMetadata(symbol, result);
     }
 }

@@ -19,6 +19,7 @@ package uk.org.okapibarcode.fuzzing;
 import static uk.org.okapibarcode.backend.SymbolTest.assertEqual;
 import static uk.org.okapibarcode.backend.SymbolTest.decode;
 import static uk.org.okapibarcode.backend.SymbolTest.draw;
+import static uk.org.okapibarcode.backend.SymbolTest.verifyMetadata;
 
 import java.awt.image.BufferedImage;
 
@@ -69,6 +70,7 @@ public class DataBarExpandedFuzzer {
         String input = content.replace('[', '(').replace(']', ')'); // ZXing uses parenthesis for AIs instead of brackets
 
         assertEqual(input, output, content, stacked, columns);
+        verifyMetadata(symbol, result);
     }
 
     private static int deriveIntFrom(String s, int min, int max) {

@@ -19,6 +19,7 @@ package uk.org.okapibarcode.fuzzing;
 import static uk.org.okapibarcode.backend.SymbolTest.assertEqual;
 import static uk.org.okapibarcode.backend.SymbolTest.decode;
 import static uk.org.okapibarcode.backend.SymbolTest.draw;
+import static uk.org.okapibarcode.backend.SymbolTest.verifyMetadata;
 
 import java.awt.image.BufferedImage;
 
@@ -91,5 +92,6 @@ public class Code128Fuzzer {
         };
 
         assertEqual(input, output, content, type, suppressModeC, readerInit);
+        verifyMetadata(symbol, result);
     }
 }

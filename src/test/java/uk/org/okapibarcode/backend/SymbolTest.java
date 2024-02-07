@@ -202,7 +202,7 @@ public class SymbolTest {
      * @throws IOException if there is any I/O error
      * @throws ReaderException if ZXing has an issue decoding the barcode image
      */
-    private void verifySuccess(TestConfig config, File pngFile, Symbol symbol, Throwable actualError) throws IOException, ReaderException {
+    private static void verifySuccess(TestConfig config, File pngFile, Symbol symbol, Throwable actualError) throws IOException, ReaderException {
 
         assertEquals(null, actualError, "error");
 
@@ -447,7 +447,7 @@ public class SymbolTest {
      * @param symbol the symbol to check against
      * @param result the ZXing result to check
      */
-    private void verifyMetadata(Symbol symbol, Result result) {
+    public static void verifyMetadata(Symbol symbol, Result result) {
 
         if (symbol instanceof Pdf417) {
             Pdf417 pdf417 = (Pdf417) symbol;
@@ -459,6 +459,22 @@ public class SymbolTest {
                 assertEquals(pdf417.getStructuredAppendPosition() == pdf417.getStructuredAppendTotal(), metadata.isLastSegment());
                 assertEquals(pdf417.getStructuredAppendFileName(), metadata.getFileName());
                 assertEquals(pdf417.getStructuredAppendIncludeSegmentCount() ? pdf417.getStructuredAppendTotal() : -1, metadata.getSegmentCount());
+            }
+        }
+
+        if (symbol instanceof Upc) {
+            Upc upc = (Upc) symbol;
+            if (upc.getAddOnContent() != null) {
+                String extension = (String) result.getResultMetadata().get(ResultMetadataType.UPC_EAN_EXTENSION);
+                assertEquals(upc.getAddOnContent(), extension);
+            }
+        }
+
+        if (symbol instanceof Ean) {
+            Ean ean = (Ean) symbol;
+            if (ean.getAddOnContent() != null) {
+                String extension = (String) result.getResultMetadata().get(ResultMetadataType.UPC_EAN_EXTENSION);
+                assertEquals(ean.getAddOnContent(), extension);
             }
         }
 
@@ -480,7 +496,7 @@ public class SymbolTest {
      * @param pngFile the file containing the expected final rendering of the bar code, if this test verifies successful behavior
      * @param actualError the actual exception
      */
-    private void verifyError(TestConfig config, File pngFile, Throwable actualError) {
+    private static void verifyError(TestConfig config, File pngFile, Throwable actualError) {
         assertFalse(pngFile.exists());
         assertTrue(actualError instanceof OkapiInputException ||
                    actualError instanceof IllegalArgumentException);
@@ -504,7 +520,7 @@ public class SymbolTest {
      * @param actualError the actual exception (may be <tt>null</tt> if there was no error)
      * @throws IOException if there is any I/O error
      */
-    private void addMissingExpectations(TestConfig config, File pngFile, Symbol symbol, Throwable actualError) throws IOException {
+    private static void addMissingExpectations(TestConfig config, File pngFile, Symbol symbol, Throwable actualError) throws IOException {
 
         // check the properties file on disk one more time before adding anything to it; otherwise,
         // files containing multiple test cases will generate multiple expectations sections when
@@ -537,7 +553,7 @@ public class SymbolTest {
      * @param error the error message
      * @throws IOException if there is any I/O error
      */
-    private void addExpectedError(TestConfig config, String error) throws IOException {
+    private static void addExpectedError(TestConfig config, String error) throws IOException {
         if (config.expectedError == null) {
             String append = EOL + ReadMode.ERROR.name() + EOL + EOL + error + EOL;
             Files.write(config.file.toPath(), append.getBytes(UTF_8), StandardOpenOption.APPEND);
@@ -551,7 +567,7 @@ public class SymbolTest {
      * @param symbol the symbol to generate the encoding log for
      * @throws IOException if there is any I/O error
      */
-    private void addExpectedLog(TestConfig config, Symbol symbol) throws IOException {
+    private static void addExpectedLog(TestConfig config, Symbol symbol) throws IOException {
         String info = symbol.getEncodeInfo();
         if (config.expectedLog.isEmpty() && info != null && !info.isEmpty()) {
             StringBuilder sb = new StringBuilder();
@@ -573,7 +589,7 @@ public class SymbolTest {
      * @param symbol the symbol to generate codewords for
      * @throws IOException if there is any I/O error
      */
-    private void addExpectedCodewords(TestConfig config, Symbol symbol) throws IOException {
+    private static void addExpectedCodewords(TestConfig config, Symbol symbol) throws IOException {
         if (config.expectedCodewords.isEmpty()) {
             StringBuilder sb = new StringBuilder();
             sb.append(EOL).append(ReadMode.CODEWORDS.name()).append(EOL).append(EOL);
@@ -598,7 +614,7 @@ public class SymbolTest {
      * @param symbol the symbol to draw
      * @throws IOException if there is any I/O error
      */
-    private void createExpectedPngFile(File pngFile, Symbol symbol) throws IOException {
+    private static void createExpectedPngFile(File pngFile, Symbol symbol) throws IOException {
         if (!pngFile.exists()) {
             BufferedImage img = draw(symbol);
             ImageIO.write(img, "png", pngFile);

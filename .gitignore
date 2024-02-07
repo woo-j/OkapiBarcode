@@ -16,3 +16,6 @@ bin/
 .project
 .idea/
 .cifuzz-corpus/
+
+# Misc temp dir
+temp/

@@ -131,7 +131,7 @@ public class Code11 extends Symbol {
     protected void encode() {
 
         if (!content.matches("[0-9-]+")) {
-            throw new OkapiException("Invalid characters in input");
+            throw OkapiInputException.invalidCharactersInInput();
         }
 
         String horizontalSpacing = "112211";

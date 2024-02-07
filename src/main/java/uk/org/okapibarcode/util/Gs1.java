@@ -19,7 +19,7 @@ package uk.org.okapibarcode.util;
 import java.util.HashMap;
 import java.util.Map;
 
-import uk.org.okapibarcode.backend.OkapiException;
+import uk.org.okapibarcode.backend.OkapiInputException;
 
 /**
  * GS1 utility class.
@@ -584,7 +584,7 @@ public final class Gs1 {
 
         /* Make sure we start with an AI */
         if (source.length == 0 || source[0] != '[') {
-            throw new OkapiException("Data does not start with an AI");
+            throw new OkapiInputException("Data does not start with an AI");
         }
 
         /* Check the position of the brackets */
@@ -623,27 +623,27 @@ public final class Gs1 {
 
         if (bracket_level != 0) {
             /* Not all brackets are closed */
-            throw new OkapiException("Malformed AI in input data (brackets don't match)");
+            throw new OkapiInputException("Malformed AI in input data (brackets don't match)");
         }
 
         if (max_bracket_level > 1) {
             /* Nested brackets */
-            throw new OkapiException("Found nested brackets in input data");
+            throw new OkapiInputException("Found nested brackets in input data");
         }
 
         if (max_ai_length > 4) {
             /* AI is too long */
-            throw new OkapiException("Invalid AI in input data (AI too long)");
+            throw new OkapiInputException("Invalid AI in input data (AI too long)");
         }
 
         if (min_ai_length <= 1) {
             /* AI is too short */
-            throw new OkapiException("Invalid AI in input data (AI too short)");
+            throw new OkapiInputException("Invalid AI in input data (AI too short)");
         }
 
         if (ai_latch) {
             /* Non-numeric data in AI */
-            throw new OkapiException("Invalid AI in input data (non-numeric characters in AI)");
+            throw new OkapiInputException("Invalid AI in input data (non-numeric characters in AI)");
         }
 
         int ai_count = 0;
@@ -681,7 +681,7 @@ public final class Gs1 {
             int ai = ai_value[i];
             byte[] info = AIS.get(ai);
             if (info == null) {
-                throw new OkapiException("Invalid AI value " + ai);
+                throw new OkapiInputException("Invalid AI value " + ai);
             }
 
             int processed = 0;
@@ -697,14 +697,14 @@ public final class Gs1 {
                     // last segment
                     limit = data_length[i] - processed;
                     if (limit < min || limit > max) {
-                        throw new OkapiException("Invalid data length for AI " + ai);
+                        throw new OkapiInputException("Invalid data length for AI " + ai);
                     }
                 } else {
                     // not last segment
                     limit = max;
                     assert min == max;
                     if (processed + limit > data_length[i]) {
-                        throw new OkapiException("Invalid data length for AI " + ai);
+                        throw new OkapiInputException("Invalid data length for AI " + ai);
                     }
                 }
 
@@ -718,7 +718,7 @@ public final class Gs1 {
                        (type == FLAG && c >= '0' && c <= '1') ||
                        (type == CHARS_UPPERCASE && c >= 'A' && c <= 'Z');
                     if (!valid) {
-                        throw new OkapiException("Invalid data value for AI " + ai);
+                        throw new OkapiInputException("Invalid data value for AI " + ai);
                     }
                 }
 

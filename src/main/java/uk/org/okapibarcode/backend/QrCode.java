@@ -298,7 +298,7 @@ public class QrCode extends Symbol {
         }
 
         if (est_binlen > (8 * max_cw)) {
-            throw new OkapiException("Input too long for selected error correction level");
+            throw new OkapiInputException("Input too long for selected error correction level");
         }
 
         // ZINT NOTE: this block is different from the corresponding block of code in Zint;
@@ -420,7 +420,7 @@ public class QrCode extends Symbol {
                 inputMode = applyOptimisation(version, inputMode);
             }
             if (preferredVersion < version) {
-                throw new OkapiException("Input too long for selected symbol size");
+                throw new OkapiInputException("Input too long for selected symbol size");
             }
         }
 

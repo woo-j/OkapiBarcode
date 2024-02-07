@@ -78,6 +78,8 @@ import uk.org.okapibarcode.backend.MicroQrCode;
 import uk.org.okapibarcode.backend.MsiPlessey;
 import uk.org.okapibarcode.backend.Nve18;
 import uk.org.okapibarcode.backend.OkapiException;
+import uk.org.okapibarcode.backend.OkapiInputException;
+import uk.org.okapibarcode.backend.OkapiInternalException;
 import uk.org.okapibarcode.backend.Pdf417;
 import uk.org.okapibarcode.backend.Pharmacode;
 import uk.org.okapibarcode.backend.Pharmacode2Track;
@@ -2354,13 +2356,13 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
         symbol.setQuietZoneVertical(quietZoneVertical);
     }
 
-    private Symbol getNewSymbol() throws OkapiException {
+    private Symbol getNewSymbol() {
 
         boolean readerInit = chkReaderInit.isSelected();
         HumanReadableLocation hrtLoc = getHrtLoc();
 
         if (selectedSymbol == null) {
-            throw new OkapiException("No symbology selected");
+            throw new OkapiInputException("No symbology selected");
         }
 
         if ((useCompositeCheck.isEnabled() && useCompositeCheck.isSelected()) &&
@@ -2978,7 +2980,7 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                 return codablockF;
             default:
                 // Should never happen
-                throw new OkapiException("Symbology not recognised: " + selectedSymbol.guiLabel);
+                throw new OkapiInternalException("Symbology not recognised: " + selectedSymbol.guiLabel);
             }
         }
     }

@@ -71,7 +71,7 @@ public class Codabar extends Symbol {
     protected void encode() {
 
         if (!content.matches("[A-D]{1}[0-9:/\\$\\.\\+\u002D]+[A-D]{1}")) {
-            throw new OkapiException("Invalid characters in input");
+            throw OkapiInputException.invalidCharactersInInput();
         }
 
         String horizontalSpacing = "";

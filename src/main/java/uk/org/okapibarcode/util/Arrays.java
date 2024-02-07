@@ -16,7 +16,7 @@
 
 package uk.org.okapibarcode.util;
 
-import uk.org.okapibarcode.backend.OkapiException;
+import uk.org.okapibarcode.backend.OkapiInternalException;
 
 /**
  * Array utility class.
@@ -42,7 +42,7 @@ public final class Arrays {
                 return i;
             }
         }
-        throw new OkapiException("Unable to find character '" + value + "' in character array.");
+        throw new OkapiInternalException("Unable to find character '" + value + "' in character array.");
     }
 
     /**
@@ -58,7 +58,7 @@ public final class Arrays {
                 return i;
             }
         }
-        throw new OkapiException("Unable to find integer '" + value + "' in integer array.");
+        throw new OkapiInternalException("Unable to find integer '" + value + "' in integer array.");
     }
 
     /**

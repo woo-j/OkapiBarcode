@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import uk.org.okapibarcode.backend.OkapiException;
+import uk.org.okapibarcode.backend.OkapiInputException;
 
 /**
  * Tests for {@link Gs1}.
@@ -455,7 +455,7 @@ public class Gs1Test {
         String output;
         try {
             output = Gs1.verify(value, "|");
-        } catch (OkapiException e) {
+        } catch (OkapiInputException e) {
             output = e.getMessage();
         }
         assertEquals(expectedOutput, output);

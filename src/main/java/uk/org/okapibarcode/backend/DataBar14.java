@@ -163,11 +163,11 @@ public class DataBar14 extends Symbol {
         int compositeOffset = 0;
 
         if (content.length() > 13) {
-            throw new OkapiException("Input too long");
+            throw OkapiInputException.inputTooLong();
         }
 
         if (!content.matches("[0-9]+?")) {
-            throw new OkapiException("Invalid characters in input");
+            throw OkapiInputException.invalidCharactersInInput();
         }
 
         accum = new BigInteger(content);

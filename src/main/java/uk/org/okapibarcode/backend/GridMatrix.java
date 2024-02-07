@@ -284,12 +284,12 @@ public class GridMatrix extends Symbol {
                 length = inputData.length;
             }
         } catch (UnsupportedCharsetException e) {
-            throw new OkapiException("Byte conversion encoding error");
+            throw new OkapiInternalException("Byte conversion encoding error");
         }
 
         error_number = encodeGridMatrixBinary(length, readerInit);
         if (error_number != 0) {
-            throw new OkapiException("Input data too long");
+            throw OkapiInputException.inputTooLong();
         }
 
         /* Determine the size of the symbol */
@@ -380,7 +380,7 @@ public class GridMatrix extends Symbol {
         }
 
         if (data_cw > data_max) {
-            throw new OkapiException("Input data too long");
+            throw OkapiInputException.inputTooLong();
         }
 
         addErrorCorrection(data_cw, layers, ecc_level);

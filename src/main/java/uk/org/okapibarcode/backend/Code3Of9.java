@@ -98,7 +98,7 @@ public class Code3Of9 extends Symbol {
     protected void encode() {
 
         if (!content.matches("[0-9A-Z\\. \\-$/+%]*")) {
-            throw new OkapiException("Invalid characters in input");
+            throw OkapiInputException.invalidCharactersInInput();
         }
 
         String start = "1211212111";

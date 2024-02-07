@@ -198,7 +198,7 @@ public class DataBarExpanded extends Symbol {
 
         inputData = toBytes(content, StandardCharsets.US_ASCII);
         if (inputData == null) {
-            throw new OkapiException("Invalid characters in input data");
+            throw OkapiInputException.invalidCharactersInInput();
         }
 
         StringBuilder binaryString = new StringBuilder(inputData.length * 8);
@@ -716,7 +716,7 @@ public class DataBarExpanded extends Symbol {
         for (int i = 0; i < read_posn; i++) {
             if (inputData[i] < '0' || inputData[i] > '9') {
                 /* Something is wrong */
-                throw new OkapiException("Invalid characters in input data");
+                throw OkapiInputException.invalidCharactersInInput();
             }
         }
 
@@ -816,7 +816,7 @@ public class DataBarExpanded extends Symbol {
         }
 
         if (binaryString.length() > 252) {
-            throw new OkapiException("Input too long");
+            throw OkapiInputException.inputTooLong();
         }
 
         remainder = calculateRemainder(binaryString.length(), stacked, blocksPerRow);
@@ -947,7 +947,7 @@ public class DataBarExpanded extends Symbol {
                 mode = EncodeMode.ISOIEC;
             } else {
                 // unable to encode this character
-                throw new OkapiException("Invalid characters in input data");
+                throw OkapiInputException.invalidCharactersInInput();
             }
             generalFieldType[i] = mode;
         }

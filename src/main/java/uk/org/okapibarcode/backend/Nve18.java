@@ -28,11 +28,11 @@ public class Nve18 extends Symbol {
     protected void encode() {
 
         if (content.length() > 17) {
-            throw new OkapiException("Input data too long");
+            throw OkapiInputException.inputTooLong();
         }
 
         if (!content.matches("[0-9]+")) {
-            throw new OkapiException("Invalid characters in data");
+            throw OkapiInputException.invalidCharactersInInput();
         }
 
         // add leading zeroes

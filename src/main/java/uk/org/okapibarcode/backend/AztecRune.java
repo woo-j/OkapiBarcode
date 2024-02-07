@@ -42,7 +42,7 @@ public class AztecRune extends Symbol {
     protected void encode() {
 
         if (!content.matches("[0-9]+")) {
-            throw new OkapiException("Invalid input data");
+            throw OkapiInputException.invalidCharactersInInput();
         }
 
         int decimalValue = 0;
@@ -60,11 +60,11 @@ public class AztecRune extends Symbol {
                 decimalValue += (content.charAt(2) - '0');
                 break;
             default:
-                throw new OkapiException("Input too large");
+                throw new OkapiInputException("Input too large");
         }
 
         if (decimalValue > 255) {
-            throw new OkapiException("Input too large");
+            throw new OkapiInputException("Input too large");
         }
 
         StringBuilder binaryDataStream = new StringBuilder(28);

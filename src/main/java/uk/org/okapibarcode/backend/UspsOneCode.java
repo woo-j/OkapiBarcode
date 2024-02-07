@@ -283,11 +283,11 @@ public class UspsOneCode extends Symbol {
         char c;
 
         if (!content.matches("[0-9\u002D]+")) {
-            throw new OkapiException("Invalid characters in input");
+            throw OkapiInputException.invalidCharactersInInput();
         }
 
         if (length > 32) {
-            throw new OkapiException("Input too long");
+            throw OkapiInputException.inputTooLong();
         }
 
         /* separate the tracking code from the routing code */
@@ -307,11 +307,11 @@ public class UspsOneCode extends Symbol {
         }
 
         if (tracker.length() != 20) {
-            throw new OkapiException("Invalid length tracking code");
+            throw new OkapiInputException("Invalid length tracking code");
         }
 
         if (zip.length() > 11) {
-            throw new OkapiException("Invalid ZIP code");
+            throw new OkapiInputException("Invalid ZIP code");
         }
 
         /* *** Step 1 - Conversion of Data Fields into Binary Data *** */

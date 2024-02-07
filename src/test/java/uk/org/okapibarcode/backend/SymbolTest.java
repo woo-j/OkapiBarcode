@@ -157,13 +157,13 @@ public class SymbolTest {
         Symbol symbol = symbolType.getDeclaredConstructor().newInstance();
         symbol.setFontName(DEJA_VU_SANS.getFontName());
 
-        String actualError;
+        Throwable actualError;
 
         try {
             setProperties(symbol, config.properties);
             actualError = null;
         } catch (InvocationTargetException e) {
-            actualError = e.getCause().getMessage();
+            actualError = e.getCause();
         }
 
         if (config.hasSuccessExpectations() && pngFile.exists()) {
@@ -181,13 +181,13 @@ public class SymbolTest {
      * @param config the test configuration, as read from the test properties file
      * @param pngFile the file containing the expected final rendering of the bar code, if this test verifies successful behavior
      * @param symbol the symbol to check
-     * @param actualError the actual error message
+     * @param actualError the actual exception
      * @throws IOException if there is any I/O error
      * @throws ReaderException if ZXing has an issue decoding the barcode image
      */
-    private void verifySuccess(TestConfig config, File pngFile, Symbol symbol, String actualError) throws IOException, ReaderException {
+    private void verifySuccess(TestConfig config, File pngFile, Symbol symbol, Throwable actualError) throws IOException, ReaderException {
 
-        assertEquals(null, actualError, "error message");
+        assertEquals(null, actualError, "error");
 
         // try to verify logs
         String info = symbol.getEncodeInfo();
@@ -461,17 +461,20 @@ public class SymbolTest {
      *
      * @param config the test configuration, as read from the test properties file
      * @param pngFile the file containing the expected final rendering of the bar code, if this test verifies successful behavior
-     * @param actualError the actual error message
+     * @param actualError the actual exception
      */
-    private void verifyError(TestConfig config, File pngFile, String actualError) {
+    private void verifyError(TestConfig config, File pngFile, Throwable actualError) {
         assertFalse(pngFile.exists());
+        assertTrue(actualError instanceof OkapiInputException ||
+                   actualError instanceof IllegalArgumentException);
+        String actualErrorMessage = actualError.getMessage();
         if (config.expectedError != null && config.expectedError.startsWith("regex:")) {
             // treat error message as a regular expression
             String expected = config.expectedError.substring(6);
-            assertTrue(actualError.matches(expected), actualError + " <-> " + expected);
+            assertTrue(actualErrorMessage.matches(expected), actualError + " <-> " + expected);
         } else {
             // treat error message literally
-            assertEquals(config.expectedError, actualError);
+            assertEquals(config.expectedError, actualErrorMessage);
         }
     }
 
@@ -481,10 +484,10 @@ public class SymbolTest {
      * @param config the test configuration, as read from the test properties file
      * @param pngFile the file containing the expected final rendering of the bar code, if this test verifies successful behavior
      * @param symbol the symbol to generate test expectations for
-     * @param actualError the actual error message (may be <tt>null</tt> if there was no error)
+     * @param actualError the actual exception (may be <tt>null</tt> if there was no error)
      * @throws IOException if there is any I/O error
      */
-    private void addMissingExpectations(TestConfig config, File pngFile, Symbol symbol, String actualError) throws IOException {
+    private void addMissingExpectations(TestConfig config, File pngFile, Symbol symbol, Throwable actualError) throws IOException {
 
         // check the properties file on disk one more time before adding anything to it; otherwise,
         // files containing multiple test cases will generate multiple expectations sections when
@@ -497,9 +500,9 @@ public class SymbolTest {
             !content.contains(EOL + ReadMode.LOG.name() + EOL) &&
             !content.contains(EOL + ReadMode.ERROR.name() + EOL);
 
-        if (actualError != null && !actualError.isEmpty()) {
+        if (actualError != null) {
             if (propertiesFileNeedsModification) {
-                addExpectedError(config, actualError);
+                addExpectedError(config, actualError.getMessage());
             }
         } else {
             createExpectedPngFile(pngFile, symbol);
@@ -640,7 +643,7 @@ public class SymbolTest {
             String value = entry.getValue();
             // content should only be set once, and it should be the last property set
             if (contentHasBeenSet) {
-                throw new OkapiException("Test should set " + name + " before content has been set, not after");
+                throw new OkapiInternalException("Test should set " + name + " before content has been set, not after");
             }
             // set each symbol property using the corresponding setter method
             String setterName = "set" + name.substring(0, 1).toUpperCase() + name.substring(1);
@@ -942,7 +945,7 @@ public class SymbolTest {
         }
 
         if (configs.isEmpty()) {
-            throw new OkapiException("Unable to find any tests in file " + file);
+            throw new OkapiInternalException("Unable to find any tests in file " + file);
         }
 
         return configs;
@@ -1010,7 +1013,7 @@ public class SymbolTest {
                     clear(file);
                 }
                 if (!file.delete()) {
-                    throw new OkapiException("Unable to delete file: " + file);
+                    throw new OkapiInternalException("Unable to delete file: " + file);
                 }
             }
         }
@@ -1018,7 +1021,7 @@ public class SymbolTest {
 
     private static void mkdirs(File dir) {
         if (!dir.exists() && !dir.mkdirs()) {
-            throw new OkapiException("Unable to create directory: " + dir);
+            throw new OkapiInternalException("Unable to create directory: " + dir);
         }
     }
 

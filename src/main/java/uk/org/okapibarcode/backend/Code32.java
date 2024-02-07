@@ -36,11 +36,11 @@ public class Code32 extends Symbol {
     protected void encode() {
 
         if (content.length() > 8) {
-            throw new OkapiException("Input too long");
+            throw OkapiInputException.inputTooLong();
         }
 
         if (!content.matches("[0-9]+")) {
-            throw new OkapiException("Invalid characters in input");
+            throw OkapiInputException.invalidCharactersInInput();
         }
 
         /* Add leading zeros as required */

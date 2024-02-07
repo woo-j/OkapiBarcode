@@ -13,7 +13,7 @@ import com.google.zxing.datamatrix.DataMatrixReader;
 
 import uk.org.okapibarcode.backend.DataMatrix;
 import uk.org.okapibarcode.backend.DataMatrix.ForceMode;
-import uk.org.okapibarcode.backend.OkapiException;
+import uk.org.okapibarcode.backend.OkapiInputException;
 import uk.org.okapibarcode.backend.Symbol.DataType;
 
 /**
@@ -41,7 +41,7 @@ public class DataMatrixFuzzer {
 
         DataType type = deriveDataTypeFrom(content);
         boolean readerInit = deriveBooleanFrom(content);
-        int size = deriveIntFrom(content, 1, 30);
+        int size = deriveIntFrom(content, 0, 30); // 0 = no preference, 1-30 are valid choices
         ForceMode mode = deriveForceModeFrom(content);
         check(content, type, readerInit, size, mode);
     }
@@ -57,7 +57,7 @@ public class DataMatrixFuzzer {
         symbol.setForceMode(mode);
         try {
             symbol.setContent(content);
-        } catch (OkapiException e) {
+        } catch (OkapiInputException e) {
             // a validation error is not unexpected behavior
             return;
         }

@@ -11,7 +11,7 @@ import com.code_intelligence.jazzer.junit.FuzzTest;
 import com.google.zxing.Result;
 import com.google.zxing.qrcode.QRCodeReader;
 
-import uk.org.okapibarcode.backend.OkapiException;
+import uk.org.okapibarcode.backend.OkapiInputException;
 import uk.org.okapibarcode.backend.QrCode;
 import uk.org.okapibarcode.backend.QrCode.EccLevel;
 import uk.org.okapibarcode.backend.Symbol.DataType;
@@ -53,7 +53,7 @@ public class QrCodeFuzzer {
         symbol.setPreferredEccLevel(ecc);
         try {
             symbol.setContent(content);
-        } catch (OkapiException e) {
+        } catch (OkapiInputException e) {
             // a validation error is not unexpected behavior
             return;
         }

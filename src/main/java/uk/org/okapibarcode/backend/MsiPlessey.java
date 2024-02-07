@@ -99,7 +99,7 @@ public class MsiPlessey extends Symbol {
     protected void encode() {
 
         if (!content.matches("[0-9]*")) {
-            throw new OkapiException("Invalid characters in input");
+            throw OkapiInputException.invalidCharactersInInput();
         }
 
         int length = content.length();

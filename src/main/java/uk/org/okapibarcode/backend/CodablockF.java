@@ -86,14 +86,14 @@ public class CodablockF extends Symbol {
         final_mode = CfMode.MODEA;
 
         if (!content.matches("[\u0000-\u00FF]+")) {
-            throw new OkapiException("Invalid characters in input data");
+            throw OkapiInputException.invalidCharactersInInput();
         }
 
         inputData = toBytes(content, StandardCharsets.ISO_8859_1, 0x00);
         input_length = inputData.length - 1;
 
         if (input_length > 5450) {
-            throw new OkapiException("Input data too long");
+            throw OkapiInputException.inputTooLong();
         }
 
         /* Make a guess at how many characters will be needed to encode the data */
@@ -128,7 +128,7 @@ public class CodablockF extends Symbol {
             columns_needed = 4;
         }
         if (columns_needed > 62) {
-            throw new OkapiException("Input data too long");
+            throw OkapiInputException.inputTooLong();
         }
 
         /* Encode the data */
@@ -735,7 +735,7 @@ public class CodablockF extends Symbol {
                     column_position = 0;
                     current_row++;
                     if (current_row > 43) {
-                        throw new OkapiException("Too many rows.");
+                        throw new OkapiInputException("Too many rows.");
                     }
                 }
             }

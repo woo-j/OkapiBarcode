@@ -146,7 +146,7 @@ public class AustraliaPost extends Symbol {
     protected void encode() {
 
         if (!content.matches("[0-9A-Za-z #]+")) {
-            throw new OkapiException("Invalid characters in data");
+            throw OkapiInputException.invalidCharactersInInput();
         }
 
         String formatControlCode = "00";
@@ -162,7 +162,7 @@ public class AustraliaPost extends Symbol {
                     case 16:
                         formatControlCode = "59";
                         if (!content.matches("[0-9]+")) {
-                            throw new OkapiException("Invalid characters in data");
+                            throw OkapiInputException.invalidCharactersInInput();
                         }
                         break;
                     case 18:
@@ -171,33 +171,30 @@ public class AustraliaPost extends Symbol {
                     case 23:
                         formatControlCode = "62";
                         if (!content.matches("[0-9]+")) {
-                            throw new OkapiException("Invalid characters in data");
+                            throw OkapiInputException.invalidCharactersInInput();
                         }
                         break;
                     default:
-                        throw new OkapiException("Input length must be one of 8, 13, 16, 18 or 23");
+                        throw new OkapiInputException("Input length must be one of 8, 13, 16, 18 or 23");
                 }
                 break;
             case REPLY:
                 if (content.length() > 8) {
-                    throw new OkapiException("Input data too long");
-                } else {
-                    formatControlCode = "45";
+                    throw OkapiInputException.inputTooLong();
                 }
+                formatControlCode = "45";
                 break;
             case ROUTE:
                 if (content.length() > 8) {
-                    throw new OkapiException("Input data too long");
-                } else {
-                    formatControlCode = "87";
+                    throw OkapiInputException.inputTooLong();
                 }
+                formatControlCode = "87";
                 break;
             case REDIRECT:
                 if (content.length() > 8) {
-                    throw new OkapiException("Input data too long");
-                } else {
-                    formatControlCode = "92";
+                    throw OkapiInputException.inputTooLong();
                 }
+                formatControlCode = "92";
                 break;
         }
 
@@ -214,7 +211,7 @@ public class AustraliaPost extends Symbol {
         /* Verify that the first 8 characters are numbers */
         String deliveryPointId = zeroPaddedInput.substring(0, 8);
         if (!deliveryPointId.matches("[0-9]+")) {
-            throw new OkapiException("Invalid characters in DPID");
+            throw new OkapiInputException("Invalid characters in DPID");
         }
         infoLine("DPID: " + deliveryPointId);
 

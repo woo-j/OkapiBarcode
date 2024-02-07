@@ -116,7 +116,7 @@ public class Ean extends Symbol {
         separateContent();
 
         if (content.isEmpty()) {
-            throw new OkapiException("Missing EAN data");
+            throw new OkapiInputException("Missing EAN data");
         }
 
         if (mode == Mode.EAN8) {
@@ -133,7 +133,7 @@ public class Ean extends Symbol {
             addOn = null;
         } else if (splitPoint == content.length() - 1) {
             // we found the add-on separator, but no add-on data
-            throw new OkapiException("Invalid add-on data");
+            throw new OkapiInputException("Invalid add-on data");
         } else {
             // there is a '+' in the input data, use an add-on EAN2 or EAN5
             addOn = new EanUpcAddOn();
@@ -210,11 +210,11 @@ public class Ean extends Symbol {
     protected static String validateAndPad(String s, int targetLength) {
 
         if (!s.matches("[0-9]+")) {
-            throw new OkapiException("Invalid characters in input");
+            throw OkapiInputException.invalidCharactersInInput();
         }
 
         if (s.length() > targetLength) {
-            throw new OkapiException("Input data too long");
+            throw OkapiInputException.inputTooLong();
         }
 
         if (s.length() < targetLength) {

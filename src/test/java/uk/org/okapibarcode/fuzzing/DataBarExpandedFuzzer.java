@@ -12,7 +12,7 @@ import com.google.zxing.Result;
 import com.google.zxing.oned.rss.expanded.RSSExpandedReader;
 
 import uk.org.okapibarcode.backend.DataBarExpanded;
-import uk.org.okapibarcode.backend.OkapiException;
+import uk.org.okapibarcode.backend.OkapiInputException;
 import uk.org.okapibarcode.backend.Symbol.DataType;
 
 /**
@@ -42,7 +42,7 @@ public class DataBarExpandedFuzzer {
         symbol.setPreferredColumns(columns);
         try {
             symbol.setContent(content);
-        } catch (OkapiException e) {
+        } catch (OkapiInputException e) {
             // a validation error is not unexpected behavior
             return;
         }

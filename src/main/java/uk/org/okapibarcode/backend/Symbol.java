@@ -507,7 +507,7 @@ public abstract class Symbol {
     public void setContent(String data) {
 
         if (readerInit && inputDataType == DataType.GS1) {
-            throw new OkapiException("Cannot use both GS1 mode and Reader Initialisation");
+            throw new OkapiInputException("Cannot use both GS1 mode and Reader Initialisation");
         }
 
         if (data == null) {
@@ -530,7 +530,7 @@ public abstract class Symbol {
         }
 
         if (content.isEmpty() && !emptyContentAllowed) {
-            throw new OkapiException("No input data");
+            throw new OkapiInputException("No input data");
         }
 
         encode();
@@ -584,7 +584,7 @@ public abstract class Symbol {
                              .or(content, "UTF8",         26);
 
         if (EciMode.NONE.equals(eci)) {
-            throw new OkapiException("Unable to determine ECI mode.");
+            throw new OkapiInputException("Unable to determine ECI mode.");
         }
 
         eciMode = eci.mode;
@@ -764,12 +764,12 @@ public abstract class Symbol {
 
         // HIBC 2.6 allows up to 110 characters, not including the "+" prefix or the check digit
         if (source.length() > 110) {
-            throw new OkapiException("Data too long for HIBC LIC");
+            throw new OkapiInputException("Data too long for HIBC LIC");
         }
 
         source = source.toUpperCase();
         if (!source.matches("[A-Z0-9-\\. \\$/+\\%]+?")) {
-            throw new OkapiException("Invalid characters in input");
+            throw OkapiInputException.invalidCharactersInInput();
         }
 
         int counter = 41;

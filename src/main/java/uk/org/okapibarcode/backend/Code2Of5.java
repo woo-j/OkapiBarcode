@@ -169,7 +169,7 @@ public class Code2Of5 extends Symbol {
     private void dataMatrix() {
 
         if (!content.matches("[0-9]*")) {
-            throw new OkapiException("Invalid characters in input");
+            throw OkapiInputException.invalidCharactersInInput();
         }
 
         String dest = "311111";
@@ -187,7 +187,7 @@ public class Code2Of5 extends Symbol {
     private void industrial() {
 
         if (!content.matches("[0-9]*")) {
-            throw new OkapiException("Invalid characters in input");
+            throw OkapiInputException.invalidCharactersInInput();
         }
 
         String dest = "313111";
@@ -205,7 +205,7 @@ public class Code2Of5 extends Symbol {
     private void iata() {
 
         if (!content.matches("[0-9]*")) {
-            throw new OkapiException("Invalid characters in input");
+            throw OkapiInputException.invalidCharactersInInput();
         }
 
         String dest = "1111";
@@ -223,7 +223,7 @@ public class Code2Of5 extends Symbol {
     private void dataLogic() {
 
         if (!content.matches("[0-9]*")) {
-            throw new OkapiException("Invalid characters in input");
+            throw OkapiInputException.invalidCharactersInInput();
         }
 
         String dest = "1111";
@@ -245,7 +245,7 @@ public class Code2Of5 extends Symbol {
         readable = content;
 
         if (!readable.matches("[0-9]*")) {
-            throw new OkapiException("Invalid characters in input");
+            throw OkapiInputException.invalidCharactersInInput();
         }
 
         if (addCheckDigit) {
@@ -291,11 +291,11 @@ public class Code2Of5 extends Symbol {
         String dest;
 
         if (!content.matches("[0-9]*")) {
-            throw new OkapiException("Invalid characters in input");
+            throw OkapiInputException.invalidCharactersInInput();
         }
 
         if (input_length > 13) {
-            throw new OkapiException("Input data too long");
+            throw OkapiInputException.inputTooLong();
         }
 
         readable = "";
@@ -325,11 +325,11 @@ public class Code2Of5 extends Symbol {
         String dest;
 
         if (!content.matches("[0-9]*")) {
-            throw new OkapiException("Invalid characters in input");
+            throw OkapiInputException.invalidCharactersInInput();
         }
 
         if (input_length > 13) {
-            throw new OkapiException("Input data too long");
+            throw OkapiInputException.inputTooLong();
         }
 
         readable = "";
@@ -359,11 +359,11 @@ public class Code2Of5 extends Symbol {
         String dest;
 
         if (!content.matches("[0-9]*")) {
-            throw new OkapiException("Invalid characters in input");
+            throw OkapiInputException.invalidCharactersInInput();
         }
 
         if (input_length > 11) {
-            throw new OkapiException("Input data too long");
+            throw OkapiInputException.inputTooLong();
         }
 
         readable = "";

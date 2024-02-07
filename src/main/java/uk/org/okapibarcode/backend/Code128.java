@@ -121,12 +121,12 @@ public class Code128 extends Symbol {
 
         inputData = toBytes(content, ISO_8859_1);
         if (inputData == null) {
-            throw new OkapiException("Invalid characters in input data");
+            throw OkapiInputException.invalidCharactersInInput();
         }
 
         int sourcelen = inputData.length;
         if (sourcelen > 170) {
-            throw new OkapiException("Input data too long");
+            throw OkapiInputException.inputTooLong();
         }
 
         /* Decide on mode using same system as PDF417 and rules of ISO 15417 Annex E */
@@ -297,7 +297,7 @@ public class Code128 extends Symbol {
             }
         }
         if (glyph_count > 80.0) {
-            throw new OkapiException("Input data too long");
+            throw OkapiInputException.inputTooLong();
         }
 
         info("Encoding: ");

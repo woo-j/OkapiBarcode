@@ -147,7 +147,7 @@ public class Upc extends Symbol {
         separateContent();
 
         if (content.isEmpty()) {
-            throw new OkapiException("Missing UPC data");
+            throw new OkapiInputException("Missing UPC data");
         }
 
         if (mode == Mode.UPCA) {
@@ -164,7 +164,7 @@ public class Upc extends Symbol {
             addOn = null;
         } else if (splitPoint == content.length() - 1) {
             // we found the add-on separator, but no add-on data
-            throw new OkapiException("Invalid add-on data");
+            throw new OkapiInputException("Invalid add-on data");
         } else {
             // there is a '+' in the input data, use an add-on EAN2 or EAN5
             addOn = new EanUpcAddOn();
@@ -268,7 +268,7 @@ public class Upc extends Symbol {
                 upca[10] = upce[5];
                 if (validate && (upce[3] == '0' || upce[3] == '1' || upce[3] == '2')) {
                     /* Note 1 - "X3 shall not be equal to 0, 1 or 2" */
-                    throw new OkapiException("Invalid UPC-E data");
+                    throw new OkapiInputException("Invalid UPC-E data");
                 }
                 break;
             case '4':
@@ -277,7 +277,7 @@ public class Upc extends Symbol {
                 upca[10] = upce[5];
                 if (validate && upce[4] == '0') {
                     /* Note 2 - "X4 shall not be equal to 0" */
-                    throw new OkapiException("Invalid UPC-E data");
+                    throw new OkapiInputException("Invalid UPC-E data");
                 }
                 break;
             default:
@@ -287,7 +287,7 @@ public class Upc extends Symbol {
                 upca[10] = emode;
                 if (validate && upce[5] == '0') {
                     /* Note 3 - "X5 shall not be equal to 0" */
-                    throw new OkapiException("Invalid UPC-E data");
+                    throw new OkapiInputException("Invalid UPC-E data");
                 }
                 break;
         }
@@ -303,7 +303,7 @@ public class Upc extends Symbol {
             case '1':
                 return 1;
             default:
-                throw new OkapiException("Invalid input data");
+                throw new OkapiInputException("Invalid input data");
         }
     }
 

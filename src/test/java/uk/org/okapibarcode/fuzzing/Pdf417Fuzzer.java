@@ -11,7 +11,7 @@ import com.code_intelligence.jazzer.junit.FuzzTest;
 import com.google.zxing.Result;
 import com.google.zxing.pdf417.PDF417Reader;
 
-import uk.org.okapibarcode.backend.OkapiException;
+import uk.org.okapibarcode.backend.OkapiInputException;
 import uk.org.okapibarcode.backend.Pdf417;
 import uk.org.okapibarcode.backend.Pdf417.Mode;
 import uk.org.okapibarcode.backend.Symbol.DataType;
@@ -61,7 +61,7 @@ public class Pdf417Fuzzer {
         symbol.setReaderInit(readerInit);
         try {
             symbol.setContent(content);
-        } catch (OkapiException e) {
+        } catch (OkapiInputException e) {
             // a validation error is not unexpected behavior
             return;
         }

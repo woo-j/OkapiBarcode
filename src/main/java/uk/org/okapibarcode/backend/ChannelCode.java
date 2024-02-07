@@ -57,11 +57,11 @@ public class ChannelCode extends Symbol {
     protected void encode() {
 
         if (content.length() > 7) {
-            throw new OkapiException("Input data too long");
+            throw OkapiInputException.inputTooLong();
         }
 
         if (!content.matches("[0-9]+")) {
-            throw new OkapiException("Invalid characters in data");
+            throw OkapiInputException.invalidCharactersInInput();
         }
 
         int channels = preferredNumberOfChannels;
@@ -94,7 +94,7 @@ public class ChannelCode extends Symbol {
         }
 
         if (channels == 9) {
-            throw new OkapiException("Value out of range");
+            throw new OkapiInputException("Value out of range");
         }
 
         infoLine("Channels Used: " + channels);

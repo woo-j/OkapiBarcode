@@ -12,7 +12,7 @@ import com.google.zxing.Result;
 import com.google.zxing.oned.Code128Reader;
 
 import uk.org.okapibarcode.backend.Code128;
-import uk.org.okapibarcode.backend.OkapiException;
+import uk.org.okapibarcode.backend.OkapiInputException;
 import uk.org.okapibarcode.backend.Symbol.DataType;
 
 /**
@@ -51,7 +51,7 @@ public class Code128Fuzzer {
         symbol.setReaderInit(readerInit);
         try {
             symbol.setContent(content);
-        } catch (OkapiException e) {
+        } catch (OkapiInputException e) {
             // a validation error is not unexpected behavior
             return;
         }

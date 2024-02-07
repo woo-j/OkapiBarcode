@@ -549,7 +549,7 @@ public class AztecCode extends Symbol {
                         compactDataSizes = AZTEC_COMPACT_50_DATA_SIZES;
                         break;
                     default:
-                        throw new OkapiException("Unrecognized ECC level: " + preferredEccLevel);
+                        throw new OkapiInputException("Unrecognized ECC level: " + preferredEccLevel);
                 }
 
                 layers = 0;
@@ -573,7 +573,7 @@ public class AztecCode extends Symbol {
 
                 if (layers == 0) {
                     /* Couldn't find a symbol which fits the data */
-                    throw new OkapiException("Input too long (too many bits for selected ECC)");
+                    throw new OkapiInputException("Input too long (too many bits for selected ECC)");
                 }
 
                 adjustedString = adjustBinaryString(binaryString, compact, layers);
@@ -603,16 +603,16 @@ public class AztecCode extends Symbol {
             int[] sizes = (compact ? AZTEC_COMPACT_SIZES : AZTEC_SIZES);
             int dataMaxSize = codewordSize * (sizes[layers - 1] - 3);
             if (adjustedString.length() > dataMaxSize) {
-                throw new OkapiException("Data too long for specified Aztec Code symbol size");
+                throw new OkapiInputException("Data too long for specified Aztec Code symbol size");
             }
         }
 
         if (readerInit && compact && layers > 1) {
-            throw new OkapiException("Symbol is too large for reader initialization");
+            throw new OkapiInputException("Symbol is too large for reader initialization");
         }
 
         if (readerInit && layers > 22) {
-            throw new OkapiException("Symbol is too large for reader initialization");
+            throw new OkapiInputException("Symbol is too large for reader initialization");
         }
 
         int codewordSize = getCodewordSize(layers);
@@ -1405,7 +1405,7 @@ public class AztecCode extends Symbol {
                             bytes--;
 
                             if (bytes > 2079) {
-                                throw new OkapiException("Input too long");
+                                throw OkapiInputException.inputTooLong();
                             }
 
                             if (bytes > 31) {
@@ -1706,7 +1706,7 @@ public class AztecCode extends Symbol {
                 startWeight = 0x800;
                 break;
             default:
-                throw new OkapiException("Unrecognized codeword size: " + codewordSize);
+                throw new OkapiInternalException("Unrecognized codeword size: " + codewordSize);
         }
 
         ReedSolomon rs = new ReedSolomon();

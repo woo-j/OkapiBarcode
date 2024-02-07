@@ -84,7 +84,7 @@ public class Telepen extends Symbol {
     private void normalMode() {
 
         if (!content.matches("[\u0000-\u007F]+")) {
-            throw new OkapiException("Invalid characters in data");
+            throw OkapiInputException.invalidCharactersInInput();
         }
 
         int count = 0;
@@ -114,7 +114,7 @@ public class Telepen extends Symbol {
     private void numericMode() {
 
         if (!content.matches("[0-9X]+")) {
-            throw new OkapiException("Invalid characters in data");
+            throw OkapiInputException.invalidCharactersInInput();
         }
 
         /* If input is an odd length, add a leading zero */
@@ -133,7 +133,7 @@ public class Telepen extends Symbol {
             char c2 = t.charAt(i + 1);
             /* Input nX is allowed, but Xn is not */
             if (c1 == 'X') {
-                throw new OkapiException("Invalid position of X in data");
+                throw new OkapiInputException("Invalid position of X in data");
             }
             int glyph;
             if (c2 == 'X') {

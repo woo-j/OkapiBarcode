@@ -128,6 +128,7 @@ and data.
 
 #### Okapi Barcode 0.4.2
 - Data Matrix: fix encoding of trailing extended ASCII characters in TEXT/C40 mode (found via fuzzing)
+- Add OkapiInputException and OkapiInternalException, so users can distinguish user vs. library errors
 
 #### Okapi Barcode 0.4.1
 - DataBar Expanded: various small fixes and cleanup

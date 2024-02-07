@@ -32,11 +32,11 @@ public class KoreaPost extends Symbol {
     protected void encode() {
 
         if (!content.matches("[0-9]+")) {
-            throw new OkapiException("Invalid characters in data");
+            throw OkapiInputException.invalidCharactersInInput();
         }
 
         if (content.length() > 6) {
-            throw new OkapiException("Input data too long");
+            throw OkapiInputException.inputTooLong();
         }
 
         StringBuilder padded = new StringBuilder(6);

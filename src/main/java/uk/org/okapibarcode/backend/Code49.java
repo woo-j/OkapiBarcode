@@ -1008,7 +1008,7 @@ public class Code49 extends Symbol {
         int[][] w_grid = new int[8][4];
 
         if (!content.matches("[\u0000-\u007F]+")) {
-            throw new OkapiException("Invalid characters in input data");
+            throw OkapiInputException.invalidCharactersInInput();
         }
 
         inputData = toBytes(content, StandardCharsets.US_ASCII);
@@ -1187,7 +1187,7 @@ public class Code49 extends Symbol {
         }
 
         if (codeword_count > 49) {
-            throw new OkapiException("Input too long");
+            throw OkapiInputException.inputTooLong();
         }
 
         infoLine("Starting Mode (M): " + M);

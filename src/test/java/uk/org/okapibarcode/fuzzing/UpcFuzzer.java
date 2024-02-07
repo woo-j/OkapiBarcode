@@ -13,7 +13,7 @@ import com.google.zxing.Result;
 import com.google.zxing.oned.UPCAReader;
 import com.google.zxing.oned.UPCEReader;
 
-import uk.org.okapibarcode.backend.OkapiException;
+import uk.org.okapibarcode.backend.OkapiInputException;
 import uk.org.okapibarcode.backend.Upc;
 import uk.org.okapibarcode.backend.Upc.Mode;
 
@@ -42,7 +42,7 @@ public class UpcFuzzer {
         symbol.setQuietZoneHorizontal(12);
         try {
             symbol.setContent(content);
-        } catch (OkapiException e) {
+        } catch (OkapiInputException e) {
             // a validation error is not unexpected behavior
             return;
         }

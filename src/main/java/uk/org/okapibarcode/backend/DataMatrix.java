@@ -401,14 +401,14 @@ public class DataMatrix extends Symbol {
                 }
             }
             if (calcsize >= DM_SIZES_COUNT) {
-                throw new OkapiException("Input too long to fit in any of the available symbol sizes");
+                throw new OkapiInputException("Input too long to fit in any of the available symbol sizes");
             }
             symbolsize = calcsize;
         } else {
             // The symbol size was specified by the user
             // Thus check if the data fits into this symbol size and use this size
             if (calcsize > optionsize) {
-                throw new OkapiException("Input too long to fit in the selected symbol size");
+                throw new OkapiInputException("Input too long to fit in the selected symbol size");
             }
             symbolsize = optionsize;
         }
@@ -417,7 +417,7 @@ public class DataMatrix extends Symbol {
         int symbolsLeft = MATRIX_BYTES[symbolsize] - binlen;
         binlen = encodeRemainder(symbolsLeft, binlen);
         if (binlen > MATRIX_BYTES[symbolsize]) {
-            throw new OkapiException("Input unexpectedly too long to fit in the selected symbol size");
+            throw new OkapiInternalException("Input unexpectedly too long to fit in the selected symbol size");
         }
 
         H = MATRIX_H[symbolsize];
@@ -1012,7 +1012,7 @@ public class DataMatrix extends Symbol {
             }
 
             if (tp > 1558) {
-                throw new OkapiException("Input too long to fit any Data Matrix symbol");
+                throw new OkapiInputException("Input too long to fit any Data Matrix symbol");
             }
 
         } /* while */

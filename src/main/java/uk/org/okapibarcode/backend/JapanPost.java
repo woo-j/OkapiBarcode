@@ -51,7 +51,7 @@ public class JapanPost extends Symbol {
 
         content = content.toUpperCase(Locale.ENGLISH);
         if (!content.matches("[0-9A-Z\\-]+")) {
-            throw new OkapiException("Invalid characters in data");
+            throw OkapiInputException.invalidCharactersInInput();
         }
 
         StringBuilder inter = new StringBuilder();

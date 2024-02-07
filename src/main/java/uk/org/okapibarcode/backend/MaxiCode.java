@@ -391,12 +391,12 @@ public class MaxiCode extends Symbol {
         assert mode == 2 || mode == 3;
 
         if (primaryData.length() != 15) {
-            throw new OkapiException("Invalid Primary String");
+            throw new OkapiInputException("Invalid primary string");
         }
 
         for (int i = 9; i < 15; i++) { /* check that country code and service are numeric */
             if (primaryData.charAt(i) < '0' || primaryData.charAt(i) > '9') {
-                throw new OkapiException("Invalid Primary String");
+                throw new OkapiInputException("Invalid primary string");
             }
         }
 
@@ -514,7 +514,7 @@ public class MaxiCode extends Symbol {
         int i, j, count, current_set;
 
         if (length > 138) {
-            throw new OkapiException("Input data too long");
+            throw OkapiInputException.inputTooLong();
         }
 
         for (i = 0; i < 144; i++) {
@@ -732,7 +732,7 @@ public class MaxiCode extends Symbol {
                         }
                         break;
                     default:
-                        throw new OkapiException("Unexpected set " + set[i] + " at index " + i + ".");
+                        throw new OkapiInternalException("Unexpected set " + set[i] + " at index " + i + ".");
                 }
                 i++;
             }
@@ -809,7 +809,7 @@ public class MaxiCode extends Symbol {
             maxLength = 0; // impossible
         }
         if (length > maxLength) {
-            throw new OkapiException("Input data too long");
+            throw OkapiInputException.inputTooLong();
         }
     }
 

@@ -97,7 +97,7 @@ public class Code16k extends Symbol {
         boolean f_state;
 
         if (!content.matches("[\u0000-\u00FF]+")) {
-            throw new OkapiException("Invalid characters in input data");
+            throw OkapiInputException.invalidCharactersInInput();
         }
 
         inputData = toBytes(content, StandardCharsets.ISO_8859_1);
@@ -109,7 +109,7 @@ public class Code16k extends Symbol {
         values = new int[160];
 
         if (input_length > 157) {
-            throw new OkapiException("Input too long");
+            throw OkapiInputException.inputTooLong();
         }
 
         /* Detect extended ASCII characters */
@@ -314,7 +314,7 @@ public class Code16k extends Symbol {
         }
 
         if (glyph_count > 77.0) {
-            throw new OkapiException("Input too long");
+            throw OkapiInputException.inputTooLong();
         }
 
         /* Calculate how tall the symbol will be */

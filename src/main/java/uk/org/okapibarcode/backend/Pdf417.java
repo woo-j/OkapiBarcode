@@ -800,7 +800,7 @@ public class Pdf417 extends Symbol {
                     processNumbers(inputData, blockCount, block.length, false);
                     break;
                 default:
-                    throw new OkapiException("Unknown block type: " + block.mode);
+                    throw new OkapiInternalException("Unknown block type: " + block.mode);
             }
             blockCount += block.length;
         }
@@ -837,7 +837,7 @@ public class Pdf417 extends Symbol {
             if (rows != null) {
                 // user specified both columns and rows; make sure the data fits
                 if (columns * rows < needed) {
-                    throw new OkapiException("Too few rows (" + rows + ") and columns (" + columns + ") to hold codewords (" + needed + ")");
+                    throw new OkapiInputException("Too few rows (" + rows + ") and columns (" + columns + ") to hold codewords (" + needed + ")");
                 }
             } else {
                 // user only specified column count; figure out row count
@@ -934,7 +934,7 @@ public class Pdf417 extends Symbol {
 
         /* make sure total codeword count isn't too high */
         if (codeWordCount > 929) {
-            throw new OkapiException("Too many codewords required (" + codeWordCount + ", but max is 929)");
+            throw new OkapiInputException("Too many codewords required (" + codeWordCount + ", but max is 929)");
         }
 
         assert 1 + dataCount + padCount + macroCount + k == columns * rows;
@@ -1036,7 +1036,7 @@ public class Pdf417 extends Symbol {
                     processNumbers(inputData, blockCount, block.length, false);
                     break;
                 default:
-                    throw new OkapiException("Unknown block type: " + block.mode);
+                    throw new OkapiInternalException("Unknown block type: " + block.mode);
             }
             blockCount += block.length;
         }
@@ -1065,10 +1065,10 @@ public class Pdf417 extends Symbol {
                     max = 126;
                     break;
                 default:
-                    throw new OkapiException("Invalid column count: " + columns);
+                    throw new OkapiInputException("Invalid column count: " + columns);
             }
             if (codeWordCount > max) {
-                throw new OkapiException("Too few columns (" + columns + ") to hold data codewords (" + codeWordCount + ")");
+                throw new OkapiInputException("Too few columns (" + columns + ") to hold data codewords (" + codeWordCount + ")");
             }
         }
 
@@ -1245,9 +1245,9 @@ public class Pdf417 extends Symbol {
     private void validateRows(int min, int max) {
         if (rows != null) {
             if (rows < min) {
-                throw new OkapiException("Too few rows (" + rows + ")");
+                throw new OkapiInputException("Too few rows (" + rows + ")");
             } else if (rows > max) {
-                throw new OkapiException("Too many rows (" + rows + ")");
+                throw new OkapiInputException("Too many rows (" + rows + ")");
             }
         }
     }
@@ -1255,9 +1255,9 @@ public class Pdf417 extends Symbol {
     private void validateColumns(int min, int max) {
         if (columns != null) {
             if (columns < min) {
-                throw new OkapiException("Too few columns (" + columns + ")");
+                throw new OkapiInputException("Too few columns (" + columns + ")");
             } else if (columns > max) {
-                throw new OkapiException("Too many columns (" + columns + ")");
+                throw new OkapiInputException("Too many columns (" + columns + ")");
             }
         }
     }
@@ -1284,7 +1284,7 @@ public class Pdf417 extends Symbol {
                 }
             }
         }
-        throw new OkapiException("Unable to determine MicroPDF417 variant for " + codeWordCount + " codewords");
+        throw new OkapiInputException("Unable to determine MicroPDF417 variant for " + codeWordCount + " codewords");
     }
 
     /** Determines the encoding block groups for the specified data. */

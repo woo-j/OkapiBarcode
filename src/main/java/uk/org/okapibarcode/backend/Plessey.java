@@ -70,7 +70,7 @@ public class Plessey extends Symbol {
     protected void encode() {
 
         if (!content.matches("[0-9A-F]*")) {
-            throw new OkapiException("Invalid characters in input");
+            throw OkapiInputException.invalidCharactersInInput();
         }
 
         int length = content.length();

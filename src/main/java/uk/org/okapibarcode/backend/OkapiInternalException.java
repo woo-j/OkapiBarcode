@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Daniel Gredler
+ * Copyright 2024 Daniel Gredler
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,21 +17,26 @@
 package uk.org.okapibarcode.backend;
 
 /**
- * An Okapi Barcode exception.
+ * An Okapi Barcode exception triggered by an unexpected internal error,
+ * i.e. probably not the user's fault. This type of exception should
+ * ideally never occur, because it probably indicates a logic error
+ * within Okapi itself. In the web world, this exception would be similar
+ * to an HTTP 5xx status code.
  *
  * @author Daniel Gredler
+ * @see OkapiInputException
  */
-public abstract class OkapiException extends RuntimeException {
+public class OkapiInternalException extends OkapiException {
 
     /** Serial version UID. */
-    private static final long serialVersionUID = -630504124631140642L;
+    private static final long serialVersionUID = 1976843420413870023L;
 
     /**
      * Creates a new instance.
      *
      * @param message the error message
      */
-    public OkapiException(String message) {
+    public OkapiInternalException(String message) {
         super(message);
     }
 

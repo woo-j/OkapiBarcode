@@ -32,12 +32,12 @@ public class UspsPackage extends Symbol {
 
         if (!content.matches("[0-9\\[\\]]+")) {
             /* Input must be numeric only */
-            throw new OkapiException("Invalid IMpb data");
+            throw OkapiInputException.invalidCharactersInInput();
         }
 
         if (content.length() % 2 != 0) {
             /* Input must be even length */
-            throw new OkapiException("Invalid IMpb data");
+            throw new OkapiInputException("Invalid IMpb data");
         }
 
         Code128 code128 = new Code128();

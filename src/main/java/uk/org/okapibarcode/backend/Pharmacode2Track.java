@@ -33,16 +33,16 @@ public class Pharmacode2Track extends Symbol {
     protected void encode() {
 
         if (content.length() > 8) {
-            throw new OkapiException("Input too long");
+            throw OkapiInputException.inputTooLong();
         }
 
         if (!content.matches("[0-9]+")) {
-            throw new OkapiException("Invalid characters in data");
+            throw OkapiInputException.invalidCharactersInInput();
         }
 
         int tester = Integer.parseInt(content);
         if (tester < 4 || tester > 64570080) {
-            throw new OkapiException("Data out of range");
+            throw new OkapiInputException("Data out of range");
         }
 
         StringBuilder dest = new StringBuilder();

@@ -149,7 +149,7 @@ public class MicroQrCode extends Symbol {
         boolean kanjiModeUsed;
 
         if (content.length() > 35) {
-            throw new OkapiException("Input data too long");
+            throw OkapiInputException.inputTooLong();
         }
 
         inputCharCheck();
@@ -232,14 +232,14 @@ public class MicroQrCode extends Symbol {
             version_valid[2] = false;
         }
         if (binaryCount[3] > 128) {
-            throw new OkapiException("Input data too long");
+            throw OkapiInputException.inputTooLong();
         }
 
         /* Eliminate possible versions depending on error correction level specified */
         ecc_level = preferredEccLevel;
 
         if (ecc_level == EccMode.H) {
-            throw new OkapiException("Error correction level H not available");
+            throw new OkapiInputException("Error correction level H not available");
         }
 
         if (ecc_level == EccMode.Q) {
@@ -247,7 +247,7 @@ public class MicroQrCode extends Symbol {
             version_valid[1] = false;
             version_valid[2] = false;
             if (binaryCount[3] > 80) {
-                throw new OkapiException("Input data too long");
+                throw OkapiInputException.inputTooLong();
             }
         }
 
@@ -260,7 +260,7 @@ public class MicroQrCode extends Symbol {
                 version_valid[2] = false;
             }
             if (binaryCount[3] > 112) {
-                throw new OkapiException("Input data too long");
+                throw OkapiInputException.inputTooLong();
             }
         }
 
@@ -304,7 +304,7 @@ public class MicroQrCode extends Symbol {
         binary = new StringBuilder();
         generateBinary(version);
         if (binary.length() > 128) {
-            throw new OkapiException("Input data too long");
+            throw OkapiInputException.inputTooLong();
         }
 
         switch (version) {
@@ -472,7 +472,7 @@ public class MicroQrCode extends Symbol {
         try {
             temp = content.getBytes("SJIS");
         } catch (UnsupportedEncodingException e) {
-            throw new OkapiException("Character encoding error");
+            throw new OkapiInternalException("Character encoding error");
         }
 
         qmarkAfter = 0;
@@ -484,7 +484,7 @@ public class MicroQrCode extends Symbol {
 
         /* If these values are the same, conversion was successful */
         if (qmarkBefore != qmarkAfter) {
-            throw new OkapiException("Invalid characters in input data");
+            throw OkapiInputException.invalidCharactersInInput();
         }
     }
 
@@ -735,7 +735,7 @@ public class MicroQrCode extends Symbol {
                     try {
                         jisBytes = oneChar.getBytes("SJIS");
                     } catch (UnsupportedEncodingException e) {
-                        throw new OkapiException("Character encoding error");
+                        throw new OkapiInternalException("Character encoding error");
                     }
 
                     jis = ((jisBytes[0] & 0xFF) << 8);

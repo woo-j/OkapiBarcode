@@ -20,7 +20,7 @@ import static java.nio.charset.StandardCharsets.ISO_8859_1;
 
 import java.nio.charset.StandardCharsets;
 
-import uk.org.okapibarcode.backend.OkapiException;
+import uk.org.okapibarcode.backend.OkapiInputException;
 
 /**
  * String utility class.
@@ -117,7 +117,7 @@ public final class Strings {
             } else {
                 if (i + 1 >= s.length()) {
                     String msg = "Error processing escape sequences: expected escape character, found end of string";
-                    throw new OkapiException(msg);
+                    throw new OkapiInputException(msg);
                 } else {
                     char c2 = s.charAt(i + 1);
                     switch (c2) {
@@ -176,7 +176,7 @@ public final class Strings {
                         case 'x':
                             if (i + 3 >= s.length()) {
                                 String msg = "Error processing escape sequences: expected hex sequence, found end of string";
-                                throw new OkapiException(msg);
+                                throw new OkapiInputException(msg);
                             } else {
                                 char c3 = s.charAt(i + 2);
                                 char c4 = s.charAt(i + 3);
@@ -186,14 +186,14 @@ public final class Strings {
                                     i += 3;
                                 } else {
                                     String msg = "Error processing escape sequences: expected hex sequence, found '" + c3 + c4 + "'";
-                                    throw new OkapiException(msg);
+                                    throw new OkapiInputException(msg);
                                 }
                             }
                             break;
                         case 'u':
                             if (i + 5 >= s.length()) {
                                 String msg = "Error processing escape sequences: expected unicode hex sequence, found end of string";
-                                throw new OkapiException(msg);
+                                throw new OkapiInputException(msg);
                             } else {
                                 char c3 = s.charAt(i + 2);
                                 char c4 = s.charAt(i + 3);
@@ -206,7 +206,7 @@ public final class Strings {
                                     i += 5;
                                 } else {
                                     String msg = "Error processing escape sequences: expected unicode hex sequence, found '" + c3 + c4 + c5 + c6 + "'";
-                                    throw new OkapiException(msg);
+                                    throw new OkapiInputException(msg);
                                 }
                             }
                             break;
@@ -214,7 +214,7 @@ public final class Strings {
                             if (lenient) {
                                 sb.append(c);
                             } else {
-                                throw new OkapiException("Error processing escape sequences: expected valid escape character, found '" + c2 + "'");
+                                throw new OkapiInputException("Error processing escape sequences: expected valid escape character, found '" + c2 + "'");
                             }
                     }
                 }

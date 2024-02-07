@@ -67,7 +67,7 @@ public class Code3Of9Extended extends Symbol {
     protected void encode() {
 
         if (!content.matches("[\u0000-\u007F]+")) {
-            throw new OkapiException("Invalid characters in data");
+            throw OkapiInputException.invalidCharactersInInput();
         }
 
         StringBuilder s = new StringBuilder(content.length() * 2);

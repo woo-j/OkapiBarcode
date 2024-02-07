@@ -28,11 +28,11 @@ public class Pharmazentralnummer extends Symbol {
 
         int len = content.length();
         if (len > 7) {
-            throw new OkapiException("Input data too long");
+            throw OkapiInputException.inputTooLong();
         }
 
         if (!content.matches("[0-9]+")) {
-            throw new OkapiException("Invalid characters in data");
+            throw OkapiInputException.invalidCharactersInInput();
         }
 
         StringBuilder localstr = new StringBuilder();
@@ -50,7 +50,7 @@ public class Pharmazentralnummer extends Symbol {
 
         int check_digit = count % 11;
         if (check_digit == 10) {
-            throw new OkapiException("Not a valid PZN identifier, check digit is 10");
+            throw new OkapiInputException("Not a valid PZN identifier, check digit is 10");
         }
 
         infoLine("Check Digit: " + check_digit);

@@ -154,7 +154,7 @@ public class CodeOne extends Symbol {
         StringBuilder bin = new StringBuilder();
 
         if (!content.matches("[\u0000-\u00FF]+")) {
-            throw new OkapiException("Invalid characters in input data");
+            throw OkapiInputException.invalidCharactersInInput();
         }
 
         if (preferredVersion == Version.S) {
@@ -163,11 +163,11 @@ public class CodeOne extends Symbol {
             infoLine("Version: S");
 
             if (length > 18) {
-                throw new OkapiException("Input data too long");
+                throw OkapiInputException.inputTooLong();
             }
 
             if (!content.matches("[0-9]+?")) {
-                throw new OkapiException("Invalid characters in input");
+                throw OkapiInputException.invalidCharactersInInput();
             }
 
             sub_version = 3;
@@ -266,7 +266,7 @@ public class CodeOne extends Symbol {
             data_length = encodeAsCode1Data();
 
             if (data_length > 38) {
-                throw new OkapiException("Input data too long");
+                throw OkapiInputException.inputTooLong();
             }
 
             size = 10;
@@ -1428,7 +1428,7 @@ public class CodeOne extends Symbol {
 
             if (targetPoint > 1480) {
                 /* Data is too large for symbol */
-                throw new OkapiException("Input data too long");
+                throw OkapiInputException.inputTooLong();
             }
 
         } while (sourcePoint < length);
@@ -1566,7 +1566,7 @@ public class CodeOne extends Symbol {
         /* Re-check length of data */
         if (targetPoint > 1480) {
             /* Data is too large for symbol */
-            throw new OkapiException("Input data too long");
+            throw OkapiInputException.inputTooLong();
         }
 
         return targetPoint;

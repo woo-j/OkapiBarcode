@@ -645,7 +645,7 @@ public class Composite extends Symbol {
         linearWidth = 0;
 
         if (linearContent.isEmpty()) {
-            throw new OkapiException("No linear data set");
+            throw new OkapiInputException("No linear data set");
         }
 
         // Manage composite component encoding first
@@ -757,7 +757,7 @@ public class Composite extends Symbol {
                 top_shift = 2;
                 break;
             default:
-                throw new OkapiException("Linear symbol not recognised");
+                throw new OkapiInternalException("Linear symbol not recognised");
         }
 
         if (linearDataType != null) {
@@ -788,7 +788,7 @@ public class Composite extends Symbol {
 
         int extraSepHeight = separatorHeight - 1;
         if (extraSepHeight > 0 && (symbology == LinearEncoding.EAN || symbology == LinearEncoding.UPCA || symbology == LinearEncoding.UPCE)) {
-            throw new OkapiException("Composite EAN and UPC separator height cannot be changed");
+            throw new OkapiInputException("Composite EAN and UPC separator height cannot be changed");
         }
 
         for (Rectangle orig : linear.rectangles) {
@@ -835,19 +835,19 @@ public class Composite extends Symbol {
     private void encodeComposite() {
 
         if (content.length() > 2990) {
-            throw new OkapiException("2D component input data too long");
+            throw new OkapiInputException("2D component input data too long");
         }
 
         inputData = toBytes(content, StandardCharsets.US_ASCII);
         if (inputData == null) {
-            throw new OkapiException("Invalid characters in input data");
+            throw OkapiInputException.invalidCharactersInInput();
         }
 
         cc_mode = userPreferredMode;
 
         if (cc_mode == CompositeMode.CC_C && symbology != LinearEncoding.CODE_128) {
             /* CC-C can only be used with a GS1-128 linear part */
-            throw new OkapiException("Invalid mode (CC-C only valid with GS1-128 linear component)");
+            throw new OkapiInputException("Invalid mode (CC-C only valid with GS1-128 linear component)");
         }
 
         switch (symbology) {
@@ -882,10 +882,11 @@ public class Composite extends Symbol {
             cc_mode = CompositeMode.CC_B;
         }
 
-        if (cc_mode == CompositeMode.CC_B) { /* If the data didn't fit into CC-A it is recalculated for CC-B */
+        if (cc_mode == CompositeMode.CC_B) {
+            /* If the data didn't fit into CC-A it is recalculated for CC-B */
             if (!cc_binary_string()) {
                 if (symbology != LinearEncoding.CODE_128) {
-                    throw new OkapiException("Input too long");
+                    throw OkapiInputException.inputTooLong();
                 } else {
                     cc_mode = CompositeMode.CC_C;
                 }
@@ -893,10 +894,9 @@ public class Composite extends Symbol {
         }
 
         if (cc_mode == CompositeMode.CC_C) {
-            /* If the data didn't fit in CC-B (and linear
-             * part is GS1-128) it is recalculated for CC-C */
+            /* If the data didn't fit in CC-B (and linear part is GS1-128) it is recalculated for CC-C */
             if (!cc_binary_string()) {
-                throw new OkapiException("Input too long");
+                throw OkapiInputException.inputTooLong();
             }
         }
 
@@ -1341,7 +1341,7 @@ public class Composite extends Symbol {
                 if (!((ninety[i] >= '0' && ninety[i] <= '9') || (ninety[i] >= 'A' && ninety[i] <= 'Z'))) {
                     if (ninety[i] != '*' && ninety[i] != ',' && ninety[i] != '-' && ninety[i] != '.' && ninety[i] != '/') {
                         /* An Invalid AI 90 character */
-                        throw new OkapiException("Invalid AI 90 data");
+                        throw new OkapiInputException("Invalid AI 90 data");
                     }
                 }
             }
@@ -1561,7 +1561,7 @@ public class Composite extends Symbol {
         }
 
         if (binary_string.length() > 11805) { /* (2361 * 5) */
-            throw new OkapiException("Input too long");
+            throw OkapiInputException.inputTooLong();
         }
 
         /* size of the symbol may have changed when adding data in the above sequence */

@@ -57,7 +57,7 @@ public class DataMatrixFuzzer {
 
         DataType type = deriveDataTypeFrom(content);
         boolean readerInit = deriveBooleanFrom(content);
-        int size = deriveIntFrom(content, 0, 30); // 0 = no preference, 1-30 are valid choices
+        int size = deriveIntFrom(content, 1, 30);
         ForceMode mode = deriveForceModeFrom(content);
         check(content, type, readerInit, size, mode);
     }

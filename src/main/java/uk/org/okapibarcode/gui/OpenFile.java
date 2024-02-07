@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package uk.org.okapibarcode.gui;
 
 import java.io.File;
@@ -26,7 +27,7 @@ import java.io.IOException;
  */
 public class OpenFile {
     public static String ReadFile (File file, boolean isBatch) throws IOException {
-        String file_data = "";        
+        String file_data = "";
         try (FileInputStream fis = new FileInputStream(file)) {
             int count;
 

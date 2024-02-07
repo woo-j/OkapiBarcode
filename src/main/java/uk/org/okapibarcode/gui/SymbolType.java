@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package uk.org.okapibarcode.gui;
 
 /**
@@ -34,11 +35,11 @@ public class SymbolType {
         CODE39_HIBC, USPS_POSTNET, USPS_PLANET, CODE_32, AZTEC_HIBC, CODABLOCK_HIBC,
         CODE_128_HIBC, DATAMATRIX_HIBC, PDF417_HIBC, PDF417_MICRO_HIBC,
         QR_HIBC, PHARMA, PHARMA_TWOTRACK, PZN, USPS_IMPB
-    } 
+    }
 
     String guiLabel; // GUI interface name
     Encoding symbology;
-    
+
     public SymbolType(String label, Encoding encoding) {
         guiLabel = label;
         symbology = encoding;

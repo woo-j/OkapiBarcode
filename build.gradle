@@ -1,4 +1,5 @@
 apply plugin: 'java-library'
+apply plugin: 'checkstyle'
 apply plugin: 'eclipse'
 apply plugin: 'jacoco'
 
@@ -34,6 +35,11 @@ jar {
         'Implementation-Title': 'Okapi Barcode',
         'Implementation-Version': project.version
     )
+}
+
+checkstyle {
+    configFile = file('checkstyle.xml')
+    showViolations = true
 }
 
 test {

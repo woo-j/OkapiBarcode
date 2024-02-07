@@ -134,6 +134,15 @@ public class Upc extends Symbol {
     }
 
     /**
+     * Returns the UPC add-on content which was encoded, if any. Only available after {@link #setContent(String)} is called.
+     *
+     * @return the UPC add-on content which was encoded, if any
+     */
+    public String getAddOnContent() {
+        return addOn != null ? addOn.getContent() : null;
+    }
+
+    /**
      * Sets the linkage flag. If set to <code>true</code>, this symbol is part of a composite symbol.
      *
      * @param linkageFlag the linkage flag

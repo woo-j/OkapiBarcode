@@ -50,6 +50,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.imageio.ImageIO;
@@ -780,7 +781,7 @@ public class SymbolTest {
      * @param inputs the inputs used to generate the actual value
      */
     public static void assertEqual(String expected, String actual, Object... inputs) {
-        if (!expected.equals(actual)) {
+        if (!Objects.equals(expected, actual)) {
             StringBuilder msg = new StringBuilder(100);
             msg.append('"').append(toPrintableAscii(expected)).append("\" != \"");
             msg.append(toPrintableAscii(actual)).append("\" for inputs (");

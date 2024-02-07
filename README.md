@@ -126,6 +126,9 @@ and data.
 
 ### Recent Releases
 
+#### Okapi Barcode 0.4.2
+- Data Matrix: fix encoding of trailing extended ASCII characters in TEXT/C40 mode (found via fuzzing)
+
 #### Okapi Barcode 0.4.1
 - DataBar Expanded: various small fixes and cleanup
 
@@ -168,5 +171,5 @@ and data.
 
 #### Okapi Barcode 0.3.0
 
-- POSTNET: improve symbol configurability (module width ratio, short height percentage, long height percentage)
-- USPS OneCode: improve symbol configurability (module width ratio, short height percentage, long height percentage)
+- POSTNET: improve symbol configurability (module width ratio, short and long height percentages)
+- USPS OneCode: improve symbol configurability (module width ratio, short and long height percentages)

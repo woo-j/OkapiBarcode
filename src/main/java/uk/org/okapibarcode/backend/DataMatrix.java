@@ -365,10 +365,17 @@ public class DataMatrix extends Symbol {
         }
 
         int required = binlen + process_p;
+
+        // In 99% of cases N trailing data characters can be encoded using N codewords, thanks to implicit ASCII
+        // latches (see encodeRemainder())... but there are two exceptions:
+        // 1. In X12 encodation when there are 2 trailing data characters, a scenario which requires 3 codewords
+        //    (explicit ASCII latch required)
+        // 2. In C40 or TEXT encodation when there is one trailing extended ASCII character, and we have already
+        //    performed the Shift 2 + Upper Shift preparation
         if (last_mode == Mode.DM_X12 && process_p == 2) {
-            // it appears that in all modes, N trailing data characters can be encoded using N codewords, thanks
-            // to implicit ASCII latches (see encodeRemainder())... *except* in X12 encodation when there are 2
-            // trailing data characters, a scenario which requires 3 codewords (explicit ASCII latch required)
+            required++;
+        }
+        if ((last_mode == Mode.DM_C40 || last_mode == Mode.DM_TEXT) && process_p == 1 && endsWithUpperShift(target, binlen)) {
             required++;
         }
 
@@ -394,14 +401,14 @@ public class DataMatrix extends Symbol {
                 }
             }
             if (calcsize >= DM_SIZES_COUNT) {
-                throw new OkapiException("Data too long to fit in symbol");
+                throw new OkapiException("Input too long to fit in any of the available symbol sizes");
             }
             symbolsize = calcsize;
         } else {
             // The symbol size was specified by the user
             // Thus check if the data fits into this symbol size and use this size
             if (calcsize > optionsize) {
-                throw new OkapiException("Input too long for selected symbol size");
+                throw new OkapiException("Input too long to fit in the selected symbol size");
             }
             symbolsize = optionsize;
         }
@@ -409,9 +416,8 @@ public class DataMatrix extends Symbol {
         // Now that we know the symbol size we can handle the remaining data in the process buffer.
         int symbolsLeft = MATRIX_BYTES[symbolsize] - binlen;
         binlen = encodeRemainder(symbolsLeft, binlen);
-
         if (binlen > MATRIX_BYTES[symbolsize]) {
-            throw new OkapiException("Data too long to fit in symbol");
+            throw new OkapiException("Input unexpectedly too long to fit in the selected symbol size");
         }
 
         H = MATRIX_H[symbolsize];
@@ -778,14 +784,8 @@ public class DataMatrix extends Symbol {
                     process_p++;
 
                     while (process_p >= 3) {
-                        int iv;
+                        tp = addTriplet(process_buffer[0], process_buffer[1], process_buffer[2], target, tp);
 
-                        iv = (1600 * process_buffer[0]) + (40 * process_buffer[1])
-                                + (process_buffer[2]) + 1;
-                        target[tp] = iv / 256;
-                        tp++;
-                        target[tp] = iv % 256;
-                        tp++;
                         binary[binary_length] = ' ';
                         binary_length++;
                         binary[binary_length] = ' ';
@@ -851,14 +851,8 @@ public class DataMatrix extends Symbol {
                     process_p++;
 
                     while (process_p >= 3) {
-                        int iv;
+                        tp = addTriplet(process_buffer[0], process_buffer[1], process_buffer[2], target, tp);
 
-                        iv = (1600 * process_buffer[0]) + (40 * process_buffer[1])
-                                + (process_buffer[2]) + 1;
-                        target[tp] = iv / 256;
-                        tp++;
-                        target[tp] = iv % 256;
-                        tp++;
                         binary[binary_length] = ' ';
                         binary_length++;
                         binary[binary_length] = ' ';
@@ -924,14 +918,8 @@ public class DataMatrix extends Symbol {
                     process_p++;
 
                     while (process_p >= 3) {
-                        int iv;
+                        tp = addTriplet(process_buffer[0], process_buffer[1], process_buffer[2], target, tp);
 
-                        iv = (1600 * process_buffer[0]) + (40 * process_buffer[1])
-                                + (process_buffer[2]) + 1;
-                        target[tp] = iv / 256;
-                        tp++;
-                        target[tp] = iv % 256;
-                        tp++;
                         binary[binary_length] = ' ';
                         binary_length++;
                         binary[binary_length] = ' ';
@@ -1024,7 +1012,7 @@ public class DataMatrix extends Symbol {
             }
 
             if (tp > 1558) {
-                throw new OkapiException("Data too long to fit in symbol");
+                throw new OkapiException("Input too long to fit any Data Matrix symbol");
             }
 
         } /* while */
@@ -1083,21 +1071,36 @@ public class DataMatrix extends Symbol {
             case DM_C40:
             case DM_TEXT:
                 if (process_p == 1) { // 1 data character left to encode
-                    if (symbols_left > 1) {
-                        target[tp] = 254; // Unlatch and encode remaining data in ASCII
+                    if (endsWithUpperShift(target, tp)) {
+                        // Normally we would switch back to ASCII mode (either implicitly or explicitly) and encode the
+                        // last data character in ASCII mode... But in this case, we have an extended ASCII value and
+                        // we've already gone through the necessary "Shift 2 + Upper Shift" sequence in C40 or TEXT mode...
+                        // ASCII encodation would actually require 3 codewords (Unlatch + Upper Shift again + value), vs
+                        // 2 codewords (one value triplet) to just stay in C40 or TEXT mode... So we stay in C40 or TEXT
+                        // mode, encode the last extended ASCII char, and pad with another "Shift 2 + Upper Shift" (1, 30).
+                        // Note that in this scenario Zint actually backtracks to the last complete triplet and encodes the
+                        // remainder (which can be quite a bit) in ASCII mode.
+                        tp = addTriplet(process_buffer[0], 1, 30, target, tp);
+                        info("(" + process_buffer[0] + " 1 30) ");
+                        if (symbols_left > 2) {
+                            target[tp] = 254; // Unlatch
+                            tp++;
+                            info("ASC ");
+                        }
+                    } else {
+                        // Standard approach: go back to ASCII mode, either implicitly or explicitly
+                        if (symbols_left > 1) {
+                            target[tp] = 254; // Unlatch and encode remaining data in ASCII
+                            tp++;
+                            info("ASC ");
+                        }
+                        target[tp] = inputData[inputlen - 1] + 1;
+                        infoSpace(target[tp] - 1);
                         tp++;
-                        info("ASC ");
                     }
-                    target[tp] = inputData[inputlen - 1] + 1;
-                    infoSpace(target[tp] - 1);
-                    tp++;
                 } else if (process_p == 2) { // 2 data characters left to encode
                     // Pad with shift 1 value (0) and encode as double.
-                    int intValue = (1600 * process_buffer[0]) + (40 * process_buffer[1]) + 1; // ie (0 + 1).
-                    target[tp] = (intValue / 256);
-                    tp++;
-                    target[tp] = (intValue % 256);
-                    tp++;
+                    tp = addTriplet(process_buffer[0], process_buffer[1], 0, target, tp);
                     info("(" + process_buffer[0] + " " + process_buffer[1] + " 0) ");
                     if (symbols_left > 2) {
                         target[tp] = 254; // Unlatch
@@ -1197,6 +1200,20 @@ public class DataMatrix extends Symbol {
         infoLine();
 
         return tp;
+    }
+
+    // C40 and TEXT encodation, per spec section 5.2.5 (3 values -> 2 codewords)
+    private static int addTriplet(int c1, int c2, int c3, int[] codewords, int i) {
+        int val = (1600 * c1) + (40 * c2) + c3 + 1;
+        codewords[i++] = val / 256;
+        codewords[i++] = val % 256;
+        return i;
+    }
+
+    // extracts the last two values in the last C40 or TEXT triplet, and returns
+    // true if they are Shift 2 (value 1) + Upper Shift (value 30)
+    private static boolean endsWithUpperShift(int[] codewords, int i) {
+        return (i >= 2 && (((codewords[i - 2] * 256) + codewords[i - 1]) % 1600) == (40 * 1) + 30 + 1);
     }
 
     private boolean isTwoDigits(int pos) {

@@ -98,34 +98,36 @@ public class Postnet extends Symbol {
     }
 
     private void encode(String[] table) {
-        int i, sum, check_digit;
-        String dest;
 
         if (content.length() > 38) {
             throw OkapiInputException.inputTooLong();
         }
 
-        if (!content.matches("[0-9]+")) {
+        if (!content.matches("[0-9]*")) {
             throw OkapiInputException.invalidCharactersInInput();
         }
 
-        sum = 0;
-        dest = "L";
+        int sum = 0;
+        int destLen = 7 + (content.length() * 5);
+        StringBuilder dest = new StringBuilder(destLen);
+        dest.append('L');
 
-        for (i = 0; i < content.length(); i++) {
-            dest += table[content.charAt(i) - '0'];
+        for (int i = 0; i < content.length(); i++) {
+            dest.append(table[content.charAt(i) - '0']);
             sum += content.charAt(i) - '0';
         }
 
-        check_digit = (10 - (sum % 10)) % 10;
-        infoLine("Check Digit: " + check_digit);
+        int checkDigit = (10 - (sum % 10)) % 10;
+        infoLine("Check Digit: " + checkDigit);
 
-        dest += table[check_digit];
-        dest += "L";
+        dest.append(table[checkDigit]);
+        dest.append('L');
+
+        assert dest.length() == destLen;
 
         infoLine("Encoding: " + dest);
         readable = content;
-        pattern = new String[] { dest };
+        pattern = new String[] { dest.toString() };
         row_count = 1;
         row_height = new int[] { -1 };
     }

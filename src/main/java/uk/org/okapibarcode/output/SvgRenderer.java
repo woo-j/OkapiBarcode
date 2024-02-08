@@ -96,7 +96,7 @@ public class SvgRenderer implements SymbolRenderer {
         int marginY = (int) (symbol.getQuietZoneVertical() * magnification);
 
         String title;
-        if (content == null || content.isEmpty()) {
+        if (content.isEmpty()) {
             title = "OkapiBarcode Generated Symbol";
         } else {
             title = content;

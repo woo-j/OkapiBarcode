@@ -217,7 +217,7 @@ public class Upc extends Symbol {
 
         content = validateAndPad(content, 7);
 
-        String expanded = expandToEquivalentUpcA(content, true);
+        String expanded = expandToEquivalentUpcA(content);
         infoLine("UPC-A Equivalent: " + expanded);
 
         char check = calcDigit(expanded);
@@ -249,10 +249,9 @@ public class Upc extends Symbol {
      * Expands the zero-compressed UPC-E code to make a UPC-A equivalent (EN Table 5).
      *
      * @param content the UPC-E code to expand
-     * @param validate whether or not to validate the input
      * @return the UPC-A equivalent of the specified UPC-E code
      */
-    protected String expandToEquivalentUpcA(String content, boolean validate) {
+    protected String expandToEquivalentUpcA(String content) {
 
         char[] upce = content.toCharArray();
         char[] upca = new char[11];
@@ -276,7 +275,7 @@ public class Upc extends Symbol {
                 upca[3] = upce[3];
                 upca[9] = upce[4];
                 upca[10] = upce[5];
-                if (validate && (upce[3] == '0' || upce[3] == '1' || upce[3] == '2')) {
+                if (upce[3] == '0' || upce[3] == '1' || upce[3] == '2') {
                     /* Note 1 - "X3 shall not be equal to 0, 1 or 2" */
                     throw new OkapiInputException("Invalid UPC-E data");
                 }
@@ -285,7 +284,7 @@ public class Upc extends Symbol {
                 upca[3] = upce[3];
                 upca[4] = upce[4];
                 upca[10] = upce[5];
-                if (validate && upce[4] == '0') {
+                if (upce[4] == '0') {
                     /* Note 2 - "X4 shall not be equal to 0" */
                     throw new OkapiInputException("Invalid UPC-E data");
                 }
@@ -295,7 +294,7 @@ public class Upc extends Symbol {
                 upca[4] = upce[4];
                 upca[5] = upce[5];
                 upca[10] = emode;
-                if (validate && upce[5] == '0') {
+                if (upce[5] == '0') {
                     /* Note 3 - "X5 shall not be equal to 0" */
                     throw new OkapiInputException("Invalid UPC-E data");
                 }

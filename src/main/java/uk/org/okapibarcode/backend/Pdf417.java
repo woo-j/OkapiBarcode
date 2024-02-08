@@ -1423,7 +1423,7 @@ public class Pdf417 extends Symbol {
                 listet0[blockIndext] = 8;
                 listet1[blockIndext] = 15;
                 break;
-            case 13:
+            case '\r':
                 listet0[blockIndext] = 12;
                 listet1[blockIndext] = 11;
                 break;

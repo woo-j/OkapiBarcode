@@ -283,7 +283,7 @@ public class UspsOneCode extends Symbol {
         boolean[] bar_map = new boolean[130];
         char c;
 
-        if (!content.matches("[0-9\u002D]+")) {
+        if (!content.matches("[0-9\u002D]*")) {
             throw OkapiInputException.invalidCharactersInInput();
         }
 
@@ -308,11 +308,11 @@ public class UspsOneCode extends Symbol {
         }
 
         if (tracker.length() != 20) {
-            throw new OkapiInputException("Invalid length tracking code");
+            throw new OkapiInputException("Tracking code is not correct length");
         }
 
         if (zip.length() > 11) {
-            throw new OkapiInputException("Invalid ZIP code");
+            throw new OkapiInputException("ZIP code is not correct length");
         }
 
         /* *** Step 1 - Conversion of Data Fields into Binary Data *** */

@@ -23,6 +23,7 @@ import static uk.org.okapibarcode.util.Doubles.roughlyEqual;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import uk.org.okapibarcode.backend.OkapiInternalException;
 import uk.org.okapibarcode.backend.Symbol;
 import uk.org.okapibarcode.graphics.Circle;
 import uk.org.okapibarcode.graphics.Color;
@@ -188,7 +189,7 @@ public class PostScriptRenderer implements SymbolRenderer {
                         writer.append(" (").append(text.text).append(") show\n");
                         break;
                     default:
-                        throw new IllegalStateException("Unknown alignment: " + alignment);
+                        throw new OkapiInternalException("Unknown alignment: " + alignment);
                 }
                 writer.append("setmatrix\n");
             }

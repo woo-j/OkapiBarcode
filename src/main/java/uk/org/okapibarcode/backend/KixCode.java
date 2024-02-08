@@ -103,7 +103,7 @@ public class KixCode extends Symbol {
                     h = 2;
                     break;
                 default:
-                    throw new IllegalStateException("Unknown pattern character: " + c);
+                    throw new OkapiInternalException("Unknown pattern character: " + c);
             }
             rectangles.add(new Rectangle(x, y, w, h));
             x += 2;

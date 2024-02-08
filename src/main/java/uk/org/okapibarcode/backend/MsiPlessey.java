@@ -159,7 +159,7 @@ public class MsiPlessey extends Symbol {
             case MOD11: return 2;
             case MOD10_MOD10: return 2;
             case MOD11_MOD10: return 3;
-            default: throw new IllegalStateException("Unknown check digit scheme: " + scheme);
+            default: throw new OkapiInternalException("Unknown check digit scheme: " + scheme);
         }
     }
 

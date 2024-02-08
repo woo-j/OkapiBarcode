@@ -36,6 +36,7 @@ import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 import org.w3c.dom.Text;
 
+import uk.org.okapibarcode.backend.OkapiInternalException;
 import uk.org.okapibarcode.backend.Symbol;
 import uk.org.okapibarcode.graphics.Circle;
 import uk.org.okapibarcode.graphics.Color;
@@ -161,7 +162,7 @@ public class SvgRenderer implements SymbolRenderer {
                         anchor = "middle";
                         break;
                     default:
-                        throw new IllegalStateException("Unknown alignment: " + alignment);
+                        throw new OkapiInternalException("Unknown alignment: " + alignment);
                 }
                 writer.append("      <text x=\"").append(x)
                       .append("\" y=\"").append((text.y * magnification) + marginY)

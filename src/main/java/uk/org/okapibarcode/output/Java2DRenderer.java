@@ -31,6 +31,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.Collections;
 import java.util.List;
 
+import uk.org.okapibarcode.backend.OkapiInternalException;
 import uk.org.okapibarcode.backend.Symbol;
 import uk.org.okapibarcode.graphics.Circle;
 import uk.org.okapibarcode.graphics.Color;
@@ -127,7 +128,7 @@ public class Java2DRenderer implements SymbolRenderer {
                     x = (float) ((magnification * text.x) + (magnification * text.width / 2) - (bounds.getWidth() / 2) + marginX);
                     break;
                 default:
-                    throw new IllegalStateException("Unknown alignment: " + alignment);
+                    throw new OkapiInternalException("Unknown alignment: " + alignment);
             }
             g2d.drawString(text.text, x, y);
         }

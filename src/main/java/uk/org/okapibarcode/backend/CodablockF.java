@@ -86,7 +86,7 @@ public class CodablockF extends Symbol {
 
         final_mode = CfMode.MODEA;
 
-        if (!content.matches("[\u0000-\u00FF]+")) {
+        if (!content.matches("[\u0000-\u00FF]*")) {
             throw OkapiInputException.invalidCharactersInInput();
         }
 

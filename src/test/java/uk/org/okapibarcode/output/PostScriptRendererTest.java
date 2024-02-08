@@ -31,6 +31,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import uk.org.okapibarcode.backend.Code93;
+import uk.org.okapibarcode.backend.Ean;
+import uk.org.okapibarcode.backend.Ean.Mode;
 import uk.org.okapibarcode.backend.MaxiCode;
 import uk.org.okapibarcode.backend.QrCode;
 import uk.org.okapibarcode.backend.Symbol;
@@ -93,6 +95,17 @@ public class PostScriptRendererTest {
         code93.setHumanReadableAlignment(TextAlignment.JUSTIFY);
         code93.setContent("123456789");
         test(code93, 1, Color.WHITE, Color.BLACK, "code93-alignment-justify.eps");
+    }
+
+    @Test
+    public void testCode93AlignmentJustifyOneChar() throws IOException {
+        Code93 code93 = new Code93();
+        code93.setQuietZoneHorizontal(5);
+        code93.setQuietZoneVertical(5);
+        code93.setShowCheckDigits(false);
+        code93.setHumanReadableAlignment(TextAlignment.JUSTIFY);
+        code93.setContent("1");
+        test(code93, 1, Color.WHITE, Color.BLACK, "code93-alignment-justify-one-char.eps");
     }
 
     @Test
@@ -170,6 +183,16 @@ public class PostScriptRendererTest {
         qr.setQuietZoneVertical(5);
         qr.setContent("123456789");
         test(qr, 5, Color.WHITE, Color.BLACK, "qr-basic.eps");
+    }
+
+    @Test
+    public void testEan13WithAddOn() throws IOException {
+        Ean ean = new Ean();
+        ean.setMode(Mode.EAN13);
+        ean.setQuietZoneHorizontal(5);
+        ean.setQuietZoneVertical(5);
+        ean.setContent("123456789012+12345");
+        test(ean, 2, Color.WHITE, Color.BLACK, "ean-13-with-add-on.eps");
     }
 
     private void test(Symbol symbol, double magnification, Color paper, Color ink, String expectationFile) throws IOException {

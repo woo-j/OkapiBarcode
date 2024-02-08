@@ -302,8 +302,10 @@ public class SymbolTest {
             return new QRCodeReader();
         } else if (symbol instanceof MaxiCode &&
                    ((MaxiCode) symbol).getMode() != 6 &&
+                   ((MaxiCode) symbol).getEciMode() == 3 &&
                    ((MaxiCode) symbol).getStructuredAppendTotal() == 1) {
             // ZXing does not currently support mode 6 in MaxiCode symbols
+            // ZXing does not currently support ECI in MaxiCode symbols
             // ZXing does not currently support Structured Append in MaxiCode symbols
             return new MaxiCodeReader();
         } else if (symbol instanceof DataMatrix &&

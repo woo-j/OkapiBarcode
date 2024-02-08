@@ -229,8 +229,8 @@ public class MaxiCode extends Symbol {
 
         // mode 2 -> mode 3 if postal code isn't strictly numeric
         if (mode == 2) {
-            for (int i = 0; i < 10 && i < primaryData.length(); i++) {
-                if ((primaryData.charAt(i) < '0') || (primaryData.charAt(i) > '9')) {
+            for (int i = 0; i < 9 && i < primaryData.length(); i++) {
+                if (primaryData.charAt(i) < '0' || primaryData.charAt(i) > '9') {
                     mode = 3;
                     break;
                 }
@@ -769,26 +769,22 @@ public class MaxiCode extends Symbol {
         /* Inject ECI codes to beginning of data, according to Table 3 */
         if (eciMode != 3) {
             insert(0, 27); // ECI
-
-            if ((eciMode >= 0) && (eciMode <= 31)) {
+            if (eciMode >= 0 && eciMode <= 31) {
                 insert(1, eciMode & 0x1F);
                 length += 2;
             }
-
-            if ((eciMode >= 32) && (eciMode <= 1023)) {
+            if (eciMode >= 32 && eciMode <= 1023) {
                 insert(1, 0x20 + (eciMode >> 6));
                 insert(2, eciMode & 0x3F);
                 length += 3;
             }
-
-            if ((eciMode >= 1024) && (eciMode <= 32767)) {
+            if (eciMode >= 1024 && eciMode <= 32767) {
                 insert(1, 0x30 + (eciMode >> 12));
                 insert(2, (eciMode >> 6) & 0x3F);
                 insert(3, eciMode & 0x3F);
                 length += 4;
             }
-
-            if ((eciMode >= 32768) && (eciMode <= 999999)) {
+            if (eciMode >= 32768 && eciMode <= 999999) {
                 insert(1, 0x38 + (eciMode >> 18));
                 insert(2, (eciMode >> 12) & 0x3F);
                 insert(3, (eciMode >> 6) & 0x3F);

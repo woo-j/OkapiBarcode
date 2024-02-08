@@ -134,6 +134,26 @@ public class PostScriptRendererTest {
     }
 
     @Test
+    public void testCode93Empty() throws IOException {
+        Code93 code93 = new Code93();
+        code93.setQuietZoneHorizontal(5);
+        code93.setQuietZoneVertical(5);
+        code93.setEmptyContentAllowed(true);
+        code93.setContent("");
+        test(code93, 1, Color.WHITE, Color.BLACK, "code93-empty.eps");
+    }
+
+    @Test
+    public void testCode93Null() throws IOException {
+        Code93 code93 = new Code93();
+        code93.setQuietZoneHorizontal(5);
+        code93.setQuietZoneVertical(5);
+        code93.setEmptyContentAllowed(true);
+        code93.setContent(null);
+        test(code93, 1, Color.WHITE, Color.BLACK, "code93-empty.eps");
+    }
+
+    @Test
     public void testMaxiCodeBasic() throws IOException {
         MaxiCode maxicode = new MaxiCode();
         maxicode.setQuietZoneHorizontal(5);

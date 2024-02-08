@@ -117,7 +117,7 @@ public class Code93 extends Symbol {
     @Override
     protected void encode() {
 
-        if (!content.matches("[\u0000-\u007F]+")) {
+        if (!content.matches("[\u0000-\u007F]*")) {
             throw OkapiInputException.invalidCharactersInInput();
         }
 

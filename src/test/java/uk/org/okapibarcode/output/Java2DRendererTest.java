@@ -30,8 +30,10 @@ import javax.imageio.ImageIO;
 import org.junit.jupiter.api.Test;
 
 import uk.org.okapibarcode.backend.Code128;
+import uk.org.okapibarcode.backend.Code93;
 import uk.org.okapibarcode.backend.DataMatrix;
 import uk.org.okapibarcode.backend.MaxiCode;
+import uk.org.okapibarcode.backend.Symbol;
 import uk.org.okapibarcode.backend.SymbolTest;
 import uk.org.okapibarcode.graphics.Color;
 import uk.org.okapibarcode.graphics.TextAlignment;
@@ -91,7 +93,12 @@ public class Java2DRendererTest {
         Font font = SymbolTest.DEJA_VU_SANS.deriveFont((float) 18);
         font = font.deriveFont(Collections.singletonMap(TextAttribute.STRIKETHROUGH, TextAttribute.STRIKETHROUGH_ON));
 
-        testFont(font, TextAlignment.CENTER, "java-2d-custom-font-strikethrough.png");
+        Code128 code128 = new Code128();
+        code128.setHumanReadableAlignment(TextAlignment.CENTER);
+        code128.setFont(font);
+        code128.setContent("123456");
+
+        test(code128, "java-2d-custom-font-strikethrough.png");
     }
 
     @Test
@@ -100,28 +107,48 @@ public class Java2DRendererTest {
         Font font = SymbolTest.DEJA_VU_SANS.deriveFont((float) 3);
         font = font.deriveFont(AffineTransform.getScaleInstance(5, 1));
 
-        testFont(font, TextAlignment.JUSTIFY, "java-2d-custom-font-justify-transform.png");
-    }
-
-    private static void testFont(Font font, TextAlignment alignment, String filename) throws IOException {
-
         Code128 code128 = new Code128();
-        code128.setHumanReadableAlignment(alignment);
+        code128.setHumanReadableAlignment(TextAlignment.JUSTIFY);
         code128.setFont(font);
         code128.setContent("123456");
 
+        test(code128, "java-2d-custom-font-justify-transform.png");
+    }
+
+    @Test
+    public void testCode93AlignmentJustify() throws IOException {
+        Code93 code93 = new Code93();
+        code93.setQuietZoneHorizontal(5);
+        code93.setQuietZoneVertical(5);
+        code93.setHumanReadableAlignment(TextAlignment.JUSTIFY);
+        code93.setContent("123456789");
+        test(code93, "code93-alignment-justify.png");
+    }
+
+    @Test
+    public void testCode93AlignmentJustifyOneChar() throws IOException {
+        Code93 code93 = new Code93();
+        code93.setQuietZoneHorizontal(5);
+        code93.setQuietZoneVertical(5);
+        code93.setShowCheckDigits(false);
+        code93.setHumanReadableAlignment(TextAlignment.JUSTIFY);
+        code93.setContent("1");
+        test(code93, "code93-alignment-justify-one-char.png");
+    }
+
+    private static void test(Symbol symbol, String expectationFile) throws IOException {
+
         int magnification = 4;
-        int w = code128.getWidth() * magnification;
-        int h = code128.getHeight() * magnification;
+        int w = symbol.getWidth() * magnification;
+        int h = symbol.getHeight() * magnification;
 
         BufferedImage image = new BufferedImage(w, h, BufferedImage.TYPE_BYTE_GRAY);
         Graphics2D g2d = image.createGraphics();
 
         Java2DRenderer renderer = new Java2DRenderer(g2d, magnification, Color.WHITE, Color.BLACK);
-        renderer.render(code128);
+        renderer.render(symbol);
 
-        BufferedImage expected = ImageIO.read(Java2DRendererTest.class.getResourceAsStream(filename));
-        String dirName = filename.substring(0, filename.lastIndexOf('.'));
-        SymbolTest.assertEqual(expected, image, dirName);
+        BufferedImage expected = ImageIO.read(Java2DRendererTest.class.getResourceAsStream(expectationFile));
+        SymbolTest.assertEqual(expected, image, "java-2d");
     }
 }

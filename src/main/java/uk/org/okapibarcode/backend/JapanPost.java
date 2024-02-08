@@ -51,11 +51,11 @@ public class JapanPost extends Symbol {
     protected void encode() {
 
         content = content.toUpperCase(Locale.ENGLISH);
-        if (!content.matches("[0-9A-Z\\-]+")) {
+        if (!content.matches("[0-9A-Z\\-]*")) {
             throw OkapiInputException.invalidCharactersInInput();
         }
 
-        StringBuilder inter = new StringBuilder();
+        StringBuilder inter = new StringBuilder(40);
         for (int i = 0; i < content.length() && inter.length() < 20; i++) {
             char c = content.charAt(i);
             if ((c >= '0' && c <= '9') || c == '-') {
@@ -76,7 +76,8 @@ public class JapanPost extends Symbol {
         }
 
         int sum = 0;
-        StringBuilder dest = new StringBuilder();
+        int destLen = 7 + (20 * 3);
+        StringBuilder dest = new StringBuilder(destLen);
         dest.append("FD");
         for (int i = 0; i < 20; i++) {
             dest.append(JAPAN_TABLE[positionOf(inter.charAt(i), KASUT_SET)]);
@@ -90,6 +91,8 @@ public class JapanPost extends Symbol {
         }
         dest.append(JAPAN_TABLE[positionOf(CH_KASUT_SET[check], KASUT_SET)]);
         dest.append("DF");
+
+        assert dest.length() == destLen;
 
         infoLine("Encoding: " + dest);
         infoLine("Check Digit: " + check);

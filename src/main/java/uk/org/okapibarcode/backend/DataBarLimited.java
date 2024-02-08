@@ -194,7 +194,7 @@ public class DataBarLimited extends Symbol {
             throw OkapiInputException.inputTooLong();
         }
 
-        if (!content.matches("[0-9]+?")) {
+        if (!content.matches("[0-9]*")) {
             throw OkapiInputException.invalidCharactersInInput();
         }
 

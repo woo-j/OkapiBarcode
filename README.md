@@ -76,13 +76,15 @@ of work that have been invested in that project.
 
 ### Library Usage
 
+Okapi Barcode JARs are available for download from [Maven Central](http://search.maven.org/#search|ga|1|uk.org.okapibarcode).
+
 To generate barcode images in your own code using the Okapi Barcode library, use one of the symbology
 classes linked above:
 
-1. instantiate the class,
+1. instantiate the barcode class,
 2. customize any relevant settings,
 3. invoke `setContent(String)`, and then
-4. pass the symbol instance to one of the available symbol renderers
+4. pass the barcode instance to one of the available renderers
 ([Java 2D](src/main/java/uk/org/okapibarcode/output/Java2DRenderer.java),
 [PostScript](src/main/java/uk/org/okapibarcode/output/PostScriptRenderer.java),
 [SVG](src/main/java/uk/org/okapibarcode/output/SvgRenderer.java))
@@ -106,8 +108,6 @@ renderer.render(barcode);
 
 ImageIO.write(image, "png", new File("code128.png"));
 ```
-
-Okapi Barcode JARs are available for download from [Maven Central](http://search.maven.org/#search|ga|1|uk.org.okapibarcode).
 
 ### GUI Usage
 
@@ -151,7 +151,7 @@ and data.
 
 - GS1 Composite: avoid ArrayIndexOutOfBoundsException in some rare corner cases
 - PDF417: add `setContent(byte[])` method for binary data
-- PDF417: when using structured append (Macro PDF417), place padding before control block rather than after
+- PDF417: when using structured append (Macro PDF417), place padding before control block, not after
 - PDF417: fix auto-calculation of row count when data is very small and column count is specified
 - PDF417: add support for segment count and file name Macro PDF417 optional fields
 - Royal Mail 4-State: fix bug in check digit calculation

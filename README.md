@@ -89,7 +89,7 @@ classes linked above:
 [PostScript](src/main/java/uk/org/okapibarcode/output/PostScriptRenderer.java),
 [SVG](src/main/java/uk/org/okapibarcode/output/SvgRenderer.java))
 
-```
+```java
 Code128 barcode = new Code128();
 barcode.setFontName("Monospaced");
 barcode.setFontSize(16);

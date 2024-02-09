@@ -707,10 +707,10 @@ public class Code128 extends Symbol {
     private int reduceSubsetChanges(Mode[] mode_type, int[] mode_length, int index_point) {
 
         int totalLength = 0;
-        int i, length;
-        Mode current, last, next;
+        int length;
+        Mode current, last, next, nextShift;
 
-        for (i = 0; i < index_point; i++) {
+        for (int i = 0; i < index_point; i++) {
             current = mode_type[i];
             length = mode_length[i];
             if (i != 0) {
@@ -722,6 +722,16 @@ public class Code128 extends Symbol {
                 next = mode_type[i + 1];
             } else {
                 next = Mode.NULL;
+            }
+
+            /* The next shift mode is the location of the next fully-known code set. */
+            /* Everything between here and there will be either A/B/C or A/B. */
+            nextShift = Mode.NULL;
+            for (int j = i + 1; j < index_point; j++) {
+                if (mode_type[j] == Mode.SHIFTA || mode_type[j] == Mode.SHIFTB || mode_type[j] == Mode.SHIFTC) {
+                    nextShift = mode_type[j];
+                    break;
+                }
             }
 
             /* ISO 15417 Annex E Note 2 */
@@ -751,7 +761,7 @@ public class Code128 extends Symbol {
                     mode_type[i] = Mode.LATCHA;
                     current = Mode.LATCHA;
                 }
-                if ((current == Mode.AORB) && (next == Mode.SHIFTA)) { /* Rule 1c */
+                if ((current == Mode.AORB) && (nextShift == Mode.SHIFTA)) { /* Rule 1c */
                     mode_type[i] = Mode.LATCHA;
                     current = Mode.LATCHA;
                 }
@@ -776,11 +786,11 @@ public class Code128 extends Symbol {
                     mode_type[i] = Mode.LATCHB;
                     current = Mode.LATCHB;
                 }
-                if ((current == Mode.AORB) && (next == Mode.SHIFTA)) {
+                if ((current == Mode.AORB) && (nextShift == Mode.SHIFTA)) {
                     mode_type[i] = Mode.LATCHA;
                     current = Mode.LATCHA;
                 }
-                if ((current == Mode.AORB) && (next == Mode.SHIFTB)) {
+                if ((current == Mode.AORB) && (nextShift == Mode.SHIFTB)) {
                     mode_type[i] = Mode.LATCHB;
                     current = Mode.LATCHB;
                 }

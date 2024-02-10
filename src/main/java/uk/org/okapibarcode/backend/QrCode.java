@@ -222,10 +222,10 @@ public class QrCode extends Symbol {
      * <table>
      * <tbody>
      * <tr><th>ECC Level  </th><th>Error Correction Capacity</th><th>Recovery Capacity</th></tr>
-     * <tr><td>L (default)</td><td>Approx 20% of symbol     </td><td>Approx 7%        </td></tr>
-     * <tr><td>M          </td><td>Approx 37% of symbol     </td><td>Approx 15%       </td></tr>
-     * <tr><td>Q          </td><td>Approx 55% of symbol     </td><td>Approx 25%       </td></tr>
-     * <tr><td>H          </td><td>Approx 65% of symbol     </td><td>Approx 30%       </td></tr>
+     * <tr><td>L (default)</td><td>About 20% of symbol      </td><td>About 7%         </td></tr>
+     * <tr><td>M          </td><td>About 37% of symbol      </td><td>About 15%        </td></tr>
+     * <tr><td>Q          </td><td>About 55% of symbol      </td><td>About 25%        </td></tr>
+     * <tr><td>H          </td><td>About 65% of symbol      </td><td>About 30%        </td></tr>
      * </tbody>
      * </table>
      *
@@ -459,12 +459,15 @@ public class QrCode extends Symbol {
         qrBinary(datastream, version, targetCwCount, inputMode, inputData, gs1, eciMode, est_binlen);
         addEcc(fullstream, datastream, version, targetCwCount, blocks);
 
-        size = QR_SIZES[version - 1];
-
-        int[] grid = new int[size * size];
-
         infoLine("Version: " + version);
         infoLine("ECC Level: " + ecc_level.name());
+
+        // Populate the grid. Each grid entry represents one module, and contains information about
+        // whether that module is ON or OFF in the least-significant nibble (0x?1 = ON, 0x?0 = OFF),
+        // as well as information about whether it should be masked in the most-significant nibble.
+
+        size = QR_SIZES[version - 1];
+        int[] grid = new int[size * size];
 
         setupGrid(grid, size, version);
         populateGrid(grid, size, fullstream, QR_TOTAL_CODEWORDS[version - 1]);
@@ -476,6 +479,8 @@ public class QrCode extends Symbol {
         bitmask = applyBitmask(grid, size, ecc_level);
         infoLine("Mask Pattern: " + Integer.toBinaryString(bitmask));
         addFormatInfo(grid, size, ecc_level, bitmask);
+
+        // Transfer layout from the now-finished grid to the standard layout data structures.
 
         readable = "";
         pattern = new String[size];
@@ -599,9 +604,9 @@ public class QrCode extends Symbol {
                     case ALPHANUM:
                         count += tribus(version, 9, 11, 13);
                         alphaLength = blockLength(i, inputMode);
-                        // In alphanumeric mode % becomes %%
+                        // In GS1 and alphanumeric mode % becomes %%
                         if (gs1) {
-                            for (j = i; j < (i + alphaLength); j++) { // TODO: need to do this only if in GS1 mode? or is the other code wrong? https://sourceforge.net/p/zint/tickets/104/#227b
+                            for (j = i; j < (i + alphaLength); j++) {
                                 if (inputData[j] == '%') {
                                     percent++;
                                 }
@@ -805,8 +810,6 @@ public class QrCode extends Symbol {
     /** Converts input data to a binary stream and adds padding. */
     private void qrBinary(int[] datastream, int version, int target_binlen, QrMode[] inputMode, int[] inputData, boolean gs1, int eciMode, int est_binlen) {
 
-        // TODO: make encodeInfo a StringBuilder, make this method static?
-
         int position = 0;
         int short_data_block_length, i;
         int padbits;
@@ -814,7 +817,8 @@ public class QrCode extends Symbol {
         int toggle;
         QrMode data_block;
 
-        StringBuilder binary = new StringBuilder(est_binlen + 12);
+        int reserved = est_binlen + 12;
+        StringBuilder binary = new StringBuilder(reserved);
 
         if (gs1) {
             binary.append("0101"); /* FNC1 */
@@ -1031,6 +1035,8 @@ public class QrCode extends Symbol {
             infoSpace(datastream[i]);
         }
         infoLine();
+
+        assert binary.length() <= reserved;
     }
 
     private static void binaryAppend(int value, int length, StringBuilder binary) {
@@ -1638,7 +1644,6 @@ public class QrCode extends Symbol {
 
     /** Adds version information. */
     private static void addVersionInfo(int[] grid, int size, int version) {
-        // TODO: Zint masks with 0x41 instead of 0x01; which is correct? https://sourceforge.net/p/zint/tickets/110/
         int version_data = QR_ANNEX_D[version - 7];
         for (int i = 0; i < 6; i++) {
             grid[((size - 11) * size) + i] += (version_data >> (i * 3)) & 0x01;

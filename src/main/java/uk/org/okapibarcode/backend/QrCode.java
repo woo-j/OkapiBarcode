@@ -202,6 +202,9 @@ public class QrCode extends Symbol {
      * @param version the preferred symbol version
      */
     public void setPreferredVersion(int version) {
+        if (version < 1 || version > 40) {
+            throw new IllegalArgumentException("Invalid QR Code version: " + version);
+        }
         preferredVersion = version;
     }
 
@@ -410,7 +413,7 @@ public class QrCode extends Symbol {
 //
 //        version = autosize;
 
-        if ((preferredVersion >= 1) && (preferredVersion <= 40)) {
+        if (preferredVersion > 0) {
             /* If the user has selected a larger symbol than the smallest available,
              then use the size the user has selected, and re-optimize for this
              symbol size.

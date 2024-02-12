@@ -1630,7 +1630,7 @@ public class QrCode extends Symbol {
         }
 
         /* Test 4: Proportion of dark modules in entire symbol */
-        percentage = 100 * (dark_mods / (size * size));
+        percentage = (int) (100d * dark_mods / (size * size));
         k = Math.abs(percentage - 50) / 5;
         result += 10 * k;
 

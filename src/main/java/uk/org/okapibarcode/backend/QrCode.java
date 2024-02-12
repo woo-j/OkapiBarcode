@@ -1315,10 +1315,9 @@ public class QrCode extends Symbol {
     private static int applyBitmask(int[] grid, int size, EccLevel ecc_level, StringBuilder encodeInfo) {
 
         int x, y;
-        char p;
+        int p;
         int pattern;
-        int best_val, best_pattern;
-        int[] penalty = new int[8];
+        int penalty, best_val, best_pattern;
         byte[] mask = new byte[size * size];
         byte[] eval = new byte[size * size];
 
@@ -1369,17 +1368,14 @@ public class QrCode extends Symbol {
         }
 
         /* Evaluate result */
+        best_pattern = 0;
+        best_val = Integer.MAX_VALUE;
         for (pattern = 0; pattern < 8; pattern++) {
             addFormatInfoEval(eval, size, ecc_level, pattern);
-            penalty[pattern] = evaluate(eval, size, pattern, encodeInfo);
-        }
-
-        best_pattern = 0;
-        best_val = penalty[0];
-        for (pattern = 1; pattern < 8; pattern++) {
-            if (penalty[pattern] < best_val) {
+            penalty = evaluate(eval, size, pattern, best_val, encodeInfo);
+            if (penalty < best_val) {
                 best_pattern = pattern;
-                best_val = penalty[pattern];
+                best_val = penalty;
             }
         }
 
@@ -1435,7 +1431,7 @@ public class QrCode extends Symbol {
         eval[(8 * size) + 7] = (byte) ((((seq >> 8) & 0x01) != 0) ? (0x01 >> pattern) : 0x00);
     }
 
-    private static int evaluate(byte[] eval, int size, int pattern, StringBuilder encodeInfo) {
+    private static int evaluate(byte[] eval, int size, int pattern, int best, StringBuilder encodeInfo) {
 
         int x, y, i, block, weight;
         int result = 0;
@@ -1506,6 +1502,10 @@ public class QrCode extends Symbol {
         }
 
         encodeInfo.append(result).append(' ');
+        if (result > best) {
+            encodeInfo.append("EXIT\n");
+            return result;
+        }
 
         /* Test 2: Block of modules in same color */
         for (x = 0; x < size - 1; x++) {
@@ -1521,6 +1521,10 @@ public class QrCode extends Symbol {
         }
 
         encodeInfo.append(result).append(' ');
+        if (result > best) {
+            encodeInfo.append("EXIT\n");
+            return result;
+        }
 
         /* Test 3: 1:1:3:1:1 ratio pattern in row/column */
         /* Vertical */
@@ -1620,6 +1624,10 @@ public class QrCode extends Symbol {
         }
 
         encodeInfo.append(result).append(' ');
+        if (result > best) {
+            encodeInfo.append("EXIT\n");
+            return result;
+        }
 
         /* Test 4: Proportion of dark modules in entire symbol */
         percentage = 100 * (dark_mods / (size * size));

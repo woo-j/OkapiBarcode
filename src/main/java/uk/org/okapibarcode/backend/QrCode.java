@@ -479,8 +479,8 @@ public class QrCode extends Symbol {
             addVersionInfo(grid, size, version);
         }
 
-        bitmask = applyBitmask(grid, size, ecc_level);
-        infoLine("Mask Pattern: " + Integer.toBinaryString(bitmask));
+        bitmask = applyBitmask(grid, size, ecc_level, encodeInfo);
+        infoLine("Mask Pattern: " + maskToString(bitmask));
         addFormatInfo(grid, size, ecc_level, bitmask);
 
         // Transfer layout from the now-finished grid to the standard layout data structures.
@@ -781,11 +781,11 @@ public class QrCode extends Symbol {
 
     /** Choose from three numbers based on version. */
     private static int tribus(int version, int a, int b, int c) {
-        if (version < 10) {
+        if (version < 10) { // 1-9
             return a;
-        } else if (version >= 10 && version <= 26) {
+        } else if (version < 27) { // 10-26
             return b;
-        } else {
+        } else { // 27-40
             return c;
         }
     }
@@ -808,6 +808,20 @@ public class QrCode extends Symbol {
     /** Returns true if input is in the Numeric set (see Table J.1) */
     private static boolean isNumeric(int c) {
         return (c >= '0' && c <= '9');
+    }
+
+    private static String maskToString(int mask) {
+        switch (mask) {
+            case 0: return "000";
+            case 1: return "001";
+            case 2: return "010";
+            case 3: return "011";
+            case 4: return "100";
+            case 5: return "101";
+            case 6: return "110";
+            case 7: return "111";
+            default: return "000";
+        }
     }
 
     /** Converts input data to a binary stream and adds padding. */
@@ -1298,7 +1312,7 @@ public class QrCode extends Symbol {
         return ((fullstream[i / 8] & (0x80 >> (i % 8))) != 0);
     }
 
-    private static int applyBitmask(int[] grid, int size, EccLevel ecc_level) {
+    private static int applyBitmask(int[] grid, int size, EccLevel ecc_level, StringBuilder encodeInfo) {
 
         int x, y;
         char p;
@@ -1357,7 +1371,7 @@ public class QrCode extends Symbol {
         /* Evaluate result */
         for (pattern = 0; pattern < 8; pattern++) {
             addFormatInfoEval(eval, size, ecc_level, pattern);
-            penalty[pattern] = evaluate(eval, size, pattern);
+            penalty[pattern] = evaluate(eval, size, pattern, encodeInfo);
         }
 
         best_pattern = 0;
@@ -1421,29 +1435,32 @@ public class QrCode extends Symbol {
         eval[(8 * size) + 7] = (byte) ((((seq >> 8) & 0x01) != 0) ? (0x01 >> pattern) : 0x00);
     }
 
-    private static int evaluate(byte[] eval, int size, int pattern) {
+    private static int evaluate(byte[] eval, int size, int pattern, StringBuilder encodeInfo) {
 
-        int x, y, block, weight;
+        int x, y, i, block, weight;
         int result = 0;
-        int state;
+        byte state;
         int p;
         int dark_mods;
         int percentage, k;
-        int a, b, afterCount, beforeCount;
+        int afterCount, beforeCount;
         byte[] local = new byte[size * size];
 
         // all eight bit mask variants have been encoded in the 8 bits of the bytes
         // that make up the grid array; select them for evaluation according to the
         // desired pattern
+        dark_mods = 0;
         for (x = 0; x < size; x++) {
             for (y = 0; y < size; y++) {
-                if ((eval[(y * size) + x] & (0x01 << pattern)) != 0) {
-                    local[(y * size) + x] = '1';
-                } else {
-                    local[(y * size) + x] = '0';
+                i = (y * size) + x;
+                if ((eval[i] & (0x01 << pattern)) != 0) {
+                    local[i] = 1;
+                    dark_mods++; // optimization: early prep for test 4 below
                 }
             }
         }
+
+        encodeInfo.append("Mask ").append(maskToString(pattern)).append(" Penalties: ");
 
         /* Test 1: Adjacent modules in row/column in same colour */
         /* Vertical */
@@ -1451,14 +1468,15 @@ public class QrCode extends Symbol {
             state = local[x];
             block = 0;
             for (y = 0; y < size; y++) {
-                if (local[(y * size) + x] == state) {
+                i = (y * size) + x;
+                if (local[i] == state) {
                     block++;
                 } else {
                     if (block > 5) {
                         result += (3 + (block - 5));
                     }
                     block = 0;
-                    state = local[(y * size) + x];
+                    state = local[i];
                 }
             }
             if (block > 5) {
@@ -1471,14 +1489,15 @@ public class QrCode extends Symbol {
             state = local[y * size];
             block = 0;
             for (x = 0; x < size; x++) {
-                if (local[(y * size) + x] == state) {
+                i = (y * size) + x;
+                if (local[i] == state) {
                     block++;
                 } else {
                     if (block > 5) {
                         result += (3 + (block - 5));
                     }
                     block = 0;
-                    state = local[(y * size) + x];
+                    state = local[i];
                 }
             }
             if (block > 5) {
@@ -1486,16 +1505,22 @@ public class QrCode extends Symbol {
             }
         }
 
+        encodeInfo.append(result).append(' ');
+
         /* Test 2: Block of modules in same color */
         for (x = 0; x < size - 1; x++) {
             for (y = 0; y < size - 1; y++) {
-                if (((local[(y * size) + x] == local[((y + 1) * size) + x]) &&
-                        (local[(y * size) + x] == local[(y * size) + (x + 1)])) &&
-                        (local[(y * size) + x] == local[((y + 1) * size) + (x + 1)])) {
+                i = (y * size) + x;
+                state = local[i];
+                if (state == local[i + 1] &&
+                    state == local[i + size] &&
+                    state == local[i + size + 1]) {
                     result += 3;
                 }
             }
         }
+
+        encodeInfo.append(result).append(' ');
 
         /* Test 3: 1:1:3:1:1 ratio pattern in row/column */
         /* Vertical */
@@ -1503,41 +1528,44 @@ public class QrCode extends Symbol {
             for (y = 0; y < (size - 7); y++) {
                 p = 0;
                 for (weight = 0; weight < 7; weight++) {
-                    if (local[((y + weight) * size) + x] == '1') {
+                    if (local[((y + weight) * size) + x] == 1) {
                         p += (0x40 >> weight);
                     }
                 }
                 if (p == 0x5d) {
                     /* Pattern found, check before and after */
                     beforeCount = 0;
-                    for (b = (y - 4); b < y; b++) {
-                        if (b < 0) {
+                    for (i = (y - 4); i < y; i++) {
+                        if (i < 0) {
                             beforeCount++;
                         } else {
-                            if (local[(b * size) + x] == '0') {
+                            if (local[(i * size) + x] == 0) {
                                 beforeCount++;
                             } else {
                                 beforeCount = 0;
                             }
                         }
                     }
-
-                    afterCount = 0;
-                    for (a = (y + 7); a <= (y + 10); a++) {
-                        if (a >= size) {
-                            afterCount++;
-                        } else {
-                            if (local[(a * size) + x] == '0') {
+                    if (beforeCount == 4) {
+                        // Pattern is preceded by light area 4 modules wide
+                        result += 40;
+                    } else {
+                        afterCount = 0;
+                        for (i = (y + 7); i <= (y + 10); i++) {
+                            if (i >= size) {
                                 afterCount++;
                             } else {
-                                afterCount = 0;
+                                if (local[(i * size) + x] == 0) {
+                                    afterCount++;
+                                } else {
+                                    afterCount = 0;
+                                }
                             }
                         }
-                    }
-
-                    if ((beforeCount == 4) || (afterCount == 4)) {
-                        // Pattern is preceded or followed by light area 4 modules wide
-                        result += 40;
+                        if (afterCount == 4) {
+                            // Pattern is followed by light area 4 modules wide
+                            result += 40;
+                        }
                     }
                 }
             }
@@ -1548,63 +1576,57 @@ public class QrCode extends Symbol {
             for (x = 0; x < (size - 7); x++) {
                 p = 0;
                 for (weight = 0; weight < 7; weight++) {
-                    if (local[(y * size) + x + weight] == '1') {
+                    if (local[(y * size) + x + weight] == 1) {
                         p += (0x40 >> weight);
                     }
                 }
                 if (p == 0x5d) {
                     /* Pattern found, check before and after */
                     beforeCount = 0;
-                    for (b = (x - 4); b < x; b++) {
-                        if (b < 0) {
+                    for (i = (x - 4); i < x; i++) {
+                        if (i < 0) {
                             beforeCount++;
                         } else {
-                            if (local[(y * size) + b] == '0') {
+                            if (local[(y * size) + i] == 0) {
                                 beforeCount++;
                             } else {
                                 beforeCount = 0;
                             }
                         }
                     }
-
-                    afterCount = 0;
-                    for (a = (x + 7); a <= (x + 10); a++) {
-                        if (a >= size) {
-                            afterCount++;
-                        } else {
-                            if (local[(y * size) + a] == '0') {
+                    if (beforeCount == 4) {
+                        // Pattern is preceded by light area 4 modules wide
+                        result += 40;
+                    } else {
+                        afterCount = 0;
+                        for (i = (x + 7); i <= (x + 10); i++) {
+                            if (i >= size) {
                                 afterCount++;
                             } else {
-                                afterCount = 0;
+                                if (local[(y * size) + i] == 0) {
+                                    afterCount++;
+                                } else {
+                                    afterCount = 0;
+                                }
                             }
                         }
-                    }
-
-                    if ((beforeCount == 4) || (afterCount == 4)) {
-                        // Pattern is preceded or followed by light area 4 modules wide
-                        result += 40;
+                        if (afterCount == 4) {
+                            // Pattern is followed by light area 4 modules wide
+                            result += 40;
+                        }
                     }
                 }
             }
         }
+
+        encodeInfo.append(result).append(' ');
 
         /* Test 4: Proportion of dark modules in entire symbol */
-        dark_mods = 0;
-        for (x = 0; x < size; x++) {
-            for (y = 0; y < size; y++) {
-                if (local[(y * size) + x] == '1') {
-                    dark_mods++;
-                }
-            }
-        }
         percentage = 100 * (dark_mods / (size * size));
-        if (percentage <= 50) {
-            k = ((100 - percentage) - 50) / 5;
-        } else {
-            k = (percentage - 50) / 5;
-        }
-
+        k = Math.abs(percentage - 50) / 5;
         result += 10 * k;
+
+        encodeInfo.append(result).append('\n');
 
         return result;
     }

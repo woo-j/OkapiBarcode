@@ -1398,37 +1398,39 @@ public class QrCode extends Symbol {
     /** Adds format information to eval. */
     private static void addFormatInfoEval(byte[] eval, int size, EccLevel ecc_level, int pattern) {
 
-        int format = pattern;
+        int format;
         int seq;
         int i;
 
         switch(ecc_level) {
-            case L: format |= 0x08; break;
-            case Q: format |= 0x18; break;
-            case H: format |= 0x10; break;
+            case L: format = pattern | 0x08; break;
+            case Q: format = pattern | 0x18; break;
+            case H: format = pattern | 0x10; break;
+            case M: format = pattern; break;
+            default: throw new OkapiInternalException("Unknown ECC level: " + ecc_level);
         }
 
         seq = QR_ANNEX_C[format];
 
         for (i = 0; i < 6; i++) {
-            eval[(i * size) + 8] = (byte) ((((seq >> i) & 0x01) != 0) ? (0x01 >> pattern) : 0x00);
+            eval[(i * size) + 8] = (byte) ((seq >> i) & 0x01);
         }
 
         for (i = 0; i < 8; i++) {
-            eval[(8 * size) + (size - i - 1)] = (byte) ((((seq >> i) & 0x01) != 0) ? (0x01 >> pattern) : 0x00);
+            eval[(8 * size) + (size - i - 1)] = (byte) ((seq >> i) & 0x01);
         }
 
         for (i = 0; i < 6; i++) {
-            eval[(8 * size) + (5 - i)] = (byte) ((((seq >> (i + 9)) & 0x01) != 0) ? (0x01 >> pattern) : 0x00);
+            eval[(8 * size) + (5 - i)] = (byte) ((seq >> (i + 9)) & 0x01);
         }
 
         for (i = 0; i < 7; i++) {
-            eval[(((size - 7) + i) * size) + 8] = (byte) ((((seq >> (i + 8)) & 0x01) != 0) ? (0x01 >> pattern) : 0x00);
+            eval[(((size - 7) + i) * size) + 8] = (byte) ((seq >> (i + 8)) & 0x01);
         }
 
-        eval[(7 * size) + 8] = (byte) ((((seq >> 6) & 0x01) != 0) ? (0x01 >> pattern) : 0x00);
-        eval[(8 * size) + 8] = (byte) ((((seq >> 7) & 0x01) != 0) ? (0x01 >> pattern) : 0x00);
-        eval[(8 * size) + 7] = (byte) ((((seq >> 8) & 0x01) != 0) ? (0x01 >> pattern) : 0x00);
+        eval[(7 * size) + 8] = (byte) ((seq >> 6) & 0x01);
+        eval[(8 * size) + 8] = (byte) ((seq >> 7) & 0x01);
+        eval[(8 * size) + 7] = (byte) ((seq >> 8) & 0x01);
     }
 
     private static int evaluate(byte[] eval, int size, int pattern, int best, StringBuilder encodeInfo) {
@@ -1642,14 +1644,16 @@ public class QrCode extends Symbol {
     /* Adds format information to grid. */
     private static void addFormatInfo(int[] grid, int size, EccLevel ecc_level, int pattern) {
 
-        int format = pattern;
+        int format;
         int seq;
         int i;
 
         switch(ecc_level) {
-            case L: format |= 0x08; break;
-            case Q: format |= 0x18; break;
-            case H: format |= 0x10; break;
+            case L: format = pattern | 0x08; break;
+            case Q: format = pattern | 0x18; break;
+            case H: format = pattern | 0x10; break;
+            case M: format = pattern; break;
+            default: throw new OkapiInternalException("Unknown ECC level: " + ecc_level);
         }
 
         seq = QR_ANNEX_C[format];

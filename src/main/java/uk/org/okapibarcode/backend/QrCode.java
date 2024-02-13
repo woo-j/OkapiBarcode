@@ -17,6 +17,7 @@
 package uk.org.okapibarcode.backend;
 
 import static uk.org.okapibarcode.util.Arrays.positionOf;
+import static uk.org.okapibarcode.util.Strings.binaryAppend;
 
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
@@ -843,11 +844,11 @@ public class QrCode extends Symbol {
         if (eciMode != 3) {
             binary.append("0111"); /* ECI (Table 4) */
             if (eciMode <= 127) {
-                binaryAppend(eciMode, 8, binary); /* 000000 to 000127 */
+                binaryAppend(binary, eciMode, 8); /* 000000 to 000127 */
             } else if (eciMode <= 16383) {
-                binaryAppend(0x8000 + eciMode, 16, binary); /* 000000 to 016383 */
+                binaryAppend(binary, 0x8000 + eciMode, 16); /* 000000 to 016383 */
             } else {
-                binaryAppend(0xC00000 + eciMode, 24, binary); /* 000000 to 999999 */
+                binaryAppend(binary, 0xC00000 + eciMode, 24); /* 000000 to 999999 */
             }
         }
 
@@ -869,7 +870,7 @@ public class QrCode extends Symbol {
                     binary.append("1000");
 
                     /* Character count indicator */
-                    binaryAppend(short_data_block_length, tribus(version, 8, 10, 12), binary);
+                    binaryAppend(binary, short_data_block_length, tribus(version, 8, 10, 12));
 
                     info("KNJI ");
 
@@ -882,7 +883,7 @@ public class QrCode extends Symbol {
                             jis -= 0xc140;
                         }
                         int prod = ((jis >> 8) * 0xc0) + (jis & 0xff);
-                        binaryAppend(prod, 13, binary);
+                        binaryAppend(binary, prod, 13);
                         infoSpace(prod);
                     }
 
@@ -899,7 +900,7 @@ public class QrCode extends Symbol {
                         int b = inputData[position + i];
                         bytes += (b > 0xff ? 2 : 1);
                     }
-                    binaryAppend(bytes, tribus(version, 8, 16, 16), binary);
+                    binaryAppend(binary, bytes, tribus(version, 8, 16, 16));
 
                     info("BYTE ");
 
@@ -910,16 +911,16 @@ public class QrCode extends Symbol {
                             // actually 2 packed Kanji bytes
                             int b1 = b >> 8;
                             int b2 = b & 0xff;
-                            binaryAppend(b1, 8, binary);
+                            binaryAppend(binary, b1, 8);
                             infoSpace(b1);
-                            binaryAppend(b2, 8, binary);
+                            binaryAppend(binary, b2, 8);
                             infoSpace(b2);
                         } else {
                             // a single byte
                             if (b == FNC1) {
                                 b = 0x1d; /* FNC1 */
                             }
-                            binaryAppend(b, 8, binary);
+                            binaryAppend(binary, b, 8);
                             infoSpace(b);
                         }
                     }
@@ -956,7 +957,7 @@ public class QrCode extends Symbol {
                     }
 
                     /* Character count indicator */
-                    binaryAppend(inputExpanded.length, tribus(version, 9, 11, 13), binary);
+                    binaryAppend(binary, inputExpanded.length, tribus(version, 9, 11, 13));
 
                     info("ALPH ");
 
@@ -966,14 +967,14 @@ public class QrCode extends Symbol {
                         int second = positionOf((char) inputExpanded[i + 1], RHODIUM);
                         int prod = (first * 45) + second;
                         int count = 2;
-                        binaryAppend(prod, 1 + (5 * count), binary);
+                        binaryAppend(binary, prod, 1 + (5 * count));
                         infoSpace(prod);
                     }
                     if (inputExpanded.length % 2 != 0) {
                         int first = positionOf((char) inputExpanded[inputExpanded.length - 1], RHODIUM);
                         int prod = first;
                         int count = 1;
-                        binaryAppend(prod, 1 + (5 * count), binary);
+                        binaryAppend(binary, prod, 1 + (5 * count));
                         infoSpace(prod);
                     }
 
@@ -985,7 +986,7 @@ public class QrCode extends Symbol {
                     binary.append("0001");
 
                     /* Character count indicator */
-                    binaryAppend(short_data_block_length, tribus(version, 10, 12, 14), binary);
+                    binaryAppend(binary, short_data_block_length, tribus(version, 10, 12, 14));
 
                     info("NUMB ");
 
@@ -1009,7 +1010,7 @@ public class QrCode extends Symbol {
                             }
                         }
 
-                        binaryAppend(prod, 1 + (3 * count), binary);
+                        binaryAppend(binary, prod, 1 + (3 * count));
 
                         infoSpace(prod);
 
@@ -1069,17 +1070,6 @@ public class QrCode extends Symbol {
         infoLine();
 
         assert binary.length() <= reserved;
-    }
-
-    private static void binaryAppend(int value, int length, StringBuilder binary) {
-        int start = 0x01 << (length - 1);
-        for (int i = 0; i < length; i++) {
-            if ((value & (start >> i)) != 0) {
-                binary.append('1');
-            } else {
-                binary.append('0');
-            }
-        }
     }
 
     /** Splits data into blocks, adds error correction and then interleaves the blocks and error correction data. */

@@ -66,8 +66,10 @@ public class QrCodeFuzzer {
 
         QrCode symbol = new QrCode();
         symbol.setDataType(type);
-        symbol.setPreferredVersion(version);
         symbol.setPreferredEccLevel(ecc);
+        if (version > 0) {
+            symbol.setPreferredVersion(version);
+        }
         try {
             symbol.setContent(content);
         } catch (OkapiInputException e) {

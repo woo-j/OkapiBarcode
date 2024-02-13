@@ -267,13 +267,13 @@ public class QrCode extends Symbol {
         eciProcess(); // Get ECI mode
 
         if (eciMode == 20) {
-            /* Shift-JIS encoding, use Kanji mode */
-            Charset c = Charset.forName("Shift_JIS");
+            /* Shift-JIS encoding, 2-byte Kanji characters need to be combined */
+            Charset sjis = Charset.forName("Shift_JIS");
             inputData = new int[content.length()];
             for (i = 0; i < inputData.length; i++) {
                 CharBuffer buffer = CharBuffer.wrap(content, i, i + 1);
-                byte[] bytes = c.encode(buffer).array();
-                int value = (bytes.length == 2 ? ((bytes[0] & 0xff) << 8) | (bytes[1] & 0xff) : bytes[0]);
+                byte[] bytes = sjis.encode(buffer).array();
+                int value = (bytes.length == 2 && bytes[1] != 0 ? ((bytes[0] & 0xff) << 8) | (bytes[1] & 0xff) : bytes[0]);
                 inputData[i] = value;
             }
         } else {
@@ -592,37 +592,36 @@ public class QrCode extends Symbol {
                 switch (inputMode[i]) {
                     case KANJI:
                         count += tribus(version, 8, 10, 12);
-                        count += (blockLength(i, inputMode) * 13);
+                        count += (blockLength(i, inputMode) * 13); // 2-byte SJIS character -> 13 bits
                         break;
                     case BINARY:
                         count += tribus(version, 8, 16, 16);
                         for (j = i; j < (i + blockLength(i, inputMode)); j++) {
                             if (inputData[j] > 0xff) {
-                                count += 16;
+                                count += 16; // actually a 2-byte SJIS character
                             } else {
-                                count += 8;
+                                count += 8; // just a normal byte
                             }
                         }
                         break;
                     case ALPHANUM:
                         count += tribus(version, 9, 11, 13);
                         alphaLength = blockLength(i, inputMode);
-                        // In GS1 and alphanumeric mode % becomes %%
                         if (gs1) {
                             for (j = i; j < (i + alphaLength); j++) {
                                 if (inputData[j] == '%') {
-                                    percent++;
+                                    percent++; // in GS1 and alphanumeric mode % becomes %%
                                 }
                             }
                         }
                         alphaLength += percent;
                         switch (alphaLength % 2) {
                             case 0:
-                                count += (alphaLength / 2) * 11;
+                                count += (alphaLength / 2) * 11; // 2 characters -> 11 bits
                                 break;
                             case 1:
-                                count += ((alphaLength - 1) / 2) * 11;
-                                count += 6;
+                                count += ((alphaLength - 1) / 2) * 11; // 2 characters -> 11 bits
+                                count += 6; // trailing character -> 6 bits
                                 break;
                         }
                         break;
@@ -630,15 +629,15 @@ public class QrCode extends Symbol {
                         count += tribus(version, 10, 12, 14);
                         switch (blockLength(i, inputMode) % 3) {
                             case 0:
-                                count += (blockLength(i, inputMode) / 3) * 10;
+                                count += (blockLength(i, inputMode) / 3) * 10; // 3 digits -> 10 bits
                                 break;
                             case 1:
-                                count += ((blockLength(i, inputMode) - 1) / 3) * 10;
-                                count += 4;
+                                count += ((blockLength(i, inputMode) - 1) / 3) * 10; // 3 digits -> 10 bits
+                                count += 4; // trailing digit -> 4 bits
                                 break;
                             case 2:
-                                count += ((blockLength(i, inputMode) - 2) / 3) * 10;
-                                count += 7;
+                                count += ((blockLength(i, inputMode) - 2) / 3) * 10; // 3 digits -> 10 bits
+                                count += 7; // trailing 2 digits -> 7 bits
                                 break;
                         }
                         break;
@@ -686,7 +685,7 @@ public class QrCode extends Symbol {
 
         if (blockCount > 1) {
             // Search forward
-            for (i = 0; i <= (blockCount - 2); i++) {
+            for (i = 0; i < blockCount - 1; i++) {
                 if (blockMode[i] == QrMode.BINARY) {
                     switch (blockMode[i + 1]) {
                         case KANJI:
@@ -894,19 +893,35 @@ public class QrCode extends Symbol {
                     /* Mode indicator */
                     binary.append("0100");
 
-                    /* Character count indicator */
-                    binaryAppend(short_data_block_length, tribus(version, 8, 16, 16), binary);
+                    /* Character count indicator (watch for packed 2-byte values, Kanji prior to optimization) */
+                    int bytes = 0;
+                    for (i = 0; i < short_data_block_length; i++) {
+                        int b = inputData[position + i];
+                        bytes += (b > 0xff ? 2 : 1);
+                    }
+                    binaryAppend(bytes, tribus(version, 8, 16, 16), binary);
 
                     info("BYTE ");
 
                     /* Character representation */
                     for (i = 0; i < short_data_block_length; i++) {
                         int b = inputData[position + i];
-                        if (b == FNC1) {
-                            b = 0x1d; /* FNC1 */
+                        if (b > 0xff) {
+                            // actually 2 packed Kanji bytes
+                            int b1 = b >> 8;
+                            int b2 = b & 0xff;
+                            binaryAppend(b1, 8, binary);
+                            infoSpace(b1);
+                            binaryAppend(b2, 8, binary);
+                            infoSpace(b2);
+                        } else {
+                            // a single byte
+                            if (b == FNC1) {
+                                b = 0x1d; /* FNC1 */
+                            }
+                            binaryAppend(b, 8, binary);
+                            infoSpace(b);
                         }
-                        binaryAppend(b, 8, binary);
-                        infoSpace(b);
                     }
 
                     break;

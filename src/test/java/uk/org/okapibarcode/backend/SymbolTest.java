@@ -17,6 +17,7 @@
 package uk.org.okapibarcode.backend;
 
 import static java.lang.Integer.toHexString;
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -657,9 +658,10 @@ public class SymbolTest {
     public static Result decode(BufferedImage image, Reader reader) throws ReaderException {
         LuminanceSource source = new BufferedImageLuminanceSource(image);
         BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
-        Map< DecodeHintType, Boolean > hints = new HashMap<>();
+        Map< DecodeHintType, Object > hints = new HashMap<>();
         hints.put(DecodeHintType.PURE_BARCODE, Boolean.TRUE);
         hints.put(DecodeHintType.TRY_HARDER, Boolean.TRUE);
+        hints.put(DecodeHintType.CHARACTER_SET, ISO_8859_1.name()); // help QR Code reader
         return reader.decode(bitmap, hints);
     }
 

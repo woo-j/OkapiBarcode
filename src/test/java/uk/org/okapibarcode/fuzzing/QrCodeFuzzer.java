@@ -82,7 +82,7 @@ public class QrCodeFuzzer {
         String output = result.getText();
 
         String input = switch (type) {
-            case ECI -> content;
+            case ECI -> content.replace("\\<FNC1>", "\u001d"); // ZXing output represents FNC1 as a GS char
             case GS1 -> symbol.getContent().replace("\\<FNC1>", "\u001d"); // ZXing output represents FNC1 as a GS char
             case HIBC -> symbol.getContent(); // HIBC automatically adds a prefix and a suffix which ZXing will include
         };

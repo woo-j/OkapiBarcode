@@ -658,7 +658,8 @@ public class QrCode extends Symbol {
 
         int inputLength = inputMode.length;
         int blockCount = 0;
-        int i, j;
+        int i, j, min;
+        boolean returns;
         QrMode currentMode = QrMode.NULL;
 
         for (i = 0; i < inputLength; i++) {
@@ -684,63 +685,78 @@ public class QrCode extends Symbol {
             }
         }
 
+        // Encoding costs in bits (switching cost depends on symbol version):
+        // Byte mode: (8,16,16) + (N * 8)              = (8,16,16)  + (N * 8)
+        // Kanji mode: (8,10,12) + (N * 13 / 2)        = (8,10,12)  + (N * 6.5) -> saves 1.5 bits / byte encoded
+        // Alphanumeric mode: (9,11,13) + (N * 11 / 2) = (9,11,13)  + (N * 5.5) -> saves 2.5 bits / byte encoded
+        // Numeric mode: (10,12,14) + (N * 10 / 3)     = (10,12,14) + (N * 3.3) -> saves 4.6 bits / byte encoded
+        // NOTE: our kanji values pack 2 bytes per value, so block lengths are actually twice the recorded size
+        // NOTE: a X -> Y -> X mode change needs to recoup not just the X -> Y overhead, but also the Y -> X overhead
+        // ZINT NOTE: the thresholds below are different from the original code, and also take mode returns into account
+
         if (blockCount > 1) {
             // Search forward
             for (i = 0; i < blockCount - 1; i++) {
+                returns = (i + 2 < blockMode.length && blockMode[i + 2] == blockMode[i]);
                 if (blockMode[i] == QrMode.BINARY) {
                     switch (blockMode[i + 1]) {
                         case KANJI:
-                            if (blockLength[i + 1] < tribus(version, 4, 5, 6)) {
-                                blockMode[i + 1] = QrMode.BINARY;
+                            min = (returns ? tribus(version, 12, 18, 20) : tribus(version, 6, 8, 8));
+                            if (blockLength[i + 1] * 2 < min) {
+                                blockMode[i + 1] = QrMode.BINARY; // not worth switching
                             }
                             break;
                         case ALPHANUM:
-                            if (blockLength[i + 1] < tribus(version, 7, 8, 9)) {
-                                blockMode[i + 1] = QrMode.BINARY;
+                            min = (returns ? tribus(version, 7, 11, 12) : tribus(version, 4, 5, 6));
+                            if (blockLength[i + 1] < min) {
+                                blockMode[i + 1] = QrMode.BINARY; // not worth switching
                             }
                             break;
                         case NUMERIC:
-                            if (blockLength[i + 1] < tribus(version, 3, 4, 5)) {
-                                blockMode[i + 1] = QrMode.BINARY;
+                            min = (returns ? tribus(version, 4, 7, 7) : tribus(version, 3, 3, 4));
+                            if (blockLength[i + 1] < min) {
+                                blockMode[i + 1] = QrMode.BINARY; // not worth switching
                             }
                             break;
                     }
                 }
-
-                if ((blockMode[i] == QrMode.ALPHANUM)
-                        && (blockMode[i + 1] == QrMode.NUMERIC)) {
-                    if (blockLength[i + 1] < tribus(version, 6, 8, 10)) {
-                        blockMode[i + 1] = QrMode.ALPHANUM;
+                if (blockMode[i] == QrMode.ALPHANUM && blockMode[i + 1] == QrMode.NUMERIC) {
+                    min = (returns ? tribus(version, 9, 12, 15) : tribus(version, 6, 9, 9));
+                    if (blockLength[i + 1] < min) {
+                        blockMode[i + 1] = QrMode.ALPHANUM; // not worth switching
                     }
                 }
             }
 
             // Search backward
             for (i = blockCount - 1; i > 0; i--) {
+                returns = (i - 2 >= 0 && blockMode[i - 2] == blockMode[i]);
                 if (blockMode[i] == QrMode.BINARY) {
                     switch (blockMode[i - 1]) {
                         case KANJI:
-                            if (blockLength[i - 1] < tribus(version, 4, 5, 6)) {
-                                blockMode[i - 1] = QrMode.BINARY;
+                            min = (returns ? tribus(version, 12, 18, 20) : tribus(version, 6, 8, 8));
+                            if (blockLength[i - 1] * 2 < min) {
+                                blockMode[i - 1] = QrMode.BINARY; // not worth switching
                             }
                             break;
                         case ALPHANUM:
-                            if (blockLength[i - 1] < tribus(version, 7, 8, 9)) {
-                                blockMode[i - 1] = QrMode.BINARY;
+                            min = (returns ? tribus(version, 7, 11, 12) : tribus(version, 4, 5, 6));
+                            if (blockLength[i - 1] < min) {
+                                blockMode[i - 1] = QrMode.BINARY; // not worth switching
                             }
                             break;
                         case NUMERIC:
-                            if (blockLength[i - 1] < tribus(version, 3, 4, 5)) {
-                                blockMode[i - 1] = QrMode.BINARY;
+                            min = (returns ? tribus(version, 4, 7, 7) : tribus(version, 3, 3, 4));
+                            if (blockLength[i - 1] < min) {
+                                blockMode[i - 1] = QrMode.BINARY; // not worth switching
                             }
                             break;
                     }
                 }
-
-                if ((blockMode[i] == QrMode.ALPHANUM)
-                        && (blockMode[i - 1] == QrMode.NUMERIC)) {
-                    if (blockLength[i - 1] < tribus(version, 6, 8, 10)) {
-                        blockMode[i - 1] = QrMode.ALPHANUM;
+                if (blockMode[i] == QrMode.ALPHANUM && blockMode[i - 1] == QrMode.NUMERIC) {
+                    min = (returns ? tribus(version, 9, 12, 15) : tribus(version, 6, 9, 9));
+                    if (blockLength[i - 1] < min) {
+                        blockMode[i - 1] = QrMode.ALPHANUM; // not worth switching
                     }
                 }
             }

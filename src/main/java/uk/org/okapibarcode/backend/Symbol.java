@@ -515,6 +515,16 @@ public abstract class Symbol {
             data = "";
         }
 
+        if (data.contains(FNC1_STRING) && !fnc1Supported()) {
+            throw new OkapiInputException("This symbology type does not support direct use of FNC1");
+        } else if (data.contains(FNC2_STRING) && !fnc2Supported()) {
+            throw new OkapiInputException("This symbology type does not support direct use of FNC2");
+        } else if (data.contains(FNC3_STRING) && !fnc3Supported()) {
+            throw new OkapiInputException("This symbology type does not support direct use of FNC3");
+        } else if (data.contains(FNC4_STRING) && !fnc4Supported()) {
+            throw new OkapiInputException("This symbology type does not support direct use of FNC4");
+        }
+
         encodeInfo.setLength(0); // clear
 
         switch (inputDataType) {
@@ -537,6 +547,42 @@ public abstract class Symbol {
         encode();
         plotSymbol();
         mergeVerticalBlocks();
+    }
+
+    /**
+     * Returns <code>true</code> if this symbology allows the user to embed {@link #FNC1_STRING} directly in the content.
+     *
+     * @return <code>true</code> if this symbology allows the user to embed {@link #FNC1_STRING} directly in the content
+     */
+    protected boolean fnc1Supported() {
+        return gs1Supported();
+    }
+
+    /**
+     * Returns <code>true</code> if this symbology allows the user to embed {@link #FNC2_STRING} directly in the content.
+     *
+     * @return <code>true</code> if this symbology allows the user to embed {@link #FNC2_STRING} directly in the content
+     */
+    protected boolean fnc2Supported() {
+        return false;
+    }
+
+    /**
+     * Returns <code>true</code> if this symbology allows the user to embed {@link #FNC3_STRING} directly in the content.
+     *
+     * @return <code>true</code> if this symbology allows the user to embed {@link #FNC3_STRING} directly in the content
+     */
+    protected boolean fnc3Supported() {
+        return false;
+    }
+
+    /**
+     * Returns <code>true</code> if this symbology allows the user to embed {@link #FNC4_STRING} directly in the content.
+     *
+     * @return <code>true</code> if this symbology allows the user to embed {@link #FNC4_STRING} directly in the content
+     */
+    protected boolean fnc4Supported() {
+        return false;
     }
 
     /**

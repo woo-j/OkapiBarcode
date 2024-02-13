@@ -104,6 +104,21 @@ public class Code128 extends Symbol {
     }
 
     @Override
+    protected boolean fnc2Supported() {
+        return true;
+    }
+
+    @Override
+    protected boolean fnc3Supported() {
+        return true;
+    }
+
+    @Override
+    protected boolean fnc4Supported() {
+        return true;
+    }
+
+    @Override
     protected void encode() {
         int i, j, k;
         int input_point = 0;

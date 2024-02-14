@@ -721,10 +721,20 @@ public class Pdf417 extends Symbol {
         return structuredAppendIncludeSegmentCount;
     }
 
+    /**
+     * Sets the type of PDF417 symbol created. Defaults to {@link Mode#NORMAL}.
+     *
+     * @param mode the type of PDF417 symbol created
+     */
     public void setMode(Mode mode) {
         symbolMode = mode;
     }
 
+    /**
+     * Returns the type of PDF417 symbol created. Defaults to {@link Mode#NORMAL}.
+     *
+     * @return the type of PDF417 symbol created
+     */
     public Mode getMode() {
         return symbolMode;
     }

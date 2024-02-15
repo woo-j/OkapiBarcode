@@ -2,9 +2,9 @@
 
 Okapi Barcode is an open-source barcode generator written entirely in Java,
 supporting over 50 encoding standards, including all ISO standards. Okapi
-Barcode is based on [Zint](https://sourceforge.net/projects/zint/), an
-open-source barcode encoding library developed in C, and builds on the years
-of work that have been invested in that project.
+Barcode is based on [Zint](https://zint.org.uk/), an open-source barcode
+encoding library developed in C, and builds on the years of work that have
+been invested in that project.
 
 ### Supported Symbologies
 

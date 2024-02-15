@@ -841,10 +841,8 @@ public class Pdf417 extends Symbol {
                 selectedECCLevel = 3;
             } else if (codeWordCount <= 320) {
                 selectedECCLevel = 4;
-            } else if (codeWordCount <= 863) {
-                selectedECCLevel = 5;
             } else {
-                selectedECCLevel = 6;
+                selectedECCLevel = 5;
             }
         }
 
@@ -1305,7 +1303,7 @@ public class Pdf417 extends Symbol {
                 }
             }
         }
-        throw new OkapiInputException("Unable to determine MicroPDF417 variant for " + codeWordCount + " codewords");
+        throw new OkapiInputException("No MicroPDF417 variant can fit the " + codeWordCount + " codewords needed for the provided content");
     }
 
     /** Determines the encoding block groups for the specified data. */

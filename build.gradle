@@ -55,6 +55,8 @@ task fuzz(type: Test) {
     forkEvery = 1 // must run each fuzz test in a separate process, due to libfuzzer global state
     environment "JAZZER_FUZZ", "1" // setting environment variable enables Jazzer's fuzzing mode
     outputs.upToDateWhen { false } // always fuzz test when requested, even if no code has changed
+    testClassesDirs = testing.suites.test.sources.output.classesDirs
+    classpath = testing.suites.test.sources.runtimeClasspath
 }
 
 jacocoTestReport {

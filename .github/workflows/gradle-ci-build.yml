@@ -20,7 +20,7 @@ jobs:
         distribution: 'temurin'
         java-version: 17
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@v2
+      uses: github/codeql-action/init@v3
       with:
         languages: java
     - name: Build with Gradle
@@ -30,4 +30,4 @@ jobs:
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v2
+      uses: github/codeql-action/analyze@v3

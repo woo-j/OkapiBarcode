@@ -127,11 +127,12 @@ and data.
 ### Recent Releases
 
 #### Okapi Barcode 0.4.2
+- PDF417: allow user to request byte compaction
 - QR Code: improved encoding performance and efficiency
 - Code 128: further optimize data encoding in some scenarios
 - QR Code: fix broken Kanji encoding in some corner cases (found via fuzzing)
 - Data Matrix: fix encoding of trailing extended ASCII characters in TEXT/C40 mode (found via fuzzing)
-- Add OkapiInputException and OkapiInternalException, so users can distinguish user vs. library errors
+- Add `OkapiInputException` and `OkapiInternalException`, so users can distinguish user vs. library errors
 
 #### Okapi Barcode 0.4.1
 - DataBar Expanded: various small fixes and cleanup

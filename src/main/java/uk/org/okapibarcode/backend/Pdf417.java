@@ -22,6 +22,7 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import uk.org.okapibarcode.util.EciMode;
@@ -56,6 +57,7 @@ public class Pdf417 extends Symbol {
     private int[] codeWords = new int[2700];
     private int codeWordCount;
     private Mode symbolMode = Mode.NORMAL;
+    private boolean forceByteCompaction;
     private Integer columns;
     private Integer rows;
     private int preferredEccLevel = -1;
@@ -740,15 +742,24 @@ public class Pdf417 extends Symbol {
     }
 
     /**
-     * <p>Sets the data to be encoded and triggers encoding. Input data will be assumed to
-     * be of the type set by {@link #setDataType(DataType)}. Use {@link #setContent(String)}
-     * instead if the data to be encoded is not binary data.
+     * <p>Sets the binary data to be encoded and triggers encoding, forcing the use
+     * of byte compaction mode. Input data will be assumed to be of the type set by
+     * {@link #setDataType(DataType)}.
+     *
+     * <p>Use {@link #setContent(String)} instead if the data to be encoded is not
+     * binary data or you do not want to force the use of byte compaction mode.
+     *
+     * <p><b>NOTE:</b> Forcing the use of byte compaction mode is usually sub-optimal,
+     * and will result in larger symbols than would otherwise be possible. This method
+     * should only be used if your downstream systems <b>require</b> the use of byte
+     * compaction mode, which is <b>not</b> usually the case.
      *
      * @param data the data to encode
      * @throws OkapiException if no data or data is invalid
      * @see #setContent(String)
      */
     public void setContent(byte[] data) {
+        this.forceByteCompaction = true;
         super.setContent(new String(data, StandardCharsets.ISO_8859_1));
     }
 
@@ -779,7 +790,7 @@ public class Pdf417 extends Symbol {
         StringBuilder codebarre = new StringBuilder();
         StringBuilder bin = new StringBuilder();
 
-        List< Block > blocks = createBlocks(inputData);
+        List< Block > blocks = createBlocks(inputData, forceByteCompaction);
 
         /* now compress the data */
         codeWordCount = 0;
@@ -1017,7 +1028,7 @@ public class Pdf417 extends Symbol {
 
         /* Encoding starts out the same as PDF417, so use the same code */
 
-        List< Block > blocks = createBlocks(inputData);
+        List< Block > blocks = createBlocks(inputData, forceByteCompaction);
 
         /* 541 - now compress the data */
         codeWordCount = 0;
@@ -1298,7 +1309,11 @@ public class Pdf417 extends Symbol {
     }
 
     /** Determines the encoding block groups for the specified data. */
-    private static List< Block > createBlocks(int[] data) {
+    private static List< Block > createBlocks(int[] data, boolean forceByteCompaction) {
+
+        if (forceByteCompaction) {
+            return Collections.singletonList(new Block(EncodingMode.BYT, data.length));
+        }
 
         List< Block > blocks = new ArrayList<>();
         Block current = null;
@@ -1309,7 +1324,7 @@ public class Pdf417 extends Symbol {
                 (mode != EncodingMode.NUM || current.length < MAX_NUMERIC_COMPACTION_BLOCK_SIZE)) {
                 current.length++;
             } else {
-                current = new Block(mode);
+                current = new Block(mode, 1);
                 blocks.add(current);
             }
         }
@@ -1766,9 +1781,9 @@ public class Pdf417 extends Symbol {
         public EncodingMode mode;
         public int length;
 
-        public Block(EncodingMode mode) {
+        public Block(EncodingMode mode, int length) {
             this.mode = mode;
-            this.length = 1;
+            this.length = length;
         }
 
         @Override

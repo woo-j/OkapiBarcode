@@ -17,6 +17,8 @@
 package uk.org.okapibarcode.backend;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static uk.org.okapibarcode.util.Strings.count;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -49,6 +51,13 @@ public class Pdf417Test {
 
         Pdf417 barcode = new Pdf417();
         barcode.setContent(bytes);
+
+        String info = barcode.getEncodeInfo();
+        assertTrue(info.indexOf("ECI Charset: ISO-8859-1\n") != -1, info);
+        assertTrue(info.indexOf("Codewords: 220 901") != -1, info); // 220 = length, 901 = latch byte compaction
+        assertTrue(info.indexOf("902") == -1, info); // 902 = latch numeric compaction
+        assertTrue(info.indexOf("Padding Codewords: 4\n") != -1, info); // we use 900 (latch text compaction) for padding
+        assertTrue(count(info, "900") == 4, info); // only the 4 padding 900s exist (no actual latching to text compaction)
 
         BufferedImage img = new BufferedImage(barcode.getWidth(), barcode.getHeight(), BufferedImage.TYPE_BYTE_BINARY);
         Graphics2D g2d = img.createGraphics();

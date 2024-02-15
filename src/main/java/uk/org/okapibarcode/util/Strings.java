@@ -263,4 +263,19 @@ public final class Strings {
         }
         return out.toString();
     }
+
+    /**
+     * Counts the number of occurrences of the specified substring within the specified string.
+     *
+     * @param s the string to search within
+     * @param substring the substring to search for
+     * @return the number of occurrences of the specified substring within the specified string
+     */
+    public static int count(String s, String substring) {
+        int count = 0;
+        for (int i = s.indexOf(substring); i != -1; i = s.indexOf(substring, i + substring.length())) {
+            count++;
+        }
+        return count;
+    }
 }

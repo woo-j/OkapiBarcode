@@ -1303,7 +1303,7 @@ public class Pdf417 extends Symbol {
                 }
             }
         }
-        throw new OkapiInputException("No MicroPDF417 variant can fit the " + codeWordCount + " codewords needed for the provided content");
+        throw new OkapiInputException("Unable to determine MicroPDF417 variant for " + codeWordCount + " codewords");
     }
 
     /** Determines the encoding block groups for the specified data. */

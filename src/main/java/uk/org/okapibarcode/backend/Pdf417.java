@@ -952,9 +952,7 @@ public class Pdf417 extends Symbol {
         }
 
         /* make sure total codeword count isn't too high */
-        if (codeWordCount > 929) {
-            throw new OkapiInputException("Too many codewords required (" + codeWordCount + ", but max is 929)");
-        }
+        checkCodewordCount(codeWordCount);
 
         assert 1 + dataCount + padCount + macroCount + k == columns * rows;
         assert codeWordCount == columns * rows;
@@ -1278,6 +1276,12 @@ public class Pdf417 extends Symbol {
             } else if (columns > max) {
                 throw new OkapiInputException("Too many columns (" + columns + ")");
             }
+        }
+    }
+
+    private static void checkCodewordCount(int count) {
+        if (count > 929) {
+            throw new OkapiInputException("Too many codewords required (" + count + ", but max is 929)");
         }
     }
 
@@ -1615,6 +1619,8 @@ public class Pdf417 extends Symbol {
 
         /* Now translate the string chainet into codewords */
 
+        checkCodewordCount(codeWordCount + (skipLatch ? 0 : 1) + (wnet / 2));
+
         if (!skipLatch) {
             // text compaction mode is the default mode for PDF417,
             // so no need for an explicit latch if this is the first block
@@ -1638,6 +1644,8 @@ public class Pdf417 extends Symbol {
 
         mantisa = new BigInteger("0");
         total = new BigInteger("0");
+
+        checkCodewordCount(codeWordCount + 1 + (5 * length / 6) + (length % 6));
 
         if (length == 1 && lastMode == EncodingMode.TEX) {
             codeWords[codeWordCount++] = 913;
@@ -1687,12 +1695,6 @@ public class Pdf417 extends Symbol {
         int[] d = new int[16];
         int cw_count;
 
-        if (!skipLatch) {
-            // we don't need to latch to numeric mode in some cases, e.g.
-            // during numeric compaction of the Macro PDF417 segment index
-            codeWords[codeWordCount++] = 902;
-        }
-
         StringBuilder t = new StringBuilder(length + 1);
         t.append('1');
         for (int i = 0; i < length; i++) {
@@ -1708,6 +1710,14 @@ public class Pdf417 extends Symbol {
             tVal = tVal.divide(BigInteger.valueOf(900));
             cw_count++;
         } while (tVal.compareTo(BigInteger.ZERO) == 1);
+
+        checkCodewordCount(codeWordCount + (skipLatch ? 0 : 1) + cw_count);
+
+        if (!skipLatch) {
+            // we don't need to latch to numeric mode in some cases, e.g.
+            // during numeric compaction of the Macro PDF417 segment index
+            codeWords[codeWordCount++] = 902;
+        }
 
         for (int i = cw_count - 1; i >= 0; i--) {
             codeWords[codeWordCount++] = d[i];

@@ -461,7 +461,7 @@ public class SymbolTest {
             if (pdf417.getStructuredAppendTotal() > 1) {
                 // verify Macro PDF417 metadata
                 PDF417ResultMetadata metadata = (PDF417ResultMetadata) result.getResultMetadata().get(ResultMetadataType.PDF417_EXTRA_METADATA);
-                assertEquals(String.valueOf(pdf417.getStructuredAppendFileId()), metadata.getFileId());
+                assertEquals(pdf417.getStructuredAppendFileId(), metadata.getFileId());
                 assertEquals(pdf417.getStructuredAppendPosition() - 1, metadata.getSegmentIndex());
                 assertEquals(pdf417.getStructuredAppendPosition() == pdf417.getStructuredAppendTotal(), metadata.isLastSegment());
                 assertEquals(pdf417.getStructuredAppendFileName(), metadata.getFileName());

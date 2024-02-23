@@ -109,6 +109,21 @@ renderer.render(barcode);
 ImageIO.write(image, "png", new File("code128.png"));
 ```
 
+If you'd like to use Okapi Barcode on the Android platform, the easiest approach is to use the
+[SVG renderer](src/main/java/uk/org/okapibarcode/output/SvgRenderer.java) to render your barcode
+to SVG, and then use a library like [AndroidSVG](https://bigbadaboom.github.io/androidsvg/) to
+draw the resultant SVG image on an Android `Bitmap` or `Canvas`:
+
+```java
+ByteArrayOutputStream stream = new ByteArrayOutputStream();
+SvgRenderer renderer = new SvgRenderer(stream, 1, Color.WHITE, Color.BLACK, true);
+renderer.render(barcode);
+
+String content = new String(stream.toByteArray(), StandardCharsets.UTF_8);
+SVG svg = SVG.getFromString(content);
+svg.renderToCanvas(canvas);
+```
+
 ### GUI Usage
 
 To use the Swing GUI, just run the [OkapiUI](src/main/java/uk/org/okapibarcode/gui/OkapiUI.java) class.

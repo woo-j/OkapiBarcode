@@ -74,7 +74,7 @@ been invested in that project.
   * UPC-E
 * [USPS OneCode](src/main/java/uk/org/okapibarcode/backend/UspsOneCode.java) (Intelligent Mail)
 
-### Library Usage
+### Library Usage (Java)
 
 Okapi Barcode JARs are available for download from [Maven Central](http://search.maven.org/#search|ga|1|uk.org.okapibarcode).
 
@@ -109,12 +109,22 @@ renderer.render(barcode);
 ImageIO.write(image, "png", new File("code128.png"));
 ```
 
+### Library Usage (Android)
+
 If you'd like to use Okapi Barcode on the Android platform, the easiest approach is to use the
 [SVG renderer](src/main/java/uk/org/okapibarcode/output/SvgRenderer.java) to render your barcode
 to SVG, and then use a library like [AndroidSVG](https://bigbadaboom.github.io/androidsvg/) to
 draw the resultant SVG image on an Android `Bitmap` or `Canvas`:
 
 ```java
+Code128 barcode = new Code128();
+barcode.setFontName("Monospaced");
+barcode.setFontSize(16);
+barcode.setModuleWidth(2);
+barcode.setBarHeight(50);
+barcode.setHumanReadableLocation(HumanReadableLocation.BOTTOM);
+barcode.setContent("123456789");
+
 ByteArrayOutputStream stream = new ByteArrayOutputStream();
 SvgRenderer renderer = new SvgRenderer(stream, 1, Color.WHITE, Color.BLACK, true);
 renderer.render(barcode);

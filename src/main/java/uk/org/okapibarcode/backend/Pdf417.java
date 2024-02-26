@@ -657,21 +657,14 @@ public class Pdf417 extends Symbol {
 
     /**
      * If this PDF417 symbol is part of a series of PDF417 symbols appended in a structured format
-     * (Macro PDF417), this method sets the unique file ID for the series. Valid values are 0 through
-     * 899 inclusive. It can consist of a series of base 900 numbers.
+     * (Macro PDF417), this method sets the unique file ID for the series. The value must be numeric,
+     * and must consist of a series of triplets (3 digits) with values between 000 and 899.
      *
      * @param structuredAppendFileId the unique file ID for the series that this symbol is part of
      */
     public void setStructuredAppendFileId(String structuredAppendFileId) {
-        int length = structuredAppendFileId.length();
-        if (length % 3 != 0) {
-            throw new IllegalArgumentException("Invalid PDF417 structured append file ID, not consisting of triplets: " + structuredAppendFileId);
-        }
-        for (int i = 0; i < length; i += 3) {
-            int number = Integer.parseInt(structuredAppendFileId.substring(i, i + 3));
-            if (number < 0 || number > 899) {
-                throw new IllegalArgumentException("Invalid PDF417 structured append file ID: " + number);
-            }
+        if (!structuredAppendFileId.matches("^(?:[0-8][0-9][0-9])+$")) {
+            throw new IllegalArgumentException("Invalid PDF417 structured append file ID: " + structuredAppendFileId);
         }
         this.structuredAppendFileId = structuredAppendFileId;
     }
@@ -1425,13 +1418,16 @@ public class Pdf417 extends Symbol {
         }
         /* Encoding ECI assignment number, from ISO/IEC 15438 Table 8 */
         if (eci <= 899) {
+            checkCodewordCount(codeWordCount + 2);
             codeWords[codeWordCount++] = 927;
             codeWords[codeWordCount++] = eci;
         } else if (eci >= 900 && eci <= 810899) {
+            checkCodewordCount(codeWordCount + 3);
             codeWords[codeWordCount++] = 926;
             codeWords[codeWordCount++] = (eci / 900) - 1;
             codeWords[codeWordCount++] = eci % 900;
         } else if (eci >= 810900 && eci <= 811799) {
+            checkCodewordCount(codeWordCount + 2);
             codeWords[codeWordCount++] = 925;
             codeWords[codeWordCount++] = eci - 810900;
         }
@@ -1754,6 +1750,7 @@ public class Pdf417 extends Symbol {
         int macroStart = codeWordCount;
 
         // add the Macro marker codeword
+        checkCodewordCount(codeWordCount + 1);
         codeWords[codeWordCount++] = 928;
 
         // add the segment index, padded with leading zeros to five digits
@@ -1761,9 +1758,9 @@ public class Pdf417 extends Symbol {
         int segmentIndex = structuredAppendPosition - 1;
         processFiveDigits(segmentIndex);
 
-        checkCodewordCount(codeWordCount + structuredAppendFileId.length() / 3);
         // add the file ID (base 900, which is easy since we limit
         // file ID values to triples in the range 0 to 899)
+        checkCodewordCount(codeWordCount + (structuredAppendFileId.length() / 3));
         for (int i = 0; i < structuredAppendFileId.length(); i += 3) {
             int number = Integer.parseInt(structuredAppendFileId.substring(i, i + 3));
             codeWords[codeWordCount++] = number;
@@ -1771,6 +1768,7 @@ public class Pdf417 extends Symbol {
 
         // optional fields: add the file name, if specified
         if (structuredAppendFileName != null && !structuredAppendFileName.isEmpty()) {
+            checkCodewordCount(codeWordCount + 2);
             codeWords[codeWordCount++] = 923;
             codeWords[codeWordCount++] = 000;
             EciMode eci = EciMode.of(structuredAppendFileName, "ISO8859_1", 3).or(structuredAppendFileName, "UTF8", 26);
@@ -1781,6 +1779,7 @@ public class Pdf417 extends Symbol {
 
         // optional fields: add segment count, if requested
         if (structuredAppendIncludeSegmentCount) {
+            checkCodewordCount(codeWordCount + 2);
             codeWords[codeWordCount++] = 923;
             codeWords[codeWordCount++] = 001;
             processFiveDigits(structuredAppendTotal);
@@ -1789,6 +1788,7 @@ public class Pdf417 extends Symbol {
         // add the terminator to the last symbol of the series
         boolean last = (structuredAppendPosition == structuredAppendTotal);
         if (last) {
+            checkCodewordCount(codeWordCount + 1);
             codeWords[codeWordCount++] = 922;
         }
 

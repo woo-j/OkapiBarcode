@@ -16,11 +16,14 @@
 
 package uk.org.okapibarcode.backend;
 
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 /**
  * Swiss QR Code is a specialized type of QR Code symbol used for QR-bill in Switzerland. It is mostly a
  * spec-compliant QR Code, but it must use error correction level M, it cannot hold more than 997 characters,
- * it must always measure 46x46 mm when printed, and it features a Swiss cross logo in the center of the
- * symbol.
+ * it must always measure 46x46 mm when printed, data must be encoded as UTF-8 without the use of ECI, and it
+ * features a Swiss cross logo in the center of the symbol.
  *
  * @author Daniel Gredler
  * @see <a href="https://www.six-group.com/dam/download/banking-services/standardization/qr-bill/ig-qr-bill-v2.2-en.pdf">Swiss QR Bill Specification, Section 5</a>
@@ -50,10 +53,13 @@ public class SwissQrCode extends QrCode {
 
     @Override
     public void setContent(String data) {
-        if (data.length() > 997) {
+        // Swiss QR Code requires coding data as "UTF-8 restricted to the Latin character set"
+        byte[] bytes = data.getBytes(UTF_8);
+        String data2 = new String(bytes, ISO_8859_1);
+        if (data2.length() > 997) {
             throw OkapiInputException.inputTooLong();
         }
-        super.setContent(data);
+        super.setContent(data2);
     }
 
     @Override

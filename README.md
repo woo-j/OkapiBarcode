@@ -68,6 +68,7 @@ been invested in that project.
 * [POSTNET / PLANET](src/main/java/uk/org/okapibarcode/backend/Postnet.java)
 * [QR Code](src/main/java/uk/org/okapibarcode/backend/QrCode.java)
 * [Royal Mail 4 State](src/main/java/uk/org/okapibarcode/backend/RoyalMail4State.java) (RM4SCC)
+* [Swiss QR Code](src/main/java/uk/org/okapibarcode/backend/SwissQrCode.java)
 * [Telepen](src/main/java/uk/org/okapibarcode/backend/Telepen.java) variants:
   * Telepen
   * Telepen Numeric
@@ -152,6 +153,10 @@ and data.
 `gradlew publish`: Deploys to Maven Central (requires a modified gradle.properties file).  
 
 ### Recent Releases
+
+#### Okapi Barcode 0.4.3
+- Add support for DPD Code
+- Add support for Swiss QR Code
 
 #### Okapi Barcode 0.4.2
 - PDF417: allow user to request byte compaction

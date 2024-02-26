@@ -166,8 +166,9 @@ public class QrCode extends Symbol {
         0x2542e, 0x26a64, 0x27541, 0x28c69
     };
 
-    private int preferredVersion;
-    private EccLevel preferredEccLevel = EccLevel.L;
+    protected int minVersion = 1;
+    protected int preferredVersion;
+    protected EccLevel preferredEccLevel = EccLevel.L;
 
     /**
      * Sets the preferred symbol size / version. This value may be ignored if the data
@@ -312,7 +313,7 @@ public class QrCode extends Symbol {
         // new array instead of modifying the existing array)
 
         version = 40;
-        for (i = 39; i >= 0; i--) {
+        for (int candidate = 40; candidate >= minVersion; candidate--) {
             int[] dataCodewords;
             switch (ecc_level) {
                 case L:
@@ -329,10 +330,9 @@ public class QrCode extends Symbol {
                     dataCodewords = QR_DATA_CODEWORDS_H;
                     break;
             }
-            int proposedVersion = i + 1;
-            int proposedBinLen = getBinaryLength(proposedVersion, inputMode, inputData, gs1, eciMode);
-            if ((8 * dataCodewords[i]) >= proposedBinLen) {
-                version = proposedVersion;
+            int proposedBinLen = getBinaryLength(candidate, inputMode, inputData, gs1, eciMode);
+            if ((8 * dataCodewords[candidate - 1]) >= proposedBinLen) {
+                version = candidate;
                 est_binlen = proposedBinLen;
             }
         }
@@ -483,6 +483,7 @@ public class QrCode extends Symbol {
         bitmask = applyBitmask(grid, size, ecc_level, encodeInfo);
         infoLine("Mask Pattern: " + maskToString(bitmask));
         addFormatInfo(grid, size, ecc_level, bitmask);
+        customize(grid, size);
 
         // Transfer layout from the now-finished grid to the standard layout data structures.
 
@@ -1711,5 +1712,10 @@ public class QrCode extends Symbol {
             grid[(i * size) + (size - 10)] += (version_data >> ((i * 3) + 1)) & 0x01;
             grid[(i * size) + (size - 9)] += (version_data >> ((i * 3) + 2)) & 0x01;
         }
+    }
+
+    /** Adds any final customization to the grid (none by default, but subclasses can override). */
+    protected void customize(int[] grid, int size) {
+        // empty
     }
 }

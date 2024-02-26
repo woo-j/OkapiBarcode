@@ -21,6 +21,7 @@ import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.org.okapibarcode.util.Strings.toPrintableAscii;
@@ -486,7 +487,11 @@ public class SymbolTest {
 
         Integer errors = (Integer) result.getResultMetadata().get(ResultMetadataType.ERRORS_CORRECTED);
         if (errors != null) {
-            assertEquals(0, errors);
+            if (symbol instanceof SwissQrCode) {
+                assertNotEquals(0, errors);
+            } else {
+                assertEquals(0, errors);
+            }
         }
 
         Integer erasures = (Integer) result.getResultMetadata().get(ResultMetadataType.ERASURES_CORRECTED);

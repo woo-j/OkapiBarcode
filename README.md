@@ -37,6 +37,7 @@ been invested in that project.
 * [Code 93](src/main/java/uk/org/okapibarcode/backend/Code93.java)
 * [Code One](src/main/java/uk/org/okapibarcode/backend/CodeOne.java)
 * [Data Matrix](src/main/java/uk/org/okapibarcode/backend/DataMatrix.java)
+* [DPD Code](src/main/java/uk/org/okapibarcode/backend/DpdCode.java)
 * [Dutch Post KIX Code](src/main/java/uk/org/okapibarcode/backend/KixCode.java)
 * [EAN](src/main/java/uk/org/okapibarcode/backend/Ean.java) variants:
   * EAN-13

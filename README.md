@@ -58,7 +58,8 @@ been invested in that project.
 * [MSI](src/main/java/uk/org/okapibarcode/backend/MsiPlessey.java) (Modified Plessey)
 * [PDF417](src/main/java/uk/org/okapibarcode/backend/Pdf417.java) variants:
   * PDF417
-  * Truncated PDF417
+  * Truncated PDF417 (Compact PDF417)
+  * Macro PDF417
   * Micro PDF417
 * [Pharmacode](src/main/java/uk/org/okapibarcode/backend/Pharmacode.java)
 * [Pharmacode Two-Track](src/main/java/uk/org/okapibarcode/backend/Pharmacode2Track.java)

@@ -266,7 +266,10 @@ public class SymbolTest {
      */
     private static Reader findReader(Symbol symbol) {
 
-        if (symbol instanceof Code128 || symbol instanceof UspsPackage) {
+        if (symbol instanceof Code128 ||
+            symbol instanceof UspsPackage ||
+            symbol instanceof DpdCode ||
+            symbol instanceof Nve18) {
             return new Code128Reader();
         } else if (symbol instanceof Code93) {
             return new Code93Reader();

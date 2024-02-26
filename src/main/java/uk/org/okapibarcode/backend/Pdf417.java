@@ -61,7 +61,7 @@ public class Pdf417 extends Symbol {
     private Integer columns;
     private Integer rows;
     private int preferredEccLevel = -1;
-    private int structuredAppendFileId = 0;
+    private String structuredAppendFileId = "000";
     private int structuredAppendPosition = 1;
     private int structuredAppendTotal = 1;
     private String structuredAppendFileName;
@@ -658,25 +658,32 @@ public class Pdf417 extends Symbol {
     /**
      * If this PDF417 symbol is part of a series of PDF417 symbols appended in a structured format
      * (Macro PDF417), this method sets the unique file ID for the series. Valid values are 0 through
-     * 899 inclusive.
+     * 899 inclusive. It can consist of a series of base 900 numbers.
      *
-     * @param fileId the unique file ID for the series that this symbol is part of
+     * @param structuredAppendFileId the unique file ID for the series that this symbol is part of
      */
-    public void setStructuredAppendFileId(int fileId) {
-        if (fileId < 0 || fileId > 899) {
-            throw new IllegalArgumentException("Invalid PDF417 structured append file ID: " + fileId);
+    public void setStructuredAppendFileId(String structuredAppendFileId) {
+        int length = structuredAppendFileId.length();
+        if (length % 3 != 0) {
+            throw new IllegalArgumentException("Invalid PDF417 structured append file ID, not consisting of triplets: " + structuredAppendFileId);
         }
-        this.structuredAppendFileId = fileId;
+        for (int i = 0; i < length; i += 3) {
+            int number = Integer.parseInt(structuredAppendFileId.substring(i, i + 3));
+            if (number < 0 || number > 899) {
+                throw new IllegalArgumentException("Invalid PDF417 structured append file ID: " + number);
+            }
+        }
+        this.structuredAppendFileId = structuredAppendFileId;
     }
 
     /**
      * Returns the unique file ID of the series of PDF417 symbols using structured append (Macro PDF417)
      * that this symbol is part of. If this symbol is not part of a structured append series, this method
-     * will return <code>0</code>.
+     * will return <code>000</code>.
      *
      * @return the unique file ID for the series that this symbol is part of
      */
-    public int getStructuredAppendFileId() {
+    public String getStructuredAppendFileId() {
         return structuredAppendFileId;
     }
 
@@ -1754,9 +1761,13 @@ public class Pdf417 extends Symbol {
         int segmentIndex = structuredAppendPosition - 1;
         processFiveDigits(segmentIndex);
 
+        checkCodewordCount(codeWordCount + structuredAppendFileId.length() / 3);
         // add the file ID (base 900, which is easy since we limit
-        // file ID values to the range 0 to 899)
-        codeWords[codeWordCount++] = structuredAppendFileId;
+        // file ID values to triples in the range 0 to 899)
+        for (int i = 0; i < structuredAppendFileId.length(); i += 3) {
+            int number = Integer.parseInt(structuredAppendFileId.substring(i, i + 3));
+            codeWords[codeWordCount++] = number;
+        }
 
         // optional fields: add the file name, if specified
         if (structuredAppendFileName != null && !structuredAppendFileName.isEmpty()) {

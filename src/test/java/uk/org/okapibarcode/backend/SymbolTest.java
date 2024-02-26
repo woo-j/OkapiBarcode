@@ -411,7 +411,7 @@ public class SymbolTest {
                     .replace(Symbol.FNC2_STRING, "")
                     .replace(Symbol.FNC3_STRING, "")
                     .replace(Symbol.FNC4_STRING, "");
-        } else if (symbol instanceof UspsPackage) {
+        } else if (symbol instanceof UspsPackage || symbol instanceof Nve18) {
             // remove AI brackets, since ZXing doesn't include them
             return s.replaceAll("[\\[\\]]", "");
         } else if (symbol instanceof DataBarExpanded) {

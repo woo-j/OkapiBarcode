@@ -23,6 +23,10 @@ jobs:
       uses: github/codeql-action/init@v3
       with:
         languages: java
+    - name: Gradle Setup
+      uses: gradle/actions/setup-gradle@v3
+      with:
+        dependency-graph: generate-and-submit
     - name: Build with Gradle
       run: |
         cd $GITHUB_WORKSPACE

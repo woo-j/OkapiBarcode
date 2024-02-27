@@ -764,6 +764,11 @@ public class Pdf417 extends Symbol {
     }
 
     @Override
+    protected boolean eciSupported() {
+        return true;
+    }
+
+    @Override
     protected void encode() {
 
         eciProcess();
@@ -1771,7 +1776,7 @@ public class Pdf417 extends Symbol {
             checkCodewordCount(codeWordCount + 2);
             codeWords[codeWordCount++] = 923;
             codeWords[codeWordCount++] = 000;
-            EciMode eci = EciMode.of(structuredAppendFileName, "ISO8859_1", 3).or(structuredAppendFileName, "UTF8", 26);
+            EciMode eci = EciMode.chooseFor(structuredAppendFileName, 3, 26);
             int[] data2 = toBytes(structuredAppendFileName, eci.charset);
             processEci(eci.mode);
             processText(data2, 0, data2.length, true);

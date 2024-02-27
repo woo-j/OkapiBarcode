@@ -157,6 +157,7 @@ and data.
 #### Okapi Barcode 0.4.3
 - Add support for DPD Code
 - Add support for Swiss QR Code
+- Add support for specifying ECI mode explicitly
 
 #### Okapi Barcode 0.4.2
 - PDF417: allow user to request byte compaction

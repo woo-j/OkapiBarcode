@@ -494,6 +494,11 @@ public class AztecCode extends Symbol {
     }
 
     @Override
+    protected boolean eciSupported() {
+        return true;
+    }
+
+    @Override
     protected void encode() {
 
         int layers;

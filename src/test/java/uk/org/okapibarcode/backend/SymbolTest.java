@@ -326,7 +326,9 @@ public class SymbolTest {
             } else {
                 return new EAN13Reader();
             }
-        } else if (symbol instanceof Pdf417) {
+        } else if (symbol instanceof Pdf417 &&
+                   symbol.getEciMode() <= 30) {
+            // ZXing supports ECI with PDF417, but only up to ECI 30
             Pdf417 pdf417 = (Pdf417) symbol;
             if (pdf417.getMode() != Pdf417.Mode.MICRO) {
                 return new PDF417Reader();
@@ -508,9 +510,10 @@ public class SymbolTest {
      * @param actualError the actual exception
      */
     private static void verifyError(TestConfig config, File pngFile, Throwable actualError) {
-        assertFalse(pngFile.exists());
+        assertFalse(pngFile.exists(), pngFile.getAbsolutePath() + " exists");
         assertTrue(actualError instanceof OkapiInputException ||
-                   actualError instanceof IllegalArgumentException);
+                   actualError instanceof IllegalArgumentException,
+                   "actual error: " + actualError);
         String actualErrorMessage = actualError.getMessage();
         if (config.expectedError != null && config.expectedError.startsWith("regex:")) {
             // treat error message as a regular expression

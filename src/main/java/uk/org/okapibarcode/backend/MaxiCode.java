@@ -221,6 +221,11 @@ public class MaxiCode extends Symbol {
         return primaryData;
     }
 
+    @Override
+    protected boolean eciSupported() {
+        return true;
+    }
+
     /** {@inheritDoc} */
     @Override
     protected void encode() {

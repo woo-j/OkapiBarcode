@@ -245,6 +245,11 @@ public class GridMatrix extends Symbol {
     }
 
     @Override
+    protected boolean eciSupported() {
+        return true;
+    }
+
+    @Override
     protected void encode() {
         int size, modules, dark, error_number;
         int auto_layers, min_layers, layers, auto_ecc_level, min_ecc_level, ecc_level;

@@ -366,6 +366,62 @@ public abstract class Symbol {
     }
 
     /**
+     * Forces this symbol to use a specific ECI mode, rather than allowing the ECI mode to be chosen
+     * automatically. It is usually recommended that you allow the system to choose the ECI mode
+     * automatically, instead of setting it explicitly. If you do need to set the ECI mode explicitly
+     * for some reason, you may specify any of the following values:
+     * <ul>
+     * <li>0 (IBM437)</li>
+     * <li>1 (ISO 8859-1)</li>
+     * <li>2 (IBM437)</li>
+     * <li>3 (ISO 8859-1, the default and most commonly used value)</li>
+     * <li>4 (ISO 8859-2)</li>
+     * <li>5 (ISO 8859-3)</li>
+     * <li>6 (ISO 8859-4)</li>
+     * <li>7 (ISO 8859-5)</li>
+     * <li>8 (ISO 8859-6)</li>
+     * <li>9 (ISO 8859-7)</li>
+     * <li>10 (ISO 8859-8)</li>
+     * <li>11 (ISO 8859-9)</li>
+     * <li>12 (ISO 8859-10)</li>
+     * <li>13 (ISO 8859-11)</li>
+     * <li>15 (ISO 8859-13)</li>
+     * <li>16 (ISO 8859-14)</li>
+     * <li>17 (ISO 8859-15)</li>
+     * <li>18 (ISO 8859-16)</li>
+     * <li>20 (Shift JIS)</li>
+     * <li>21 (Windows-1250)</li>
+     * <li>22 (Windows-1251)</li>
+     * <li>23 (Windows-1252)</li>
+     * <li>24 (Windows-1256)</li>
+     * <li>25 (UTF-16BE)</li>
+     * <li>26 (UTF-8, another commonly used value)</li>
+     * <li>27 (US-ASCII)</li>
+     * <li>28 (Big5)</li>
+     * <li>29 (GB2312)</li>
+     * <li>30 (EUC-KR)</li>
+     * <li>31 (GBK)</li>
+     * <li>32 (GB18030)</li>
+     * <li>33 (UTF-16LE)</li>
+     * <li>34 (UTF-32BE)</li>
+     * <li>35 (UTF-32LE)</li>
+     * </ul>
+     *
+     * @param eciMode the ECI mode to force the symbol to use
+     * @throws IllegalArgumentException if this symbology does not support ECI or an unsupported ECI mode is requested
+     */
+    public void setEciMode(int eciMode) {
+        if (!eciSupported()) {
+            throw new IllegalArgumentException("This symbology type does not support ECI");
+        }
+        boolean valid = EciMode.ECIS.stream().anyMatch(eci -> eci.mode == eciMode);
+        if (!valid) {
+            throw new IllegalArgumentException("Unsupported ECI mode: " + eciMode);
+        }
+        this.eciMode = eciMode;
+    }
+
+    /**
      * Returns the ECI mode used by this symbol. The ECI mode is chosen automatically during encoding
      * if the symbol data type has been set to {@link DataType#ECI}. If this symbol does not use ECI,
      * this method will return <code>-1</code>.
@@ -375,6 +431,15 @@ public abstract class Symbol {
      */
     public int getEciMode() {
         return eciMode;
+    }
+
+    /**
+     * Returns <code>true</code> if this type of symbology supports ECI (Extended Channel Interpretation).
+     *
+     * @return <code>true</code> if this type of symbology supports ECI (Extended Channel Interpretation)
+     */
+    protected boolean eciSupported() {
+        return false;
     }
 
     /**
@@ -608,34 +673,28 @@ public abstract class Symbol {
      */
     protected void eciProcess() {
 
-        EciMode eci = EciMode.of(content, "ISO8859_1",    3)
-                             .or(content, "ISO8859_2",    4)
-                             .or(content, "ISO8859_3",    5)
-                             .or(content, "ISO8859_4",    6)
-                             .or(content, "ISO8859_5",    7)
-                             .or(content, "ISO8859_6",    8)
-                             .or(content, "ISO8859_7",    9)
-                             .or(content, "ISO8859_8",    10)
-                             .or(content, "ISO8859_9",    11)
-                             .or(content, "ISO8859_10",   12)
-                             .or(content, "ISO8859_11",   13)
-                             .or(content, "ISO8859_13",   15)
-                             .or(content, "ISO8859_14",   16)
-                             .or(content, "ISO8859_15",   17)
-                             .or(content, "ISO8859_16",   18)
-                             .or(content, "Windows_1250", 21)
-                             .or(content, "Windows_1251", 22)
-                             .or(content, "Windows_1252", 23)
-                             .or(content, "Windows_1256", 24)
-                             .or(content, "SJIS",         20)
-                             .or(content, "UTF8",         26);
+        assert eciSupported();
+
+        EciMode eci;
+        if (eciMode != -1) {
+            // user chose the ECI mode explicitly
+            eci = EciMode.ECIS.stream().filter(e -> e.mode == eciMode).findFirst().orElse(EciMode.NONE);
+        } else {
+            // detect the ECI mode automatically
+            eci = EciMode.chooseFor(content);
+        }
 
         if (EciMode.NONE.equals(eci)) {
-            throw new OkapiInputException("Unable to determine ECI mode.");
+            throw new OkapiInputException("Unable to determine ECI mode");
         }
 
         eciMode = eci.mode;
         inputData = toBytes(content, eci.charset);
+
+        if (inputData == null) {
+            // user chose the ECI mode explicitly and it can't encode the provided data
+            throw new OkapiInputException("Unable to encode the provided data using the requested ECI mode");
+        }
 
         infoLine("ECI Mode: " + eci.mode);
         infoLine("ECI Charset: " + eci.charset.name());

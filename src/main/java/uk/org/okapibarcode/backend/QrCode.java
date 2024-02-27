@@ -255,6 +255,11 @@ public class QrCode extends Symbol {
     }
 
     @Override
+    protected boolean eciSupported() {
+        return true;
+    }
+
+    @Override
     protected void encode() {
 
         int i, j;

@@ -28,6 +28,7 @@ jobs:
       uses: gradle/actions/setup-gradle@v3
       with:
         dependency-graph: generate-and-submit
+        cache-disabled: true # play nice with CodeQL
     - name: Build with Gradle
       run: |
         cd $GITHUB_WORKSPACE

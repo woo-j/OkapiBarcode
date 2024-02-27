@@ -38,8 +38,16 @@ jar {
 }
 
 checkstyle {
+    toolVersion = '10.13.0'
     configFile = file('checkstyle.xml')
     showViolations = true
+}
+
+configurations.checkstyle {
+    // avoid checkstyle dependency mayhem: https://github.com/gradle/gradle/issues/27035
+    resolutionStrategy.capabilitiesResolution.withCapability('com.google.collections:google-collections') {
+        select('com.google.guava:guava:0')
+    }
 }
 
 test {

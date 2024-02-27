@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-22.04
     permissions:
       security-events: write # for CodeQL
+      contents: write # for Gradle dependency graph submission
     steps:
     - name: Checkout
       uses: actions/checkout@v3
@@ -23,7 +24,7 @@ jobs:
       uses: github/codeql-action/init@v3
       with:
         languages: java
-    - name: Gradle Setup
+    - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v3
       with:
         dependency-graph: generate-and-submit

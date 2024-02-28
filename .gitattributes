@@ -1,2 +1,20 @@
-**/*.properties text
+# See: https://stackoverflow.com/questions/170961/whats-the-strategy-for-handling-crlf-carriage-return-line-feed-with-git
+# See: https://stackoverflow.com/questions/42667996/enforce-core-autocrlf-input-through-gitattributes
 
+*            text=auto
+
+*.md         text
+*.xml        text
+*.svg        text
+*.eps        text
+*.seed       text
+*.form       text
+*.java       text diff=java
+*.gradle     text diff=java
+*.properties text
+
+gradlew      text eol=lf
+gradlew.bat  text eol=crlf
+
+*.png        binary
+*.ttf        binary

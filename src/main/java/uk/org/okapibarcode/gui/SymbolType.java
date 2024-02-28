@@ -22,6 +22,7 @@ package uk.org.okapibarcode.gui;
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class SymbolType {
+
     public enum Encoding { CHANNEL_CODE, CODABAR, CODE_11, CODE25_MATRIX,
         CODE25_IATA, CODE25_INDUSTRY, CODE25_INTERLEAVED, CODE25_DATALOGIC, ITF14,
         CODE39, CODE39_EXTENDED, CODE93, DOD_LOGMARS, CODE_128, NVE18, EAN,

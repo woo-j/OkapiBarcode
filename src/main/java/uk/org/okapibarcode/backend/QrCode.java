@@ -21,6 +21,7 @@ import static uk.org.okapibarcode.util.Strings.binaryAppend;
 
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 
 /**
  * <p>Implements QR Code bar code symbology According to ISO/IEC 18004:2015.
@@ -169,6 +170,8 @@ public class QrCode extends Symbol {
     protected int minVersion = 1;
     protected int preferredVersion;
     protected EccLevel preferredEccLevel = EccLevel.L;
+    protected boolean improveEccLevelIfPossible = true;
+    protected boolean forceByteCompaction;
 
     /**
      * Sets the preferred symbol size / version. This value may be ignored if the data
@@ -288,11 +291,11 @@ public class QrCode extends Symbol {
         }
 
         QrMode[] inputMode = new QrMode[inputData.length];
-        defineMode(inputMode, inputData);
+        defineMode(inputMode, inputData, forceByteCompaction);
         est_binlen = getBinaryLength(40, inputMode, inputData, gs1, eciMode);
 
         ecc_level = this.preferredEccLevel;
-        switch (this.preferredEccLevel) {
+        switch (ecc_level) {
             case L:
             default:
                 max_cw = 2956;
@@ -435,14 +438,16 @@ public class QrCode extends Symbol {
         }
 
         /* Ensure maximum error correction capacity */
-        if (est_binlen <= (QR_DATA_CODEWORDS_M[version - 1] * 8)) {
-            ecc_level = EccLevel.M;
-        }
-        if (est_binlen <= (QR_DATA_CODEWORDS_Q[version - 1] * 8)) {
-            ecc_level = EccLevel.Q;
-        }
-        if (est_binlen <= (QR_DATA_CODEWORDS_H[version - 1] * 8)) {
-            ecc_level = EccLevel.H;
+        if (improveEccLevelIfPossible) {
+            if (est_binlen <= (QR_DATA_CODEWORDS_M[version - 1] * 8)) {
+                ecc_level = EccLevel.M;
+            }
+            if (est_binlen <= (QR_DATA_CODEWORDS_Q[version - 1] * 8)) {
+                ecc_level = EccLevel.Q;
+            }
+            if (est_binlen <= (QR_DATA_CODEWORDS_H[version - 1] * 8)) {
+                ecc_level = EccLevel.H;
+            }
         }
 
         targetCwCount = QR_DATA_CODEWORDS_L[version - 1];
@@ -511,9 +516,12 @@ public class QrCode extends Symbol {
     }
 
     /** Place Kanji / Binary / Alphanumeric / Numeric values in inputMode. */
-    private static void defineMode(QrMode[] inputMode, int[] inputData) {
+    private static void defineMode(QrMode[] inputMode, int[] inputData, boolean forceByteCompaction) {
 
-        int mlen;
+        if (forceByteCompaction) {
+            Arrays.fill(inputMode, 0, inputData.length, QrMode.BINARY);
+            return;
+        }
 
         for (int i = 0; i < inputData.length; i++) {
             if (inputData[i] > 0xff) {

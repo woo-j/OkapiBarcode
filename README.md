@@ -155,6 +155,7 @@ and data.
 ### Recent Releases
 
 #### Okapi Barcode 0.4.3
+- Add support for UPN QR
 - Add support for DPD Code
 - Add support for Swiss QR Code
 - Add support for specifying ECI mode explicitly

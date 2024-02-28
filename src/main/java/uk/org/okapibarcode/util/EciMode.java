@@ -111,7 +111,7 @@ public final class EciMode {
 
     @Override
     public int hashCode() {
-        return Integer.valueOf(mode).hashCode();
+        return Integer.hashCode(mode);
     }
 
     @Override

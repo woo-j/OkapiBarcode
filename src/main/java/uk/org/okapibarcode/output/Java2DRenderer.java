@@ -137,7 +137,7 @@ public class Java2DRenderer implements SymbolRenderer {
             Polygon polygon = new Polygon();
             for (int j = 0; j < 6; j++) {
                 polygon.addPoint((int) ((hexagon.pointX[j] * magnification) + marginX),
-                        (int) ((hexagon.pointY[j] * magnification) + marginY));
+                                 (int) ((hexagon.pointY[j] * magnification) + marginY));
             }
             g2d.fill(polygon);
         }

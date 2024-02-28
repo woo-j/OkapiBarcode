@@ -132,8 +132,7 @@ public class SvgRenderer implements SymbolRenderer {
                   .append("\" fill=\"#").append(bgColour).append("\" />\n");
 
             // Rectangles
-            for (int i = 0; i < symbol.getRectangles().size(); i++) {
-                Rectangle rect = symbol.getRectangles().get(i);
+            for (Rectangle rect : symbol.getRectangles()) {
                 writer.append("      <rect x=\"").append((rect.x * magnification) + marginX)
                       .append("\" y=\"").append((rect.y * magnification) + marginY)
                       .append("\" width=\"").append(rect.width * magnification)
@@ -142,8 +141,7 @@ public class SvgRenderer implements SymbolRenderer {
             }
 
             // Text
-            for (int i = 0; i < symbol.getTexts().size(); i++) {
-                TextBox text = symbol.getTexts().get(i);
+            for (TextBox text : symbol.getTexts()) {
                 TextAlignment alignment = (text.alignment == JUSTIFY && text.text.length() == 1 ? CENTER : text.alignment);
                 double x;
                 String anchor;
@@ -195,8 +193,7 @@ public class SvgRenderer implements SymbolRenderer {
             }
 
             // Hexagons
-            for (int i = 0; i < symbol.getHexagons().size(); i++) {
-                Hexagon hexagon = symbol.getHexagons().get(i);
+            for (Hexagon hexagon : symbol.getHexagons()) {
                 writer.append("      <path d=\"");
                 for (int j = 0; j < 6; j++) {
                     if (j == 0) {

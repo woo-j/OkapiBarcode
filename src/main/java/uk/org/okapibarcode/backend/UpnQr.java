@@ -58,4 +58,12 @@ public class UpnQr extends QrCode {
         }
         super.setPreferredEccLevel(preferredEccLevel);
     }
+
+    @Override
+    public void setForceByteCompaction(boolean forceByteCompaction) {
+        if (!forceByteCompaction) {
+            throw new OkapiInputException("UPN QR requires forced byte compaction");
+        }
+        super.setForceByteCompaction(forceByteCompaction);
+    }
 }

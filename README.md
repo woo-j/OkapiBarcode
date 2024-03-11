@@ -75,6 +75,7 @@ been invested in that project.
 * [UPC](src/main/java/uk/org/okapibarcode/backend/Upc.java) variants:
   * UPC-A
   * UPC-E
+* [UPN QR](src/main/java/uk/org/okapibarcode/backend/UpnQr.java)
 * [USPS OneCode](src/main/java/uk/org/okapibarcode/backend/UspsOneCode.java) (Intelligent Mail)
 
 ### Library Usage (Java)
@@ -159,6 +160,8 @@ and data.
 - Add support for DPD Code
 - Add support for Swiss QR Code
 - Add support for specifying ECI mode explicitly
+- PDF417: Add support for forcing byte compaction mode
+- QR Code: Add support for forcing byte compaction mode
 
 #### Okapi Barcode 0.4.2
 - PDF417: allow user to request byte compaction

@@ -50,6 +50,7 @@ public class Pdf417Test {
         }
 
         Pdf417 barcode = new Pdf417();
+        barcode.setForceByteCompaction(true);
         barcode.setContent(bytes);
 
         String info = barcode.getEncodeInfo();

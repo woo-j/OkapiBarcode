@@ -742,24 +742,45 @@ public class Pdf417 extends Symbol {
     }
 
     /**
-     * <p>Sets the binary data to be encoded and triggers encoding, forcing the use
-     * of byte compaction mode. Input data will be assumed to be of the type set by
-     * {@link #setDataType(DataType)}.
-     *
-     * <p>Use {@link #setContent(String)} instead if the data to be encoded is not
-     * binary data or you do not want to force the use of byte compaction mode.
+     * <p>If set to <code>false</code> (which is the default value), this symbol is
+     * allowed to optimize compaction modes automatically, based on the data to be
+     * encoded. If set to <code>true</code>, this symbol is forced to use byte
+     * compaction mode instead of optimizing the compaction modes automatically.
      *
      * <p><b>NOTE:</b> Forcing the use of byte compaction mode is usually sub-optimal,
      * and will result in larger symbols than would otherwise be possible. This method
      * should only be used if your downstream systems <b>require</b> the use of byte
      * compaction mode, which is <b>not</b> usually the case.
      *
+     * @param forceByteCompaction whether or not to force the use of byte compaction mode
+     */
+    public void setForceByteCompaction(boolean forceByteCompaction) {
+        this.forceByteCompaction = forceByteCompaction;
+    }
+
+    /**
+     * Returns whether or not this symbol has been forced to use byte compaction mode.
+     * By default, this method returns <code>false</code>, and the symbol is allowed
+     * to optimize compaction modes in whatever way best fits the provided data.
+     *
+     * @return whether or not this symbol has been forced to use byte compaction mode
+     */
+    public boolean getForceByteCompaction() {
+        return forceByteCompaction;
+    }
+
+    /**
+     * <p>Sets the binary data to be encoded and triggers encoding. Input data will
+     * be assumed to be of the type set by {@link #setDataType(DataType)}.
+     *
+     * <p>Use {@link #setContent(String)} instead if the data to be encoded is not
+     * binary data.
+     *
      * @param data the data to encode
      * @throws OkapiException if no data or data is invalid
      * @see #setContent(String)
      */
     public void setContent(byte[] data) {
-        this.forceByteCompaction = true;
         super.setContent(new String(data, StandardCharsets.ISO_8859_1));
     }
 

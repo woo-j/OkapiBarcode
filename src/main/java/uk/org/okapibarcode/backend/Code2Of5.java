@@ -92,10 +92,26 @@ public class Code2Of5 extends Symbol {
     };
 
     /** The 2-of-5 mode. */
-    private ToFMode mode = ToFMode.MATRIX;
+    private ToFMode mode;
 
     /** Ratio of wide bar width to narrow bar width. */
     private double moduleWidthRatio = 3;
+
+    /**
+     * Creates a new instance, using mode {@link ToFMode#MATRIX}.
+     */
+    public Code2Of5() {
+        this(ToFMode.MATRIX);
+    }
+
+    /**
+     * Creates a new instance, using the specified mode.
+     *
+     * @param mode the 2-of-5 mode
+     */
+    public Code2Of5(ToFMode mode) {
+        this.mode = mode;
+    }
 
     /**
      * Sets the 2-of-5 mode. The default value is {@link ToFMode#MATRIX}.

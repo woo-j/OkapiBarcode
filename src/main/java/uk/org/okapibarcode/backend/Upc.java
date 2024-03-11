@@ -68,14 +68,26 @@ public class Upc extends Symbol {
         "ABABAB", "ABABBA", "ABBABA"
     };
 
-    private Mode mode = Mode.UPCA;
+    private Mode mode;
     private boolean showCheckDigit = true;
     private int guardPatternExtraHeight = 5;
     private boolean linkageFlag;
     private EanUpcAddOn addOn;
 
-    /** Creates a new instance. */
+    /**
+     * Creates a new instance, using mode {@link Mode#UPCA}.
+     */
     public Upc() {
+        this(Mode.UPCA);
+    }
+
+    /**
+     * Creates a new instance, using the specified mode.
+     *
+     * @param mode the UPC mode (UPC-A or UPC-E)
+     */
+    public Upc(Mode mode) {
+        this.mode = mode;
         this.humanReadableAlignment = TextAlignment.JUSTIFY;
     }
 

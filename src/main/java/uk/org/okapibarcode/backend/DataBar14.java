@@ -75,8 +75,25 @@ public class DataBar14 extends Symbol {
 
     private boolean linkageFlag;
     private int separatorHeight = 1;
-    private Mode mode = Mode.LINEAR;
+    private Mode mode;
 
+    /**
+     * Creates a new instance, using mode {@link Mode#LINEAR}.
+     */
+    public DataBar14() {
+        this(Mode.LINEAR);
+    }
+
+    /**
+     * Creates a new instance, using the specified mode.
+     *
+     * @param mode the symbol mode
+     */
+    public DataBar14(Mode mode) {
+        this.mode = mode;
+    }
+
+    /** {@inheritDoc} */
     @Override
     public void setDataType(DataType dummy) {
         // Do nothing!
@@ -89,14 +106,6 @@ public class DataBar14 extends Symbol {
     @Override
     protected boolean gs1Supported() {
         return false;
-    }
-
-    protected void setLinkageFlag(boolean linkageFlag) {
-        this.linkageFlag = linkageFlag;
-    }
-
-    protected boolean getLinkageFlag() {
-        return linkageFlag;
     }
 
     /**
@@ -136,6 +145,14 @@ public class DataBar14 extends Symbol {
      */
     public int getSeparatorHeight() {
         return separatorHeight;
+    }
+
+    protected void setLinkageFlag(boolean linkageFlag) {
+        this.linkageFlag = linkageFlag;
+    }
+
+    protected boolean getLinkageFlag() {
+        return linkageFlag;
     }
 
     @Override

@@ -173,7 +173,7 @@ public class SymbolTest {
     @MethodSource("data")
     public void test(Class< ? extends Symbol > symbolType, TestConfig config, File pngFile, String symbolName, String fileBaseName) throws Exception {
 
-        Symbol symbol = symbolType.getDeclaredConstructor().newInstance();
+        Symbol symbol = createSymbol(symbolType, config);
         symbol.setFontName(DEJA_VU_SANS.getFontName());
 
         Throwable actualError;
@@ -191,6 +191,32 @@ public class SymbolTest {
             verifyError(config, pngFile, actualError);
         } else {
             addMissingExpectations(config, pngFile, symbol, actualError);
+        }
+    }
+
+    /**
+     * Creates a symbol of the specified type. If the test configuration specifies a constructor parameter,
+     * the constructor parameter is used.
+     *
+     * @param symbolType the type of symbol being tested
+     * @param config the test configuration, as read from the test properties file
+     * @return the symbol instance created
+     * @throws Exception if any error occurs during the test
+     */
+    @SuppressWarnings("unchecked")
+    private static < E extends Enum< E > > Symbol createSymbol(Class< ? extends Symbol > symbolType, TestConfig config) throws Exception {
+        String cx = config.properties.remove("constructor");
+        if (cx == null) {
+            return symbolType.getDeclaredConstructor().newInstance();
+        } else {
+            Class< ? > type = symbolType.getMethod("getMode").getReturnType();
+            if (type.isEnum()) {
+                Object mode = Enum.valueOf((Class< E >) type, cx);
+                return symbolType.getDeclaredConstructor(type).newInstance(mode);
+            } else {
+                int mode = Integer.parseInt(cx);
+                return symbolType.getDeclaredConstructor(type).newInstance(mode);
+            }
         }
     }
 

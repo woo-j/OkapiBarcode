@@ -48,8 +48,20 @@ public class Postnet extends Symbol {
     private Mode mode;
     private double moduleWidthRatio;
 
+    /**
+     * Creates a new instance, using mode {@link Mode#POSTNET}
+     */
     public Postnet() {
-        this.mode = Mode.POSTNET;
+        this(Mode.POSTNET);
+    }
+
+    /**
+     * Creates a new instance, using the specified mode.
+     *
+     * @param mode the barcode mode (PLANET or POSTNET)
+     */
+    public Postnet(Mode mode) {
+        this.mode = mode;
         this.moduleWidthRatio = 1.5;
         this.default_height = 12;
         this.humanReadableLocation = HumanReadableLocation.NONE;

@@ -127,6 +127,22 @@ public class MaxiCode extends Symbol {
     private boolean[][] grid = new boolean[33][30];
 
     /**
+     * Creates a new instance, using mode 4 (standard symbol).
+     */
+    public MaxiCode() {
+        this(4);
+    }
+
+    /**
+     * Creates a new instance, using the specified mode.
+     *
+     * @param mode the MaxiCode mode to use
+     */
+    public MaxiCode(int mode) {
+        setMode(mode);
+    }
+
+    /**
      * Sets the MaxiCode mode to use. Only modes 2 to 6 are supported.
      *
      * @param mode the MaxiCode mode to use

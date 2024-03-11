@@ -56,7 +56,7 @@ public class Pdf417 extends Symbol {
 
     private int[] codeWords = new int[2700];
     private int codeWordCount;
-    private Mode symbolMode = Mode.NORMAL;
+    private Mode symbolMode;
     private boolean forceByteCompaction;
     private Integer columns;
     private Integer rows;
@@ -506,9 +506,19 @@ public class Pdf417 extends Symbol {
     };
 
     /**
-     * Creates a new PDF417 symbol instance.
+     * Creates a new instance, using mode {@link Mode#NORMAL}.
      */
     public Pdf417() {
+        this(Mode.NORMAL);
+    }
+
+    /**
+     * Creates a new instance, using the specified mode.
+     *
+     * @param mode the type of PDF417 symbol created
+     */
+    public Pdf417(Mode mode) {
+        this.symbolMode = mode;
         setBarHeight(3);
     }
 

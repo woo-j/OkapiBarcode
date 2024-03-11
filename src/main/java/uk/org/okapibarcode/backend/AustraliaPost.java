@@ -131,12 +131,38 @@ public class AustraliaPost extends Symbol {
         "332", "333"
     };
 
-    private Mode mode = Mode.POST;
+    private Mode mode;
 
+    /**
+     * Creates a new instance, using mode {@link Mode#POST}.
+     */
+    public AustraliaPost() {
+        this(Mode.POST);
+    }
+
+    /**
+     * Creates a new instance, using the specified mode.
+     *
+     * @param mode the Australia Post mode
+     */
+    public AustraliaPost(Mode mode) {
+        this.mode = mode;
+    }
+
+    /**
+     * Sets the Australia Post mode.
+     *
+     * @param mode the Australia Post mode
+     */
     public void setMode(Mode mode) {
         this.mode = mode;
     }
 
+    /**
+     * Gets the Australia Post mode.
+     *
+     * @return the Australia Post mode
+     */
     public Mode getMode() {
         return mode;
     }

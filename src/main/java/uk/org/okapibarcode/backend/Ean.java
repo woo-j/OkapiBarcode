@@ -56,13 +56,25 @@ public class Ean extends Symbol {
         "1123", "1222", "2212", "1141", "2311", "1321", "4111", "2131", "3121", "2113"
     };
 
-    private Mode mode = Mode.EAN13;
+    private Mode mode;
     private int guardPatternExtraHeight = 5;
     private boolean linkageFlag;
     private EanUpcAddOn addOn;
 
-    /** Creates a new instance. */
+    /**
+     * Creates a new instance, using mode {@link Mode#EAN13}.
+     */
     public Ean() {
+        this(Mode.EAN13);
+    }
+
+    /**
+     * Creates a new instance, using the specified mode.
+     *
+     * @param mode the EAN mode (EAN-8 or EAN-13)
+     */
+    public Ean(Mode mode) {
+        this.mode = mode;
         this.humanReadableAlignment = TextAlignment.JUSTIFY;
     }
 

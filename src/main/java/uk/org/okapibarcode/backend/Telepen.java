@@ -29,7 +29,10 @@ package uk.org.okapibarcode.backend;
 public class Telepen extends Symbol {
 
     public static enum Mode {
-        NORMAL, NUMERIC
+        /** A normal Telepen symbol. */
+        NORMAL,
+        /** A numeric Telepen symbol. */
+        NUMERIC
     }
 
     private static final String[] TELE_TABLE = {
@@ -63,12 +66,38 @@ public class Telepen extends Symbol {
         "131111111113"
     };
 
-    private Mode mode = Mode.NORMAL;
+    private Mode mode;
 
+    /**
+     * Creates a new instance, using mode {@link Mode#NORMAL}.
+     */
+    public Telepen() {
+        this(Mode.NORMAL);
+    }
+
+    /**
+     * Creates a new instance, using the specified mode.
+     *
+     * @param mode the Telepen mode
+     */
+    public Telepen(Mode mode) {
+        this.mode = mode;
+    }
+
+    /**
+     * Sets the Telepen mode.
+     *
+     * @param mode the Telepen mode
+     */
     public void setMode(Mode mode) {
         this.mode = mode;
     }
 
+    /**
+     * Returns the Telepen mode.
+     *
+     * @return the Telepen mode
+     */
     public Mode getMode() {
         return mode;
     }

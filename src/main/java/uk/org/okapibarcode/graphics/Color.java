@@ -57,9 +57,9 @@ public final class Color {
                 throw new IllegalArgumentException("Invalid hex RRGGBB value: " + rrggbb);
             }
         }
-        this.red = Integer.parseInt(rrggbb, 0, 2, 16);
-        this.green = Integer.parseInt(rrggbb, 2, 4, 16);
-        this.blue = Integer.parseInt(rrggbb, 4, 6, 16);
+        this.red = Integer.parseInt(rrggbb.substring(0, 2), 16);
+        this.green = Integer.parseInt(rrggbb.substring(2, 4), 16);
+        this.blue = Integer.parseInt(rrggbb.substring(4, 6), 16);
     }
 
     /** {@inheritDoc} */

@@ -45,6 +45,26 @@ public class Code3Of9Extended extends Symbol {
     };
 
     private CheckDigit checkDigit = CheckDigit.NONE;
+    private double moduleWidthRatio = 2;
+
+    /**
+     * Sets the ratio of wide bar width to narrow bar width. Valid values are usually between
+     * {@code 2} and {@code 3}. The default value is {@code 2}.
+     *
+     * @param moduleWidthRatio the ratio of wide bar width to narrow bar width
+     */
+    public void setModuleWidthRatio(double moduleWidthRatio) {
+        this.moduleWidthRatio = moduleWidthRatio;
+    }
+
+    /**
+     * Returns the ratio of wide bar width to narrow bar width.
+     *
+     * @return the ratio of wide bar width to narrow bar width
+     */
+    public double getModuleWidthRatio() {
+        return moduleWidthRatio;
+    }
 
     /**
      * Sets the check digit scheme (no check digit, or a modulo-43 check digit). By default, no check digit is added.
@@ -81,11 +101,22 @@ public class Code3Of9Extended extends Symbol {
         if (checkDigit == CheckDigit.MOD43) {
             code39.setCheckDigit(Code3Of9.CheckDigit.MOD43);
         }
+        code39.setModuleWidthRatio(moduleWidthRatio);
         code39.setContent(s.toString());
 
         readable = content;
         pattern = new String[] { code39.pattern[0] };
         row_count = 1;
         row_height = new int[] { -1 };
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected double getModuleWidth(int originalWidth) {
+        if (originalWidth == 1) {
+            return 1;
+        } else {
+            return moduleWidthRatio;
+        }
     }
 }

@@ -160,8 +160,9 @@ and data.
 - Add support for DPD Code
 - Add support for Swiss QR Code
 - Add support for specifying ECI mode explicitly
-- PDF417: Add support for forcing byte compaction mode
-- QR Code: Add support for forcing byte compaction mode
+- PDF417: add support for forcing byte compaction mode
+- QR Code: add support for forcing byte compaction mode
+- Code 39 Extended: allow customization of module width ratio
 
 #### Okapi Barcode 0.4.2
 - PDF417: allow user to request byte compaction

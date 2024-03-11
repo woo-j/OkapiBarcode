@@ -47,6 +47,21 @@ public final class Color {
         this.blue = rgb & 0xFF;
     }
 
+    public Color(String rrggbb) {
+        if (rrggbb.length() != 6) {
+            throw new IllegalArgumentException("Invalid hex RRGGBB value: " + rrggbb);
+        }
+        for (int i = 0; i < rrggbb.length(); i++) {
+            char c = rrggbb.charAt(i);
+            if (!(c >= '0' && c <= '9') && !(c >= 'A' && c <= 'F') && !(c >= 'a' && c <= 'f')) {
+                throw new IllegalArgumentException("Invalid hex RRGGBB value: " + rrggbb);
+            }
+        }
+        this.red = Integer.parseInt(rrggbb, 0, 2, 16);
+        this.green = Integer.parseInt(rrggbb, 2, 4, 16);
+        this.blue = Integer.parseInt(rrggbb, 4, 6, 16);
+    }
+
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object other) {

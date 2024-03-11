@@ -18,6 +18,7 @@ package uk.org.okapibarcode.graphics;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
@@ -36,6 +37,13 @@ public class ColorTest {
         Color color3 = new Color(new java.awt.Color(-16711165).getRGB());
         assertEqual(color1, color3);
 
+        Color color4 = new Color("010203");
+        assertEqual(color1, color4);
+
+        Color color5 = new Color("09afAF");
+        Color color6 = new Color("09AFaf");
+        assertEqual(color5, color6);
+
         assertNotEqual(color1, Color.BLACK);
         assertNotEqual(color1, new Color(9, 2, 3));
         assertNotEqual(color1, new Color(1, 9, 3));
@@ -44,6 +52,15 @@ public class ColorTest {
         Object obj = new Object();
         assertNotEquals(color1, obj);
         assertNotEquals(obj, color1);
+
+        assertThrows(IllegalArgumentException.class, () -> new Color(""));
+        assertThrows(IllegalArgumentException.class, () -> new Color("AB"));
+        assertThrows(IllegalArgumentException.class, () -> new Color("ABCDEG"));
+        assertThrows(IllegalArgumentException.class, () -> new Color("ABCDE."));
+        assertThrows(IllegalArgumentException.class, () -> new Color("ABCDE:"));
+        assertThrows(IllegalArgumentException.class, () -> new Color("ABCDE@"));
+        assertThrows(IllegalArgumentException.class, () -> new Color("ABCDE`"));
+        assertThrows(IllegalArgumentException.class, () -> new Color("ABCDEg"));
     }
 
     private static void assertEqual(Color color1, Color color2) {

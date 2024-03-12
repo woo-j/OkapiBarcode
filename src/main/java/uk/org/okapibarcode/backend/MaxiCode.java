@@ -239,7 +239,7 @@ public class MaxiCode extends Symbol {
     }
 
     @Override
-    protected boolean eciSupported() {
+    public boolean supportsEci() {
         return true;
     }
 

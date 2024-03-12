@@ -74,7 +74,7 @@ public class CodablockF extends Symbol {
      * it was originally copied from the Code 128 source code (just a suspicion, though).
      */
     @Override
-    protected boolean gs1Supported() {
+    public boolean supportsGs1() {
         return true;
     }
 

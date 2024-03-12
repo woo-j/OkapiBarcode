@@ -52,6 +52,11 @@ public class SwissQrCode extends QrCode {
     }
 
     @Override
+    public boolean supportsGs1() {
+        return false;
+    }
+
+    @Override
     public void setContent(String data) {
         // Swiss QR Code requires coding data as "UTF-8 restricted to the Latin character set"
         byte[] bytes = data.getBytes(UTF_8);

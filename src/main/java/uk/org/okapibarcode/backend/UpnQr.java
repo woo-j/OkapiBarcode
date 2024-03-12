@@ -66,4 +66,9 @@ public class UpnQr extends QrCode {
         }
         super.setForceByteCompaction(forceByteCompaction);
     }
+
+    @Override
+    public boolean supportsGs1() {
+        return false;
+    }
 }

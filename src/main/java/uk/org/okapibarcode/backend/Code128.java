@@ -99,22 +99,22 @@ public class Code128 extends Symbol {
     }
 
     @Override
-    protected boolean gs1Supported() {
+    public boolean supportsGs1() {
         return true;
     }
 
     @Override
-    protected boolean fnc2Supported() {
+    protected boolean supportsFnc2() {
         return true;
     }
 
     @Override
-    protected boolean fnc3Supported() {
+    protected boolean supportsFnc3() {
         return true;
     }
 
     @Override
-    protected boolean fnc4Supported() {
+    protected boolean supportsFnc4() {
         return true;
     }
 

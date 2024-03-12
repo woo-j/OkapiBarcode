@@ -796,7 +796,7 @@ public class Pdf417 extends Symbol {
     }
 
     @Override
-    protected boolean eciSupported() {
+    public boolean supportsEci() {
         return true;
     }
 

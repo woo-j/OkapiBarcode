@@ -152,7 +152,7 @@ public class DataBarLimited extends Symbol {
      * as well as the check digit. Thus, the input data is not considered GS1-format data.
      */
     @Override
-    protected boolean gs1Supported() {
+    public boolean supportsGs1() {
         return false;
     }
 

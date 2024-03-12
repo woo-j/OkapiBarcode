@@ -124,7 +124,7 @@ public abstract class Symbol {
      * @param dataType the type of input data
      */
     public void setDataType(DataType dataType) {
-        if (dataType == DataType.GS1 && !gs1Supported()) {
+        if (dataType == DataType.GS1 && !supportsGs1()) {
             throw new IllegalArgumentException("This symbology type does not support GS1 data");
         }
         inputDataType = dataType;
@@ -144,7 +144,7 @@ public abstract class Symbol {
      *
      * @return <code>true</code> if this type of symbology supports GS1 data
      */
-    protected boolean gs1Supported() {
+    public boolean supportsGs1() {
         return false;
     }
 
@@ -411,7 +411,7 @@ public abstract class Symbol {
      * @throws IllegalArgumentException if this symbology does not support ECI or an unsupported ECI mode is requested
      */
     public void setEciMode(int eciMode) {
-        if (!eciSupported()) {
+        if (!supportsEci()) {
             throw new IllegalArgumentException("This symbology type does not support ECI");
         }
         boolean valid = EciMode.ECIS.stream().anyMatch(eci -> eci.mode == eciMode);
@@ -438,7 +438,7 @@ public abstract class Symbol {
      *
      * @return <code>true</code> if this type of symbology supports ECI (Extended Channel Interpretation)
      */
-    protected boolean eciSupported() {
+    public boolean supportsEci() {
         return false;
     }
 
@@ -580,13 +580,13 @@ public abstract class Symbol {
             data = "";
         }
 
-        if (data.contains(FNC1_STRING) && !fnc1Supported()) {
+        if (data.contains(FNC1_STRING) && !supportsFnc1()) {
             throw new OkapiInputException("This symbology type does not support direct use of FNC1");
-        } else if (data.contains(FNC2_STRING) && !fnc2Supported()) {
+        } else if (data.contains(FNC2_STRING) && !supportsFnc2()) {
             throw new OkapiInputException("This symbology type does not support direct use of FNC2");
-        } else if (data.contains(FNC3_STRING) && !fnc3Supported()) {
+        } else if (data.contains(FNC3_STRING) && !supportsFnc3()) {
             throw new OkapiInputException("This symbology type does not support direct use of FNC3");
-        } else if (data.contains(FNC4_STRING) && !fnc4Supported()) {
+        } else if (data.contains(FNC4_STRING) && !supportsFnc4()) {
             throw new OkapiInputException("This symbology type does not support direct use of FNC4");
         }
 
@@ -619,8 +619,8 @@ public abstract class Symbol {
      *
      * @return <code>true</code> if this symbology allows the user to embed {@link #FNC1_STRING} directly in the content
      */
-    protected boolean fnc1Supported() {
-        return gs1Supported();
+    protected boolean supportsFnc1() {
+        return supportsGs1();
     }
 
     /**
@@ -628,7 +628,7 @@ public abstract class Symbol {
      *
      * @return <code>true</code> if this symbology allows the user to embed {@link #FNC2_STRING} directly in the content
      */
-    protected boolean fnc2Supported() {
+    protected boolean supportsFnc2() {
         return false;
     }
 
@@ -637,7 +637,7 @@ public abstract class Symbol {
      *
      * @return <code>true</code> if this symbology allows the user to embed {@link #FNC3_STRING} directly in the content
      */
-    protected boolean fnc3Supported() {
+    protected boolean supportsFnc3() {
         return false;
     }
 
@@ -646,7 +646,7 @@ public abstract class Symbol {
      *
      * @return <code>true</code> if this symbology allows the user to embed {@link #FNC4_STRING} directly in the content
      */
-    protected boolean fnc4Supported() {
+    protected boolean supportsFnc4() {
         return false;
     }
 
@@ -673,7 +673,7 @@ public abstract class Symbol {
      */
     protected void eciProcess() {
 
-        assert eciSupported();
+        assert supportsEci();
 
         EciMode eci;
         if (eciMode != -1) {

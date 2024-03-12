@@ -496,12 +496,12 @@ public class AztecCode extends Symbol {
     }
 
     @Override
-    protected boolean gs1Supported() {
+    public boolean supportsGs1() {
         return true;
     }
 
     @Override
-    protected boolean eciSupported() {
+    public boolean supportsEci() {
         return true;
     }
 

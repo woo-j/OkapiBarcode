@@ -141,7 +141,7 @@ public class CodeOne extends Symbol {
     }
 
     @Override
-    protected boolean gs1Supported() {
+    public boolean supportsGs1() {
         return true;
     }
 

@@ -600,9 +600,6 @@ public class MakeBarcode {
                         case 2:
                             microQrCode.setEccMode(MicroQrCode.EccMode.Q);
                             break;
-                        case 3:
-                            microQrCode.setEccMode(MicroQrCode.EccMode.H);
-                            break;
                     }
                     microQrCode.setPreferredVersion(settings.getSymbolVersion());
                     microQrCode.setContent(dataInput);

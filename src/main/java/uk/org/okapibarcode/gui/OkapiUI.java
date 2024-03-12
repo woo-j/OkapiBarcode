@@ -2847,9 +2847,6 @@ public class OkapiUI extends javax.swing.JFrame implements TreeSelectionListener
                         case 2:
                             microQrCode.setEccMode(MicroQrCode.EccMode.Q);
                             break;
-                        case 3:
-                            microQrCode.setEccMode(MicroQrCode.EccMode.H);
-                            break;
                     }
                 }
                 if (microQrUserSize.isSelected()) {

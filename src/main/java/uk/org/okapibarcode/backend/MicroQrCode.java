@@ -33,7 +33,7 @@ import java.io.UnsupportedEncodingException;
 public class MicroQrCode extends Symbol {
 
     public enum EccMode {
-        L, M, Q, H
+        L, M, Q
     }
 
     private enum qrMode {
@@ -245,10 +245,6 @@ public class MicroQrCode extends Symbol {
 
         /* Eliminate possible versions depending on error correction level specified */
         ecc_level = preferredEccLevel;
-
-        if (ecc_level == EccMode.H) {
-            throw new OkapiInputException("Error correction level H not available");
-        }
 
         if (ecc_level == EccMode.Q) {
             version_valid[0] = false;
@@ -504,8 +500,6 @@ public class MicroQrCode extends Symbol {
                 return 'M';
             case Q:
                 return 'Q';
-            case H:
-                return 'H';
             default:
                 return ' ';
         }

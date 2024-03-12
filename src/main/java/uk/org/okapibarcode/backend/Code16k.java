@@ -72,6 +72,13 @@ public class Code16k extends Symbol {
     private int[] block_length = new int[170]; /* RENAME block_length */
     private int block_count;
 
+    /**
+     * Creates a new instance.
+     */
+    public Code16k() {
+        this.humanReadableLocation = HumanReadableLocation.NONE;
+    }
+
     @Override
     protected boolean gs1Supported() {
         return true;

@@ -140,6 +140,7 @@ public class MaxiCode extends Symbol {
      */
     public MaxiCode(int mode) {
         setMode(mode);
+        this.humanReadableLocation = HumanReadableLocation.NONE;
     }
 
     /**

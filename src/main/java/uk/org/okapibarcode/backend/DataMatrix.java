@@ -146,6 +146,13 @@ public class DataMatrix extends Symbol {
     private int codewordCount;
 
     /**
+     * Creates a new instance.
+     */
+    public DataMatrix() {
+        this.humanReadableLocation = HumanReadableLocation.NONE;
+    }
+
+    /**
      * Forces the symbol to be either square or rectangular (non-square). Used only
      * if a {@link #getPreferredSize() preferred size} has not been specified.
      *

@@ -54,6 +54,13 @@ public class RoyalMail4State extends Symbol {
         'U', 'V', 'W', 'X', 'Y', 'Z'
     };
 
+    /**
+     * Creates a new instance.
+     */
+    public RoyalMail4State() {
+        this.humanReadableLocation = HumanReadableLocation.NONE;
+    }
+
     @Override
     protected void encode() {
 

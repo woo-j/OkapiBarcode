@@ -72,6 +72,13 @@ public class MicroQrCode extends Symbol {
     private int[] eval;
 
     /**
+     * Creates a new instance.
+     */
+    public MicroQrCode() {
+        this.humanReadableLocation = HumanReadableLocation.NONE;
+    }
+
+    /**
      * <p>Sets the preferred symbol size. This value may be ignored if the
      * data string is too large to fit into the specified symbol. Input
      * values correspond to symbol sizes as shown in the following table.

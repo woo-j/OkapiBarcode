@@ -39,6 +39,13 @@ public class AztecRune extends Symbol {
          0, 0, 22, 21, 20, 19, 18, 17, 16, 0, 0
     };
 
+    /**
+     * Creates a new instance.
+     */
+    public AztecRune() {
+        this.humanReadableLocation = HumanReadableLocation.NONE;
+    }
+
     @Override
     protected void encode() {
 

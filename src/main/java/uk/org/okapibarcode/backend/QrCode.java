@@ -174,6 +174,13 @@ public class QrCode extends Symbol {
     protected boolean forceByteCompaction;
 
     /**
+     * Creates a new instance.
+     */
+    public QrCode() {
+        this.humanReadableLocation = HumanReadableLocation.NONE;
+    }
+
+    /**
      * Sets the preferred symbol size / version. This value may be ignored if the data
      * string is too large to fit into the specified symbol. Input values correspond
      * to symbol sizes as shown in the following table:

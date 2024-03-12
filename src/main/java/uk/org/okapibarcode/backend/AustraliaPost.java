@@ -147,6 +147,7 @@ public class AustraliaPost extends Symbol {
      */
     public AustraliaPost(Mode mode) {
         this.mode = mode;
+        this.humanReadableLocation = HumanReadableLocation.NONE;
     }
 
     /**

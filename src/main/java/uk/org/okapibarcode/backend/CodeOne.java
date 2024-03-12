@@ -114,6 +114,13 @@ public class CodeOne extends Symbol {
     private boolean[][] outputGrid = new boolean[148][134];
 
     /**
+     * Creates a new instance.
+     */
+    public CodeOne() {
+        this.humanReadableLocation = HumanReadableLocation.NONE;
+    }
+
+    /**
      * Sets the preferred symbol size / version. Versions A to H are square symbols.
      * Version S and T are fixed height symbols. This value may be ignored if the input
      * data does not fit in the specified version.

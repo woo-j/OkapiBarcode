@@ -331,6 +331,13 @@ public class AztecCode extends Symbol {
     private int structuredAppendTotal = 1;
 
     /**
+     * Creates a new instance.
+     */
+    public AztecCode() {
+        this.humanReadableLocation = HumanReadableLocation.NONE;
+    }
+
+    /**
      * <p>Sets a preferred symbol size. This value may be ignored if data string is
      * too large to fit in the specified symbol size. Values correspond to symbol
      * sizes as shown in the following table:

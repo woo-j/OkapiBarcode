@@ -47,6 +47,13 @@ public class JapanPost extends Symbol {
         'd', 'e', 'f', 'g', 'h'
     };
 
+    /**
+     * Creates a new instance.
+     */
+    public JapanPost() {
+        this.humanReadableLocation = HumanReadableLocation.NONE;
+    }
+
     @Override
     protected void encode() {
 

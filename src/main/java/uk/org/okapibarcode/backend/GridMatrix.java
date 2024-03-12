@@ -194,6 +194,13 @@ public class GridMatrix extends Symbol {
     private int preferredEccLevel = -1;
 
     /**
+     * Creates a new instance.
+     */
+    public GridMatrix() {
+        this.humanReadableLocation = HumanReadableLocation.NONE;
+    }
+
+    /**
      * Set preferred size, or "version" of the symbol according to the following
      * table. This value may be ignored if the data to be encoded does not fit
      * into a symbol of the selected size.

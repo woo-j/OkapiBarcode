@@ -29,6 +29,13 @@ import uk.org.okapibarcode.graphics.Rectangle;
  */
 public class Pharmacode2Track extends Symbol {
 
+    /**
+     * Creates a new instance.
+     */
+    public Pharmacode2Track() {
+        this.humanReadableLocation = HumanReadableLocation.NONE;
+    }
+
     @Override
     protected void encode() {
 

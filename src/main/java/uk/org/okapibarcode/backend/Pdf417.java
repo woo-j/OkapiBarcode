@@ -519,6 +519,7 @@ public class Pdf417 extends Symbol {
      */
     public Pdf417(Mode mode) {
         this.symbolMode = mode;
+        this.humanReadableLocation = HumanReadableLocation.NONE;
         setBarHeight(3);
     }
 

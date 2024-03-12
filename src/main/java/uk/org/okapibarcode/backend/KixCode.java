@@ -48,6 +48,13 @@ public class KixCode extends Symbol {
         'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
     };
 
+    /**
+     * Creates a new instance.
+     */
+    public KixCode() {
+        this.humanReadableLocation = HumanReadableLocation.NONE;
+    }
+
     @Override
     protected void encode() {
 

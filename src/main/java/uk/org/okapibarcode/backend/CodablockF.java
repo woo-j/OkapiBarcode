@@ -61,6 +61,13 @@ public class CodablockF extends Symbol {
     private CfMode[] subset_selector = new CfMode[44];
 
     /**
+     * Creates a new instance.
+     */
+    public CodablockF() {
+        this.humanReadableLocation = HumanReadableLocation.NONE;
+    }
+
+    /**
      * TODO: It doesn't appear that this symbol should support GS1 (it's not in the GS1 spec and Zint doesn't
      * support GS1 with this type of symbology). However, the code below does contain GS1 checks, so we'll mark
      * it as supported for now. It's very possible that the code below which supports GS1 only does so because

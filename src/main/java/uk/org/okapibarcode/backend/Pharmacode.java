@@ -27,6 +27,13 @@ package uk.org.okapibarcode.backend;
  */
 public class Pharmacode extends Symbol {
 
+    /**
+     * Creates a new instance.
+     */
+    public Pharmacode() {
+        this.humanReadableLocation = HumanReadableLocation.NONE;
+    }
+
     @Override
     protected void encode() {
 

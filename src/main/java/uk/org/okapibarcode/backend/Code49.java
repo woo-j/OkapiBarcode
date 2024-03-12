@@ -995,6 +995,13 @@ public class Code49 extends Symbol {
         '%', '!', '&', '*'
     };
 
+    /**
+     * Creates a new instance.
+     */
+    public Code49() {
+        this.humanReadableLocation = HumanReadableLocation.NONE;
+    }
+
     @Override
     protected boolean gs1Supported() {
         return true;

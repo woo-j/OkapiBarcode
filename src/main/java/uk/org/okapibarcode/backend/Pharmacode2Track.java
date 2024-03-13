@@ -83,7 +83,7 @@ public class Pharmacode2Track extends Symbol {
     protected void plotSymbol() {
 
         int x = 0;
-        int w = 1;
+        int w = moduleWidth;
         int y = 0;
         int h = 0;
 
@@ -106,10 +106,10 @@ public class Pharmacode2Track extends Symbol {
             }
             Rectangle rect = new Rectangle(x, y, w, h);
             rectangles.add(rect);
-            x += 2;
+            x += 2 * w;
         }
 
-        symbol_width = pattern[0].length() * 2;
+        symbol_width = pattern[0].length() * 2 * w;
         symbol_height = default_height;
     }
 }

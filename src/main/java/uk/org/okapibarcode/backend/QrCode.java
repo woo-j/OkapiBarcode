@@ -546,7 +546,7 @@ public class QrCode extends Symbol {
                 }
             }
             pattern[i] = bin2pat(bin);
-            row_height[i] = 1;
+            row_height[i] = moduleWidth;
         }
     }
 

@@ -451,7 +451,7 @@ public class GridMatrix extends Symbol {
                     bin.append('0');
                 }
             }
-            row_height[x] = 1;
+            row_height[x] = moduleWidth;
             pattern[x] = bin2pat(bin);
         }
     }

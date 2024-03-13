@@ -688,7 +688,7 @@ public class AztecCode extends Symbol {
                         }
                     }
                 }
-                row_height[y - AZTEC_COMPACT_OFFSET[layers - 1]] = 1;
+                row_height[y - AZTEC_COMPACT_OFFSET[layers - 1]] = moduleWidth;
                 pattern[y - AZTEC_COMPACT_OFFSET[layers - 1]] = bin2pat(bin);
             }
 
@@ -721,7 +721,7 @@ public class AztecCode extends Symbol {
                         }
                     }
                 }
-                row_height[y - AZTEC_OFFSET[layers - 1]] = 1;
+                row_height[y - AZTEC_OFFSET[layers - 1]] = moduleWidth;
                 pattern[y - AZTEC_OFFSET[layers - 1]] = bin2pat(bin);
             }
         }

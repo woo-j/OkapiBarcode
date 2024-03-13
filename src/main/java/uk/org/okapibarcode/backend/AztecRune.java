@@ -171,7 +171,7 @@ public class AztecRune extends Symbol {
                 }
             }
             pattern[row] = bin2pat(rowBinary);
-            row_height[row] = 1;
+            row_height[row] = moduleWidth;
         }
     }
 }

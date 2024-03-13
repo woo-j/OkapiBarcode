@@ -30,20 +30,20 @@ public class HexagonTest {
     @Test
     public void testHexagon() {
 
-        Hexagon hex1 = new Hexagon(1, 2);
+        Hexagon hex1 = new Hexagon(1, 2, 1);
         assertEquals(1, hex1.centreX, 0.001);
         assertEquals(2, hex1.centreY, 0.001);
         assertEquals("Hexagon[centreX=1.0, centreY=2.0]", hex1.toString());
 
-        Hexagon hex2 = new Hexagon(1, 2);
+        Hexagon hex2 = new Hexagon(1, 2, 1);
         assertEqual(hex1, hex2);
 
         Object obj = new Object();
         assertNotEquals(hex1, obj);
         assertNotEquals(obj, hex1);
 
-        assertNotEqual(hex1, new Hexagon(9, 2));
-        assertNotEqual(hex1, new Hexagon(1, 9));
+        assertNotEqual(hex1, new Hexagon(9, 2, 1));
+        assertNotEqual(hex1, new Hexagon(1, 9, 1));
     }
 
     private static void assertEqual(Hexagon hex1, Hexagon hex2) {

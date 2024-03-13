@@ -35,12 +35,12 @@ public final class Hexagon {
     public final double[] pointX = new double[6];
     public final double[] pointY = new double[6];
 
-    public Hexagon(double centreX, double centreY) {
+    public Hexagon(double centreX, double centreY, int factor) {
         this.centreX = centreX;
         this.centreY = centreY;
         for (int i = 0; i < 6; i++) {
-            pointX[i] = centreX + (OFFSET_X[i] * INK_SPREAD);
-            pointY[i] = centreY + (OFFSET_Y[i] * INK_SPREAD);
+            pointX[i] = centreX + (OFFSET_X[i] * INK_SPREAD * factor);
+            pointY[i] = centreY + (OFFSET_Y[i] * INK_SPREAD * factor);
         }
     }
 

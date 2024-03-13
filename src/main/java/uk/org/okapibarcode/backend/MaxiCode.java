@@ -398,7 +398,7 @@ public class MaxiCode extends Symbol {
                 }
             }
             pattern[i] = bin2pat(bin);
-            row_height[i] = 1;
+            row_height[i] = moduleWidth;
         }
     }
 
@@ -907,19 +907,23 @@ public class MaxiCode extends Symbol {
 
         resetPlotElements();
 
-        symbol_height = 72;
-        symbol_width = 74;
+        // this is a very different symbology, but for consistency with all of the other
+        // 2D matrix symbologies, we scale the symbol up by the module width (the hexagons
+        // are considered "modules" in the MaxiCode spec)
+        int m = moduleWidth;
+        symbol_height = 72 * m;
+        symbol_width = 74 * m;
 
         // hexagons
         for (int row = 0; row < 33; row++) {
             for (int col = 0; col < 30; col++) {
                 if (grid[row][col]) {
-                    double x = (2.46 * col) + 1.23;
+                    double x = ((2.46 * col) + 1.23) * m;
                     if ((row & 1) != 0) {
-                        x += 1.23;
+                        x += 1.23 * m;
                     }
-                    double y = (2.135 * row) + 1.43;
-                    hexagons.add(new Hexagon(x, y));
+                    double y = ((2.135 * row) + 1.43) * m;
+                    hexagons.add(new Hexagon(x, y, m));
                 }
             }
         }
@@ -927,7 +931,7 @@ public class MaxiCode extends Symbol {
         // circles
         double[] radii = { 10.85, 8.97, 7.10, 5.22, 3.31, 1.43 };
         for (int i = 0; i < radii.length; i++) {
-            target.add(new Circle(35.76, 35.60, radii[i]));
+            target.add(new Circle(35.76 * m, 35.60 * m, radii[i] * m));
         }
     }
 

@@ -112,8 +112,6 @@ public class Java2DRenderer implements SymbolRenderer {
             TextAlignment alignment = (text.alignment == JUSTIFY && text.text.length() == 1 ? CENTER : text.alignment);
             Font font = (alignment != JUSTIFY ? f : addTracking(f, text.width * magnification, text.text, g2d));
             g2d.setFont(font);
-            FontMetrics fm = g2d.getFontMetrics();
-            Rectangle2D bounds = fm.getStringBounds(text.text, g2d);
             float y = (float) (text.y * magnification) + marginY;
             float x;
             switch (alignment) {
@@ -122,10 +120,10 @@ public class Java2DRenderer implements SymbolRenderer {
                     x = (float) ((magnification * text.x) + marginX);
                     break;
                 case RIGHT:
-                    x = (float) ((magnification * text.x) + (magnification * text.width) - bounds.getWidth() + marginX);
+                    x = (float) ((magnification * text.x) + (magnification * text.width) - getBounds(text, g2d).getWidth() + marginX);
                     break;
                 case CENTER:
-                    x = (float) ((magnification * text.x) + (magnification * text.width / 2) - (bounds.getWidth() / 2) + marginX);
+                    x = (float) ((magnification * text.x) + (magnification * text.width / 2) - (getBounds(text, g2d).getWidth() / 2) + marginX);
                     break;
                 default:
                     throw new OkapiInternalException("Unknown alignment: " + alignment);
@@ -153,6 +151,11 @@ public class Java2DRenderer implements SymbolRenderer {
 
         g2d.setFont(oldFont);
         g2d.setColor(oldColor);
+    }
+
+    private static Rectangle2D getBounds(TextBox text, Graphics2D g2d) {
+        FontMetrics fm = g2d.getFontMetrics();
+        return fm.getStringBounds(text.text, g2d);
     }
 
     private static Ellipse2D.Double adjust(Circle circle, double magnification, int marginX, int marginY) {

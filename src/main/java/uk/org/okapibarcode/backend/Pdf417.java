@@ -1810,7 +1810,7 @@ public class Pdf417 extends Symbol {
             codeWords[codeWordCount++] = 923;
             codeWords[codeWordCount++] = 000;
             EciMode eci = EciMode.chooseFor(structuredAppendFileName, 3, 26);
-            int[] data2 = toBytes(structuredAppendFileName, eci.charset);
+            int[] data2 = toBytes(structuredAppendFileName, eci.getCharset());
             processEci(eci.mode);
             processText(data2, 0, data2.length, true);
         }

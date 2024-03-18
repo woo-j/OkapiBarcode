@@ -163,6 +163,7 @@ and data.
 - PDF417: add support for forcing byte compaction mode
 - QR Code: add support for forcing byte compaction mode
 - Code 39 Extended: allow customization of module width ratio
+- PDF417: add support for automatic splitting of structured append symbols
 
 #### Okapi Barcode 0.4.2
 - PDF417: allow user to request byte compaction

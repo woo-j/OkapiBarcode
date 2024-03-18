@@ -144,7 +144,14 @@ public class MaxiCode extends Symbol {
     }
 
     /**
-     * Sets the MaxiCode mode to use. Only modes 2 to 6 are supported.
+     * Sets the MaxiCode mode to use. Only modes 2 to 6 are supported:
+     * <ul>
+     *   <li>Mode 2: Structured carrier message (US domestic transportation)</li>
+     *   <li>Mode 3: Structured carrier message (international transportation)</li>
+     *   <li>Mode 4: Standard symbol</li>
+     *   <li>Mode 5: Full EEC (enhanced error correction)</li>
+     *   <li>Mode 6: Reader programming</li>
+     * </ul>
      *
      * @param mode the MaxiCode mode to use
      */

@@ -16,6 +16,7 @@
 
 package uk.org.okapibarcode.backend;
 
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static uk.org.okapibarcode.util.Arrays.positionOf;
 
 import java.math.BigInteger;
@@ -1846,5 +1847,130 @@ public class Pdf417 extends Symbol {
         public String toString() {
             return mode + "x" + length;
         }
+    }
+
+    /**
+     * Splits up the data into a series of structured append PDF417 symbols which include
+     * segment macro data <code>total</code> and <code>position</code>.
+     * Input data will be assumed to be of the type set by {@link Pdf417#setDataType(Symbol.DataType)}.
+     *
+     * @param data     the data to encode
+     * @param template the PDF417 symbol template which will be used for all created
+     *                 symbols. The following properties will be ignored from the template:
+     *                 <ul>
+     *                      <li>{@link Pdf417#setContent(String)}</li>
+     *                      <li>{@link Pdf417#setContent(byte[])}</li>
+     *                      <li>{@link Pdf417#setStructuredAppendTotal(int)}</li>
+     *                      <li>{@link Pdf417#setStructuredAppendPosition(int)}</li>
+     *                 </ul>
+     * @throws OkapiException if no data or data is invalid
+     */
+    public static List<Pdf417> createStructuredAppendSymbols(String data, Pdf417 template) {
+        List<String> dataList = splitData(data, template);
+        return createStructuredAppendSymbols(dataList, template);
+    }
+
+    /**
+     * Overloaded method of {@link #createStructuredAppendSymbols(String, Pdf417)} which
+     * accepts binary data.
+     *
+     * <p><b>NOTE:</b>See linked method above for details.
+     */
+    public static List<Pdf417> createStructuredAppendSymbols(byte[] data, Pdf417 template) {
+        return createStructuredAppendSymbols(new String(data, ISO_8859_1), template);
+    }
+
+    private static List<String> splitData(String data, Pdf417 template) {
+        Pdf417 testSymbol = new Pdf417() {
+            @Override
+            protected void plotSymbol() {
+            } // expensive plotting is not required
+        };
+        clone(template, testSymbol);
+        testSymbol.setStructuredAppendTotal(2);
+
+        List<String> dataList = new ArrayList<>();
+        String remainingData = data;
+        while (!remainingData.isEmpty()) {
+            int low = 0;
+            int high = remainingData.length();
+
+            while (low <= high) {
+                int mid = low + high >>> 1;
+                int currentLength = Math.min(mid, remainingData.length());
+                String currentData = remainingData.substring(0, currentLength);
+                boolean fit = fits(currentData, testSymbol, false);
+                if (fit && mid < remainingData.length() &&
+                    fits(remainingData.substring(0, currentLength + 1), testSymbol, false)) {
+                    low = mid + 1;
+                } else {
+                    if (fit && currentLength == mid) {
+                        dataList.add(currentData);
+                        remainingData = remainingData.substring(mid);
+                    }
+                    high = mid - 1;
+                }
+            }
+        }
+        if (!dataList.isEmpty()) {
+            String lastData = dataList.get(dataList.size() - 1);
+            if (!fits(lastData, testSymbol, true)) {
+                int endIndex = lastData.length() - 1;
+                dataList.set(dataList.size() - 1, lastData.substring(0, endIndex));
+                dataList.add(lastData.substring(endIndex));
+            }
+        }
+        return dataList;
+    }
+
+    private static boolean fits(String data, Pdf417 testSymbol, boolean last) {
+        testSymbol.setStructuredAppendPosition(last ? 2 : 1);
+        try {
+            if (!data.isEmpty()) {
+                testSymbol.setContent(data);
+            }
+        } catch (OkapiInputException e) {
+            return false;
+        }
+        return true;
+    }
+
+    private static List<Pdf417> createStructuredAppendSymbols(List<String> dataList, Pdf417 template) {
+        int structuredAppendTotal = dataList.size();
+        List<Pdf417> symbols = new ArrayList<>(structuredAppendTotal);
+        for (int i = 0; i < structuredAppendTotal; i++) {
+            String data = dataList.get(i);
+            Pdf417 symbol = new Pdf417();
+            symbols.add(symbol);
+            clone(template, symbol);
+
+            symbol.setStructuredAppendPosition(i + 1);
+            symbol.setStructuredAppendTotal(structuredAppendTotal);
+
+            symbol.setContent(data);
+        }
+        return symbols;
+    }
+
+    private static void clone(Pdf417 template, Pdf417 target) {
+        target.setFontName(template.getFontName());
+        target.setFontSize(template.getFontSize());
+        target.setDataType(template.getDataType());
+        target.setEmptyContentAllowed(template.getEmptyContentAllowed());
+        target.setHumanReadableAlignment(template.getHumanReadableAlignment());
+        target.setHumanReadableLocation(template.getHumanReadableLocation());
+        target.setModuleWidth(template.getModuleWidth());
+        target.setQuietZoneHorizontal(template.getQuietZoneHorizontal());
+        target.setQuietZoneVertical(template.getQuietZoneVertical());
+        target.setReaderInit(template.getReaderInit());
+        target.setDataColumns(template.getDataColumns());
+        target.setRows(template.getRows());
+        target.setPreferredEccLevel(template.getPreferredEccLevel());
+        target.setStructuredAppendFileId(template.getStructuredAppendFileId());
+        target.setStructuredAppendFileName(template.getStructuredAppendFileName());
+        target.setBarHeight(template.getBarHeight());
+        target.setMode(template.getMode());
+        target.setStructuredAppendIncludeSegmentCount(template.getStructuredAppendIncludeSegmentCount());
+        target.setForceByteCompaction(template.getForceByteCompaction());
     }
 }

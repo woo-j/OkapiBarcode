@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import uk.org.okapibarcode.graphics.Circle;
 import uk.org.okapibarcode.graphics.Hexagon;
@@ -414,7 +415,7 @@ public abstract class Symbol {
         if (!supportsEci()) {
             throw new IllegalArgumentException("This symbology type does not support ECI");
         }
-        boolean valid = EciMode.ECIS.stream().anyMatch(eci -> eci.mode == eciMode);
+        boolean valid = Optional.ofNullable(EciMode.ECIS.get(eciMode)).filter(EciMode::isSupported).isPresent();
         if (!valid) {
             throw new IllegalArgumentException("Unsupported ECI mode: " + eciMode);
         }
@@ -678,7 +679,7 @@ public abstract class Symbol {
         EciMode eci;
         if (eciMode != -1) {
             // user chose the ECI mode explicitly
-            eci = EciMode.ECIS.stream().filter(e -> e.mode == eciMode).findFirst().orElse(EciMode.NONE);
+            eci = Optional.ofNullable(EciMode.ECIS.get(eciMode)).filter(EciMode::isSupported).orElse(EciMode.NONE);
         } else {
             // detect the ECI mode automatically
             eci = EciMode.chooseFor(content);
@@ -689,7 +690,7 @@ public abstract class Symbol {
         }
 
         eciMode = eci.mode;
-        inputData = toBytes(content, eci.charset);
+        inputData = toBytes(content, eci.getCharset());
 
         if (inputData == null) {
             // user chose the ECI mode explicitly and it can't encode the provided data
@@ -697,7 +698,7 @@ public abstract class Symbol {
         }
 
         infoLine("ECI Mode: " + eci.mode);
-        infoLine("ECI Charset: " + eci.charset.name());
+        infoLine("ECI Charset: " + eci.charsetName);
     }
 
     protected static int[] toBytes(String s, Charset charset, int... suffix) {

@@ -37,6 +37,12 @@ jar {
     )
 }
 
+tasks.withType(AbstractArchiveTask).configureEach {
+    // ensure 100% byte-for-byte reproducible builds
+    preserveFileTimestamps = false
+    reproducibleFileOrder = true
+}
+
 checkstyle {
     toolVersion = '10.14.2'
     configFile = file('checkstyle.xml')

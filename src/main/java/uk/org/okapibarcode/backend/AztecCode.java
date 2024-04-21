@@ -31,6 +31,16 @@ import static uk.org.okapibarcode.util.Arrays.insertArray;
  */
 public class AztecCode extends Symbol {
 
+    /** The types of Aztec Code symbol sizes allowed.  */
+    public enum Mode {
+        /** Allow only normal Aztec Code symbol sizes. */
+        NORMAL,
+        /** Allow only compact Aztec Code symbol sizes. */
+        COMPACT,
+        /** Allow both normal and compact Aztec Code symbol sizes. */
+        ANY;
+    }
+
     /* 27 x 27 data grid */
     private static final int[] COMPACT_AZTEC_MAP = {
         609, 608, 411, 413, 415, 417, 419, 421, 423, 425, 427, 429, 431, 433, 435, 437, 439, 441, 443, 445, 447, 449, 451, 453, 455, 457, 459,
@@ -324,6 +334,7 @@ public class AztecCode extends Symbol {
         return output;
     }
 
+    private Mode mode;
     private int preferredSize = 0;
     private int preferredEccLevel = 2;
     private String structuredAppendMessageId;
@@ -331,10 +342,38 @@ public class AztecCode extends Symbol {
     private int structuredAppendTotal = 1;
 
     /**
-     * Creates a new instance.
+     * Creates a new instance, using mode {@link Mode#ANY}.
      */
     public AztecCode() {
+        this(Mode.ANY);
+    }
+
+    /**
+     * Creates a new instance, using the specified mode.
+     *
+     * @param mode whether to allow normal sizes, compact sizes, or all sizes
+     */
+    public AztecCode(Mode mode) {
+        this.mode = mode;
         this.humanReadableLocation = HumanReadableLocation.NONE;
+    }
+
+    /**
+     * Sets the mode (normal sizes only, compact sizes only, or all sizes).
+     *
+     * @param mode the mode (normal sizes only, compact sizes only, or all sizes)
+     */
+    public void setMode(Mode mode) {
+        this.mode = mode;
+    }
+
+    /**
+     * Returns the mode (normal sizes only, compact sizes only, or all sizes).
+     *
+     * @return the mode (normal sizes only, compact sizes only, or all sizes)
+     */
+    public Mode getMode() {
+        return mode;
     }
 
     /**
@@ -568,19 +607,23 @@ public class AztecCode extends Symbol {
                 layers = 0;
                 compact = false;
 
-                for (int i = 32; i > 0; i--) {
-                    if (dataLength < dataSizes[i - 1]) {
-                        layers = i;
-                        compact = false;
-                        dataMaxSize = dataSizes[i - 1];
+                if (mode == Mode.NORMAL || mode == Mode.ANY) {
+                    for (int i = 32; i > 0; i--) {
+                        if (dataLength < dataSizes[i - 1]) {
+                            layers = i;
+                            compact = false;
+                            dataMaxSize = dataSizes[i - 1];
+                        }
                     }
                 }
 
-                for (int i = compLoop; i > 0; i--) {
-                    if (dataLength < compactDataSizes[i - 1]) {
-                        layers = i;
-                        compact = true;
-                        dataMaxSize = compactDataSizes[i - 1];
+                if (mode == Mode.COMPACT || mode == Mode.ANY) {
+                    for (int i = compLoop; i > 0; i--) {
+                        if (dataLength < compactDataSizes[i - 1]) {
+                            layers = i;
+                            compact = true;
+                            dataMaxSize = compactDataSizes[i - 1];
+                        }
                     }
                 }
 
@@ -607,6 +650,10 @@ public class AztecCode extends Symbol {
             } else {
                 compact = false;
                 layers = preferredSize - 4;
+            }
+
+            if ((compact && mode == Mode.NORMAL) || (!compact && mode == Mode.COMPACT)) {
+                throw new OkapiInputException("Aztec mode " + mode + " and preferred size " + preferredSize + " are incompatible");
             }
 
             adjustedString = adjustBinaryString(binaryString, compact, layers);

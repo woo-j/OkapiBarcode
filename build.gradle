@@ -39,8 +39,12 @@ jar {
 
 tasks.withType(AbstractArchiveTask).configureEach {
     // ensure 100% byte-for-byte reproducible builds
+    // https://github.com/jvm-repo-rebuild/reproducible-central
+    // https://github.com/gradle/gradle/issues/28806
     preserveFileTimestamps = false
     reproducibleFileOrder = true
+    dirMode  = 0755 // rwx r-x r-x
+    fileMode = 0644 // rw- r-- r--
 }
 
 checkstyle {

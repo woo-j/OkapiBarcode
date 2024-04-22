@@ -26,8 +26,12 @@ package uk.org.okapibarcode.backend;
  */
 public class Code3Of9Extended extends Symbol {
 
+    /** The types of Code 39 Extended check digits available. */
     public enum CheckDigit {
-        NONE, MOD43
+        /** No check digit. */
+        NONE,
+        /** One mod 43 check digit. */
+        MOD43
     }
 
     private static final String[] E_CODE_39 = {

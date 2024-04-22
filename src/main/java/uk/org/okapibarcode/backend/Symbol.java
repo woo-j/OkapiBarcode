@@ -55,8 +55,14 @@ public abstract class Symbol {
     // is used, or if FNC1 escape sequences are used. We may want to make sure that they
     // encode to the same output.
 
-    public static enum DataType {
-        ECI, GS1, HIBC
+    /** The type of input data to expect in {@link #setContent(String)}. */
+    public enum DataType {
+        /** Extended Channel Interpretations (the default). */
+        ECI,
+        /** GS1 Application Identifier and data pairs in "[AI]DATA" format. */
+        GS1,
+        /** Health Industry Bar Code number (without check digit). */
+        HIBC
     }
 
     protected static final int FNC1 = -1;

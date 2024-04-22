@@ -29,6 +29,9 @@ import uk.org.okapibarcode.graphics.TextBox;
  */
 public class Code2Of5 extends Symbol {
 
+    /**
+     * The different Code 2 of 5 barcode variants available to encode.
+     */
     public enum ToFMode {
         /**
          * Standard Code 2 of 5 mode, also known as Code 2 of 5 Matrix. Encodes any

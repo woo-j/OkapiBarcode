@@ -30,8 +30,12 @@ import static uk.org.okapibarcode.util.Arrays.positionOf;
  */
 public class Code3Of9 extends Symbol {
 
+    /** The types of Code 39 check digits available. */
     public enum CheckDigit {
-        NONE, MOD43
+        /** No check digit. */
+        NONE,
+        /** One mod 43 check digit. */
+        MOD43
     }
 
     private static final String[] CODE_39 = {

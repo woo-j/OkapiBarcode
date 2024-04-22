@@ -30,6 +30,7 @@ import java.math.BigInteger;
  */
 public class DataBar14 extends Symbol {
 
+    /** The different DataBar-14 barcode variants available to encode. */
     public enum Mode {
         /** DataBar-14 */
         LINEAR,

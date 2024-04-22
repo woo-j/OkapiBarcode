@@ -42,10 +42,11 @@ import uk.org.okapibarcode.util.EciMode;
  */
 public class Pdf417 extends Symbol {
 
+    /** The different PDF417 barcode variants available to encode. */
     public enum Mode {
         /** Normal PDF417. */
         NORMAL,
-        /** Truncated PDF417. */
+        /** Truncated PDF417 (also known as Compact PDF417). */
         TRUNCATED,
         /** MicroPDF417. */
         MICRO

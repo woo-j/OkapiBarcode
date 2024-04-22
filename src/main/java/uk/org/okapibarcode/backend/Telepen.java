@@ -28,10 +28,11 @@ package uk.org.okapibarcode.backend;
  */
 public class Telepen extends Symbol {
 
-    public static enum Mode {
-        /** A normal Telepen symbol. */
+    /** The different Telepen barcode variants available to encode. */
+    public enum Mode {
+        /** Normal Telepen */
         NORMAL,
-        /** A numeric Telepen symbol. */
+        /** Numeric Telepen */
         NUMERIC
     }
 

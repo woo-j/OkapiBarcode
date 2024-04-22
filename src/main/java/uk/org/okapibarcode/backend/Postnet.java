@@ -33,8 +33,12 @@ import uk.org.okapibarcode.graphics.TextBox;
  */
 public class Postnet extends Symbol {
 
-    public static enum Mode {
-        PLANET, POSTNET
+    /** Whether to encode a POSTNET or PLANET barcode. */
+    public enum Mode {
+        /** Encode a PLANET barcode. */
+        PLANET,
+        /** Encode a POSTNET barcode. */
+        POSTNET
     }
 
     private static final String[] PN_TABLE = {

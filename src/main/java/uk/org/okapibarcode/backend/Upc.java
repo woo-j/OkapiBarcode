@@ -44,8 +44,12 @@ import uk.org.okapibarcode.graphics.TextBox;
  */
 public class Upc extends Symbol {
 
-    public static enum Mode {
-        UPCA, UPCE
+    /** The different UPC barcode variants available to encode. */
+    public enum Mode {
+        /** UPC-A */
+        UPCA,
+        /** UPC-E */
+        UPCE
     }
 
     private static final String[] SET_AC = {

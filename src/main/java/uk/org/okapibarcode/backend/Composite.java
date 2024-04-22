@@ -40,15 +40,19 @@ import uk.org.okapibarcode.graphics.TextBox;
  */
 public class Composite extends Symbol {
 
-    /** The linear component choices available. */
-    public static enum LinearEncoding {
-        UPCA, UPCE, EAN, CODE_128, DATABAR_14, DATABAR_14_STACK,
-        DATABAR_14_STACK_OMNI, DATABAR_LIMITED, DATABAR_EXPANDED,
-        DATABAR_EXPANDED_STACK
+    /**
+     * The linear component choices available.
+     */
+    public enum LinearEncoding {
+        UPCA, UPCE, EAN, CODE_128,
+        DATABAR_14, DATABAR_14_STACK, DATABAR_14_STACK_OMNI,
+        DATABAR_LIMITED, DATABAR_EXPANDED, DATABAR_EXPANDED_STACK
     }
 
-    /** The 2D component choices available. */
-    public static enum CompositeMode {
+    /**
+     * The 2D component choices available.
+     */
+    public enum CompositeMode {
         /**
          * Indicates that the composite symbol uses a MicroPDF417 variant as the 2D component.
          * Of the 2D component choices, this one holds the least amount of data.

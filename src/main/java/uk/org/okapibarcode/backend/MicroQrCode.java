@@ -21,19 +21,24 @@ import static uk.org.okapibarcode.util.Arrays.positionOf;
 import java.io.UnsupportedEncodingException;
 
 /**
- * Implements Micro QR Code
- * According to ISO/IEC 18004:2006
- * <br>
- * A miniature version of the QR Code symbol for short messages.
- * QR Code symbols can encode characters in the Latin-1 set and Kanji
- * characters which are members of the Shift-JIS encoding scheme.
+ * <p>Implements Micro QR Code according to ISO/IEC 18004:2006.
+ *
+ * <p>A miniature version of the QR Code symbol for short messages, Micro QR Code symbols
+ * can encode characters in the Latin-1 set and Kanji characters which are members of the
+ * Shift-JIS encoding scheme.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class MicroQrCode extends Symbol {
 
+    /** The different Micro QR Code error correction levels. */
     public enum EccMode {
-        L, M, Q
+        /** Low error correction level. Appropriate for symbols that are high-quality or require smallest possible size. */
+        L,
+        /** Medium or "standard" error correction level. Offers a good compromise between symbol size and reliability. */
+        M,
+        /** High error correction level. Suitable for critically-important symbols or applications with low print quality. */
+        Q
     }
 
     private enum qrMode {

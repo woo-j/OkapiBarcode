@@ -36,8 +36,16 @@ import java.util.Arrays;
  */
 public class QrCode extends Symbol {
 
+    /** The different QR Code error correction levels. */
     public enum EccLevel {
-        L, M, Q, H
+        /** Low error correction level. Appropriate for symbols that are high-quality or require smallest possible size. */
+        L,
+        /** Medium or "standard" error correction level. Offers a good compromise between symbol size and reliability. */
+        M,
+        /** High error correction level. Suitable for critically-important symbols or applications with low print quality. */
+        Q,
+        /** Highest error correction level. Provides the maximum achievable reliability at the cost of much larger symbols. */
+        H
     }
 
     private enum QrMode {

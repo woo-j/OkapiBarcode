@@ -26,8 +26,18 @@ package uk.org.okapibarcode.backend;
  */
 public class MsiPlessey extends Symbol {
 
+    /** The types of MSI Plessey check digits available. */
     public enum CheckDigit {
-        NONE, MOD10, MOD10_MOD10, MOD11, MOD11_MOD10
+        /** No check digit. */
+        NONE,
+        /** One mod 10 check digit. */
+        MOD10,
+        /** Two mod 10 check digits. */
+        MOD10_MOD10,
+        /** One mod 11 check digit. */
+        MOD11,
+        /** One mod 11 check digit and one mod 10 check digit. */
+        MOD11_MOD10
     }
 
     private final static String[] MSI_PLESS_TABLE = {

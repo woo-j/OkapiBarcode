@@ -39,8 +39,12 @@ import uk.org.okapibarcode.graphics.TextBox;
  */
 public class Ean extends Symbol {
 
+    /** The different EAN barcode variants available to encode. */
     public enum Mode {
-        EAN8, EAN13
+        /** EAN-8 */
+        EAN8,
+        /** EAN-13 */
+        EAN13
     }
 
     private static final String[] EAN13_PARITY = {

@@ -148,12 +148,16 @@ and data.
 
 ### Building
 
-`gradlew check`: Compiles and runs all quality checks, including the unit tests.  
-`gradlew fuzz`: Runs barcode encoding fuzz tests using [Jazzer](https://github.com/CodeIntelligenceTesting/jazzer).  
-`gradlew jar`: Builds the JAR file.  
-`gradlew publish`: Deploys to Maven Central (requires a modified gradle.properties file).  
+`gradlew check`: Compiles and runs all quality checks, including the unit tests.
+`gradlew fuzz`: Runs barcode encoding fuzz tests using [Jazzer](https://github.com/CodeIntelligenceTesting/jazzer).
+`gradlew jar`: Builds the JAR file.
+`gradlew publish`: Deploys to Maven Central (requires a modified gradle.properties file).
 
 ### Recent Releases
+
+#### Okapi Barcode 0.4.4
+- Aztec Code: allow user to restrict sizes to compact or normal Aztec sizes
+- First [reproducible build](https://github.com/jvm-repo-rebuild/reproducible-central/)
 
 #### Okapi Barcode 0.4.3
 - Add support for UPN QR

@@ -121,6 +121,7 @@ public class Java2DRendererTest {
         code93.setQuietZoneHorizontal(5);
         code93.setQuietZoneVertical(5);
         code93.setHumanReadableAlignment(TextAlignment.JUSTIFY);
+        code93.setFontName(SymbolTest.DEJA_VU_SANS.getFontName());
         code93.setContent("123456789");
         test(code93, "code93-alignment-justify.png");
     }
@@ -132,6 +133,7 @@ public class Java2DRendererTest {
         code93.setQuietZoneVertical(5);
         code93.setShowCheckDigits(false);
         code93.setHumanReadableAlignment(TextAlignment.JUSTIFY);
+        code93.setFontName(SymbolTest.DEJA_VU_SANS.getFontName());
         code93.setContent("1");
         test(code93, "code93-alignment-justify-one-char.png");
     }

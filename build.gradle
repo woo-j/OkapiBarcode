@@ -157,3 +157,9 @@ publishing {
 signing {
     sign publishing.publications.mavenJava
 }
+
+tasks.withType(Sign) {
+    // reproducible builds use "publishToMavenLocal" and need to be able to publish locally without signing,
+    // so we always sign when publishing to Maven Central, but *not* when publishing to the local Maven repo
+    onlyIf { gradle.taskGraph.hasTask(':publish') }
+}

@@ -37,6 +37,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
@@ -209,7 +210,9 @@ public class SymbolTest {
         if (cx == null) {
             return symbolType.getDeclaredConstructor().newInstance();
         } else {
-            Class< ? > type = symbolType.getMethod("getMode").getReturnType();
+            Constructor< ? >[] constructors = symbolType.getDeclaredConstructors();
+            Constructor< ? > c = List.of(constructors).stream().filter(e -> e.getParameterCount() > 0).findFirst().orElseThrow();
+            Class< ? > type = c.getParameterTypes()[0];
             if (type.isEnum()) {
                 Object mode = Enum.valueOf((Class< E >) type, cx);
                 return symbolType.getDeclaredConstructor(type).newInstance(mode);

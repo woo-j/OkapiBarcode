@@ -30,6 +30,20 @@ import static java.nio.charset.StandardCharsets.ISO_8859_1;
  */
 public class Code128 extends Symbol {
 
+    /** Code sets and code set combinations which the user may require the symbol to use. */
+    public enum CodeSet {
+        /** Code set A, which can encode ASCII values 0-95, as well as FNC1, FNC2, FNC3 and FNC4. */
+        A,
+        /** Code set B, which can encode ASCII values 32-127, as well as FNC1, FNC2, FNC3 and FNC4. */
+        B,
+        /** Code set C, which can encode pairs of numbers, as well as FNC1. */
+        C,
+        /** Code sets A and B only (suppress code set C). */
+        AB,
+        /** No code set restrictions (code sets A, B and C are all allowed). */
+        ABC
+    }
+
     private enum Mode {
         NULL, SHIFTA, LATCHA, SHIFTB, LATCHB, SHIFTC, LATCHC, AORB, ABORC
     }
@@ -61,25 +75,47 @@ public class Code128 extends Symbol {
         "211232", "2331112"
     };
 
-    private boolean suppressModeC = false;
+    private CodeSet codeSet;
     private Composite compositeMode = Composite.OFF;
 
     /**
-     * Optionally prevents this symbol from using subset mode C for numeric data compression.
-     *
-     * @param suppressModeC whether or not to prevent this symbol from using subset mode C
+     * Creates a new instance.
      */
-    public void setSuppressModeC(boolean suppressModeC) {
-        this.suppressModeC = suppressModeC;
+    public Code128() {
+        this(CodeSet.ABC);
     }
 
     /**
-     * Returns whether or not this symbol is prevented from using subset mode C for numeric data compression.
+     * <p>Creates a new instance, using the specified code set restrictions.
      *
-     * @return whether or not this symbol is prevented from using subset mode C for numeric data compression
+     * <p><b>NOTE:</b> Unless your application has very specific encoding requirements, it is recommended that no
+     * custom code set restrictions are used, allowing the system to fully optimize the encoded data.
+     *
+     * @param codeSet the code set restrictions to use
      */
-    public boolean getSuppressModeC() {
-        return suppressModeC;
+    public Code128(CodeSet codeSet) {
+        this.codeSet = codeSet;
+    }
+
+    /**
+     * <p>Sets the code set restrictions. The default value is {@link CodeSet#ABC}, which allows the use of any code set.
+     *
+     * <p><b>NOTE:</b> Unless your application has very specific encoding requirements, it is recommended that no
+     * custom code set restrictions are used, allowing the system to fully optimize the encoded data.
+     *
+     * @param codeSet the code set restrictions to use
+     */
+    public void setCodeSet(CodeSet codeSet) {
+        this.codeSet = codeSet;
+    }
+
+    /**
+     * Returns the code set restrictions. The default value is {@link CodeSet#ABC}, which allows the use of any code set.
+     *
+     * @return the code set restrictions used
+     */
+    public CodeSet getCodeSet() {
+        return codeSet;
     }
 
     protected void setCca() {
@@ -644,6 +680,10 @@ public class Code128 extends Symbol {
         if ((nums & 1) != 0) {
             int index;
             Mode m;
+            if (codeSet == CodeSet.C) {
+                // User wants to force the use of code set C only, but it's not possible
+                throw new OkapiInputException("Unable to encode the specified data using only code set C");
+            }
             if (i - cs == 0 || fncs > 0) {
                 // Rule 2: first block -> swap last digit to A or B
                 index = i - 1;
@@ -701,8 +741,29 @@ public class Code128 extends Symbol {
             mode = Mode.SHIFTB;
         }
 
-        if (suppressModeC && mode == Mode.ABORC) {
-            mode = Mode.AORB;
+        // if the user wishes to force the use of certain code sets, take that into account
+        if (codeSet == CodeSet.A) {
+            if (mode == Mode.ABORC || mode == Mode.AORB || mode == Mode.SHIFTA) {
+                mode = Mode.SHIFTA;
+            } else {
+                throw new OkapiInputException("Unable to encode the specified data using only code set A");
+            }
+        } else if (codeSet == CodeSet.B) {
+            if (mode == Mode.ABORC || mode == Mode.AORB || mode == Mode.SHIFTB) {
+                mode = Mode.SHIFTB;
+            } else {
+                throw new OkapiInputException("Unable to encode the specified data using only code set B");
+            }
+        } else if (codeSet == CodeSet.C) {
+            if (mode == Mode.ABORC) {
+                mode = Mode.SHIFTC;
+            } else {
+                throw new OkapiInputException("Unable to encode the specified data using only code set C");
+            }
+        } else if (codeSet == CodeSet.AB) {
+            if (mode == Mode.ABORC) {
+                mode = Mode.AORB;
+            }
         }
 
         return mode;
@@ -783,6 +844,10 @@ public class Code128 extends Symbol {
                 if (current == Mode.AORB) { /* Rule 1d */
                     mode_type[i] = Mode.LATCHB;
                     current = Mode.LATCHB;
+                }
+                if (current == Mode.SHIFTC) { /* user forced use of code set C */
+                    mode_type[i] = Mode.LATCHC;
+                    current = Mode.LATCHC;
                 }
             } else {
                 if ((current == Mode.ABORC) && (length >= 4)) { /* Rule 3 */

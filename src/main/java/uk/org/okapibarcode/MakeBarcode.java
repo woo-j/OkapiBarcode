@@ -34,6 +34,7 @@ import uk.org.okapibarcode.backend.Codabar;
 import uk.org.okapibarcode.backend.CodablockF;
 import uk.org.okapibarcode.backend.Code11;
 import uk.org.okapibarcode.backend.Code128;
+import uk.org.okapibarcode.backend.Code128.CodeSet;
 import uk.org.okapibarcode.backend.Code16k;
 import uk.org.okapibarcode.backend.Code2Of5;
 import uk.org.okapibarcode.backend.Code2Of5.ToFMode;
@@ -209,7 +210,7 @@ public class MakeBarcode {
                         code128.setDataType(Symbol.DataType.HIBC);
                     }
                     if (type == 60) {
-                        code128.setSuppressModeC(true);
+                        code128.setCodeSet(CodeSet.AB);
                     }
                     code128.setReaderInit(settings.isReaderInit());
                     code128.setHumanReadableLocation(hrtLocation);

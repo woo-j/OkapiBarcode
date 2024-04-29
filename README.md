@@ -155,9 +155,12 @@ and data.
 
 ### Recent Releases
 
+#### Okapi Barcode 0.4.5
+- Code 128: allow user to restrict the code sets used to encode data
+- First [reproducible build](https://github.com/jvm-repo-rebuild/reproducible-central/)
+
 #### Okapi Barcode 0.4.4
 - Aztec Code: allow user to restrict sizes to compact or normal Aztec sizes
-- First [reproducible build](https://github.com/jvm-repo-rebuild/reproducible-central/)
 
 #### Okapi Barcode 0.4.3
 - Add support for UPN QR

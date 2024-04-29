@@ -29,6 +29,7 @@ import com.google.zxing.Result;
 import com.google.zxing.oned.Code128Reader;
 
 import uk.org.okapibarcode.backend.Code128;
+import uk.org.okapibarcode.backend.Code128.CodeSet;
 import uk.org.okapibarcode.backend.OkapiInputException;
 import uk.org.okapibarcode.backend.Symbol.DataType;
 
@@ -46,25 +47,26 @@ public class Code128Fuzzer {
     @FuzzTest(maxDuration = "5m")
     public void test(FuzzedDataProvider data) throws Exception {
         String content = data.consumeString(20);
-        check(content, DataType.ECI,  false, false);
-        check(content, DataType.ECI,  false, true);
-        check(content, DataType.ECI,  true,  false);
-        check(content, DataType.ECI,  true,  true);
-        check(content, DataType.GS1,  false, false);
-        check(content, DataType.GS1,  false, true);
-        check(content, DataType.GS1,  true,  false);
-        check(content, DataType.GS1,  true,  true);
-        check(content, DataType.HIBC, false, false);
-        check(content, DataType.HIBC, false, true);
-        check(content, DataType.HIBC, true,  false);
-        check(content, DataType.HIBC, true,  true);
+        CodeSet randomCodeSet = deriveCodeSetFrom(content);
+        check(content, DataType.ECI,  CodeSet.ABC,   false);
+        check(content, DataType.ECI,  CodeSet.ABC,   true);
+        check(content, DataType.ECI,  randomCodeSet, false);
+        check(content, DataType.ECI,  randomCodeSet, true);
+        check(content, DataType.GS1,  CodeSet.ABC,   false);
+        check(content, DataType.GS1,  CodeSet.ABC,   true);
+        check(content, DataType.GS1,  randomCodeSet, false);
+        check(content, DataType.GS1,  randomCodeSet, true);
+        check(content, DataType.HIBC, CodeSet.ABC,   false);
+        check(content, DataType.HIBC, CodeSet.ABC,   true);
+        check(content, DataType.HIBC, randomCodeSet, false);
+        check(content, DataType.HIBC, randomCodeSet, true);
     }
 
-    private static void check(String content, DataType type, boolean suppressModeC, boolean readerInit) throws Exception {
+    private static void check(String content, DataType type, CodeSet codeSet, boolean readerInit) throws Exception {
 
         Code128 symbol = new Code128();
         symbol.setDataType(type);
-        symbol.setSuppressModeC(suppressModeC);
+        symbol.setCodeSet(codeSet);
         symbol.setReaderInit(readerInit);
         try {
             symbol.setContent(content);
@@ -91,7 +93,19 @@ public class Code128Fuzzer {
             case HIBC -> symbol.getContent(); // HIBC automatically adds a prefix and a suffix which ZXing will include
         };
 
-        assertEqual(input, output, content, type, suppressModeC, readerInit);
+        assertEqual(input, output, content, type, codeSet, readerInit);
         verifyMetadata(symbol, result);
+    }
+
+    private static CodeSet deriveCodeSetFrom(String s) {
+        int i = s.isEmpty() ? 0 : s.charAt(s.length() - 1);
+        int j = i % 5;
+        return switch (j) {
+            case 0 -> CodeSet.A;
+            case 1 -> CodeSet.B;
+            case 2 -> CodeSet.C;
+            case 3 -> CodeSet.AB;
+            default -> CodeSet.ABC;
+        };
     }
 }

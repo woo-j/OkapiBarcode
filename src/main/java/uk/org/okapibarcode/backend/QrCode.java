@@ -315,7 +315,6 @@ public class QrCode extends Symbol {
         int targetCwCount, version, blocks;
         int size;
         int bitmask;
-        boolean gs1 = (inputDataType == DataType.GS1);
 
         eciProcess(); // Get ECI mode
 
@@ -331,6 +330,16 @@ public class QrCode extends Symbol {
             }
         } else {
             /* inputData already initialized in eciProcess() */
+        }
+
+        boolean gs1;
+        if (inputDataType == DataType.GS1) {
+            gs1 = true;
+        } else if (inputDataType == DataType.ECI && inputData.length > 0 && inputData[0] == FNC1) {
+            gs1 = true;
+            inputData = Arrays.copyOfRange(inputData, 1, inputData.length);
+        } else {
+            gs1 = false;
         }
 
         QrMode[] inputMode = new QrMode[inputData.length];

@@ -399,6 +399,12 @@ public class SymbolTest {
                    symbol.getDataType() == DataType.GS1) {
             // transform GS -> '\<FNC1>' (Okapi representation of FNC1)
             return s.replace("\u001d", Symbol.FNC1_STRING);
+        } else if (symbol instanceof QrCode &&
+                   symbol.getDataType() == DataType.ECI &&
+                   symbol.getContent().startsWith(Symbol.FNC1_STRING)) {
+            // not GS1-formatted input, but actually GS1 data
+            // transform GS -> '\<FNC1>' (Okapi representation of FNC1)
+            return Symbol.FNC1_STRING + s.replace("\u001d", Symbol.FNC1_STRING);
         } else if (symbol instanceof AztecCode && ((AztecCode) symbol).getStructuredAppendTotal() > 1) {
             // remove first two characters, which actually represent the structured append position and total count information
             // also remove the message ID and the surrounding space characters, if there was a message ID

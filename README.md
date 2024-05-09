@@ -157,6 +157,7 @@ and data.
 
 #### Okapi Barcode 0.4.6
 - QR Code: allow empty content, if user requests it
+- QR Code: allow FNC1 escape sequences in user-provided content
 
 #### Okapi Barcode 0.4.5
 - Code 128: allow user to restrict the code sets used to encode data

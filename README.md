@@ -155,6 +155,9 @@ and data.
 
 ### Recent Releases
 
+#### Okapi Barcode 0.4.6
+- QR Code: allow empty content, if user requests it
+
 #### Okapi Barcode 0.4.5
 - Code 128: allow user to restrict the code sets used to encode data
 - First [reproducible build](https://github.com/jvm-repo-rebuild/reproducible-central/)

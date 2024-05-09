@@ -927,7 +927,8 @@ public class QrCode extends Symbol {
 
         info("Encoding: ");
 
-        do {
+        while (position < inputMode.length) {
+
             data_block = inputMode[position];
             short_data_block_length = 0;
             do {
@@ -1095,7 +1096,7 @@ public class QrCode extends Symbol {
 
             position += short_data_block_length;
 
-        } while (position < inputMode.length);
+        }
 
         infoLine();
 

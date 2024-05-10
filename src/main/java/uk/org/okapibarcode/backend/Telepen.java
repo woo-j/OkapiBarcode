@@ -114,7 +114,7 @@ public class Telepen extends Symbol {
 
     private void normalMode() {
 
-        if (!content.matches("[\u0000-\u007F]+")) {
+        if (!content.matches("[\u0000-\u007F]*")) {
             throw OkapiInputException.invalidCharactersInInput();
         }
 
@@ -144,7 +144,7 @@ public class Telepen extends Symbol {
 
     private void numericMode() {
 
-        if (!content.matches("[0-9X]+")) {
+        if (!content.matches("[0-9X]*")) {
             throw OkapiInputException.invalidCharactersInInput();
         }
 

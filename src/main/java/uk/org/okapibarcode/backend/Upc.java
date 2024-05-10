@@ -172,7 +172,7 @@ public class Upc extends Symbol {
 
         separateContent();
 
-        if (content.isEmpty()) {
+        if (content.isEmpty() && !emptyContentAllowed) {
             throw new OkapiInputException("Missing UPC data");
         }
 

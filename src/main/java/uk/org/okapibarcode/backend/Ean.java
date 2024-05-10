@@ -141,7 +141,7 @@ public class Ean extends Symbol {
 
         separateContent();
 
-        if (content.isEmpty()) {
+        if (content.isEmpty() && !emptyContentAllowed) {
             throw new OkapiInputException("Missing EAN data");
         }
 
@@ -235,7 +235,7 @@ public class Ean extends Symbol {
 
     protected static String validateAndPad(String s, int targetLength) {
 
-        if (!s.matches("[0-9]+")) {
+        if (!s.matches("[0-9]*")) {
             throw OkapiInputException.invalidCharactersInInput();
         }
 

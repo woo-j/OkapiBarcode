@@ -159,6 +159,7 @@ and data.
 - QR Code: allow FNC1 escape sequences in user-provided content
 - QR Code: allow empty content, if user requests it
 - Code 39 Extended: allow empty content, if user requests it
+- UPC/EAN: allow empty content, if user requests it
 
 #### Okapi Barcode 0.4.5
 - Code 128: allow user to restrict the code sets used to encode data

@@ -156,8 +156,9 @@ and data.
 ### Recent Releases
 
 #### Okapi Barcode 0.4.6
-- QR Code: allow empty content, if user requests it
 - QR Code: allow FNC1 escape sequences in user-provided content
+- QR Code: allow empty content, if user requests it
+- Code 39 Extended: allow empty content, if user requests it
 
 #### Okapi Barcode 0.4.5
 - Code 128: allow user to restrict the code sets used to encode data
@@ -182,7 +183,7 @@ and data.
 - Code 128: further optimize data encoding in some scenarios
 - QR Code: fix broken Kanji encoding in some corner cases (found via fuzzing)
 - Data Matrix: fix encoding of trailing extended ASCII characters in TEXT/C40 mode (found via fuzzing)
-- Add `OkapiInputException` and `OkapiInternalException`, so users can distinguish user vs. library errors
+- Add `OkapiInputException` and `OkapiInternalException`, to distinguish user vs. library errors
 
 #### Okapi Barcode 0.4.1
 - DataBar Expanded: various small fixes and cleanup

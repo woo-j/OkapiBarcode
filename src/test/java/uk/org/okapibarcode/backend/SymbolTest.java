@@ -303,11 +303,13 @@ public class SymbolTest {
             return new Code128Reader();
         } else if (symbol instanceof Code93) {
             return new Code93Reader();
-        } else if (symbol instanceof Code3Of9) {
+        } else if (symbol instanceof Code3Of9 && !symbol.getContent().isEmpty()) {
+            // ZXing does not currently support empty content in Code 39 symbols
             Code3Of9 code39 = (Code3Of9) symbol;
             boolean checkDigit = (code39.getCheckDigit() == Code3Of9.CheckDigit.MOD43);
             return new Code39Reader(checkDigit, false);
-        } else if (symbol instanceof Code3Of9Extended) {
+        } else if (symbol instanceof Code3Of9Extended && !symbol.getContent().isEmpty()) {
+            // ZXing does not currently support empty content in Code 39 symbols
             Code3Of9Extended code39 = (Code3Of9Extended) symbol;
             boolean checkDigit = (code39.getCheckDigit() == Code3Of9Extended.CheckDigit.MOD43);
             return new Code39Reader(checkDigit, true);

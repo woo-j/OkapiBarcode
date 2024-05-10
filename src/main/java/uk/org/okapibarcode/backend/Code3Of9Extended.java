@@ -91,7 +91,7 @@ public class Code3Of9Extended extends Symbol {
     @Override
     protected void encode() {
 
-        if (!content.matches("[\u0000-\u007F]+")) {
+        if (!content.matches("[\u0000-\u007F]*")) {
             throw OkapiInputException.invalidCharactersInInput();
         }
 
@@ -105,6 +105,7 @@ public class Code3Of9Extended extends Symbol {
         if (checkDigit == CheckDigit.MOD43) {
             code39.setCheckDigit(Code3Of9.CheckDigit.MOD43);
         }
+        code39.setEmptyContentAllowed(emptyContentAllowed);
         code39.setModuleWidthRatio(moduleWidthRatio);
         code39.setContent(s.toString());
 

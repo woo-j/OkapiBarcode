@@ -4,7 +4,7 @@ apply plugin: 'eclipse'
 apply plugin: 'jacoco'
 
 group = 'uk.org.okapibarcode'
-version = '0.4.6'
+version = '0.4.7'
 
 repositories {
     mavenCentral()
@@ -20,8 +20,9 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.2'
 }
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 compileJava.options.release = 8
+compileJava.options.compilerArgs << '-Xlint:-options' // Java 8 target is considered obsolete when building on Java 21; silence this warning
 compileJava.options.encoding = 'UTF-8'
 compileTestJava.options.encoding = 'UTF-8'
 javadoc.options.encoding = 'UTF-8'

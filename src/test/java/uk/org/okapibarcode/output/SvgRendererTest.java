@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Locale;
 
 import org.junit.jupiter.api.AfterEach;
@@ -212,6 +213,13 @@ public class SvgRendererTest {
         ean.setQuietZoneVertical(5);
         ean.setContent("123456789012+12345");
         test(ean, 2, Color.WHITE, Color.BLACK, "ean-13-with-add-on.svg", true);
+    }
+
+    @Test
+    public void testCode93With1dot2Magnification() throws IOException {
+        Code93 code93 = new Code93();
+        code93.setContent("123456789");
+        test(code93, 1.2, Color.WHITE, Color.BLACK, "code93-with-magnification-1.2.svg", true);
     }
 
     private void test(Symbol symbol, double magnification, Color paper, Color ink, String expectationFile, boolean xmlProlog) throws IOException {

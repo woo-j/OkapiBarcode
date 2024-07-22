@@ -216,7 +216,7 @@ public class SvgRendererTest {
     }
 
     @Test
-    public void testCode93With1dot2Magnification() throws IOException {
+    public void testCode93WithDecimalMagnification() throws IOException {
         Code93 code93 = new Code93();
         code93.setContent("123456789");
         test(code93, 1.2, Color.WHITE, Color.BLACK, "code93-with-magnification-1.2.svg", true);

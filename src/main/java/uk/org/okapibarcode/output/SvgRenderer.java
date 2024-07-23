@@ -91,8 +91,8 @@ public class SvgRenderer implements SymbolRenderer {
     public void render(Symbol symbol) throws IOException {
 
         String content = symbol.getContent();
-        int width = (int) (symbol.getWidth() * magnification);
-        int height = (int) (symbol.getHeight() * magnification);
+        int width = (int) Math.ceil(symbol.getWidth() * magnification);
+        int height = (int) Math.ceil(symbol.getHeight() * magnification);
         int marginX = (int) (symbol.getQuietZoneHorizontal() * magnification);
         int marginY = (int) (symbol.getQuietZoneVertical() * magnification);
 

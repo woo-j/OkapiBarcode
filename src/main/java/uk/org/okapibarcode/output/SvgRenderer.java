@@ -92,7 +92,7 @@ public class SvgRenderer implements SymbolRenderer {
 
         String content = symbol.getContent();
         int width = (int) Math.ceil(symbol.getWidth() * magnification);
-        int height = (int) (symbol.getHeight() * magnification);
+        int height = (int) Math.ceil(symbol.getHeight() * magnification);
         int marginX = (int) (symbol.getQuietZoneHorizontal() * magnification);
         int marginY = (int) (symbol.getQuietZoneVertical() * magnification);
 

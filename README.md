@@ -157,6 +157,7 @@ and data.
 
 #### Okapi Barcode 0.4.7
 - Update build toolchain from Java 17 to Java 21 (minimum target runtime remains Java 8)
+- SVG and EPS output: round up canvas dimensions when using decimal magnification factor
 
 #### Okapi Barcode 0.4.6
 - QR Code: allow FNC1 escape sequences in user-provided content

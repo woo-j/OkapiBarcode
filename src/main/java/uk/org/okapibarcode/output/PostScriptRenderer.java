@@ -74,8 +74,8 @@ public class PostScriptRenderer implements SymbolRenderer {
         // All y dimensions are reversed because EPS origin (0,0) is at the bottom left, not top left
 
         String content = symbol.getContent();
-        int width = (int) (symbol.getWidth() * magnification);
-        int height = (int) (symbol.getHeight() * magnification);
+        int width = (int) Math.ceil(symbol.getWidth() * magnification);
+        int height = (int) Math.ceil(symbol.getHeight() * magnification);
         int marginX = (int) (symbol.getQuietZoneHorizontal() * magnification);
         int marginY = (int) (symbol.getQuietZoneVertical() * magnification);
 

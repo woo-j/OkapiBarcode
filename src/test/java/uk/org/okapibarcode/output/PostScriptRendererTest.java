@@ -195,6 +195,13 @@ public class PostScriptRendererTest {
         test(ean, 2, Color.WHITE, Color.BLACK, "ean-13-with-add-on.eps");
     }
 
+    @Test
+    public void testCode93With1dot2Magnification() throws IOException {
+        Code93 code93 = new Code93();
+        code93.setContent("123456789");
+        test(code93, 1.2, Color.WHITE, Color.BLACK, "code93-with-magnification-1.2.eps");
+    }
+
     private void test(Symbol symbol, double magnification, Color paper, Color ink, String expectationFile) throws IOException {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();

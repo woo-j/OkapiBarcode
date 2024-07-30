@@ -201,8 +201,8 @@ public class SvgRenderer implements SymbolRenderer {
                     } else {
                         writer.append("L ");
                     }
-                    writer.append((hexagon.pointX[j] * magnification) + marginX).append(" ")
-                          .append((hexagon.pointY[j] * magnification) + marginY).append(" ");
+                    writer.append((hexagon.getX(j) * magnification) + marginX).append(" ")
+                          .append((hexagon.getY(j) * magnification) + marginY).append(" ");
                 }
                 writer.append("Z\" />\n");
             }

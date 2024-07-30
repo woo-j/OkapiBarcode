@@ -32,16 +32,26 @@ public final class Hexagon {
 
     public final double centreX;
     public final double centreY;
-    public final double[] pointX = new double[6];
-    public final double[] pointY = new double[6];
+    public final int factor;
 
     public Hexagon(double centreX, double centreY, int factor) {
         this.centreX = centreX;
         this.centreY = centreY;
-        for (int i = 0; i < 6; i++) {
-            pointX[i] = centreX + (OFFSET_X[i] * INK_SPREAD * factor);
-            pointY[i] = centreY + (OFFSET_Y[i] * INK_SPREAD * factor);
+        this.factor = factor;
+    }
+
+    public double getX(int vertex) {
+        if (vertex < 0 || vertex > 5) {
+            throw new IllegalArgumentException("Vertex must be between 0 and 5");
         }
+        return centreX + (OFFSET_X[vertex] * INK_SPREAD * factor);
+    }
+
+    public double getY(int vertex) {
+        if (vertex < 0 || vertex > 5) {
+            throw new IllegalArgumentException("Vertex must be between 0 and 5");
+        }
+        return centreY + (OFFSET_Y[vertex] * INK_SPREAD * factor);
     }
 
     /** {@inheritDoc} */
@@ -51,18 +61,18 @@ public final class Hexagon {
             return false;
         }
         Hexagon h = (Hexagon) other;
-        return centreX == h.centreX && centreY == h.centreY;
+        return centreX == h.centreX && centreY == h.centreY && factor == h.factor;
     }
 
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
-        return Objects.hash(centreX, centreY);
+        return Objects.hash(centreX, centreY, factor);
     }
 
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return "Hexagon[centreX=" + centreX + ", centreY=" + centreY + "]";
+        return "Hexagon[centreX=" + centreX + ", centreY=" + centreY + ", factor=" + factor + "]";
     }
 }

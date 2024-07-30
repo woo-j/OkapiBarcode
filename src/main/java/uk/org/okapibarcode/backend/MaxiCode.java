@@ -936,10 +936,14 @@ public class MaxiCode extends Symbol {
         }
 
         // circles
-        double[] radii = { 10.85, 8.97, 7.10, 5.22, 3.31, 1.43 };
-        for (int i = 0; i < radii.length; i++) {
-            target.add(new Circle(35.76 * m, 35.60 * m, radii[i] * m));
-        }
+        double x = 35.76 * m;
+        double y = 35.60 * m;
+        target.add(new Circle(x, y, 10.85 * m));
+        target.add(new Circle(x, y, 8.97 * m));
+        target.add(new Circle(x, y, 7.10 * m));
+        target.add(new Circle(x, y, 5.22 * m));
+        target.add(new Circle(x, y, 3.31 * m));
+        target.add(new Circle(x, y, 1.43 * m));
     }
 
     /** {@inheritDoc} */

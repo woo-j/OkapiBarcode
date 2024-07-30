@@ -229,8 +229,8 @@ public class PostScriptRenderer implements SymbolRenderer {
             // Because MaxiCode size is fixed, this ignores magnification
             for (Hexagon hexagon : symbol.getHexagons()) {
                 for (int j = 0; j < 6; j++) {
-                    writer.append(hexagon.pointX[j] + marginX).append(" ")
-                          .append((height - hexagon.pointY[j]) - marginY).append(" ");
+                    writer.append(hexagon.getX(j) + marginX).append(" ")
+                          .append((height - hexagon.getY(j)) - marginY).append(" ");
                 }
                 writer.append(" TH\n");
             }

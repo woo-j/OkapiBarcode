@@ -16,7 +16,6 @@
 
 package uk.org.okapibarcode.graphics;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
@@ -33,7 +32,7 @@ public class HexagonTest {
         Hexagon hex1 = new Hexagon(1, 2, 1);
         assertEquals(1, hex1.centreX, 0.001);
         assertEquals(2, hex1.centreY, 0.001);
-        assertEquals("Hexagon[centreX=1.0, centreY=2.0]", hex1.toString());
+        assertEquals("Hexagon[centreX=1.0, centreY=2.0, factor=1]", hex1.toString());
 
         Hexagon hex2 = new Hexagon(1, 2, 1);
         assertEqual(hex1, hex2);
@@ -49,11 +48,13 @@ public class HexagonTest {
     private static void assertEqual(Hexagon hex1, Hexagon hex2) {
         assertEquals(hex1.centreX, hex2.centreX);
         assertEquals(hex1.centreY, hex2.centreY);
-        assertArrayEquals(hex1.pointX, hex2.pointX);
-        assertArrayEquals(hex1.pointY, hex2.pointY);
         assertEquals(hex1, hex2);
         assertEquals(hex1.hashCode(), hex2.hashCode());
         assertEquals(hex1.toString(), hex2.toString());
+        for (int i = 0; i < 6; i++) {
+            assertEquals(hex1.getX(i), hex2.getX(i));
+            assertEquals(hex1.getY(i), hex2.getY(i));
+        }
     }
 
     private static void assertNotEqual(Hexagon hex1, Hexagon hex2) {

@@ -131,13 +131,16 @@ public class Java2DRenderer implements SymbolRenderer {
             g2d.drawString(text.text, x, y);
         }
 
-        for (Hexagon hexagon : symbol.getHexagons()) {
+        if (!symbol.getHexagons().isEmpty()) {
             Polygon polygon = new Polygon();
-            for (int j = 0; j < 6; j++) {
-                polygon.addPoint((int) ((hexagon.pointX[j] * magnification) + marginX),
-                                 (int) ((hexagon.pointY[j] * magnification) + marginY));
+            for (Hexagon hexagon : symbol.getHexagons()) {
+                for (int j = 0; j < 6; j++) {
+                    polygon.addPoint((int) ((hexagon.pointX[j] * magnification) + marginX),
+                                     (int) ((hexagon.pointY[j] * magnification) + marginY));
+                }
+                g2d.fill(polygon);
+                polygon.reset();
             }
-            g2d.fill(polygon);
         }
 
         List< Circle > target = symbol.getTarget();

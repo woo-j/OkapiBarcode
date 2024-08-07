@@ -663,7 +663,8 @@ public class QrCode extends Symbol {
                         break;
                     case BINARY:
                         count += tribus(version, 8, 16, 16);
-                        for (j = i; j < (i + blockLength(i, inputMode)); j++) {
+                        int max = i + blockLength(i, inputMode);
+                        for (j = i; j < max; j++) {
                             if (inputData[j] > 0xff) {
                                 count += 16; // actually a 2-byte SJIS character
                             } else {
@@ -694,16 +695,17 @@ public class QrCode extends Symbol {
                         break;
                     case NUMERIC:
                         count += tribus(version, 10, 12, 14);
-                        switch (blockLength(i, inputMode) % 3) {
+                        int length = blockLength(i, inputMode);
+                        switch (length % 3) {
                             case 0:
-                                count += (blockLength(i, inputMode) / 3) * 10; // 3 digits -> 10 bits
+                                count += (length / 3) * 10; // 3 digits -> 10 bits
                                 break;
                             case 1:
-                                count += ((blockLength(i, inputMode) - 1) / 3) * 10; // 3 digits -> 10 bits
+                                count += ((length - 1) / 3) * 10; // 3 digits -> 10 bits
                                 count += 4; // trailing digit -> 4 bits
                                 break;
                             case 2:
-                                count += ((blockLength(i, inputMode) - 2) / 3) * 10; // 3 digits -> 10 bits
+                                count += ((length - 2) / 3) * 10; // 3 digits -> 10 bits
                                 count += 7; // trailing 2 digits -> 7 bits
                                 break;
                         }
@@ -851,14 +853,13 @@ public class QrCode extends Symbol {
     private static int blockLength(int start, QrMode[] inputMode) {
 
         QrMode mode = inputMode[start];
-        int count = 0;
-        int i = start;
+        int i = start + 1;
 
-        do {
-            count++;
-        } while ((i + count) < inputMode.length && inputMode[i + count] == mode);
+        while (i < inputMode.length && inputMode[i] == mode) {
+            i++;
+        }
 
-        return count;
+        return i - start;
     }
 
     /** Choose from three numbers based on version. */

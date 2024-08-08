@@ -1524,10 +1524,9 @@ public class QrCode extends Symbol {
 
     private static int evaluate(byte[] eval, int size, int pattern, int best, StringBuilder encodeInfo) {
 
-        int x, y, i, block, weight;
+        int x, y, i, block;
         int result = 0;
         byte state;
-        int p;
         int dark_mods;
         int percentage, k;
         int afterCount, beforeCount;
@@ -1537,13 +1536,11 @@ public class QrCode extends Symbol {
         // that make up the grid array; select them for evaluation according to the
         // desired pattern
         dark_mods = 0;
-        for (x = 0; x < size; x++) {
-            for (y = 0; y < size; y++) {
-                i = (y * size) + x;
-                if ((eval[i] & (0x01 << pattern)) != 0) {
-                    local[i] = 1;
-                    dark_mods++; // optimization: early prep for test 4 below
-                }
+        int mask = 0x01 << pattern;
+        for (i = 0; i < local.length; i++) {
+            if ((eval[i] & mask) != 0) {
+                local[i] = 1;
+                dark_mods++; // optimization: early prep for test 4 below
             }
         }
 
@@ -1621,13 +1618,13 @@ public class QrCode extends Symbol {
         /* Vertical */
         for (x = 0; x < size; x++) {
             for (y = 0; y < (size - 7); y++) {
-                p = 0;
-                for (weight = 0; weight < 7; weight++) {
-                    if (local[((y + weight) * size) + x] == 1) {
-                        p += (0x40 >> weight);
-                    }
-                }
-                if (p == 0x5d) {
+                if (local[((y + 0) * size) + x] == 1 &&
+                    local[((y + 1) * size) + x] == 0 &&
+                    local[((y + 2) * size) + x] == 1 &&
+                    local[((y + 3) * size) + x] == 1 &&
+                    local[((y + 4) * size) + x] == 1 &&
+                    local[((y + 5) * size) + x] == 0 &&
+                    local[((y + 6) * size) + x] == 1) {
                     /* Pattern found, check before and after */
                     beforeCount = 0;
                     for (i = (y - 4); i < y; i++) {
@@ -1669,13 +1666,13 @@ public class QrCode extends Symbol {
         /* Horizontal */
         for (y = 0; y < size; y++) {
             for (x = 0; x < (size - 7); x++) {
-                p = 0;
-                for (weight = 0; weight < 7; weight++) {
-                    if (local[(y * size) + x + weight] == 1) {
-                        p += (0x40 >> weight);
-                    }
-                }
-                if (p == 0x5d) {
+                if (local[(y * size) + x + 0] == 1 &&
+                    local[(y * size) + x + 1] == 0 &&
+                    local[(y * size) + x + 2] == 1 &&
+                    local[(y * size) + x + 3] == 1 &&
+                    local[(y * size) + x + 4] == 1 &&
+                    local[(y * size) + x + 5] == 0 &&
+                    local[(y * size) + x + 6] == 1) {
                     /* Pattern found, check before and after */
                     beforeCount = 0;
                     for (i = (x - 4); i < x; i++) {

@@ -1538,10 +1538,9 @@ public class QrCode extends Symbol {
         dark_mods = 0;
         int mask = 0x01 << pattern;
         for (i = 0; i < local.length; i++) {
-            if ((eval[i] & mask) != 0) {
-                local[i] = 1;
-                dark_mods++; // optimization: early prep for test 4 below
-            }
+            byte val = (byte) ((eval[i] & mask) >> pattern); // 0 or 1
+            local[i] = val;
+            dark_mods += val; // optimization: early prep for test 4 below
         }
 
         encodeInfo.append("Mask ").append(maskToString(pattern)).append(" Penalties: ");

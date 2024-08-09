@@ -1529,7 +1529,7 @@ public class QrCode extends Symbol {
         byte state;
         int dark_mods;
         int percentage, k;
-        int afterCount, beforeCount;
+        boolean light;
         byte[] local = new byte[size * size];
 
         // all eight bit mask variants have been encoded in the 8 bits of the bytes
@@ -1550,8 +1550,8 @@ public class QrCode extends Symbol {
         /* Vertical */
         for (x = 0; x < size; x++) {
             state = local[x];
-            block = 0;
-            for (y = 0; y < size; y++) {
+            block = 1;
+            for (y = 1; y < size; y++) {
                 i = (y * size) + x;
                 if (local[i] == state) {
                     block++;
@@ -1571,8 +1571,8 @@ public class QrCode extends Symbol {
         /* Horizontal */
         for (y = 0; y < size; y++) {
             state = local[y * size];
-            block = 0;
-            for (x = 0; x < size; x++) {
+            block = 1;
+            for (x = 1; x < size; x++) {
                 i = (y * size) + x;
                 if (local[i] == state) {
                     block++;
@@ -1625,36 +1625,26 @@ public class QrCode extends Symbol {
                     local[((y + 4) * size) + x] == 1 &&
                     local[((y + 5) * size) + x] == 0 &&
                     local[((y + 6) * size) + x] == 1) {
-                    /* Pattern found, check before and after */
-                    beforeCount = 0;
-                    for (i = (y - 4); i < y; i++) {
-                        if (i < 0) {
-                            beforeCount++;
-                        } else {
-                            if (local[(i * size) + x] == 0) {
-                                beforeCount++;
-                            } else {
-                                beforeCount = 0;
-                            }
+                    // Pattern found, check before and after
+                    light = true;
+                    for (i = y - 4; i < y; i++) {
+                        if (i >= 0 && local[(i * size) + x] == 1) {
+                            light = false;
+                            break;
                         }
                     }
-                    if (beforeCount == 4) {
+                    if (light) {
                         // Pattern is preceded by light area 4 modules wide
                         result += 40;
                     } else {
-                        afterCount = 0;
-                        for (i = (y + 7); i <= (y + 10); i++) {
-                            if (i >= size) {
-                                afterCount++;
-                            } else {
-                                if (local[(i * size) + x] == 0) {
-                                    afterCount++;
-                                } else {
-                                    afterCount = 0;
-                                }
+                        light = true;
+                        for (i = y + 7; i <= y + 10; i++) {
+                            if (i < size && local[(i * size) + x] == 1) {
+                                light = false;
+                                break;
                             }
                         }
-                        if (afterCount == 4) {
+                        if (light) {
                             // Pattern is followed by light area 4 modules wide
                             result += 40;
                         }
@@ -1673,36 +1663,26 @@ public class QrCode extends Symbol {
                     local[(y * size) + x + 4] == 1 &&
                     local[(y * size) + x + 5] == 0 &&
                     local[(y * size) + x + 6] == 1) {
-                    /* Pattern found, check before and after */
-                    beforeCount = 0;
-                    for (i = (x - 4); i < x; i++) {
-                        if (i < 0) {
-                            beforeCount++;
-                        } else {
-                            if (local[(y * size) + i] == 0) {
-                                beforeCount++;
-                            } else {
-                                beforeCount = 0;
-                            }
+                    // Pattern found, check before and after
+                    light = true;
+                    for (i = x - 4; i < x; i++) {
+                        if (i >= 0 && local[(y * size) + i] == 1) {
+                            light = false;
+                            break;
                         }
                     }
-                    if (beforeCount == 4) {
+                    if (light) {
                         // Pattern is preceded by light area 4 modules wide
                         result += 40;
                     } else {
-                        afterCount = 0;
-                        for (i = (x + 7); i <= (x + 10); i++) {
-                            if (i >= size) {
-                                afterCount++;
-                            } else {
-                                if (local[(y * size) + i] == 0) {
-                                    afterCount++;
-                                } else {
-                                    afterCount = 0;
-                                }
+                        light = true;
+                        for (i = x + 7; i <= x + 10; i++) {
+                            if (i < size && local[(y * size) + i] == 1) {
+                                light = false;
+                                break;
                             }
                         }
-                        if (afterCount == 4) {
+                        if (light) {
                             // Pattern is followed by light area 4 modules wide
                             result += 40;
                         }

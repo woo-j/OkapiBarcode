@@ -13,16 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package uk.org.okapibarcode;
 
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 import javax.imageio.ImageIO;
 
@@ -53,7 +54,6 @@ import uk.org.okapibarcode.backend.DataMatrix;
 import uk.org.okapibarcode.backend.DataMatrix.ForceMode;
 import uk.org.okapibarcode.backend.Ean;
 import uk.org.okapibarcode.backend.GridMatrix;
-import uk.org.okapibarcode.backend.HumanReadableLocation;
 import uk.org.okapibarcode.backend.JapanPost;
 import uk.org.okapibarcode.backend.KixCode;
 import uk.org.okapibarcode.backend.KoreaPost;
@@ -79,20 +79,33 @@ import uk.org.okapibarcode.graphics.Color;
 import uk.org.okapibarcode.output.Java2DRenderer;
 import uk.org.okapibarcode.output.PostScriptRenderer;
 import uk.org.okapibarcode.output.SvgRenderer;
+
 /**
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class MakeBarcode {
 
-    public void process(Settings settings, String dataInput, String outputFileName) {
-        int type = settings.getSymbolType();
-        Symbol symbol;
-        String extension = "";
-        HumanReadableLocation hrtLocation = settings.getHrtPosition();
+    public byte[] processToByte(Settings settings, String dataInput, String format) {
+
+        ByteArrayOutputStream out = (ByteArrayOutputStream) this.processToStream(settings, dataInput, format);
+
+        if (out != null && out.size() > 0) {
+            return out.toByteArray();
+        }
+
+        return null;
+    }
+
+    public OutputStream processToStream(Settings settings, String dataInput, String format) {
+
+        Symbol symbol = this.create(settings, dataInput);
 
         Color ink = settings.getForegroundColour();
         Color paper = settings.getBackgroundColour();
+
+        // add scale support
+        int scale = settings.getSymbolScale();
 
         if (settings.isReverseColour()) {
             ink = Color.WHITE;
@@ -100,56 +113,195 @@ public class MakeBarcode {
         }
 
         try {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+            switch (format) {
+                case "png":
+                case "gif":
+                case "jpg":
+                case "bmp":
+                    BufferedImage image = new BufferedImage(
+                            symbol.getWidth() * scale,
+                            symbol.getHeight() * scale,
+                            BufferedImage.TYPE_INT_RGB);
+                    Graphics2D g2d = image.createGraphics();
+                    //g2d.setBackground(paper);
+                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                    Java2DRenderer renderer = new Java2DRenderer(g2d, scale, paper, ink);
+
+                    renderer.render(symbol);
+                    ImageIO.write(image, format, out);
+
+                    break;
+                case "svg":
+                    SvgRenderer svg = new SvgRenderer(out, scale, paper, ink, true);
+                    svg.render(symbol);
+                    break;
+                case "eps":
+                    PostScriptRenderer eps = new PostScriptRenderer(out, scale, paper, ink);
+                    eps.render(symbol);
+                    break;
+                default:
+                    System.out.println("Unsupported output format");
+
+                    break;
+            }
+
+            if (out.size() > 0) {
+                return out;
+            }
+
+            out.close();
+
+        } catch (IOException e) {
+            System.out.printf("Write Error\n");
+        }
+
+        return null;
+    }
+
+    /**
+     * Make a barcode as file.
+     *
+     * @param settings
+     * @param dataInput
+     * @param outputFileName
+     */
+    public void process(Settings settings, String dataInput, String outputFileName) {
+
+        Symbol symbol = this.create(settings, dataInput);
+
+        String extension = "";
+
+        Color ink = settings.getForegroundColour();
+        Color paper = settings.getBackgroundColour();
+
+        // add scale support
+        int scale = settings.getSymbolScale();
+
+        if (settings.isReverseColour()) {
+            ink = Color.WHITE;
+            paper = Color.BLACK;
+        }
+
+        File file = new File(outputFileName);
+
+        try {
+            int i = file.getName().lastIndexOf('.');
+            if (i > 0) {
+                extension = file.getName().substring(i + 1);
+            }
+
+            switch (extension) {
+                case "png":
+                case "gif":
+                case "jpg":
+                case "bmp":
+                    BufferedImage image = new BufferedImage(
+                            symbol.getWidth() * scale,
+                            symbol.getHeight() * scale,
+                            BufferedImage.TYPE_INT_RGB);
+                    Graphics2D g2d = image.createGraphics();
+                    //g2d.setBackground(paper);
+                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                    Java2DRenderer renderer = new Java2DRenderer(g2d, 1, paper, ink);
+                    System.out.printf("MakeBarcode\n");
+                    renderer.render(symbol);
+
+                    try {
+                        ImageIO.write(image, extension, file);
+                    } catch (IOException e) {
+                        System.out.printf("Error outputting to file\n");
+                    }
+                    break;
+                case "svg":
+                    SvgRenderer svg = new SvgRenderer(new FileOutputStream(file), scale, paper, ink, true);
+                    svg.render(symbol);
+                    break;
+                case "eps":
+                    PostScriptRenderer eps = new PostScriptRenderer(new FileOutputStream(file), scale, paper, ink);
+                    eps.render(symbol);
+                    break;
+                default:
+                    System.out.println("Unsupported output format");
+                    break;
+            }
+
+        } catch (FileNotFoundException e) {
+            System.out.printf("File Not Found\n");
+        } catch (IOException e) {
+            System.out.printf("Write Error\n");
+        }
+    }
+
+    private Symbol create(Settings settings, String dataInput) {
+        int type = settings.getSymbolType();
+
+        if (dataInput == null) {
+            dataInput = "";
+        }
+
+        Symbol symbol = null;
+
+        // GS1 data
+        if (settings.isDataGs1Mode() && !dataInput.isBlank()) {
+            dataInput = dataInput.trim()
+                    .replace("(", "[").replace(")", "]");
+        }
+
+        try {
             /* values marked "Legacy" are for compatability purposes
                and should not be documented.
-            */
-            switch(type) {
+             */
+            switch (type) {
                 case 1:
                     // Code 11
                     Code11 code11 = new Code11();
-                    code11.setHumanReadableLocation(hrtLocation);
-                    code11.setContent(dataInput);
-                    symbol = code11;
+                    //code11.setHumanReadableLocation(hrtLocation);
+                    //code11.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, code11);
                     break;
                 case 2:
                     // Code 2 of 5
                     Code2Of5 c25matrix = new Code2Of5();
                     c25matrix.setMode(ToFMode.MATRIX);
-                    c25matrix.setHumanReadableLocation(hrtLocation);
-                    c25matrix.setContent(dataInput);
-                    symbol = c25matrix;
+                    //c25matrix.setHumanReadableLocation(hrtLocation);
+                    //c25matrix.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, c25matrix);
                     break;
                 case 3:
                     //Interleaved 2 of 5
                     Code2Of5 c25inter = new Code2Of5();
                     c25inter.setMode(ToFMode.INTERLEAVED);
-                    c25inter.setHumanReadableLocation(hrtLocation);
-                    c25inter.setContent(dataInput);
-                    symbol = c25inter;
+                    //c25inter.setHumanReadableLocation(hrtLocation);
+                    //c25inter.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, c25inter);
                     break;
                 case 4:
                     // IATA 2 of 5
                     Code2Of5 c25iata = new Code2Of5();
                     c25iata.setMode(ToFMode.IATA);
-                    c25iata.setHumanReadableLocation(hrtLocation);
-                    c25iata.setContent(dataInput);
-                    symbol = c25iata;
+                    //c25iata.setHumanReadableLocation(hrtLocation);
+                    //c25iata.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, c25iata);
                     break;
                 case 6:
                     // Data Logic
                     Code2Of5 c25logic = new Code2Of5();
                     c25logic.setMode(ToFMode.DATA_LOGIC);
-                    c25logic.setHumanReadableLocation(hrtLocation);
-                    c25logic.setContent(dataInput);
-                    symbol = c25logic;
+                    //c25logic.setHumanReadableLocation(hrtLocation);
+                    //c25logic.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, c25logic);
                     break;
                 case 7:
                     // Industrial 2 of 5
                     Code2Of5 c25ind = new Code2Of5();
                     c25ind.setMode(ToFMode.INDUSTRIAL);
-                    c25ind.setHumanReadableLocation(hrtLocation);
-                    c25ind.setContent(dataInput);
-                    symbol = c25ind;
+                    //c25ind.setHumanReadableLocation(hrtLocation);
+                    //c25ind.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, c25ind);
                     break;
                 case 8:
                 case 99:
@@ -159,16 +311,16 @@ public class MakeBarcode {
                     if ((type == 99) || (type == 101)) {
                         code3of9.setDataType(Symbol.DataType.HIBC);
                     }
-                    code3of9.setHumanReadableLocation(hrtLocation);
-                    code3of9.setContent(dataInput);
-                    symbol = code3of9;
+                    //code3of9.setHumanReadableLocation(hrtLocation);
+                    //code3of9.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, code3of9);
                     break;
                 case 9:
                     // Extended Code 39
                     Code3Of9Extended code3of9ext = new Code3Of9Extended();
-                    code3of9ext.setHumanReadableLocation(hrtLocation);
-                    code3of9ext.setContent(dataInput);
-                    symbol = code3of9ext;
+                    //code3of9ext.setHumanReadableLocation(hrtLocation);
+                    //code3of9ext.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, code3of9ext);
                     break;
                 case 13:
                 case 14: // Legacy
@@ -179,19 +331,21 @@ public class MakeBarcode {
                     // EAN
                     Ean ean = new Ean();
                     if (eanCalculateVersion(dataInput) == 8) {
+                        //System.out.println("EAN8:");
                         ean.setMode(Ean.Mode.EAN8);
                     } else {
+                        //System.out.println("EAN13:");
                         ean.setMode(Ean.Mode.EAN13);
                     }
-                    ean.setContent(dataInput);
-                    symbol = ean;
+                    //ean.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, ean);
                     break;
                 case 18:
                     // Codabar
                     Codabar codabar = new Codabar();
-                    codabar.setHumanReadableLocation(hrtLocation);
-                    codabar.setContent(dataInput);
-                    symbol = codabar;
+                    //codabar.setHumanReadableLocation(hrtLocation);
+                    //codabar.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, codabar);
                     break;
                 case 20:
                 case 60:
@@ -213,25 +367,26 @@ public class MakeBarcode {
                         code128.setCodeSet(CodeSet.AB);
                     }
                     code128.setReaderInit(settings.isReaderInit());
-                    code128.setHumanReadableLocation(hrtLocation);
-                    code128.setContent(dataInput);
-                    symbol = code128;
+                    //code128.setHumanReadableLocation(hrtLocation);
+                    //code128.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, code128);
+                    ;
                     break;
                 case 21:
                     // Leitcode
                     Code2Of5 dpLeit = new Code2Of5();
                     dpLeit.setMode(ToFMode.DP_LEITCODE);
-                    dpLeit.setHumanReadableLocation(hrtLocation);
-                    dpLeit.setContent(dataInput);
-                    symbol = dpLeit;
+                    //dpLeit.setHumanReadableLocation(hrtLocation);
+                    //dpLeit.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, dpLeit);
                     break;
                 case 22:
                     // Identcode
                     Code2Of5 dpIdent = new Code2Of5();
                     dpIdent.setMode(ToFMode.DP_IDENTCODE);
-                    dpIdent.setHumanReadableLocation(hrtLocation);
-                    dpIdent.setContent(dataInput);
-                    symbol = dpIdent;
+                    //dpIdent.setHumanReadableLocation(hrtLocation);
+                    //dpIdent.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, dpIdent);
                     break;
                 case 23:
                     // Code 16k
@@ -240,53 +395,53 @@ public class MakeBarcode {
                         code16k.setDataType(Symbol.DataType.GS1);
                     }
                     code16k.setReaderInit(settings.isReaderInit());
-                    code16k.setContent(dataInput);
-                    symbol = code16k;
+                    //code16k.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, code16k);
                     break;
                 case 24:
                     // Code 49
                     Code49 code49 = new Code49();
-                    code49.setHumanReadableLocation(hrtLocation);
-                    code49.setContent(dataInput);
-                    symbol = code49;
+                    //code49.setHumanReadableLocation(hrtLocation);
+                    //code49.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, code49);
                     break;
                 case 25:
                     // Code 93
                     Code93 code93 = new Code93();
-                    code93.setHumanReadableLocation(hrtLocation);
-                    code93.setContent(dataInput);
-                    symbol = code93;
+                    //code93.setHumanReadableLocation(hrtLocation);
+                    //code93.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, code93);
                     break;
                 case 29:
                     // Databar-14
                     DataBar14 dataBar14 = new DataBar14();
                     dataBar14.setMode(Mode.LINEAR);
-                    dataBar14.setHumanReadableLocation(hrtLocation);
-                    dataBar14.setContent(dataInput);
-                    symbol = dataBar14;
+                    //dataBar14.setHumanReadableLocation(hrtLocation);
+                    //dataBar14.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, dataBar14);
                     break;
                 case 30:
                     // Databar Limited
                     DataBarLimited dataBarLimited = new DataBarLimited();
-                    dataBarLimited.setHumanReadableLocation(hrtLocation);
-                    dataBarLimited.setContent(dataInput);
-                    symbol = dataBarLimited;
+                    //dataBarLimited.setHumanReadableLocation(hrtLocation);
+                    //dataBarLimited.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, dataBarLimited);
                     break;
                 case 31:
                     // Databar Expanded
                     DataBarExpanded dataBarE = new DataBarExpanded();
                     dataBarE.setStacked(false);
-                    dataBarE.setHumanReadableLocation(hrtLocation);
-                    dataBarE.setContent(dataInput);
-                    symbol = dataBarE;
+                    //dataBarE.setHumanReadableLocation(hrtLocation);
+                    //dataBarE.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, dataBarE);
                     break;
                 case 32:
                     // Telepen Alpha
                     Telepen telepen = new Telepen();
                     telepen.setMode(Telepen.Mode.NORMAL);
-                    telepen.setHumanReadableLocation(hrtLocation);
-                    telepen.setContent(dataInput);
-                    symbol = telepen;
+                    //telepen.setHumanReadableLocation(hrtLocation);
+                    //telepen.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, telepen);
                     break;
                 case 34:
                 case 35: // Legacy
@@ -294,8 +449,8 @@ public class MakeBarcode {
                     // UPC-A
                     Upc upca = new Upc();
                     upca.setMode(Upc.Mode.UPCA);
-                    upca.setContent(dataInput);
-                    symbol = upca;
+                    //upca.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, upca);
                     break;
                 case 37:
                 case 38: // Legacy
@@ -303,8 +458,8 @@ public class MakeBarcode {
                     // UPC-E
                     Upc upce = new Upc();
                     upce.setMode(Upc.Mode.UPCE);
-                    upce.setContent(dataInput);
-                    symbol = upce;
+                    //upce.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, upce);
                     break;
                 case 40:
                 case 41: // Legacy
@@ -316,22 +471,22 @@ public class MakeBarcode {
                     // Postnet and Brizillian CepNet
                     Postnet postnet = new Postnet();
                     postnet.setMode(Postnet.Mode.POSTNET);
-                    postnet.setContent(dataInput);
-                    symbol = postnet;
+                    //postnet.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, postnet);
                     break;
                 case 47:
                     // MSI Plessey
                     MsiPlessey msiPlessey = new MsiPlessey();
-                    msiPlessey.setHumanReadableLocation(hrtLocation);
-                    msiPlessey.setContent(dataInput);
-                    symbol = msiPlessey;
+                    //msiPlessey.setHumanReadableLocation(hrtLocation);
+                    //msiPlessey.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, msiPlessey);
                     break;
                 case 50:
                     // LOGMARS
                     Logmars logmars = new Logmars();
-                    logmars.setHumanReadableLocation(hrtLocation);
-                    logmars.setContent(dataInput);
-                    symbol = logmars;
+                    //logmars.setHumanReadableLocation(hrtLocation);
+                    //logmars.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, logmars);
                     break;
                 case 51:
                     // Pharmacode One-Track
@@ -342,8 +497,8 @@ public class MakeBarcode {
                 case 53:
                     // Pharmacode Two-Track
                     Pharmacode2Track pharmacode2t = new Pharmacode2Track();
-                    pharmacode2t.setContent(dataInput);
-                    symbol = pharmacode2t;
+                    //pharmacode2t.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, pharmacode2t);
                     break;
                 case 55:
                 case 56:
@@ -359,19 +514,23 @@ public class MakeBarcode {
                     } else if (type == 56) {
                         pdf417.setMode(Pdf417.Mode.TRUNCATED);
                     }
-                    pdf417.setPreferredEccLevel(settings.getSymbolECC() - 1);
-                    pdf417.setDataColumns(settings.getSymbolColumns());
+                    if (settings.getSymbolECC() > 0) {
+                        pdf417.setPreferredEccLevel(settings.getSymbolECC() - 1);
+                    }
+                    if (settings.getSymbolColumns() > 0) {
+                        pdf417.setDataColumns(settings.getSymbolColumns());
+                    }
                     pdf417.setReaderInit(settings.isReaderInit());
-                    pdf417.setContent(dataInput);
-                    symbol = pdf417;
+                    //pdf417.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, pdf417);
                     break;
                 case 57:
                     // Maxicode
                     MaxiCode maxiCode = new MaxiCode();
                     maxiCode.setPrimary(settings.getPrimaryData());
                     maxiCode.setMode(settings.getEncodeMode());
-                    maxiCode.setContent(dataInput);
-                    symbol = maxiCode;
+                    //maxiCode.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, maxiCode);
                     break;
                 case 58:
                 case 104:
@@ -384,7 +543,7 @@ public class MakeBarcode {
                     if ((type == 104) || (type == 105)) {
                         qrCode.setDataType(Symbol.DataType.HIBC);
                     }
-                    switch(settings.getSymbolECC()) {
+                    switch (settings.getSymbolECC()) {
                         case 0:
                             qrCode.setPreferredEccLevel(QrCode.EccLevel.L);
                             break;
@@ -398,10 +557,13 @@ public class MakeBarcode {
                             qrCode.setPreferredEccLevel(QrCode.EccLevel.H);
                             break;
                     }
-                    qrCode.setPreferredVersion(settings.getSymbolVersion());
+
+                    if (settings.getSymbolVersion() > 0) {
+                        qrCode.setPreferredVersion(settings.getSymbolVersion());
+                    }
                     qrCode.setReaderInit(settings.isReaderInit());
-                    qrCode.setContent(dataInput);
-                    symbol = qrCode;
+                    //qrCode.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, qrCode);
                     break;
                 case 63:
                 case 64: // Legacy
@@ -409,35 +571,35 @@ public class MakeBarcode {
                     // Australia Post Standard Customer
                     AustraliaPost auPost = new AustraliaPost();
                     auPost.setMode(AustraliaPost.Mode.POST);
-                    auPost.setContent(dataInput);
-                    symbol = auPost;
+                    //auPost.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, auPost);
                     break;
                 case 66:
                     // Australia Post Reply Paid
                     AustraliaPost auReply = new AustraliaPost();
                     auReply.setMode(AustraliaPost.Mode.REPLY);
-                    auReply.setContent(dataInput);
-                    symbol = auReply;
+                    //auReply.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, auReply);
                     break;
                 case 67:
                     // Australia Post Re-Routing
                     AustraliaPost auRoute = new AustraliaPost();
                     auRoute.setMode(AustraliaPost.Mode.ROUTE);
-                    auRoute.setContent(dataInput);
-                    symbol = auRoute;
+                    //auRoute.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, auRoute);
                     break;
                 case 68:
                     // Australia Post Redirection
                     AustraliaPost auRedirect = new AustraliaPost();
                     auRedirect.setMode(AustraliaPost.Mode.REDIRECT);
-                    auRedirect.setContent(dataInput);
-                    symbol = auRedirect;
+                    //auRedirect.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, auRedirect);
                     break;
                 case 70:
                     // RM4SCC
                     RoyalMail4State royalMail = new RoyalMail4State();
-                    royalMail.setContent(dataInput);
-                    symbol = royalMail;
+                    //royalMail.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, royalMail);
                     break;
                 case 71:
                 case 102:
@@ -453,8 +615,8 @@ public class MakeBarcode {
                     dataMatrix.setReaderInit(settings.isReaderInit());
                     dataMatrix.setPreferredSize(settings.getSymbolVersion());
                     dataMatrix.setForceMode(settings.isMakeSquare() ? ForceMode.SQUARE : ForceMode.NONE);
-                    dataMatrix.setContent(dataInput);
-                    symbol = dataMatrix;
+                    //dataMatrix.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, dataMatrix);
                     break;
                 case 74:
                 case 110:
@@ -467,58 +629,58 @@ public class MakeBarcode {
                     if ((type == 110) || (type == 111)) {
                         codablockF.setDataType(Symbol.DataType.HIBC);
                     }
-                    codablockF.setContent(dataInput);
-                    symbol = codablockF;
+                    //codablockF.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, codablockF);
                     break;
                 case 75:
                     // NVE-18
                     Nve18 nve18 = new Nve18();
-                    nve18.setHumanReadableLocation(hrtLocation);
-                    nve18.setContent(dataInput);
-                    symbol = nve18;
+                    //nve18.setHumanReadableLocation(hrtLocation);
+                    //nve18.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, nve18);
                     break;
                 case 76:
                     // Japanese Post
                     JapanPost japanPost = new JapanPost();
-                    japanPost.setContent(dataInput);
-                    symbol = japanPost;
+                    //japanPost.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, japanPost);
                     break;
                 case 77:
                     // Korea Post
                     KoreaPost koreaPost = new KoreaPost();
-                    koreaPost.setHumanReadableLocation(hrtLocation);
-                    koreaPost.setContent(dataInput);
-                    symbol = koreaPost;
+                    //koreaPost.setHumanReadableLocation(hrtLocation);
+                    //koreaPost.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, koreaPost);
                     break;
                 case 79:
                     // Databar-14 Stacked
                     DataBar14 dataBar14s = new DataBar14();
                     dataBar14s.setMode(Mode.STACKED);
-                    dataBar14s.setContent(dataInput);
-                    symbol = dataBar14s;
+                    //dataBar14s.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, dataBar14s);
                     break;
                 case 80:
                     // Databar-14 Stacked Omnidirectional
                     DataBar14 dataBar14so = new DataBar14();
                     dataBar14so.setMode(Mode.OMNI);
-                    dataBar14so.setContent(dataInput);
-                    symbol = dataBar14so;
+                    //dataBar14so.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, dataBar14so);
                     break;
                 case 81:
                     // Databar Expanded Stacked
                     DataBarExpanded dataBarES = new DataBarExpanded();
                     dataBarES.setPreferredColumns(settings.getSymbolColumns());
                     dataBarES.setStacked(true);
-                    dataBarES.setContent(dataInput);
-                    symbol = dataBarES;
+                    //dataBarES.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, dataBarES);
                     break;
                 case 82:
                 case 83: // Legacy
                     // Planet
                     Postnet planet = new Postnet();
                     planet.setMode(Postnet.Mode.PLANET);
-                    planet.setContent(dataInput);
-                    symbol = planet;
+                    //planet.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, planet);
                     break;
                 case 84:
                 case 108:
@@ -533,37 +695,37 @@ public class MakeBarcode {
                         microPdf417.setDataType(Symbol.DataType.HIBC);
                     }
                     microPdf417.setReaderInit(settings.isReaderInit());
-                    microPdf417.setDataColumns(settings.getSymbolColumns());
-                    microPdf417.setContent(dataInput);
-                    symbol = microPdf417;
+                    //microPdf417.setDataColumns(settings.getSymbolColumns());
+                    //microPdf417.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, microPdf417);
                     break;
                 case 85:
                     // USPS Intelligent Mail
                     UspsOneCode uspsIMail = new UspsOneCode();
-                    uspsIMail.setContent(dataInput);
-                    symbol = uspsIMail;
+                    //uspsIMail.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, uspsIMail);
                     break;
                 case 87:
                     // Telepen Numeric
                     Telepen telepenNum = new Telepen();
                     telepenNum.setMode(Telepen.Mode.NUMERIC);
-                    telepenNum.setHumanReadableLocation(hrtLocation);
-                    telepenNum.setContent(dataInput);
-                    symbol = telepenNum;
+                    //telepenNum.setHumanReadableLocation(hrtLocation);
+                    //telepenNum.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, telepenNum);
                     break;
                 case 89:
                     // ITF-14
                     Code2Of5 itf14 = new Code2Of5();
                     itf14.setMode(ToFMode.ITF14);
-                    itf14.setHumanReadableLocation(hrtLocation);
-                    itf14.setContent(dataInput);
-                    symbol = itf14;
+                    //itf14.setHumanReadableLocation(hrtLocation);
+                    //itf14.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, itf14);
                     break;
                 case 90:
                     // Dutch Post KIX Code
                     KixCode kixCode = new KixCode();
-                    kixCode.setContent(dataInput);
-                    symbol = kixCode;
+                    //kixCode.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, kixCode);
                     break;
                 case 92:
                 case 112:
@@ -578,20 +740,20 @@ public class MakeBarcode {
                     aztecCode.setReaderInit(settings.isReaderInit());
                     aztecCode.setPreferredEccLevel(settings.getSymbolECC());
                     aztecCode.setPreferredSize(settings.getSymbolVersion());
-                    aztecCode.setContent(dataInput);
-                    symbol = aztecCode;
+                    //aztecCode.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, aztecCode);
                     break;
                 case 93:
                     // Code 32
                     Code32 code32 = new Code32();
-                    code32.setHumanReadableLocation(hrtLocation);
-                    code32.setContent(dataInput);
-                    symbol = code32;
+                    //code32.setHumanReadableLocation(hrtLocation);
+                    //code32.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, code32);
                     break;
                 case 97:
                     // Micro QR Code
                     MicroQrCode microQrCode = new MicroQrCode();
-                    switch(settings.getSymbolECC()) {
+                    switch (settings.getSymbolECC()) {
                         case 0:
                             microQrCode.setEccMode(MicroQrCode.EccMode.L);
                             break;
@@ -602,68 +764,71 @@ public class MakeBarcode {
                             microQrCode.setEccMode(MicroQrCode.EccMode.Q);
                             break;
                     }
-                    microQrCode.setPreferredVersion(settings.getSymbolVersion());
-                    microQrCode.setContent(dataInput);
-                    symbol = microQrCode;
+                    if (settings.getSymbolVersion() > 0) {
+                        microQrCode.setPreferredVersion(settings.getSymbolVersion());
+                    }
+                    //microQrCode.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, microQrCode);
                     break;
                 case 113:
                 case 52: // Legacy
                     // PZN-8
                     Pharmazentralnummer pzn = new Pharmazentralnummer();
-                    pzn.setContent(dataInput);
-                    symbol = pzn;
+                    //pzn.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, pzn);
                     break;
                 case 117:
                     // USPS Intelligent Mail Package
                     UspsPackage uspsPackage = new UspsPackage();
-                    uspsPackage.setContent(dataInput);
-                    symbol = uspsPackage;
+                    //uspsPackage.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, uspsPackage);
                     break;
                 case 128:
                     // Aztec Runes
                     AztecRune aztecRune = new AztecRune();
-                    aztecRune.setContent(dataInput);
-                    symbol = aztecRune;
+                    //aztecRune.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, aztecRune);
                     break;
                 case 130:
                     // Composite symbol with EAN linear
                     Composite compositeEan = new Composite();
                     compositeEan.setSymbology(Composite.LinearEncoding.EAN);
                     compositeEan.setLinearContent(settings.getPrimaryData());
-                    compositeEan.setContent(dataInput);
-                    symbol = compositeEan;
+                    //compositeEan.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, compositeEan);
                     break;
                 case 131:
                     // Composite with Code 128 linear
                     Composite compositeC128 = new Composite();
                     compositeC128.setSymbology(Composite.LinearEncoding.CODE_128);
                     compositeC128.setLinearContent(settings.getPrimaryData());
-                    compositeC128.setContent(dataInput);
-                    symbol = compositeC128;
+                    //compositeC128.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, compositeC128);
                     break;
                 case 132:
                     // Composite with Databar-14
                     Composite compositeDb14 = new Composite();
                     compositeDb14.setSymbology(Composite.LinearEncoding.DATABAR_14);
                     compositeDb14.setLinearContent(settings.getPrimaryData());
-                    compositeDb14.setContent(dataInput);
-                    symbol = compositeDb14;
+                    //compositeDb14.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, compositeDb14);
+                    ;
                     break;
                 case 133:
                     // Composite with Databar Limited
                     Composite compositeDbLtd = new Composite();
                     compositeDbLtd.setSymbology(Composite.LinearEncoding.DATABAR_LIMITED);
                     compositeDbLtd.setLinearContent(settings.getPrimaryData());
-                    compositeDbLtd.setContent(dataInput);
-                    symbol = compositeDbLtd;
+                    //compositeDbLtd.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, compositeDbLtd);
                     break;
                 case 134:
                     // Composite with Databar Extended
                     Composite compositeDbExt = new Composite();
                     compositeDbExt.setSymbology(Composite.LinearEncoding.DATABAR_EXPANDED);
                     compositeDbExt.setLinearContent(settings.getPrimaryData());
-                    compositeDbExt.setContent(dataInput);
-                    symbol = compositeDbExt;
+                    //compositeDbExt.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, compositeDbExt);
                     break;
                 case 135:
                     // Composite with UPC-A
@@ -671,47 +836,47 @@ public class MakeBarcode {
                     compositeUpcA.setSymbology(Composite.LinearEncoding.UPCA);
                     compositeUpcA.setLinearContent(settings.getPrimaryData());
                     compositeUpcA.setContent(dataInput);
-                    symbol = compositeUpcA;
+                    //symbol = this.make(settings, dataInput, compositeUpcA);
                     break;
                 case 136:
                     // Composite with UPC-E
                     Composite compositeUpcE = new Composite();
                     compositeUpcE.setSymbology(Composite.LinearEncoding.UPCE);
                     compositeUpcE.setLinearContent(settings.getPrimaryData());
-                    compositeUpcE.setContent(dataInput);
-                    symbol = compositeUpcE;
+                    //compositeUpcE.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, compositeUpcE);
                     break;
                 case 137:
                     // Composite with Databar-14 Stacked
                     Composite compositeDb14Stack = new Composite();
                     compositeDb14Stack.setSymbology(Composite.LinearEncoding.DATABAR_14_STACK);
                     compositeDb14Stack.setLinearContent(settings.getPrimaryData());
-                    compositeDb14Stack.setContent(dataInput);
-                    symbol = compositeDb14Stack;
+                    //compositeDb14Stack.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, compositeDb14Stack);
                     break;
                 case 138:
                     // Composite with Databar-14 Stacked Omnidirectional
                     Composite compositeDb14SO = new Composite();
                     compositeDb14SO.setSymbology(Composite.LinearEncoding.DATABAR_14_STACK_OMNI);
                     compositeDb14SO.setLinearContent(settings.getPrimaryData());
-                    compositeDb14SO.setContent(dataInput);
-                    symbol = compositeDb14SO;
+                    //compositeDb14SO.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, compositeDb14SO);
                     break;
                 case 139:
                     // Composite with Databar-14 Expanded Stacked
                     Composite compositeDb14ES = new Composite();
                     compositeDb14ES.setSymbology(Composite.LinearEncoding.DATABAR_EXPANDED_STACK);
                     compositeDb14ES.setLinearContent(settings.getPrimaryData());
-                    compositeDb14ES.setContent(dataInput);
-                    symbol = compositeDb14ES;
+                    //compositeDb14ES.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, compositeDb14ES);
                     break;
                 case 140:
                     // Channel Code
                     ChannelCode channelCode = new ChannelCode();
                     channelCode.setPreferredNumberOfChannels(settings.getSymbolColumns());
-                    channelCode.setHumanReadableLocation(hrtLocation);
-                    channelCode.setContent(dataInput);
-                    symbol = channelCode;
+                    //channelCode.setHumanReadableLocation(hrtLocation);
+                    //channelCode.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, channelCode);
                     break;
                 case 141:
                     // Code One
@@ -720,7 +885,7 @@ public class MakeBarcode {
                         codeOne.setDataType(Symbol.DataType.GS1);
                     }
                     codeOne.setReaderInit(settings.isReaderInit());
-                    switch(settings.getSymbolVersion()) {
+                    switch (settings.getSymbolVersion()) {
                         case 0:
                             codeOne.setPreferredVersion(CodeOne.Version.NONE);
                             break;
@@ -755,8 +920,8 @@ public class MakeBarcode {
                             codeOne.setPreferredVersion(CodeOne.Version.T);
                             break;
                     }
-                    codeOne.setContent(dataInput);
-                    symbol = codeOne;
+                    //codeOne.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, codeOne);
                     break;
                 case 142:
                     // Grid Matrix
@@ -767,66 +932,38 @@ public class MakeBarcode {
                     gridMatrix.setReaderInit(settings.isReaderInit());
                     gridMatrix.setPreferredEccLevel(settings.getSymbolECC());
                     gridMatrix.setPreferredVersion(settings.getSymbolVersion());
-                    gridMatrix.setContent(dataInput);
-                    symbol = gridMatrix;
+                    //gridMatrix.setContent(dataInput);
+                    symbol = this.make(settings, dataInput, gridMatrix);
                     break;
                 default:
                     // Invalid
                     System.out.println("Invaid barcode type");
-                    return;
+                    return null;
             }
         } catch (OkapiException e) {
             System.out.printf("Encoding error: %s\n", e.getMessage());
-            return;
+            return null;
         }
 
-        File file = new File(outputFileName);
+        return symbol;
+    }
 
-        try {
-            int i = file.getName().lastIndexOf('.');
-            if (i > 0) {
-                extension = file.getName().substring(i + 1);
-            }
+    private Symbol make(Settings settings, String content, Symbol symbol) {
 
-            switch (extension) {
-                case "png":
-                case "gif":
-                case "jpg":
-                case "bmp":
-                    BufferedImage image = new BufferedImage(symbol.getWidth(),
-                            symbol.getHeight(), BufferedImage.TYPE_INT_RGB);
-                    Graphics2D g2d = image.createGraphics();
-                    //g2d.setBackground(paper);
-                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        symbol.setHumanReadableLocation(settings.getHrtPosition());
 
-                    Java2DRenderer renderer = new Java2DRenderer(g2d, 1, paper, ink);
-                    System.out.printf("MakeBarcode\n");
-                    renderer.render(symbol);
-
-                    try {
-                        ImageIO.write(image, extension, file);
-                    } catch (IOException e) {
-                        System.out.printf("Error outputting to file\n");
-                    }
-                    break;
-                case "svg":
-                    SvgRenderer svg = new SvgRenderer(new FileOutputStream(file), 1, paper, ink, true);
-                    svg.render(symbol);
-                    break;
-                case "eps":
-                    PostScriptRenderer eps = new PostScriptRenderer(new FileOutputStream(file), 1, paper, ink);
-                    eps.render(symbol);
-                    break;
-                default:
-                    System.out.println("Unsupported output format");
-                    break;
-            }
-
-        } catch (FileNotFoundException e){
-            System.out.printf("File Not Found\n");
-        } catch (IOException e) {
-            System.out.printf("Write Error\n");
+        if (settings.getSymbolHeight() > 0) {
+            symbol.setBarHeight(settings.getSymbolHeight());
         }
+
+        if (settings.getSymbolWhiteSpace() > 0) {
+            symbol.setQuietZoneHorizontal(settings.getSymbolWhiteSpace());
+            symbol.setQuietZoneVertical(settings.getSymbolWhiteSpace());
+        }
+
+        symbol.setContent(content);
+
+        return symbol;
     }
 
     private int eanCalculateVersion(String dataInput) {

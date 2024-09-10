@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package uk.org.okapibarcode;
 
 import com.beust.jcommander.Parameter;
@@ -48,8 +47,8 @@ public class Settings {
     @Parameter(names = "--height", description = "Height of the symbol in multiples of x-dimension", required = false)
     private int symbolHeight = 0;
 
-//    @Parameter(names = {"-w", "--whitesp"}, description = "Width of whitespace in multiples of x-dimension", required = false)
-//    private int symbolWhiteSpace = 0;
+    @Parameter(names = {"-w", "--whitesp"}, description = "Width of whitespace in multiples of x-dimension", required = false)
+    private int symbolWhiteSpace = 0;
 //
 //    @Parameter(names = "--border", description = "Width of border in multiples of x-dimension", required = false)
 //    private int symbolBorder = 0;
@@ -59,7 +58,6 @@ public class Settings {
 //
 //    @Parameter(names = "--bind", description = "Add boundary bars", required = false)
 //    private boolean addBinding = false;
-
     @Parameter(names = {"-r", "--reverse"}, description = "Reverse colours (white on black)", required = false)
     private boolean reverseColour = false;
 
@@ -69,14 +67,13 @@ public class Settings {
     @Parameter(names = "--bg", description = "Specify a background (paper) colour", required = false)
     private String backgroundColour = "FFFFFF";
 
+    // Set Default 1
     @Parameter(names = "--scale", description = "Adjust size of output image", required = false)
-    private int symbolScale = 0;
+    private int symbolScale = 1;
 
     // --directpng, --directeps, --directsvg, --dump
-
 //    @Parameter(names = "--rotate", description = "Rotate symbol", required = false)
 //    private int rotationAngle = 0;
-
     @Parameter(names = "--cols", description = "Number of columns in PDF417", required = false)
     private int symbolColumns = 0;
 
@@ -104,14 +101,14 @@ public class Settings {
     @Parameter(names = "--textabove", description = "Place human readable text above symbol", required = false)
     private boolean superHrt = false;
 
+    // Set Default True
     @Parameter(names = "--square", description = "Force Data Matrix symbols to be square", required = false)
-    private boolean makeSquare = false;
+    private boolean makeSquare = true;
 
     @Parameter(names = "--init", description = "Add reader initialisation code", required = false)
     private boolean addReaderInit = false;
 
     // --smalltext
-
     @Parameter(names = "--batch", description = "Treat each line of input as a separate data set", required = false)
     private boolean batchMode = false;
 
@@ -170,14 +167,12 @@ public class Settings {
 //    public int getSymbolWhiteSpace() {
 //        return symbolWhiteSpace;
 //    }
-
 //    /**
 //     * @return the symbolBorder
 //     */
 //    public int getSymbolBorder() {
 //        return symbolBorder;
 //    }
-
 //    /**
 //     * @return the addBox
 //     */
@@ -191,7 +186,6 @@ public class Settings {
 //    public boolean isAddBinding() {
 //        return addBinding;
 //    }
-
     /**
      * @return the reverseColour
      */
@@ -246,7 +240,6 @@ public class Settings {
 //    public int getRotationAngle() {
 //        return rotationAngle;
 //    }
-
     /**
      * @return the symbolColumns
      */
@@ -302,11 +295,11 @@ public class Settings {
     public HumanReadableLocation getHrtPosition() {
         HumanReadableLocation temp = HumanReadableLocation.BOTTOM;
 
-        if(superHrt) {
+        if (superHrt) {
             temp = HumanReadableLocation.TOP;
         }
 
-        if(supressHrt) {
+        if (supressHrt) {
             temp = HumanReadableLocation.NONE;
         }
 
@@ -332,6 +325,62 @@ public class Settings {
      */
     public boolean isBatchMode() {
         return batchMode;
+    }
+
+    public int getSymbolWhiteSpace() {
+        return symbolWhiteSpace;
+    }
+
+    public void setSymbolType(int symbolType) {
+        this.symbolType = symbolType;
+    }
+
+    public void setSymbolHeight(int symbolHeight) {
+        this.symbolHeight = symbolHeight;
+    }
+
+    public void setSymbolWhiteSpace(int symbolWhiteSpace) {
+        this.symbolWhiteSpace = symbolWhiteSpace;
+    }
+
+    public void setSymbolScale(int symbolScale) {
+        this.symbolScale = symbolScale;
+    }
+
+    public void setSymbolColumns(int symbolColumns) {
+        this.symbolColumns = symbolColumns;
+    }
+
+    public void setSymbolVersion(int symbolVersion) {
+        this.symbolVersion = symbolVersion;
+    }
+
+    public void setSymbolECC(int symbolECC) {
+        this.symbolECC = symbolECC;
+    }
+
+    public void setDataGs1Mode(boolean dataGs1Mode) {
+        this.dataGs1Mode = dataGs1Mode;
+    }
+
+    public boolean isSupressHrt() {
+        return supressHrt;
+    }
+
+    public void setSupressHrt(boolean supressHrt) {
+        this.supressHrt = supressHrt;
+    }
+
+    public boolean isSuperHrt() {
+        return superHrt;
+    }
+
+    public void setSuperHrt(boolean superHrt) {
+        this.superHrt = superHrt;
+    }
+
+    public void setMakeSquare(boolean makeSquare) {
+        this.makeSquare = makeSquare;
     }
 
 }

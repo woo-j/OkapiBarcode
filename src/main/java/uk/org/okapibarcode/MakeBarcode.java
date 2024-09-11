@@ -87,14 +87,21 @@ import uk.org.okapibarcode.output.SvgRenderer;
 public class MakeBarcode {
 
     public byte[] processToByte(Settings settings, String dataInput, String format) {
+        byte[] data = null;
 
         ByteArrayOutputStream out = (ByteArrayOutputStream) this.processToStream(settings, dataInput, format);
 
         if (out != null && out.size() > 0) {
-            return out.toByteArray();
+            try {
+                data = out.toByteArray();
+
+                out.close();
+            } catch (IOException ex) {
+                System.out.printf("Write Error\n");
+            }
         }
 
-        return null;
+        return data;
     }
 
     public OutputStream processToStream(Settings settings, String dataInput, String format) {

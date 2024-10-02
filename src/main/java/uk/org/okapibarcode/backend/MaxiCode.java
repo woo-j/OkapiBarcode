@@ -121,6 +121,9 @@ public class MaxiCode extends Symbol {
     private int structuredAppendPosition = 1;
     private int structuredAppendTotal = 1;
     private String primaryData = "";
+    private String postalCode; // modes 2 and 3 only
+    private int country; // modes 2 and 3 only
+    private int service; // modes 2 and 3 only
     private int[] codewords;
     private int[] set = new int[144];
     private int[] character = new int[144];
@@ -243,6 +246,48 @@ public class MaxiCode extends Symbol {
      */
     public String getPrimary() {
         return primaryData;
+    }
+
+    /**
+     * Returns the postal code encoded by this symbol, as extracted from the
+     * {@link #setPrimary(String) primary data}. Only available after
+     * {@link #setContent(String) encoding} a mode 2 or mode 3 symbol.
+     *
+     * @return the postal code encoded by this symbol
+     */
+    public String getPostalCode() {
+        if (mode != 2 && mode != 3) {
+            throw new OkapiInputException("Postal code is not available for MaxiCode mode: " + mode);
+        }
+        return postalCode;
+    }
+
+    /**
+     * Returns the country encoded by this symbol, as extracted from the
+     * {@link #setPrimary(String) primary data}. Only available after
+     * {@link #setContent(String) encoding} a mode 2 or mode 3 symbol.
+     *
+     * @return the country encoded by this symbol
+     */
+    public int getCountry() {
+        if (mode != 2 && mode != 3) {
+            throw new OkapiInputException("Country is not available for MaxiCode mode: " + mode);
+        }
+        return country;
+    }
+
+    /**
+     * Returns the service encoded by this symbol, as extracted from the
+     * {@link #setPrimary(String) primary data}. Only available after
+     * {@link #setContent(String) encoding} a mode 2 or mode 3 symbol.
+     *
+     * @return the service encoded by this symbol
+     */
+    public int getService() {
+        if (mode != 2 && mode != 3) {
+            throw new OkapiInputException("Service is not available for MaxiCode mode: " + mode);
+        }
+        return service;
     }
 
     @Override
@@ -411,8 +456,8 @@ public class MaxiCode extends Symbol {
     }
 
     /**
-     * Extracts the postal code, country code and service code from the primary data and returns the corresponding primary message
-     * codewords.
+     * Extracts the postal code, country code and service code from the primary data and
+     * returns the corresponding primary message codewords.
      *
      * @return the primary message codewords
      */
@@ -424,36 +469,48 @@ public class MaxiCode extends Symbol {
             throw new OkapiInputException("Invalid primary string");
         }
 
-        for (int i = 9; i < 15; i++) { /* check that country code and service are numeric */
+        // check that country code and service are numeric
+        for (int i = 9; i < 15; i++) {
             if (primaryData.charAt(i) < '0' || primaryData.charAt(i) > '9') {
                 throw new OkapiInputException("Invalid primary string");
             }
         }
 
-        String postcode;
+        country = Integer.parseInt(primaryData.substring(9, 12));
+        service = Integer.parseInt(primaryData.substring(12, 15));
+
         if (mode == 2) {
-            postcode = primaryData.substring(0, 9);
-            int index = postcode.indexOf(' ');
+            // remove any space padding, pad with zeroes if necessary
+            postalCode = primaryData.substring(0, 9);
+            int index = postalCode.indexOf(' ');
             if (index != -1) {
-                postcode = postcode.substring(0, index);
+                postalCode = postalCode.substring(0, index);
+            }
+            while (country == 840 && postalCode.length() < 9) {
+                postalCode += "0"; // per Annex B, section B.1, paragraph 4.a
             }
         } else {
             assert mode == 3;
-            postcode = primaryData.substring(0, 6);
+            // characters not encodable in Code Set A are converted to spaces
+            char[] chars = primaryData.substring(0, 6).toUpperCase().toCharArray();
+            for (int i = 0; i < chars.length; i++) {
+                int set = MAXICODE_SET[chars[i]];
+                if (set != 0 && set != 1) {
+                    chars[i] = ' ';
+                }
+            }
+            postalCode = new String(chars);
         }
 
-        int country = Integer.parseInt(primaryData.substring(9, 12));
-        int service = Integer.parseInt(primaryData.substring(12, 15));
-
-        infoLine("Postal Code: " + postcode);
+        infoLine("Postal Code: " + postalCode);
         infoLine("Country Code: " + country);
         infoLine("Service: " + service);
 
         if (mode == 2) {
-            return getMode2PrimaryCodewords(postcode, country, service);
+            return getMode2PrimaryCodewords(postalCode, country, service);
         } else {
             assert mode == 3;
-            return getMode3PrimaryCodewords(postcode, country, service);
+            return getMode3PrimaryCodewords(postalCode, country, service);
         }
     }
 
@@ -461,18 +518,14 @@ public class MaxiCode extends Symbol {
      * Returns the primary message codewords for mode 2. Assumes that the postal code has
      * already been validated to contain only numeric data.
      *
-     * @param postcode the postal code
+     * @param postalCode the postal code
      * @param country the country code
      * @param service the service code
      * @return the primary message, as codewords
      */
-    private static int[] getMode2PrimaryCodewords(String postcode, int country, int service) {
+    private static int[] getMode2PrimaryCodewords(String postalCode, int country, int service) {
 
-        while (country == 840 && postcode.length() < 9) {
-            postcode += "0"; // per Annex B, section B.1, paragraph 4.a
-        }
-
-        int postcodeNum = Integer.parseInt(postcode);
+        int postcodeNum = Integer.parseInt(postalCode);
 
         int[] primary = new int[10];
         primary[0] = ((postcodeNum & 0x03) << 4) | 2;
@@ -480,8 +533,8 @@ public class MaxiCode extends Symbol {
         primary[2] = ((postcodeNum & 0x3f00) >> 8);
         primary[3] = ((postcodeNum & 0xfc000) >> 14);
         primary[4] = ((postcodeNum & 0x3f00000) >> 20);
-        primary[5] = ((postcodeNum & 0x3c000000) >> 26) | ((postcode.length() & 0x3) << 4);
-        primary[6] = ((postcode.length() & 0x3c) >> 2) | ((country & 0x3) << 4);
+        primary[5] = ((postcodeNum & 0x3c000000) >> 26) | ((postalCode.length() & 0x3) << 4);
+        primary[6] = ((postalCode.length() & 0x3c) >> 2) | ((country & 0x3) << 4);
         primary[7] = (country & 0xfc) >> 2;
         primary[8] = ((country & 0x300) >> 8) | ((service & 0xf) << 2);
         primary[9] = ((service & 0x3f0) >> 4);
@@ -490,40 +543,34 @@ public class MaxiCode extends Symbol {
     }
 
     /**
-     * Returns the primary message codewords for mode 3.
+     * Returns the primary message codewords for mode 3. Assumes that the postal code has
+     * already been validated to contain only characters in Code Set A.
      *
-     * @param postcode the postal code
+     * @param postalCode the postal code
      * @param country the country code
      * @param service the service code
      * @return the primary message, as codewords
      */
-    private static int[] getMode3PrimaryCodewords(String postcode, int country, int service) {
+    private static int[] getMode3PrimaryCodewords(String postalCode, int country, int service) {
 
-        int[] postcodeNums = new int[postcode.length()];
+        int[] values = new int[postalCode.length()];
 
-        postcode = postcode.toUpperCase();
-        for (int i = 0; i < postcodeNums.length; i++) {
-            postcodeNums[i] = postcode.charAt(i);
-            if (postcode.charAt(i) >= 'A' && postcode.charAt(i) <= 'Z') {
-                // (Capital) letters shifted to Code Set A values
-                postcodeNums[i] -= 64;
+        for (int i = 0; i < values.length; i++) {
+            char c = postalCode.charAt(i);
+            values[i] = c;
+            if (c >= 'A' && c <= 'Z') {
+                values[i] -= 64; // shift to Code Set A value
             }
-            if (postcodeNums[i] == 27 || postcodeNums[i] == 31 || postcodeNums[i] == 33 || postcodeNums[i] >= 59) {
-                // Not a valid postal code character, use space instead
-                postcodeNums[i] = 32;
-            }
-            // Input characters lower than 27 (NUL - SUB) in postal code are interpreted as capital
-            // letters in Code Set A (e.g. LF becomes 'J')
         }
 
         int[] primary = new int[10];
-        primary[0] = ((postcodeNums[5] & 0x03) << 4) | 3;
-        primary[1] = ((postcodeNums[4] & 0x03) << 4) | ((postcodeNums[5] & 0x3c) >> 2);
-        primary[2] = ((postcodeNums[3] & 0x03) << 4) | ((postcodeNums[4] & 0x3c) >> 2);
-        primary[3] = ((postcodeNums[2] & 0x03) << 4) | ((postcodeNums[3] & 0x3c) >> 2);
-        primary[4] = ((postcodeNums[1] & 0x03) << 4) | ((postcodeNums[2] & 0x3c) >> 2);
-        primary[5] = ((postcodeNums[0] & 0x03) << 4) | ((postcodeNums[1] & 0x3c) >> 2);
-        primary[6] = ((postcodeNums[0] & 0x3c) >> 2) | ((country & 0x3) << 4);
+        primary[0] = ((values[5] & 0x03) << 4) | 3;
+        primary[1] = ((values[4] & 0x03) << 4) | ((values[5] & 0x3c) >> 2);
+        primary[2] = ((values[3] & 0x03) << 4) | ((values[4] & 0x3c) >> 2);
+        primary[3] = ((values[2] & 0x03) << 4) | ((values[3] & 0x3c) >> 2);
+        primary[4] = ((values[1] & 0x03) << 4) | ((values[2] & 0x3c) >> 2);
+        primary[5] = ((values[0] & 0x03) << 4) | ((values[1] & 0x3c) >> 2);
+        primary[6] = ((values[0] & 0x3c) >> 2) | ((country & 0x3) << 4);
         primary[7] = (country & 0xfc) >> 2;
         primary[8] = ((country & 0x300) >> 8) | ((service & 0xf) << 2);
         primary[9] = ((service & 0x3f0) >> 4);
@@ -827,10 +874,9 @@ public class MaxiCode extends Symbol {
             maxLength = 84;
         } else if (mode == 4 || mode == 6) {
             maxLength = 93;
-        } else if (mode == 5) {
-            maxLength = 77;
         } else {
-            maxLength = 0; // impossible
+            assert mode == 5;
+            maxLength = 77;
         }
         if (length > maxLength) {
             throw OkapiInputException.inputTooLong();

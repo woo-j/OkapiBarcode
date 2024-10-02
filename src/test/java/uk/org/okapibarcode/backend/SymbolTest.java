@@ -461,22 +461,11 @@ public class SymbolTest {
             MaxiCode maxicode = (MaxiCode) symbol;
             if (maxicode.getMode() == 2 || maxicode.getMode() == 3) {
                 // combine the primary message and secondary data, since ZXing combines them in the decoding result
-                String p = maxicode.getPrimary();
-                String c = maxicode.getContent();
                 char gs = '\u001D';
-                int i = (maxicode.getMode() == 2 ? 9 : 6);
-                String postal = p.substring(0, i);
-                String country = p.substring(9, 12);
-                String service = p.substring(12);
-                if (maxicode.getMode() == 2 && "840".equals(country)) { // USA
-                    int j = postal.indexOf(' ');
-                    if (j != -1) {
-                        postal = postal.substring(0, j);
-                        while (postal.length() < 9) {
-                            postal += "0"; // per Annex B, section B.1, paragraph 4.a
-                        }
-                    }
-                }
+                String c = maxicode.getContent();
+                String postal = maxicode.getPostalCode();
+                String country = String.format("%03d", maxicode.getCountry());
+                String service = String.format("%03d", maxicode.getService());
                 return c.substring(0, 9) + postal + gs + country + gs + service + gs + c.substring(9);
             } else {
                 return s;

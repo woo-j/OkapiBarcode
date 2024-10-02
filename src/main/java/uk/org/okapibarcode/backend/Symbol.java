@@ -376,6 +376,7 @@ public abstract class Symbol {
      * automatically. It is usually recommended that you allow the system to choose the ECI mode
      * automatically, instead of setting it explicitly. If you do need to set the ECI mode explicitly
      * for some reason, you may specify any of the following values:
+     *
      * <ul>
      * <li>0 (IBM437)</li>
      * <li>1 (ISO 8859-1)</li>

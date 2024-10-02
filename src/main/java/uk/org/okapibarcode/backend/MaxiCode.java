@@ -259,7 +259,8 @@ public class MaxiCode extends Symbol {
         // mode 2 -> mode 3 if postal code isn't strictly numeric
         if (mode == 2) {
             for (int i = 0; i < 9 && i < primaryData.length(); i++) {
-                if (primaryData.charAt(i) < '0' || primaryData.charAt(i) > '9') {
+                char c = primaryData.charAt(i);
+                if ((c < '0' || c > '9') && c != ' ') {
                     mode = 3;
                     break;
                 }
@@ -457,7 +458,8 @@ public class MaxiCode extends Symbol {
     }
 
     /**
-     * Returns the primary message codewords for mode 2.
+     * Returns the primary message codewords for mode 2. Assumes that the postal code has
+     * already been validated to contain only numeric data.
      *
      * @param postcode the postal code
      * @param country the country code
@@ -466,11 +468,8 @@ public class MaxiCode extends Symbol {
      */
     private static int[] getMode2PrimaryCodewords(String postcode, int country, int service) {
 
-        for (int i = 0; i < postcode.length(); i++) {
-            if (postcode.charAt(i) < '0' || postcode.charAt(i) > '9') {
-                postcode = postcode.substring(0, i);
-                break;
-            }
+        while (country == 840 && postcode.length() < 9) {
+            postcode += "0"; // per Annex B, section B.1, paragraph 4.a
         }
 
         int postcodeNum = Integer.parseInt(postcode);

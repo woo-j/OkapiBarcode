@@ -4,7 +4,7 @@ apply plugin: 'eclipse'
 apply plugin: 'jacoco'
 
 group = 'uk.org.okapibarcode'
-version = '0.4.7'
+version = '0.4.8'
 
 repositories {
     mavenCentral()
@@ -15,9 +15,9 @@ dependencies {
     testImplementation 'com.google.zxing:javase:3.5.3'
     testImplementation 'org.reflections:reflections:0.10.2'
     testImplementation 'com.code-intelligence:jazzer-junit:0.22.1'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.2'
-    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.10.2'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.11.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.11.1'
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)

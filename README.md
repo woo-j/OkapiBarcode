@@ -157,6 +157,7 @@ and data.
 
 #### Okapi Barcode 0.4.8
 - MaxiCode: improve handling of partial and malformed postal codes (modes 2 and 3)
+- Code 11: allow empty content, if user requests it
 
 #### Okapi Barcode 0.4.7
 - Update build toolchain from Java 17 to Java 21 (minimum target runtime remains Java 8)

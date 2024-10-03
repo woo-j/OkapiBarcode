@@ -130,7 +130,7 @@ public class Code11 extends Symbol {
     @Override
     protected void encode() {
 
-        if (!content.matches("[0-9-]+")) {
+        if (!content.matches("[0-9-]*")) {
             throw OkapiInputException.invalidCharactersInInput();
         }
 

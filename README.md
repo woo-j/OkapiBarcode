@@ -155,6 +155,11 @@ and data.
 
 ### Recent Releases
 
+#### Okapi Barcode 0.4.9
+- Codablock F: allow user to customize row height
+- Codablock F: allow user to customize module width
+- Codablock F: improve check digit calculation
+
 #### Okapi Barcode 0.4.8
 - MaxiCode: improve handling of partial and malformed postal codes (modes 2 and 3)
 - Code 11: allow empty content, if user requests it

@@ -465,7 +465,7 @@ public class MicroQrCode extends Symbol {
 
         /* Check that input includes valid characters */
 
-        if (content.matches("[\u0000-\u00FF]+")) {
+        if (content.matches("[\u0000-\u00FF]*")) {
             /* All characters in ISO 8859-1 */
             return;
         }
@@ -707,12 +707,13 @@ public class MicroQrCode extends Symbol {
 
         info("Encoding: ");
 
-        do {
+        while (position < content.length()) {
+
             data_block = inputMode[position];
             blockLength = 0;
             do {
                 blockLength++;
-            } while (((blockLength + position) < content.length())
+            } while (((position + blockLength) < content.length())
                     && (inputMode[position + blockLength] == data_block));
 
             switch (data_block) {
@@ -886,7 +887,7 @@ public class MicroQrCode extends Symbol {
             }
 
             position += blockLength;
-        } while (position < content.length() - 1);
+        }
 
         /* Add terminator */
         switch(version) {

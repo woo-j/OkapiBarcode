@@ -33,4 +33,19 @@ public interface SymbolRenderer {
      */
     void render(Symbol symbol) throws IOException;
 
+    /**
+     * Normalizes clockwise rotation values to 0, 90, 180, or 270 degrees.
+     *
+     * @param rotation the clockwise rotation to normalize
+     * @return the normalized rotation (0, 90, 180, or 270)
+     * @throws IllegalArgumentException if rotation is not a multiple of 90 degrees
+     */
+    static int normalizeRotation(int rotation) {
+        int normalized = ((rotation % 360) + 360) % 360;
+        if (normalized % 90 != 0) {
+            throw new IllegalArgumentException("Rotation must be a multiple of 90 degrees");
+        }
+        return normalized;
+    }
+    
 }

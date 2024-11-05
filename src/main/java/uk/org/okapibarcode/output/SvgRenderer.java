@@ -67,6 +67,9 @@ public class SvgRenderer implements SymbolRenderer {
 
     /** Whether or not to include the XML prolog in the output. */
     private final boolean xmlProlog;
+ 
+    /** The clockwise rotation of the symbol in degrees. */
+    private final int rotation;
 
     /**
      * Creates a new SVG renderer.
@@ -79,11 +82,27 @@ public class SvgRenderer implements SymbolRenderer {
      *        standalone SVG documents, {@code false} for SVG content embedded directly in HTML documents)
      */
     public SvgRenderer(OutputStream out, double magnification, Color paper, Color ink, boolean xmlProlog) {
+        this(out, magnification, paper, ink, xmlProlog, 0);
+    }
+
+    /**
+     * Creates a new SVG renderer.
+     *
+     * @param out the output stream to render to
+     * @param magnification the magnification factor to apply
+     * @param paper the paper (background) color
+     * @param ink the ink (foreground) color
+     * @param xmlProlog whether or not to include the XML prolog in the output (usually {@code true} for
+     *        standalone SVG documents, {@code false} for SVG content embedded directly in HTML documents)
+     * @param rotation the clockwise rotation of the symbol in degrees (0, 90, 180, or 270)
+     */
+    public SvgRenderer(OutputStream out, double magnification, Color paper, Color ink, boolean xmlProlog, int rotation) {
         this.out = out;
         this.magnification = magnification;
         this.paper = paper;
         this.ink = ink;
         this.xmlProlog = xmlProlog;
+        this.rotation = SymbolRenderer.normalizeRotation(rotation);
     }
 
     /** {@inheritDoc} */
@@ -120,13 +139,38 @@ public class SvgRenderer implements SymbolRenderer {
                 writer.append("   \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n");
             }
 
+            // render rotation clockwise
+            int rotateHeight = height;
+            int rotateWidth = width;
+            String transform;
+            switch (rotation) {
+                case 90:
+                    rotateHeight = width;
+                    rotateWidth = height;
+                    transform = " transform=\"rotate(" + rotation + ") translate(0,-" + rotateWidth + ")\"";
+                    break;
+                case 180:
+                    transform = " transform=\"rotate(" + rotation + "," + (width/2) + "," + (height/2) + ")\"";
+                    break;
+                case 270:
+                    rotateHeight = width;
+                    rotateWidth = height;
+                    transform = " transform=\"rotate(" + rotation + ") translate(-" + rotateHeight + ",0)\"";
+                    break;
+                default:
+                    transform = "";
+                    break;
+            }
+
             // Header
-            writer.append("<svg width=\"").appendInt(width)
-                  .append("\" height=\"").appendInt(height)
+            writer.append("<svg width=\"").appendInt(rotateWidth)
+                  .append("\" height=\"").appendInt(rotateHeight)
                   .append("\" version=\"1.1")
                   .append("\" xmlns=\"http://www.w3.org/2000/svg\">\n");
             writer.append("   <desc>").append(clean(title)).append("</desc>\n");
-            writer.append("   <g id=\"barcode\" fill=\"#").append(fgColour).append("\">\n");
+            
+
+            writer.append("   <g id=\"barcode\" fill=\"#").append(fgColour).append("\"").append(transform).append(">\n");
             writer.append("      <rect x=\"0\" y=\"0\" width=\"").appendInt(width)
                   .append("\" height=\"").appendInt(height)
                   .append("\" fill=\"#").append(bgColour).append("\" />\n");

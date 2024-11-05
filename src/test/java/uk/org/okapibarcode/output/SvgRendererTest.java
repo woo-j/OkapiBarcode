@@ -32,10 +32,10 @@ import org.junit.jupiter.api.Test;
 
 import uk.org.okapibarcode.backend.Code93;
 import uk.org.okapibarcode.backend.Ean;
+import uk.org.okapibarcode.backend.Ean.Mode;
 import uk.org.okapibarcode.backend.MaxiCode;
 import uk.org.okapibarcode.backend.QrCode;
 import uk.org.okapibarcode.backend.Symbol;
-import uk.org.okapibarcode.backend.Ean.Mode;
 import uk.org.okapibarcode.graphics.Color;
 import uk.org.okapibarcode.graphics.TextAlignment;
 
@@ -64,7 +64,7 @@ public class SvgRendererTest {
         code93.setQuietZoneHorizontal(5);
         code93.setQuietZoneVertical(5);
         code93.setContent("123456789");
-        test(code93, 1, Color.WHITE, Color.BLACK, "code93-basic.svg", true);
+        test(code93, 1, Color.WHITE, Color.BLACK, "code93-basic.svg", true, 0);
     }
 
     @Test
@@ -73,7 +73,7 @@ public class SvgRendererTest {
         code93.setQuietZoneHorizontal(5);
         code93.setQuietZoneVertical(5);
         code93.setContent("123456789");
-        test(code93, 1, Color.WHITE, Color.BLACK, "code93-basic-no-prolog.svg", false);
+        test(code93, 1, Color.WHITE, Color.BLACK, "code93-basic-no-prolog.svg", false, 0);
     }
 
     @Test
@@ -83,7 +83,7 @@ public class SvgRendererTest {
         code93.setQuietZoneVertical(5);
         code93.setHumanReadableAlignment(TextAlignment.LEFT);
         code93.setContent("123456789");
-        test(code93, 1, Color.WHITE, Color.BLACK, "code93-alignment-left.svg", true);
+        test(code93, 1, Color.WHITE, Color.BLACK, "code93-alignment-left.svg", true, 0);
     }
 
     @Test
@@ -93,7 +93,7 @@ public class SvgRendererTest {
         code93.setQuietZoneVertical(5);
         code93.setHumanReadableAlignment(TextAlignment.RIGHT);
         code93.setContent("123456789");
-        test(code93, 1, Color.WHITE, Color.BLACK, "code93-alignment-right.svg", true);
+        test(code93, 1, Color.WHITE, Color.BLACK, "code93-alignment-right.svg", true, 0);
     }
 
     @Test
@@ -103,7 +103,7 @@ public class SvgRendererTest {
         code93.setQuietZoneVertical(5);
         code93.setHumanReadableAlignment(TextAlignment.JUSTIFY);
         code93.setContent("123456789");
-        test(code93, 1, Color.WHITE, Color.BLACK, "code93-alignment-justify.svg", true);
+        test(code93, 1, Color.WHITE, Color.BLACK, "code93-alignment-justify.svg", true, 0);
     }
 
     @Test
@@ -114,7 +114,7 @@ public class SvgRendererTest {
         code93.setShowCheckDigits(false);
         code93.setHumanReadableAlignment(TextAlignment.JUSTIFY);
         code93.setContent("1");
-        test(code93, 1, Color.WHITE, Color.BLACK, "code93-alignment-justify-one-char.svg", true);
+        test(code93, 1, Color.WHITE, Color.BLACK, "code93-alignment-justify-one-char.svg", true, 0);
     }
 
     @Test
@@ -123,7 +123,7 @@ public class SvgRendererTest {
         code93.setQuietZoneHorizontal(20);
         code93.setQuietZoneVertical(20);
         code93.setContent("123456789");
-        test(code93, 1, Color.WHITE, Color.BLACK, "code93-margin-size-20.svg", true);
+        test(code93, 1, Color.WHITE, Color.BLACK, "code93-margin-size-20.svg", true, 0);
     }
 
     @Test
@@ -132,7 +132,7 @@ public class SvgRendererTest {
         code93.setQuietZoneHorizontal(5);
         code93.setQuietZoneVertical(5);
         code93.setContent("123456789");
-        test(code93, 2, Color.WHITE, Color.BLACK, "code93-magnification-2.svg", true);
+        test(code93, 2, Color.WHITE, Color.BLACK, "code93-magnification-2.svg", true, 0);
     }
 
     @Test
@@ -141,7 +141,7 @@ public class SvgRendererTest {
         code93.setQuietZoneHorizontal(5);
         code93.setQuietZoneVertical(5);
         code93.setContent("123456789");
-        test(code93, 1, Color.GREEN, Color.RED, "code93-colors.svg", true);
+        test(code93, 1, Color.GREEN, Color.RED, "code93-colors.svg", true, 0);
     }
 
     @Test
@@ -152,7 +152,7 @@ public class SvgRendererTest {
         code93.setFontName("Arial");
         code93.setFontSize(26);
         code93.setContent("123456789");
-        test(code93, 1, Color.WHITE, Color.BLACK, "code93-custom-font.svg", true);
+        test(code93, 1, Color.WHITE, Color.BLACK, "code93-custom-font.svg", true, 0);
     }
 
     @Test
@@ -162,7 +162,7 @@ public class SvgRendererTest {
         code93.setQuietZoneVertical(5);
         code93.setEmptyContentAllowed(true);
         code93.setContent("");
-        test(code93, 1, Color.WHITE, Color.BLACK, "code93-empty.svg", true);
+        test(code93, 1, Color.WHITE, Color.BLACK, "code93-empty.svg", true, 0);
     }
 
     @Test
@@ -172,7 +172,7 @@ public class SvgRendererTest {
         code93.setQuietZoneVertical(5);
         code93.setEmptyContentAllowed(true);
         code93.setContent(null);
-        test(code93, 1, Color.WHITE, Color.BLACK, "code93-empty.svg", true);
+        test(code93, 1, Color.WHITE, Color.BLACK, "code93-empty.svg", true, 0);
     }
 
     @Test
@@ -182,7 +182,7 @@ public class SvgRendererTest {
         maxicode.setQuietZoneVertical(5);
         maxicode.setMode(4);
         maxicode.setContent("123456789");
-        test(maxicode, 1, Color.WHITE, Color.BLACK, "maxicode-basic.svg", true);
+        test(maxicode, 1, Color.WHITE, Color.BLACK, "maxicode-basic.svg", true, 0);
     }
 
     @Test
@@ -192,7 +192,7 @@ public class SvgRendererTest {
         maxicode.setQuietZoneVertical(5);
         maxicode.setMode(4);
         maxicode.setContent("x\u001dx>x<x/x&x");
-        test(maxicode, 1, Color.WHITE, Color.BLACK, "maxicode-nasty-chars.svg", true);
+        test(maxicode, 1, Color.WHITE, Color.BLACK, "maxicode-nasty-chars.svg", true, 0);
     }
 
     @Test
@@ -201,7 +201,7 @@ public class SvgRendererTest {
         qr.setQuietZoneHorizontal(5);
         qr.setQuietZoneVertical(5);
         qr.setContent("123456789");
-        test(qr, 1, Color.WHITE, Color.BLACK, "qr-basic.svg", true);
+        test(qr, 1, Color.WHITE, Color.BLACK, "qr-basic.svg", true, 0);
     }
 
     @Test
@@ -211,20 +211,74 @@ public class SvgRendererTest {
         ean.setQuietZoneHorizontal(5);
         ean.setQuietZoneVertical(5);
         ean.setContent("123456789012+12345");
-        test(ean, 2, Color.WHITE, Color.BLACK, "ean-13-with-add-on.svg", true);
+        test(ean, 2, Color.WHITE, Color.BLACK, "ean-13-with-add-on.svg", true, 0);
     }
 
     @Test
     public void testCode93With1dot2Magnification() throws IOException {
         Code93 code93 = new Code93();
         code93.setContent("123456789");
-        test(code93, 1.2, Color.WHITE, Color.BLACK, "code93-with-magnification-1.2.svg", true);
+        test(code93, 1.2, Color.WHITE, Color.BLACK, "code93-with-magnification-1.2.svg", true, 0);
     }
 
-    private void test(Symbol symbol, double magnification, Color paper, Color ink, String expectationFile, boolean xmlProlog) throws IOException {
+    @Test
+    public void testCode93Rotation90() throws IOException {
+        Code93 code93 = new Code93();
+        code93.setQuietZoneHorizontal(20);
+        code93.setQuietZoneVertical(5);
+        code93.setContent("123456789");
+        test(code93, 1.2, Color.WHITE, Color.BLACK, "code93-with-rotation-90.svg", true, 90);
+    }
+
+    @Test
+    public void testCode93Rotation180() throws IOException {
+        Code93 code93 = new Code93();
+        code93.setQuietZoneHorizontal(20);
+        code93.setQuietZoneVertical(5);
+        code93.setContent("123456789");
+        test(code93, 1.2, Color.WHITE, Color.BLACK, "code93-with-rotation-180.svg", true, 180);
+    }
+
+    @Test
+    public void testCode93Rotation270() throws IOException {
+        Code93 code93 = new Code93();
+        code93.setQuietZoneHorizontal(20);
+        code93.setQuietZoneVertical(5);
+        code93.setContent("123456789");
+        test(code93, 1.2, Color.WHITE, Color.BLACK, "code93-with-rotation-270.svg", true, 270);
+    }
+
+    @Test
+    public void testCode93RotationMinus90() throws IOException {
+        Code93 code93 = new Code93();
+        code93.setQuietZoneHorizontal(20);
+        code93.setQuietZoneVertical(5);
+        code93.setContent("123456789");
+        test(code93, 1.2, Color.WHITE, Color.BLACK, "code93-with-rotation-270.svg", true, -90);
+    }
+
+    @Test
+    public void testCode93RotationMinus180() throws IOException {
+        Code93 code93 = new Code93();
+        code93.setQuietZoneHorizontal(20);
+        code93.setQuietZoneVertical(5);
+        code93.setContent("123456789");
+        test(code93, 1.2, Color.WHITE, Color.BLACK, "code93-with-rotation-180.svg", true, -180);
+    }
+
+    @Test
+    public void testCode93RotationMinus270() throws IOException {
+        Code93 code93 = new Code93();
+        code93.setQuietZoneHorizontal(20);
+        code93.setQuietZoneVertical(5);
+        code93.setContent("123456789");
+        test(code93, 1.2, Color.WHITE, Color.BLACK, "code93-with-rotation-90.svg", true, -270);
+    }
+
+    private void test(Symbol symbol, double magnification, Color paper, Color ink, String expectationFile, boolean xmlProlog, int rotation) throws IOException {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        SvgRenderer renderer = new SvgRenderer(baos, magnification, paper, ink, xmlProlog);
+        SvgRenderer renderer = new SvgRenderer(baos, magnification, paper, ink, xmlProlog, rotation);
         renderer.render(symbol);
         String actual = new String(baos.toByteArray(), StandardCharsets.UTF_8);
         BufferedReader actualReader = new BufferedReader(new StringReader(actual));

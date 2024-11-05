@@ -52,6 +52,9 @@ public class PostScriptRenderer implements SymbolRenderer {
     /** The ink (foreground) color. */
     private final Color ink;
 
+    /** The clockwise rotation of the symbol in degrees. */
+    private final int rotation;
+
     /**
      * Creates a new PostScript renderer.
      *
@@ -61,10 +64,24 @@ public class PostScriptRenderer implements SymbolRenderer {
      * @param ink the ink (foreground) color
      */
     public PostScriptRenderer(OutputStream out, double magnification, Color paper, Color ink) {
+        this(out, magnification, paper, ink, 0);
+    }
+
+    /**
+     * Creates a new PostScript renderer.
+     *
+     * @param out the output stream to render to
+     * @param magnification the magnification factor to apply
+     * @param paper the paper (background) color
+     * @param ink the ink (foreground) color
+     * @param rotation the clockwise rotation of the symbol in degrees (0, 90, 180, or 270)
+     */
+    public PostScriptRenderer(OutputStream out, double magnification, Color paper, Color ink, int rotation) {
         this.out = out;
         this.magnification = magnification;
         this.paper = paper;
         this.ink = ink;
+        this.rotation = SymbolRenderer.normalizeRotation(rotation);
     }
 
     /** {@inheritDoc} */
@@ -78,6 +95,20 @@ public class PostScriptRenderer implements SymbolRenderer {
         int height = (int) Math.ceil(symbol.getHeight() * magnification);
         int marginX = (int) (symbol.getQuietZoneHorizontal() * magnification);
         int marginY = (int) (symbol.getQuietZoneVertical() * magnification);
+
+         // render rotation clockwise
+         int rotateHeight = height;
+         int rotateWidth = width;
+         String transform;
+         switch (rotation) {
+             case 90:
+             case 270:
+                 rotateHeight = width;
+                 rotateWidth = height;
+                 break;
+             default:
+                 break;
+         }
 
         String title;
         if (content.isEmpty()) {
@@ -93,7 +124,7 @@ public class PostScriptRenderer implements SymbolRenderer {
             writer.append("%%Creator: OkapiBarcode\n");
             writer.append("%%Title: ").append(title).append('\n');
             writer.append("%%Pages: 0\n");
-            writer.append("%%BoundingBox: 0 0 ").appendInt(width).append(" ").appendInt(height).append("\n");
+            writer.append("%%BoundingBox: 0 0 ").appendInt(rotateWidth).append(" ").appendInt(rotateHeight).append("\n");
             writer.append("%%EndComments\n");
 
             // Definitions
@@ -103,6 +134,27 @@ public class PostScriptRenderer implements SymbolRenderer {
             writer.append("/TB { 2 copy } bind def\n");
             writer.append("/TR { newpath 4 1 roll exch moveto 1 index 0 rlineto 0 exch rlineto neg 0 rlineto closepath fill } bind def\n");
             writer.append("/TE { pop pop } bind def\n");
+
+            // Set orientation
+            switch (rotation) {
+                case 90:
+                    writer.append("gsave\n")
+                          .append(-rotation).append(" rotate\n")
+                          .append(-width).append(" 0.00 translate\n");
+                    break;
+                case 180:
+                    writer.append("gsave\n")
+                          .append(-rotation).append(" rotate\n")
+                          .append(-width).append(" ").append(-height).append(" translate\n");
+                    break;
+                case 270:
+                    writer.append("gsave\n")
+                          .append(-rotation).append(" rotate\n")
+                          .append("0.00 ").append(-height).append(" translate\n");
+                    break;
+                default:
+                    break;
+            }
 
             // Background
             writer.append("newpath\n");
@@ -233,6 +285,11 @@ public class PostScriptRenderer implements SymbolRenderer {
                           .append((height - hexagon.getY(j)) - marginY).append(" ");
                 }
                 writer.append(" TH\n");
+            }
+
+            // Restore original transformation if rotated
+            if (rotation != 0) {
+                writer.append("grestore\n");
             }
 
             // Footer

@@ -25,6 +25,7 @@ import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextAttribute;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
@@ -57,6 +58,9 @@ public class Java2DRenderer implements SymbolRenderer {
     /** The ink (foreground) color. */
     private final Color ink;
 
+    /** The clockwise rotation of the symbol in degrees (0, 90, 180, or 270). */
+    private final int rotation;
+
     /**
      * Creates a new Java 2D renderer. If the specified paper color is {@code null}, the symbol is drawn without clearing the
      * existing {@code g2d} background.
@@ -67,18 +71,61 @@ public class Java2DRenderer implements SymbolRenderer {
      * @param ink the ink (foreground) color
      */
     public Java2DRenderer(Graphics2D g2d, double magnification, Color paper, Color ink) {
+        this(g2d, magnification, paper, ink, 0);
+    }
+
+    /**
+     * Creates a new Java 2D renderer. If the specified paper color is {@code null}, the symbol is drawn without clearing the
+     * existing {@code g2d} background.
+     *
+     * @param g2d the graphics to render to
+     * @param magnification the magnification factor to apply
+     * @param paper the paper (background) color (may be {@code null})
+     * @param ink the ink (foreground) color
+     * @param rotation the clockwise rotation of the symbol in degrees (0, 90, 180, or 270)
+     */
+    public Java2DRenderer(Graphics2D g2d, double magnification, Color paper, Color ink, int rotation) {
         this.g2d = g2d;
         this.magnification = magnification;
         this.paper = paper;
         this.ink = ink;
+        this.rotation = SymbolRenderer.normalizeRotation(rotation);
     }
 
     /** {@inheritDoc} */
     @Override
     public void render(Symbol symbol) {
 
+        int width = (int) (symbol.getWidth() * magnification);
+        int height = (int) (symbol.getHeight() * magnification);
         int marginX = (int) (symbol.getQuietZoneHorizontal() * magnification);
         int marginY = (int) (symbol.getQuietZoneVertical() * magnification);
+        int rotateHeight = height;
+        int rotateWidth = width;
+
+        // render rotation clockwise
+        AffineTransform oldTransform = null;
+        if (rotation != 0) {
+            oldTransform = g2d.getTransform();
+            switch (rotation) {
+                case 90:
+                    rotateHeight = width;
+                    rotateWidth = height;
+                    g2d.rotate(Math.PI / 2d);
+                    g2d.translate(0, -rotateWidth);
+                    break;
+                case 180:
+                    g2d.rotate(Math.PI);
+                    g2d.translate(-width, -height);
+                    break;
+                case 270:
+                    rotateHeight = width;
+                    rotateWidth = height;
+                    g2d.rotate(Math.PI * 1.5d);
+                    g2d.translate(-rotateHeight, 0);
+                    break;
+            }
+        }
 
         Font f = symbol.getFont();
         if (f != null) {
@@ -92,10 +139,8 @@ public class Java2DRenderer implements SymbolRenderer {
         java.awt.Color oldColor = g2d.getColor();
 
         if (paper != null) {
-            int w = (int) (symbol.getWidth() * magnification);
-            int h = (int) (symbol.getHeight() * magnification);
             g2d.setColor(new java.awt.Color(paper.red, paper.green, paper.blue));
-            g2d.fillRect(0, 0, w, h);
+            g2d.fillRect(0, 0, width, height);
         }
 
         g2d.setColor(new java.awt.Color(ink.red, ink.green, ink.blue));
@@ -154,6 +199,9 @@ public class Java2DRenderer implements SymbolRenderer {
 
         g2d.setFont(oldFont);
         g2d.setColor(oldColor);
+        if (oldTransform != null) {
+            g2d.setTransform(oldTransform);
+        }
     }
 
     private static Rectangle2D getBounds(TextBox text, Graphics2D g2d) {

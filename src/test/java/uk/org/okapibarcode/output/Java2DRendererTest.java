@@ -98,7 +98,7 @@ public class Java2DRendererTest {
         code128.setFont(font);
         code128.setContent("123456");
 
-        test(code128, "java-2d-custom-font-strikethrough.png");
+        test(code128, "java-2d-custom-font-strikethrough.png", 0);
     }
 
     @Test
@@ -112,7 +112,7 @@ public class Java2DRendererTest {
         code128.setFont(font);
         code128.setContent("123456");
 
-        test(code128, "java-2d-custom-font-justify-transform.png");
+        test(code128, "java-2d-custom-font-justify-transform.png", 0);
     }
 
     @Test
@@ -123,7 +123,7 @@ public class Java2DRendererTest {
         code93.setHumanReadableAlignment(TextAlignment.JUSTIFY);
         code93.setFontName(SymbolTest.DEJA_VU_SANS.getFontName());
         code93.setContent("123456789");
-        test(code93, "code93-alignment-justify.png");
+        test(code93, "code93-alignment-justify.png", 0);
     }
 
     @Test
@@ -135,19 +135,94 @@ public class Java2DRendererTest {
         code93.setHumanReadableAlignment(TextAlignment.JUSTIFY);
         code93.setFontName(SymbolTest.DEJA_VU_SANS.getFontName());
         code93.setContent("1");
-        test(code93, "code93-alignment-justify-one-char.png");
+        test(code93, "code93-alignment-justify-one-char.png", 0);
     }
 
-    private static void test(Symbol symbol, String expectationFile) throws IOException {
+    @Test
+    public void testCode93Rotation90() throws IOException {
+        Code93 code93 = new Code93();
+        code93.setQuietZoneHorizontal(20);
+        code93.setQuietZoneVertical(5);
+        code93.setHumanReadableAlignment(TextAlignment.JUSTIFY);
+        code93.setFontName(SymbolTest.DEJA_VU_SANS.getFontName());
+        code93.setContent("123456789");
+        test(code93, "code93-with-rotation-90.png", 90);
+    }
+
+    @Test
+    public void testCode93Rotation180() throws IOException {
+        Code93 code93 = new Code93();
+        code93.setQuietZoneHorizontal(20);
+        code93.setQuietZoneVertical(5);
+        code93.setHumanReadableAlignment(TextAlignment.JUSTIFY);
+        code93.setFontName(SymbolTest.DEJA_VU_SANS.getFontName());
+        code93.setContent("123456789");
+        test(code93, "code93-with-rotation-180.png", 180);
+    }
+
+    @Test
+    public void testCode93Rotation270() throws IOException {
+        Code93 code93 = new Code93();
+        code93.setQuietZoneHorizontal(20);
+        code93.setQuietZoneVertical(5);
+        code93.setHumanReadableAlignment(TextAlignment.JUSTIFY);
+        code93.setFontName(SymbolTest.DEJA_VU_SANS.getFontName());
+        code93.setContent("123456789");
+        test(code93, "code93-with-rotation-270.png", 270);
+    }
+
+    @Test
+    public void testCode93RotationMinus90() throws IOException {
+        Code93 code93 = new Code93();
+        code93.setQuietZoneHorizontal(20);
+        code93.setQuietZoneVertical(5);
+        code93.setHumanReadableAlignment(TextAlignment.JUSTIFY);
+        code93.setFontName(SymbolTest.DEJA_VU_SANS.getFontName());
+        code93.setContent("123456789");
+        test(code93, "code93-with-rotation-270.png", -90);
+    }
+
+    @Test
+    public void testCode93RotationMinus180() throws IOException {
+        Code93 code93 = new Code93();
+        code93.setQuietZoneHorizontal(20);
+        code93.setQuietZoneVertical(5);
+        code93.setHumanReadableAlignment(TextAlignment.JUSTIFY);
+        code93.setFontName(SymbolTest.DEJA_VU_SANS.getFontName());
+        code93.setContent("123456789");
+        test(code93, "code93-with-rotation-180.png", -180);
+    }
+
+    @Test
+    public void testCode93RotationMinus270() throws IOException {
+        Code93 code93 = new Code93();
+        code93.setQuietZoneHorizontal(20);
+        code93.setQuietZoneVertical(5);
+        code93.setHumanReadableAlignment(TextAlignment.JUSTIFY);
+        code93.setFontName(SymbolTest.DEJA_VU_SANS.getFontName());
+        code93.setContent("123456789");
+        test(code93, "code93-with-rotation-90.png", -270);
+    }
+
+    private static void test(Symbol symbol, String expectationFile, int rotation) throws IOException {
 
         int magnification = 4;
         int w = symbol.getWidth() * magnification;
         int h = symbol.getHeight() * magnification;
+        int normalizedRotation = SymbolRenderer.normalizeRotation(rotation);
+
+        switch (normalizedRotation) {
+            case 90:
+            case 270:
+                w = symbol.getHeight() * magnification;
+                h = symbol.getWidth() * magnification;
+                break;
+        }
 
         BufferedImage image = new BufferedImage(w, h, BufferedImage.TYPE_BYTE_GRAY);
         Graphics2D g2d = image.createGraphics();
 
-        Java2DRenderer renderer = new Java2DRenderer(g2d, magnification, Color.WHITE, Color.BLACK);
+        Java2DRenderer renderer = new Java2DRenderer(g2d, magnification, Color.WHITE, Color.BLACK, rotation);
         renderer.render(symbol);
 
         BufferedImage expected = ImageIO.read(Java2DRendererTest.class.getResourceAsStream(expectationFile));

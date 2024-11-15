@@ -64,7 +64,7 @@ public class PostScriptRendererTest {
         code93.setQuietZoneHorizontal(5);
         code93.setQuietZoneVertical(5);
         code93.setContent("123456789");
-        test(code93, 1, Color.WHITE, Color.BLACK, "code93-basic.eps");
+        test(code93, 1, Color.WHITE, Color.BLACK, "code93-basic.eps", 0);
     }
 
     @Test
@@ -74,7 +74,7 @@ public class PostScriptRendererTest {
         code93.setQuietZoneVertical(5);
         code93.setHumanReadableAlignment(TextAlignment.LEFT);
         code93.setContent("123456789");
-        test(code93, 1, Color.WHITE, Color.BLACK, "code93-alignment-left.eps");
+        test(code93, 1, Color.WHITE, Color.BLACK, "code93-alignment-left.eps", 0);
     }
 
     @Test
@@ -84,7 +84,7 @@ public class PostScriptRendererTest {
         code93.setQuietZoneVertical(5);
         code93.setHumanReadableAlignment(TextAlignment.RIGHT);
         code93.setContent("123456789");
-        test(code93, 1, Color.WHITE, Color.BLACK, "code93-alignment-right.eps");
+        test(code93, 1, Color.WHITE, Color.BLACK, "code93-alignment-right.eps", 0);
     }
 
     @Test
@@ -94,7 +94,7 @@ public class PostScriptRendererTest {
         code93.setQuietZoneVertical(5);
         code93.setHumanReadableAlignment(TextAlignment.JUSTIFY);
         code93.setContent("123456789");
-        test(code93, 1, Color.WHITE, Color.BLACK, "code93-alignment-justify.eps");
+        test(code93, 1, Color.WHITE, Color.BLACK, "code93-alignment-justify.eps", 0);
     }
 
     @Test
@@ -105,7 +105,7 @@ public class PostScriptRendererTest {
         code93.setShowCheckDigits(false);
         code93.setHumanReadableAlignment(TextAlignment.JUSTIFY);
         code93.setContent("1");
-        test(code93, 1, Color.WHITE, Color.BLACK, "code93-alignment-justify-one-char.eps");
+        test(code93, 1, Color.WHITE, Color.BLACK, "code93-alignment-justify-one-char.eps", 0);
     }
 
     @Test
@@ -114,7 +114,7 @@ public class PostScriptRendererTest {
         code93.setQuietZoneHorizontal(20);
         code93.setQuietZoneVertical(20);
         code93.setContent("123456789");
-        test(code93, 1, Color.WHITE, Color.BLACK, "code93-margin-size-20.eps");
+        test(code93, 1, Color.WHITE, Color.BLACK, "code93-margin-size-20.eps", 0);
     }
 
     @Test
@@ -123,7 +123,7 @@ public class PostScriptRendererTest {
         code93.setQuietZoneHorizontal(5);
         code93.setQuietZoneVertical(5);
         code93.setContent("123456789");
-        test(code93, 2, Color.WHITE, Color.BLACK, "code93-magnification-2.eps");
+        test(code93, 2, Color.WHITE, Color.BLACK, "code93-magnification-2.eps", 0);
     }
 
     @Test
@@ -132,7 +132,7 @@ public class PostScriptRendererTest {
         code93.setQuietZoneHorizontal(5);
         code93.setQuietZoneVertical(5);
         code93.setContent("123456789");
-        test(code93, 1, Color.GREEN, Color.RED, "code93-colors.eps");
+        test(code93, 1, Color.GREEN, Color.RED, "code93-colors.eps", 0);
     }
 
     @Test
@@ -143,7 +143,7 @@ public class PostScriptRendererTest {
         code93.setFontName("Arial");
         code93.setFontSize(26);
         code93.setContent("123456789");
-        test(code93, 1, Color.WHITE, Color.BLACK, "code93-custom-font.eps");
+        test(code93, 1, Color.WHITE, Color.BLACK, "code93-custom-font.eps", 0);
     }
 
     @Test
@@ -153,7 +153,7 @@ public class PostScriptRendererTest {
         code93.setQuietZoneVertical(5);
         code93.setEmptyContentAllowed(true);
         code93.setContent("");
-        test(code93, 1, Color.WHITE, Color.BLACK, "code93-empty.eps");
+        test(code93, 1, Color.WHITE, Color.BLACK, "code93-empty.eps", 0);
     }
 
     @Test
@@ -163,7 +163,7 @@ public class PostScriptRendererTest {
         code93.setQuietZoneVertical(5);
         code93.setEmptyContentAllowed(true);
         code93.setContent(null);
-        test(code93, 1, Color.WHITE, Color.BLACK, "code93-empty.eps");
+        test(code93, 1, Color.WHITE, Color.BLACK, "code93-empty.eps", 0);
     }
 
     @Test
@@ -173,7 +173,7 @@ public class PostScriptRendererTest {
         maxicode.setQuietZoneVertical(5);
         maxicode.setMode(4);
         maxicode.setContent("123456789");
-        test(maxicode, 5, Color.WHITE, Color.BLACK, "maxicode-basic.eps");
+        test(maxicode, 5, Color.WHITE, Color.BLACK, "maxicode-basic.eps", 0);
     }
 
     @Test
@@ -182,7 +182,7 @@ public class PostScriptRendererTest {
         qr.setQuietZoneHorizontal(5);
         qr.setQuietZoneVertical(5);
         qr.setContent("123456789");
-        test(qr, 5, Color.WHITE, Color.BLACK, "qr-basic.eps");
+        test(qr, 5, Color.WHITE, Color.BLACK, "qr-basic.eps", 0);
     }
 
     @Test
@@ -192,20 +192,83 @@ public class PostScriptRendererTest {
         ean.setQuietZoneHorizontal(5);
         ean.setQuietZoneVertical(5);
         ean.setContent("123456789012+12345");
-        test(ean, 2, Color.WHITE, Color.BLACK, "ean-13-with-add-on.eps");
+        test(ean, 2, Color.WHITE, Color.BLACK, "ean-13-with-add-on.eps", 0);
     }
 
     @Test
     public void testCode93With1dot2Magnification() throws IOException {
         Code93 code93 = new Code93();
         code93.setContent("123456789");
-        test(code93, 1.2, Color.WHITE, Color.BLACK, "code93-with-magnification-1.2.eps");
+        test(code93, 1.2, Color.WHITE, Color.BLACK, "code93-with-magnification-1.2.eps", 0);
     }
 
-    private void test(Symbol symbol, double magnification, Color paper, Color ink, String expectationFile) throws IOException {
+    @Test
+    public void testCode93Rotation90() throws IOException {
+        Code93 code93 = new Code93();
+        code93.setQuietZoneHorizontal(20);
+        code93.setQuietZoneVertical(5);
+        code93.setContent("123456789");
+        test(code93, 1.2, Color.WHITE, Color.BLACK, "code93-with-rotation-90.eps", 90);
+    }
+
+    @Test
+    public void testCode93Rotation180() throws IOException {
+        Code93 code93 = new Code93();
+        code93.setQuietZoneHorizontal(20);
+        code93.setQuietZoneVertical(5);
+        code93.setContent("123456789");
+        test(code93, 1.2, Color.WHITE, Color.BLACK, "code93-with-rotation-180.eps", 180);
+    }
+
+    @Test
+    public void testCode93Rotation270() throws IOException {
+        Code93 code93 = new Code93();
+        code93.setQuietZoneHorizontal(20);
+        code93.setQuietZoneVertical(5);
+        code93.setContent("123456789");
+        test(code93, 1.2, Color.WHITE, Color.BLACK, "code93-with-rotation-270.eps", 270);
+    }
+
+    @Test
+    public void testCode93RotationMinus90() throws IOException {
+        Code93 code93 = new Code93();
+        code93.setQuietZoneHorizontal(20);
+        code93.setQuietZoneVertical(5);
+        code93.setContent("123456789");
+        test(code93, 1.2, Color.WHITE, Color.BLACK, "code93-with-rotation-270.eps", -90);
+    }
+
+    @Test
+    public void testCode93RotationMinus180() throws IOException {
+        Code93 code93 = new Code93();
+        code93.setQuietZoneHorizontal(20);
+        code93.setQuietZoneVertical(5);
+        code93.setContent("123456789");
+        test(code93, 1.2, Color.WHITE, Color.BLACK, "code93-with-rotation-180.eps", -180);
+    }
+
+    @Test
+    public void testCode93RotationMinus270() throws IOException {
+        Code93 code93 = new Code93();
+        code93.setQuietZoneHorizontal(20);
+        code93.setQuietZoneVertical(5);
+        code93.setContent("123456789");
+        test(code93, 1.2, Color.WHITE, Color.BLACK, "code93-with-rotation-90.eps", -270);
+    }
+
+    @Test
+    public void testCode93RotationMinus360() throws IOException {
+        Code93 code93 = new Code93();
+        code93.setQuietZoneHorizontal(20);
+        code93.setQuietZoneVertical(5);
+        code93.setContent("123456789");
+        test(code93, 1.2, Color.WHITE, Color.BLACK, "code93-with-rotation-360.eps", -360);
+    }
+
+    private void test(Symbol symbol, double magnification, Color paper, Color ink, String expectationFile, int rotation) throws IOException {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        PostScriptRenderer renderer = new PostScriptRenderer(baos, magnification, paper, ink);
+        PostScriptRenderer renderer = new PostScriptRenderer(baos, magnification, paper, ink, rotation);
         renderer.render(symbol);
         String actual = new String(baos.toByteArray(), StandardCharsets.UTF_8);
         BufferedReader actualReader = new BufferedReader(new StringReader(actual));

@@ -16,6 +16,8 @@
 
 package uk.org.okapibarcode.output;
 
+import static uk.org.okapibarcode.util.Integers.normalizeRotation;
+
 import java.awt.Font;
 import java.awt.GradientPaint;
 import java.awt.Graphics2D;
@@ -207,17 +209,9 @@ public class Java2DRendererTest {
     private static void test(Symbol symbol, String expectationFile, int rotation) throws IOException {
 
         int magnification = 4;
-        int w = symbol.getWidth() * magnification;
-        int h = symbol.getHeight() * magnification;
-        int normalizedRotation = SymbolRenderer.normalizeRotation(rotation);
-
-        switch (normalizedRotation) {
-            case 90:
-            case 270:
-                w = symbol.getHeight() * magnification;
-                h = symbol.getWidth() * magnification;
-                break;
-        }
+        int rot = normalizeRotation(rotation);
+        int w = magnification * (rot != 90 && rot != 270 ? symbol.getWidth() : symbol.getHeight());
+        int h = magnification * (rot != 90 && rot != 270 ? symbol.getHeight() : symbol.getWidth());
 
         BufferedImage image = new BufferedImage(w, h, BufferedImage.TYPE_BYTE_GRAY);
         Graphics2D g2d = image.createGraphics();

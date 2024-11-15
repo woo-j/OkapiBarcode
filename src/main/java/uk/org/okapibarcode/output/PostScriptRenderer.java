@@ -19,6 +19,7 @@ package uk.org.okapibarcode.output;
 import static uk.org.okapibarcode.graphics.TextAlignment.CENTER;
 import static uk.org.okapibarcode.graphics.TextAlignment.JUSTIFY;
 import static uk.org.okapibarcode.util.Doubles.roughlyEqual;
+import static uk.org.okapibarcode.util.Integers.normalizeRotation;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -74,14 +75,14 @@ public class PostScriptRenderer implements SymbolRenderer {
      * @param magnification the magnification factor to apply
      * @param paper the paper (background) color
      * @param ink the ink (foreground) color
-     * @param rotation the clockwise rotation of the symbol in degrees (0, 90, 180, or 270)
+     * @param rotation the clockwise rotation of the symbol in degrees (must be a multiple of 90)
      */
     public PostScriptRenderer(OutputStream out, double magnification, Color paper, Color ink, int rotation) {
         this.out = out;
         this.magnification = magnification;
         this.paper = paper;
         this.ink = ink;
-        this.rotation = SymbolRenderer.normalizeRotation(rotation);
+        this.rotation = normalizeRotation(rotation);
     }
 
     /** {@inheritDoc} */
@@ -96,19 +97,17 @@ public class PostScriptRenderer implements SymbolRenderer {
         int marginX = (int) (symbol.getQuietZoneHorizontal() * magnification);
         int marginY = (int) (symbol.getQuietZoneVertical() * magnification);
 
-         // render rotation clockwise
-         int rotateHeight = height;
-         int rotateWidth = width;
-         String transform;
-         switch (rotation) {
-             case 90:
-             case 270:
-                 rotateHeight = width;
-                 rotateWidth = height;
-                 break;
-             default:
-                 break;
-         }
+        int rotatedHeight = height;
+        int rotatedWidth = width;
+        switch (rotation) {
+            case 90:
+            case 270:
+                rotatedHeight = width;
+                rotatedWidth = height;
+                break;
+            default:
+                break;
+        }
 
         String title;
         if (content.isEmpty()) {
@@ -124,7 +123,7 @@ public class PostScriptRenderer implements SymbolRenderer {
             writer.append("%%Creator: OkapiBarcode\n");
             writer.append("%%Title: ").append(title).append('\n');
             writer.append("%%Pages: 0\n");
-            writer.append("%%BoundingBox: 0 0 ").appendInt(rotateWidth).append(" ").appendInt(rotateHeight).append("\n");
+            writer.append("%%BoundingBox: 0 0 ").appendInt(rotatedWidth).append(" ").appendInt(rotatedHeight).append("\n");
             writer.append("%%EndComments\n");
 
             // Definitions

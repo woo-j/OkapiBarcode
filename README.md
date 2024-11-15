@@ -159,6 +159,7 @@ and data.
 - Codablock F: allow user to customize row height
 - Codablock F: allow user to customize module width
 - Codablock F: improve check digit calculation
+- Add optional rotation parameter to all renderers
 
 #### Okapi Barcode 0.4.8
 - MaxiCode: improve handling of partial and malformed postal codes (modes 2 and 3)

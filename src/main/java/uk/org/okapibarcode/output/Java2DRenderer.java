@@ -18,6 +18,7 @@ package uk.org.okapibarcode.output;
 
 import static uk.org.okapibarcode.graphics.TextAlignment.CENTER;
 import static uk.org.okapibarcode.graphics.TextAlignment.JUSTIFY;
+import static uk.org.okapibarcode.util.Integers.normalizeRotation;
 
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -58,7 +59,7 @@ public class Java2DRenderer implements SymbolRenderer {
     /** The ink (foreground) color. */
     private final Color ink;
 
-    /** The clockwise rotation of the symbol in degrees (0, 90, 180, or 270). */
+    /** The clockwise rotation of the symbol in degrees. */
     private final int rotation;
 
     /**
@@ -82,14 +83,14 @@ public class Java2DRenderer implements SymbolRenderer {
      * @param magnification the magnification factor to apply
      * @param paper the paper (background) color (may be {@code null})
      * @param ink the ink (foreground) color
-     * @param rotation the clockwise rotation of the symbol in degrees (0, 90, 180, or 270)
+     * @param rotation the clockwise rotation of the symbol in degrees (must be a multiple of 90)
      */
     public Java2DRenderer(Graphics2D g2d, double magnification, Color paper, Color ink, int rotation) {
         this.g2d = g2d;
         this.magnification = magnification;
         this.paper = paper;
         this.ink = ink;
-        this.rotation = SymbolRenderer.normalizeRotation(rotation);
+        this.rotation = normalizeRotation(rotation);
     }
 
     /** {@inheritDoc} */
@@ -100,29 +101,22 @@ public class Java2DRenderer implements SymbolRenderer {
         int height = (int) (symbol.getHeight() * magnification);
         int marginX = (int) (symbol.getQuietZoneHorizontal() * magnification);
         int marginY = (int) (symbol.getQuietZoneVertical() * magnification);
-        int rotateHeight = height;
-        int rotateWidth = width;
 
-        // render rotation clockwise
         AffineTransform oldTransform = null;
         if (rotation != 0) {
             oldTransform = g2d.getTransform();
             switch (rotation) {
                 case 90:
-                    rotateHeight = width;
-                    rotateWidth = height;
                     g2d.rotate(Math.PI / 2d);
-                    g2d.translate(0, -rotateWidth);
+                    g2d.translate(0, -height);
                     break;
                 case 180:
                     g2d.rotate(Math.PI);
                     g2d.translate(-width, -height);
                     break;
                 case 270:
-                    rotateHeight = width;
-                    rotateWidth = height;
                     g2d.rotate(Math.PI * 1.5d);
-                    g2d.translate(-rotateHeight, 0);
+                    g2d.translate(-width, 0);
                     break;
             }
         }

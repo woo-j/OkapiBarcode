@@ -18,6 +18,7 @@ package uk.org.okapibarcode.output;
 
 import static uk.org.okapibarcode.graphics.TextAlignment.CENTER;
 import static uk.org.okapibarcode.graphics.TextAlignment.JUSTIFY;
+import static uk.org.okapibarcode.util.Integers.normalizeRotation;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -67,7 +68,7 @@ public class SvgRenderer implements SymbolRenderer {
 
     /** Whether or not to include the XML prolog in the output. */
     private final boolean xmlProlog;
- 
+
     /** The clockwise rotation of the symbol in degrees. */
     private final int rotation;
 
@@ -94,7 +95,7 @@ public class SvgRenderer implements SymbolRenderer {
      * @param ink the ink (foreground) color
      * @param xmlProlog whether or not to include the XML prolog in the output (usually {@code true} for
      *        standalone SVG documents, {@code false} for SVG content embedded directly in HTML documents)
-     * @param rotation the clockwise rotation of the symbol in degrees (0, 90, 180, or 270)
+     * @param rotation the clockwise rotation of the symbol in degrees (must be a multiple of 90)
      */
     public SvgRenderer(OutputStream out, double magnification, Color paper, Color ink, boolean xmlProlog, int rotation) {
         this.out = out;
@@ -102,7 +103,7 @@ public class SvgRenderer implements SymbolRenderer {
         this.paper = paper;
         this.ink = ink;
         this.xmlProlog = xmlProlog;
-        this.rotation = SymbolRenderer.normalizeRotation(rotation);
+        this.rotation = normalizeRotation(rotation);
     }
 
     /** {@inheritDoc} */
@@ -139,23 +140,23 @@ public class SvgRenderer implements SymbolRenderer {
                 writer.append("   \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n");
             }
 
-            // render rotation clockwise
-            int rotateHeight = height;
-            int rotateWidth = width;
+            // Rotation
+            int rotatedHeight = height;
+            int rotatedWidth = width;
             String transform;
             switch (rotation) {
                 case 90:
-                    rotateHeight = width;
-                    rotateWidth = height;
-                    transform = " transform=\"rotate(" + rotation + ") translate(0,-" + rotateWidth + ")\"";
+                    rotatedHeight = width;
+                    rotatedWidth = height;
+                    transform = " transform=\"rotate(" + rotation + ") translate(0,-" + rotatedWidth + ")\"";
                     break;
                 case 180:
-                    transform = " transform=\"rotate(" + rotation + "," + (width/2) + "," + (height/2) + ")\"";
+                    transform = " transform=\"rotate(" + rotation + "," + (width / 2) + "," + (height / 2) + ")\"";
                     break;
                 case 270:
-                    rotateHeight = width;
-                    rotateWidth = height;
-                    transform = " transform=\"rotate(" + rotation + ") translate(-" + rotateHeight + ",0)\"";
+                    rotatedHeight = width;
+                    rotatedWidth = height;
+                    transform = " transform=\"rotate(" + rotation + ") translate(-" + rotatedHeight + ",0)\"";
                     break;
                 default:
                     transform = "";
@@ -163,13 +164,11 @@ public class SvgRenderer implements SymbolRenderer {
             }
 
             // Header
-            writer.append("<svg width=\"").appendInt(rotateWidth)
-                  .append("\" height=\"").appendInt(rotateHeight)
+            writer.append("<svg width=\"").appendInt(rotatedWidth)
+                  .append("\" height=\"").appendInt(rotatedHeight)
                   .append("\" version=\"1.1")
                   .append("\" xmlns=\"http://www.w3.org/2000/svg\">\n");
             writer.append("   <desc>").append(clean(title)).append("</desc>\n");
-            
-
             writer.append("   <g id=\"barcode\" fill=\"#").append(fgColour).append("\"").append(transform).append(">\n");
             writer.append("      <rect x=\"0\" y=\"0\" width=\"").appendInt(width)
                   .append("\" height=\"").appendInt(height)

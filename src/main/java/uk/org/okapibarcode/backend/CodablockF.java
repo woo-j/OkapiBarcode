@@ -103,9 +103,10 @@ public class CodablockF extends Symbol {
             throw OkapiInputException.inputTooLong();
         }
 
-        /* Make a guess at how many characters will be needed to encode the data */
-        estimate_codelength = 0.0;
-        last_mode = Mode.AORB; /* Codablock always starts with Code A */
+        // guess how many characters will be needed to encode the data,
+        // we need two characters right off the bat for the check digits
+        estimate_codelength = 2.0;
+        last_mode = Mode.AORB; // Codablock always starts with Code A
         for (i = 0; i < input_length; i++) {
             this_mode = findSubset(inputData[i]);
             if (this_mode != last_mode) {
@@ -123,14 +124,14 @@ public class CodablockF extends Symbol {
         }
 
         /* Decide symbol size based on the above guess */
-        rows = (int) (0.5 + Math.sqrt((estimate_codelength + 2) / 1.45));
+        rows = (int) (0.5 + Math.sqrt(estimate_codelength / 1.45));
         if (rows < 2) {
             rows = 2;
         }
         if (rows > 44) {
             rows = 44;
         }
-        columns = (int) (estimate_codelength + 2) / rows;
+        columns = (int) estimate_codelength / rows;
         if (columns < 4) {
             columns = 4;
         }

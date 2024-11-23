@@ -548,17 +548,12 @@ public class CodablockF extends Symbol {
                             blockmatrix[current_row][column_position] = 99; /* Code C */
                             column_position++;
                             c--;
-                            if (inputData[input_position] == FNC1) {
-                                blockmatrix[current_row][column_position] = 102; /* FNC1 */
-                                input_position++;
-                            } else {
-                                blockmatrix[current_row][column_position] =
-                                    ((inputData[input_position] - '0') * 10) +
-                                    (inputData[input_position + 1] - '0');
-                                input_position += 2;
-                            }
+                            blockmatrix[current_row][column_position] =
+                                ((inputData[input_position] - '0') * 10) +
+                                (inputData[input_position + 1] - '0');
                             column_position++;
                             c--;
+                            input_position += 2;
                             current_mode = CfMode.MODEC;
                         } else {
                             /* Annex B section 1 rule 5b */

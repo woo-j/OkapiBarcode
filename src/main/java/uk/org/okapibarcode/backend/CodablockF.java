@@ -537,21 +537,27 @@ public class CodablockF extends Symbol {
                         }
                         j++;
                     } while ((findSubset(inputData[input_position + j]) == Mode.ABORC)
-                            || (inputData[input_position + j] == FNC1));
+                            || ((inputData[input_position + j] == FNC1) && i % 2 == 0));
                     i--;
 
                     if (i >= 4) {
                         /* Annex B section 1 rule 5 */
-                        if ((i % 2) == 1) {
+                        if (i % 2 == 1) {
                             /* Annex B section 1 rule 5a */
                             blockmatrix[current_row][column_position] = 99; /* Code C */
                             column_position++;
                             c--;
-                            blockmatrix[current_row][column_position] = ((inputData[input_position] - '0') * 10)
-                                    + (inputData[input_position + 1] - '0');
+                            if (inputData[input_position] == FNC1) {
+                                blockmatrix[current_row][column_position] = 102; /* FNC1 */
+                                input_position++;
+                            } else {
+                                blockmatrix[current_row][column_position] =
+                                    ((inputData[input_position] - '0') * 10) +
+                                    (inputData[input_position + 1] - '0');
+                                input_position += 2;
+                            }
                             column_position++;
                             c--;
-                            input_position += 2;
                             current_mode = CfMode.MODEC;
                         } else {
                             /* Annex B section 1 rule 5b */
@@ -621,7 +627,8 @@ public class CodablockF extends Symbol {
                      a.   If following that character, a control character occurs in the data before the occurrence of
                      another lower case character, insert a Shift character before the lower case character.
                      b.   Otherwise, insert a Code B character before the lower case character to change to subset B. */
-                    if ((findSubset(inputData[input_position + 1]) == Mode.SHIFTA)
+                    if (input_position + 2 < inputData.length
+                            && (findSubset(inputData[input_position + 1]) == Mode.SHIFTA)
                             && (findSubset(inputData[input_position + 2]) == Mode.SHIFTB)) {
                         /* Annex B section 1 rule 7a */
                         blockmatrix[current_row][column_position] = 98; /* Shift */

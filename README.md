@@ -159,6 +159,7 @@ and data.
 - Codablock F: allow user to customize row height
 - Codablock F: allow user to customize module width
 - Codablock F: improve check digit calculation
+- Codablock F: fix encodation bugs in various corner cases
 - Add optional rotation parameter to all renderers
 
 #### Okapi Barcode 0.4.8

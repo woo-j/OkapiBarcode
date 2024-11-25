@@ -357,7 +357,6 @@ public class CodablockF extends Symbol {
                                 input_position++;
                                 done = true;
                             }
-
                             if ((findSubset(inputData[input_position]) == Mode.SHIFTB) && (c == 1)) {
                                 /* Needs two symbols */
                                 blockmatrix[current_row][column_position] = 100; /* Code B */
@@ -365,7 +364,6 @@ public class CodablockF extends Symbol {
                                 c--;
                                 done = true;
                             }
-
                             if ((inputData[input_position] >= 244) && (!done)) {
                                 /* Needs three symbols */
                                 blockmatrix[current_row][column_position] = 100; /* Code B */
@@ -378,7 +376,6 @@ public class CodablockF extends Symbol {
                                 }
                                 done = true;
                             }
-
                             if ((inputData[input_position] >= 128) && (!done) && c == 1) {
                                 /* Needs two symbols */
                                 blockmatrix[current_row][column_position] = 100; /* Code B */
@@ -395,7 +392,6 @@ public class CodablockF extends Symbol {
                                 input_position++;
                                 done = true;
                             }
-
                             if ((findSubset(inputData[input_position]) == Mode.SHIFTA) && (c == 1)) {
                                 /* Needs two symbols */
                                 blockmatrix[current_row][column_position] = 101; /* Code A */
@@ -403,7 +399,6 @@ public class CodablockF extends Symbol {
                                 c--;
                                 done = true;
                             }
-
                             if (((inputData[input_position] >= 128)
                                     && (inputData[input_position] <= 159)) && (!done)) {
                                 /* Needs three symbols */
@@ -417,7 +412,6 @@ public class CodablockF extends Symbol {
                                 }
                                 done = true;
                             }
-
                             if ((inputData[input_position] >= 160) && (!done) && c == 1) {
                                 /* Needs two symbols */
                                 blockmatrix[current_row][column_position] = 101; /* Code A */
@@ -434,7 +428,6 @@ public class CodablockF extends Symbol {
                                 c--;
                                 done = true;
                             }
-
                             if (((findSubset(inputData[input_position]) == Mode.ABORC)
                                     && (findSubset(inputData[input_position + 1]) != Mode.ABORC))
                                     && (c == 1)) {
@@ -444,7 +437,6 @@ public class CodablockF extends Symbol {
                                 c--;
                                 done = true;
                             }
-
                             if (inputData[input_position] >= 128) {
                                 /* Needs three symbols */
                                 blockmatrix[current_row][column_position] = 101; /* Code A */
@@ -455,6 +447,7 @@ public class CodablockF extends Symbol {
                                     column_position++;
                                     c--;
                                 }
+                                done = true;
                             }
                             break;
                     }
@@ -587,7 +580,7 @@ public class CodablockF extends Symbol {
                         c--;
                         if (inputData[input_position] >= 128) {
                             /* Extended ASCII character */
-                            blockmatrix[current_row][column_position] = 100; /* FNC4 */
+                            blockmatrix[current_row][column_position] = 101; /* FNC4 */
                             column_position++;
                             c--;
                         }
@@ -602,7 +595,7 @@ public class CodablockF extends Symbol {
                         c--;
                         if (inputData[input_position] >= 128) {
                             /* Extended ASCII character */
-                            blockmatrix[current_row][column_position] = 100; /* FNC4 */
+                            blockmatrix[current_row][column_position] = 101; /* FNC4 */
                             column_position++;
                             c--;
                         }
@@ -632,7 +625,7 @@ public class CodablockF extends Symbol {
                         c--;
                         if (inputData[input_position] >= 128) {
                             /* Extended ASCII character */
-                            blockmatrix[current_row][column_position] = 101; /* FNC4 */
+                            blockmatrix[current_row][column_position] = 100; /* FNC4 */
                             column_position++;
                             c--;
                         }
@@ -647,7 +640,7 @@ public class CodablockF extends Symbol {
                         c--;
                         if (inputData[input_position] >= 128) {
                             /* Extended ASCII character */
-                            blockmatrix[current_row][column_position] = 101; /* FNC4 */
+                            blockmatrix[current_row][column_position] = 100; /* FNC4 */
                             column_position++;
                             c--;
                         }

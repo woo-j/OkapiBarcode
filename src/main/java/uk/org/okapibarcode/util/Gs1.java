@@ -28,9 +28,11 @@ public final class Gs1 {
 
     private static final byte DIGITS = 1; // 0-9
     private static final byte CHARS_82 = 2; // GS1 charset 82
-    private static final byte CHARS_39 = 3; // GS1 charset 39
-    private static final byte CHARS_UPPERCASE = 4; // A-Z
-    private static final byte FLAG = 5; // 0-1
+    private static final byte CHARS_64 = 3; // GS1 charset 64 (file-safe / URI-safe)
+    private static final byte CHARS_39 = 4; // GS1 charset 39
+    private static final byte CHARS_UPPERCASE = 5; // A-Z
+    private static final byte FLAG = 6; // 0-1
+    private static final byte MINUS = 7; // minus character ("-")
 
     private static final Map< Integer, byte[] > AIS = new HashMap<>();
 
@@ -38,6 +40,7 @@ public final class Gs1 {
         AIS.put(00,   new byte[] { DIGITS, 18, 18 }); // N2+N18
         AIS.put(01,   new byte[] { DIGITS, 14, 14 }); // N2+N14
         AIS.put(02,   new byte[] { DIGITS, 14, 14 }); // N2+N14
+        AIS.put(03,   new byte[] { DIGITS, 14, 14 }); // N2+N14
         AIS.put(10,   new byte[] { CHARS_82, 0, 20 }); // N2+X..20
         AIS.put(11,   new byte[] { DIGITS, 6, 6 }); // N2+N6
         AIS.put(12,   new byte[] { DIGITS, 6, 6 }); // N2+N6
@@ -428,10 +431,6 @@ public final class Gs1 {
         AIS.put(3953, new byte[] { DIGITS, 6, 6 }); // N4+N6
         AIS.put(3954, new byte[] { DIGITS, 6, 6 }); // N4+N6
         AIS.put(3955, new byte[] { DIGITS, 6, 6 }); // N4+N6
-        AIS.put(3956, new byte[] { DIGITS, 6, 6 }); // N4+N6
-        AIS.put(3957, new byte[] { DIGITS, 6, 6 }); // N4+N6
-        AIS.put(3958, new byte[] { DIGITS, 6, 6 }); // N4+N6
-        AIS.put(3959, new byte[] { DIGITS, 6, 6 }); // N4+N6
         AIS.put(400,  new byte[] { CHARS_82, 0, 30 }); // N3+X..30
         AIS.put(401,  new byte[] { CHARS_82, 0, 30 }); // N3+X..30
         AIS.put(402,  new byte[] { DIGITS, 17, 17 }); // N3+N17
@@ -461,6 +460,7 @@ public final class Gs1 {
         AIS.put(4306, new byte[] { CHARS_82, 0, 70 }); // N4+X..70
         AIS.put(4307, new byte[] { CHARS_UPPERCASE, 2, 2 }); // N4+X2
         AIS.put(4308, new byte[] { CHARS_82, 0, 30 }); // N4+X..30
+        AIS.put(4309, new byte[] { DIGITS, 20, 20 }); // N4+N20
         AIS.put(4310, new byte[] { CHARS_82, 0, 35 }); // N4+X..35
         AIS.put(4311, new byte[] { CHARS_82, 0, 35 }); // N4+X..35
         AIS.put(4312, new byte[] { CHARS_82, 0, 70 }); // N4+X..70
@@ -478,6 +478,10 @@ public final class Gs1 {
         AIS.put(4324, new byte[] { DIGITS, 10, 10 }); // N4+N10
         AIS.put(4325, new byte[] { DIGITS, 10, 10 }); // N4+N10
         AIS.put(4326, new byte[] { DIGITS, 6, 6 }); // N4+N6
+        AIS.put(4330, new byte[] { DIGITS, 6, 6, MINUS, 0, 1 }); // N4+N6+[-]
+        AIS.put(4331, new byte[] { DIGITS, 6, 6, MINUS, 0, 1 }); // N4+N6+[-]
+        AIS.put(4332, new byte[] { DIGITS, 6, 6, MINUS, 0, 1 }); // N4+N6+[-]
+        AIS.put(4333, new byte[] { DIGITS, 6, 6, MINUS, 0, 1 }); // N4+N6+[-]
         AIS.put(7001, new byte[] { DIGITS, 13, 13 }); // N4+N13
         AIS.put(7002, new byte[] { CHARS_82, 0, 30 }); // N4+X..30
         AIS.put(7003, new byte[] { DIGITS, 10, 10 }); // N4+N10
@@ -488,6 +492,7 @@ public final class Gs1 {
         AIS.put(7008, new byte[] { CHARS_82, 0, 3 }); // N4+X..3
         AIS.put(7009, new byte[] { CHARS_82, 0, 10 }); // N4+X..10
         AIS.put(7010, new byte[] { CHARS_82, 0, 2 }); // N4+X..2
+        AIS.put(7011, new byte[] { DIGITS, 6, 10 }); // N4+N6..10
         AIS.put(7020, new byte[] { CHARS_82, 0, 20 }); // N4+X..20
         AIS.put(7021, new byte[] { CHARS_82, 0, 20 }); // N4+X..20
         AIS.put(7022, new byte[] { CHARS_82, 0, 20 }); // N4+X..20
@@ -503,12 +508,14 @@ public final class Gs1 {
         AIS.put(7038, new byte[] { DIGITS, 3, 3, CHARS_82, 0, 27 }); // N4+N3+X..27
         AIS.put(7039, new byte[] { DIGITS, 3, 3, CHARS_82, 0, 27 }); // N4+N3+X..27
         AIS.put(7040, new byte[] { DIGITS, 1, 1, CHARS_82, 3, 3 }); // N4+N1+X3
+        AIS.put(7041, new byte[] { CHARS_82, 0, 4 }); // N4+X..4
         AIS.put(710,  new byte[] { CHARS_82, 0, 20 }); // N3+X..20
         AIS.put(711,  new byte[] { CHARS_82, 0, 20 }); // N3+X..20
         AIS.put(712,  new byte[] { CHARS_82, 0, 20 }); // N3+X..20
         AIS.put(713,  new byte[] { CHARS_82, 0, 20 }); // N3+X..20
         AIS.put(714,  new byte[] { CHARS_82, 0, 20 }); // N3+X..20
         AIS.put(715,  new byte[] { CHARS_82, 0, 20 }); // N3+X..20
+        AIS.put(716,  new byte[] { CHARS_82, 0, 20 }); // N3+X..20
         AIS.put(7230, new byte[] { CHARS_82, 2, 30 }); // N4+X2+X..28
         AIS.put(7231, new byte[] { CHARS_82, 2, 30 }); // N4+X2+X..28
         AIS.put(7232, new byte[] { CHARS_82, 2, 30 }); // N4+X2+X..28
@@ -520,6 +527,18 @@ public final class Gs1 {
         AIS.put(7238, new byte[] { CHARS_82, 2, 30 }); // N4+X2+X..28
         AIS.put(7239, new byte[] { CHARS_82, 2, 30 }); // N4+X2+X..28
         AIS.put(7240, new byte[] { CHARS_82, 0, 20 }); // N4+X..20
+        AIS.put(7241, new byte[] { DIGITS, 2, 2 }); // N4+N2
+        AIS.put(7242, new byte[] { CHARS_82, 0, 25 }); // N4+X..25
+        AIS.put(7250, new byte[] { DIGITS, 8, 8 }); // N4+N8
+        AIS.put(7251, new byte[] { DIGITS, 12, 12 }); // N4+N12
+        AIS.put(7252, new byte[] { DIGITS, 1, 1 }); // N4+N1
+        AIS.put(7253, new byte[] { CHARS_82, 0, 40 }); // N4+X..40
+        AIS.put(7254, new byte[] { CHARS_82, 0, 40 }); // N4+X..40
+        AIS.put(7255, new byte[] { CHARS_82, 0, 10 }); // N4+X..10
+        AIS.put(7256, new byte[] { CHARS_82, 0, 90 }); // N4+X..90
+        AIS.put(7257, new byte[] { CHARS_82, 0, 70 }); // N4+X..70
+        AIS.put(7258, new byte[] { DIGITS, 1, 1, CHARS_82, 1, 1, DIGITS, 1, 1 }); // N4+N1+X1+N1
+        AIS.put(7259, new byte[] { CHARS_82, 0, 40 }); // N4+X..40
         AIS.put(8001, new byte[] { DIGITS, 14, 14 }); // N4+N14
         AIS.put(8002, new byte[] { CHARS_82, 0, 20 }); // N4+X..20
         AIS.put(8003, new byte[] { DIGITS, 14, 14, CHARS_82, 0, 16 }); // N4+N14+X..16
@@ -533,11 +552,13 @@ public final class Gs1 {
         AIS.put(8011, new byte[] { DIGITS, 0, 12 }); // N4+N..12
         AIS.put(8012, new byte[] { CHARS_82, 0, 20 }); // N4+X..20
         AIS.put(8013, new byte[] { CHARS_82, 0, 25 }); // N4+X..25
+        AIS.put(8014, new byte[] { CHARS_82, 0, 25 }); // N4+X..25
         AIS.put(8017, new byte[] { DIGITS, 18, 18 }); // N4+N18
         AIS.put(8018, new byte[] { DIGITS, 18, 18 }); // N4+N18
         AIS.put(8019, new byte[] { DIGITS, 0, 10 }); // N4+N..10
         AIS.put(8020, new byte[] { CHARS_82, 0, 25 }); // N4+X..25
         AIS.put(8026, new byte[] { DIGITS, 18, 18 }); // N4+N14+N2+N2
+        AIS.put(8030, new byte[] { CHARS_64, 0, 90 }); // N4+Z..90
         AIS.put(8110, new byte[] { CHARS_82, 0, 70 }); // N4+X..70
         AIS.put(8111, new byte[] { DIGITS, 4, 4 }); // N4+N4
         AIS.put(8112, new byte[] { CHARS_82, 0, 70 }); // N4+X..70
@@ -568,7 +589,7 @@ public final class Gs1 {
      * @param fnc1 the string to use to represent FNC1 in the output
      * @return the input data, verified and with FNC1 strings added at the appropriate positions
      * @see <a href="https://sourceforge.net/p/zint/code/ci/master/tree/backend/gs1.c">Corresponding Zint code</a>
-     * @see <a href="http://www.gs1.org/docs/gsmp/barcodes/GS1_General_Specifications.pdf">GS1 specification</a>
+     * @see <a href="https://ref.gs1.org/standards/genspecs/">GS1 specification</a>
      */
     public static String verify(String s, String fnc1) {
 
@@ -714,9 +735,11 @@ public final class Gs1 {
                     boolean valid =
                        (type == DIGITS && c >= '0' && c <= '9') ||
                        (type == CHARS_82 && ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '%' && c <= '?') || c == '_' || c == '!' || c == '"')) ||
+                       (type == CHARS_64 && ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '_' || c == '-' || c == '=')) ||
                        (type == CHARS_39 && ((c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '#' || c == '-' || c == '/')) ||
                        (type == FLAG && c >= '0' && c <= '1') ||
-                       (type == CHARS_UPPERCASE && c >= 'A' && c <= 'Z');
+                       (type == CHARS_UPPERCASE && c >= 'A' && c <= 'Z') ||
+                       (type == MINUS && c == '-');
                     if (!valid) {
                         throw new OkapiInputException("Invalid data value for AI " + ai);
                     }

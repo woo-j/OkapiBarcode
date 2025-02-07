@@ -68,6 +68,12 @@ public class Gs1Test {
         checkVerify("[02]123456789012345",                      "Invalid data length for AI 2");
         checkVerify("[02]1234567890123/",                       "Invalid data value for AI 2");
 
+        checkVerify("[03]",                                     "Invalid data length for AI 3");
+        checkVerify("[03]1234567890123",                        "Invalid data length for AI 3");
+        checkVerify("[03]12345678901234",                       "0312345678901234");
+        checkVerify("[03]123456789012345",                      "Invalid data length for AI 3");
+        checkVerify("[03]1234567890123/",                       "Invalid data value for AI 3");
+
         checkVerify("[10]",                                     "10");
         checkVerify("[10]1",                                    "101");
         checkVerify("[10]123",                                  "10123");
@@ -268,6 +274,12 @@ public class Gs1Test {
         checkVerify("[4307]U@",                                 "Invalid data value for AI 4307");
         checkVerify("[4307]U^",                                 "Invalid data value for AI 4307");
 
+        checkVerify("[4309]",                                   "Invalid data length for AI 4309");
+        checkVerify("[4309]1234567890123456789",                "Invalid data length for AI 4309");
+        checkVerify("[4309]12345678901234567890",               "430912345678901234567890");
+        checkVerify("[4309]123456789012345678901",              "Invalid data length for AI 4309");
+        checkVerify("[4309]1234567890123456789X",               "Invalid data value for AI 4309");
+
         checkVerify("[4321]",                                   "Invalid data length for AI 4321");
         checkVerify("[4321]0",                                  "43210");
         checkVerify("[4321]1",                                  "43211");
@@ -276,15 +288,67 @@ public class Gs1Test {
         checkVerify("[4321]X",                                  "Invalid data value for AI 4321");
         checkVerify("[4321]/",                                  "Invalid data value for AI 4321");
 
+        checkVerify("[4330]",                                   "Invalid data length for AI 4330");
+        checkVerify("[4330]12345",                              "Invalid data length for AI 4330");
+        checkVerify("[4330]123456",                             "4330123456");
+        checkVerify("[4330]123456-",                            "4330123456-");
+        checkVerify("[4330]12345-",                             "Invalid data value for AI 4330");
+        checkVerify("[4330]1234567",                            "Invalid data value for AI 4330");
+        checkVerify("[4330]1234567-",                           "Invalid data length for AI 4330");
+
+        checkVerify("[4333]",                                   "Invalid data length for AI 4333");
+        checkVerify("[4333]12345",                              "Invalid data length for AI 4333");
+        checkVerify("[4333]123456",                             "4333123456");
+        checkVerify("[4333]123456-",                            "4333123456-");
+        checkVerify("[4333]12345-",                             "Invalid data value for AI 4333");
+        checkVerify("[4333]1234567",                            "Invalid data value for AI 4333");
+        checkVerify("[4333]1234567-",                           "Invalid data length for AI 4333");
+
         checkVerify("[7007]12345",                              "Invalid data length for AI 7007");
         checkVerify("[7007]123456",                             "7007123456");
         checkVerify("[7007]123456789012",                       "7007123456789012");
         checkVerify("[7007]1234567890123",                      "Invalid data length for AI 7007");
 
+        checkVerify("[7011]",                                   "Invalid data length for AI 7011");
+        checkVerify("[7011]12345",                              "Invalid data length for AI 7011");
+        checkVerify("[7011]123456",                             "7011123456");
+        checkVerify("[7011]1234567890",                         "70111234567890");
+        checkVerify("[7011]12345678901",                        "Invalid data length for AI 7011");
+        checkVerify("[7011]123456789X",                         "Invalid data value for AI 7011");
+
         checkVerify("[7030]12",                                 "Invalid data length for AI 7030");
         checkVerify("[7030]123",                                "7030123");
         checkVerify("[7030]123456789012345678901234567890",     "7030123456789012345678901234567890");
         checkVerify("[7030]1234567890123456789012345678901",    "Invalid data length for AI 7030");
+
+        checkVerify("[7041]",                                   "7041");
+        checkVerify("[7041]" + chars82(1),                      "7041" + chars82(1));
+        checkVerify("[7041]" + chars82(4),                      "7041" + chars82(4));
+        checkVerify("[7041]" + chars82(5),                      "Invalid data length for AI 7041");
+
+        checkVerify("[716]",                                    "716");
+        checkVerify("[716]" + chars82(1),                       "716" + chars82(1));
+        checkVerify("[716]" + chars82(20),                      "716" + chars82(20));
+        checkVerify("[716]" + chars82(21),                      "Invalid data length for AI 716");
+
+        checkVerify("[7241]",                                   "Invalid data length for AI 7241");
+        checkVerify("[7241]1",                                  "Invalid data length for AI 7241");
+        checkVerify("[7241]12",                                 "724112");
+        checkVerify("[7241]123",                                "Invalid data length for AI 7241");
+        checkVerify("[7241]1X",                                 "Invalid data value for AI 7241");
+
+        checkVerify("[7258]",                                   "Invalid data length for AI 7258");
+        checkVerify("[7258]1",                                  "Invalid data length for AI 7258");
+        checkVerify("[7258]1X",                                 "Invalid data length for AI 7258");
+        checkVerify("[7258]1X1",                                "72581X1");
+        checkVerify("[7258]1X11",                               "Invalid data length for AI 7258");
+        checkVerify("[7258]1XX",                                "Invalid data value for AI 7258");
+        checkVerify("[7258]XX1",                                "Invalid data value for AI 7258");
+
+        checkVerify("[7259]",                                   "7259");
+        checkVerify("[7259]" + chars82(1),                      "7259" + chars82(1));
+        checkVerify("[7259]" + chars82(40),                     "7259" + chars82(40));
+        checkVerify("[7259]" + chars82(41),                     "Invalid data length for AI 7259");
 
         checkVerify("[8003]1234567890123",                      "Invalid data length for AI 8003");
         checkVerify("[8003]12345678901234",                     "800312345678901234");
@@ -330,6 +394,13 @@ public class Gs1Test {
         checkVerify("[8013]" + chars82(26),                     "Invalid data length for AI 8013");
         checkVerify("[8013]#",                                  "Invalid data value for AI 8013");
 
+        checkVerify("[8014]",                                   "8014");
+        checkVerify("[8014]1",                                  "80141");
+        checkVerify("[8014]123",                                "8014123");
+        checkVerify("[8014]" + chars82(25),                     "8014" + chars82(25));
+        checkVerify("[8014]" + chars82(26),                     "Invalid data length for AI 8014");
+        checkVerify("[8014]#",                                  "Invalid data value for AI 8014");
+
         checkVerify("[8017]" + digits(17),                      "Invalid data length for AI 8017");
         checkVerify("[8017]" + digits(18),                      "8017" + digits(18));
         checkVerify("[8017]" + digits(19),                      "Invalid data length for AI 8017");
@@ -359,6 +430,12 @@ public class Gs1Test {
         checkVerify("[8026]1234567890123456789",                "Invalid data length for AI 8026");
         checkVerify("[8026]12345678901234567:",                 "Invalid data value for AI 8026");
         checkVerify("[8026]12345678901234567/",                 "Invalid data value for AI 8026");
+
+        checkVerify("[8030]",                                   "8030");
+        checkVerify("[8030]" + chars64(1),                      "8030" + chars64(1));
+        checkVerify("[8030]" + chars64(90),                     "8030" + chars64(90));
+        checkVerify("[8030]" + chars64(91),                     "Invalid data length for AI 8030");
+        checkVerify("[8030]" + chars82(90),                     "Invalid data value for AI 8030");
 
         checkVerify("[8110]",                                   "8110");
         checkVerify("[8110]1",                                  "81101");
@@ -464,6 +541,11 @@ public class Gs1Test {
     private static String chars82(int length) {
         String charset82 = "!\"%&'()*+,-./0123456789:;<=>?ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz"; // see GS1 spec section 7.11
         return chars(length, charset82);
+    }
+
+    private static String chars64(int length) {
+        String charset64 = "-0123456789=ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz"; // see GS1 spec section 7.11
+        return chars(length, charset64);
     }
 
     private static String chars39(int length) {

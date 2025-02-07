@@ -155,6 +155,9 @@ and data.
 
 ### Recent Releases
 
+#### Okapi Barcode 0.5.0
+- Update GS1 AI validations per 2025 specifications
+
 #### Okapi Barcode 0.4.9
 - Codablock F: allow user to customize row height
 - Codablock F: allow user to customize module width

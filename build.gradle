@@ -34,8 +34,12 @@ jar {
     manifest.attributes(
         'Main-Class': 'uk.org.okapibarcode.OkapiBarcode',
         'Implementation-Title': 'Okapi Barcode',
-        'Implementation-Version': project.version
+        'Implementation-Version': project.version,
+        'Bundle-License': 'Apache-2.0'
     )
+    metaInf {
+        from 'LICENSE'
+    }
 }
 
 tasks.withType(AbstractArchiveTask).configureEach {

@@ -151,7 +151,7 @@ and data.
 `gradlew check`: Compiles and runs all quality checks, including the unit tests.  
 `gradlew fuzz`: Runs barcode encoding fuzz tests using [Jazzer](https://github.com/CodeIntelligenceTesting/jazzer).  
 `gradlew jar`: Builds the JAR file.  
-`gradlew publish`: Deploys to Maven Central (requires a modified gradle.properties file).  
+`gradlew publish`: Deploys to Maven Central (requires a modified `gradle.properties` file).  
 
 ### Recent Releases
 

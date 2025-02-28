@@ -82,8 +82,8 @@ public class Java2DRenderer implements SymbolRenderer {
      *
      * @param g2d the graphics to render to
      * @param magnification the magnification factor to apply
-     * @param paper the paper (background) color (may be {@code null})
-     * @param ink the ink (foreground) color (may be {@code null})
+     * @param paper the paper (background) color (may be {@code null}, in which case no background is drawn)
+     * @param ink the ink (foreground) color (may be {@code null}, in which case the current {@link Graphics2D} color is used)
      * @param rotation the clockwise rotation of the symbol in degrees (must be a multiple of 90)
      */
     public Java2DRenderer(Graphics2D g2d, double magnification, Color paper, Color ink, int rotation) {

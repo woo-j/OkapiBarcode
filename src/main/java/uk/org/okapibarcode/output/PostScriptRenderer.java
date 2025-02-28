@@ -23,6 +23,7 @@ import static uk.org.okapibarcode.util.Integers.normalizeRotation;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Objects;
 
 import uk.org.okapibarcode.backend.OkapiInternalException;
 import uk.org.okapibarcode.backend.Symbol;
@@ -78,10 +79,10 @@ public class PostScriptRenderer implements SymbolRenderer {
      * @param rotation the clockwise rotation of the symbol in degrees (must be a multiple of 90)
      */
     public PostScriptRenderer(OutputStream out, double magnification, Color paper, Color ink, int rotation) {
-        this.out = out;
+        this.out = Objects.requireNonNull(out);
         this.magnification = magnification;
-        this.paper = paper;
-        this.ink = ink;
+        this.paper = Objects.requireNonNull(paper);
+        this.ink = Objects.requireNonNull(ink);
         this.rotation = normalizeRotation(rotation);
     }
 

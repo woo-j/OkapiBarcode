@@ -46,7 +46,7 @@ import uk.org.okapibarcode.graphics.TextAlignment;
 public class Java2DRendererTest {
 
     @Test
-    public void testPaperColor() throws Exception {
+    public void testPaperAndInkColor() throws Exception {
 
         Code128 code128 = new Code128();
         code128.setFontName(SymbolTest.DEJA_VU_SANS.getFontName());
@@ -66,22 +66,25 @@ public class Java2DRendererTest {
         Graphics2D g2d = image.createGraphics();
         g2d.setPaint(new GradientPaint(0, 0, java.awt.Color.ORANGE, width, height, java.awt.Color.GREEN));
         g2d.fillRect(0, 0, width, height);
+        g2d.setColor(java.awt.Color.BLACK);
 
-        Java2DRenderer renderer = new Java2DRenderer(g2d, 4, null, Color.BLACK);
+        Java2DRenderer renderer1 = new Java2DRenderer(g2d, 4, null, Color.BLACK); // null paper -> no background drawn
+        Java2DRenderer renderer2 = new Java2DRenderer(g2d, 4, null, null); // null paper -> no background drawn, null ink -> uses g2d color
         g2d.translate(25, 25);
-        renderer.render(code128);
+        renderer1.render(code128);
         g2d.translate(300, 0);
-        renderer.render(datamatrix);
-        g2d.translate(100, 0);
-        renderer.render(maxicode);
-
-        Java2DRenderer renderer2 = new Java2DRenderer(g2d, 4, Color.WHITE, Color.BLACK);
-        g2d.translate(-400, 300);
-        renderer2.render(code128);
-        g2d.translate(300, 0);
-        renderer2.render(datamatrix);
+        renderer1.render(datamatrix);
         g2d.translate(100, 0);
         renderer2.render(maxicode);
+
+        Java2DRenderer renderer3 = new Java2DRenderer(g2d, 4, Color.WHITE, Color.BLACK);
+        Java2DRenderer renderer4 = new Java2DRenderer(g2d, 4, Color.WHITE, null); // null ink -> uses g2d color
+        g2d.translate(-400, 300);
+        renderer3.render(code128);
+        g2d.translate(300, 0);
+        renderer3.render(datamatrix);
+        g2d.translate(100, 0);
+        renderer4.render(maxicode);
 
         String filename = "java-2d-paper-color.png";
         BufferedImage expected = ImageIO.read(getClass().getResourceAsStream(filename));

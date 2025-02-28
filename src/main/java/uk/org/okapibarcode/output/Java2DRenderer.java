@@ -32,6 +32,7 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import uk.org.okapibarcode.backend.OkapiInternalException;
 import uk.org.okapibarcode.backend.Symbol;
@@ -82,11 +83,11 @@ public class Java2DRenderer implements SymbolRenderer {
      * @param g2d the graphics to render to
      * @param magnification the magnification factor to apply
      * @param paper the paper (background) color (may be {@code null})
-     * @param ink the ink (foreground) color
+     * @param ink the ink (foreground) color (may be {@code null})
      * @param rotation the clockwise rotation of the symbol in degrees (must be a multiple of 90)
      */
     public Java2DRenderer(Graphics2D g2d, double magnification, Color paper, Color ink, int rotation) {
-        this.g2d = g2d;
+        this.g2d = Objects.requireNonNull(g2d);
         this.magnification = magnification;
         this.paper = paper;
         this.ink = ink;
@@ -135,9 +136,12 @@ public class Java2DRenderer implements SymbolRenderer {
         if (paper != null) {
             g2d.setColor(new java.awt.Color(paper.red, paper.green, paper.blue));
             g2d.fillRect(0, 0, width, height);
+            g2d.setColor(oldColor);
         }
 
-        g2d.setColor(new java.awt.Color(ink.red, ink.green, ink.blue));
+        if (ink != null) {
+            g2d.setColor(new java.awt.Color(ink.red, ink.green, ink.blue));
+        }
 
         for (Rectangle rect : symbol.getRectangles()) {
             double x = (rect.x * magnification) + marginX;

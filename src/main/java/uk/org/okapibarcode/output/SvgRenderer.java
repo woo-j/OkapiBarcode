@@ -23,6 +23,7 @@ import static uk.org.okapibarcode.util.Integers.normalizeRotation;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
+import java.util.Objects;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -98,10 +99,10 @@ public class SvgRenderer implements SymbolRenderer {
      * @param rotation the clockwise rotation of the symbol in degrees (must be a multiple of 90)
      */
     public SvgRenderer(OutputStream out, double magnification, Color paper, Color ink, boolean xmlProlog, int rotation) {
-        this.out = out;
+        this.out = Objects.requireNonNull(out);
         this.magnification = magnification;
-        this.paper = paper;
-        this.ink = ink;
+        this.paper = Objects.requireNonNull(paper);
+        this.ink = Objects.requireNonNull(ink);
         this.xmlProlog = xmlProlog;
         this.rotation = normalizeRotation(rotation);
     }

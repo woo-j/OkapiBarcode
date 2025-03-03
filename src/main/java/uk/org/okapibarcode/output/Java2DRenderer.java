@@ -46,7 +46,7 @@ import uk.org.okapibarcode.graphics.TextBox;
 /**
  * Renders symbologies using the Java 2D API.
  */
-public class Java2DRenderer implements SymbolRenderer {
+public final class Java2DRenderer implements SymbolRenderer {
 
     /** The graphics to render to. */
     private final Graphics2D g2d;
@@ -64,13 +64,22 @@ public class Java2DRenderer implements SymbolRenderer {
     private final int rotation;
 
     /**
+     * Creates a new Java 2D renderer which draws the symbol using the current {@link Graphics2D} color.
+     *
+     * @param g2d the graphics to render to
+     */
+    public Java2DRenderer(Graphics2D g2d) {
+        this(g2d, 1, null, null, 0);
+    }
+
+    /**
      * Creates a new Java 2D renderer. If the specified paper color is {@code null}, the symbol is drawn without clearing the
      * existing {@code g2d} background.
      *
      * @param g2d the graphics to render to
      * @param magnification the magnification factor to apply
-     * @param paper the paper (background) color (may be {@code null})
-     * @param ink the ink (foreground) color
+     * @param paper the paper (background) color (may be {@code null}, in which case no background is drawn)
+     * @param ink the ink (foreground) color (may be {@code null}, in which case the current {@link Graphics2D} color is used)
      */
     public Java2DRenderer(Graphics2D g2d, double magnification, Color paper, Color ink) {
         this(g2d, magnification, paper, ink, 0);

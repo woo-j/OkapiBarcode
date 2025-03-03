@@ -86,6 +86,10 @@ public class Java2DRendererTest {
         g2d.translate(100, 0);
         renderer4.render(maxicode);
 
+        Java2DRenderer renderer5 = new Java2DRenderer(g2d);
+        g2d.translate(-400, 250);
+        renderer5.render(code128);
+
         String filename = "java-2d-paper-color.png";
         BufferedImage expected = ImageIO.read(getClass().getResourceAsStream(filename));
         String dirName = filename.substring(0, filename.lastIndexOf('.'));

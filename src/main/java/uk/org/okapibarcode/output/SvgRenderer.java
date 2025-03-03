@@ -53,7 +53,7 @@ import uk.org.okapibarcode.graphics.TextBox;
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  * @author Daniel Gredler
  */
-public class SvgRenderer implements SymbolRenderer {
+public final class SvgRenderer implements SymbolRenderer {
 
     /** The output stream to render to. */
     private final OutputStream out;

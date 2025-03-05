@@ -107,7 +107,7 @@ int height = barcode.getHeight();
 
 BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
 Graphics2D g2d = image.createGraphics();
-Java2DRenderer renderer = new Java2DRenderer(g2d);
+Java2DRenderer renderer = new Java2DRenderer(g2d, 1, Color.WHITE, Color.BLACK);
 renderer.render(barcode);
 
 ImageIO.write(image, "png", new File("code128.png"));

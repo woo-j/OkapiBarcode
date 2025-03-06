@@ -32,6 +32,7 @@ public class Code128Test {
         Code128 code128 = new Code128();
         code128.setContent("11");
         assertArrayEquals(new int[] { 211232, 231212, 122132, 233111, 2 }, code128.getCodewords());
+        assertEquals("11", code128.getHumanReadableText());
         assertEquals("Encoding: STARTC 11 \n" +
                      "Data Codewords: 2\n" +
                      "Check Digit: 13\n",
@@ -39,6 +40,7 @@ public class Code128Test {
 
         code128.setContent("12");
         assertArrayEquals(new int[] { 211232, 112232, 122231, 233111, 2 }, code128.getCodewords());
+        assertEquals("12", code128.getHumanReadableText());
         assertEquals("Encoding: STARTC 12 \n" +
                         "Data Codewords: 2\n" +
                         "Check Digit: 14\n",

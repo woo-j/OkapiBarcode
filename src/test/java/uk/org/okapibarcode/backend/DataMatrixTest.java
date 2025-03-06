@@ -29,6 +29,17 @@ import uk.org.okapibarcode.backend.DataMatrix.ForceMode;
 public class DataMatrixTest {
 
     @Test
+    public void testEciNotFound() {
+        try {
+            DataMatrix dm = new DataMatrix();
+            dm.setContent("\uDBFF\uFFFF"); // invalid unicode
+            fail("Expected error.");
+        } catch (OkapiInputException e) {
+            assertEquals("Unable to determine ECI mode", e.getMessage());
+        }
+    }
+
+    @Test
     public void testActualSize() {
 
         DataMatrix dm = new DataMatrix();

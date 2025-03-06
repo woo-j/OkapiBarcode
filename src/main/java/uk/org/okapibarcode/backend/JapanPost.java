@@ -61,25 +61,31 @@ public class JapanPost extends Symbol {
         if (!content.matches("[0-9A-Z\\-]*")) {
             throw OkapiInputException.invalidCharactersInInput();
         }
+        if (content.length() > 20) {
+            throw OkapiInputException.inputTooLong();
+        }
 
         StringBuilder inter = new StringBuilder(40);
-        for (int i = 0; i < content.length() && inter.length() < 20; i++) {
+        for (int i = 0; i < content.length(); i++) {
             char c = content.charAt(i);
             if ((c >= '0' && c <= '9') || c == '-') {
                 inter.append(c);
-            } else if (c >= 'A' && c <= 'J') {
+            } else if (c <= 'J') { // A-J
                 inter.append('a');
                 inter.append(CH_KASUT_SET[(c - 'A')]);
-            } else if (c >= 'K' && c <= 'O') {
+            } else if (c <= 'T') { // K-T
                 inter.append('b');
                 inter.append(CH_KASUT_SET[(c - 'K')]);
-            } else if (c >= 'U' && c <= 'Z') {
+            } else { // U-Z
                 inter.append('c');
                 inter.append(CH_KASUT_SET[(c - 'U')]);
             }
         }
         for (int i = inter.length(); i < 20; i++) {
             inter.append('d');
+        }
+        if (inter.length() > 20) {
+            throw OkapiInputException.inputTooLong();
         }
 
         int sum = 0;

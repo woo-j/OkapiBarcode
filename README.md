@@ -160,6 +160,10 @@ and data.
 
 ### Recent Releases
 
+#### Okapi Barcode 0.5.1
+- Japanese Postal Code: fix bug encoding some letters
+- Japanese Postal Code: throw exception if input data is too long
+
 #### Okapi Barcode 0.5.0
 - Update GS1 AI validations per 2025 specifications
 - Include license in JAR file

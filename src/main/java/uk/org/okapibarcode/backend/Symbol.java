@@ -174,7 +174,8 @@ public abstract class Symbol {
     }
 
     /**
-     * Sets the default bar height for this symbol (default value is <code>40</code>).
+     * Sets the default bar height for this symbol.
+     * The default value is {@code 40}.
      *
      * @param barHeight the default bar height for this symbol
      */
@@ -184,6 +185,7 @@ public abstract class Symbol {
 
     /**
      * Returns the default bar height for this symbol.
+     * The default value is {@code 40}.
      *
      * @return the default bar height for this symbol
      */
@@ -192,7 +194,8 @@ public abstract class Symbol {
     }
 
     /**
-     * Sets the module width for this symbol (default value is <code>1</code>).
+     * Sets the module width for this symbol.
+     * The default value is {@code 1}.
      *
      * @param moduleWidth the module width for this symbol
      */
@@ -202,6 +205,7 @@ public abstract class Symbol {
 
     /**
      * Returns the module width for this symbol.
+     * The default value is {@code 1}.
      *
      * @return the module width for this symbol
      */
@@ -211,6 +215,7 @@ public abstract class Symbol {
 
     /**
      * Sets the horizontal quiet zone (white space) added to the left and to the right of this symbol.
+     * The default value is {@code 0}.
      *
      * @param quietZoneHorizontal the horizontal quiet zone (white space) added to the left and to the right of this symbol
      */
@@ -220,6 +225,7 @@ public abstract class Symbol {
 
     /**
      * Returns the horizontal quiet zone (white space) added to the left and to the right of this symbol.
+     * The default value is {@code 0}.
      *
      * @return the horizontal quiet zone (white space) added to the left and to the right of this symbol
      */
@@ -229,6 +235,7 @@ public abstract class Symbol {
 
     /**
      * Sets the vertical quiet zone (white space) added above and below this symbol.
+     * The default value is {@code 0}.
      *
      * @param quietZoneVertical the vertical quiet zone (white space) added above and below this symbol
      */
@@ -238,6 +245,7 @@ public abstract class Symbol {
 
     /**
      * Returns the vertical quiet zone (white space) added above and below this symbol.
+     * The default value is {@code 0}.
      *
      * @return the vertical quiet zone (white space) added above and below this symbol
      */

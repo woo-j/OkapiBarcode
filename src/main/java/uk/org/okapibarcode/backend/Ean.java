@@ -23,6 +23,8 @@ import static uk.org.okapibarcode.backend.HumanReadableLocation.TOP;
 import uk.org.okapibarcode.graphics.Rectangle;
 import uk.org.okapibarcode.graphics.TextAlignment;
 import uk.org.okapibarcode.graphics.TextBox;
+import uk.org.okapibarcode.output.PostScriptRenderer;
+import uk.org.okapibarcode.output.SvgRenderer;
 
 /**
  * <p>Implements EAN bar code symbology according to BS EN 797:1996.
@@ -34,6 +36,11 @@ import uk.org.okapibarcode.graphics.TextBox;
  *
  * <p>Add-on content can be appended to the main symbol content by adding a {@code '+'} character,
  * followed by the add-on content (up to 5 digits).
+ *
+ * <p><b>NOTE:</b> When generating standalone documents like {@link SvgRenderer SVG}
+ * or {@link PostScriptRenderer EPS}, it may be necessary to configure additional
+ * {@link #setQuietZoneHorizontal(int) horizontal quiet zone} so that the
+ * EAN-13 prefix digit (to the left of the symbol) is fully visible.
  *
  * @author <a href="mailto:jakel2006@me.com">Robert Elliott</a>
  */

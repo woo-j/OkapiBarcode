@@ -164,6 +164,7 @@ and data.
 - Japanese Postal Code: fix bug encoding some letters
 - Japanese Postal Code: throw exception if input data is too long
 - PDF417, MicroPDF417: improve error messages
+- JavaDoc improvements
 
 #### Okapi Barcode 0.5.0
 - Update GS1 AI validations per 2025 specifications

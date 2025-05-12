@@ -27,6 +27,8 @@ import java.util.Arrays;
 import uk.org.okapibarcode.graphics.Rectangle;
 import uk.org.okapibarcode.graphics.TextAlignment;
 import uk.org.okapibarcode.graphics.TextBox;
+import uk.org.okapibarcode.output.PostScriptRenderer;
+import uk.org.okapibarcode.output.SvgRenderer;
 
 /**
  * <p>Implements UPC bar code symbology according to BS EN 797:1996.
@@ -39,6 +41,12 @@ import uk.org.okapibarcode.graphics.TextBox;
  *
  * <p>EAN-2 and EAN-5 add-on symbols can be added using the '+' character followed
  * by the add-on data.
+ *
+ * <p><b>NOTE:</b> When generating standalone documents like {@link SvgRenderer SVG}
+ * or {@link PostScriptRenderer EPS}, it may be necessary to configure additional
+ * {@link #setQuietZoneHorizontal(int) horizontal quiet zone} so that the
+ * prefix digit (to the left of the symbol) and check digit (to the right of
+ * the symbol) are fully visible.
  *
  * @author <a href="mailto:jakel2006@me.com">Robert Elliott</a>
  */

@@ -895,7 +895,8 @@ public class Pdf417 extends Symbol {
             if (rows != null) {
                 // user specified both columns and rows; make sure the data fits
                 if (columns * rows < needed) {
-                    throw new OkapiInputException("Too few rows (" + rows + ") and columns (" + columns + ") to hold codewords (" + needed + ")");
+                    throw new OkapiInputException("Input too long for PDF417 with " +
+                        count(columns, "column") + " and " + count(rows, "row"));
                 }
             } else {
                 // user only specified column count; figure out row count
@@ -1105,29 +1106,6 @@ public class Pdf417 extends Symbol {
         validateRows(4, 44);
         validateColumns(1, 4);
 
-        if (columns != null) {
-            int max;
-            switch (columns) {
-                case 1:
-                    max = 20;
-                    break;
-                case 2:
-                    max = 37;
-                    break;
-                case 3:
-                    max = 82;
-                    break;
-                case 4:
-                    max = 126;
-                    break;
-                default:
-                    throw new OkapiInputException("Invalid column count: " + columns);
-            }
-            if (codeWordCount > max) {
-                throw new OkapiInputException("Too few columns (" + columns + ") to hold data codewords (" + codeWordCount + ")");
-            }
-        }
-
         /* Now figure out which variant of the symbol to use and load values accordingly */
 
         int variant = getMicroPdf417Variant(codeWordCount, columns, rows);
@@ -1334,19 +1312,52 @@ public class Pdf417 extends Symbol {
         }
     }
 
+    /** Determine the MicroPdf417 variant to use, based on the amount of data and any user-provided size preferences. */
     private static int getMicroPdf417Variant(int codeWordCount, Integer columns, Integer rows) {
+
+        boolean sizeMatched = false;
         for (int i = 0; i < 34; i++) {
-            int maxCodewordCount = MICRO_AUTOSIZE[i];
-            if (codeWordCount <= maxCodewordCount) {
-                int variant = MICRO_AUTOSIZE[i + 34];
-                int columnsForThisVariant = MICRO_VARIANTS[variant - 1];
-                int rowsForThisVariant = MICRO_VARIANTS[variant - 1 + 34];
-                if ((columns == null || columns == columnsForThisVariant) && (rows == null || rows == rowsForThisVariant)) {
+            int variant = MICRO_AUTOSIZE[i + 34];
+            int columnsForThisVariant = MICRO_VARIANTS[variant - 1];
+            int rowsForThisVariant = MICRO_VARIANTS[variant - 1 + 34];
+            if ((columns == null || columns == columnsForThisVariant) && (rows == null || rows == rowsForThisVariant)) {
+                sizeMatched = true;
+                int maxCodewordCount = MICRO_AUTOSIZE[i];
+                if (codeWordCount <= maxCodewordCount) {
                     return variant;
                 }
             }
         }
-        throw new OkapiInputException("Unable to determine MicroPDF417 variant for " + codeWordCount + " codewords");
+
+        String error;
+        if (sizeMatched) {
+            // couldn't find a variant because of codeword count (too much data); size constraints were OK
+            error = "Input too long for MicroPDF417";
+            if (columns != null && rows != null) {
+                error += " with " + count(columns, "column") + " and " + count(rows, "row");
+            } else if (columns != null) {
+                error += " with " + count(columns, "column");
+            } else if (rows != null) {
+                error += " with " + count(rows, "row");
+            }
+        } else {
+            // couldn't find a variant because of column / row constraints, independently of data size
+            error = "No MicroPDF417 variant found";
+            if (columns != null && rows != null) {
+                error += " with " + count(columns, "column") + " and " + count(rows, "row");
+            } else if (columns != null) {
+                error += " with " + count(columns, "column");
+            } else if (rows != null) {
+                error += " with " + count(rows, "row");
+            }
+        }
+
+        throw new OkapiInputException(error);
+    }
+
+    /** Returns "N <word>" or "N <word>s", as appropriate. */
+    private static String count(int count, String word) {
+        return count + " " + word + (count == 1 ? "" : "s");
     }
 
     /** Determines the encoding block groups for the specified data. */

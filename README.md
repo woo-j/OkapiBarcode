@@ -163,6 +163,7 @@ and data.
 #### Okapi Barcode 0.5.1
 - Japanese Postal Code: fix bug encoding some letters
 - Japanese Postal Code: throw exception if input data is too long
+- PDF417, MicroPDF417: improve error messages
 
 #### Okapi Barcode 0.5.0
 - Update GS1 AI validations per 2025 specifications

@@ -21,7 +21,10 @@ import static uk.org.okapibarcode.util.Strings.binaryAppend;
 
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * <p>Implements QR Code bar code symbology According to ISO/IEC 18004:2015.
@@ -35,6 +38,9 @@ import java.util.Arrays;
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class QrCode extends Symbol {
+
+    /* The max number of symbols in a structured append sequence. */
+    public static final int MAX_STRUCTURED_APPEND_SYMBOLS = 16;
 
     /** The different QR Code error correction levels. */
     public enum EccLevel {
@@ -181,6 +187,11 @@ public class QrCode extends Symbol {
     protected boolean improveEccLevelIfPossible = true;
     protected boolean forceByteCompaction;
 
+    protected int structuredAppendPosition = 1;
+    protected int structuredAppendTotal = 1;
+    protected int structuredAppendParity = 0;
+    protected boolean forceStructuredAppendMode;
+
     /**
      * Creates a new instance.
      */
@@ -295,6 +306,87 @@ public class QrCode extends Symbol {
         return forceByteCompaction;
     }
 
+    /**
+     * Sets the position of this QR Code symbol in a structured append sequence (1–16).
+     *
+     * @param position the position (1–16)
+     */
+    public void setStructuredAppendPosition(int position) {
+        if (position < 1 || position > MAX_STRUCTURED_APPEND_SYMBOLS) {
+            throw new IllegalArgumentException("Invalid QR Code structured append position: " + position);
+        }
+        this.structuredAppendPosition = position;
+    }
+
+    /**
+     * Returns the position of this QR Code symbol in a structured append sequence.
+     *
+     * @return the position (1–16)
+     */
+    public int getStructuredAppendPosition() {
+        return structuredAppendPosition;
+    }
+
+    /**
+     * Sets the total number of QR Code symbols in the structured append sequence (1–16).
+     *
+     * @param total the total number (1–16)
+     */
+    public void setStructuredAppendTotal(int total) {
+        if (total < 1 || total > MAX_STRUCTURED_APPEND_SYMBOLS) {
+            throw new IllegalArgumentException("Invalid QR Code structured append total: " + total);
+        }
+        this.structuredAppendTotal = total;
+    }
+
+    /**
+     * Returns the total number of QR Code symbols in the structured append sequence.
+     *
+     * @return the total number (1–16)
+     */
+    public int getStructuredAppendTotal() {
+        return structuredAppendTotal;
+    }
+
+    /**
+     * Sets the structured append parity (XOR of all bytes in the original message, 0–255).
+     *
+     * @param parity the parity value (0–255)
+     */
+    public void setStructuredAppendParity(int parity) {
+        if (parity < 0 || parity > 255) {
+            throw new IllegalArgumentException("Invalid QR Code structured append parity: " + parity);
+        }
+        this.structuredAppendParity = parity;
+    }
+
+    /**
+     * Returns the structured append parity value.
+     *
+     * @return the parity value (0–255)
+     */
+    public int getStructuredAppendParity() {
+        return structuredAppendParity;
+    }
+
+    /**
+     * Returns whether this symbol is forced to use structured append mode.
+     *
+     * @return whether this symbol is forced to use structured append mode.
+     */
+    public boolean getForceStructuredAppendMode() {
+        return forceStructuredAppendMode;
+    }
+
+    /**
+     * Sets whether this symbol is forced to use structured append mode.
+     *
+     * @param forceStructuredAppendMode whether to force structured append mode
+     */
+    public void setForceStructuredAppendMode(boolean forceStructuredAppendMode) {
+        this.forceStructuredAppendMode = forceStructuredAppendMode;
+    }
+
     @Override
     public boolean supportsGs1() {
         return true;
@@ -344,7 +436,7 @@ public class QrCode extends Symbol {
 
         QrMode[] inputMode = new QrMode[inputData.length];
         defineMode(inputMode, inputData, forceByteCompaction);
-        est_binlen = getBinaryLength(40, inputMode, inputData, gs1, eciMode);
+        est_binlen = getBinaryLength(40, inputMode, inputData, gs1, eciMode, getStructuredAppendMode());
 
         ecc_level = this.preferredEccLevel;
         switch (ecc_level) {
@@ -390,7 +482,7 @@ public class QrCode extends Symbol {
                     dataCodewords = QR_DATA_CODEWORDS_H;
                     break;
             }
-            int proposedBinLen = getBinaryLength(candidate, inputMode, inputData, gs1, eciMode);
+            int proposedBinLen = getBinaryLength(candidate, inputMode, inputData, gs1, eciMode, getStructuredAppendMode());
             if ((8 * dataCodewords[candidate - 1]) >= proposedBinLen) {
                 version = candidate;
                 est_binlen = proposedBinLen;
@@ -481,7 +573,7 @@ public class QrCode extends Symbol {
              */
             if (preferredVersion > version) {
                 version = preferredVersion;
-                est_binlen = getBinaryLength(preferredVersion, inputMode, inputData, gs1, eciMode);
+                est_binlen = getBinaryLength(preferredVersion, inputMode, inputData, gs1, eciMode, getStructuredAppendMode());
                 inputMode = applyOptimisation(version, inputMode);
             }
             if (preferredVersion < version) {
@@ -629,7 +721,7 @@ public class QrCode extends Symbol {
     }
 
     /** Calculate the actual bit length of the proposed binary string. */
-    private static int getBinaryLength(int version, QrMode[] inputModeUnoptimized, int[] inputData, boolean gs1, int eciMode) {
+    private static int getBinaryLength(int version, QrMode[] inputModeUnoptimized, int[] inputData, boolean gs1, int eciMode, boolean structuredAppendMode) {
 
         int i, j;
         QrMode currentMode;
@@ -644,6 +736,10 @@ public class QrCode extends Symbol {
         QrMode[] inputMode = applyOptimisation(version, inputModeUnoptimized);
 
         currentMode = QrMode.NULL;
+
+        if (structuredAppendMode) {
+            count += 20;
+        }
 
         if (gs1) {
             count += 4;
@@ -920,6 +1016,13 @@ public class QrCode extends Symbol {
         int reserved = est_binlen + 12;
         StringBuilder binary = new StringBuilder(reserved);
 
+        if (getStructuredAppendMode()) {
+            binary.append("0011");  /* Structured append mode */
+            binaryAppend(binary, structuredAppendPosition - 1, 4);
+            binaryAppend(binary, structuredAppendTotal - 1, 4);
+            binaryAppend(binary, structuredAppendParity, 8);
+        }
+
         if (gs1) {
             binary.append("0101"); /* FNC1 */
         }
@@ -1154,6 +1257,10 @@ public class QrCode extends Symbol {
         infoLine();
 
         assert binary.length() <= reserved;
+    }
+
+    private boolean getStructuredAppendMode() {
+        return forceStructuredAppendMode || structuredAppendTotal > 1;
     }
 
     /** Splits data into blocks, adds error correction and then interleaves the blocks and error correction data. */
@@ -1761,4 +1868,139 @@ public class QrCode extends Symbol {
     protected void customize(int[] grid, int size) {
         // empty
     }
+
+    /**
+     * Overloaded method of {@link #createStructuredAppendSymbols(String, QrCode)} which
+     * accepts binary data.
+     *
+     * @see #createStructuredAppendSymbols(String, QrCode)
+     */
+    public static List<QrCode> createStructuredAppendSymbols(byte[] data, QrCode template) {
+        return createStructuredAppendSymbols(new String(data, StandardCharsets.ISO_8859_1), template);
+    }
+
+    /**
+     * Creates a list of QR Code symbols for structured append from a string, using a template symbol.
+     * The template's settings are cloned for each symbol.
+     *
+     * @param data     the input data
+     * @param template the template QrCode symbol
+     * @return a list of QrCode symbols with structured append set
+     * @throws OkapiException if no data or data is invalid
+     */
+    public static List<QrCode> createStructuredAppendSymbols(String data, QrCode template) {
+        List<String> dataList = splitData(data, template);
+        return createStructuredAppendSymbols(dataList, template);
+    }
+
+    private static List<String> splitData(String data, QrCode template) {
+
+        QrCode testSymbol = new QrCode() {
+            @Override
+            protected void plotSymbol() {
+            } // expensive plotting is not required
+        };
+        clone(template, testSymbol);
+        testSymbol.setForceStructuredAppendMode(true);
+
+        List<String> split = new ArrayList<>();
+        while (!data.isEmpty()) {
+            int low = 0;
+            int high = data.length();
+            while (low <= high) {
+                int mid = (low + high) >>> 1;
+                String candidate = data.substring(0, mid);
+                if (fits(candidate, testSymbol)) {
+                    low = mid + 1;
+                } else {
+                    high = mid - 1;
+                }
+            }
+            if (high == 0) {
+                throw new OkapiInputException("The specified template is too small to hold both data and structured append metadata");
+            }
+            split.add(data.substring(0, high));
+            data = data.substring(high);
+        }
+
+        if (!split.isEmpty()) {
+            String last = split.get(split.size() - 1);
+            if (!fits(last, testSymbol)) {
+                int end = last.length() - 1;
+                if (end > 0) {
+                    split.set(split.size() - 1, last.substring(0, end));
+                    split.add(last.substring(end));
+                } else {
+                    throw new OkapiInputException("The specified template is too small to hold both data and structured append metadata");
+                }
+            }
+        }
+
+        if (split.size() > MAX_STRUCTURED_APPEND_SYMBOLS) {
+            throw new OkapiInputException("The specified template is too small to hold the data and structured append metadata " +
+                    "or the data is too large for structured append. Maximum number of symbols is " + MAX_STRUCTURED_APPEND_SYMBOLS + " but got " + split.size());
+        }
+
+        return split;
+    }
+
+    private static boolean fits(String data, QrCode testSymbol) {
+        if (!data.isEmpty()) {
+            try {
+                testSymbol.setContent(data);
+            } catch (OkapiInputException e) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static List<QrCode> createStructuredAppendSymbols(List<String> split, QrCode template) {
+        int count = split.size();
+        List<QrCode> symbols = new ArrayList<>(count);
+        int parity = calculateStructuredAppendParity(split);
+        for (int i = 0; i < count; i++) {
+            String data = split.get(i);
+            QrCode symbol = new QrCode();
+            symbols.add(symbol);
+            clone(template, symbol);
+            symbol.setStructuredAppendPosition(i + 1);
+            symbol.setStructuredAppendTotal(count);
+            symbol.setStructuredAppendParity(parity);
+            symbol.setContent(data);
+        }
+        return symbols;
+    }
+
+    private static int calculateStructuredAppendParity(List<String> split) {
+        int parity = 0;
+        for (String s : split) {
+            byte[] bytes = s.getBytes(StandardCharsets.ISO_8859_1);
+            for (byte b : bytes) {
+                parity ^= b & 0xFF;
+            }
+        }
+        return parity;
+    }
+
+    private static void clone(QrCode template, QrCode target) {
+        target.setFontName(template.getFontName());
+        target.setFontSize(template.getFontSize());
+        target.setDataType(template.getDataType());
+        target.setEmptyContentAllowed(template.getEmptyContentAllowed());
+        target.setHumanReadableAlignment(template.getHumanReadableAlignment());
+        target.setHumanReadableLocation(template.getHumanReadableLocation());
+        target.setModuleWidth(template.getModuleWidth());
+        target.setQuietZoneHorizontal(template.getQuietZoneHorizontal());
+        target.setQuietZoneVertical(template.getQuietZoneVertical());
+        target.setReaderInit(template.getReaderInit());
+        target.setBarHeight(template.getBarHeight());
+        target.setForceByteCompaction(template.getForceByteCompaction());
+        target.setPreferredEccLevel(template.getPreferredEccLevel());
+        if (template.getPreferredVersion() != 0) {
+            target.setPreferredVersion(template.getPreferredVersion());
+        }
+        target.setForceStructuredAppendMode(template.getForceStructuredAppendMode());
+    }
+
 }

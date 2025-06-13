@@ -16,6 +16,8 @@
 
 package uk.org.okapibarcode.backend;
 
+import uk.org.okapibarcode.util.EciMode;
+
 import static uk.org.okapibarcode.util.Arrays.positionOf;
 import static uk.org.okapibarcode.util.Strings.binaryAppend;
 
@@ -1890,7 +1892,9 @@ public class QrCode extends Symbol {
      */
     public static List<QrCode> createStructuredAppendSymbols(String data, QrCode template) {
         List<String> dataList = splitData(data, template);
-        return createStructuredAppendSymbols(dataList, template);
+        int parity = calculateStructuredAppendParity(data, template);
+
+        return createStructuredAppendSymbols(dataList, parity, template);
     }
 
     private static List<String> splitData(String data, QrCode template) {
@@ -1955,10 +1959,9 @@ public class QrCode extends Symbol {
         return true;
     }
 
-    private static List<QrCode> createStructuredAppendSymbols(List<String> split, QrCode template) {
+    private static List<QrCode> createStructuredAppendSymbols(List<String> split, int parity, QrCode template) {
         int count = split.size();
         List<QrCode> symbols = new ArrayList<>(count);
-        int parity = calculateStructuredAppendParity(split);
         for (int i = 0; i < count; i++) {
             String data = split.get(i);
             QrCode symbol = new QrCode();
@@ -1972,15 +1975,28 @@ public class QrCode extends Symbol {
         return symbols;
     }
 
-    private static int calculateStructuredAppendParity(List<String> split) {
-        int parity = 0;
-        for (String s : split) {
-            byte[] bytes = s.getBytes(StandardCharsets.ISO_8859_1);
-            for (byte b : bytes) {
-                parity ^= b & 0xFF;
-            }
+    private static int calculateStructuredAppendParity(String content, QrCode template) {
+        EciMode eci = selectEciModeForParity(content, template);
+        if (eci == EciMode.NONE) {
+            throw new OkapiInputException("Structured append requires ECI mode to be set in the template or for the content to be compatible with one ECI mode.");
         }
+
+        byte[] bytes = content.getBytes(eci.charset);
+
+        int parity = 0;
+        for (byte b : bytes) {
+            parity ^= b & 0xFF;
+        }
+
         return parity;
+    }
+
+    private static EciMode selectEciModeForParity(String content, QrCode template) {
+        if (template.eciMode != -1) {
+            return EciMode.ECIS.stream().filter(e -> e.mode == template.eciMode).findFirst().orElse(EciMode.NONE);
+        } else {
+            return EciMode.chooseFor(content);
+        }
     }
 
     private static void clone(QrCode template, QrCode target) {

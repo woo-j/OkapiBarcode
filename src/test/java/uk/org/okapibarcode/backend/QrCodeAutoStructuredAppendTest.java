@@ -58,7 +58,7 @@ class QrCodeAutoStructuredAppendTest {
         template.setForceByteCompaction(true);
 
         byte[] bytes = bytes(dataLength);
-        List<QrCode> symbols = QrCode.createStructuredAppendSymbols(new String(bytes, ISO_8859_1), template);
+        List< QrCode > symbols = QrCode.createStructuredAppendSymbols(new String(bytes, ISO_8859_1), template);
         assertions(symbols, bytes, expectedSymbolsCount);
     }
 

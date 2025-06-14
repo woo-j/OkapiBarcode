@@ -1896,7 +1896,7 @@ public class QrCode extends Symbol {
         return createStructuredAppendSymbols(dataList, parity, template);
     }
 
-    private static List<String> splitData(String data, QrCode template) {
+    private static List< String > splitData(String data, QrCode template) {
 
         QrCode testSymbol = new QrCode() {
             @Override

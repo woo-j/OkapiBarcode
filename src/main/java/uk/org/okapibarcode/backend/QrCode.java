@@ -1977,7 +1977,7 @@ public class QrCode extends Symbol {
     private static int calculateStructuredAppendParity(String content, QrCode template) {
         EciMode eci = selectEciModeForParity(content, template);
         if (eci == EciMode.NONE) {
-            throw new OkapiInputException("Structured append requires ECI mode to be set in the template or for the content to be compatible with one ECI mode.");
+            throw new OkapiInputException("Unable to determine ECI mode");
         }
 
         byte[] bytes = content.getBytes(eci.charset);

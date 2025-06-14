@@ -344,7 +344,7 @@ public class QrCode extends Symbol {
     /**
      * Returns the total number of QR Code symbols in the structured append sequence.
      *
-     * @return the total number (1–16)
+     * @return the total number of QR Code symbols in the structured append sequence (1–16)
      */
     public int getStructuredAppendTotal() {
         return structuredAppendTotal;

@@ -1980,7 +1980,7 @@ public class QrCode extends Symbol {
             throw new OkapiInputException("Unable to determine ECI mode");
         }
 
-        byte[] bytes = content.getBytes(eci.charset);
+        byte[] bytes = toBytes(content, eci.charset);
 
         int parity = 0;
         for (byte b : bytes) {

@@ -311,7 +311,7 @@ public class QrCode extends Symbol {
     /**
      * Sets the position of this QR Code symbol in a structured append sequence (1–16).
      *
-     * @param position the position (1–16)
+     * @param position the position of this QR Code symbol in a structured append sequence (1–16)
      */
     public void setStructuredAppendPosition(int position) {
         if (position < 1 || position > MAX_STRUCTURED_APPEND_SYMBOLS) {

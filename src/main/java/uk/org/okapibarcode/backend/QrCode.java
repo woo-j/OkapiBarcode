@@ -323,7 +323,7 @@ public class QrCode extends Symbol {
     /**
      * Returns the position of this QR Code symbol in a structured append sequence.
      *
-     * @return the position (1–16)
+     * @return the position of this QR Code symbol in a structured append sequence (1–16)
      */
     public int getStructuredAppendPosition() {
         return structuredAppendPosition;

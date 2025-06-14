@@ -62,6 +62,18 @@ class QrCodeAutoStructuredAppendTest {
         assertions(symbols, bytes, expectedSymbolsCount);
     }
 
+    @ParameterizedTest
+    @CsvSource({
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ,1",
+            "祈れ、フリースイスよ、祈れ！,72"
+    })
+    public void testCalculateStructuredAppendParity(String content, int expectedParity) throws Exception {
+        List<QrCode> symbols = QrCode.createStructuredAppendSymbols(content, new QrCode());
+        for (QrCode symbol : symbols) {
+            assertEquals(expectedParity, symbol.getStructuredAppendParity());
+        }
+    }
+
     private byte[] bytes(int length) {
         return "A".repeat(Math.max(0, length)).getBytes(ISO_8859_1);
     }

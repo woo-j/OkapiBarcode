@@ -1906,7 +1906,7 @@ public class QrCode extends Symbol {
         clone(template, testSymbol);
         testSymbol.setForceStructuredAppendMode(true);
 
-        List<String> split = new ArrayList<>();
+        List< String > split = new ArrayList<>();
         while (!data.isEmpty()) {
             int low = 0;
             int high = data.length();

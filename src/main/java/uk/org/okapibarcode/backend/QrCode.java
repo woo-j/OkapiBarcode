@@ -1890,7 +1890,7 @@ public class QrCode extends Symbol {
      * @return a list of QrCode symbols with structured append set
      * @throws OkapiException if no data or data is invalid
      */
-    public static List<QrCode> createStructuredAppendSymbols(String data, QrCode template) {
+    public static List< QrCode > createStructuredAppendSymbols(String data, QrCode template) {
         List<String> dataList = splitData(data, template);
         int parity = calculateStructuredAppendParity(data, template);
 

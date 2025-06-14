@@ -1893,7 +1893,6 @@ public class QrCode extends Symbol {
     public static List< QrCode > createStructuredAppendSymbols(String data, QrCode template) {
         List< String > dataList = splitData(data, template);
         int parity = calculateStructuredAppendParity(data, template);
-
         return createStructuredAppendSymbols(dataList, parity, template);
     }
 

@@ -363,7 +363,7 @@ public class QrCode extends Symbol {
     }
 
     /**
-     * Returns the structured append parity value.
+     * Returns the structured append parity (XOR of all bytes in the original message, 0–255).
      *
      * @return the parity value (0–255)
      */

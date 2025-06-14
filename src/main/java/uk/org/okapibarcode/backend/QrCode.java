@@ -1885,7 +1885,7 @@ public class QrCode extends Symbol {
      * Creates a list of QR Code symbols for structured append from a string, using a template symbol.
      * The template's settings are cloned for each symbol.
      *
-     * @param data     the input data
+     * @param data the input data
      * @param template the template QrCode symbol
      * @return a list of QrCode symbols with structured append set
      * @throws OkapiException if no data or data is invalid

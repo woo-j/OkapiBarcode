@@ -1877,7 +1877,7 @@ public class QrCode extends Symbol {
      *
      * @see #createStructuredAppendSymbols(String, QrCode)
      */
-    public static List<QrCode> createStructuredAppendSymbols(byte[] data, QrCode template) {
+    public static List< QrCode > createStructuredAppendSymbols(byte[] data, QrCode template) {
         return createStructuredAppendSymbols(new String(data, StandardCharsets.ISO_8859_1), template);
     }
 

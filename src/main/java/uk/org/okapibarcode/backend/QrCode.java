@@ -1960,7 +1960,7 @@ public class QrCode extends Symbol {
 
     private static List< QrCode > createStructuredAppendSymbols(List< String > split, int parity, QrCode template) {
         int count = split.size();
-        List<QrCode> symbols = new ArrayList<>(count);
+        List< QrCode > symbols = new ArrayList<>(count);
         for (int i = 0; i < count; i++) {
             String data = split.get(i);
             QrCode symbol = new QrCode();

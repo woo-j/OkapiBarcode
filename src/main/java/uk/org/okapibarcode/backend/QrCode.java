@@ -332,7 +332,7 @@ public class QrCode extends Symbol {
     /**
      * Sets the total number of QR Code symbols in the structured append sequence (1–16).
      *
-     * @param total the total number (1–16)
+     * @param total the total number of QR Code symbols in the structured append sequence (1–16)
      */
     public void setStructuredAppendTotal(int total) {
         if (total < 1 || total > MAX_STRUCTURED_APPEND_SYMBOLS) {

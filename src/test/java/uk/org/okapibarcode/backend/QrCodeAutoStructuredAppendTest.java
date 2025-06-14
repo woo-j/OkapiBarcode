@@ -16,7 +16,11 @@
 
 package uk.org.okapibarcode.backend;
 
-import com.google.zxing.*;
+import com.google.zxing.BinaryBitmap;
+import com.google.zxing.LuminanceSource;
+import com.google.zxing.ReaderException;
+import com.google.zxing.Result;
+import com.google.zxing.ResultMetadataType;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.qrcode.QRCodeReader;
@@ -25,7 +29,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import uk.org.okapibarcode.backend.QrCode.EccLevel;
 import uk.org.okapibarcode.output.Java2DRenderer;
 
-import java.awt.*;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

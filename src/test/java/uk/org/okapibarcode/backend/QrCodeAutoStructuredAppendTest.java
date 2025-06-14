@@ -75,7 +75,7 @@ class QrCodeAutoStructuredAppendTest {
     }
 
     private byte[] bytes(int length) {
-        return "A".repeat(Math.max(0, length)).getBytes(ISO_8859_1);
+        return "A".repeat(length).getBytes(ISO_8859_1);
     }
 
     private static void assertions(List< QrCode > symbols, byte[] bytes, int expectedSymbolsCount) throws IOException, ReaderException {

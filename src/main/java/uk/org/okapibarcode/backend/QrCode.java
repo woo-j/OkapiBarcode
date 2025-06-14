@@ -41,9 +41,6 @@ import java.util.List;
  */
 public class QrCode extends Symbol {
 
-    /* The max number of symbols in a structured append sequence. */
-    public static final int MAX_STRUCTURED_APPEND_SYMBOLS = 16;
-
     /** The different QR Code error correction levels. */
     public enum EccLevel {
         /** Low error correction level. Appropriate for symbols that are high-quality or require smallest possible size. */
@@ -182,6 +179,9 @@ public class QrCode extends Symbol {
         0x1b08e, 0x1cc1a, 0x1d33f, 0x1ed75, 0x1f250, 0x209d5, 0x216f0, 0x228ba, 0x2379f, 0x24b0b,
         0x2542e, 0x26a64, 0x27541, 0x28c69
     };
+
+    /* The max number of symbols in a structured append sequence. */
+    private static final int MAX_STRUCTURED_APPEND_SYMBOLS = 16;
 
     protected int minVersion = 1;
     protected int preferredVersion;

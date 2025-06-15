@@ -1901,23 +1901,11 @@ public class QrCode extends Symbol {
                 }
             }
             if (high == 0) {
-                throw new OkapiInputException("The specified template is too small to hold both data and structured append metadata");
+                // This should never happen, as the template should be able to fit at least one character
+                throw new IllegalStateException("Failed to fit any data into the template symbol");
             }
             split.add(data.substring(0, high));
             data = data.substring(high);
-        }
-
-        if (!split.isEmpty()) {
-            String last = split.get(split.size() - 1);
-            if (!fits(last, testSymbol)) {
-                int end = last.length() - 1;
-                if (end > 0) {
-                    split.set(split.size() - 1, last.substring(0, end));
-                    split.add(last.substring(end));
-                } else {
-                    throw new OkapiInputException("The specified template is too small to hold both data and structured append metadata");
-                }
-            }
         }
 
         if (split.size() > MAX_STRUCTURED_APPEND_SYMBOLS) {

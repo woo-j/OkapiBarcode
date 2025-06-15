@@ -58,7 +58,6 @@ class QrCodeAutoStructuredAppendTest {
         QrCode template = new QrCode();
         template.setPreferredVersion(1);
         template.setPreferredEccLevel(EccLevel.M);
-        template.setForceStructuredAppendMode(true);
         template.setForceByteCompaction(true);
 
         byte[] bytes = bytes(dataLength);

@@ -192,7 +192,6 @@ public class QrCode extends Symbol {
     protected int structuredAppendPosition = 1;
     protected int structuredAppendTotal = 1;
     protected int structuredAppendParity = 0;
-    protected boolean forceStructuredAppendMode;
 
     /**
      * Creates a new instance.
@@ -369,24 +368,6 @@ public class QrCode extends Symbol {
      */
     public int getStructuredAppendParity() {
         return structuredAppendParity;
-    }
-
-    /**
-     * Returns whether this symbol is forced to use structured append mode.
-     *
-     * @return whether this symbol is forced to use structured append mode.
-     */
-    public boolean getForceStructuredAppendMode() {
-        return forceStructuredAppendMode;
-    }
-
-    /**
-     * Sets whether this symbol is forced to use structured append mode.
-     *
-     * @param forceStructuredAppendMode whether to force structured append mode
-     */
-    public void setForceStructuredAppendMode(boolean forceStructuredAppendMode) {
-        this.forceStructuredAppendMode = forceStructuredAppendMode;
     }
 
     @Override
@@ -1262,7 +1243,7 @@ public class QrCode extends Symbol {
     }
 
     private boolean getStructuredAppendMode() {
-        return forceStructuredAppendMode || structuredAppendTotal > 1;
+        return structuredAppendTotal > 1;
     }
 
     /** Splits data into blocks, adds error correction and then interleaves the blocks and error correction data. */
@@ -1904,7 +1885,7 @@ public class QrCode extends Symbol {
             } // expensive plotting is not required
         };
         clone(template, testSymbol);
-        testSymbol.setForceStructuredAppendMode(true);
+        testSymbol.setStructuredAppendTotal(2);
 
         List< String > split = new ArrayList<>();
         while (!data.isEmpty()) {
@@ -2015,7 +1996,6 @@ public class QrCode extends Symbol {
         if (template.getPreferredVersion() != 0) {
             target.setPreferredVersion(template.getPreferredVersion());
         }
-        target.setForceStructuredAppendMode(template.getForceStructuredAppendMode());
     }
 
 }

@@ -24,6 +24,7 @@ import com.google.zxing.ResultMetadataType;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.qrcode.QRCodeReader;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import uk.org.okapibarcode.backend.QrCode.EccLevel;
@@ -39,6 +40,9 @@ import static java.awt.image.BufferedImage.TYPE_BYTE_BINARY;
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.org.okapibarcode.graphics.Color.BLACK;
 import static uk.org.okapibarcode.graphics.Color.WHITE;
 
@@ -47,17 +51,16 @@ class QrCodeAutoStructuredAppendTest {
     @ParameterizedTest
     @CsvSource({
             "0,0",
-            "11,1",
-            "12,1",
-            "13,2",
-            "14,2",
-            "192,16"
+            "1,1",
+            "5,1",
+            "6,2",
+            "80,16"
     })
     public void testCreateStructuredAppendSymbols(int dataLength, int expectedSymbolsCount) throws Exception {
 
         QrCode template = new QrCode();
         template.setPreferredVersion(1);
-        template.setPreferredEccLevel(EccLevel.M);
+        template.setPreferredEccLevel(EccLevel.H);
         template.setForceByteCompaction(true);
 
         byte[] bytes = bytes(dataLength);
@@ -71,10 +74,34 @@ class QrCodeAutoStructuredAppendTest {
             "祈れ、フリースイスよ、祈れ！,72"
     })
     public void testCalculateStructuredAppendParity(String content, int expectedParity) throws Exception {
-        List<QrCode> symbols = QrCode.createStructuredAppendSymbols(content, new QrCode());
+        List< QrCode > symbols = QrCode.createStructuredAppendSymbols(content, new QrCode());
         for (QrCode symbol : symbols) {
             assertEquals(expectedParity, symbol.getStructuredAppendParity());
         }
+    }
+
+    @Test
+    public void testCreateStructuredAppendSymbolsWithTooSmallTemplate() throws Exception {
+        QrCode template = new QrCode();
+        template.setPreferredVersion(1);
+        template.setPreferredEccLevel(EccLevel.H);
+        template.setForceByteCompaction(true);
+
+        int maxBytesForStructuredAppendTemplate = 16 * 5;
+
+        // First validate that the template can handle the maximum size
+        byte[] bytes = bytes(maxBytesForStructuredAppendTemplate);
+        List< QrCode > symbols = QrCode.createStructuredAppendSymbols(new String(bytes, ISO_8859_1), template);
+        assertions(symbols, bytes, 16, (qrCode, result) -> {
+            assertEquals(9, result.getRawBytes().length);
+            assertEquals(5, result.getText().getBytes(ISO_8859_1).length);
+        });
+
+        // Now re-test with maximum size + 1 byte
+        OkapiInputException exception = assertThrows(OkapiInputException.class, () -> {
+            QrCode.createStructuredAppendSymbols(new String(bytes(maxBytesForStructuredAppendTemplate + 1), ISO_8859_1), template);
+        });
+        assertTrue(exception.getMessage().contains("The specified template is too small to hold the data and structured append metadata or the data is too large for structured append"));
     }
 
     private byte[] bytes(int length) {
@@ -82,16 +109,26 @@ class QrCodeAutoStructuredAppendTest {
     }
 
     private static void assertions(List< QrCode > symbols, byte[] bytes, int expectedSymbolsCount) throws IOException, ReaderException {
+        assertions(symbols, bytes, expectedSymbolsCount, (qrCode, result) -> {
+        });
+    }
 
+    private static void assertions(List< QrCode > symbols, byte[] bytes, int expectedSymbolsCount, CustomSymbolAssertion customAssertion) throws IOException, ReaderException {
         assertEquals(expectedSymbolsCount, symbols.size());
 
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             for (int i = 0; i < symbols.size(); i++) {
                 QrCode barcode = symbols.get(i);
-                assertEquals(EccLevel.M, barcode.getPreferredEccLevel());
+                assertEquals(EccLevel.H, barcode.getPreferredEccLevel());
                 BufferedImage img = drawToImage(barcode);
                 Result result = decodeImage(img);
-                assertStructuredAppendSequence(result, i + 1, expectedSymbolsCount);
+                if (expectedSymbolsCount > 1) {
+                    assertStructuredAppendSequence(result, i + 1, expectedSymbolsCount);
+                } else {
+                    assertNoStructuredAppendMode(result);
+                }
+                customAssertion.assertSymbol(barcode, result);
+
                 byte[] output = result.getText().getBytes(ISO_8859_1);
                 outputStream.write(output);
             }
@@ -105,6 +142,11 @@ class QrCodeAutoStructuredAppendTest {
         int total = (sequence & 0x0F) + 1;
         assertEquals(expectedPosition, position);
         assertEquals(expectedTotal, total);
+    }
+
+    private static void assertNoStructuredAppendMode(Result result) {
+        assertNull(result.getResultMetadata().get(ResultMetadataType.STRUCTURED_APPEND_SEQUENCE));
+        assertNull(result.getResultMetadata().get(ResultMetadataType.STRUCTURED_APPEND_PARITY));
     }
 
     private static BufferedImage drawToImage(QrCode barcode) {
@@ -123,5 +165,9 @@ class QrCodeAutoStructuredAppendTest {
         QRCodeReader reader = new QRCodeReader();
         Result result = reader.decode(bitmap);
         return result;
+    }
+
+    private interface CustomSymbolAssertion {
+        void assertSymbol(QrCode symbol, Result result);
     }
 }

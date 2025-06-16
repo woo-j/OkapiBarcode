@@ -1853,16 +1853,6 @@ public class QrCode extends Symbol {
     }
 
     /**
-     * Overloaded method of {@link #createStructuredAppendSymbols(String, QrCode)} which
-     * accepts binary data.
-     *
-     * @see #createStructuredAppendSymbols(String, QrCode)
-     */
-    public static List< QrCode > createStructuredAppendSymbols(byte[] data, QrCode template) {
-        return createStructuredAppendSymbols(new String(data, StandardCharsets.ISO_8859_1), template);
-    }
-
-    /**
      * Creates a list of QR Code symbols for structured append from a string, using a template symbol.
      * The template's settings are cloned for each symbol.
      *

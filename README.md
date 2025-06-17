@@ -160,6 +160,9 @@ and data.
 
 ### Recent Releases
 
+#### Okapi Barcode 0.5.2
+- QR Code: add support for structured append
+
 #### Okapi Barcode 0.5.1
 - Japanese Postal Code: fix bug encoding some letters
 - Japanese Postal Code: throw exception if input data is too long

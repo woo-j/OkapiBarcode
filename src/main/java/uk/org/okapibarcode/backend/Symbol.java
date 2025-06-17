@@ -684,11 +684,27 @@ public abstract class Symbol {
     }
 
     /**
-     * Chooses the ECI mode most suitable for the content of this symbol.
+     * Chooses the ECI mode most suitable for the content of this symbol and uses it to encode the input data.
      */
     protected void eciProcess() {
 
         assert supportsEci();
+
+        EciMode eci = determineEci(content, eciMode); // ECI mode may be implicit or explicit
+
+        eciMode = eci.mode;
+        inputData = toBytes(content, eci.charset);
+
+        if (inputData == null) {
+            // user chose the ECI mode explicitly and it can't encode the provided data
+            throw new OkapiInputException("Unable to encode the provided data using the requested ECI mode");
+        }
+
+        infoLine("ECI Mode: " + eci.mode);
+        infoLine("ECI Charset: " + eci.charset.name());
+    }
+
+    protected static EciMode determineEci(String content, int eciMode) {
 
         EciMode eci;
         if (eciMode != -1) {
@@ -703,16 +719,7 @@ public abstract class Symbol {
             throw new OkapiInputException("Unable to determine ECI mode");
         }
 
-        eciMode = eci.mode;
-        inputData = toBytes(content, eci.charset);
-
-        if (inputData == null) {
-            // user chose the ECI mode explicitly and it can't encode the provided data
-            throw new OkapiInputException("Unable to encode the provided data using the requested ECI mode");
-        }
-
-        infoLine("ECI Mode: " + eci.mode);
-        infoLine("ECI Charset: " + eci.charset.name());
+        return eci;
     }
 
     protected static int[] toBytes(String s, Charset charset, int... suffix) {
@@ -967,5 +974,64 @@ public abstract class Symbol {
 
     protected void infoLine() {
         encodeInfo.append('\n');
+    }
+
+    /**
+     * Splits the specified data so that it will fit across N symbols configured like the test symbol.
+     * Uses binary search instead of linear search, for performance reasons.
+     *
+     * @param <T> the type of symbol
+     * @param data the data to split
+     * @param testSymbol the test symbol
+     * @param check custom logic to check whether a symbol fits or not
+     * @param max the maximum number of symbols to allow
+     * @return the split data
+     */
+    protected static < T extends Symbol > List< String > split(String data, T testSymbol, FitsCheck< T > check, int max) {
+
+        List< String > split = new ArrayList<>();
+
+        while (!data.isEmpty()) {
+            int low = 0;
+            int high = data.length();
+            while (low <= high) {
+                int mid = (low + high) >>> 1;
+                String candidate = data.substring(0, mid);
+                if (check.fits(candidate, testSymbol, false)) {
+                    low = mid + 1;
+                } else {
+                    high = mid - 1;
+                }
+            }
+            if (high == 0) {
+                throw new OkapiInputException("The specified template is too small to hold both data and structured append metadata");
+            }
+            split.add(data.substring(0, high));
+            data = data.substring(high);
+        }
+
+        if (!split.isEmpty()) {
+            String last = split.get(split.size() - 1);
+            if (!check.fits(last, testSymbol, true)) {
+                int end = last.length() - 1;
+                if (end > 0) {
+                    split.set(split.size() - 1, last.substring(0, end));
+                    split.add(last.substring(end));
+                } else {
+                    throw new OkapiInputException("The specified template is too small to hold both data and structured append metadata");
+                }
+            }
+        }
+
+        if (split.size() > max) {
+            throw new OkapiInputException("The specified template is too small to hold both data and structured append metadata");
+        }
+
+        return split;
+    }
+
+    @FunctionalInterface
+    protected interface FitsCheck< T extends Symbol > {
+        boolean fits(String data, T testSymbol, boolean last);
     }
 }

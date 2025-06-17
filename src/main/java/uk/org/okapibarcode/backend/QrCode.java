@@ -23,7 +23,6 @@ import static uk.org.okapibarcode.util.Strings.binaryAppend;
 
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -188,7 +187,6 @@ public class QrCode extends Symbol {
     protected EccLevel preferredEccLevel = EccLevel.L;
     protected boolean improveEccLevelIfPossible = true;
     protected boolean forceByteCompaction;
-
     protected int structuredAppendPosition = 1;
     protected int structuredAppendTotal = 1;
     protected int structuredAppendParity = 0;
@@ -1854,7 +1852,7 @@ public class QrCode extends Symbol {
 
     /**
      * Creates a list of QR Code symbols for structured append from a string, using a template symbol.
-     * The template's settings are cloned for each symbol.
+     * The template's settings are cloned for each symbol created.
      *
      * @param data the input data
      * @param template the template QrCode symbol
@@ -1868,45 +1866,15 @@ public class QrCode extends Symbol {
     }
 
     private static List< String > splitData(String data, QrCode template) {
-
         QrCode testSymbol = new QrCode() {
-            @Override
-            protected void plotSymbol() {
-            } // expensive plotting is not required
+            @Override protected void plotSymbol() {} // expensive plotting is not required
         };
         clone(template, testSymbol);
         testSymbol.setStructuredAppendTotal(2);
-
-        List< String > split = new ArrayList<>();
-        while (!data.isEmpty()) {
-            int low = 0;
-            int high = data.length();
-            while (low <= high) {
-                int mid = (low + high) >>> 1;
-                String candidate = data.substring(0, mid);
-                if (fits(candidate, testSymbol)) {
-                    low = mid + 1;
-                } else {
-                    high = mid - 1;
-                }
-            }
-            if (high == 0) {
-                // This should never happen, as the template should be able to fit at least one character
-                throw new IllegalStateException("Failed to fit any data into the template symbol");
-            }
-            split.add(data.substring(0, high));
-            data = data.substring(high);
-        }
-
-        if (split.size() > MAX_STRUCTURED_APPEND_SYMBOLS) {
-            throw new OkapiInputException("The specified template is too small to hold the data and structured append metadata " +
-                    "or the data is too large for structured append. Maximum number of symbols is " + MAX_STRUCTURED_APPEND_SYMBOLS + " but got " + split.size());
-        }
-
-        return split;
+        return split(data, testSymbol, QrCode::fits, MAX_STRUCTURED_APPEND_SYMBOLS);
     }
 
-    private static boolean fits(String data, QrCode testSymbol) {
+    private static boolean fits(String data, QrCode testSymbol, boolean last) {
         if (!data.isEmpty()) {
             try {
                 testSymbol.setContent(data);
@@ -1934,27 +1902,13 @@ public class QrCode extends Symbol {
     }
 
     private static int calculateStructuredAppendParity(String content, QrCode template) {
-        EciMode eci = selectEciModeForParity(content, template);
-        if (eci == EciMode.NONE) {
-            throw new OkapiInputException("Unable to determine ECI mode");
-        }
-
+        EciMode eci = determineEci(content, template.eciMode);
         int[] bytes = toBytes(content, eci.charset);
-
         int parity = 0;
         for (int b : bytes) {
             parity ^= b & 0xFF;
         }
-
         return parity;
-    }
-
-    private static EciMode selectEciModeForParity(String content, QrCode template) {
-        if (template.eciMode != -1) {
-            return EciMode.ECIS.stream().filter(e -> e.mode == template.eciMode).findFirst().orElse(EciMode.NONE);
-        } else {
-            return EciMode.chooseFor(content);
-        }
     }
 
     private static void clone(QrCode template, QrCode target) {
@@ -1975,5 +1929,4 @@ public class QrCode extends Symbol {
             target.setPreferredVersion(template.getPreferredVersion());
         }
     }
-
 }

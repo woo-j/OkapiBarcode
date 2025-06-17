@@ -1892,49 +1892,12 @@ public class Pdf417 extends Symbol {
     }
 
     private static List< String > splitData(String data, Pdf417 template) {
-
         Pdf417 testSymbol = new Pdf417() {
-            @Override
-            protected void plotSymbol() {
-            } // expensive plotting is not required
+            @Override protected void plotSymbol() {} // expensive plotting is not required
         };
         clone(template, testSymbol);
         testSymbol.setStructuredAppendTotal(2);
-
-        List< String > split = new ArrayList<>();
-        while (!data.isEmpty()) {
-            int low = 0;
-            int high = data.length();
-            while (low <= high) {
-                int mid = (low + high) >>> 1;
-                String candidate = data.substring(0, mid);
-                if (fits(candidate, testSymbol, false)) {
-                    low = mid + 1;
-                } else {
-                    high = mid - 1;
-                }
-            }
-            if (high == 0) {
-                throw new OkapiInputException("The specified template is too small to hold both data and structured append metadata");
-            }
-            split.add(data.substring(0, high));
-            data = data.substring(high);
-        }
-
-        if (!split.isEmpty()) {
-            String last = split.get(split.size() - 1);
-            if (!fits(last, testSymbol, true)) {
-                int end = last.length() - 1;
-                if (end > 0) {
-                    split.set(split.size() - 1, last.substring(0, end));
-                    split.add(last.substring(end));
-                } else {
-                    throw new OkapiInputException("The specified template is too small to hold both data and structured append metadata");
-                }
-            }
-        }
-
-        return split;
+        return split(data, testSymbol, Pdf417::fits, 99_999);
     }
 
     private static boolean fits(String data, Pdf417 testSymbol, boolean last) {

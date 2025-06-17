@@ -16,6 +16,24 @@
 
 package uk.org.okapibarcode.backend;
 
+import static java.awt.image.BufferedImage.TYPE_BYTE_BINARY;
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static uk.org.okapibarcode.graphics.Color.BLACK;
+import static uk.org.okapibarcode.graphics.Color.WHITE;
+
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+
 import com.google.zxing.BinaryBitmap;
 import com.google.zxing.LuminanceSource;
 import com.google.zxing.ReaderException;
@@ -24,37 +42,22 @@ import com.google.zxing.ResultMetadataType;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.qrcode.QRCodeReader;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
+
 import uk.org.okapibarcode.backend.QrCode.EccLevel;
 import uk.org.okapibarcode.output.Java2DRenderer;
 
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.List;
-
-import static java.awt.image.BufferedImage.TYPE_BYTE_BINARY;
-import static java.nio.charset.StandardCharsets.ISO_8859_1;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static uk.org.okapibarcode.graphics.Color.BLACK;
-import static uk.org.okapibarcode.graphics.Color.WHITE;
-
+/**
+ * Tests for {@link QrCode} structured append.
+ */
 class QrCodeAutoStructuredAppendTest {
 
     @ParameterizedTest
     @CsvSource({
-            "0,0",
-            "1,1",
-            "5,1",
-            "6,2",
-            "80,16"
+        "0,0",
+        "1,1",
+        "5,1",
+        "6,2",
+        "80,16"
     })
     public void testCreateStructuredAppendSymbols(int dataLength, int expectedSymbolsCount) throws Exception {
 
@@ -65,13 +68,13 @@ class QrCodeAutoStructuredAppendTest {
 
         byte[] bytes = bytes(dataLength);
         List< QrCode > symbols = QrCode.createStructuredAppendSymbols(new String(bytes, ISO_8859_1), template);
-        assertions(symbols, bytes, expectedSymbolsCount);
+        assertions(symbols, bytes, expectedSymbolsCount, (qrCode, result) -> { /* no custom assertions */ });
     }
 
     @ParameterizedTest
     @CsvSource({
-            "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ,1",
-            "祈れ、フリースイスよ、祈れ！,72"
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ,1",
+        "祈れ、フリースイスよ、祈れ！,72"
     })
     public void testCalculateStructuredAppendParity(String content, int expectedParity) throws Exception {
         List< QrCode > symbols = QrCode.createStructuredAppendSymbols(content, new QrCode());
@@ -82,58 +85,50 @@ class QrCodeAutoStructuredAppendTest {
 
     @Test
     public void testCreateStructuredAppendSymbolsWithTooSmallTemplate() throws Exception {
+
         QrCode template = new QrCode();
         template.setPreferredVersion(1);
         template.setPreferredEccLevel(EccLevel.H);
         template.setForceByteCompaction(true);
 
-        int maxBytesForStructuredAppendTemplate = 16 * 5;
-
-        // First validate that the template can handle the maximum size
-        byte[] bytes = bytes(maxBytesForStructuredAppendTemplate);
+        // first validate that the template can handle the maximum size (16 symbols, 5 bytes of data in each)
+        int totalByteCount = 16 * 5;
+        byte[] bytes = bytes(totalByteCount);
         List< QrCode > symbols = QrCode.createStructuredAppendSymbols(new String(bytes, ISO_8859_1), template);
         assertions(symbols, bytes, 16, (qrCode, result) -> {
             assertEquals(9, result.getRawBytes().length);
-            assertEquals(5, result.getText().getBytes(ISO_8859_1).length);
+            assertEquals(5, result.getText().length());
         });
 
-        // Now re-test with maximum size + 1 byte
+        // now re-test with one extra byte, which would require 17 symbols (not possible)
         OkapiInputException exception = assertThrows(OkapiInputException.class, () -> {
-            QrCode.createStructuredAppendSymbols(new String(bytes(maxBytesForStructuredAppendTemplate + 1), ISO_8859_1), template);
+            QrCode.createStructuredAppendSymbols(new String(bytes(totalByteCount + 1), ISO_8859_1), template);
         });
-        assertTrue(exception.getMessage().contains("The specified template is too small to hold the data and structured append metadata or the data is too large for structured append"));
+        assertEquals("The specified template is too small to hold both data and structured append metadata", exception.getMessage());
     }
 
     private byte[] bytes(int length) {
         return "A".repeat(length).getBytes(ISO_8859_1);
     }
 
-    private static void assertions(List< QrCode > symbols, byte[] bytes, int expectedSymbolsCount) throws IOException, ReaderException {
-        assertions(symbols, bytes, expectedSymbolsCount, (qrCode, result) -> {
-        });
-    }
-
-    private static void assertions(List< QrCode > symbols, byte[] bytes, int expectedSymbolsCount, CustomSymbolAssertion customAssertion) throws IOException, ReaderException {
-        assertEquals(expectedSymbolsCount, symbols.size());
-
-        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
-            for (int i = 0; i < symbols.size(); i++) {
-                QrCode barcode = symbols.get(i);
-                assertEquals(EccLevel.H, barcode.getPreferredEccLevel());
-                BufferedImage img = drawToImage(barcode);
-                Result result = decodeImage(img);
-                if (expectedSymbolsCount > 1) {
-                    assertStructuredAppendSequence(result, i + 1, expectedSymbolsCount);
-                } else {
-                    assertNoStructuredAppendMode(result);
-                }
-                customAssertion.assertSymbol(barcode, result);
-
-                byte[] output = result.getText().getBytes(ISO_8859_1);
-                outputStream.write(output);
+    private static void assertions(List< QrCode > symbols, byte[] expectedBytes, int expectedSymbolCount, CustomSymbolAssertion customAssertion) throws ReaderException {
+        assertEquals(expectedSymbolCount, symbols.size());
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        for (int i = 0; i < symbols.size(); i++) {
+            QrCode barcode = symbols.get(i);
+            assertEquals(EccLevel.H, barcode.getPreferredEccLevel());
+            BufferedImage img = drawToImage(barcode);
+            Result result = decodeImage(img);
+            if (expectedSymbolCount > 1) {
+                assertStructuredAppendSequence(result, i + 1, expectedSymbolCount);
+            } else {
+                assertNoStructuredAppendMode(result);
             }
-            assertArrayEquals(bytes, outputStream.toByteArray());
+            customAssertion.assertSymbol(barcode, result);
+            byte[] output = result.getText().getBytes(ISO_8859_1);
+            outputStream.writeBytes(output);
         }
+        assertArrayEquals(expectedBytes, outputStream.toByteArray());
     }
 
     private static void assertStructuredAppendSequence(Result result, int expectedPosition, int expectedTotal) {
@@ -167,6 +162,7 @@ class QrCodeAutoStructuredAppendTest {
         return result;
     }
 
+    @FunctionalInterface
     private interface CustomSymbolAssertion {
         void assertSymbol(QrCode symbol, Result result);
     }

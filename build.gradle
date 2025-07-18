@@ -53,7 +53,7 @@ tasks.withType(AbstractArchiveTask).configureEach {
 }
 
 checkstyle {
-    toolVersion = '10.14.2'
+    toolVersion = '10.26.1'
     configFile = file('checkstyle.xml')
     showViolations = true
 }

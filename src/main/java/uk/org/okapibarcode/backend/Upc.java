@@ -222,7 +222,9 @@ public class Upc extends Symbol {
 
         String hrt = content + check;
 
-        StringBuilder dest = new StringBuilder("111");
+        int length = 3 + (12 * 4) + 5 + 3;
+        StringBuilder dest = new StringBuilder(length);
+        dest.append("111");
         for (int i = 0; i < 12; i++) {
             if (i == 6) {
                 dest.append("11111");
@@ -253,7 +255,9 @@ public class Upc extends Symbol {
         String[] parityArray = (numberSystem == 1 ? UPC_PARITY_1 : UPC_PARITY_0);
         String parity = parityArray[check - '0'];
 
-        StringBuilder dest = new StringBuilder("111");
+        int length = 3 + (6 * 4) + 6;
+        StringBuilder dest = new StringBuilder(length);
+        dest.append("111");
         for (int i = 0; i < 6; i++) {
             if (parity.charAt(i) == 'A') {
                 dest.append(SET_AC[content.charAt(i + 1) - '0']);

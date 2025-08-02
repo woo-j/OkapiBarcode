@@ -47,10 +47,11 @@ public class KoreaPost extends Symbol {
         padded.append(content);
 
         int total = 0;
-        String accumulator = "";
+        int maxLength = (padded.length() + 1) * 10;
+        StringBuilder accumulator = new StringBuilder(maxLength);
         for (int i = 0; i < padded.length(); i++) {
             int j = Character.getNumericValue(padded.charAt(i));
-            accumulator += KOREA_TABLE[j];
+            accumulator.append(KOREA_TABLE[j]);
             total += j;
         }
 
@@ -58,11 +59,11 @@ public class KoreaPost extends Symbol {
         if (check == 10) {
             check = 0;
         }
-        accumulator += KOREA_TABLE[check];
+        accumulator.append(KOREA_TABLE[check]);
         infoLine("Check Digit: " + check);
 
         readable = padded.toString() + check;
-        pattern = new String[] { accumulator };
+        pattern = new String[] { accumulator.toString() };
         row_count = 1;
         row_height = new int[] { -1 };
     }

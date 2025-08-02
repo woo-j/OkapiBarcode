@@ -269,9 +269,9 @@ public class UspsOneCode extends Symbol {
 
     @Override
     protected void encode() {
-        String zip = "";
+        StringBuilder tracker = new StringBuilder(20);
+        StringBuilder zip = new StringBuilder(11);
         String zip_adder;
-        String tracker = "";
         int i, j;
         int length = content.length();
         BigInteger accum;
@@ -299,10 +299,10 @@ public class UspsOneCode extends Symbol {
             } else {
                 if (j == 0) {
                     /* reading tracker */
-                    tracker += content.charAt(i);
+                    tracker.append(content.charAt(i));
                 } else {
                     /* reading zip code */
-                    zip += content.charAt(i);
+                    zip.append(content.charAt(i));
                 }
             }
         }
@@ -319,7 +319,7 @@ public class UspsOneCode extends Symbol {
 
         /* Routing code first */
         if (zip.length() > 0) {
-            x_reg = new BigInteger(zip);
+            x_reg = new BigInteger(zip.toString());
         } else {
             x_reg = new BigInteger("0");
         }
@@ -424,13 +424,7 @@ public class UspsOneCode extends Symbol {
             }
         }
 
-        readable = formatHumanReadableText(content);
-        pattern = new String[1];
-        row_count = 1;
-        row_height = new int[1];
-        row_height[0] = -1;
-
-        pattern[0] = "";
+        StringBuilder pat = new StringBuilder(65);
         for (i = 0; i < 65; i++) {
             c = 'T';
             if (bar_map[i]) {
@@ -442,10 +436,14 @@ public class UspsOneCode extends Symbol {
             if (bar_map[i] && bar_map[i + 65]) {
                 c = 'F';
             }
-            pattern[0] += c;
+            pat.append(c);
         }
+        infoLine("Encoding: " + pat);
 
-        infoLine("Encoding: " + pattern[0]);
+        readable = formatHumanReadableText(content);
+        pattern = new String[] { pat.toString() };
+        row_count = 1;
+        row_height = new int[] { -1 };
     }
 
     private static int USPS_MSB_Math_CRC11GenerateFrameCheckSequence(int[] bytes) {

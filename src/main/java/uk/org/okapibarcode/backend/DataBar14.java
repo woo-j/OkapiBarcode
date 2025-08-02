@@ -327,7 +327,7 @@ public class DataBar14 extends Symbol {
         c_left = checksum / 9;
         c_right = checksum % 9;
 
-        infoLine("Checksum: " + checksum);
+        infoLine("Checksum: ", checksum);
 
         /* Put element widths together */
         total_widths[0] = 1;
@@ -430,7 +430,7 @@ public class DataBar14 extends Symbol {
             if (check_digit == 10) {
                 check_digit = 0;
             }
-            infoLine("Check Digit: " + check_digit);
+            infoLine("Check Digit: ", check_digit);
             hrt.append((char) (check_digit + '0'));
             readable = "(01)" + hrt;
         }

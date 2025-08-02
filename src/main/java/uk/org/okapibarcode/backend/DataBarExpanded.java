@@ -213,7 +213,7 @@ public class DataBarExpanded extends Symbol {
         }
 
         int encodingMethod = calculateBinaryString(stacked, preferredColumns, inputData, binaryString); // updates binaryString
-        infoLine("Encoding Method: " + encodingMethod);
+        infoLine("Encoding Method: ", encodingMethod);
         logBinaryStringInfo(binaryString);
 
         data_chars = binaryString.length() / 12;
@@ -275,7 +275,7 @@ public class DataBarExpanded extends Symbol {
 
         check_char = (211 * ((data_chars + 1) - 4)) + (checksum % 211);
 
-        infoLine("Check Character: " + check_char);
+        infoLine("Check Character: ", check_char);
 
         c_group = 1;
         if ((check_char >= 348) && (check_char <= 1387)) {
@@ -886,7 +886,7 @@ public class DataBarExpanded extends Symbol {
     /** Logs binary string as hexadecimal */
     private void logBinaryStringInfo(StringBuilder binaryString) {
 
-        infoLine("Binary Length: " + binaryString.length());
+        infoLine("Binary Length: ", binaryString.length());
         info("Binary String: ");
 
         int nibble = 0;

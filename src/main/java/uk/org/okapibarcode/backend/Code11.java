@@ -148,14 +148,14 @@ public class Code11 extends Symbol {
         int checkDigitC = getCheckDigitC(weight, length);
         horizontalSpacing += CODE_11_TABLE[checkDigitC];
         humanReadable += CHARACTER_SET[checkDigitC];
-        infoLine("Check Digit C: " + checkDigitC);
+        infoLine("Check Digit C: ", checkDigitC);
 
         if (checkDigitCount == 2) {
             weight[length] = checkDigitC;
             int checkDigitK = getCheckDigitK(weight, length + 1);
             horizontalSpacing += CODE_11_TABLE[checkDigitK];
             humanReadable += CHARACTER_SET[checkDigitK];
-            infoLine("Check Digit K: " + checkDigitK);
+            infoLine("Check Digit K: ", checkDigitK);
         }
 
         horizontalSpacing += "112211";

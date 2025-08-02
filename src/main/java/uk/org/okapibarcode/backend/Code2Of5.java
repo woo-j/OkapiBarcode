@@ -271,7 +271,7 @@ public class Code2Of5 extends Symbol {
         if (addCheckDigit) {
             char checkDigit = checkDigit(readable, 1, 3);
             readable += checkDigit;
-            infoLine("Check Digit: " + checkDigit);
+            infoLine("Check Digit: ", checkDigit);
         }
 
         if ((readable.length() & 1) != 0) {
@@ -326,7 +326,7 @@ public class Code2Of5 extends Symbol {
 
         char checkDigit = checkDigit(readable, 1, 3);
         readable += checkDigit;
-        infoLine("Check Digit: " + checkDigit);
+        infoLine("Check Digit: ", checkDigit);
 
         dest = "1111";
         for (i = 0; i < readable.length(); i += 2) {
@@ -360,7 +360,7 @@ public class Code2Of5 extends Symbol {
 
         char checkDigit = checkDigit(readable, 9, 4);
         readable += checkDigit;
-        infoLine("Check digit: " + checkDigit);
+        infoLine("Check digit: ", checkDigit);
 
         dest = "1111";
         for (i = 0; i < readable.length(); i += 2) {
@@ -394,7 +394,7 @@ public class Code2Of5 extends Symbol {
 
         char checkDigit = checkDigit(readable, 9, 4);
         readable += checkDigit;
-        infoLine("Check Digit: " + checkDigit);
+        infoLine("Check Digit: ", checkDigit);
 
         dest = "1111";
         for (i = 0; i < readable.length(); i += 2) {

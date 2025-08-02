@@ -881,7 +881,7 @@ public class Composite extends Symbol {
                 break;
         }
 
-        infoLine("Composite Width: " + cc_width);
+        infoLine("Composite Width: ", cc_width);
 
         if (cc_mode == CompositeMode.CC_A && !cc_binary_string()) {
             cc_mode = CompositeMode.CC_B;
@@ -1574,7 +1574,7 @@ public class Composite extends Symbol {
             return false;
         }
 
-        infoLine("Composite Binary Length: " + binary_string.length());
+        infoLine("Composite Binary Length: ", binary_string.length());
         logBinaryString();
 
         if (binary_string.length() < target_bitsize) {

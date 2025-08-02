@@ -134,14 +134,14 @@ public class Postnet extends Symbol {
         }
 
         int checkDigit = (10 - (sum % 10)) % 10;
-        infoLine("Check Digit: " + checkDigit);
+        infoLine("Check Digit: ", checkDigit);
 
         dest.append(table[checkDigit]);
         dest.append('L');
 
         assert dest.length() == destLen;
 
-        infoLine("Encoding: " + dest);
+        infoLine("Encoding: ", dest);
         readable = content;
         pattern = new String[] { dest.toString() };
         row_count = 1;

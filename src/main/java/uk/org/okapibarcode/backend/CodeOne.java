@@ -207,7 +207,7 @@ public class CodeOne extends Symbol {
             rs.init_code(codewords, 1);
             rs.encode(codewords, data);
 
-            infoLine("ECC Codeword Count: " + codewords);
+            infoLine("ECC Codeword Count: ", codewords);
 
             for (i = 0; i < codewords; i++) {
                 stream[i] = data[i];
@@ -307,7 +307,7 @@ public class CodeOne extends Symbol {
             rs.init_code(ecc_cw, 1);
             rs.encode(data_cw, data);
 
-            infoLine("ECC Codeword Count: " + ecc_cw);
+            infoLine("ECC Codeword Count: ", ecc_cw);
 
             /* "Stream" combines data and error correction data */
             for (i = 0; i < data_cw; i++) {
@@ -378,7 +378,7 @@ public class CodeOne extends Symbol {
             }
 
             char version = (char) ((size - 1) + 'A');
-            infoLine("Version: " + version);
+            infoLine("Version: ", version);
             logCodewords(data_length);
 
             for (i = data_length; i < C1_DATA_LENGTH[size - 1]; i++) {
@@ -402,7 +402,7 @@ public class CodeOne extends Symbol {
                 }
             }
 
-            infoLine("ECC Codeword Count: " + C1_ECC_LENGTH[size - 1]);
+            infoLine("ECC Codeword Count: ", C1_ECC_LENGTH[size - 1]);
 
             /* "Stream" combines data and error correction data */
             for (i = 0; i < data_length; i++) {

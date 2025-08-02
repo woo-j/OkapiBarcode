@@ -225,7 +225,7 @@ public class AustraliaPost extends Symbol {
                 break;
         }
 
-        infoLine("FCC: " + formatControlCode);
+        infoLine("FCC: ", formatControlCode);
 
         StringBuilder zeroPaddedInput = new StringBuilder();
         if (mode != Mode.POST) {
@@ -240,7 +240,7 @@ public class AustraliaPost extends Symbol {
         if (!deliveryPointId.matches("[0-9]+")) {
             throw new OkapiInputException("Invalid characters in DPID");
         }
-        infoLine("DPID: " + deliveryPointId);
+        infoLine("DPID: ", deliveryPointId);
 
         /* Start */
         StringBuilder barStateValues = new StringBuilder();
@@ -287,7 +287,7 @@ public class AustraliaPost extends Symbol {
         /* Stop character */
         barStateValues.append("13");
 
-        infoLine("Total Length: " + barStateValues.length());
+        infoLine("Total Length: ", barStateValues.length());
         info("Encoding: ");
         for (int i = 0; i < barStateValues.length(); i++) {
             switch (barStateValues.charAt(i)) {

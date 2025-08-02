@@ -136,7 +136,7 @@ public class Code3Of9 extends Symbol {
                 // display a space check digit as _, otherwise it looks like an error
                 checkDigit = '_';
             }
-            infoLine("Check Digit: " + checkDigit);
+            infoLine("Check Digit: ", checkDigit);
         }
 
         dest.append(stop);

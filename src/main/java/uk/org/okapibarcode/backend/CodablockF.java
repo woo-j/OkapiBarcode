@@ -222,8 +222,8 @@ public class CodablockF extends Symbol {
         row_height = new int[row_count];
 
         infoLine("Grid Size: " + columns + " X " + rows);
-        infoLine("K1 Check Digit: " + k1);
-        infoLine("K2 Check Digit: " + k2);
+        infoLine("K1 Check Digit: ", k1);
+        infoLine("K2 Check Digit: ", k2);
 
         /* Resolve the data into patterns and place in symbol structure */
         info("Encoding: ");

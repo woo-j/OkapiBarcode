@@ -71,7 +71,7 @@ public class KixCode extends Symbol {
         }
 
         String dest = sb.toString();
-        infoLine("Encoding: " + dest);
+        infoLine("Encoding: ", dest);
 
         readable = "";
         pattern = new String[] { dest };

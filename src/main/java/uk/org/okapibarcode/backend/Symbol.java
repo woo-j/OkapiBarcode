@@ -700,8 +700,8 @@ public abstract class Symbol {
             throw new OkapiInputException("Unable to encode the provided data using the requested ECI mode");
         }
 
-        infoLine("ECI Mode: " + eci.mode);
-        infoLine("ECI Charset: " + eci.charset.name());
+        infoLine("ECI Mode: ", eci.mode);
+        infoLine("ECI Charset: ", eci.charset.name());
     }
 
     protected static EciMode determineEci(String content, int eciMode) {
@@ -908,8 +908,8 @@ public abstract class Symbol {
 
         char checkDigit = HIBC_CHAR_TABLE[counter];
 
-        infoLine("HIBC Check Digit Counter: " + counter);
-        infoLine("HIBC Check Digit: " + checkDigit);
+        infoLine("HIBC Check Digit Counter: ", counter);
+        infoLine("HIBC Check Digit: ", checkDigit);
 
         return "+" + source + checkDigit;
     }
@@ -970,6 +970,22 @@ public abstract class Symbol {
 
     protected void infoLine(CharSequence s) {
         encodeInfo.append(s).append('\n');
+    }
+
+    protected void infoLine(CharSequence s1, CharSequence s2) {
+        encodeInfo.append(s1).append(s2).append('\n');
+    }
+
+    protected void infoLine(CharSequence s, char c) {
+        encodeInfo.append(s).append(c).append('\n');
+    }
+
+    protected void infoLine(CharSequence s, int i) {
+        encodeInfo.append(s).append(i).append('\n');
+    }
+
+    protected void infoLine(CharSequence s, boolean b) {
+        encodeInfo.append(s).append(b).append('\n');
     }
 
     protected void infoLine() {

@@ -438,7 +438,7 @@ public class UspsOneCode extends Symbol {
             }
             pat.append(c);
         }
-        infoLine("Encoding: " + pat);
+        infoLine("Encoding: ", pat);
 
         readable = formatHumanReadableText(content);
         pattern = new String[] { pat.toString() };

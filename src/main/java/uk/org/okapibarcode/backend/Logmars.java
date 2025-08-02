@@ -102,7 +102,7 @@ public class Logmars extends Symbol {
 
         counter = counter % 43;
         char checkDigit = LOOKUP[counter];
-        infoLine("Check Digit: " + checkDigit);
+        infoLine("Check Digit: ", checkDigit);
         p.append(CODE39LM[counter]);
         p.append("131131311");
 

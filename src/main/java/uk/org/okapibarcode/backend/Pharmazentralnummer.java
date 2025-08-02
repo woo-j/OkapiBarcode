@@ -54,7 +54,7 @@ public class Pharmazentralnummer extends Symbol {
             throw new OkapiInputException("Not a valid PZN identifier, check digit is 10");
         }
 
-        infoLine("Check Digit: " + check_digit);
+        infoLine("Check Digit: ", check_digit);
         localstr.append((char) (check_digit + '0'));
 
         Code3Of9 code39 = new Code3Of9();

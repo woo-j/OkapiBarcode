@@ -538,13 +538,12 @@ public class Code16k extends Symbol {
         row_count = rows_needed;
         row_height = new int[rows_needed];
 
-        infoLine("Symbol Rows: " + rows_needed);
-        infoLine("First Check Digit: " + first_check);
-        infoLine("Second Check Digit: " + second_check);
+        infoLine("Symbol Rows: ", rows_needed);
+        infoLine("First Check Digit: ", first_check);
+        infoLine("Second Check Digit: ", second_check);
+
         info("Codewords: ");
-
         for (current_row = 0; current_row < rows_needed; current_row++) {
-
             width_pattern = "";
             width_pattern += C16K_START_STOP[C16K_START_VALUES[current_row]];
             width_pattern += "1";
@@ -553,7 +552,6 @@ public class Code16k extends Symbol {
                 infoSpace(values[(current_row * 5) + i]);
             }
             width_pattern += C16K_START_STOP[C16K_STOP_VALUES[current_row]];
-
             pattern[current_row] = width_pattern;
             row_height[current_row] = 10;
         }

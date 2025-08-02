@@ -324,17 +324,17 @@ public class MicroQrCode extends Symbol {
         case 1:
             generateM2Symbol(ecc_level);
             infoLine("Version: M2");
-            infoLine("ECC Level: " + levelToLetter(ecc_level));
+            infoLine("ECC Level: ", levelToLetter(ecc_level));
             break;
         case 2:
             generateM3Symbol(ecc_level);
             infoLine("Version: M3");
-            infoLine("ECC Level: " + levelToLetter(ecc_level));
+            infoLine("ECC Level: ", levelToLetter(ecc_level));
             break;
         case 3:
             generateM4Symbol(ecc_level);
             infoLine("Version: M4");
-            infoLine("ECC Level: " + levelToLetter(ecc_level));
+            infoLine("ECC Level: ", levelToLetter(ecc_level));
             break;
         }
 
@@ -352,7 +352,7 @@ public class MicroQrCode extends Symbol {
         populateBitGrid(size);
         bitmask = applyBitmask(size);
 
-        infoLine("Mask Pattern: " + Integer.toBinaryString(bitmask));
+        infoLine("Mask Pattern: ", Integer.toBinaryString(bitmask));
 
         /* Add format data */
         format = 0;

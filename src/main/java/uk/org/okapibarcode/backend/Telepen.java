@@ -131,7 +131,7 @@ public class Telepen extends Symbol {
         if (check_digit == 127) {
             check_digit = 0;
         }
-        infoLine("Check Digit: " + check_digit);
+        infoLine("Check Digit: ", check_digit);
 
         dest.append(TELE_TABLE[check_digit]);
         dest.append(TELE_TABLE['z']); // Stop
@@ -180,7 +180,7 @@ public class Telepen extends Symbol {
         if (check_digit == 127) {
             check_digit = 0;
         }
-        infoLine("Check Digit: " + check_digit);
+        infoLine("Check Digit: ", check_digit);
 
         dest.append(TELE_TABLE[check_digit]);
         dest.append(TELE_TABLE['z']); // Stop

@@ -612,7 +612,7 @@ public class Code128 extends Symbol {
                     case LATCHB: linkage_flag = 99; break;
                     case LATCHC: linkage_flag = 101; break;
                 }
-                infoLine("Linkage Flag: " + linkage_flag);
+                infoLine("Linkage Flag: ", linkage_flag);
                 break;
             case CCC:
                 /* CC-C 2D component */
@@ -621,7 +621,7 @@ public class Code128 extends Symbol {
                     case LATCHB: linkage_flag = 101; break;
                     case LATCHC: linkage_flag = 100; break;
                 }
-                infoLine("Linkage Flag: " + linkage_flag);
+                infoLine("Linkage Flag: ", linkage_flag);
                 break;
             default:
                 break;
@@ -632,14 +632,14 @@ public class Code128 extends Symbol {
             bar_characters++;
         }
 
-        infoLine("Data Codewords: " + bar_characters);
+        infoLine("Data Codewords: ", bar_characters);
 
         /* Check digit calculation */
         for (i = 0; i < bar_characters; i++) {
             total_sum += (i == 0 ? values[i] : values[i] * i);
         }
         int checkDigit = total_sum % 103;
-        infoLine("Check Digit: " + checkDigit);
+        infoLine("Check Digit: ", checkDigit);
 
         /* Build pattern string */
         StringBuilder dest = new StringBuilder((6 * bar_characters) + 6 + 7);

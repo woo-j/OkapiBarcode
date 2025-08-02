@@ -107,8 +107,8 @@ public class JapanPost extends Symbol {
 
         assert dest.length() == destLen;
 
-        infoLine("Encoding: " + dest);
-        infoLine("Check Digit: " + check);
+        infoLine("Encoding: ", dest);
+        infoLine("Check Digit: ", check);
 
         readable = "";
         pattern = new String[] { dest.toString() };

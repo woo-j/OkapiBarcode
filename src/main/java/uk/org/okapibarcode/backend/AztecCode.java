@@ -685,11 +685,11 @@ public class AztecCode extends Symbol {
             eccBlocks = AZTEC_SIZES[layers - 1] - dataBlocks;
         }
 
-        infoLine("Compact Mode: " + compact);
-        infoLine("Layers: " + layers);
-        infoLine("Codeword Length: " + codewordSize + " bits");
-        infoLine("Data Codewords: " + dataBlocks);
-        infoLine("ECC Codewords: " + eccBlocks);
+        infoLine("Compact Mode: ", compact);
+        infoLine("Layers: ", layers);
+        infoLine("Codeword Length: ", codewordSize + " bits");
+        infoLine("Data Codewords: ", dataBlocks);
+        infoLine("ECC Codewords: ", eccBlocks);
 
         /* Add ECC data to the adjusted string */
         addErrorCorrection(adjustedString, codewordSize, dataBlocks, eccBlocks);
@@ -1686,7 +1686,7 @@ public class AztecCode extends Symbol {
             descDataSize = 4;
         }
 
-        infoLine("Mode Message: " + descriptor);
+        infoLine("Mode Message: ", descriptor);
 
         /* Split into 4-bit codewords */
         int[] desc_data = new int[descDataSize];

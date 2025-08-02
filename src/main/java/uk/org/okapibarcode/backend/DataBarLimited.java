@@ -349,7 +349,7 @@ public class DataBarLimited extends Symbol {
         }
         checksum %= 89;
 
-        infoLine("Checksum: " + checksum);
+        infoLine("Checksum: ", checksum);
 
         for(i = 0; i < 14; i++) {
                 check_elements[i] = FINDER_PATTERN_LTD[i + (checksum * 14)];

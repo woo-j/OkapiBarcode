@@ -69,7 +69,7 @@ public class Code32 extends Symbol {
         int checkdigit = checksum % 10;
         char check = (char) (checkdigit + '0');
         localstr += check;
-        infoLine("Check Digit: " + check);
+        infoLine("Check Digit: ", check);
 
         /* Convert string into an integer value */
         int pharmacode = 0;
@@ -100,7 +100,7 @@ public class Code32 extends Symbol {
         pattern = new String[1];
         row_count = 1;
         row_height = new int[] { -1 };
-        infoLine("Code 39 Equivalent: " + risultante);
+        infoLine("Code 39 Equivalent: ", risultante);
 
         Code3Of9 c39 = new Code3Of9();
         c39.setContent(risultante);

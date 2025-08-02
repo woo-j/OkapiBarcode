@@ -1198,7 +1198,7 @@ public class Code49 extends Symbol {
             throw OkapiInputException.inputTooLong();
         }
 
-        infoLine("Starting Mode (M): " + M);
+        infoLine("Starting Mode (M): ", M);
 
         /* Place codewords in code character array (c grid) */
         int rows = 0;

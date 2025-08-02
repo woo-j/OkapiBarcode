@@ -598,8 +598,8 @@ public class QrCode extends Symbol {
         qrBinary(datastream, version, targetCwCount, inputMode, inputData, gs1, eciMode, est_binlen);
         addEcc(fullstream, datastream, version, targetCwCount, blocks);
 
-        infoLine("Version: " + version);
-        infoLine("ECC Level: " + ecc_level.name());
+        infoLine("Version: ", version);
+        infoLine("ECC Level: ", ecc_level.name());
 
         // Populate the grid. Each grid entry represents one module, and contains information about
         // whether that module is ON or OFF in the least-significant nibble (0x?1 = ON, 0x?0 = OFF),
@@ -616,7 +616,7 @@ public class QrCode extends Symbol {
         }
 
         bitmask = applyBitmask(grid, size, ecc_level, encodeInfo);
-        infoLine("Mask Pattern: " + maskToString(bitmask));
+        infoLine("Mask Pattern: ", maskToString(bitmask));
         addFormatInfo(grid, size, ecc_level, bitmask);
         customize(grid, size);
 

@@ -60,7 +60,7 @@ public class Nve18 extends Symbol {
             check = 0;
         }
 
-        infoLine("NVE Check Digit: " + check);
+        infoLine("NVE Check Digit: ", check);
 
         content = "[00]" + gs1 + check;
 

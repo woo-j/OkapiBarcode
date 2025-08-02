@@ -91,11 +91,11 @@ public class RoyalMail4State extends Symbol {
         }
         int check = (6 * row) + column;
         dest.append(ROYAL_TABLE[check]);
-        infoLine("Check Digit: " + check);
+        infoLine("Check Digit: ", check);
 
         /* stop character */
         dest.append('F');
-        infoLine("Encoding: " + dest);
+        infoLine("Encoding: ", dest);
 
         readable = "";
         pattern = new String[] { dest.toString() };

@@ -937,11 +937,11 @@ public class Pdf417 extends Symbol {
         }
         infoLine();
         infoLine("Length Descriptor Codewords: 1");
-        infoLine("Data Codewords: " + dataCount);
-        infoLine("Padding Codewords: " + padCount);
-        infoLine("Macro Codewords: " + macroCount);
-        infoLine("ECC Codewords: " + k);
-        infoLine("Total Codewords: " + (columns * rows));
+        infoLine("Data Codewords: ", dataCount);
+        infoLine("Padding Codewords: ", padCount);
+        infoLine("Macro Codewords: ", macroCount);
+        infoLine("ECC Codewords: ", k);
+        infoLine("Total Codewords: ", columns * rows);
 
         /* 796 - we now take care of the Reed Solomon codes */
         switch (selectedECCLevel) {
@@ -1132,11 +1132,11 @@ public class Pdf417 extends Symbol {
             infoSpace(codeWords[i]);
         }
         infoLine();
-        infoLine("Data Codewords: " + dataCount);
-        infoLine("Padding Codewords: " + padCount);
-        infoLine("Macro Codewords: " + macroCount);
-        infoLine("ECC Codewords: " + k);
-        infoLine("Total Codewords: " + (columns * rows));
+        infoLine("Data Codewords: ", dataCount);
+        infoLine("Padding Codewords: ", padCount);
+        infoLine("Macro Codewords: ", macroCount);
+        infoLine("ECC Codewords: ", k);
+        infoLine("Total Codewords: ", columns * rows);
 
         /* Reed-Solomon error correction */
         longueur = codeWordCount;

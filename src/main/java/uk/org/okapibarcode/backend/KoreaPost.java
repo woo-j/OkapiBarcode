@@ -60,7 +60,7 @@ public class KoreaPost extends Symbol {
             check = 0;
         }
         accumulator.append(KOREA_TABLE[check]);
-        infoLine("Check Digit: " + check);
+        infoLine("Check Digit: ", check);
 
         readable = padded.toString() + check;
         pattern = new String[] { accumulator.toString() };

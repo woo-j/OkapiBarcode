@@ -387,8 +387,8 @@ public class MaxiCode extends Symbol {
             codewords[20 + secondaryMax + (2 * i)] = secondaryECEven[i];
         }
 
-        infoLine("Mode: " + mode);
-        infoLine("ECC Codewords: " + secondaryECMax);
+        infoLine("Mode: ", mode);
+        infoLine("ECC Codewords: ", secondaryECMax);
         info("Codewords: ");
         for (int i = 0; i < codewords.length; i++) {
             infoSpace(codewords[i]);
@@ -502,9 +502,9 @@ public class MaxiCode extends Symbol {
             postalCode = new String(chars);
         }
 
-        infoLine("Postal Code: " + postalCode);
-        infoLine("Country Code: " + country);
-        infoLine("Service: " + service);
+        infoLine("Postal Code: ", postalCode);
+        infoLine("Country Code: ", country);
+        infoLine("Service: ", service);
 
         if (mode == 2) {
             return getMode2PrimaryCodewords(postalCode, country, service);

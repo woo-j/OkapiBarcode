@@ -506,8 +506,8 @@ public class DataMatrix extends Symbol {
         }
 
         infoLine("Grid Size: " + W + " X " + H);
-        infoLine("Data Codewords: " + datablock);
-        infoLine("ECC Codewords: " + rsblock);
+        infoLine("Data Codewords: ", datablock);
+        infoLine("ECC Codewords: ", rsblock);
     }
 
     @Override

@@ -400,10 +400,10 @@ public class GridMatrix extends Symbol {
         size = 6 + (layers * 12);
         modules = 1 + (layers * 2);
 
-        infoLine("Layers: " + layers);
-        infoLine("ECC Level: " + ecc_level);
-        infoLine("Data Codewords: " + data_cw);
-        infoLine("ECC Codewords: " + GM_DATA_CODEWORDS[((layers - 1) * 5) + (ecc_level - 1)]);
+        infoLine("Layers: ", layers);
+        infoLine("ECC Level: ", ecc_level);
+        infoLine("Data Codewords: ", data_cw);
+        infoLine("ECC Codewords: ", GM_DATA_CODEWORDS[((layers - 1) * 5) + (ecc_level - 1)]);
         infoLine("Grid Size: " + modules + " X " + modules);
 
         grid = new boolean[size * size];

@@ -150,13 +150,43 @@ publishing {
     }
     repositories {
         maven {
-            url = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
+            url = 'https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/'
             credentials {
                 username = sonatypeUsername
                 password = sonatypePassword
             }
         }
     }
+}
+
+task promote {
+    // extra manual step required by the Maven Central Publishing Portal which replaced the OSSRH service in June 2025
+    // https://central.sonatype.org/news/20250326_ossrh_sunset/
+    group = 'publishing'
+    description = 'Promotes staged artifacts to the Maven Central Publisher Portal, where they can be manually released or dropped.'
+    onlyIf { project.hasProperty('sonatypeUsername') && project.hasProperty('sonatypePassword') }
+    doLast {
+        def url = "https://ossrh-staging-api.central.sonatype.com/manual/upload/defaultRepository/${project.group}"
+        def token = "${sonatypeUsername}:${sonatypePassword}".bytes.encodeBase64().toString()
+        def conn = new URL(url).openConnection()
+        conn.setRequestMethod("POST")
+        conn.setRequestProperty("Authorization", "Bearer ${token}")
+        def status = conn.responseCode
+        if (status == 200) {
+            project.logger.lifecycle("Successfully promoted repository, ready for review at https://central.sonatype.com/publishing/deployments");
+        } else {
+            def errorStream = conn.errorStream
+            def errorBody = errorStream ? errorStream.text : "No error body available"
+            project.logger.error("Failed to promote repository")
+            project.logger.error("Response code: ${status}")
+            project.logger.error("Response message: ${conn.responseMessage}")
+            project.logger.error("Error body: ${errorBody}")
+        }
+    }
+}
+
+tasks.matching { it.name == 'publish' }.configureEach { publishTask ->
+    publishTask.finalizedBy tasks.promote
 }
 
 signing {

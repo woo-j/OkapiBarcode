@@ -12,12 +12,12 @@ repositories {
 
 dependencies {
     implementation 'com.beust:jcommander:1.82'
-    testImplementation 'com.google.zxing:javase:3.5.3'
+    testImplementation 'com.google.zxing:javase:3.5.4'
     testImplementation 'org.reflections:reflections:0.10.2'
     testImplementation 'com.code-intelligence:jazzer-junit:0.22.1'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.1'
-    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.11.1'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.11.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.14.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.14.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.14.1'
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)

@@ -1345,16 +1345,13 @@ public class QrCode extends Symbol {
         grid[((size - 8) * size) + 7] = 0x10;
 
         /* Add alignment patterns */
-        if (version != 1) {
-            /* Version 1 does not have alignment patterns */
-            int loopsize = QR_ALIGN_LOOPSIZE[version - 1];
-            for (int x = 0; x < loopsize; x++) {
-                for (int y = 0; y < loopsize; y++) {
-                    int xcoord = QR_TABLE_E1[((version - 2) * 7) + x];
-                    int ycoord = QR_TABLE_E1[((version - 2) * 7) + y];
-                    if ((grid[(ycoord * size) + xcoord] & 0x10) == 0) {
-                        placeAlign(grid, size, xcoord, ycoord);
-                    }
+        int loopsize = QR_ALIGN_LOOPSIZE[version - 1];
+        for (int x = 0; x < loopsize; x++) {
+            for (int y = 0; y < loopsize; y++) {
+                int xcoord = QR_TABLE_E1[((version - 2) * 7) + x];
+                int ycoord = QR_TABLE_E1[((version - 2) * 7) + y];
+                if ((grid[(ycoord * size) + xcoord] & 0x10) == 0) {
+                    placeAlign(grid, size, xcoord, ycoord);
                 }
             }
         }
@@ -1501,7 +1498,6 @@ public class QrCode extends Symbol {
         /* Perform data masking */
         for (x = 0; x < size; x++) {
             for (y = 0; y < size; y++) {
-                mask[(y * size) + x] = 0x00;
                 // all eight bit mask variants are encoded in the 8 bits of the bytes that make up the mask array
                 if ((grid[(y * size) + x] & 0xf0) == 0) { // exclude areas not to be masked
                     if (((y + x) & 1) == 0) {

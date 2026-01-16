@@ -1,7 +1,7 @@
 # Okapi Barcode
 
 [![License](https://img.shields.io/badge/License-Apache%202-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/uk.org.okapibarcode/okapibarcode/badge.svg)](https://maven-badges.herokuapp.com/maven-central/uk.org.okapibarcode/okapibarcode)
+[![Maven Central](https://img.shields.io/maven-central/v/uk.org.okapibarcode/okapibarcode?color=31c653&label=Maven%20Central)](https://central.sonatype.com/artifact/uk.org.okapibarcode/okapibarcode)
 [![Reproducible Builds](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/jvm-repo-rebuild/reproducible-central/master/content/uk/org/okapibarcode/okapibarcode/badge.json)](https://github.com/jvm-repo-rebuild/reproducible-central/blob/master/content/uk/org/okapibarcode/okapibarcode/README.md)
 [![Code Coverage](https://codecov.io/gh/woo-j/OkapiBarcode/branch/master/graph/badge.svg)](https://codecov.io/gh/woo-j/OkapiBarcode/branch/master)
 

@@ -160,6 +160,9 @@ and data.
 
 ### Recent Releases
 
+#### Okapi Barcode 0.5.3
+- Performance improvements for 2D matrix barcodes (Data Matrix, QR Code, etc)
+
 #### Okapi Barcode 0.5.2
 - QR Code: add support for structured append
 

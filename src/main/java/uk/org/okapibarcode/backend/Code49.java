@@ -1346,8 +1346,7 @@ public class Code49 extends Symbol {
                         h = row_height[yBlock];
                     }
                     if (w != 0 && h != 0) {
-                        Rectangle rect = new Rectangle(x, y, w, h);
-                        rectangles.add(rect);
+                        addRectangle(new Rectangle(x, y, w, h));
                     }
                     if (x + w > symbol_width) {
                         symbol_width = x + w;
@@ -1364,15 +1363,15 @@ public class Code49 extends Symbol {
             /* Add bars between rows */
             if (yBlock != row_count - 1) {
                 Rectangle rect = new Rectangle(15, y - 1, symbol_width - 15, 2);
-                rectangles.add(rect);
+                addRectangle(rect);
             }
         }
 
         /* Add top and bottom binding bars */
         Rectangle top = new Rectangle(0, 0, symbol_width + 15, 2);
-        rectangles.add(top);
+        addRectangle(top);
         Rectangle bottom = new Rectangle(0, y - 1, symbol_width + 15, 2);
-        rectangles.add(bottom);
+        addRectangle(bottom);
         symbol_width += 15;
         symbol_height += 1;
     }

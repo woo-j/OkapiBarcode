@@ -385,7 +385,7 @@ public class Upc extends Symbol {
                     }
                 }
                 Rectangle rect = new Rectangle(scale(x), y + compositeOffset + hrtOffset, scale(w), h);
-                rectangles.add(rect);
+                addRectangle(rect);
                 symbol_width = Math.max(symbol_width, (int) (rect.x + rect.width));
                 symbol_height = Math.max(symbol_height, (int) rect.height);
             }
@@ -397,15 +397,15 @@ public class Upc extends Symbol {
         /* Add separator for composite symbology, if necessary */
         if (linkageFlag) {
             if (mode == Mode.UPCA) {
-                rectangles.add(new Rectangle(scale(0),  0, scale(1), 2));
-                rectangles.add(new Rectangle(scale(94), 0, scale(1), 2));
-                rectangles.add(new Rectangle(scale(-1), 2, scale(1), 2));
-                rectangles.add(new Rectangle(scale(95), 2, scale(1), 2));
+                addRectangle(new Rectangle(scale(0),  0, scale(1), 2));
+                addRectangle(new Rectangle(scale(94), 0, scale(1), 2));
+                addRectangle(new Rectangle(scale(-1), 2, scale(1), 2));
+                addRectangle(new Rectangle(scale(95), 2, scale(1), 2));
             } else { // UPCE
-                rectangles.add(new Rectangle(scale(0),  0, scale(1), 2));
-                rectangles.add(new Rectangle(scale(50), 0, scale(1), 2));
-                rectangles.add(new Rectangle(scale(-1), 2, scale(1), 2));
-                rectangles.add(new Rectangle(scale(51), 2, scale(1), 2));
+                addRectangle(new Rectangle(scale(0),  0, scale(1), 2));
+                addRectangle(new Rectangle(scale(50), 0, scale(1), 2));
+                addRectangle(new Rectangle(scale(-1), 2, scale(1), 2));
+                addRectangle(new Rectangle(scale(51), 2, scale(1), 2));
             }
             symbol_height += 4;
         }
@@ -445,7 +445,7 @@ public class Upc extends Symbol {
                 texts.add(new TextBox(baseX + t.x, baseY + t.y, t.width, t.text, t.alignment));
             }
             for (Rectangle r : addOn.getRectangles()) {
-                rectangles.add(new Rectangle(baseX + r.x, baseY + r.y, r.width, r.height));
+                addRectangle(new Rectangle(baseX + r.x, baseY + r.y, r.width, r.height));
             }
             symbol_width += scale(gap) + addOn.symbol_width;
             pattern[0] = pattern[0] + gap + addOn.pattern[0];

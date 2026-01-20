@@ -643,8 +643,8 @@ public class Composite extends Symbol {
     @Override
     protected void encode() {
 
-        List < Rectangle > combine_rect = new ArrayList<>();
-        List < TextBox > combine_txt = new ArrayList<>();
+        List< Rectangle > combine_rect = new ArrayList<>();
+        List< TextBox > combine_txt = new ArrayList<>();
         int top_shift = 0; // 2D component x-coordinate shift
         int bottom_shift = 0; // linear component x-coordinate shift
         linearWidth = 0;
@@ -813,7 +813,7 @@ public class Composite extends Symbol {
             }
         }
 
-        rectangles = combine_rect;
+        setRectangles(rectangles);
         texts = combine_txt;
         symbol_height += linear.symbol_height + extraSepHeight;
         symbol_width = max_x;

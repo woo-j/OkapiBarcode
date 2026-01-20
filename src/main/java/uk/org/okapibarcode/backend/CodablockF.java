@@ -840,8 +840,7 @@ public class CodablockF extends Symbol {
                 if (black) {
                     h = row_height[yBlock];
                     if (w != 0 && h != 0) {
-                        Rectangle rect = new Rectangle(x, y, w, h);
-                        rectangles.add(rect);
+                        addRectangle(new Rectangle(x, y, w, h));
                     }
                     if ((x + w) > symbol_width) {
                         symbol_width = x + w;
@@ -857,13 +856,13 @@ public class CodablockF extends Symbol {
             /* Add bars between rows */
             if (yBlock != (row_count - 1)) {
                 Rectangle rect = new Rectangle(11 * moduleWidth, y - 1, symbol_width - (24 * moduleWidth), 2);
-                rectangles.add(rect);
+                addRectangle(rect);
             }
         }
 
         /* Add top and bottom binding bars */
-        rectangles.add(new Rectangle(0, 0, symbol_width, 2)); // top
-        rectangles.add(new Rectangle(0, y - 1, symbol_width, 2)); // bottom
+        addRectangle(new Rectangle(0, 0, symbol_width, 2)); // top
+        addRectangle(new Rectangle(0, y - 1, symbol_width, 2)); // bottom
         symbol_height = (rows * default_height) + 2; // one extra line above, one below
     }
 }

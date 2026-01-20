@@ -29,7 +29,9 @@ import java.awt.GraphicsEnvironment;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import uk.org.okapibarcode.graphics.Circle;
@@ -109,10 +111,11 @@ public abstract class Symbol {
     protected int symbol_height = 0;
     protected int symbol_width = 0;
     protected StringBuilder encodeInfo = new StringBuilder();
-    protected List< Rectangle > rectangles = new ArrayList<>(); // note positions do not account for quiet zones (handled in renderers)
     protected List< TextBox > texts = new ArrayList<>();        // note positions do not account for quiet zones (handled in renderers)
     protected List< Hexagon > hexagons = new ArrayList<>();     // note positions do not account for quiet zones (handled in renderers)
     protected List< Circle > target = new ArrayList<>();        // note positions do not account for quiet zones (handled in renderers)
+    protected List< Rectangle > rectangles = new ArrayList<>(); // note positions do not account for quiet zones (handled in renderers)
+    protected Map< Double, Rectangle > prevRectangles = new HashMap<>(); // x-position -> last seen rectangle at that position (optimization)
 
     /**
      * <p>Sets the type of input data. This setting influences what pre-processing is done on
@@ -494,6 +497,42 @@ public abstract class Symbol {
     }
 
     /**
+     * Adds the specified rectangle to this symbol. If the specified rectangle cleanly
+     * extends another rectangle immediately above it, the existing rectangle is updated
+     * instead, so as to minimize the number of rectangles which must be drawn.
+     *
+     * @param rect the rectangle to add
+     */
+    protected void addRectangle(Rectangle rect) {
+        Rectangle prev = prevRectangles.get(rect.x);
+        if (prev != null &&
+            roughlyEqual(prev.width, rect.width) &&
+            roughlyEqual(prev.y + prev.height, rect.y)) {
+            prev.height += rect.height;
+        } else {
+            rectangles.add(rect);
+            prevRectangles.put(rect.x, rect);
+        }
+    }
+
+    /**
+     * Removes the existing rectangles from this symbol and replaces them with the
+     * specified rectangles. If any rectangles can be merged, they are merged during
+     * this process.
+     *
+     * @param rects the new rectangles
+     */
+    protected void setRectangles(List< Rectangle > rects) {
+
+        rectangles.clear();
+        prevRectangles.clear();
+
+        for (Rectangle rect : rects) {
+            addRectangle(rect);
+        }
+    }
+
+    /**
      * Returns render information about the rectangles in this symbol.
      *
      * @return render information about the rectangles in this symbol
@@ -626,7 +665,6 @@ public abstract class Symbol {
 
         encode();
         plotSymbol();
-        mergeVerticalBlocks();
     }
 
     /**
@@ -799,8 +837,7 @@ public abstract class Symbol {
                         h = row_height[yBlock];
                     }
                     if (w != 0 && h != 0) {
-                        Rectangle rect = new Rectangle(x, y, w, h);
-                        rectangles.add(rect);
+                        addRectangle(new Rectangle(x, y, w, h));
                     }
                     if (x + w > symbol_width) {
                         symbol_width = (int) Math.ceil(x + w);
@@ -824,15 +861,18 @@ public abstract class Symbol {
             }
             texts.add(new TextBox(0, baseline, symbol_width, readable, humanReadableAlignment));
         }
+
+        infoLine("Blocks: ", rectangles.size());
     }
 
     protected void resetPlotElements() {
         symbol_height = 0;
         symbol_width = 0;
-        rectangles.clear();
         texts.clear();
         hexagons.clear();
         target.clear();
+        rectangles.clear();
+        prevRectangles.clear();
     }
 
     /**
@@ -844,43 +884,6 @@ public abstract class Symbol {
      */
     protected double getModuleWidth(int originalWidth) {
         return originalWidth;
-    }
-
-    /**
-     * Search for rectangles which have the same width and x position, and which join together vertically
-     * and merge them together to reduce the number of rectangles needed to describe a symbol. This can
-     * actually take a non-trivial amount of time for symbols with a large number of rectangles (like
-     * large PDF417 symbols) so we exploit the fact that the rectangles are ordered by rows (and within
-     * the rows that they are ordered by x position).
-     */
-    protected void mergeVerticalBlocks() {
-
-        int before = rectangles.size();
-
-        for (int i = rectangles.size() - 1; i >= 0; i--) {
-            Rectangle rect1 = rectangles.get(i);
-            for (int j = i - 1; j >= 0; j--) {
-                Rectangle rect2 = rectangles.get(j);
-                if (roughlyEqual(rect1.y, rect2.y + rect2.height)) {
-                    // rect2 is in the segment of rectangles for the row directly above rect1
-                    if (roughlyEqual(rect1.x, rect2.x) && roughlyEqual(rect1.width, rect2.width)) {
-                        // we've found a match; merge the rectangles
-                        rect2.height += rect1.height;
-                        rectangles.remove(i);
-                        break;
-                    }
-                    if (rect2.x < rect1.x) {
-                        // we've moved past any rectangles that might be directly above rect1
-                        break;
-                    }
-                }
-            }
-        }
-
-        int after = rectangles.size();
-        if (before != after) {
-            infoLine("Blocks Merged: " + before + " -> " + after);
-        }
     }
 
     /**

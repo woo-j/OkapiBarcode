@@ -104,8 +104,7 @@ public class Pharmacode2Track extends Symbol {
                     h = default_height;
                     break;
             }
-            Rectangle rect = new Rectangle(x, y, w, h);
-            rectangles.add(rect);
+            addRectangle(new Rectangle(x, y, w, h));
             x += 2 * w;
         }
 

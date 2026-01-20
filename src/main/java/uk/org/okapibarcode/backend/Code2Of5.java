@@ -451,8 +451,7 @@ public class Code2Of5 extends Symbol {
                     h = row_height[0];
                 }
                 if (w != 0 && h != 0) {
-                    Rectangle rect = new Rectangle(x + offset, y, w, h);
-                    rectangles.add(rect);
+                    addRectangle(new Rectangle(x + offset, y, w, h));
                 }
                 symbol_width = (int) Math.ceil(x + w + (2 * offset));
             }
@@ -468,10 +467,10 @@ public class Code2Of5 extends Symbol {
             Rectangle bottomBar = new Rectangle(0, baseY + symbol_height - 4, symbol_width, 4);
             Rectangle leftBar = new Rectangle(0, baseY, 4, symbol_height);
             Rectangle rightBar = new Rectangle(symbol_width - 4, baseY, 4, symbol_height);
-            rectangles.add(topBar);
-            rectangles.add(bottomBar);
-            rectangles.add(leftBar);
-            rectangles.add(rightBar);
+            addRectangle(topBar);
+            addRectangle(bottomBar);
+            addRectangle(leftBar);
+            addRectangle(rightBar);
         }
 
         if (humanReadableLocation != NONE && !readable.isEmpty()) {

@@ -374,8 +374,7 @@ public class AustraliaPost extends Symbol {
                     h = 2;
                     break;
             }
-            Rectangle rect = new Rectangle(x, y, w, h);
-            rectangles.add(rect);
+            addRectangle(new Rectangle(x, y, w, h));
             x += 2;
         }
 

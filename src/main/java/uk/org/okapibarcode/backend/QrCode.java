@@ -1639,14 +1639,14 @@ public class QrCode extends Symbol {
                 if (local[i] == state) {
                     block++;
                 } else {
-                    if (block > 5) {
+                    if (block >= 5) {
                         result += (3 + (block - 5));
                     }
                     block = 0;
                     state = local[i];
                 }
             }
-            if (block > 5) {
+            if (block >= 5) {
                 result += (3 + (block - 5));
             }
         }
@@ -1660,14 +1660,14 @@ public class QrCode extends Symbol {
                 if (local[i] == state) {
                     block++;
                 } else {
-                    if (block > 5) {
+                    if (block >= 5) {
                         result += (3 + (block - 5));
                     }
                     block = 0;
                     state = local[i];
                 }
             }
-            if (block > 5) {
+            if (block >= 5) {
                 result += (3 + (block - 5));
             }
         }

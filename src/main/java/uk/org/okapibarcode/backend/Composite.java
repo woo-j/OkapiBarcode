@@ -813,7 +813,10 @@ public class Composite extends Symbol {
             }
         }
 
-        setRectangles(rectangles);
+        int compositeMerged = rectanglesMerged;
+        setRectangles(combine_rect);
+        rectanglesMerged += compositeMerged;
+
         texts = combine_txt;
         symbol_height += linear.symbol_height + extraSepHeight;
         symbol_width = max_x;

@@ -294,6 +294,21 @@ public class Ean extends Symbol {
 
         x = 0;
 
+        /* Add top separator for composite symbology, if necessary */
+        if (linkageFlag) {
+            if (mode == Mode.EAN13) {
+                addRectangle(new Rectangle(scale(0),  0, scale(1), 2));
+                addRectangle(new Rectangle(scale(94), 0, scale(1), 2));
+                addRectangle(new Rectangle(scale(-1), 2, scale(1), 2));
+                addRectangle(new Rectangle(scale(95), 2, scale(1), 2));
+            } else { // EAN8
+                addRectangle(new Rectangle(scale(0),  0, scale(1), 2));
+                addRectangle(new Rectangle(scale(66), 0, scale(1), 2));
+                addRectangle(new Rectangle(scale(-1), 2, scale(1), 2));
+                addRectangle(new Rectangle(scale(67), 2, scale(1), 2));
+            }
+        }
+
         /* Draw the bars in the symbology */
         for (xBlock = 0; xBlock < pattern[0].length(); xBlock++) {
 
@@ -323,27 +338,11 @@ public class Ean extends Symbol {
                 Rectangle rect = new Rectangle(scale(x), y + compositeOffset + hrtOffset, scale(w), h);
                 addRectangle(rect);
                 symbol_width = Math.max(symbol_width, (int) (rect.x + rect.width));
-                symbol_height = Math.max(symbol_height, (int) rect.height);
+                symbol_height = Math.max(symbol_height, (int) (rect.y + rect.height - hrtOffset));
             }
 
             black = !black;
             x += w;
-        }
-
-        /* Add separator for composite symbology, if necessary */
-        if (linkageFlag) {
-            if (mode == Mode.EAN13) {
-                addRectangle(new Rectangle(scale(0),  0, scale(1), 2));
-                addRectangle(new Rectangle(scale(94), 0, scale(1), 2));
-                addRectangle(new Rectangle(scale(-1), 2, scale(1), 2));
-                addRectangle(new Rectangle(scale(95), 2, scale(1), 2));
-            } else { // EAN8
-                addRectangle(new Rectangle(scale(0),  0, scale(1), 2));
-                addRectangle(new Rectangle(scale(66), 0, scale(1), 2));
-                addRectangle(new Rectangle(scale(-1), 2, scale(1), 2));
-                addRectangle(new Rectangle(scale(67), 2, scale(1), 2));
-            }
-            symbol_height += 4;
         }
 
         /* Now add the text */

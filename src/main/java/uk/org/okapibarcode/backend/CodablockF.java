@@ -17,6 +17,8 @@
 package uk.org.okapibarcode.backend;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 import uk.org.okapibarcode.graphics.Rectangle;
 
@@ -823,6 +825,8 @@ public class CodablockF extends Symbol {
 
     @Override
     protected void plotSymbol() {
+
+        List< Rectangle > dividers = new ArrayList<>();
         int xBlock, yBlock;
         int x, y, w, h;
         boolean black;
@@ -853,11 +857,14 @@ public class CodablockF extends Symbol {
             if (y > symbol_height) {
                 symbol_height = y;
             }
-            /* Add bars between rows */
             if (yBlock != (row_count - 1)) {
-                Rectangle rect = new Rectangle(11 * moduleWidth, y - 1, symbol_width - (24 * moduleWidth), 2);
-                addRectangle(rect);
+                dividers.add(new Rectangle(11 * moduleWidth, y - 1, symbol_width - (24 * moduleWidth), 2));
             }
+        }
+
+        /* Add bars between rows last, so they do not interfere with rectangle merging */
+        for (Rectangle divider : dividers) {
+            addRectangle(divider);
         }
 
         /* Add top and bottom binding bars */

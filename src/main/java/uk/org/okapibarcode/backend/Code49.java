@@ -19,6 +19,8 @@ package uk.org.okapibarcode.backend;
 import static uk.org.okapibarcode.util.Arrays.positionOf;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 import uk.org.okapibarcode.graphics.Rectangle;
 
@@ -1325,6 +1327,7 @@ public class Code49 extends Symbol {
     @Override
     protected void plotSymbol() {
 
+        List< Rectangle > dividers = new ArrayList<>();
         int xBlock, yBlock;
         int x, y, w, h;
         boolean black;
@@ -1338,7 +1341,6 @@ public class Code49 extends Symbol {
             x = 15;
             for (xBlock = 0; xBlock < pattern[yBlock].length(); xBlock++) {
                 if (black) {
-                    black = false;
                     w = pattern[yBlock].charAt(xBlock) - '0';
                     if (row_height[yBlock] == -1) {
                         h = default_height;
@@ -1351,20 +1353,22 @@ public class Code49 extends Symbol {
                     if (x + w > symbol_width) {
                         symbol_width = x + w;
                     }
-                } else {
-                    black = true;
                 }
+                black = !black;
                 x += pattern[yBlock].charAt(xBlock) - '0';
             }
             y += h;
             if (y > symbol_height) {
                 symbol_height = y;
             }
-            /* Add bars between rows */
             if (yBlock != row_count - 1) {
-                Rectangle rect = new Rectangle(15, y - 1, symbol_width - 15, 2);
-                addRectangle(rect);
+                dividers.add(new Rectangle(15, y - 1, symbol_width - 15, 2));
             }
+        }
+
+        /* Add bars between rows last, so they do not interfere with rectangle merging */
+        for (Rectangle divider : dividers) {
+            addRectangle(divider);
         }
 
         /* Add top and bottom binding bars */

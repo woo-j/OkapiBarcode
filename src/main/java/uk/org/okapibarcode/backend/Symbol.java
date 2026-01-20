@@ -116,6 +116,7 @@ public abstract class Symbol {
     protected List< Circle > target = new ArrayList<>();        // note positions do not account for quiet zones (handled in renderers)
     protected List< Rectangle > rectangles = new ArrayList<>(); // note positions do not account for quiet zones (handled in renderers)
     protected Map< Double, Rectangle > prevRectangles = new HashMap<>(); // x-position -> last seen rectangle at that position (optimization)
+    protected int rectanglesMerged;
 
     /**
      * <p>Sets the type of input data. This setting influences what pre-processing is done on
@@ -497,9 +498,12 @@ public abstract class Symbol {
     }
 
     /**
-     * Adds the specified rectangle to this symbol. If the specified rectangle cleanly
+     * <p>Adds the specified rectangle to this symbol. If the specified rectangle cleanly
      * extends another rectangle immediately above it, the existing rectangle is updated
      * instead, so as to minimize the number of rectangles which must be drawn.
+     *
+     * <p>IMPORTANT: Rectangle merging requires that rectangles be added in order, from
+     * top to bottom.
      *
      * @param rect the rectangle to add
      */
@@ -509,6 +513,7 @@ public abstract class Symbol {
             roughlyEqual(prev.width, rect.width) &&
             roughlyEqual(prev.y + prev.height, rect.y)) {
             prev.height += rect.height;
+            rectanglesMerged++;
         } else {
             rectangles.add(rect);
             prevRectangles.put(rect.x, rect);
@@ -516,9 +521,12 @@ public abstract class Symbol {
     }
 
     /**
-     * Removes the existing rectangles from this symbol and replaces them with the
+     * <p>Removes the existing rectangles from this symbol and replaces them with the
      * specified rectangles. If any rectangles can be merged, they are merged during
      * this process.
+     *
+     * <p>IMPORTANT: Rectangle merging requires that rectangles are ordered from top
+     * to bottom.
      *
      * @param rects the new rectangles
      */
@@ -526,6 +534,7 @@ public abstract class Symbol {
 
         rectangles.clear();
         prevRectangles.clear();
+        rectanglesMerged = 0;
 
         for (Rectangle rect : rects) {
             addRectangle(rect);
@@ -665,6 +674,12 @@ public abstract class Symbol {
 
         encode();
         plotSymbol();
+
+        if (rectanglesMerged > 0) {
+            int count2 = rectangles.size();
+            int count1 = count2 + rectanglesMerged;
+            infoLine("Blocks Merged: " + count1 + " -> " + count2);
+        }
     }
 
     /**
@@ -861,8 +876,6 @@ public abstract class Symbol {
             }
             texts.add(new TextBox(0, baseline, symbol_width, readable, humanReadableAlignment));
         }
-
-        infoLine("Blocks: ", rectangles.size());
     }
 
     protected void resetPlotElements() {
@@ -873,6 +886,7 @@ public abstract class Symbol {
         target.clear();
         rectangles.clear();
         prevRectangles.clear();
+        rectanglesMerged = 0;
     }
 
     /**

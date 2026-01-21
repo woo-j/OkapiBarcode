@@ -33,9 +33,13 @@ public class ReedSolomon {
     private int[] alog;
     private int[] rspoly;
 
-    public static ReedSolomon get(int poly, int nsym, int index) {
-        Key key = new Key(poly, nsym, index);
-        return INSTANCES.computeIfAbsent(key, k -> new ReedSolomon(k.poly, k.nsym, k.index));
+    public static ReedSolomon get(int poly, int nsym, int index, boolean cache) {
+        if (cache) {
+            Key key = new Key(poly, nsym, index);
+            return INSTANCES.computeIfAbsent(key, k -> new ReedSolomon(k.poly, k.nsym, k.index));
+        } else {
+            return new ReedSolomon(poly, nsym, index);
+        }
     }
 
     private ReedSolomon(int poly, int nsym, int index) {

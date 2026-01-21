@@ -1010,7 +1010,7 @@ public class MicroQrCode extends Symbol {
         infoLine();
 
         /* Calculate Reed-Solomon error codewords */
-        ReedSolomon rs = ReedSolomon.get(0x11d, ecc_codewords, 0);
+        ReedSolomon rs = ReedSolomon.get(0x11d, ecc_codewords, 0, true);
         int[] result = rs.encode(data_codewords, data_blocks);
         System.arraycopy(result, 0, ecc_blocks, 0, ecc_codewords);
 
@@ -1095,7 +1095,7 @@ public class MicroQrCode extends Symbol {
         infoLine();
 
         /* Calculate Reed-Solomon error codewords */
-        ReedSolomon rs = ReedSolomon.get(0x11d, ecc_codewords, 0);
+        ReedSolomon rs = ReedSolomon.get(0x11d, ecc_codewords, 0, true);
         int[] result = rs.encode(data_codewords, data_blocks);
         System.arraycopy(result, 0, ecc_blocks, 0, ecc_codewords);
 
@@ -1228,7 +1228,7 @@ public class MicroQrCode extends Symbol {
         infoLine();
 
         /* Calculate Reed-Solomon error codewords */
-        ReedSolomon rs = ReedSolomon.get(0x11d, ecc_codewords, 0);
+        ReedSolomon rs = ReedSolomon.get(0x11d, ecc_codewords, 0, true);
         int[] result = rs.encode(data_codewords, data_blocks);
         System.arraycopy(result, 0, ecc_blocks, 0, ecc_codewords);
 
@@ -1320,7 +1320,7 @@ public class MicroQrCode extends Symbol {
         infoLine();
 
         /* Calculate Reed-Solomon error codewords */
-        ReedSolomon rs = ReedSolomon.get(0x11d, ecc_codewords, 0);
+        ReedSolomon rs = ReedSolomon.get(0x11d, ecc_codewords, 0, true);
         int[] result = rs.encode(data_codewords, data_blocks);
         System.arraycopy(result, 0, ecc_blocks, 0, ecc_codewords);
 

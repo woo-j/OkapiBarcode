@@ -940,7 +940,7 @@ public class MaxiCode extends Symbol {
      */
     private static int[] getErrorCorrection(int[] codewords, int ecclen) {
 
-        ReedSolomon rs = ReedSolomon.get(0x43, ecclen, 1);
+        ReedSolomon rs = ReedSolomon.get(0x43, ecclen, 1, true);
         int[] result = rs.encode(codewords.length, codewords);
 
         int[] ecc = new int[ecclen];

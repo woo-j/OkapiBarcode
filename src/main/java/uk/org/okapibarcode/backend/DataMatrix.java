@@ -1512,7 +1512,7 @@ public class DataMatrix extends Symbol {
 
     private void calculateErrorCorrection(int bytes, int datablock, int rsblock, int skew) {
         // calculate and append ecc code, and if necessary interleave
-        ReedSolomon rs = ReedSolomon.get(0x12d, rsblock, 1);
+        ReedSolomon rs = ReedSolomon.get(0x12d, rsblock, 1, true);
         int blocks = (bytes + 2) / datablock, b;
         int n, p;
         for (b = 0; b < blocks; b++) {

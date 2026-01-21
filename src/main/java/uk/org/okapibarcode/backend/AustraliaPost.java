@@ -327,7 +327,7 @@ public class AustraliaPost extends Symbol {
                             + barStateToDecimal(oldBarStateValues.charAt(barStateCount + 2), 0);
         }
 
-        ReedSolomon rs = ReedSolomon.get(0x43, 4, 1);
+        ReedSolomon rs = ReedSolomon.get(0x43, 4, 1, true);
         int[] result = rs.encode(tripleValueCount, tripleValue);
 
         StringBuilder newBarStateValues = new StringBuilder();

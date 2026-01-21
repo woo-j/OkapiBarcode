@@ -202,7 +202,7 @@ public class CodeOne extends Symbol {
 
             logCodewords(codewords);
 
-            ReedSolomon rs = ReedSolomon.get(0x25, codewords, 1);
+            ReedSolomon rs = ReedSolomon.get(0x25, codewords, 1, true);
             int[] result = rs.encode(codewords, data);
 
             infoLine("ECC Codeword Count: ", codewords);
@@ -301,7 +301,7 @@ public class CodeOne extends Symbol {
             }
 
             /* Calculate error correction data */
-            ReedSolomon rs = ReedSolomon.get(0x12d, ecc_cw, 1);
+            ReedSolomon rs = ReedSolomon.get(0x12d, ecc_cw, 1, true);
             int[] result = rs.encode(data_cw, data);
 
             infoLine("ECC Codeword Count: ", ecc_cw);
@@ -387,7 +387,7 @@ public class CodeOne extends Symbol {
 
             data_blocks = C1_BLOCKS[size - 1];
 
-            ReedSolomon rs = ReedSolomon.get(0x12d, C1_ECC_BLOCKS[size - 1], 0);
+            ReedSolomon rs = ReedSolomon.get(0x12d, C1_ECC_BLOCKS[size - 1], 0, true);
             for (i = 0; i < data_blocks; i++) {
                 for (j = 0; j < C1_DATA_BLOCKS[size - 1]; j++) {
                     sub_data[j] = data[j * data_blocks + i];

@@ -1773,7 +1773,7 @@ public class GridMatrix extends Symbol {
             }
 
             /* Calculate ECC data for this block */
-            ReedSolomon rs = ReedSolomon.get(0x89, ecc_size, 1);
+            ReedSolomon rs = ReedSolomon.get(0x89, ecc_size, 1, true);
             int[] result = rs.encode(data_size, data_block);
             System.arraycopy(result, 0, ecc_block, 0, ecc_size);
 

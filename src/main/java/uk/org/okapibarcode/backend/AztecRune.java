@@ -105,7 +105,7 @@ public class AztecRune extends Symbol {
 
         int[] errorCorrectionCodeword = new int[6];
 
-        ReedSolomon rs = ReedSolomon.get(0x13, 5, 1);
+        ReedSolomon rs = ReedSolomon.get(0x13, 5, 1, true);
         int[] result = rs.encode(2, dataCodeword);
         System.arraycopy(result, 0, errorCorrectionCodeword, 0, 5);
 

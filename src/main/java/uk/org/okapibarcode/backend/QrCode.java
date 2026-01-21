@@ -1272,7 +1272,7 @@ public class QrCode extends Symbol {
                 data_block[j] = datastream[posn + j];
             }
 
-            ReedSolomon rs = ReedSolomon.get(0x11d, ecc_block_length, 0);
+            ReedSolomon rs = ReedSolomon.get(0x11d, ecc_block_length, 0, true);
             int[] result = rs.encode(length_this_block, data_block);
             System.arraycopy(result, 0, ecc_block, 0, ecc_block_length);
 

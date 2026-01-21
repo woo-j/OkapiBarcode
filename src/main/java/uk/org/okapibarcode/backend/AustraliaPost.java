@@ -327,14 +327,13 @@ public class AustraliaPost extends Symbol {
                             + barStateToDecimal(oldBarStateValues.charAt(barStateCount + 2), 0);
         }
 
-        ReedSolomon rs = new ReedSolomon();
-        rs.init_gf(0x43);
-        rs.init_code(4, 1);
-        rs.encode(tripleValueCount, tripleValue);
+        ReedSolomon rs = ReedSolomon.get(0x43, 4, 1);
+        int[] result = rs.encode(tripleValueCount, tripleValue);
 
         StringBuilder newBarStateValues = new StringBuilder();
         for (barStateCount = 4; barStateCount > 0; barStateCount--) {
-            newBarStateValues.append(BAR_VALUE_TABLE[rs.getResult(barStateCount - 1)]);
+            int ecc = result[barStateCount - 1];
+            newBarStateValues.append(BAR_VALUE_TABLE[ecc]);
         }
 
         return newBarStateValues;

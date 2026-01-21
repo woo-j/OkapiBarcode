@@ -1710,7 +1710,6 @@ public class GridMatrix extends Symbol {
         int[] block = new int[130];
         int[] data_block = new int[115];
         int[] ecc_block = new int[70];
-        ReedSolomon rs = new ReedSolomon();
 
         data_cw = GM_DATA_CODEWORDS[((layers - 1) * 5) + (ecc_level - 1)];
 
@@ -1774,12 +1773,9 @@ public class GridMatrix extends Symbol {
             }
 
             /* Calculate ECC data for this block */
-            rs.init_gf(0x89);
-            rs.init_code(ecc_size, 1);
-            rs.encode(data_size, data_block);
-            for (j = 0; j < ecc_size; j++) {
-                ecc_block[j] = rs.getResult(j);
-            }
+            ReedSolomon rs = ReedSolomon.get(0x89, ecc_size, 1);
+            int[] result = rs.encode(data_size, data_block);
+            System.arraycopy(result, 0, ecc_block, 0, ecc_size);
 
             /* Correct error correction data but in reverse order */
             for (j = 0; j < data_size; j++) {

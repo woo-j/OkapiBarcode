@@ -1699,14 +1699,12 @@ public class AztecCode extends Symbol {
         }
 
         /* Add Reed-Solomon error correction with Galois Field GF(16) and prime modulus x^4 + x + 1 (Section 7.2.3) */
-        ReedSolomon rs = new ReedSolomon();
-        rs.init_gf(0x13);
         if (compact) {
-            rs.init_code(5, 1);
-            rs.encode(2, desc_data);
+            ReedSolomon rs = ReedSolomon.get(0x13, 5, 1);
+            int[] result = rs.encode(2, desc_data);
             int[] desc_ecc = new int[6];
             for (int i = 0; i < 5; i++) {
-                desc_ecc[i] = rs.getResult(i);
+                desc_ecc[i] = result[i];
             }
             for (int i = 0; i < 5; i++) {
                 for (int weight = 0x08; weight > 0; weight = weight >> 1) {
@@ -1718,11 +1716,11 @@ public class AztecCode extends Symbol {
                 }
             }
         } else {
-            rs.init_code(6, 1);
-            rs.encode(4, desc_data);
+            ReedSolomon rs = ReedSolomon.get(0x13, 6, 1);
+            int[] result = rs.encode(4, desc_data);
             int[] desc_ecc = new int[6];
             for (int i = 0; i < 6; i++) {
-                desc_ecc[i] = rs.getResult(i);
+                desc_ecc[i] = result[i];
             }
             for (int i = 0; i < 6; i++) {
                 for (int weight = 0x08; weight > 0; weight = weight >> 1) {
@@ -1769,7 +1767,6 @@ public class AztecCode extends Symbol {
                 throw new OkapiInternalException("Unrecognized codeword size: " + codewordSize);
         }
 
-        ReedSolomon rs = new ReedSolomon();
         int[] data = new int[dataBlocks + 3];
         int[] ecc = new int[eccBlocks + 3];
 
@@ -1781,13 +1778,9 @@ public class AztecCode extends Symbol {
             }
         }
 
-        rs.init_gf(poly);
-        rs.init_code(eccBlocks, 1);
-        rs.encode(dataBlocks, data);
-
-        for (int i = 0; i < eccBlocks; i++) {
-            ecc[i] = rs.getResult(i);
-        }
+        ReedSolomon rs = ReedSolomon.get(poly, eccBlocks, 1);
+        int[] result = rs.encode(dataBlocks, data);
+        System.arraycopy(result, 0, ecc, 0, eccBlocks);
 
         for (int i = (eccBlocks - 1); i >= 0; i--) {
             for (int weight = startWeight; weight > 0; weight = weight >> 1) {

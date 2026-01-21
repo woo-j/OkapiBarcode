@@ -920,7 +920,6 @@ public class MicroQrCode extends Symbol {
         int data_codewords, ecc_codewords;
         int[] data_blocks = new int[4];
         int[] ecc_blocks = new int[3];
-        ReedSolomon rs = new ReedSolomon();
 
         bits_total = 20;
         latch = 0;
@@ -1011,12 +1010,9 @@ public class MicroQrCode extends Symbol {
         infoLine();
 
         /* Calculate Reed-Solomon error codewords */
-        rs.init_gf(0x11d);
-        rs.init_code(ecc_codewords, 0);
-        rs.encode(data_codewords, data_blocks);
-        for (i = 0; i < ecc_codewords; i++) {
-            ecc_blocks[i] = rs.getResult(i);
-        }
+        ReedSolomon rs = ReedSolomon.get(0x11d, ecc_codewords, 0);
+        int[] result = rs.encode(data_codewords, data_blocks);
+        System.arraycopy(result, 0, ecc_blocks, 0, ecc_codewords);
 
         /* Add Reed-Solomon codewords to binary data */
         for (i = 0; i < ecc_codewords; i++) {
@@ -1030,7 +1026,6 @@ public class MicroQrCode extends Symbol {
         int data_codewords, ecc_codewords;
         int[] data_blocks = new int[6];
         int[] ecc_blocks = new int[7];
-        ReedSolomon rs = new ReedSolomon();
 
         bits_total = 40; // ecc_mode == EccMode.L
         if (ecc_mode == EccMode.M) {
@@ -1100,12 +1095,9 @@ public class MicroQrCode extends Symbol {
         infoLine();
 
         /* Calculate Reed-Solomon error codewords */
-        rs.init_gf(0x11d);
-        rs.init_code(ecc_codewords, 0);
-        rs.encode(data_codewords, data_blocks);
-        for (i = 0; i < ecc_codewords; i++) {
-            ecc_blocks[i] = rs.getResult(i);
-        }
+        ReedSolomon rs = ReedSolomon.get(0x11d, ecc_codewords, 0);
+        int[] result = rs.encode(data_codewords, data_blocks);
+        System.arraycopy(result, 0, ecc_blocks, 0, ecc_codewords);
 
         /* Add Reed-Solomon codewords to binary data */
         for (i = 0; i < ecc_codewords; i++) {
@@ -1119,7 +1111,6 @@ public class MicroQrCode extends Symbol {
         int data_codewords, ecc_codewords;
         int[] data_blocks = new int[12];
         int[] ecc_blocks = new int[12];
-        ReedSolomon rs = new ReedSolomon();
 
         latch = 0;
 
@@ -1237,12 +1228,9 @@ public class MicroQrCode extends Symbol {
         infoLine();
 
         /* Calculate Reed-Solomon error codewords */
-        rs.init_gf(0x11d);
-        rs.init_code(ecc_codewords, 0);
-        rs.encode(data_codewords, data_blocks);
-        for (i = 0; i < ecc_codewords; i++) {
-            ecc_blocks[i] = rs.getResult(i);
-        }
+        ReedSolomon rs = ReedSolomon.get(0x11d, ecc_codewords, 0);
+        int[] result = rs.encode(data_codewords, data_blocks);
+        System.arraycopy(result, 0, ecc_blocks, 0, ecc_codewords);
 
         /* Add Reed-Solomon codewords to binary data */
         for (i = 0; i < ecc_codewords; i++) {
@@ -1256,7 +1244,6 @@ public class MicroQrCode extends Symbol {
         int data_codewords, ecc_codewords;
         int[] data_blocks = new int[17];
         int[] ecc_blocks = new int[15];
-        ReedSolomon rs = new ReedSolomon();
 
         bits_total = 128; // ecc_mode == EccMode.L
         if (ecc_mode == EccMode.M) {
@@ -1333,12 +1320,9 @@ public class MicroQrCode extends Symbol {
         infoLine();
 
         /* Calculate Reed-Solomon error codewords */
-        rs.init_gf(0x11d);
-        rs.init_code(ecc_codewords, 0);
-        rs.encode(data_codewords, data_blocks);
-        for (i = 0; i < ecc_codewords; i++) {
-            ecc_blocks[i] = rs.getResult(i);
-        }
+        ReedSolomon rs = ReedSolomon.get(0x11d, ecc_codewords, 0);
+        int[] result = rs.encode(data_codewords, data_blocks);
+        System.arraycopy(result, 0, ecc_blocks, 0, ecc_codewords);
 
         /* Add Reed-Solomon codewords to binary data */
         for (i = 0; i < ecc_codewords; i++) {

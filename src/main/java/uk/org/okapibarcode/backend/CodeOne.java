@@ -156,7 +156,6 @@ public class CodeOne extends Symbol {
         int[] stream = new int[2100];
         int block_width;
         int length = content.length();
-        ReedSolomon rs = new ReedSolomon();
         int data_length;
         int data_cw, ecc_cw;
         int[] sub_data = new int[190];
@@ -203,15 +202,14 @@ public class CodeOne extends Symbol {
 
             logCodewords(codewords);
 
-            rs.init_gf(0x25);
-            rs.init_code(codewords, 1);
-            rs.encode(codewords, data);
+            ReedSolomon rs = ReedSolomon.get(0x25, codewords, 1);
+            int[] result = rs.encode(codewords, data);
 
             infoLine("ECC Codeword Count: ", codewords);
 
             for (i = 0; i < codewords; i++) {
                 stream[i] = data[i];
-                stream[i + codewords] = rs.getResult(codewords - i - 1);
+                stream[i + codewords] = result[codewords - i - 1];
             }
 
             for (i = 0; i < 136; i++) {
@@ -303,9 +301,8 @@ public class CodeOne extends Symbol {
             }
 
             /* Calculate error correction data */
-            rs.init_gf(0x12d);
-            rs.init_code(ecc_cw, 1);
-            rs.encode(data_cw, data);
+            ReedSolomon rs = ReedSolomon.get(0x12d, ecc_cw, 1);
+            int[] result = rs.encode(data_cw, data);
 
             infoLine("ECC Codeword Count: ", ecc_cw);
 
@@ -314,7 +311,7 @@ public class CodeOne extends Symbol {
                 stream[i] = data[i];
             }
             for (i = 0; i < ecc_cw; i++) {
-                stream[data_cw + i] = rs.getResult(ecc_cw - i - 1);
+                stream[data_cw + i] = result[ecc_cw - i - 1];
             }
 
             for (i = 0; i < 136; i++) {
@@ -390,15 +387,14 @@ public class CodeOne extends Symbol {
 
             data_blocks = C1_BLOCKS[size - 1];
 
-            rs.init_gf(0x12d);
-            rs.init_code(C1_ECC_BLOCKS[size - 1], 0);
+            ReedSolomon rs = ReedSolomon.get(0x12d, C1_ECC_BLOCKS[size - 1], 0);
             for (i = 0; i < data_blocks; i++) {
                 for (j = 0; j < C1_DATA_BLOCKS[size - 1]; j++) {
                     sub_data[j] = data[j * data_blocks + i];
                 }
-                rs.encode(C1_DATA_BLOCKS[size - 1], sub_data);
+                int[] result = rs.encode(C1_DATA_BLOCKS[size - 1], sub_data);
                 for (j = 0; j < C1_ECC_BLOCKS[size - 1]; j++) {
-                    ecc[C1_ECC_LENGTH[size - 1] - (j * data_blocks + i) - 1] = rs.getResult(j);
+                    ecc[C1_ECC_LENGTH[size - 1] - (j * data_blocks + i) - 1] = result[j];
                 }
             }
 

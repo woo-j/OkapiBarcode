@@ -16,31 +16,42 @@
 
 package uk.org.okapibarcode.backend;
 
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
 public class ReedSolomon {
+
+    private static final Map< Key, ReedSolomon > INSTANCES = new ConcurrentHashMap<>();
 
     private int logmod;
     private int rlen;
     private int[] logt;
     private int[] alog;
     private int[] rspoly;
-    private int[] res;
 
-    public void init_gf(int poly) {
+    public static ReedSolomon get(int poly, int nsym, int index) {
+        Key key = new Key(poly, nsym, index);
+        return INSTANCES.computeIfAbsent(key, k -> new ReedSolomon(k.poly, k.nsym, k.index));
+    }
+
+    private ReedSolomon(int poly, int nsym, int index) {
+        init_gf(poly);
+        init_code(nsym, index);
+    }
+
+    private void init_gf(int poly) {
         // Find the top bit, and hence the symbol size
-        int m, b;
-        for (b = 1, m = 0; b <= poly; b <<= 1) {
-            m++;
-        }
-        b >>= 1;
-        m--;
+        int leading = Integer.numberOfLeadingZeros(poly);
+        int m = 31 - leading;
+        int b = 1 << m;
         // Calculate the log / alog tables
-        logmod = (1 << m) - 1;
+        logmod = b - 1;
         logt = new int[logmod + 1];
         alog = new int[logmod];
-
         for (int p = 1, v = 0; v < logmod; v++) {
             alog[v] = p;
             logt[p] = v;
@@ -51,7 +62,7 @@ public class ReedSolomon {
         }
     }
 
-    public void init_code(int nsym, int index) {
+    private void init_code(int nsym, int index) {
         rlen = nsym;
         rspoly = new int[nsym + 1];
         rspoly[0] = 1;
@@ -68,8 +79,8 @@ public class ReedSolomon {
         }
     }
 
-    public void encode(int len, int[] data) {
-        res = new int[rlen];
+    public int[] encode(int len, int[] data) {
+        int[] res = new int[rlen];
         for (int i = 0; i < len; i++) {
             int m = res[rlen - 1] ^ data[i];
             for (int k = rlen - 1; k > 0; k--) {
@@ -85,9 +96,29 @@ public class ReedSolomon {
                 res[0] = 0;
             }
         }
+        return res;
     }
 
-    public int getResult(int count) {
-        return res[count];
+    private static class Key {
+        private final int poly;
+        private final int nsym;
+        private final int index;
+        public Key(int poly, int nsym, int index) {
+            this.poly = poly;
+            this.nsym = nsym;
+            this.index = index;
+        }
+        @Override
+        public boolean equals(Object obj) {
+            if (!(obj instanceof Key)) {
+                return false;
+            }
+            Key other = (Key) obj;
+            return poly == other.poly && nsym == other.nsym && index == other.index;
+        }
+        @Override
+        public int hashCode() {
+            return Objects.hash(poly, nsym, index);
+        }
     }
 }

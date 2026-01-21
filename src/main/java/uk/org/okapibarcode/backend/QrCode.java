@@ -1268,22 +1268,13 @@ public class QrCode extends Symbol {
                 length_this_block = short_data_block_length + 1;
             }
 
-            for (j = 0; j < ecc_block_length; j++) {
-                ecc_block[j] = 0;
-            }
-
             for (j = 0; j < length_this_block; j++) {
                 data_block[j] = datastream[posn + j];
             }
 
-            ReedSolomon rs = new ReedSolomon();
-            rs.init_gf(0x11d);
-            rs.init_code(ecc_block_length, 0);
-            rs.encode(length_this_block, data_block);
-
-            for (j = 0; j < ecc_block_length; j++) {
-                ecc_block[j] = rs.getResult(j);
-            }
+            ReedSolomon rs = ReedSolomon.get(0x11d, ecc_block_length, 0);
+            int[] result = rs.encode(length_this_block, data_block);
+            System.arraycopy(result, 0, ecc_block, 0, ecc_block_length);
 
             for (j = 0; j < short_data_block_length; j++) {
                 interleaved_data[(j * blocks) + i] = data_block[j];

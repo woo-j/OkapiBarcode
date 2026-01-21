@@ -16,6 +16,8 @@
 
 package uk.org.okapibarcode.backend;
 
+import static uk.org.okapibarcode.util.Strings.deleteLastLine;
+
 import java.util.Locale;
 
 /**
@@ -80,11 +82,11 @@ public class DpdCode extends Symbol {
                      content.substring(start + 24, start + 27) + " " + // CCC
                      check;                                            // D
 
-        encodeInfo = code128.encodeInfo;
         readable = hrt;
         pattern = new String[] { code128.pattern[0] };
         rowHeight = new int[] { defaultHeight };
         rowCount = 1;
+        encodeInfo = deleteLastLine(code128.encodeInfo); // remove shape count, our shape count is added later
     }
 
     /** {@inheritDoc} */

@@ -35,7 +35,8 @@ public class Code128Test {
         assertEquals("11", code128.getHumanReadableText());
         assertEquals("Encoding: STARTC 11 \n" +
                      "Data Codewords: 2\n" +
-                     "Check Digit: 13\n",
+                     "Check Digit: 13\n" +
+                     "Shapes: 13\n",
                      code128.getEncodeInfo());
 
         code128.setContent("12");
@@ -43,7 +44,8 @@ public class Code128Test {
         assertEquals("12", code128.getHumanReadableText());
         assertEquals("Encoding: STARTC 12 \n" +
                         "Data Codewords: 2\n" +
-                        "Check Digit: 14\n",
+                        "Check Digit: 14\n" +
+                        "Shapes: 13\n",
                         code128.getEncodeInfo());
     }
 

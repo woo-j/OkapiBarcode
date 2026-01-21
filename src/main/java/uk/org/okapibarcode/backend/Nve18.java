@@ -16,6 +16,8 @@
 
 package uk.org.okapibarcode.backend;
 
+import static uk.org.okapibarcode.util.Strings.deleteLastLine;
+
 /**
  * <p>Calculate NVE-18 (Nummer der Versandeinheit), also known as SSCC-18 (Serial Shipping Container Code).
  *
@@ -75,6 +77,7 @@ public class Nve18 extends Symbol {
         rowCount = code128.rowCount;
         rowHeight = code128.rowHeight;
 
+        deleteLastLine(code128.encodeInfo); // remove shape count, our shape count is added later
         info(code128.encodeInfo);
     }
 

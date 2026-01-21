@@ -592,6 +592,7 @@ public class SymbolTest {
         } else {
             createExpectedPngFile(pngFile, symbol);
             if (propertiesFileNeedsModification) {
+                cleanTrailingNewLines(config);
                 addExpectedLog(config, symbol);
                 addExpectedCodewords(config, symbol);
             }
@@ -609,6 +610,33 @@ public class SymbolTest {
         if (config.expectedError == null) {
             String append = EOL + ReadMode.ERROR.name() + EOL + EOL + error + EOL;
             Files.write(config.file.toPath(), append.getBytes(UTF_8), StandardOpenOption.APPEND);
+        }
+    }
+
+    /**
+     * Ensures that the specified test configuration file has no more and no less than one trailing
+     * new line, so that subsequent writes are correctly formatted.
+     *
+     * @param config the test configuration, as read from the test properties file
+     * @throws IOException if there is any I/O error
+     */
+    private static void cleanTrailingNewLines(TestConfig config) throws IOException {
+        String content = Files.readString(config.file.toPath(), UTF_8);
+        int trailing = 0;
+        for (int i = content.length() - EOL.length(); i >= 0; i -= EOL.length()) {
+            if (content.regionMatches(i, EOL, 0, EOL.length())) {
+                trailing++;
+            } else {
+                break;
+            }
+        }
+        if (trailing == 0) {
+            content += EOL;
+            Files.writeString(config.file.toPath(), content, UTF_8);
+        } else if (trailing > 1) {
+            int delete = (trailing - 1) * EOL.length();
+            content = content.substring(0, content.length() - delete);
+            Files.writeString(config.file.toPath(), content, UTF_8);
         }
     }
 

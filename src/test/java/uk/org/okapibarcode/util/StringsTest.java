@@ -17,6 +17,7 @@
 package uk.org.okapibarcode.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static uk.org.okapibarcode.util.Strings.deleteLastLine;
 import static uk.org.okapibarcode.util.Strings.escape;
 import static uk.org.okapibarcode.util.Strings.unescape;
 
@@ -26,6 +27,15 @@ import org.junit.jupiter.api.Test;
  * Tests for {@link Strings}.
  */
 public class StringsTest {
+
+    @Test
+    public void testDeleteLastLine() {
+        assertEquals("", deleteLastLine(new StringBuilder()).toString());
+        assertEquals("", deleteLastLine(new StringBuilder("\n")).toString());
+        assertEquals("", deleteLastLine(new StringBuilder("ABC\n")).toString());
+        assertEquals("ABC\n", deleteLastLine(new StringBuilder("ABC\nDEF\n")).toString());
+        assertEquals("ABC\nDEF\n", deleteLastLine(new StringBuilder("ABC\nDEF\nGHI\n")).toString());
+    }
 
     @Test
     public void testUnescape() {

@@ -228,6 +228,25 @@ public final class Strings {
     }
 
     /**
+     * Deletes the last line in the specified string, assuming that it contains a trailing new line character.
+     *
+     * @param s the string to modify
+     * @return the modified string
+     */
+    public static StringBuilder deleteLastLine(StringBuilder s) {
+        int i = s.lastIndexOf("\n");
+        if (i != -1) {
+            i = s.lastIndexOf("\n", i - 1);
+            if (i != -1) {
+                s.delete(i + 1, s.length());
+            } else {
+                s.setLength(0); // clear
+            }
+        }
+        return s;
+    }
+
+    /**
      * Appends the specific integer to the specified string, in binary format, padded to the specified number of digits.
      *
      * @param s the string to append to

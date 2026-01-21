@@ -16,6 +16,8 @@
 
 package uk.org.okapibarcode.backend;
 
+import static uk.org.okapibarcode.util.Strings.deleteLastLine;
+
 import uk.org.okapibarcode.graphics.Rectangle;
 import uk.org.okapibarcode.graphics.TextBox;
 
@@ -69,11 +71,11 @@ public class UspsPackage extends Symbol {
             }
         }
 
-        encodeInfo = code128.encodeInfo;
         readable = hrt.toString();
         pattern = new String[] { code128.pattern[0] };
         rowHeight = new int[] { defaultHeight };
         rowCount = 1;
+        encodeInfo = deleteLastLine(code128.encodeInfo); // remove shape count, our shape count is added later
     }
 
     @Override

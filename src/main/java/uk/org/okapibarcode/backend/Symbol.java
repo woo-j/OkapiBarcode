@@ -116,7 +116,6 @@ public abstract class Symbol {
     protected List< Circle > target = new ArrayList<>();        // note positions do not account for quiet zones (handled in renderers)
     protected List< Rectangle > rectangles = new ArrayList<>(); // note positions do not account for quiet zones (handled in renderers)
     protected Map< Double, Rectangle > prevRectangles = new HashMap<>(); // x-position -> last seen rectangle at that position (optimization)
-    protected int rectanglesMerged;
 
     /**
      * <p>Sets the type of input data. This setting influences what pre-processing is done on
@@ -499,8 +498,8 @@ public abstract class Symbol {
 
     /**
      * <p>Adds the specified rectangle to this symbol. If the specified rectangle cleanly
-     * extends another rectangle immediately above it, the existing rectangle is updated
-     * instead, so as to minimize the number of rectangles which must be drawn.
+     * extends another rectangle immediately above it, the rectangles are instead merged,
+     * so as to minimize the number of rectangles which must be drawn.
      *
      * <p>IMPORTANT: Rectangle merging requires that rectangles be added in order, from
      * top to bottom.
@@ -513,7 +512,6 @@ public abstract class Symbol {
             roughlyEqual(prev.width, rect.width) &&
             roughlyEqual(prev.y + prev.height, rect.y)) {
             prev.height += rect.height;
-            rectanglesMerged++;
         } else {
             rectangles.add(rect);
             prevRectangles.put(rect.x, rect);
@@ -534,7 +532,6 @@ public abstract class Symbol {
 
         rectangles.clear();
         prevRectangles.clear();
-        rectanglesMerged = 0;
 
         for (Rectangle rect : rects) {
             addRectangle(rect);
@@ -675,11 +672,7 @@ public abstract class Symbol {
         encode();
         plotSymbol();
 
-        if (rectanglesMerged > 0) {
-            int count2 = rectangles.size();
-            int count1 = count2 + rectanglesMerged;
-            infoLine("Blocks Merged: " + count1 + " -> " + count2);
-        }
+        infoLine("Shapes: ", rectangles.size() + hexagons.size() + target.size());
     }
 
     /**
@@ -882,7 +875,6 @@ public abstract class Symbol {
         target.clear();
         rectangles.clear();
         prevRectangles.clear();
-        rectanglesMerged = 0;
     }
 
     /**

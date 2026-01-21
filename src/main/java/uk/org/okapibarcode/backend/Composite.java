@@ -18,6 +18,7 @@ package uk.org.okapibarcode.backend;
 
 import static uk.org.okapibarcode.util.Arrays.positionOf;
 import static uk.org.okapibarcode.util.Strings.binaryAppend;
+import static uk.org.okapibarcode.util.Strings.deleteLastLine;
 
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
@@ -813,14 +814,13 @@ public class Composite extends Symbol {
             }
         }
 
-        int compositeMerged = rectanglesMerged;
         setRectangles(combine_rect);
-        rectanglesMerged += compositeMerged;
-
         texts = combine_txt;
         symbol_height += linear.symbol_height + extraSepHeight;
         symbol_width = max_x;
-        info(linear.getEncodeInfo());
+
+        deleteLastLine(linear.encodeInfo); // remove linear shape count, full shape count (linear + 2D) is added later
+        info(linear.encodeInfo);
     }
 
     private void copyPropertiesTo(Symbol linear) {

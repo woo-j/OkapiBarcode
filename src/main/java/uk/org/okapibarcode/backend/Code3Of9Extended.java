@@ -111,8 +111,8 @@ public class Code3Of9Extended extends Symbol {
 
         readable = content;
         pattern = new String[] { code39.pattern[0] };
-        row_count = 1;
-        row_height = new int[] { -1 };
+        rowHeight = new int[] { defaultHeight };
+        rowCount = 1;
     }
 
     /** {@inheritDoc} */

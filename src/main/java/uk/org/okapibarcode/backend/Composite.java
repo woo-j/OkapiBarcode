@@ -776,7 +776,7 @@ public class Composite extends Symbol {
             linearWidth = linear.symbol_width;
             if (cc_mode == CompositeMode.CC_C) {
                 /* Width of composite component depends on width of linear component, so recalculate. */
-                row_count = 0;
+                rowCount = 0;
                 resetPlotElements();
                 encodeInfo.setLength(0);
                 encodeComposite();
@@ -1795,9 +1795,9 @@ public class Composite extends Symbol {
         Cluster = StartCluster; /* Cluster can be 0, 1 or 2 for Cluster(0), Cluster(3) and Cluster(6) */
 
         readable = "";
-        row_count = rows;
-        pattern = new String[row_count];
-        row_height = new int[row_count];
+        rowCount = rows;
+        pattern = new String[rowCount];
+        rowHeight = new int[rowCount];
 
         for (i = 0; i < rows; i++) {
             codebarre = "";
@@ -1862,7 +1862,7 @@ public class Composite extends Symbol {
                 }
             }
 
-            row_height[i] = 2;
+            rowHeight[i] = 2;
             pattern[i] = bin2pat(bin);
 
             /* Set up RAPs and Cluster for next row */
@@ -2128,9 +2128,9 @@ public class Composite extends Symbol {
         Cluster = StartCluster; /* Cluster can be 0, 1 or 2 for Cluster(0), Cluster(3) and Cluster(6) */
 
         readable = "";
-        row_count = rows;
-        pattern = new String[row_count];
-        row_height = new int[row_count];
+        rowCount = rows;
+        pattern = new String[rowCount];
+        rowHeight = new int[rowCount];
 
         for (i = 0; i < rows; i++) {
             codebarre = "";
@@ -2194,7 +2194,7 @@ public class Composite extends Symbol {
             }
 
             pattern[i] = bin2pat(bin);
-            row_height[i] = 2;
+            rowHeight[i] = 2;
 
             /* Set up RAPs and Cluster for next row */
             LeftRAP++;
@@ -2323,9 +2323,9 @@ public class Composite extends Symbol {
         c3 = cc_width - 1;
 
         readable = "";
-        row_count = codeWordCount / cc_width;
-        pattern = new String[row_count];
-        row_height = new int[row_count];
+        rowCount = codeWordCount / cc_width;
+        pattern = new String[rowCount];
+        rowHeight = new int[rowCount];
 
         /* we now encode each row */
         for (i = 0; i <= (codeWordCount / cc_width) - 1; i++) {
@@ -2374,7 +2374,7 @@ public class Composite extends Symbol {
                 bin.append(PDF_TTF[positionOf(codebarre.charAt(loop), BR_SET)]);
             }
             pattern[i] = bin2pat(bin);
-            row_height[i] = 3;
+            rowHeight[i] = 3;
         }
     }
 

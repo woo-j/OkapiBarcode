@@ -75,8 +75,8 @@ public class Pharmacode2Track extends Symbol {
 
         readable = "";
         pattern = new String[] { dest.toString() };
-        row_count = 1;
-        row_height = new int[] { -1 };
+        rowHeight = new int[] { defaultHeight };
+        rowCount = 1;
     }
 
     @Override
@@ -93,15 +93,15 @@ public class Pharmacode2Track extends Symbol {
             switch (pattern[0].charAt(xBlock)) {
                 case 'A':
                     y = 0;
-                    h = default_height / 2;
+                    h = defaultHeight / 2;
                     break;
                 case 'D':
-                    y = default_height / 2;
-                    h = default_height / 2;
+                    y = defaultHeight / 2;
+                    h = defaultHeight / 2;
                     break;
                 case 'F':
                     y = 0;
-                    h = default_height;
+                    h = defaultHeight;
                     break;
             }
             addRectangle(new Rectangle(x, y, w, h));
@@ -109,6 +109,6 @@ public class Pharmacode2Track extends Symbol {
         }
 
         symbol_width = pattern[0].length() * 2 * w;
-        symbol_height = default_height;
+        symbol_height = defaultHeight;
     }
 }

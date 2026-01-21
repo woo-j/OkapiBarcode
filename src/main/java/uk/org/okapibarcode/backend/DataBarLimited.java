@@ -415,9 +415,9 @@ public class DataBarLimited extends Symbol {
             compositeOffset = 1;
         }
 
-        row_count = 1 + compositeOffset;
-        row_height = new int[1 + compositeOffset];
-        row_height[0 + compositeOffset] = -1;
+        rowCount = 1 + compositeOffset;
+        rowHeight = new int[1 + compositeOffset];
+        rowHeight[0 + compositeOffset] = defaultHeight;
         pattern = new String[1 + compositeOffset];
         pattern[0 + compositeOffset] = bin2pat(bin);
 
@@ -425,7 +425,7 @@ public class DataBarLimited extends Symbol {
             // Add composite symbol separator
             notbin.delete(70, notbin.length());
             notbin.delete(0, 4);
-            row_height[0] = 1;
+            rowHeight[0] = 1;
             pattern[0] = "04" + bin2pat(notbin);
         }
     }

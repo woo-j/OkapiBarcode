@@ -112,8 +112,8 @@ public class JapanPost extends Symbol {
 
         readable = "";
         pattern = new String[] { dest.toString() };
-        row_count = 1;
-        row_height = new int[] { -1 };
+        rowHeight = new int[] { defaultHeight };
+        rowCount = 1;
     }
 
     @Override

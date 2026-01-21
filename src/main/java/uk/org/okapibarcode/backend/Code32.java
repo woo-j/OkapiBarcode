@@ -98,8 +98,8 @@ public class Code32 extends Symbol {
 
         readable = "A" + localstr;
         pattern = new String[1];
-        row_count = 1;
-        row_height = new int[] { -1 };
+        rowHeight = new int[] { defaultHeight };
+        rowCount = 1;
         infoLine("Code 39 Equivalent: ", risultante);
 
         Code3Of9 c39 = new Code3Of9();

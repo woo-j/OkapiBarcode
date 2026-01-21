@@ -67,7 +67,7 @@ public class Postnet extends Symbol {
     public Postnet(Mode mode) {
         this.mode = mode;
         this.moduleWidthRatio = 1.5;
-        this.default_height = 12;
+        this.defaultHeight = 12;
         this.humanReadableLocation = HumanReadableLocation.NONE;
     }
 
@@ -144,8 +144,8 @@ public class Postnet extends Symbol {
         infoLine("Encoding: ", dest);
         readable = content;
         pattern = new String[] { dest.toString() };
-        row_count = 1;
-        row_height = new int[] { -1 };
+        rowHeight = new int[] { defaultHeight };
+        rowCount = 1;
     }
 
     @Override
@@ -165,13 +165,13 @@ public class Postnet extends Symbol {
         x = 0;
         w = moduleWidth;
         dx = (1 + moduleWidthRatio) * w;
-        shortHeight = (int) (0.4 * default_height);
+        shortHeight = (int) (0.4 * defaultHeight);
         for (xBlock = 0; xBlock < pattern[0].length(); xBlock++) {
             if (pattern[0].charAt(xBlock) == 'L') {
                 y = baseY;
-                h = default_height;
+                h = defaultHeight;
             } else {
-                y = baseY + default_height - shortHeight;
+                y = baseY + defaultHeight - shortHeight;
                 h = shortHeight;
             }
             addRectangle(new Rectangle(x, y, w, h));
@@ -179,7 +179,7 @@ public class Postnet extends Symbol {
         }
 
         symbol_width = (int) Math.ceil(((pattern[0].length() - 1) * dx) + w); // final bar doesn't need extra whitespace
-        symbol_height = default_height;
+        symbol_height = defaultHeight;
 
         if (humanReadableLocation != NONE && !readable.isEmpty()) {
             double baseline;

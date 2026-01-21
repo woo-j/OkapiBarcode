@@ -709,10 +709,10 @@ public class AztecCode extends Symbol {
         if (compact) {
 
             readable = "";
-            row_count = 27 - (2 * AZTEC_COMPACT_OFFSET[layers - 1]);
-            row_height = new int[row_count];
-            row_height[0] = -1;
-            pattern = new String[row_count];
+            rowCount = 27 - (2 * AZTEC_COMPACT_OFFSET[layers - 1]);
+            rowHeight = new int[rowCount];
+            rowHeight[0] = defaultHeight;
+            pattern = new String[rowCount];
             for (int y = AZTEC_COMPACT_OFFSET[layers - 1]; y < (27 - AZTEC_COMPACT_OFFSET[layers - 1]); y++) {
                 StringBuilder bin = new StringBuilder(27);
                 for (int x = AZTEC_COMPACT_OFFSET[layers - 1]; x < (27 - AZTEC_COMPACT_OFFSET[layers - 1]); x++) {
@@ -735,17 +735,17 @@ public class AztecCode extends Symbol {
                         }
                     }
                 }
-                row_height[y - AZTEC_COMPACT_OFFSET[layers - 1]] = moduleWidth;
+                rowHeight[y - AZTEC_COMPACT_OFFSET[layers - 1]] = moduleWidth;
                 pattern[y - AZTEC_COMPACT_OFFSET[layers - 1]] = bin2pat(bin);
             }
 
         } else {
 
             readable = "";
-            row_count = 151 - (2 * AZTEC_OFFSET[layers - 1]);
-            row_height = new int[row_count];
-            row_height[0] = -1;
-            pattern = new String[row_count];
+            rowCount = 151 - (2 * AZTEC_OFFSET[layers - 1]);
+            rowHeight = new int[rowCount];
+            rowHeight[0] = defaultHeight;
+            pattern = new String[rowCount];
             for (int y = AZTEC_OFFSET[layers - 1]; y < (151 - AZTEC_OFFSET[layers - 1]); y++) {
                 StringBuilder bin = new StringBuilder(151);
                 for (int x = AZTEC_OFFSET[layers - 1]; x < (151 - AZTEC_OFFSET[layers - 1]); x++) {
@@ -768,7 +768,7 @@ public class AztecCode extends Symbol {
                         }
                     }
                 }
-                row_height[y - AZTEC_OFFSET[layers - 1]] = moduleWidth;
+                rowHeight[y - AZTEC_OFFSET[layers - 1]] = moduleWidth;
                 pattern[y - AZTEC_OFFSET[layers - 1]] = bin2pat(bin);
             }
         }

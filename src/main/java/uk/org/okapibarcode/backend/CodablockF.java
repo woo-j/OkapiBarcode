@@ -68,7 +68,7 @@ public class CodablockF extends Symbol {
      */
     public CodablockF() {
         this.humanReadableLocation = HumanReadableLocation.NONE;
-        this.default_height = 15;
+        this.defaultHeight = 15;
     }
 
     /**
@@ -219,9 +219,9 @@ public class CodablockF extends Symbol {
         }
 
         readable = "";
-        row_count = rows;
-        pattern = new String[row_count];
-        row_height = new int[row_count];
+        rowCount = rows;
+        pattern = new String[rowCount];
+        rowHeight = new int[rowCount];
 
         infoLine("Grid Size: " + columns + " X " + rows);
         infoLine("K1 Check Digit: ", k1);
@@ -265,7 +265,7 @@ public class CodablockF extends Symbol {
 
             /* Write the information into the symbol */
             pattern[i] = row_pattern;
-            row_height[i] = default_height;
+            rowHeight[i] = defaultHeight;
         }
         infoLine();
     }
@@ -835,14 +835,14 @@ public class CodablockF extends Symbol {
 
         y = 1;
         h = 1;
-        for (yBlock = 0; yBlock < row_count; yBlock++) {
+        for (yBlock = 0; yBlock < rowCount; yBlock++) {
             black = true;
             x = 0;
+            h = rowHeight[yBlock];
             for (xBlock = 0; xBlock < pattern[yBlock].length(); xBlock++) {
                 char c = pattern[yBlock].charAt(xBlock);
                 w = (c - '0') * moduleWidth;
                 if (black) {
-                    h = row_height[yBlock];
                     if (w != 0 && h != 0) {
                         addRectangle(new Rectangle(x, y, w, h));
                     }
@@ -857,7 +857,7 @@ public class CodablockF extends Symbol {
             if (y > symbol_height) {
                 symbol_height = y;
             }
-            if (yBlock != (row_count - 1)) {
+            if (yBlock != (rowCount - 1)) {
                 dividers.add(new Rectangle(11 * moduleWidth, y - 1, symbol_width - (24 * moduleWidth), 2));
             }
         }
@@ -870,6 +870,6 @@ public class CodablockF extends Symbol {
         /* Add top and bottom binding bars */
         addRectangle(new Rectangle(0, 0, symbol_width, 2)); // top
         addRectangle(new Rectangle(0, y - 1, symbol_width, 2)); // bottom
-        symbol_height = (rows * default_height) + 2; // one extra line above, one below
+        symbol_height = (rows * defaultHeight) + 2; // one extra line above, one below
     }
 }

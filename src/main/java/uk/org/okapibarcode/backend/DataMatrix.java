@@ -490,8 +490,8 @@ public class DataMatrix extends Symbol {
         actualSize = positionOf(symbolsize, INT_SYMBOL) + 1;
         readable = "";
         pattern = new String[H];
-        row_count = H;
-        row_height = new int[H];
+        rowCount = H;
+        rowHeight = new int[H];
         for (y = H - 1; y >= 0; y--) {
             bin.setLength(0);
             for (x = 0; x < W; x++) {
@@ -502,7 +502,7 @@ public class DataMatrix extends Symbol {
                 }
             }
             pattern[(H - y) - 1] = bin2pat(bin);
-            row_height[(H - y) - 1] = moduleWidth;
+            rowHeight[(H - y) - 1] = moduleWidth;
         }
 
         infoLine("Grid Size: " + W + " X " + H);

@@ -118,8 +118,8 @@ public class ChannelCode extends Symbol {
         text.append(content);
 
         readable = text.toString();
-        row_count = 1;
-        row_height = new int[] { -1 };
+        rowHeight = new int[] { defaultHeight };
+        rowCount = 1;
     }
 
     private void nextSpace(int channels, int i, int maxSpace, int maxBar) {

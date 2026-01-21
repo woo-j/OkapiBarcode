@@ -348,9 +348,9 @@ public class DataBarExpanded extends Symbol {
             elements[pattern_width - 1] = 1;
 
             /* Copy elements into symbol */
-            row_count = 1 + compositeOffset;
-            row_height = new int[1 + compositeOffset];
-            row_height[0 + compositeOffset] = -1;
+            rowCount = 1 + compositeOffset;
+            rowHeight = new int[1 + compositeOffset];
+            rowHeight[0 + compositeOffset] = defaultHeight;
             pattern = new String[1 + compositeOffset];
 
             black = false;
@@ -379,9 +379,9 @@ public class DataBarExpanded extends Symbol {
                 stack_rows++;
             }
 
-            row_count = (stack_rows * 4) - 3;
-            row_height = new int[row_count + compositeOffset];
-            pattern = new String[row_count + compositeOffset];
+            rowCount = (stack_rows * 4) - 3;
+            rowHeight = new int[rowCount + compositeOffset];
+            pattern = new String[rowCount + compositeOffset];
 
             symbol_row = 0;
             current_block = 0;
@@ -436,7 +436,7 @@ public class DataBarExpanded extends Symbol {
                 elements_in_sub += 2;
 
                 black = true;
-                row_height[symbol_row + compositeOffset] = -1;
+                rowHeight[symbol_row + compositeOffset] = defaultHeight;
                 StringBuilder pat = new StringBuilder();
                 if (current_row % 2 == 1 || special_case_row) {
                     pat.append('0');
@@ -455,16 +455,16 @@ public class DataBarExpanded extends Symbol {
                         sep.append("11");
                     }
                     pattern[symbol_row - 2 + compositeOffset] = sep.toString();
-                    row_height[symbol_row - 2 + compositeOffset] = 1;
+                    rowHeight[symbol_row - 2 + compositeOffset] = 1;
                     /* bottom separator pattern (above current row) */
                     boolean odd_last_row = (current_row == stack_rows) && (data_chars % 2 == 0);
-                    row_height[symbol_row - 1 + compositeOffset] = 1;
+                    rowHeight[symbol_row - 1 + compositeOffset] = 1;
                     pattern[symbol_row - 1 + compositeOffset] = separator(pat, reader, false, special_case_row, left_to_right, odd_last_row, v2);
                 }
 
                 if (current_row != stack_rows) {
                     /* top separator pattern (below current row) */
-                    row_height[symbol_row + 1 + compositeOffset] = 1;
+                    rowHeight[symbol_row + 1 + compositeOffset] = 1;
                     pattern[symbol_row + 1 + compositeOffset] = separator(pat, reader, true, false, left_to_right, false, v2);
                 }
 
@@ -473,13 +473,13 @@ public class DataBarExpanded extends Symbol {
             } // end current_row loop
 
             readable = "";
-            row_count += compositeOffset;
+            rowCount += compositeOffset;
         }
 
         if (linkageFlag) {
             // Add composite code separator
             pattern[0] = separator(pattern[1], 4, false, false, true, false, new AtomicBoolean(false));
-            row_height[0] = 1;
+            rowHeight[0] = 1;
         }
     }
 

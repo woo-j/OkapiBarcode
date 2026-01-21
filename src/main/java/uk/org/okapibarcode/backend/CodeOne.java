@@ -260,7 +260,7 @@ public class CodeOne extends Symbol {
             infoLine("Grid Size: " + block_width + " X " + 2);
 
             size = 9;
-            row_count = 8;
+            rowCount = 8;
             symbol_width = 10 * sub_version + 1;
         }
 
@@ -356,7 +356,7 @@ public class CodeOne extends Symbol {
 
             infoLine("Grid Size: " + block_width + " X " + 5);
 
-            row_count = 16;
+            rowCount = 16;
             symbol_width = (sub_version * 16) + 1;
         }
 
@@ -451,7 +451,7 @@ public class CodeOne extends Symbol {
 
             infoLine("Grid Size: " + C1_GRID_WIDTH[size - 1] + " X " + C1_GRID_HEIGHT[size - 1]);
 
-            row_count = C1_HEIGHT[size - 1];
+            rowCount = C1_HEIGHT[size - 1];
             symbol_width = C1_WIDTH[size - 1];
         }
 
@@ -731,9 +731,9 @@ public class CodeOne extends Symbol {
         }
 
         readable = "";
-        pattern = new String[row_count];
-        row_height = new int[row_count];
-        for (i = 0; i < row_count; i++) {
+        pattern = new String[rowCount];
+        rowHeight = new int[rowCount];
+        for (i = 0; i < rowCount; i++) {
             bin.setLength(0);
             for (j = 0; j < symbol_width; j++) {
                 if (outputGrid[i][j]) {
@@ -743,7 +743,7 @@ public class CodeOne extends Symbol {
                 }
             }
             pattern[i] = bin2pat(bin);
-            row_height[i] = moduleWidth;
+            rowHeight[i] = moduleWidth;
         }
     }
 
@@ -1899,7 +1899,7 @@ public class CodeOne extends Symbol {
             }
         } else {
             for (int i = 0; i < height; i++) {
-                setGridModule(row_count - i - 1, column);
+                setGridModule(rowCount - i - 1, column);
             }
         }
     }

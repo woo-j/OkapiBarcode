@@ -437,10 +437,10 @@ public class MaxiCode extends Symbol {
         grid[23][17] = true;
 
         // the following is provided for compatibility, but the results are not useful
-        row_count = 33;
+        rowCount = 33;
         readable = "";
         pattern = new String[33];
-        row_height = new int[33];
+        rowHeight = new int[33];
         for (int i = 0; i < 33; i++) {
             StringBuilder bin = new StringBuilder(30);
             for (int j = 0; j < 30; j++) {
@@ -451,7 +451,7 @@ public class MaxiCode extends Symbol {
                 }
             }
             pattern[i] = bin2pat(bin);
-            row_height[i] = moduleWidth;
+            rowHeight[i] = moduleWidth;
         }
     }
 

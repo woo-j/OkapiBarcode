@@ -309,8 +309,8 @@ public class AustraliaPost extends Symbol {
 
         readable = "";
         pattern = new String[] { barStateValues.toString() };
-        row_count = 1;
-        row_height = new int[] { -1 };
+        rowHeight = new int[] { defaultHeight };
+        rowCount = 1;
     }
 
     private CharSequence calcReedSolomon(CharSequence oldBarStateValues) {

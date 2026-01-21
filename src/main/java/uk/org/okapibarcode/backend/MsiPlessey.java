@@ -158,8 +158,8 @@ public class MsiPlessey extends Symbol {
 
         readable = (checkDigitInHumanReadableText ? data : content);
         pattern = new String[] { intermediate.toString() };
-        row_count = 1;
-        row_height = new int[] { -1 };
+        rowHeight = new int[] { defaultHeight };
+        rowCount = 1;
     }
 
     private static int maxCheckDigits(CheckDigit scheme) {

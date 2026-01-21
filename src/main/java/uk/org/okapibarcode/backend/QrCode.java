@@ -624,8 +624,8 @@ public class QrCode extends Symbol {
 
         readable = "";
         pattern = new String[size];
-        row_count = size;
-        row_height = new int[size];
+        rowHeight = new int[size];
+        rowCount = size;
         for (i = 0; i < size; i++) {
             StringBuilder bin = new StringBuilder(size);
             for (j = 0; j < size; j++) {
@@ -636,7 +636,7 @@ public class QrCode extends Symbol {
                 }
             }
             pattern[i] = bin2pat(bin);
-            row_height[i] = moduleWidth;
+            rowHeight[i] = moduleWidth;
         }
     }
 

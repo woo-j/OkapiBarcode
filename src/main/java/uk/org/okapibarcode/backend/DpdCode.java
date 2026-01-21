@@ -83,8 +83,8 @@ public class DpdCode extends Symbol {
         encodeInfo = code128.encodeInfo;
         readable = hrt;
         pattern = new String[] { code128.pattern[0] };
-        row_count = 1;
-        row_height = new int[] { -1 };
+        rowHeight = new int[] { defaultHeight };
+        rowCount = 1;
     }
 
     /** {@inheritDoc} */

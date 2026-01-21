@@ -63,7 +63,7 @@ public class Pharmazentralnummer extends Symbol {
         readable = "PZN" + localstr;
         pattern = new String[1];
         pattern[0] = code39.pattern[0];
-        row_count = 1;
-        row_height = new int[] { -1 };
+        rowHeight = new int[] { defaultHeight };
+        rowCount = 1;
     }
 }

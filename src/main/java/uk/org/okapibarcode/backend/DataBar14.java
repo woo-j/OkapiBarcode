@@ -345,7 +345,7 @@ public class DataBar14 extends Symbol {
             total_widths[i + 31] = FINDER_PATTERN[(4 - i) + (5 * c_right)];
         }
 
-        row_count = 0;
+        rowCount = 0;
 
         boolean[] separator = new boolean[100];
         for(i = 0; i < separator.length; i++) {
@@ -359,7 +359,7 @@ public class DataBar14 extends Symbol {
             for (i = 0; i < 46; i++) {
                 for (j = 0; j < total_widths[i]; j++) {
                     if (latch == '1') {
-                        grid[row_count][writer] = true;
+                        grid[rowCount][writer] = true;
                     }
                     writer++;
                 }
@@ -409,7 +409,7 @@ public class DataBar14 extends Symbol {
                     }
                 }
             }
-            row_count = row_count + 1;
+            rowCount = rowCount + 1;
 
             count = 0;
             check_digit = 0;
@@ -441,7 +441,7 @@ public class DataBar14 extends Symbol {
             latch = '0';
             for (i = 0; i < 23; i++) {
                 for (j = 0; j < total_widths[i]; j++) {
-                    grid[row_count][writer] = (latch == '1');
+                    grid[rowCount][writer] = (latch == '1');
                     writer++;
                 }
                 if (latch == '1') {
@@ -450,18 +450,18 @@ public class DataBar14 extends Symbol {
                     latch = '1';
                 }
             }
-            grid[row_count][writer] = true;
-            grid[row_count][writer + 1] = false;
+            grid[rowCount][writer] = true;
+            grid[rowCount][writer + 1] = false;
 
             /* bottom row */
-            row_count = row_count + 2;
-            grid[row_count][0] = true;
-            grid[row_count][1] = false;
+            rowCount = rowCount + 2;
+            grid[rowCount][0] = true;
+            grid[rowCount][1] = false;
             writer = 0;
             latch = '1';
             for (i = 23; i < 46; i++) {
                 for (j = 0; j < total_widths[i]; j++) {
-                    grid[row_count][writer + 2] = (latch == '1');
+                    grid[rowCount][writer + 2] = (latch == '1');
                     writer++;
                 }
                 if (latch == '1') {
@@ -473,18 +473,18 @@ public class DataBar14 extends Symbol {
 
             /* separator pattern */
             for (i = 1; i < 46; i++) {
-                if (grid[row_count - 2][i] == grid[row_count][i]) {
-                    if (!grid[row_count - 2][i]) {
-                        grid[row_count - 1][i] = true;
+                if (grid[rowCount - 2][i] == grid[rowCount][i]) {
+                    if (!grid[rowCount - 2][i]) {
+                        grid[rowCount - 1][i] = true;
                     }
                 } else {
-                    if (!grid[row_count - 1][i - 1]) {
-                        grid[row_count - 1][i] = true;
+                    if (!grid[rowCount - 1][i - 1]) {
+                        grid[rowCount - 1][i] = true;
                     }
                 }
             }
             for (i = 0; i < 4; i++) {
-                grid[row_count - 1][i] = false;
+                grid[rowCount - 1][i] = false;
             }
 
             if (linkageFlag) {
@@ -508,7 +508,7 @@ public class DataBar14 extends Symbol {
                     }
                 }
             }
-            row_count = row_count + 1;
+            rowCount = rowCount + 1;
             if (symbol_width < 50) {
                 symbol_width = 50;
             }
@@ -520,23 +520,23 @@ public class DataBar14 extends Symbol {
             latch = '0';
             for (i = 0; i < 23; i++) {
                 for (j = 0; j < total_widths[i]; j++) {
-                    grid[row_count][writer] = (latch == '1');
+                    grid[rowCount][writer] = (latch == '1');
                     writer++;
                 }
                 latch = (latch == '1' ? '0' : '1');
             }
-            grid[row_count][writer] = true;
-            grid[row_count][writer + 1] = false;
+            grid[rowCount][writer] = true;
+            grid[rowCount][writer + 1] = false;
 
             /* bottom row */
-            row_count = row_count + 4;
-            grid[row_count][0] = true;
-            grid[row_count][1] = false;
+            rowCount = rowCount + 4;
+            grid[rowCount][0] = true;
+            grid[rowCount][1] = false;
             writer = 0;
             latch = '1';
             for (i = 23; i < 46; i++) {
                 for (j = 0; j < total_widths[i]; j++) {
-                    grid[row_count][writer + 2] = (latch == '1');
+                    grid[rowCount][writer + 2] = (latch == '1');
                     writer++;
                 }
                 if (latch == '1') {
@@ -548,49 +548,49 @@ public class DataBar14 extends Symbol {
 
             /* middle separator */
             for (i = 5; i < 46; i += 2) {
-                grid[row_count - 2][i] = true;
+                grid[rowCount - 2][i] = true;
             }
 
             /* top separator */
             for (i = 4; i < 46; i++) {
-                if (!grid[row_count - 4][i]) {
-                    grid[row_count - 3][i] = true;
+                if (!grid[rowCount - 4][i]) {
+                    grid[rowCount - 3][i] = true;
                 }
             }
             latch = '1';
             for (i = 17; i < 33; i++) {
-                if (!grid[row_count - 4][i]) {
+                if (!grid[rowCount - 4][i]) {
                     if (latch == '1') {
-                        grid[row_count - 3][i] = true;
+                        grid[rowCount - 3][i] = true;
                         latch = '0';
                     } else {
-                        grid[row_count - 3][i] = false;
+                        grid[rowCount - 3][i] = false;
                         latch = '1';
                     }
                 } else {
-                    grid[row_count - 3][i] = false;
+                    grid[rowCount - 3][i] = false;
                     latch = '1';
                 }
             }
 
             /* bottom separator */
             for (i = 4; i < 46; i++) {
-                if (!grid[row_count][i]) {
-                    grid[row_count - 1][i] = true;
+                if (!grid[rowCount][i]) {
+                    grid[rowCount - 1][i] = true;
                 }
             }
             latch = '1';
             for (i = 16; i < 32; i++) {
-                if (!grid[row_count][i]) {
+                if (!grid[rowCount][i]) {
                     if (latch == '1') {
-                        grid[row_count - 1][i] = true;
+                        grid[rowCount - 1][i] = true;
                         latch = '0';
                     } else {
-                        grid[row_count - 1][i] = false;
+                        grid[rowCount - 1][i] = false;
                         latch = '1';
                     }
                 } else {
-                    grid[row_count - 1][i] = false;
+                    grid[rowCount - 1][i] = false;
                     latch = '1';
                 }
             }
@@ -619,11 +619,11 @@ public class DataBar14 extends Symbol {
                     }
                 }
             }
-            row_count = row_count + 1;
+            rowCount = rowCount + 1;
         }
 
-        pattern = new String[row_count + compositeOffset];
-        row_height = new int[row_count + compositeOffset];
+        pattern = new String[rowCount + compositeOffset];
+        rowHeight = new int[rowCount + compositeOffset];
 
         if (linkageFlag) {
             bin.setLength(0);
@@ -635,10 +635,10 @@ public class DataBar14 extends Symbol {
                 }
             }
             pattern[0] = bin2pat(bin);
-            row_height[0] = 1;
+            rowHeight[0] = 1;
         }
 
-        for (i = 0; i < row_count; i++) {
+        for (i = 0; i < rowCount; i++) {
             bin.setLength(0);
             for (j = 0; j < symbol_width; j++) {
                 if (grid[i][j]) {
@@ -651,23 +651,23 @@ public class DataBar14 extends Symbol {
         }
 
         if (mode == Mode.LINEAR) {
-            row_height[0 + compositeOffset] = -1;
+            rowHeight[0 + compositeOffset] = defaultHeight;
         }
         if (mode == Mode.STACKED) {
-            row_height[0 + compositeOffset] = 5;
-            row_height[1 + compositeOffset] = separatorHeight;
-            row_height[2 + compositeOffset] = 7;
+            rowHeight[0 + compositeOffset] = 5;
+            rowHeight[1 + compositeOffset] = separatorHeight;
+            rowHeight[2 + compositeOffset] = 7;
         }
         if (mode == Mode.OMNI) {
-            row_height[0 + compositeOffset] = -1;
-            row_height[1 + compositeOffset] = separatorHeight;
-            row_height[2 + compositeOffset] = separatorHeight;
-            row_height[3 + compositeOffset] = separatorHeight;
-            row_height[4 + compositeOffset] = -1;
+            rowHeight[0 + compositeOffset] = defaultHeight;
+            rowHeight[1 + compositeOffset] = separatorHeight;
+            rowHeight[2 + compositeOffset] = separatorHeight;
+            rowHeight[3 + compositeOffset] = separatorHeight;
+            rowHeight[4 + compositeOffset] = defaultHeight;
         }
 
         if (linkageFlag) {
-            row_count++;
+            rowCount++;
         }
     }
 }

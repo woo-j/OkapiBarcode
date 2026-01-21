@@ -200,8 +200,8 @@ public class Code2Of5 extends Symbol {
 
         readable = content;
         pattern = new String[] { dest };
-        row_count = 1;
-        row_height = new int[] { -1 };
+        rowHeight = new int[] { defaultHeight };
+        rowCount = 1;
     }
 
     private void industrial() {
@@ -218,8 +218,8 @@ public class Code2Of5 extends Symbol {
 
         readable = content;
         pattern = new String[] { dest };
-        row_count = 1;
-        row_height = new int[] { -1 };
+        rowHeight = new int[] { defaultHeight };
+        rowCount = 1;
     }
 
     private void iata() {
@@ -236,8 +236,8 @@ public class Code2Of5 extends Symbol {
 
         readable = content;
         pattern = new String[] { dest };
-        row_count = 1;
-        row_height = new int[] { -1 };
+        rowHeight = new int[] { defaultHeight };
+        rowCount = 1;
     }
 
     private void dataLogic() {
@@ -254,8 +254,8 @@ public class Code2Of5 extends Symbol {
 
         readable = content;
         pattern = new String[] { dest };
-        row_count = 1;
-        row_height = new int[] { -1 };
+        rowHeight = new int[] { defaultHeight };
+        rowCount = 1;
     }
 
     private void interleaved(boolean addCheckDigit) {
@@ -285,8 +285,8 @@ public class Code2Of5 extends Symbol {
         dest += "311";
 
         pattern = new String[] { dest };
-        row_count = 1;
-        row_height = new int[] { -1 };
+        rowHeight = new int[] { defaultHeight };
+        rowCount = 1;
     }
 
     private String interlace(int x, int y) {
@@ -335,8 +335,8 @@ public class Code2Of5 extends Symbol {
         dest += "311";
 
         pattern = new String[] { dest };
-        row_count = 1;
-        row_height = new int[] { -1 };
+        rowHeight = new int[] { defaultHeight };
+        rowCount = 1;
     }
 
     private void deutschePostLeitcode() {
@@ -369,8 +369,8 @@ public class Code2Of5 extends Symbol {
         dest += "311";
 
         pattern = new String[] { dest };
-        row_count = 1;
-        row_height = new int[] { -1 };
+        rowHeight = new int[] { defaultHeight };
+        rowCount = 1;
     }
 
     private void deutschePostIdentcode() {
@@ -403,8 +403,8 @@ public class Code2Of5 extends Symbol {
         dest += "311";
 
         pattern = new String[] { dest };
-        row_count = 1;
-        row_height = new int[] { -1 };
+        rowHeight = new int[] { defaultHeight };
+        rowCount = 1;
     }
 
     private static char checkDigit(String s, int multiplier1, int multiplier2) {
@@ -433,7 +433,7 @@ public class Code2Of5 extends Symbol {
 
         double x = 0;
         int y = baseY;
-        int h = 0;
+        int h = rowHeight[0];
         boolean black = true;
 
         int offset = 0;
@@ -445,11 +445,6 @@ public class Code2Of5 extends Symbol {
             char c = pattern[0].charAt(xBlock);
             double w = getModuleWidth(c - '0') * moduleWidth;
             if (black) {
-                if (row_height[0] == -1) {
-                    h = default_height;
-                } else {
-                    h = row_height[0];
-                }
                 if (w != 0 && h != 0) {
                     addRectangle(new Rectangle(x + offset, y, w, h));
                 }

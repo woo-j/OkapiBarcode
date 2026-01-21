@@ -1295,8 +1295,8 @@ public class Code49 extends Symbol {
 
         readable = "";
         pattern = new String[rows];
-        row_count = rows;
-        row_height = new int[rows];
+        rowHeight = new int[rows];
+        rowCount = rows;
 
         info("Symbol Characters: ");
         for (i = 0; i < rows; i++) {
@@ -1319,7 +1319,7 @@ public class Code49 extends Symbol {
             }
             rowPattern.append('4'); /* Stop character */
             pattern[i] = rowPattern.toString();
-            row_height[i] = 10;
+            rowHeight[i] = 10;
         }
         infoLine();
     }
@@ -1336,17 +1336,13 @@ public class Code49 extends Symbol {
 
         y = 1;
         h = 1;
-        for (yBlock = 0; yBlock < row_count; yBlock++) {
+        for (yBlock = 0; yBlock < rowCount; yBlock++) {
             black = true;
             x = 15;
+            h = rowHeight[yBlock];
             for (xBlock = 0; xBlock < pattern[yBlock].length(); xBlock++) {
                 if (black) {
                     w = pattern[yBlock].charAt(xBlock) - '0';
-                    if (row_height[yBlock] == -1) {
-                        h = default_height;
-                    } else {
-                        h = row_height[yBlock];
-                    }
                     if (w != 0 && h != 0) {
                         addRectangle(new Rectangle(x, y, w, h));
                     }
@@ -1361,7 +1357,7 @@ public class Code49 extends Symbol {
             if (y > symbol_height) {
                 symbol_height = y;
             }
-            if (yBlock != row_count - 1) {
+            if (yBlock != rowCount - 1) {
                 dividers.add(new Rectangle(15, y - 1, symbol_width - 15, 2));
             }
         }

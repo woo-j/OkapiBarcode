@@ -110,7 +110,7 @@ public class Logmars extends Symbol {
 
         readable = content + checkDigit;
         pattern = new String[] { p.toString() };
-        row_count = 1;
-        row_height = new int[] { -1 };
+        rowHeight = new int[] { defaultHeight };
+        rowCount = 1;
     }
 }

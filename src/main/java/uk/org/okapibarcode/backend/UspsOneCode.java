@@ -199,7 +199,7 @@ public class UspsOneCode extends Symbol {
     private double longHeightPercentage;
 
     public UspsOneCode() {
-        this.default_height = 8;
+        this.defaultHeight = 8;
         this.humanReadableLocation = HumanReadableLocation.NONE;
         this.humanReadableAlignment = TextAlignment.LEFT; // spec section 2.4.2
         this.moduleWidthRatio = 1.43;
@@ -442,8 +442,8 @@ public class UspsOneCode extends Symbol {
 
         readable = formatHumanReadableText(content);
         pattern = new String[] { pat.toString() };
-        row_count = 1;
-        row_height = new int[] { -1 };
+        rowHeight = new int[] { defaultHeight };
+        rowCount = 1;
     }
 
     private static int USPS_MSB_Math_CRC11GenerateFrameCheckSequence(int[] bytes) {
@@ -558,8 +558,8 @@ public class UspsOneCode extends Symbol {
         y = 0;
         h = 0;
         dx = (1 + moduleWidthRatio) * w;
-        shortHeight = (int) (shortHeightPercentage * default_height);
-        longHeight = (int) (longHeightPercentage * default_height);
+        shortHeight = (int) (shortHeightPercentage * defaultHeight);
+        longHeight = (int) (longHeightPercentage * defaultHeight);
         for (xBlock = 0; xBlock < pattern[0].length(); xBlock++) {
 
             switch (pattern[0].charAt(xBlock)) {
@@ -568,15 +568,15 @@ public class UspsOneCode extends Symbol {
                 h = longHeight;
                 break;
             case 'D':
-                y = baseY + default_height - longHeight;
+                y = baseY + defaultHeight - longHeight;
                 h = longHeight;
                 break;
             case 'F':
                 y = baseY;
-                h = default_height;
+                h = defaultHeight;
                 break;
             case 'T':
-                y = baseY + default_height - longHeight;
+                y = baseY + defaultHeight - longHeight;
                 h = shortHeight;
                 break;
             }
@@ -586,7 +586,7 @@ public class UspsOneCode extends Symbol {
         }
 
         symbol_width = (int) Math.ceil(((pattern[0].length() - 1) * dx) + w); // final bar doesn't need extra whitespace
-        symbol_height = default_height;
+        symbol_height = defaultHeight;
 
         if (humanReadableLocation != NONE && !readable.isEmpty()) {
             double baseline;

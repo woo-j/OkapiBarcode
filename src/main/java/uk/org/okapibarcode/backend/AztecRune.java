@@ -154,8 +154,8 @@ public class AztecRune extends Symbol {
 
         readable = "";
         pattern = new String[11];
-        row_count = 11;
-        row_height = new int[11];
+        rowHeight = new int[11];
+        rowCount = 11;
 
         for (int row = 0; row < 11; row++) {
             StringBuilder rowBinary = new StringBuilder(11);
@@ -171,7 +171,7 @@ public class AztecRune extends Symbol {
                 }
             }
             pattern[row] = bin2pat(rowBinary);
-            row_height[row] = moduleWidth;
+            rowHeight[row] = moduleWidth;
         }
     }
 }

@@ -1003,9 +1003,9 @@ public class Pdf417 extends Symbol {
         c3 = columns - 1;
 
         readable = "";
-        row_count = rows;
+        rowCount = rows;
         pattern = new String[rows];
-        row_height = new int[rows];
+        rowHeight = new int[rows];
         infoLine("Grid Size: " + columns + " X " + rows);
 
         /* we now encode each row */
@@ -1047,7 +1047,7 @@ public class Pdf417 extends Symbol {
                 bin.append(PDF_TTF[positionOf(codebarre.charAt(j), BR_SET)]);
             }
             pattern[i] = bin2pat(bin);
-            row_height[i] = default_height;
+            rowHeight[i] = defaultHeight;
         }
     }
 
@@ -1184,10 +1184,10 @@ public class Pdf417 extends Symbol {
 
         readable = "";
         pattern = new String[rows];
-        row_count = rows;
-        row_height = new int[rows];
+        rowHeight = new int[rows];
+        rowCount = rows;
 
-        infoLine("Grid Size: " + columns + " X " + row_count);
+        infoLine("Grid Size: " + columns + " X " + rowCount);
 
         for (int i = 0; i < rows; i++) {
             codebarre.setLength(0);
@@ -1253,7 +1253,7 @@ public class Pdf417 extends Symbol {
 
             /* so now pattern[] holds the string of '1's and '0's. - copy this to the symbol */
             pattern[i] = bin2pat(bin);
-            row_height[i] = default_height;
+            rowHeight[i] = defaultHeight;
 
             /* Set up RAPs and Cluster for next row */
             LeftRAP++;

@@ -207,7 +207,7 @@ public class Upc extends Symbol {
             addOn.fontSize = this.fontSize;
             addOn.humanReadableLocation = (this.humanReadableLocation == NONE ? NONE : TOP);
             addOn.moduleWidth = this.moduleWidth;
-            addOn.default_height = this.default_height + this.guardPatternExtraHeight - 8;
+            addOn.defaultHeight = this.defaultHeight + this.guardPatternExtraHeight - 8;
             addOn.setContent(content.substring(splitPoint + 1));
             content = content.substring(0, splitPoint);
         }
@@ -235,8 +235,8 @@ public class Upc extends Symbol {
 
         readable = hrt;
         pattern = new String[] { dest.toString() };
-        row_count = 1;
-        row_height = new int[] { -1 };
+        rowHeight = new int[] { defaultHeight };
+        rowCount = 1;
     }
 
     private void upce() {
@@ -269,8 +269,8 @@ public class Upc extends Symbol {
 
         readable = hrt;
         pattern = new String[] { dest.toString() };
-        row_count = 1;
-        row_height = new int[] { -1 };
+        rowHeight = new int[] { defaultHeight };
+        rowCount = 1;
     }
 
     /**
@@ -380,7 +380,7 @@ public class Upc extends Symbol {
 
             if (black) {
                 y = 0;
-                h = default_height;
+                h = defaultHeight;
                 /* Add extension to guide bars */
                 if (mode == Mode.UPCA) {
                     if (x < 10 || x > 84 || (x > 45 && x < 49)) {

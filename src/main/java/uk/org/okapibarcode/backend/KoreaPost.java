@@ -64,8 +64,8 @@ public class KoreaPost extends Symbol {
 
         readable = padded.toString() + check;
         pattern = new String[] { accumulator.toString() };
-        row_count = 1;
-        row_height = new int[] { -1 };
+        rowHeight = new int[] { defaultHeight };
+        rowCount = 1;
     }
 
 }

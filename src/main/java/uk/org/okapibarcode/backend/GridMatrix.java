@@ -438,9 +438,9 @@ public class GridMatrix extends Symbol {
 
         /* Copy values to symbol */
         symbol_width = size;
-        row_count = size;
-        row_height = new int[row_count];
-        pattern = new String[row_count];
+        rowCount = size;
+        rowHeight = new int[rowCount];
+        pattern = new String[rowCount];
 
         for (x = 0; x < size; x++) {
             bin.setLength(0);
@@ -451,7 +451,7 @@ public class GridMatrix extends Symbol {
                     bin.append('0');
                 }
             }
-            row_height[x] = moduleWidth;
+            rowHeight[x] = moduleWidth;
             pattern[x] = bin2pat(bin);
         }
     }

@@ -72,8 +72,8 @@ public class UspsPackage extends Symbol {
         encodeInfo = code128.encodeInfo;
         readable = hrt.toString();
         pattern = new String[] { code128.pattern[0] };
-        row_count = 1;
-        row_height = new int[] { -1 };
+        rowHeight = new int[] { defaultHeight };
+        rowCount = 1;
     }
 
     @Override
@@ -85,7 +85,7 @@ public class UspsPackage extends Symbol {
         int yoffset = 15;
         int x = 0;
         int y = yoffset;
-        int h = default_height;
+        int h = defaultHeight;
         boolean black = true;
 
         for (int xBlock = 0; xBlock < pattern[0].length(); xBlock++) {

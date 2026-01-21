@@ -88,7 +88,7 @@ public abstract class Symbol {
 
     protected DataType inputDataType = DataType.ECI;
     protected boolean readerInit;
-    protected int default_height = 40;
+    protected int defaultHeight = 40;
     protected int quietZoneHorizontal = 0;
     protected int quietZoneVertical = 0;
     protected int moduleWidth = 1;
@@ -106,8 +106,8 @@ public abstract class Symbol {
     protected int[] inputData; // usually bytes (values 0-255), but may also contain FNC flags
     protected String readable = "";
     protected String[] pattern;
-    protected int row_count = 0;
-    protected int[] row_height;
+    protected int[] rowHeight;
+    protected int rowCount = 0;
     protected int symbol_height = 0;
     protected int symbol_width = 0;
     protected StringBuilder encodeInfo = new StringBuilder();
@@ -184,7 +184,7 @@ public abstract class Symbol {
      * @param barHeight the default bar height for this symbol
      */
     public void setBarHeight(int barHeight) {
-        this.default_height = barHeight;
+        this.defaultHeight = barHeight;
     }
 
     /**
@@ -194,7 +194,7 @@ public abstract class Symbol {
      * @return the default bar height for this symbol
      */
     public int getBarHeight() {
-        return default_height;
+        return defaultHeight;
     }
 
     /**
@@ -839,18 +839,14 @@ public abstract class Symbol {
         h = 0;
         y = baseY;
 
-        for (yBlock = 0; yBlock < row_count; yBlock++) {
+        for (yBlock = 0; yBlock < rowCount; yBlock++) {
             black = true;
             x = 0;
+            h = rowHeight[yBlock];
             for (xBlock = 0; xBlock < pattern[yBlock].length(); xBlock++) {
                 char c = pattern[yBlock].charAt(xBlock);
                 w = getModuleWidth(c - '0') * moduleWidth;
                 if (black) {
-                    if (row_height[yBlock] == -1) {
-                        h = default_height;
-                    } else {
-                        h = row_height[yBlock];
-                    }
                     if (w != 0 && h != 0) {
                         addRectangle(new Rectangle(x, y, w, h));
                     }

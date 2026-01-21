@@ -537,8 +537,8 @@ public class Code16k extends Symbol {
 
         readable = "";
         pattern = new String[rows_needed];
-        row_count = rows_needed;
-        row_height = new int[rows_needed];
+        rowHeight = new int[rows_needed];
+        rowCount = rows_needed;
 
         infoLine("Symbol Rows: ", rows_needed);
         infoLine("First Check Digit: ", first_check);
@@ -555,7 +555,7 @@ public class Code16k extends Symbol {
             }
             width_pattern += C16K_START_STOP[C16K_STOP_VALUES[current_row]];
             pattern[current_row] = width_pattern;
-            row_height[current_row] = 10;
+            rowHeight[current_row] = 10;
         }
         infoLine();
     }
@@ -750,18 +750,14 @@ public class Code16k extends Symbol {
 
         y = 1;
         h = 1;
-        for (yBlock = 0; yBlock < row_count; yBlock++) {
+        for (yBlock = 0; yBlock < rowCount; yBlock++) {
             black = true;
             x = 15;
+            h = rowHeight[yBlock];
             for (xBlock = 0; xBlock < pattern[yBlock].length(); xBlock++) {
                 if (black) {
                     black = false;
                     w = pattern[yBlock].charAt(xBlock) - '0';
-                    if (row_height[yBlock] == -1) {
-                        h = default_height;
-                    } else {
-                        h = row_height[yBlock];
-                    }
                     if (w != 0 && h != 0) {
                         addRectangle(new Rectangle(x, y, w, h));
                     }
@@ -777,7 +773,7 @@ public class Code16k extends Symbol {
             if (y > symbol_height) {
                 symbol_height = y;
             }
-            if (yBlock != (row_count - 1)) {
+            if (yBlock != (rowCount - 1)) {
                 dividers.add(new Rectangle(15, y - 1, (symbol_width - 15), 2));
             }
         }

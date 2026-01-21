@@ -138,8 +138,8 @@ public class Telepen extends Symbol {
 
         readable = content;
         pattern = new String[] { dest.toString() };
-        row_count = 1;
-        row_height = new int[] { -1 };
+        rowHeight = new int[] { defaultHeight };
+        rowCount = 1;
     }
 
     private void numericMode() {
@@ -187,7 +187,7 @@ public class Telepen extends Symbol {
 
         readable = content;
         pattern = new String[] { dest.toString() };
-        row_count = 1;
-        row_height = new int[] { -1 };
+        rowHeight = new int[] { defaultHeight };
+        rowCount = 1;
     }
 }

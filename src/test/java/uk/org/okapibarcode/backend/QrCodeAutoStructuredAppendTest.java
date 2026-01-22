@@ -29,12 +29,14 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 import com.google.zxing.BinaryBitmap;
+import com.google.zxing.DecodeHintType;
 import com.google.zxing.LuminanceSource;
 import com.google.zxing.ReaderException;
 import com.google.zxing.Result;
@@ -158,7 +160,7 @@ class QrCodeAutoStructuredAppendTest {
         LuminanceSource source = new BufferedImageLuminanceSource(img);
         BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
         QRCodeReader reader = new QRCodeReader();
-        Result result = reader.decode(bitmap);
+        Result result = reader.decode(bitmap, Map.of(DecodeHintType.PURE_BARCODE, true));
         return result;
     }
 

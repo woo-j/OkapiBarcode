@@ -1519,7 +1519,7 @@ public class QrCode extends Symbol {
             }
         }
 
-        /* Apply data masks to grid, result in eval */
+        /* Apply data masks to grid, result in eval (each byte in eval contains 8 masked bit values, one per mask) */
         for (x = 0; x < size; x++) {
             for (y = 0; y < size; y++) {
                 if ((grid[(y * size) + x] & 0x01) != 0) {
@@ -1577,24 +1577,24 @@ public class QrCode extends Symbol {
         seq = QR_ANNEX_C[format];
 
         for (i = 0; i < 6; i++) {
-            eval[(i * size) + 8] = (byte) ((seq >> i) & 0x01);
+            eval[(i * size) + 8] = (byte) (((seq >>> i) & 0x01) << pattern);
         }
 
         for (i = 0; i < 8; i++) {
-            eval[(8 * size) + (size - i - 1)] = (byte) ((seq >> i) & 0x01);
+            eval[(8 * size) + (size - i - 1)] = (byte) (((seq >>> i) & 0x01) << pattern);
         }
 
         for (i = 0; i < 6; i++) {
-            eval[(8 * size) + (5 - i)] = (byte) ((seq >> (i + 9)) & 0x01);
+            eval[(8 * size) + (5 - i)] = (byte) (((seq >>> (i + 9)) & 0x01) << pattern);
         }
 
         for (i = 0; i < 7; i++) {
-            eval[(((size - 7) + i) * size) + 8] = (byte) ((seq >> (i + 8)) & 0x01);
+            eval[(((size - 7) + i) * size) + 8] = (byte) (((seq >>> (i + 8)) & 0x01) << pattern);
         }
 
-        eval[(7 * size) + 8] = (byte) ((seq >> 6) & 0x01);
-        eval[(8 * size) + 8] = (byte) ((seq >> 7) & 0x01);
-        eval[(8 * size) + 7] = (byte) ((seq >> 8) & 0x01);
+        eval[(7 * size) + 8] = (byte) (((seq >>> 6) & 0x01) << pattern);
+        eval[(8 * size) + 8] = (byte) (((seq >>> 7) & 0x01) << pattern);
+        eval[(8 * size) + 7] = (byte) (((seq >>> 8) & 0x01) << pattern);
     }
 
     private static int evaluate(byte[] eval, int size, int pattern, int best, StringBuilder encodeInfo) {
@@ -1633,7 +1633,7 @@ public class QrCode extends Symbol {
                     if (block >= 5) {
                         result += (3 + (block - 5));
                     }
-                    block = 0;
+                    block = 1;
                     state = local[i];
                 }
             }
@@ -1654,7 +1654,7 @@ public class QrCode extends Symbol {
                     if (block >= 5) {
                         result += (3 + (block - 5));
                     }
-                    block = 0;
+                    block = 1;
                     state = local[i];
                 }
             }

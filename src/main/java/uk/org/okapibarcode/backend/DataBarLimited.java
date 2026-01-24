@@ -359,10 +359,10 @@ public class DataBarLimited extends Symbol {
         total_widths[1] = 1;
         total_widths[44] = 1;
         total_widths[45] = 1;
-        for(i = 0; i < 14; i++) {
-                total_widths[i + 2] = left_widths[i];
-                total_widths[i + 16] = check_elements[i];
-                total_widths[i + 30] = right_widths[i];
+        for (i = 0; i < 14; i++) {
+            total_widths[i + 2] = left_widths[i];
+            total_widths[i + 16] = check_elements[i];
+            total_widths[i + 30] = right_widths[i];
         }
 
         StringBuilder bin = new StringBuilder();
@@ -380,11 +380,7 @@ public class DataBarLimited extends Symbol {
                 }
                 writer++;
             }
-            if (bar_latch) {
-                bar_latch = false;
-            } else {
-                bar_latch = true;
-            }
+            bar_latch = !bar_latch;
         }
 
         /* Calculate check digit from Annex A and place human readable text */

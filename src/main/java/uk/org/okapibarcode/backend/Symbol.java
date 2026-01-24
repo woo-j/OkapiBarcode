@@ -577,26 +577,17 @@ public abstract class Symbol {
     protected static String bin2pat(CharSequence bin) {
 
         int len = 0;
-        boolean black = true;
+        char prev = '1';
         StringBuilder pattern = new StringBuilder(bin.length());
 
         for (int i = 0; i < bin.length(); i++) {
-            if (black) {
-                if (bin.charAt(i) == '1') {
-                    len++;
-                } else {
-                    black = false;
-                    pattern.append((char) (len + '0'));
-                    len = 1;
-                }
+            char c = bin.charAt(i);
+            if (c == prev) {
+                len++;
             } else {
-                if (bin.charAt(i) == '0') {
-                    len++;
-                } else {
-                    black = true;
-                    pattern.append((char) (len + '0'));
-                    len = 1;
-                }
+                pattern.append((char) (len + '0'));
+                prev = c;
+                len = 1;
             }
         }
 

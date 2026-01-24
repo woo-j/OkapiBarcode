@@ -264,7 +264,6 @@ public class GridMatrix extends Symbol {
         int data_cw, input_latch = 0;
         int data_max;
         int length;
-        StringBuilder bin = new StringBuilder();
 
         for (i = 0; i < 1460; i++) {
             word[i] = 0;
@@ -442,17 +441,10 @@ public class GridMatrix extends Symbol {
         rowHeight = new int[rowCount];
         pattern = new String[rowCount];
 
+        StringBuilder pat = new StringBuilder(size);
         for (x = 0; x < size; x++) {
-            bin.setLength(0);
-            for (y = 0; y < size; y++) {
-                if (grid[(x * size) + y]) {
-                    bin.append('1');
-                } else {
-                    bin.append('0');
-                }
-            }
+            pattern[x] = bin2pat(grid, x * size, size, pat);
             rowHeight[x] = moduleWidth;
-            pattern[x] = bin2pat(bin);
         }
     }
 

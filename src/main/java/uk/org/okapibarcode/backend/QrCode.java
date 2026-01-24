@@ -626,16 +626,10 @@ public class QrCode extends Symbol {
         pattern = new String[size];
         rowHeight = new int[size];
         rowCount = size;
+
+        StringBuilder pat = new StringBuilder(size);
         for (i = 0; i < size; i++) {
-            StringBuilder bin = new StringBuilder(size);
-            for (j = 0; j < size; j++) {
-                if ((grid[(i * size) + j] & 0x01) != 0) {
-                    bin.append('1');
-                } else {
-                    bin.append('0');
-                }
-            }
-            pattern[i] = bin2pat(bin);
+            pattern[i] = bin2pat(grid, i * size, size, pat);
             rowHeight[i] = moduleWidth;
         }
     }

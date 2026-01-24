@@ -441,16 +441,10 @@ public class MaxiCode extends Symbol {
         readable = "";
         pattern = new String[33];
         rowHeight = new int[33];
+
+        StringBuilder pat = new StringBuilder(30);
         for (int i = 0; i < 33; i++) {
-            StringBuilder bin = new StringBuilder(30);
-            for (int j = 0; j < 30; j++) {
-                if (grid[i][j]) {
-                    bin.append("1");
-                } else {
-                    bin.append("0");
-                }
-            }
-            pattern[i] = bin2pat(bin);
+            pattern[i] = bin2pat(grid[i], 0, 30, pat);
             rowHeight[i] = moduleWidth;
         }
     }

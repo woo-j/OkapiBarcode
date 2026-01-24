@@ -444,16 +444,10 @@ public class MicroQrCode extends Symbol {
         pattern = new String[size];
         rowCount = size;
         rowHeight = new int[size];
+
+        StringBuilder pat = new StringBuilder(size);
         for (i = 0; i < size; i++) {
-            bin.setLength(0);
-            for (j = 0; j < size; j++) {
-                if ((grid[(i * size) + j] & 0x01) != 0) {
-                    bin.append('1');
-                } else {
-                    bin.append('0');
-                }
-            }
-            pattern[i] = bin2pat(bin);
+            pattern[i] = bin2pat(grid, i * size, size, pat);
             rowHeight[i] = moduleWidth;
         }
     }

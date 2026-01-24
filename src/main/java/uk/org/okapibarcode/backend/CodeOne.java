@@ -159,7 +159,6 @@ public class CodeOne extends Symbol {
         int data_length;
         int data_cw, ecc_cw;
         int[] sub_data = new int[190];
-        StringBuilder bin = new StringBuilder();
 
         if (!content.matches("[\u0000-\u00FF]+")) {
             throw OkapiInputException.invalidCharactersInInput();
@@ -729,16 +728,10 @@ public class CodeOne extends Symbol {
         readable = "";
         pattern = new String[rowCount];
         rowHeight = new int[rowCount];
+
+        StringBuilder pat = new StringBuilder(symbol_width);
         for (i = 0; i < rowCount; i++) {
-            bin.setLength(0);
-            for (j = 0; j < symbol_width; j++) {
-                if (outputGrid[i][j]) {
-                    bin.append('1');
-                } else {
-                    bin.append('0');
-                }
-            }
-            pattern[i] = bin2pat(bin);
+            pattern[i] = bin2pat(outputGrid[i], 0, symbol_width, pat);
             rowHeight[i] = moduleWidth;
         }
     }

@@ -578,21 +578,65 @@ public abstract class Symbol {
 
         int len = 0;
         char prev = '1';
-        StringBuilder pattern = new StringBuilder(bin.length());
+        StringBuilder pat = new StringBuilder(bin.length());
 
         for (int i = 0; i < bin.length(); i++) {
-            char c = bin.charAt(i);
-            if (c == prev) {
+            char val = bin.charAt(i);
+            if (val == prev) {
                 len++;
             } else {
-                pattern.append((char) (len + '0'));
-                prev = c;
+                pat.append((char) (len + '0'));
+                prev = val;
                 len = 1;
             }
         }
 
-        pattern.append((char) (len + '0'));
-        return pattern.toString();
+        pat.append((char) (len + '0'));
+        return pat.toString();
+    }
+
+    protected static String bin2pat(int[] bin, int index, int size, StringBuilder pat) {
+
+        int len = 0;
+        int prev = 1;
+        int end = index + size;
+        pat.setLength(0); // reset
+
+        for (int i = index; i < end; i++) {
+            int val = bin[i] & 0x01;
+            if (val == prev) {
+                len++;
+            } else {
+                pat.append((char) (len + '0'));
+                prev = val;
+                len = 1;
+            }
+        }
+
+        pat.append((char) (len + '0'));
+        return pat.toString();
+    }
+
+    protected static String bin2pat(boolean[] bin, int index, int size, StringBuilder pat) {
+
+        int len = 0;
+        boolean prev = true;
+        int end = index + size;
+        pat.setLength(0); // reset
+
+        for (int i = index; i < end; i++) {
+            boolean val = bin[i];
+            if (val == prev) {
+                len++;
+            } else {
+                pat.append((char) (len + '0'));
+                prev = val;
+                len = 1;
+            }
+        }
+
+        pat.append((char) (len + '0'));
+        return pat.toString();
     }
 
     /**

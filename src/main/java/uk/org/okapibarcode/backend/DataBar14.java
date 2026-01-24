@@ -178,7 +178,6 @@ public class DataBar14 extends Symbol {
         int j;
         int count;
         int check_digit;
-        StringBuilder bin = new StringBuilder();
         int compositeOffset = 0;
 
         if (content.length() > 13) {
@@ -622,32 +621,17 @@ public class DataBar14 extends Symbol {
             rowCount = rowCount + 1;
         }
 
+        StringBuilder pat = new StringBuilder(symbol_width);
         pattern = new String[rowCount + compositeOffset];
         rowHeight = new int[rowCount + compositeOffset];
 
         if (linkageFlag) {
-            bin.setLength(0);
-            for (j = 0; j < symbol_width; j++) {
-                if (separator[j]) {
-                    bin.append('1');
-                } else {
-                    bin.append('0');
-                }
-            }
-            pattern[0] = bin2pat(bin);
+            pattern[0] = bin2pat(separator, 0, symbol_width, pat);
             rowHeight[0] = 1;
         }
 
         for (i = 0; i < rowCount; i++) {
-            bin.setLength(0);
-            for (j = 0; j < symbol_width; j++) {
-                if (grid[i][j]) {
-                    bin.append('1');
-                } else {
-                    bin.append('0');
-                }
-            }
-            pattern[i + compositeOffset] = bin2pat(bin);
+            pattern[i + compositeOffset] = bin2pat(grid[i], 0, symbol_width, pat);
         }
 
         if (mode == Mode.LINEAR) {

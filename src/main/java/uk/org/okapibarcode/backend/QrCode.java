@@ -1685,7 +1685,7 @@ public class QrCode extends Symbol {
         /* Test 3: 1:1:3:1:1 ratio pattern in row/column */
         /* Vertical */
         for (x = 0; x < size; x++) {
-            for (y = 0; y < (size - 7); y++) {
+            for (y = 0; y <= (size - 7); y++) {
                 if (local[((y + 0) * size) + x] == 1 &&
                     local[((y + 1) * size) + x] == 0 &&
                     local[((y + 2) * size) + x] == 1 &&
@@ -1723,7 +1723,7 @@ public class QrCode extends Symbol {
 
         /* Horizontal */
         for (y = 0; y < size; y++) {
-            for (x = 0; x < (size - 7); x++) {
+            for (x = 0; x <= (size - 7); x++) {
                 if (local[(y * size) + x + 0] == 1 &&
                     local[(y * size) + x + 1] == 0 &&
                     local[(y * size) + x + 2] == 1 &&

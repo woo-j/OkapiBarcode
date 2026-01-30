@@ -507,6 +507,14 @@ public abstract class Symbol {
      * @param rect the rectangle to add
      */
     protected void addRectangle(Rectangle rect) {
+
+        // if this is a 1D linear barcode, exit early (nothing to merge vertically)
+        if (rowCount == 1) {
+            rectangles.add(rect);
+            return;
+        }
+
+        // if this is a 2D barcode, try to merge rectangles
         Rectangle prev = prevRectangles.get(rect.x);
         if (prev != null &&
             roughlyEqual(prev.width, rect.width) &&

@@ -27,11 +27,11 @@ public class ReedSolomon {
 
     private static final Map< Key, ReedSolomon > INSTANCES = new ConcurrentHashMap<>();
 
-    private int logmod;
     private int rlen;
-    private int[] logt;
-    private int[] alog;
-    private int[] rspoly;
+    private short logmod;
+    private short[] logt;
+    private short[] alog;
+    private short[] rspoly;
 
     public static ReedSolomon get(int poly, int nsym, int index, boolean cache) {
         if (cache) {
@@ -49,14 +49,18 @@ public class ReedSolomon {
 
     private void init_gf(int poly) {
         // Find the top bit, and hence the symbol size
+        // Ensure size is small enough to fit in short[]
         int leading = Integer.numberOfLeadingZeros(poly);
         int m = 31 - leading;
         int b = 1 << m;
+        if (m > 12) {
+            throw new OkapiInternalException("Expected 12 bits or fewer, but got " + m);
+        }
         // Calculate the log / alog tables
-        logmod = b - 1;
-        logt = new int[logmod + 1];
-        alog = new int[logmod];
-        for (int p = 1, v = 0; v < logmod; v++) {
+        logmod = (short) (b - 1);
+        logt = new short[logmod + 1];
+        alog = new short[logmod];
+        for (short p = 1, v = 0; v < logmod; v++) {
             alog[v] = p;
             logt[p] = v;
             p <<= 1;
@@ -68,7 +72,7 @@ public class ReedSolomon {
 
     private void init_code(int nsym, int index) {
         rlen = nsym;
-        rspoly = new int[nsym + 1];
+        rspoly = new short[nsym + 1];
         rspoly[0] = 1;
         for (int i = 1; i <= nsym; i++) {
             rspoly[i] = 1;
@@ -103,7 +107,7 @@ public class ReedSolomon {
         return res;
     }
 
-    private static class Key {
+    private static final class Key {
         private final int poly;
         private final int nsym;
         private final int index;

@@ -23,15 +23,15 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */
-public class ReedSolomon {
+public final class ReedSolomon {
 
     private static final Map< Key, ReedSolomon > INSTANCES = new ConcurrentHashMap<>();
 
-    private int rlen;
-    private short logmod;
-    private short[] logt;
-    private short[] alog;
-    private short[] rspoly;
+    private final int rlen;       // number of error correction symbols
+    private final short logmod;   // log modulo value
+    private final short[] logt;   // log table
+    private final short[] alog;   // anti-log (exponential) table
+    private final short[] rspoly; // generator polynomial
 
     public static ReedSolomon get(int poly, int nsym, int index, boolean cache) {
         if (cache) {
@@ -43,11 +43,9 @@ public class ReedSolomon {
     }
 
     private ReedSolomon(int poly, int nsym, int index) {
-        init_gf(poly);
-        init_code(nsym, index);
-    }
 
-    private void init_gf(int poly) {
+        // INIT GF
+
         // Find the top bit, and hence the symbol size
         // Ensure size is small enough to fit in short[]
         int leading = Integer.numberOfLeadingZeros(poly);
@@ -56,6 +54,7 @@ public class ReedSolomon {
         if (m > 12) {
             throw new OkapiInternalException("Expected 12 bits or fewer, but got " + m);
         }
+
         // Calculate the log / alog tables
         logmod = (short) (b - 1);
         logt = new short[logmod + 1];
@@ -68,9 +67,9 @@ public class ReedSolomon {
                 p ^= poly;
             }
         }
-    }
 
-    private void init_code(int nsym, int index) {
+        // INIT CODE
+
         rlen = nsym;
         rspoly = new short[nsym + 1];
         rspoly[0] = 1;

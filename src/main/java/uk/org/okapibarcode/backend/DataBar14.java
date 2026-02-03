@@ -368,8 +368,8 @@ public class DataBar14 extends Symbol {
                     latch = '1';
                 }
             }
-            if (symbol_width < writer) {
-                symbol_width = writer;
+            if (symbolWidth < writer) {
+                symbolWidth = writer;
             }
 
             if(linkageFlag) {
@@ -508,8 +508,8 @@ public class DataBar14 extends Symbol {
                 }
             }
             rowCount = rowCount + 1;
-            if (symbol_width < 50) {
-                symbol_width = 50;
+            if (symbolWidth < 50) {
+                symbolWidth = 50;
             }
         }
 
@@ -594,8 +594,8 @@ public class DataBar14 extends Symbol {
                 }
             }
 
-            if (symbol_width < 50) {
-                symbol_width = 50;
+            if (symbolWidth < 50) {
+                symbolWidth = 50;
             }
             if (linkageFlag) {
                 /* separator pattern for composite symbol */
@@ -621,17 +621,17 @@ public class DataBar14 extends Symbol {
             rowCount = rowCount + 1;
         }
 
-        StringBuilder pat = new StringBuilder(symbol_width);
+        StringBuilder pat = new StringBuilder(symbolWidth);
         pattern = new String[rowCount + compositeOffset];
         rowHeight = new int[rowCount + compositeOffset];
 
         if (linkageFlag) {
-            pattern[0] = bin2pat(separator, 0, symbol_width, pat);
+            pattern[0] = bin2pat(separator, 0, symbolWidth, pat);
             rowHeight[0] = 1;
         }
 
         for (i = 0; i < rowCount; i++) {
-            pattern[i + compositeOffset] = bin2pat(grid[i], 0, symbol_width, pat);
+            pattern[i + compositeOffset] = bin2pat(grid[i], 0, symbolWidth, pat);
         }
 
         if (mode == Mode.LINEAR) {

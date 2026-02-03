@@ -108,8 +108,8 @@ public abstract class Symbol {
     protected String[] pattern;
     protected int[] rowHeight;
     protected int rowCount = 0;
-    protected int symbol_height = 0;
-    protected int symbol_width = 0;
+    protected int symbolHeight = 0;
+    protected int symbolWidth = 0;
     protected StringBuilder encodeInfo = new StringBuilder();
     protected List< TextBox > texts = new ArrayList<>();        // note positions do not account for quiet zones (handled in renderers)
     protected List< Hexagon > hexagons = new ArrayList<>();     // note positions do not account for quiet zones (handled in renderers)
@@ -336,7 +336,7 @@ public abstract class Symbol {
      * @return the width of the encoded symbol
      */
     public int getWidth() {
-        return symbol_width + (2 * quietZoneHorizontal);
+        return symbolWidth + (2 * quietZoneHorizontal);
     }
 
     /**
@@ -347,7 +347,7 @@ public abstract class Symbol {
      *         quiet zone
      */
     public int getHeight() {
-        return symbol_height + getHumanReadableHeight() + (2 * quietZoneVertical);
+        return symbolHeight + getHumanReadableHeight() + (2 * quietZoneVertical);
     }
 
     /**
@@ -886,15 +886,15 @@ public abstract class Symbol {
                     if (w != 0 && h != 0) {
                         addRectangle(new Rectangle(x, y, w, h));
                     }
-                    if (x + w > symbol_width) {
-                        symbol_width = (int) Math.ceil(x + w);
+                    if (x + w > symbolWidth) {
+                        symbolWidth = (int) Math.ceil(x + w);
                     }
                 }
                 black = !black;
                 x += w;
             }
-            if ((y - baseY + h) > symbol_height) {
-                symbol_height = (int) Math.ceil(y - baseY + h);
+            if ((y - baseY + h) > symbolHeight) {
+                symbolHeight = (int) Math.ceil(y - baseY + h);
             }
             y += h;
         }
@@ -904,15 +904,15 @@ public abstract class Symbol {
             if (humanReadableLocation == TOP) {
                 baseline = fontSize;
             } else {
-                baseline = symbol_height + fontSize;
+                baseline = symbolHeight + fontSize;
             }
-            texts.add(new TextBox(0, baseline, symbol_width, readable, humanReadableAlignment));
+            texts.add(new TextBox(0, baseline, symbolWidth, readable, humanReadableAlignment));
         }
     }
 
     protected void resetPlotElements() {
-        symbol_height = 0;
-        symbol_width = 0;
+        symbolHeight = 0;
+        symbolWidth = 0;
         texts.clear();
         hexagons.clear();
         target.clear();

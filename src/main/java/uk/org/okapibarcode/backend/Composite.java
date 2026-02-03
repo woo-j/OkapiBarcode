@@ -774,7 +774,7 @@ public class Composite extends Symbol {
         linear.setContent(linearContent);
 
         if (symbology == LinearEncoding.CODE_128) {
-            linearWidth = linear.symbol_width;
+            linearWidth = linear.symbolWidth;
             if (cc_mode == CompositeMode.CC_C) {
                 /* Width of composite component depends on width of linear component, so recalculate. */
                 rowCount = 0;
@@ -782,8 +782,8 @@ public class Composite extends Symbol {
                 encodeInfo.setLength(0);
                 encodeComposite();
             } else {
-                if (linearWidth > symbol_width) {
-                    top_shift = (linearWidth - symbol_width) / 2;
+                if (linearWidth > symbolWidth) {
+                    top_shift = (linearWidth - symbolWidth) / 2;
                 }
             }
         }
@@ -800,11 +800,11 @@ public class Composite extends Symbol {
         for (Rectangle orig : linear.rectangles) {
             double h = orig.height + (extraSepHeight > 0 && orig.height == 1 ? extraSepHeight : 0);
             double y = orig.y +      (extraSepHeight > 0 && orig.height != 1 ? extraSepHeight : 0);
-            combine_rect.add(new Rectangle(orig.x + bottom_shift, y + symbol_height, orig.width, h));
+            combine_rect.add(new Rectangle(orig.x + bottom_shift, y + symbolHeight, orig.width, h));
         }
 
         for (TextBox orig : linear.texts) {
-            combine_txt.add(new TextBox(orig.x + bottom_shift, orig.y + symbol_height + extraSepHeight, orig.width, orig.text, humanReadableAlignment));
+            combine_txt.add(new TextBox(orig.x + bottom_shift, orig.y + symbolHeight + extraSepHeight, orig.width, orig.text, humanReadableAlignment));
         }
 
         int max_x = 0;
@@ -816,8 +816,8 @@ public class Composite extends Symbol {
 
         setRectangles(combine_rect);
         texts = combine_txt;
-        symbol_height += linear.symbol_height + extraSepHeight;
-        symbol_width = max_x;
+        symbolHeight += linear.symbolHeight + extraSepHeight;
+        symbolWidth = max_x;
 
         deleteLastLine(linear.encodeInfo); // remove linear shape count, full shape count (linear + 2D) is added later
         info(linear.encodeInfo);

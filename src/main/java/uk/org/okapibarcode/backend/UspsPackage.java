@@ -94,29 +94,29 @@ public class UspsPackage extends Symbol {
             int w = pattern[0].charAt(xBlock) - '0';
             if (black) {
                 addRectangle(new Rectangle(x + offset, y, w, h));
-                symbol_width = x + w + (2 * offset);
+                symbolWidth = x + w + (2 * offset);
             }
             black = !black;
             x += w;
         }
-        symbol_height = h + (2 * yoffset);
+        symbolHeight = h + (2 * yoffset);
 
         // add boundary bars
-        Rectangle topBar = new Rectangle(0, 0, symbol_width, 2);
-        Rectangle bottomBar = new Rectangle(0, symbol_height - 2, symbol_width, 2);
+        Rectangle topBar = new Rectangle(0, 0, symbolWidth, 2);
+        Rectangle bottomBar = new Rectangle(0, symbolHeight - 2, symbolWidth, 2);
         addRectangle(topBar);
         addRectangle(bottomBar);
 
         // add banner and human-readable text
-        texts.add(new TextBox(0, 12.0, symbol_width, "USPS TRACKING #", humanReadableAlignment));
-        texts.add(new TextBox(0, symbol_height - 6.0, symbol_width, readable, humanReadableAlignment));
+        texts.add(new TextBox(0, 12.0, symbolWidth, "USPS TRACKING #", humanReadableAlignment));
+        texts.add(new TextBox(0, symbolHeight - 6.0, symbolWidth, readable, humanReadableAlignment));
     }
 
     @Override
     public int getHeight() {
         // because of the custom layout logic in plotSymbol(), we store all height components (e.g. human
         // readable text height, quiet zone, boundary bars) here; this is not the case for most symbologies
-        return symbol_height;
+        return symbolHeight;
     }
 
     /** {@inheritDoc} */

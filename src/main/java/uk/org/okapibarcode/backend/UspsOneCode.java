@@ -585,17 +585,17 @@ public class UspsOneCode extends Symbol {
             x += dx;
         }
 
-        symbol_width = (int) Math.ceil(((pattern[0].length() - 1) * dx) + w); // final bar doesn't need extra whitespace
-        symbol_height = defaultHeight;
+        symbolWidth = (int) Math.ceil(((pattern[0].length() - 1) * dx) + w); // final bar doesn't need extra whitespace
+        symbolHeight = defaultHeight;
 
         if (humanReadableLocation != NONE && !readable.isEmpty()) {
             double baseline;
             if (humanReadableLocation == TOP) {
                 baseline = fontSize;
             } else {
-                baseline = symbol_height + fontSize;
+                baseline = symbolHeight + fontSize;
             }
-            texts.add(new TextBox(0, baseline, symbol_width, readable, humanReadableAlignment));
+            texts.add(new TextBox(0, baseline, symbolWidth, readable, humanReadableAlignment));
         }
     }
 }

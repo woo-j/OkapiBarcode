@@ -258,7 +258,7 @@ public class CodeOne extends Symbol {
 
             size = 9;
             rowCount = 8;
-            symbol_width = 10 * sub_version + 1;
+            symbolWidth = 10 * sub_version + 1;
         }
 
         if (preferredVersion == Version.T) {
@@ -353,7 +353,7 @@ public class CodeOne extends Symbol {
             infoLine("Grid Size: " + block_width + " X " + 5);
 
             rowCount = 16;
-            symbol_width = (sub_version * 16) + 1;
+            symbolWidth = (sub_version * 16) + 1;
         }
 
         if ((preferredVersion != Version.S) && (preferredVersion != Version.T)) {
@@ -447,7 +447,7 @@ public class CodeOne extends Symbol {
             infoLine("Grid Size: " + C1_GRID_WIDTH[size - 1] + " X " + C1_GRID_HEIGHT[size - 1]);
 
             rowCount = C1_HEIGHT[size - 1];
-            symbol_width = C1_WIDTH[size - 1];
+            symbolWidth = C1_WIDTH[size - 1];
         }
 
         for (i = 0; i < 148; i++) {
@@ -656,9 +656,9 @@ public class CodeOne extends Symbol {
             plotHorizontalBar(5, 1);
             plotHorizontalBar(7, 1);
             setGridModule(6, 0);
-            setGridModule(6, symbol_width - 1);
+            setGridModule(6, symbolWidth - 1);
             resetGridModule(7, 1);
-            resetGridModule(7, symbol_width - 2);
+            resetGridModule(7, symbolWidth - 2);
             switch (sub_version) {
             case 1:
                 /* Version S-10 */
@@ -689,13 +689,13 @@ public class CodeOne extends Symbol {
             plotHorizontalBar(13, 1);
             plotHorizontalBar(15, 1);
             setGridModule(12, 0);
-            setGridModule(12, symbol_width - 1);
+            setGridModule(12, symbolWidth - 1);
             setGridModule(14, 0);
-            setGridModule(14, symbol_width - 1);
+            setGridModule(14, symbolWidth - 1);
             resetGridModule(13, 1);
-            resetGridModule(13, symbol_width - 2);
+            resetGridModule(13, symbolWidth - 2);
             resetGridModule(15, 1);
-            resetGridModule(15, symbol_width - 2);
+            resetGridModule(15, symbolWidth - 2);
             switch (sub_version) {
             case 1:
                 /* Version T-16 */
@@ -729,9 +729,9 @@ public class CodeOne extends Symbol {
         pattern = new String[rowCount];
         rowHeight = new int[rowCount];
 
-        StringBuilder pat = new StringBuilder(symbol_width);
+        StringBuilder pat = new StringBuilder(symbolWidth);
         for (i = 0; i < rowCount; i++) {
-            pattern[i] = bin2pat(outputGrid[i], 0, symbol_width, pat);
+            pattern[i] = bin2pat(outputGrid[i], 0, symbolWidth, pat);
             rowHeight[i] = moduleWidth;
         }
     }
@@ -1863,7 +1863,7 @@ public class CodeOne extends Symbol {
                 plotHorizontalBar(start_row + (i * 2), 0);
                 if (i != row_count - 1) {
                     setGridModule(start_row + (i * 2) + 1, 1);
-                    setGridModule(start_row + (i * 2) + 1, symbol_width - 2);
+                    setGridModule(start_row + (i * 2) + 1, symbolWidth - 2);
                 }
             }
         }
@@ -1871,11 +1871,11 @@ public class CodeOne extends Symbol {
 
     private void plotHorizontalBar(int row_no, int full) {
         if (full != 0) {
-            for (int i = 0; i < symbol_width; i++) {
+            for (int i = 0; i < symbolWidth; i++) {
                 setGridModule(row_no, i);
             }
         } else {
-            for (int i = 1; i < symbol_width - 1; i++) {
+            for (int i = 1; i < symbolWidth - 1; i++) {
                 setGridModule(row_no, i);
             }
         }
@@ -1894,7 +1894,7 @@ public class CodeOne extends Symbol {
     }
 
     private void plotSpigot(int row_no) {
-        for (int i = symbol_width - 1; i > 0; i--) {
+        for (int i = symbolWidth - 1; i > 0; i--) {
             if (outputGrid[row_no][i - 1]) {
                 setGridModule(row_no, i);
             }

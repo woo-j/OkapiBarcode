@@ -115,7 +115,7 @@ public class KixCode extends Symbol {
             addRectangle(new Rectangle(x, y, w, h));
             x += 2;
         }
-        symbol_width = ((pattern[0].length() - 1) * 2) + 1; // final bar doesn't need extra whitespace
-        symbol_height = 8;
+        symbolWidth = ((pattern[0].length() - 1) * 2) + 1; // final bar doesn't need extra whitespace
+        symbolHeight = 8;
     }
 }

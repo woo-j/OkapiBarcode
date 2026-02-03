@@ -401,8 +401,8 @@ public class Upc extends Symbol {
                 }
                 Rectangle rect = new Rectangle(scale(x), y + compositeOffset + hrtOffset, scale(w), h);
                 addRectangle(rect);
-                symbol_width = Math.max(symbol_width, (int) (rect.x + rect.width));
-                symbol_height = Math.max(symbol_height, (int) (rect.y + rect.height - hrtOffset));
+                symbolWidth = Math.max(symbolWidth, (int) (rect.x + rect.width));
+                symbolHeight = Math.max(symbolHeight, (int) (rect.y + rect.height - hrtOffset));
             }
 
             black = !black;
@@ -411,8 +411,8 @@ public class Upc extends Symbol {
 
         /* Now add the text */
         if (humanReadableLocation == BOTTOM) {
-            symbol_height -= guardPatternExtraHeight;
-            double baseline = symbol_height + fontSize;
+            symbolHeight -= guardPatternExtraHeight;
+            double baseline = symbolHeight + fontSize;
             if (mode == Mode.UPCA) {
                 texts.add(new TextBox(scale(-9), baseline, scale(4), readable.substring(0, 1), TextAlignment.RIGHT));
                 texts.add(new TextBox(scale(12), baseline, scale(32), readable.substring(1, 6), humanReadableAlignment));
@@ -436,7 +436,7 @@ public class Upc extends Symbol {
         /* Now add the add-on symbol, if necessary */
         if (addOn != null) {
             int gap = 9;
-            int baseX = symbol_width + scale(gap);
+            int baseX = symbolWidth + scale(gap);
             Rectangle r1 = rectangles.get(0);
             Rectangle ar1 = addOn.rectangles.get(0);
             int baseY = (int) (r1.y + r1.height - ar1.y - ar1.height);
@@ -446,7 +446,7 @@ public class Upc extends Symbol {
             for (Rectangle r : addOn.getRectangles()) {
                 addRectangle(new Rectangle(baseX + r.x, baseY + r.y, r.width, r.height));
             }
-            symbol_width += scale(gap) + addOn.symbol_width;
+            symbolWidth += scale(gap) + addOn.symbolWidth;
             pattern[0] = pattern[0] + gap + addOn.pattern[0];
         }
     }

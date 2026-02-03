@@ -377,7 +377,7 @@ public class AustraliaPost extends Symbol {
             x += 2;
         }
 
-        symbol_width = ((pattern[0].length() - 1) * 2) + 1; // no whitespace needed after the final bar
-        symbol_height = 8;
+        symbolWidth = ((pattern[0].length() - 1) * 2) + 1; // no whitespace needed after the final bar
+        symbolHeight = 8;
     }
 }

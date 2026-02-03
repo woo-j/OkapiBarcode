@@ -108,7 +108,7 @@ public class Pharmacode2Track extends Symbol {
             x += 2 * w;
         }
 
-        symbol_width = pattern[0].length() * 2 * w;
-        symbol_height = defaultHeight;
+        symbolWidth = pattern[0].length() * 2 * w;
+        symbolHeight = defaultHeight;
     }
 }

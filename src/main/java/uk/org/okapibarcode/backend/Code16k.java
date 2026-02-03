@@ -761,8 +761,8 @@ public class Code16k extends Symbol {
                     if (w != 0 && h != 0) {
                         addRectangle(new Rectangle(x, y, w, h));
                     }
-                    if ((x + w) > symbol_width) {
-                        symbol_width = x + w;
+                    if ((x + w) > symbolWidth) {
+                        symbolWidth = x + w;
                     }
                 } else {
                     black = true;
@@ -770,11 +770,11 @@ public class Code16k extends Symbol {
                 x += pattern[yBlock].charAt(xBlock) - '0';
             }
             y += h;
-            if (y > symbol_height) {
-                symbol_height = y;
+            if (y > symbolHeight) {
+                symbolHeight = y;
             }
             if (yBlock != (rowCount - 1)) {
-                dividers.add(new Rectangle(15, y - 1, (symbol_width - 15), 2));
+                dividers.add(new Rectangle(15, y - 1, (symbolWidth - 15), 2));
             }
         }
 
@@ -784,11 +784,11 @@ public class Code16k extends Symbol {
         }
 
         /* Add top and bottom binding bars */
-        Rectangle top = new Rectangle(0, 0, (symbol_width + 15), 2);
+        Rectangle top = new Rectangle(0, 0, (symbolWidth + 15), 2);
         addRectangle(top);
-        Rectangle bottom = new Rectangle(0, y - 1, (symbol_width + 15), 2);
+        Rectangle bottom = new Rectangle(0, y - 1, (symbolWidth + 15), 2);
         addRectangle(bottom);
-        symbol_width += 15;
-        symbol_height += 1;
+        symbolWidth += 15;
+        symbolHeight += 1;
     }
 }

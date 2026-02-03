@@ -136,7 +136,7 @@ public class RoyalMail4State extends Symbol {
             x += 2;
         }
 
-        symbol_width = pattern[0].length() * 2;
-        symbol_height = 8;
+        symbolWidth = pattern[0].length() * 2;
+        symbolHeight = 8;
     }
 }

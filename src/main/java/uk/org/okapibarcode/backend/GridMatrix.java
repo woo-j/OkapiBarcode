@@ -436,7 +436,7 @@ public class GridMatrix extends Symbol {
         }
 
         /* Copy values to symbol */
-        symbol_width = size;
+        symbolWidth = size;
         rowCount = size;
         rowHeight = new int[rowCount];
         pattern = new String[rowCount];

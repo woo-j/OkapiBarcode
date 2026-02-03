@@ -955,8 +955,8 @@ public class MaxiCode extends Symbol {
         // 2D matrix symbologies, we scale the symbol up by the module width (the hexagons
         // are considered "modules" in the MaxiCode spec)
         int m = moduleWidth;
-        symbol_height = 72 * m;
-        symbol_width = 74 * m;
+        symbolHeight = 72 * m;
+        symbolWidth = 74 * m;
 
         // hexagons
         for (int row = 0; row < 33; row++) {

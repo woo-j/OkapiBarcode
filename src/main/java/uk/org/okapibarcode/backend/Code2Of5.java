@@ -448,20 +448,20 @@ public class Code2Of5 extends Symbol {
                 if (w != 0 && h != 0) {
                     addRectangle(new Rectangle(x + offset, y, w, h));
                 }
-                symbol_width = (int) Math.ceil(x + w + (2 * offset));
+                symbolWidth = (int) Math.ceil(x + w + (2 * offset));
             }
             black = !black;
             x += w;
         }
 
-        symbol_height = h;
+        symbolHeight = h;
 
         if (mode == ToFMode.ITF14) {
             // Add bounding box
-            Rectangle topBar = new Rectangle(0, baseY, symbol_width, 4);
-            Rectangle bottomBar = new Rectangle(0, baseY + symbol_height - 4, symbol_width, 4);
-            Rectangle leftBar = new Rectangle(0, baseY, 4, symbol_height);
-            Rectangle rightBar = new Rectangle(symbol_width - 4, baseY, 4, symbol_height);
+            Rectangle topBar = new Rectangle(0, baseY, symbolWidth, 4);
+            Rectangle bottomBar = new Rectangle(0, baseY + symbolHeight - 4, symbolWidth, 4);
+            Rectangle leftBar = new Rectangle(0, baseY, 4, symbolHeight);
+            Rectangle rightBar = new Rectangle(symbolWidth - 4, baseY, 4, symbolHeight);
             addRectangle(topBar);
             addRectangle(bottomBar);
             addRectangle(leftBar);
@@ -473,9 +473,9 @@ public class Code2Of5 extends Symbol {
             if (humanReadableLocation == TOP) {
                 baseline = fontSize;
             } else {
-                baseline = symbol_height + fontSize;
+                baseline = symbolHeight + fontSize;
             }
-            texts.add(new TextBox(0, baseline, symbol_width, readable, humanReadableAlignment));
+            texts.add(new TextBox(0, baseline, symbolWidth, readable, humanReadableAlignment));
         }
     }
 

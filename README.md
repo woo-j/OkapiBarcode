@@ -160,6 +160,9 @@ and data.
 
 ### Recent Releases
 
+#### Okapi Barcode 0.5.4
+- NVE-18: do not ignore user-provided bar height
+
 #### Okapi Barcode 0.5.3
 - Performance improvements for 2D matrix barcodes (Data Matrix, QR Code, etc)
 - QR Code: fix bugs in mask evaluation

@@ -73,9 +73,9 @@ public class Nve18 extends Symbol {
         code128.setContent(content);
 
         readable = code128.readable;
-        pattern = code128.pattern;
-        rowCount = code128.rowCount;
-        rowHeight = code128.rowHeight;
+        pattern = new String[] { code128.pattern[0] };
+        rowHeight = new int[] { defaultHeight };
+        rowCount = 1;
 
         deleteLastLine(code128.encodeInfo); // remove shape count, our shape count is added later
         info(code128.encodeInfo);

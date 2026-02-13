@@ -126,55 +126,17 @@ public class AztecCode extends Symbol {
         "000", "001", "010", "011", "100", "101", "110", "111"
     };
 
-    /* Codewords per symbol */
-    private static final int[] AZTEC_SIZES = {
-        21, 48, 60, 88, 120, 156, 196, 240, 230, 272, 316, 364, 416, 470, 528, 588, 652, 720, 790,
-        864, 940, 1020, 920, 992, 1066, 1144, 1224, 1306, 1392, 1480, 1570, 1664
+    /** Symbol bit capacity (see Table 1) */
+    protected static final int[] AZTEC_BIT_CAPACITIES = {
+        126, 288, 480, 704, 960, 1248, 1568, 1920, 2300, 2720,
+        3160, 3640, 4160, 4700, 5280, 5880, 6520, 7200, 7900, 8640,
+        9400, 10200, 11040, 11904, 12792, 13728, 14688, 15672, 16704, 17760,
+        18840, 19968
     };
 
-    private static final int[] AZTEC_COMPACT_SIZES = {
-        17, 40, 51, 76
-    };
-
-    /* Data bits per symbol maximum with 10% error correction */
-    private static final int[] AZTEC_10_DATA_SIZES = {
-        96, 246, 408, 616, 840, 1104, 1392, 1704, 2040, 2420, 2820, 3250, 3720, 4200, 4730,
-        5270, 5840, 6450, 7080, 7750, 8430, 9150, 9900, 10680, 11484, 12324, 13188, 14076,
-        15000, 15948, 16920, 17940
-    };
-
-    /* Data bits per symbol maximum with 23% error correction */
-    private static final int[] AZTEC_23_DATA_SIZES = {
-        84, 204, 352, 520, 720, 944, 1184, 1456, 1750, 2070, 2410, 2780, 3180, 3590, 4040,
-        4500, 5000, 5520, 6060, 6630, 7210, 7830, 8472, 9132, 9816, 10536, 11280, 12036,
-        12828, 13644, 14472, 15348
-    };
-
-    /* Data bits per symbol maximum with 36% error correction */
-    private static final int[] AZTEC_36_DATA_SIZES = {
-        66, 168, 288, 432, 592, 776, 984, 1208, 1450, 1720, 2000, 2300, 2640, 2980, 3350,
-        3740, 4150, 4580, 5030, 5500, 5990, 6500, 7032, 7584, 8160, 8760, 9372, 9996, 10656,
-        11340, 12024, 12744
-    };
-
-    /* Data bits per symbol maximum with 50% error correction */
-    private static final int[] AZTEC_50_DATA_SIZES = {
-        48, 126, 216, 328, 456, 600, 760, 936, 1120, 1330, 1550, 1790, 2050, 2320, 2610,
-        2910, 3230, 3570, 3920, 4290, 4670, 5070, 5484, 5916, 6360, 6828, 7308, 7800, 8316,
-        8844, 9384, 9948
-    };
-
-    private static final int[] AZTEC_COMPACT_10_DATA_SIZES = {
-        78, 198, 336, 520
-    };
-    private static final int[] AZTEC_COMPACT_23_DATA_SIZES = {
-        66, 168, 288, 440
-    };
-    private static final int[] AZTEC_COMPACT_36_DATA_SIZES = {
-        48, 138, 232, 360
-    };
-    private static final int[] AZTEC_COMPACT_50_DATA_SIZES = {
-        36, 102, 176, 280
+    /** Symbol bit capacity (see Table 1) */
+    protected static final int[] AZTEC_COMPACT_BIT_CAPACITIES = {
+        102, 240, 408, 608
     };
 
     private static final int[] AZTEC_OFFSET = {
@@ -336,7 +298,7 @@ public class AztecCode extends Symbol {
 
     private Mode mode;
     private int preferredSize = 0;
-    private int preferredEccLevel = 2;
+    private int preferredEccPercentage = 23;
     private String structuredAppendMessageId;
     private int structuredAppendPosition = 1;
     private int structuredAppendTotal = 1;
@@ -377,9 +339,8 @@ public class AztecCode extends Symbol {
     }
 
     /**
-     * <p>Sets a preferred symbol size. This value may be ignored if data string is
-     * too large to fit in the specified symbol size. Values correspond to symbol
-     * sizes as shown in the following table:
+     * <p>Sets a preferred symbol size. Values correspond to symbol sizes as shown
+     * in the following table:
      *
      * <table>
      * <tbody>
@@ -405,7 +366,7 @@ public class AztecCode extends Symbol {
      * </tbody>
      * </table>
      *
-     * <p> Note that sizes 1 to 4 are the "compact" Aztec Code symbols; sizes 5 to 36
+     * <p>Note that sizes 1 to 4 are the "compact" Aztec Code symbols; sizes 5 to 36
      * are the "full-range" Aztec Code symbols.
      *
      * @param size an integer in the range 1 - 36
@@ -429,7 +390,7 @@ public class AztecCode extends Symbol {
     /**
      * Sets the preferred minimum amount of symbol space dedicated to error
      * correction. This value will be ignored if a symbol size has been set by
-     * <code>setPreferredSize</code>. Valid options are:
+     * {@link #setPreferredSize(int)}. Valid options are:
      *
      * <table>
      * <tbody>
@@ -442,21 +403,45 @@ public class AztecCode extends Symbol {
      * </table>
      *
      * @param eccLevel an integer in the range 1 - 4
+     * @see #setPreferredEccPercentage(int)
      */
+    @Deprecated
     public void setPreferredEccLevel(int eccLevel) {
         if (eccLevel < 1 || eccLevel > 4) {
             throw new IllegalArgumentException("Invalid ECC level: " + eccLevel);
         }
-        preferredEccLevel = eccLevel;
+        switch (eccLevel) {
+            case 1: preferredEccPercentage = 10; break;
+            case 2: preferredEccPercentage = 23; break;
+            case 3: preferredEccPercentage = 36; break;
+            case 4: preferredEccPercentage = 50; break;
+        }
     }
 
     /**
-     * Returns the preferred error correction level.
+     * <p>Sets the preferred minimum amount of symbol space dedicated to error correction.
+     * By default, 23% of the symbol space is dedicated to error correction, which is the
+     * recommended level. Values under 10% or over 50% should only be used with extreme
+     * caution. The specified percentage is in addition to the minimum 3 codewords always
+     * reserved for error correction. This value will be ignored if a symbol size has been
+     * set using {@link #setPreferredSize(int)}.
      *
-     * @return the preferred error correction level
+     * @param percentage the percentage of symbol space dedicated to error correction (1 to 99)
      */
-    public int getPreferredEccLevel() {
-        return preferredEccLevel;
+    public void setPreferredEccPercentage(int percentage) {
+        if (percentage < 1 || percentage > 99) {
+            throw new IllegalArgumentException("Invalid ECC percentage: " + percentage);
+        }
+        preferredEccPercentage = percentage;
+    }
+
+    /**
+     * Returns the preferred minimum amount of symbol space dedicated to error correction.
+     *
+     * @return the preferred minimum amount of symbol space dedicated to error correction
+     */
+    public int getPreferredEccPercentage() {
+        return preferredEccPercentage;
     }
 
     /**
@@ -579,50 +564,29 @@ public class AztecCode extends Symbol {
             do {
                 /* Decide what size symbol to use - the smallest that fits the data */
 
-                int[] dataSizes;
-                int[] compactDataSizes;
-
-                switch (preferredEccLevel) {
-                    /* For each level of error correction work out the smallest symbol which the data will fit in */
-                    case 1:
-                        dataSizes = AZTEC_10_DATA_SIZES;
-                        compactDataSizes = AZTEC_COMPACT_10_DATA_SIZES;
-                        break;
-                    case 2:
-                        dataSizes = AZTEC_23_DATA_SIZES;
-                        compactDataSizes = AZTEC_COMPACT_23_DATA_SIZES;
-                        break;
-                    case 3:
-                        dataSizes = AZTEC_36_DATA_SIZES;
-                        compactDataSizes = AZTEC_COMPACT_36_DATA_SIZES;
-                        break;
-                    case 4:
-                        dataSizes = AZTEC_50_DATA_SIZES;
-                        compactDataSizes = AZTEC_COMPACT_50_DATA_SIZES;
-                        break;
-                    default:
-                        throw new OkapiInputException("Unrecognized ECC level: " + preferredEccLevel);
-                }
-
                 layers = 0;
                 compact = false;
 
                 if (mode == Mode.NORMAL || mode == Mode.ANY) {
-                    for (int i = 32; i > 0; i--) {
-                        if (dataLength < dataSizes[i - 1]) {
+                    for (int i = 1; i <= 32; i++) {
+                        int dataBitCapacity = dataBitCapacity(preferredEccPercentage, i, false);
+                        if (dataLength <= dataBitCapacity) {
                             layers = i;
                             compact = false;
-                            dataMaxSize = dataSizes[i - 1];
+                            dataMaxSize = dataBitCapacity;
+                            break;
                         }
                     }
                 }
 
                 if (mode == Mode.COMPACT || mode == Mode.ANY) {
-                    for (int i = compLoop; i > 0; i--) {
-                        if (dataLength < compactDataSizes[i - 1]) {
+                    for (int i = 1; i <= compLoop; i++) {
+                        int dataBitCapacity = dataBitCapacity(preferredEccPercentage, i, true);
+                        if (dataLength <= dataBitCapacity) {
                             layers = i;
                             compact = true;
-                            dataMaxSize = compactDataSizes[i - 1];
+                            dataMaxSize = dataBitCapacity;
+                            break;
                         }
                     }
                 }
@@ -659,10 +623,8 @@ public class AztecCode extends Symbol {
             adjustedString = adjustBinaryString(binaryString, compact, layers);
 
             /* Check if the data actually fits into the selected symbol size */
-            int codewordSize = getCodewordSize(layers);
-            int[] sizes = (compact ? AZTEC_COMPACT_SIZES : AZTEC_SIZES);
-            int dataMaxSize = codewordSize * (sizes[layers - 1] - 3);
-            if (adjustedString.length() > dataMaxSize) {
+            int dataBitCapacity = dataBitCapacity(0, layers, compact);
+            if (adjustedString.length() > dataBitCapacity) {
                 throw new OkapiInputException("Data too long for specified Aztec Code symbol size");
             }
         }
@@ -675,15 +637,11 @@ public class AztecCode extends Symbol {
             throw new OkapiInputException("Symbol is too large for reader initialization");
         }
 
+        int bitCapacity = compact ? AZTEC_COMPACT_BIT_CAPACITIES[layers - 1] : AZTEC_BIT_CAPACITIES[layers - 1];
         int codewordSize = getCodewordSize(layers);
-        int dataBlocks = adjustedString.length() / codewordSize;
-
-        int eccBlocks;
-        if (compact) {
-            eccBlocks = AZTEC_COMPACT_SIZES[layers - 1] - dataBlocks;
-        } else {
-            eccBlocks = AZTEC_SIZES[layers - 1] - dataBlocks;
-        }
+        int totalBlocks = bitCapacity / codewordSize; // no rounding needed, always an exact multiple
+        int dataBlocks = (int) Math.ceil(adjustedString.length() / (double) codewordSize); // round up
+        int eccBlocks = totalBlocks - dataBlocks;
 
         infoLine("Compact Mode: ", compact);
         infoLine("Layers: ", layers);
@@ -772,6 +730,15 @@ public class AztecCode extends Symbol {
                 pattern[y - AZTEC_OFFSET[layers - 1]] = bin2pat(bin);
             }
         }
+    }
+
+    protected int dataBitCapacity(int preferredEccPercentage, int layers, boolean compact) {
+        int totalBitCapacity = compact ? AZTEC_COMPACT_BIT_CAPACITIES[layers - 1] : AZTEC_BIT_CAPACITIES[layers - 1];
+        int codewordSize = getCodewordSize(layers);
+        int requiredEccBits = 3 * codewordSize;
+        int preferredEccBits = (int) (totalBitCapacity * preferredEccPercentage / 100d); // round down to nearest whole bit
+        preferredEccBits -= preferredEccBits % codewordSize; // round down to nearest whole codeword
+        return totalBitCapacity - requiredEccBits - preferredEccBits;
     }
 
     private String generateAztecBinary() {
@@ -1793,16 +1760,15 @@ public class AztecCode extends Symbol {
         }
     }
 
-    /** Determines codeword bit length - Table 3 */
-    private static int getCodewordSize(int layers) {
+    /** Determines codeword bit length, per Table 3 */
+    protected static int getCodewordSize(int layers) {
         if (layers >= 23) {
             return 12;
-        } else if (layers >= 9 && layers <= 22) {
+        } else if (layers >= 9) {
             return 10;
-        } else if (layers >= 3 && layers <= 8) {
+        } else if (layers >= 3) {
             return 8;
         } else {
-            assert layers <= 2;
             return 6;
         }
     }

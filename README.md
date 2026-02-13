@@ -160,6 +160,10 @@ and data.
 
 ### Recent Releases
 
+#### Okapi Barcode 0.5.5
+- Aztec Code: allow more fine-grained control over error correction percentage
+- Aztec Code: deprecate `setPreferredEccLevel` (use `setPreferredEccPercentage` instead)
+
 #### Okapi Barcode 0.5.4
 - NVE-18: do not ignore user-provided bar height
 

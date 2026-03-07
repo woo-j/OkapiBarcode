@@ -551,7 +551,7 @@ public class AztecCode extends Symbol {
             inputData = insertArray(inputData, 0, prefixArray);
         }
 
-        String binaryString = generateAztecBinary();
+        CharSequence binaryString = generateAztecBinary();
         int dataLength = binaryString.length();
 
         if (preferredSize == 0) {
@@ -741,7 +741,7 @@ public class AztecCode extends Symbol {
         return totalBitCapacity - requiredEccBits - preferredEccBits;
     }
 
-    private String generateAztecBinary() {
+    private CharSequence generateAztecBinary() {
 
         /* Encode input data into a binary string */
         int i, j, k, bytes;
@@ -1502,14 +1502,15 @@ public class AztecCode extends Symbol {
 
         infoLine();
 
-        return binaryString.toString();
+        return binaryString;
     }
 
     /** Adjusts bit stream so that no codewords are all 0s or all 1s, per Section 7.3.1.2 */
-    private StringBuilder adjustBinaryString(String binaryString, boolean compact, int layers) {
+    private StringBuilder adjustBinaryString(CharSequence binaryString, boolean compact, int layers) {
 
-        StringBuilder adjustedString = new StringBuilder();
         int codewordSize = getCodewordSize(layers);
+        int startCapacity = binaryString.length() + (2 * codewordSize);
+        StringBuilder adjustedString = new StringBuilder(startCapacity);
         int ones = 0;
 
         /* Insert dummy digits needed to prevent codewords of all 0s or all 1s */

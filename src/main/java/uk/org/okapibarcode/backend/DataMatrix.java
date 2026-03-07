@@ -359,7 +359,7 @@ public class DataMatrix extends Symbol {
     @Override
     protected void encode() {
 
-        int i, binlen, skew = 0;
+        int i, binlen;
         int symbolsize, optionsize, calcsize;
         int taillength;
         int H, W, FH, FW, datablock, bytes, rsblock;
@@ -449,9 +449,7 @@ public class DataMatrix extends Symbol {
         }
 
         // ecc code
-        if (symbolsize == 29) {
-            skew = 1;
-        }
+        boolean skew = (symbolsize == 29);
         calculateErrorCorrection(bytes, datablock, rsblock, skew);
         NC = W - 2 * (W / FW);
         NR = H - 2 * (H / FH);
@@ -1503,7 +1501,7 @@ public class DataMatrix extends Symbol {
                (source >= 'A' && source <= 'Z');
     }
 
-    private void calculateErrorCorrection(int bytes, int datablock, int rsblock, int skew) {
+    private void calculateErrorCorrection(int bytes, int datablock, int rsblock, boolean skew) {
         // calculate and append ecc code, and if necessary interleave
         ReedSolomon rs = ReedSolomon.get(0x12d, rsblock, 1, true);
         int blocks = (bytes + 2) / datablock, b;
@@ -1519,7 +1517,7 @@ public class DataMatrix extends Symbol {
             System.arraycopy(result, 0, ecc, 0, rsblock);
             p = rsblock - 1; // comes back reversed
             for (n = b; n < rsblock * blocks; n += blocks) {
-                if (skew == 1) {
+                if (skew) {
                     /* Rotate ecc data to make 144x144 size symbols acceptable */
                     /* See http://groups.google.com/group/postscriptbarcode/msg/5ae8fda7757477da */
                     if (b < 8) {

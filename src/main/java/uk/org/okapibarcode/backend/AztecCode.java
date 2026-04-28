@@ -746,8 +746,8 @@ public class AztecCode extends Symbol {
         /* Encode input data into a binary string */
         int i, j, k, bytes;
         int curtable, newtable, lasttable, chartype, maplength, blocks;
-        int[] charmap = new int[2 * inputData.length];
-        int[] typemap = new int[2 * inputData.length];
+        int[] charmap = new int[(2 * inputData.length) + 4]; // include space for possible GS1 and ECI indicators
+        int[] typemap = new int[(2 * inputData.length) + 4]; // include space for possible GS1 and ECI indicators
         int[] blockType = new int[inputData.length + 1];
         int[] blockLength = new int[inputData.length + 1];
 
@@ -762,11 +762,8 @@ public class AztecCode extends Symbol {
             typemap[maplength++] = 8; // PUNC
         }
 
+        /** Add ECI mode to beginning of symbols which need it */
         if (eciMode != 3) {
-
-            charmap[maplength] = 0; // FLG
-            typemap[maplength++] = 8; // PUNC
-
             int flagNumber;
             if (eciMode < 10) {
                 flagNumber = 1;
@@ -781,11 +778,13 @@ public class AztecCode extends Symbol {
             } else {
                 flagNumber = 6;
             }
-
+            charmap[maplength] = 0; // FLG
+            typemap[maplength++] = 8; // PUNC
             charmap[maplength] = 400 + flagNumber;
             typemap[maplength++] = 8; // PUNC
         }
 
+        /** Add message data */
         for (i = 0; i < inputData.length; i++) {
             if (inputData[i] == FNC1) {
                 /* FNC1 represented by FLG(0) */

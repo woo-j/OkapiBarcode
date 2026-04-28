@@ -763,31 +763,23 @@ public class AztecCode extends Symbol {
         }
 
         if (eciMode != 3) {
-            int flagNumber;
 
             charmap[maplength] = 0; // FLG
             typemap[maplength++] = 8; // PUNC
 
-            flagNumber = 6;
-
-            if (eciMode < 100000) {
-                flagNumber = 5;
-            }
-
-            if (eciMode < 10000) {
-                flagNumber = 4;
-            }
-
-            if (eciMode < 1000) {
-                flagNumber = 3;
-            }
-
-            if (eciMode < 100) {
-                flagNumber = 2;
-            }
-
+            int flagNumber;
             if (eciMode < 10) {
                 flagNumber = 1;
+            } else if (eciMode < 100) {
+                flagNumber = 2;
+            } else if (eciMode < 1000) {
+                flagNumber = 3;
+            } else if (eciMode < 10000) {
+                flagNumber = 4;
+            } else if (eciMode < 100000) {
+                flagNumber = 5;
+            } else {
+                flagNumber = 6;
             }
 
             charmap[maplength] = 400 + flagNumber;
@@ -813,7 +805,7 @@ public class AztecCode extends Symbol {
         }
 
         /* Look for double character encoding possibilities */
-        for (i = 0; i < (maplength - 1); i++) {
+        for (i = 0; i + 1 < maplength; i++) {
             if (((charmap[i] == 300) && (charmap[i + 1] == 11)) && ((typemap[i] == 12) && (typemap[i + 1] == 4))) {
                 /* CR LF combination */
                 charmap[i] = 2;
@@ -1426,10 +1418,9 @@ public class AztecCode extends Symbol {
                             }
 
                             bytes = 0;
-                            do {
+                            while (i + bytes < maplength && typemap[i + bytes] == 32) {
                                 bytes++;
-                            } while (typemap[i + (bytes - 1)] == 32);
-                            bytes--;
+                            }
 
                             if (bytes > 2079) {
                                 throw OkapiInputException.inputTooLong();
@@ -1578,14 +1569,14 @@ public class AztecCode extends Symbol {
         return adjustedString;
     }
 
-    private String eciToBinary() {
+    private CharSequence eciToBinary() {
         String eciNumber = Integer.toString(eciMode);
         StringBuilder binary = new StringBuilder(4 * eciNumber.length());
         for (int i = 0; i < eciNumber.length(); i++) {
             binary.append(QUADBIT[(eciNumber.charAt(i) - '0') + 2]);
             infoSpace(eciNumber.charAt(i));
         }
-        return binary.toString();
+        return binary;
     }
 
     /** Creates the descriptor / mode message, per Section 7.2 */

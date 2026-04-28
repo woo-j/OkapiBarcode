@@ -160,6 +160,9 @@ and data.
 
 ### Recent Releases
 
+#### Okapi Barcode 0.5.6
+- Aztec Code: fix occasional `ArrayIndexOutOfBoundsException` during encoding
+
 #### Okapi Barcode 0.5.5
 - Aztec Code: allow more fine-grained control over error correction percentage
 - Aztec Code: deprecate `setPreferredEccLevel` (use `setPreferredEccPercentage` instead)

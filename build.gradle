@@ -53,9 +53,15 @@ tasks.withType(AbstractArchiveTask).configureEach {
 }
 
 checkstyle {
-    toolVersion = '10.26.1'
+    toolVersion = '13.4.1'
     configFile = file('checkstyle.xml')
     showViolations = true
+}
+
+configurations.checkstyle {
+    // exclude transitive dependency which is out of date, unnecessary, and triggers security alerts
+    // https://github.com/checkstyle/checkstyle/issues/18718
+    exclude group: 'org.apache.maven.doxia', module: 'doxia-core'
 }
 
 test {

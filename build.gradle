@@ -59,9 +59,9 @@ checkstyle {
 }
 
 configurations.checkstyle {
-    // exclude transitive dependency which is out of date, unnecessary, and triggers security alerts
+    // exclude transitive dependencies which are out of date, unnecessary, and trigger security alerts
     // https://github.com/checkstyle/checkstyle/issues/18718
-    exclude group: 'org.apache.maven.doxia', module: 'doxia-core'
+    exclude group: 'org.apache.maven.doxia'
 }
 
 test {

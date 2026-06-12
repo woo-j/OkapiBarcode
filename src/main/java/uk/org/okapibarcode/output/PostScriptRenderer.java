@@ -23,6 +23,9 @@ import static uk.org.okapibarcode.util.Integers.normalizeRotation;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 import uk.org.okapibarcode.backend.OkapiInternalException;
@@ -42,8 +45,8 @@ import uk.org.okapibarcode.graphics.TextBox;
  */
 public final class PostScriptRenderer implements SymbolRenderer {
 
-    /** The output stream to render to. */
-    private final OutputStream out;
+    /** The writer to render to. */
+    private final Writer writer;
 
     /** The magnification factor to apply. */
     private final double magnification;
@@ -56,6 +59,35 @@ public final class PostScriptRenderer implements SymbolRenderer {
 
     /** The clockwise rotation of the symbol in degrees. */
     private final int rotation;
+
+    /**
+     * Creates a new PostScript renderer.
+     *
+     * @param writer the writer to render to
+     * @param magnification the magnification factor to apply
+     * @param paper the paper (background) color
+     * @param ink the ink (foreground) color
+     */
+    public PostScriptRenderer(Writer writer, double magnification, Color paper, Color ink) {
+        this(writer, magnification, paper, ink, 0);
+    }
+
+    /**
+     * Creates a new PostScript renderer.
+     *
+     * @param writer the writer to render to
+     * @param magnification the magnification factor to apply
+     * @param paper the paper (background) color
+     * @param ink the ink (foreground) color
+     * @param rotation the clockwise rotation of the symbol in degrees (must be a multiple of 90)
+     */
+    public PostScriptRenderer(Writer writer, double magnification, Color paper, Color ink, int rotation) {
+        this.writer = Objects.requireNonNull(writer);
+        this.magnification = magnification;
+        this.paper = Objects.requireNonNull(paper);
+        this.ink = Objects.requireNonNull(ink);
+        this.rotation = normalizeRotation(rotation);
+    }
 
     /**
      * Creates a new PostScript renderer.
@@ -79,11 +111,7 @@ public final class PostScriptRenderer implements SymbolRenderer {
      * @param rotation the clockwise rotation of the symbol in degrees (must be a multiple of 90)
      */
     public PostScriptRenderer(OutputStream out, double magnification, Color paper, Color ink, int rotation) {
-        this.out = Objects.requireNonNull(out);
-        this.magnification = magnification;
-        this.paper = Objects.requireNonNull(paper);
-        this.ink = Objects.requireNonNull(ink);
-        this.rotation = normalizeRotation(rotation);
+        this(new OutputStreamWriter(Objects.requireNonNull(out), StandardCharsets.UTF_8), magnification, paper, ink, rotation);
     }
 
     /** {@inheritDoc} */
@@ -117,7 +145,7 @@ public final class PostScriptRenderer implements SymbolRenderer {
             title = content;
         }
 
-        try (ExtendedOutputStreamWriter writer = new ExtendedOutputStreamWriter(out, "%.2f")) {
+        try (ExtendedWriter writer = new ExtendedWriter(this.writer, "%.2f")) {
 
             // Header
             writer.append("%!PS-Adobe-3.0 EPSF-3.0\n");

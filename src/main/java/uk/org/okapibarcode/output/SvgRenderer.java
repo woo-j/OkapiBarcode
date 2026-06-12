@@ -22,7 +22,10 @@ import static uk.org.okapibarcode.util.Integers.normalizeRotation;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.StringWriter;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -55,8 +58,8 @@ import uk.org.okapibarcode.graphics.TextBox;
  */
 public final class SvgRenderer implements SymbolRenderer {
 
-    /** The output stream to render to. */
-    private final OutputStream out;
+    /** The writer to render to. */
+    private final Writer writer;
 
     /** The magnification factor to apply. */
     private final double magnification;
@@ -72,6 +75,40 @@ public final class SvgRenderer implements SymbolRenderer {
 
     /** The clockwise rotation of the symbol in degrees. */
     private final int rotation;
+
+    /**
+     * Creates a new SVG renderer.
+     *
+     * @param writer the writer to render to
+     * @param magnification the magnification factor to apply
+     * @param paper the paper (background) color
+     * @param ink the ink (foreground) color
+     * @param xmlProlog whether or not to include the XML prolog in the output (usually {@code true} for
+     *        standalone SVG documents, {@code false} for SVG content embedded directly in HTML documents)
+     */
+    public SvgRenderer(Writer writer, double magnification, Color paper, Color ink, boolean xmlProlog) {
+        this(writer, magnification, paper, ink, xmlProlog, 0);
+    }
+
+    /**
+     * Creates a new SVG renderer.
+     *
+     * @param writer the writer to render to
+     * @param magnification the magnification factor to apply
+     * @param paper the paper (background) color
+     * @param ink the ink (foreground) color
+     * @param xmlProlog whether or not to include the XML prolog in the output (usually {@code true} for
+     *        standalone SVG documents, {@code false} for SVG content embedded directly in HTML documents)
+     * @param rotation the clockwise rotation of the symbol in degrees (must be a multiple of 90)
+     */
+    public SvgRenderer(Writer writer, double magnification, Color paper, Color ink, boolean xmlProlog, int rotation) {
+        this.writer = Objects.requireNonNull(writer);
+        this.magnification = magnification;
+        this.paper = Objects.requireNonNull(paper);
+        this.ink = Objects.requireNonNull(ink);
+        this.xmlProlog = xmlProlog;
+        this.rotation = normalizeRotation(rotation);
+    }
 
     /**
      * Creates a new SVG renderer.
@@ -99,12 +136,7 @@ public final class SvgRenderer implements SymbolRenderer {
      * @param rotation the clockwise rotation of the symbol in degrees (must be a multiple of 90)
      */
     public SvgRenderer(OutputStream out, double magnification, Color paper, Color ink, boolean xmlProlog, int rotation) {
-        this.out = Objects.requireNonNull(out);
-        this.magnification = magnification;
-        this.paper = Objects.requireNonNull(paper);
-        this.ink = Objects.requireNonNull(ink);
-        this.xmlProlog = xmlProlog;
-        this.rotation = normalizeRotation(rotation);
+        this(new OutputStreamWriter(Objects.requireNonNull(out), StandardCharsets.UTF_8), magnification, paper, ink, xmlProlog, rotation);
     }
 
     /** {@inheritDoc} */
@@ -132,7 +164,7 @@ public final class SvgRenderer implements SymbolRenderer {
                         + String.format("%02X", paper.green)
                         + String.format("%02X", paper.blue);
 
-        try (ExtendedOutputStreamWriter writer = new ExtendedOutputStreamWriter(out, "%.2f")) {
+        try (ExtendedWriter writer = new ExtendedWriter(this.writer, "%.2f")) {
 
             // XML Prolog
             if(xmlProlog) {

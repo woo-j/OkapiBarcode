@@ -23,6 +23,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
@@ -276,11 +277,17 @@ public class SvgRendererTest {
     }
 
     private void test(Symbol symbol, double magnification, Color paper, Color ink, String expectationFile, boolean xmlProlog, int rotation) throws IOException {
+        test(symbol, magnification,paper, ink, expectationFile, xmlProlog, rotation, true);
+        test(symbol, magnification,paper, ink, expectationFile, xmlProlog, rotation, false);
+    }
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        SvgRenderer renderer = new SvgRenderer(baos, magnification, paper, ink, xmlProlog, rotation);
-        renderer.render(symbol);
-        String actual = new String(baos.toByteArray(), StandardCharsets.UTF_8);
+    private void test(Symbol symbol, double magnification, Color paper, Color ink, String expectationFile, boolean xmlProlog, int rotation, boolean withWriter) throws IOException {
+        String actual;
+        if(withWriter) {
+            actual = renderWithWriterAndRead(symbol, magnification, paper, ink, xmlProlog, rotation);
+        } else {
+            actual = renderWithOutputStreamAndRead(symbol, magnification, paper, ink, xmlProlog, rotation);
+        }
         BufferedReader actualReader = new BufferedReader(new StringReader(actual));
 
         InputStream is = getClass().getResourceAsStream(expectationFile);
@@ -298,5 +305,19 @@ public class SvgRendererTest {
             expectedLine = expectedReader.readLine();
             line++;
         }
+    }
+
+    private String renderWithOutputStreamAndRead(Symbol symbol, double magnification, Color paper, Color ink, boolean xmlProlog, int rotation) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        SvgRenderer renderer = new SvgRenderer(baos, magnification, paper, ink, xmlProlog, rotation);
+        renderer.render(symbol);
+        return new String(baos.toByteArray(), StandardCharsets.UTF_8);
+    }
+
+    private String renderWithWriterAndRead(Symbol symbol, double magnification, Color paper, Color ink, boolean xmlProlog, int rotation) throws IOException {
+        StringWriter sw = new StringWriter();
+        SvgRenderer renderer = new SvgRenderer(sw, magnification, paper, ink, xmlProlog, rotation);
+        renderer.render(symbol);
+        return sw.toString();
     }
 }

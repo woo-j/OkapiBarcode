@@ -158,6 +158,9 @@ and data.
 `gradlew jar`: Builds the JAR file.  
 `gradlew publish`: Deploys to Maven Central (requires a modified `gradle.properties` file).  
 
+Note that the unit tests require Linux or Windows, and must be run with Java 21.0.7, because some of the
+tests check exact output image pixel values, and there are small differences in the output of other runtimes.
+
 ### Recent Releases
 
 #### Okapi Barcode 0.5.7

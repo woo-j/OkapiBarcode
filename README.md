@@ -160,6 +160,9 @@ and data.
 
 ### Recent Releases
 
+#### Okapi Barcode 0.5.7
+- Add support for writing SVG and PostScript output to a `java.io.Writer`
+
 #### Okapi Barcode 0.5.6
 - Aztec Code: fix occasional `ArrayIndexOutOfBoundsException` during encoding
 

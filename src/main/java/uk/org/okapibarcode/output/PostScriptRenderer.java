@@ -21,11 +21,13 @@ import static uk.org.okapibarcode.graphics.TextAlignment.JUSTIFY;
 import static uk.org.okapibarcode.util.Doubles.roughlyEqual;
 import static uk.org.okapibarcode.util.Integers.normalizeRotation;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 import java.util.Objects;
 
 import uk.org.okapibarcode.backend.OkapiInternalException;
@@ -111,7 +113,8 @@ public final class PostScriptRenderer implements SymbolRenderer {
      * @param rotation the clockwise rotation of the symbol in degrees (must be a multiple of 90)
      */
     public PostScriptRenderer(OutputStream out, double magnification, Color paper, Color ink, int rotation) {
-        this(new OutputStreamWriter(Objects.requireNonNull(out), StandardCharsets.UTF_8), magnification, paper, ink, rotation);
+        this(new BufferedWriter(new OutputStreamWriter(Objects.requireNonNull(out), StandardCharsets.UTF_8)),
+             magnification, paper, ink, rotation);
     }
 
     /** {@inheritDoc} */
@@ -145,14 +148,14 @@ public final class PostScriptRenderer implements SymbolRenderer {
             title = content;
         }
 
-        try (ExtendedWriter writer = new ExtendedWriter(this.writer, "%.2f")) {
+        try {
 
             // Header
             writer.append("%!PS-Adobe-3.0 EPSF-3.0\n");
             writer.append("%%Creator: OkapiBarcode\n");
             writer.append("%%Title: ").append(title).append('\n');
             writer.append("%%Pages: 0\n");
-            writer.append("%%BoundingBox: 0 0 ").appendInt(rotatedWidth).append(" ").appendInt(rotatedHeight).append("\n");
+            writer.append("%%BoundingBox: 0 0 ").append(i2s(rotatedWidth)).append(" ").append(i2s(rotatedHeight)).append("\n");
             writer.append("%%EndComments\n");
 
             // Definitions
@@ -167,18 +170,18 @@ public final class PostScriptRenderer implements SymbolRenderer {
             switch (rotation) {
                 case 90:
                     writer.append("gsave\n")
-                          .append(-rotation).append(" rotate\n")
-                          .append(-width).append(" 0.00 translate\n");
+                          .append(d2s(-rotation)).append(" rotate\n")
+                          .append(d2s(-width)).append(" 0.00 translate\n");
                     break;
                 case 180:
                     writer.append("gsave\n")
-                          .append(-rotation).append(" rotate\n")
-                          .append(-width).append(" ").append(-height).append(" translate\n");
+                          .append(d2s(-rotation)).append(" rotate\n")
+                          .append(d2s(-width)).append(" ").append(d2s(-height)).append(" translate\n");
                     break;
                 case 270:
                     writer.append("gsave\n")
-                          .append(-rotation).append(" rotate\n")
-                          .append("0.00 ").append(-height).append(" translate\n");
+                          .append(d2s(-rotation)).append(" rotate\n")
+                          .append("0.00 ").append(d2s(-height)).append(" translate\n");
                     break;
                 default:
                     break;
@@ -186,37 +189,37 @@ public final class PostScriptRenderer implements SymbolRenderer {
 
             // Background
             writer.append("newpath\n");
-            writer.append(ink.red / 255.0).append(" ")
-                  .append(ink.green / 255.0).append(" ")
-                  .append(ink.blue / 255.0).append(" setrgbcolor\n");
-            writer.append(paper.red / 255.0).append(" ")
-                  .append(paper.green / 255.0).append(" ")
-                  .append(paper.blue / 255.0).append(" setrgbcolor\n");
-            writer.append(height).append(" 0.00 TB 0.00 ").append(width).append(" TR\n");
+            writer.append(d2s(ink.red / 255.0)).append(" ")
+                  .append(d2s(ink.green / 255.0)).append(" ")
+                  .append(d2s(ink.blue / 255.0)).append(" setrgbcolor\n");
+            writer.append(d2s(paper.red / 255.0)).append(" ")
+                  .append(d2s(paper.green / 255.0)).append(" ")
+                  .append(d2s(paper.blue / 255.0)).append(" setrgbcolor\n");
+            writer.append(d2s(height)).append(" 0.00 TB 0.00 ").append(d2s(width)).append(" TR\n");
 
             // Rectangles
             for (int i = 0; i < symbol.getRectangles().size(); i++) {
                 Rectangle rect = symbol.getRectangles().get(i);
                 if (i == 0) {
                     writer.append("TE\n");
-                    writer.append(ink.red / 255.0).append(" ")
-                          .append(ink.green / 255.0).append(" ")
-                          .append(ink.blue / 255.0).append(" setrgbcolor\n");
-                    writer.append(rect.height * magnification).append(" ")
-                          .append(height - ((rect.y + rect.height) * magnification) - marginY).append(" TB ")
-                          .append((rect.x * magnification) + marginX).append(" ")
-                          .append(rect.width * magnification).append(" TR\n");
+                    writer.append(d2s(ink.red / 255.0)).append(" ")
+                          .append(d2s(ink.green / 255.0)).append(" ")
+                          .append(d2s(ink.blue / 255.0)).append(" setrgbcolor\n");
+                    writer.append(d2s(rect.height * magnification)).append(" ")
+                          .append(d2s(height - ((rect.y + rect.height) * magnification) - marginY)).append(" TB ")
+                          .append(d2s((rect.x * magnification) + marginX)).append(" ")
+                          .append(d2s(rect.width * magnification)).append(" TR\n");
                 } else {
                     Rectangle prev = symbol.getRectangles().get(i - 1);
                     if (!roughlyEqual(rect.height, prev.height) || !roughlyEqual(rect.y, prev.y)) {
                         writer.append("TE\n");
-                        writer.append(ink.red / 255.0).append(" ")
-                              .append(ink.green / 255.0).append(" ")
-                              .append(ink.blue / 255.0).append(" setrgbcolor\n");
-                        writer.append(rect.height * magnification).append(" ")
-                              .append(height - ((rect.y + rect.height) * magnification) - marginY).append(" ");
+                        writer.append(d2s(ink.red / 255.0)).append(" ")
+                              .append(d2s(ink.green / 255.0)).append(" ")
+                              .append(d2s(ink.blue / 255.0)).append(" setrgbcolor\n");
+                        writer.append(d2s(rect.height * magnification)).append(" ")
+                              .append(d2s(height - ((rect.y + rect.height) * magnification) - marginY)).append(" ");
                     }
-                    writer.append("TB ").append((rect.x * magnification) + marginX).append(" ").append(rect.width * magnification).append(" TR\n");
+                    writer.append("TB ").append(d2s((rect.x * magnification) + marginX)).append(" ").append(d2s(rect.width * magnification)).append(" TR\n");
                 }
             }
 
@@ -226,33 +229,33 @@ public final class PostScriptRenderer implements SymbolRenderer {
                 TextAlignment alignment = (text.alignment == JUSTIFY && text.text.length() == 1 ? CENTER : text.alignment);
                 if (i == 0) {
                     writer.append("TE\n");
-                    writer.append(ink.red / 255.0).append(" ")
-                          .append(ink.green / 255.0).append(" ")
-                          .append(ink.blue / 255.0).append(" setrgbcolor\n");
+                    writer.append(d2s(ink.red / 255.0)).append(" ")
+                          .append(d2s(ink.green / 255.0)).append(" ")
+                          .append(d2s(ink.blue / 255.0)).append(" setrgbcolor\n");
                 }
                 writer.append("matrix currentmatrix\n");
                 writer.append("/").append(symbol.getFontName()).append(" findfont\n");
-                writer.append(symbol.getFontSize() * magnification).append(" scalefont setfont\n");
+                writer.append(d2s(symbol.getFontSize() * magnification)).append(" scalefont setfont\n");
                 double y = height - (text.y * magnification) - marginY;
                 switch (alignment) {
                     case LEFT:
                         double leftX = (magnification * text.x) + marginX;
-                        writer.append(" 0 0 moveto ").append(leftX).append(" ").append(y)
+                        writer.append(" 0 0 moveto ").append(d2s(leftX)).append(" ").append(d2s(y))
                               .append(" translate 0.00 rotate 0 0 moveto\n");
                         writer.append(" (").append(text.text).append(") show\n");
                         break;
                     case JUSTIFY:
                         double textX = (magnification * text.x) + marginX;
                         double textW = (magnification * text.width);
-                        writer.append(" 0 0 moveto ").append(textX).append(" ").append(y)
+                        writer.append(" 0 0 moveto ").append(d2s(textX)).append(" ").append(d2s(y))
                               .append(" translate 0.00 rotate 0 0 moveto\n");
                         writer.append(" (").append(text.text).append(") dup stringwidth pop ")
-                              .append(textW).append(" sub neg 1 index length 1 sub div 0")
+                              .append(d2s(textW)).append(" sub neg 1 index length 1 sub div 0")
                               .append(" 3 -1 roll ashow\n");
                         break;
                     case RIGHT:
                         double rightX = (magnification * text.x) + (magnification * text.width) + marginX;
-                        writer.append(" 0 0 moveto ").append(rightX).append(" ").append(y)
+                        writer.append(" 0 0 moveto ").append(d2s(rightX)).append(" ").append(d2s(y))
                               .append(" translate 0.00 rotate 0 0 moveto\n");
                         writer.append(" (").append(text.text).append(") stringwidth\n");
                         writer.append("pop\n");
@@ -261,7 +264,7 @@ public final class PostScriptRenderer implements SymbolRenderer {
                         break;
                     case CENTER:
                         double centerX = (magnification * text.x) + (magnification * text.width / 2) + marginX;
-                        writer.append(" 0 0 moveto ").append(centerX).append(" ").append(y)
+                        writer.append(" 0 0 moveto ").append(d2s(centerX)).append(" ").append(d2s(y))
                               .append(" translate 0.00 rotate 0 0 moveto\n");
                         writer.append(" (").append(text.text).append(") stringwidth\n");
                         writer.append("pop\n");
@@ -281,12 +284,12 @@ public final class PostScriptRenderer implements SymbolRenderer {
                 Circle circle2 = symbol.getTarget().get(i + 1);
                 if (i == 0) {
                     writer.append("TE\n");
-                    writer.append(ink.red / 255.0).append(" ")
-                          .append(ink.green / 255.0).append(" ")
-                          .append(ink.blue / 255.0).append(" setrgbcolor\n");
-                    writer.append(ink.red / 255.0).append(" ")
-                          .append(ink.green / 255.0).append(" ")
-                          .append(ink.blue / 255.0).append(" setrgbcolor\n");
+                    writer.append(d2s(ink.red / 255.0)).append(" ")
+                          .append(d2s(ink.green / 255.0)).append(" ")
+                          .append(d2s(ink.blue / 255.0)).append(" setrgbcolor\n");
+                    writer.append(d2s(ink.red / 255.0)).append(" ")
+                          .append(d2s(ink.green / 255.0)).append(" ")
+                          .append(d2s(ink.blue / 255.0)).append(" setrgbcolor\n");
                 }
                 double x1 = circle1.centreX;
                 double x2 = circle2.centreX;
@@ -294,14 +297,14 @@ public final class PostScriptRenderer implements SymbolRenderer {
                 double y2 = height - circle2.centreY;
                 double r1 = circle1.radius;
                 double r2 = circle2.radius;
-                writer.append(x1 + marginX)
-                      .append(" ").append(y1 - marginY)
-                      .append(" ").append(r1)
-                      .append(" ").append(x2 + marginX)
-                      .append(" ").append(y2 - marginY)
-                      .append(" ").append(r2)
-                      .append(" ").append(x2 + r2 + marginX)
-                      .append(" ").append(y2 - marginY)
+                writer.append(d2s(x1 + marginX))
+                      .append(" ").append(d2s(y1 - marginY))
+                      .append(" ").append(d2s(r1))
+                      .append(" ").append(d2s(x2 + marginX))
+                      .append(" ").append(d2s(y2 - marginY))
+                      .append(" ").append(d2s(r2))
+                      .append(" ").append(d2s(x2 + r2 + marginX))
+                      .append(" ").append(d2s(y2 - marginY))
                       .append(" TC\n");
             }
 
@@ -309,8 +312,8 @@ public final class PostScriptRenderer implements SymbolRenderer {
             // Because MaxiCode size is fixed, this ignores magnification
             for (Hexagon hexagon : symbol.getHexagons()) {
                 for (int j = 0; j < 6; j++) {
-                    writer.append(hexagon.getX(j) + marginX).append(" ")
-                          .append((height - hexagon.getY(j)) - marginY).append(" ");
+                    writer.append(d2s(hexagon.getX(j) + marginX)).append(" ")
+                          .append(d2s((height - hexagon.getY(j)) - marginY)).append(" ");
                 }
                 writer.append(" TH\n");
             }
@@ -322,6 +325,17 @@ public final class PostScriptRenderer implements SymbolRenderer {
 
             // Footer
             writer.append("\nshowpage\n");
+
+        } finally {
+            writer.close();
         }
+    }
+
+    private static String i2s(int i) {
+        return String.valueOf(i);
+    }
+
+    private static String d2s(double d) {
+        return String.format(Locale.ROOT, "%.2f", d);
     }
 }

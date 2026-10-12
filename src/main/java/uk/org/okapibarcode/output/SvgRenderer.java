@@ -20,12 +20,14 @@ import static uk.org.okapibarcode.graphics.TextAlignment.CENTER;
 import static uk.org.okapibarcode.graphics.TextAlignment.JUSTIFY;
 import static uk.org.okapibarcode.util.Integers.normalizeRotation;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 import java.util.Objects;
 
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -136,7 +138,8 @@ public final class SvgRenderer implements SymbolRenderer {
      * @param rotation the clockwise rotation of the symbol in degrees (must be a multiple of 90)
      */
     public SvgRenderer(OutputStream out, double magnification, Color paper, Color ink, boolean xmlProlog, int rotation) {
-        this(new OutputStreamWriter(Objects.requireNonNull(out), StandardCharsets.UTF_8), magnification, paper, ink, xmlProlog, rotation);
+        this(new BufferedWriter(new OutputStreamWriter(Objects.requireNonNull(out), StandardCharsets.UTF_8)),
+             magnification, paper, ink, xmlProlog, rotation);
     }
 
     /** {@inheritDoc} */
@@ -164,7 +167,7 @@ public final class SvgRenderer implements SymbolRenderer {
                         + String.format("%02X", paper.green)
                         + String.format("%02X", paper.blue);
 
-        try (ExtendedWriter writer = new ExtendedWriter(this.writer, "%.2f")) {
+        try {
 
             // XML Prolog
             if(xmlProlog) {
@@ -197,22 +200,22 @@ public final class SvgRenderer implements SymbolRenderer {
             }
 
             // Header
-            writer.append("<svg width=\"").appendInt(rotatedWidth)
-                  .append("\" height=\"").appendInt(rotatedHeight)
+            writer.append("<svg width=\"").append(i2s(rotatedWidth))
+                  .append("\" height=\"").append(i2s(rotatedHeight))
                   .append("\" version=\"1.1")
                   .append("\" xmlns=\"http://www.w3.org/2000/svg\">\n");
             writer.append("   <desc>").append(clean(title)).append("</desc>\n");
             writer.append("   <g id=\"barcode\" fill=\"#").append(fgColour).append("\"").append(transform).append(">\n");
-            writer.append("      <rect x=\"0\" y=\"0\" width=\"").appendInt(width)
-                  .append("\" height=\"").appendInt(height)
+            writer.append("      <rect x=\"0\" y=\"0\" width=\"").append(i2s(width))
+                  .append("\" height=\"").append(i2s(height))
                   .append("\" fill=\"#").append(bgColour).append("\" />\n");
 
             // Rectangles
             for (Rectangle rect : symbol.getRectangles()) {
-                writer.append("      <rect x=\"").append((rect.x * magnification) + marginX)
-                      .append("\" y=\"").append((rect.y * magnification) + marginY)
-                      .append("\" width=\"").append(rect.width * magnification)
-                      .append("\" height=\"").append(rect.height * magnification)
+                writer.append("      <rect x=\"").append(d2s((rect.x * magnification) + marginX))
+                      .append("\" y=\"").append(d2s((rect.y * magnification) + marginY))
+                      .append("\" width=\"").append(d2s(rect.width * magnification))
+                      .append("\" height=\"").append(d2s(rect.height * magnification))
                       .append("\" />\n");
             }
 
@@ -238,16 +241,16 @@ public final class SvgRenderer implements SymbolRenderer {
                     default:
                         throw new OkapiInternalException("Unknown alignment: " + alignment);
                 }
-                writer.append("      <text x=\"").append(x)
-                      .append("\" y=\"").append((text.y * magnification) + marginY)
+                writer.append("      <text x=\"").append(d2s(x))
+                      .append("\" y=\"").append(d2s((text.y * magnification) + marginY))
                       .append("\" text-anchor=\"").append(anchor).append("\"\n");
                 if (alignment == JUSTIFY) {
                     writer.append("         textLength=\"")
-                          .append(text.width * magnification)
+                          .append(d2s(text.width * magnification))
                           .append("\" lengthAdjust=\"spacing\"\n");
                 }
                 writer.append("         font-family=\"").append(clean(symbol.getFontName()))
-                      .append("\" font-size=\"").append(symbol.getFontSize() * magnification)
+                      .append("\" font-size=\"").append(d2s(symbol.getFontSize() * magnification))
                       .append("\" fill=\"#").append(fgColour).append("\">\n");
                 writer.append("         ").append(clean(text.text)).append("\n");
                 writer.append("      </text>\n");
@@ -262,9 +265,9 @@ public final class SvgRenderer implements SymbolRenderer {
                 } else {
                     color = bgColour;
                 }
-                writer.append("      <circle cx=\"").append((circle.centreX * magnification) + marginX)
-                      .append("\" cy=\"").append((circle.centreY * magnification) + marginY)
-                      .append("\" r=\"").append(circle.radius * magnification)
+                writer.append("      <circle cx=\"").append(d2s((circle.centreX * magnification) + marginX))
+                      .append("\" cy=\"").append(d2s((circle.centreY * magnification) + marginY))
+                      .append("\" r=\"").append(d2s(circle.radius * magnification))
                       .append("\" fill=\"#").append(color).append("\" />\n");
             }
 
@@ -277,8 +280,8 @@ public final class SvgRenderer implements SymbolRenderer {
                     } else {
                         writer.append("L ");
                     }
-                    writer.append((hexagon.getX(j) * magnification) + marginX).append(" ")
-                          .append((hexagon.getY(j) * magnification) + marginY).append(" ");
+                    writer.append(d2s((hexagon.getX(j) * magnification) + marginX)).append(" ")
+                          .append(d2s((hexagon.getY(j) * magnification) + marginY)).append(" ");
                 }
                 writer.append("Z\" />\n");
             }
@@ -286,6 +289,9 @@ public final class SvgRenderer implements SymbolRenderer {
             // Footer
             writer.append("   </g>\n");
             writer.append("</svg>\n");
+
+        } finally {
+            writer.close();
         }
     }
 
@@ -315,5 +321,13 @@ public final class SvgRenderer implements SymbolRenderer {
         } catch (ParserConfigurationException | TransformerException | TransformerFactoryConfigurationError e) {
             return s;
         }
+    }
+
+    private static String i2s(int i) {
+        return String.valueOf(i);
+    }
+
+    private static String d2s(double d) {
+        return String.format(Locale.ROOT, "%.2f", d);
     }
 }

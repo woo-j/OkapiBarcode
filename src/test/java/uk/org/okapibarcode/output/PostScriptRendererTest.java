@@ -267,18 +267,15 @@ public class PostScriptRendererTest {
     }
 
     private void test(Symbol symbol, double magnification, Color paper, Color ink, String expectationFile, int rotation) throws IOException {
-        test(symbol, magnification,paper, ink, expectationFile, rotation, true);
-        test(symbol, magnification,paper, ink, expectationFile, rotation, false);
+        test(symbol, magnification, paper, ink, expectationFile, rotation, true);
+        test(symbol, magnification, paper, ink, expectationFile, rotation, false);
     }
 
     private void test(Symbol symbol, double magnification, Color paper, Color ink, String expectationFile, int rotation, boolean withWriter) throws IOException {
 
-        String actual;
-        if(withWriter) {
-            actual = renderWithWriterAndRead(symbol, magnification, paper, ink, rotation);
-        } else {
-            actual = renderWithOutputStreamAndRead(symbol, magnification, paper, ink, rotation);
-        }
+        String actual = withWriter ?
+            renderToWriter(symbol, magnification, paper, ink, rotation) :
+            renderToOutputStream(symbol, magnification, paper, ink, rotation);
         BufferedReader actualReader = new BufferedReader(new StringReader(actual));
 
         InputStream is = getClass().getResourceAsStream(expectationFile);
@@ -298,14 +295,14 @@ public class PostScriptRendererTest {
         }
     }
 
-    private String renderWithOutputStreamAndRead(Symbol symbol, double magnification, Color paper, Color ink, int rotation) throws IOException {
+    private String renderToOutputStream(Symbol symbol, double magnification, Color paper, Color ink, int rotation) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PostScriptRenderer renderer = new PostScriptRenderer(baos, magnification, paper, ink, rotation);
         renderer.render(symbol);
         return new String(baos.toByteArray(), StandardCharsets.UTF_8);
     }
 
-    private String renderWithWriterAndRead(Symbol symbol, double magnification, Color paper, Color ink, int rotation) throws IOException {
+    private String renderToWriter(Symbol symbol, double magnification, Color paper, Color ink, int rotation) throws IOException {
         StringWriter sw = new StringWriter();
         PostScriptRenderer renderer = new PostScriptRenderer(sw, magnification, paper, ink, rotation);
         renderer.render(symbol);

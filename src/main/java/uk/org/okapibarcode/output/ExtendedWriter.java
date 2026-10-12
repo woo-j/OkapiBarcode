@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Daniel Gredler
+ * Copyright 2014-2015 Robin Stuart, Robert Elliott, Daniel Gredler
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,40 +17,67 @@
 package uk.org.okapibarcode.output;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
+import java.io.Writer;
 import java.util.Locale;
 
 /**
- * {@link OutputStreamWriter} extension which provides some convenience methods for writing numbers.
+ * {@link Writer} wrapper which provides some convenience methods for writing numbers.
  */
-class ExtendedOutputStreamWriter extends OutputStreamWriter {
+public class ExtendedWriter extends Writer {
+
+    /** Wrapped writer */
+    private final Writer writer;
 
     /** Format to use when writing doubles to the stream. */
     private final String doubleFormat;
 
+
     /**
-     * Creates a new extended output stream writer, using the UTF-8 charset.
+     * Creates a new extended writer.
      *
-     * @param out the stream to write to
+     * @param writer the Writer to wrap
      * @param doubleFormat the format to use when writing doubles to the stream
      */
-    public ExtendedOutputStreamWriter(OutputStream out, String doubleFormat) {
-        super(out, StandardCharsets.UTF_8);
+    public ExtendedWriter(Writer writer, String doubleFormat) {
+        this.writer = writer;
         this.doubleFormat = doubleFormat;
     }
 
     /** {@inheritDoc} */
     @Override
-    public ExtendedOutputStreamWriter append(CharSequence cs) throws IOException {
+    public void write(char[] cbuf, int off, int len) throws IOException {
+        writer.write(cbuf, off, len);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void flush() throws IOException {
+        writer.flush();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void close() throws IOException {
+        writer.close();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ExtendedWriter append(char c) throws IOException {
+        super.append(c);
+        return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ExtendedWriter append(CharSequence cs) throws IOException {
         super.append(cs);
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
-    public ExtendedOutputStreamWriter append(CharSequence cs, int start, int end) throws IOException {
+    public ExtendedWriter append(CharSequence cs, int start, int end) throws IOException {
         super.append(cs, start, end);
         return this;
     }
@@ -62,7 +89,7 @@ class ExtendedOutputStreamWriter extends OutputStreamWriter {
      * @return this writer
      * @throws IOException if an I/O error occurs
      */
-    public ExtendedOutputStreamWriter append(double d) throws IOException {
+    public ExtendedWriter append(double d) throws IOException {
         super.append(String.format(Locale.ROOT, doubleFormat, d));
         return this;
     }
@@ -74,7 +101,7 @@ class ExtendedOutputStreamWriter extends OutputStreamWriter {
      * @return this writer
      * @throws IOException if an I/O error occurs
      */
-    public ExtendedOutputStreamWriter appendInt(int i) throws IOException {
+    public ExtendedWriter appendInt(int i) throws IOException {
         super.append(String.valueOf(i));
         return this;
     }

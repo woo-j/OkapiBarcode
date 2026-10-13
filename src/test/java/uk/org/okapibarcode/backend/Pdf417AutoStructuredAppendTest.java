@@ -20,6 +20,7 @@ import static java.awt.image.BufferedImage.TYPE_BYTE_BINARY;
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.org.okapibarcode.graphics.Color.BLACK;
 import static uk.org.okapibarcode.graphics.Color.WHITE;
@@ -42,9 +43,11 @@ import com.google.zxing.BinaryBitmap;
 import com.google.zxing.LuminanceSource;
 import com.google.zxing.ReaderException;
 import com.google.zxing.Result;
+import com.google.zxing.ResultMetadataType;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.pdf417.PDF417Reader;
+import com.google.zxing.pdf417.PDF417ResultMetadata;
 
 import uk.org.okapibarcode.output.Java2DRenderer;
 
@@ -87,6 +90,73 @@ class Pdf417AutoStructuredAppendTest {
         template.setForceByteCompaction(true);
         List< Pdf417 > symbolsByteEncoded = Pdf417.createStructuredAppendSymbols(bytes, template);
         assertions(symbolsByteEncoded, bytes, expectedSymbolsCountByteCompaction);
+    }
+
+    @Test
+    public void testSingleSymbolHasNoControlBlockByDefault() throws Exception {
+
+        List< Pdf417 > symbols = Pdf417.createStructuredAppendSymbols("a test", templateWithMetadata());
+
+        assertEquals(1, symbols.size());
+        assertFalse(symbols.get(0).getStructuredAppendForced());
+        PDF417ResultMetadata metadata = metadataOf(symbols.get(0));
+        assertEquals(-1, metadata.getSegmentCount());
+        assertEquals(null, metadata.getFileId());
+        assertEquals(null, metadata.getFileName());
+    }
+
+    @Test
+    public void testSingleSymbolHasControlBlockWhenForced() throws Exception {
+
+        Pdf417 template = templateWithMetadata();
+        template.setStructuredAppendForced(true);
+
+        List< Pdf417 > symbols = Pdf417.createStructuredAppendSymbols("a test", template);
+
+        assertEquals(1, symbols.size());
+        assertTrue(symbols.get(0).getStructuredAppendForced());
+        PDF417ResultMetadata metadata = metadataOf(symbols.get(0));
+        assertEquals(0, metadata.getSegmentIndex());
+        assertEquals(1, metadata.getSegmentCount());
+        assertEquals("001002003", metadata.getFileId());
+        assertEquals("name.txt", metadata.getFileName());
+        assertTrue(metadata.isLastSegment());
+    }
+
+    @Test
+    public void testForcedControlBlockDoesNotChangeSeveralSymbols() throws Exception {
+
+        byte[] bytes = bytes(400);
+        Pdf417 forced = templateWithMetadata();
+        forced.setStructuredAppendForced(true);
+
+        List< Pdf417 > symbols = Pdf417.createStructuredAppendSymbols(bytes, templateWithMetadata());
+        List< Pdf417 > forcedSymbols = Pdf417.createStructuredAppendSymbols(bytes, forced);
+
+        assertTrue(symbols.size() > 1);
+        assertEquals(symbols.size(), forcedSymbols.size());
+        for (int i = 0; i < symbols.size(); i++) {
+            assertEquals(symbols.get(i).getEncodeInfo(), forcedSymbols.get(i).getEncodeInfo());
+            PDF417ResultMetadata metadata = metadataOf(forcedSymbols.get(i));
+            assertEquals(i, metadata.getSegmentIndex());
+            assertEquals(symbols.size(), metadata.getSegmentCount());
+            assertEquals(i == symbols.size() - 1, metadata.isLastSegment());
+        }
+    }
+
+    private static Pdf417 templateWithMetadata() {
+        Pdf417 template = new Pdf417();
+        template.setRows(12);
+        template.setDataColumns(13);
+        template.setStructuredAppendFileId("001002003");
+        template.setStructuredAppendFileName("name.txt");
+        template.setStructuredAppendIncludeSegmentCount(true);
+        return template;
+    }
+
+    private static PDF417ResultMetadata metadataOf(Pdf417 barcode) throws ReaderException {
+        Result result = decodeImage(drawToImage(barcode));
+        return (PDF417ResultMetadata) result.getResultMetadata().get(ResultMetadataType.PDF417_EXTRA_METADATA);
     }
 
     @Test

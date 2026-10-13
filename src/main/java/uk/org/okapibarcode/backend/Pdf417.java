@@ -68,6 +68,7 @@ public class Pdf417 extends Symbol {
     private int structuredAppendTotal = 1;
     private String structuredAppendFileName;
     private boolean structuredAppendIncludeSegmentCount;
+    private boolean structuredAppendForced;
 
     private static final int MAX_NUMERIC_COMPACTION_BLOCK_SIZE = 44;
 
@@ -619,6 +620,29 @@ public class Pdf417 extends Symbol {
     }
 
     /**
+     * Sets whether the Macro PDF417 control block (segment index, file ID, optional fields and the
+     * last segment terminator) is written even if the structured append series consists of a single
+     * symbol. By default a series size of 1 means that the symbol is not part of a structured append
+     * series, and no control block is written. Forcing the control block is useful when every
+     * document must be read the same way, whether it needs one symbol or several.
+     *
+     * @param structuredAppendForced whether to write the control block for a series of one symbol
+     */
+    public void setStructuredAppendForced(boolean structuredAppendForced) {
+        this.structuredAppendForced = structuredAppendForced;
+    }
+
+    /**
+     * Returns whether the Macro PDF417 control block is written even for a series of a single symbol.
+     *
+     * @return whether the control block is written even for a series of a single symbol
+     * @see #setStructuredAppendForced(boolean)
+     */
+    public boolean getStructuredAppendForced() {
+        return structuredAppendForced;
+    }
+
+    /**
      * If this PDF417 symbol is part of a series of PDF417 symbols appended in a structured format
      * (Macro PDF417), this method sets the position of this symbol in the series. Valid values are
      * 1 through 99,999 inclusive.
@@ -646,7 +670,7 @@ public class Pdf417 extends Symbol {
      * If this PDF417 symbol is part of a series of PDF417 symbols appended in a structured format
      * (Macro PDF417), this method sets the total number of symbols in the series. Valid values are
      * 1 through 99,999 inclusive. A value of 1 indicates that this symbol is not part of a structured
-     * append series.
+     * append series, unless {@link #setStructuredAppendForced(boolean)} is used.
      *
      * @param total the total number of PDF417 symbols in the structured append series
      */
@@ -1788,8 +1812,8 @@ public class Pdf417 extends Symbol {
     private int addMacroCodewords() {
 
         // if the structured append series size is 1, this isn't
-        // actually part of a structured append series
-        if (structuredAppendTotal == 1) {
+        // actually part of a structured append series (unless the control block is forced)
+        if (structuredAppendTotal == 1 && !structuredAppendForced) {
             return 0;
         }
 
@@ -1941,6 +1965,7 @@ public class Pdf417 extends Symbol {
         target.setBarHeight(template.getBarHeight());
         target.setMode(template.getMode());
         target.setStructuredAppendIncludeSegmentCount(template.getStructuredAppendIncludeSegmentCount());
+        target.setStructuredAppendForced(template.getStructuredAppendForced());
         target.setForceByteCompaction(template.getForceByteCompaction());
         if (template.getPreferredEccLevel() != -1) {
             target.setPreferredEccLevel(template.getPreferredEccLevel());

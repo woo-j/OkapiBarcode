@@ -1020,6 +1020,10 @@ public abstract class Symbol {
         encodeInfo.append(s).append('\n');
     }
 
+    protected void infoLine(int i) {
+        encodeInfo.append(i).append('\n');
+    }
+
     protected void infoLine(CharSequence s1, CharSequence s2) {
         encodeInfo.append(s1).append(s2).append('\n');
     }

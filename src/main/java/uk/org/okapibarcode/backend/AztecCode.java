@@ -302,6 +302,7 @@ public class AztecCode extends Symbol {
     private String structuredAppendMessageId;
     private int structuredAppendPosition = 1;
     private int structuredAppendTotal = 1;
+    private boolean structuredAppendForced;
 
     /**
      * Creates a new instance, using mode {@link Mode#ANY}.
@@ -472,7 +473,7 @@ public class AztecCode extends Symbol {
      * If this Aztec Code symbol is part of a series of Aztec Code symbols appended in a structured
      * format, this method sets the total number of symbols in the series. Valid values are
      * 1 through 26 inclusive. A value of 1 indicates that this symbol is not part of a structured
-     * append series.
+     * append series, unless {@link #setStructuredAppendForced(boolean)} is used.
      *
      * @param total the total number of Aztec Code symbols in the structured append series
      */
@@ -519,6 +520,29 @@ public class AztecCode extends Symbol {
         return structuredAppendMessageId;
     }
 
+    /**
+     * Sets whether the structured append metadata is encoded even if the structured append series
+     * consists of a single symbol. By default a {@link #setStructuredAppendTotal(int) series size}
+     * of 1 means that the symbol is not part of a structured append series, and no structured append
+     * metadata is encoded. Forcing the metadata to be written is not usually the desired behavior,
+     * but can be useful when the intended client expects to always receive a structured append series,
+     * even if it is a single symbol.
+     *
+     * @param structuredAppendForced whether to always encode the structured append metadata
+     */
+    public void setStructuredAppendForced(boolean structuredAppendForced) {
+        this.structuredAppendForced = structuredAppendForced;
+    }
+
+    /**
+     * Returns whether the structured append metadata is encoded even for a series of a single symbol.
+     *
+     * @return whether the structured append metadata is encoded even for a series of a single symbol
+     */
+    public boolean getStructuredAppendForced() {
+        return structuredAppendForced;
+    }
+
     @Override
     public boolean supportsGs1() {
         return true;
@@ -540,7 +564,7 @@ public class AztecCode extends Symbol {
 
         /* Optional structured append (Section 8 of spec) */
         /* ML + UL start flag handled later, not part of data */
-        if (structuredAppendTotal != 1) {
+        if (structuredAppendTotal != 1 || structuredAppendForced) {
             StringBuilder prefix = new StringBuilder();
             if (structuredAppendMessageId != null) {
                 prefix.append(' ').append(structuredAppendMessageId).append(' ');
@@ -1033,7 +1057,7 @@ public class AztecCode extends Symbol {
         lasttable = 1;
 
         /* Optional structured append start flag (Section 8 of spec) */
-        if (structuredAppendTotal != 1) {
+        if (structuredAppendTotal != 1 || structuredAppendForced) {
             binaryString.append(PENTBIT[29]);
             info("ML ");
             binaryString.append(PENTBIT[29]);

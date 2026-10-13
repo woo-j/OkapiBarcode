@@ -190,6 +190,7 @@ public class QrCode extends Symbol {
     protected int structuredAppendPosition = 1;
     protected int structuredAppendTotal = 1;
     protected int structuredAppendParity = 0;
+    protected boolean structuredAppendForced;
 
     /**
      * Creates a new instance.
@@ -368,6 +369,29 @@ public class QrCode extends Symbol {
         return structuredAppendParity;
     }
 
+    /**
+     * Sets whether the structured append metadata is encoded even if the structured append series
+     * consists of a single symbol. By default a {@link #setStructuredAppendTotal(int) series size}
+     * of 1 means that the symbol is not part of a structured append series, and no structured append
+     * metadata is encoded. Forcing the metadata to be written is not usually the desired behavior,
+     * but can be useful when the intended client expects to always receive a structured append series,
+     * even if it is a single symbol.
+     *
+     * @param structuredAppendForced whether to always encode the structured append metadata
+     */
+    public void setStructuredAppendForced(boolean structuredAppendForced) {
+        this.structuredAppendForced = structuredAppendForced;
+    }
+
+    /**
+     * Returns whether the structured append metadata is encoded even for a series of a single symbol.
+     *
+     * @return whether the structured append metadata is encoded even for a series of a single symbol
+     */
+    public boolean getStructuredAppendForced() {
+        return structuredAppendForced;
+    }
+
     @Override
     public boolean supportsGs1() {
         return true;
@@ -381,7 +405,7 @@ public class QrCode extends Symbol {
     @Override
     protected void encode() {
 
-        int i, j;
+        int i;
         int est_binlen;
         EccLevel ecc_level;
         int max_cw;
@@ -992,10 +1016,14 @@ public class QrCode extends Symbol {
         StringBuilder binary = new StringBuilder(reserved);
 
         if (getStructuredAppendMode()) {
-            binary.append("0011");  /* Structured append mode */
+            binary.append("0011"); /* Structured append mode */
             binaryAppend(binary, structuredAppendPosition - 1, 4);
             binaryAppend(binary, structuredAppendTotal - 1, 4);
             binaryAppend(binary, structuredAppendParity, 8);
+            info("Structured Append: ");
+            infoSpace(structuredAppendPosition);
+            infoSpace(structuredAppendTotal);
+            infoLine(structuredAppendParity);
         }
 
         if (gs1) {
@@ -1235,7 +1263,7 @@ public class QrCode extends Symbol {
     }
 
     private boolean getStructuredAppendMode() {
-        return structuredAppendTotal > 1;
+        return structuredAppendTotal > 1 || structuredAppendForced;
     }
 
     /** Splits data into blocks, adds error correction and then interleaves the blocks and error correction data. */

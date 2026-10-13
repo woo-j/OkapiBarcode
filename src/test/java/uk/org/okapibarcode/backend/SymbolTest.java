@@ -339,14 +339,16 @@ public class SymbolTest {
         } else if (symbol instanceof MaxiCode &&
                    ((MaxiCode) symbol).getMode() != 6 &&
                    ((MaxiCode) symbol).getEciMode() == 3 &&
-                   ((MaxiCode) symbol).getStructuredAppendTotal() == 1) {
+                   ((MaxiCode) symbol).getStructuredAppendTotal() == 1 &&
+                  !((MaxiCode) symbol).getStructuredAppendForced()) {
             // ZXing does not currently support mode 6 in MaxiCode symbols
             // ZXing does not currently support ECI in MaxiCode symbols
             // ZXing does not currently support Structured Append in MaxiCode symbols
             return new MaxiCodeReader();
         } else if (symbol instanceof DataMatrix &&
                    symbol.getEciMode() == 3 &&
-                   ((DataMatrix) symbol).getStructuredAppendTotal() == 1) {
+                   ((DataMatrix) symbol).getStructuredAppendTotal() == 1 &&
+                  !((DataMatrix) symbol).getStructuredAppendForced()) {
             // ZXing does not currently support ECI in Data Matrix symbols
             // ZXing does not currently support Structured Append in Data Matrix symbols
             return new DataMatrixReader();
@@ -407,7 +409,7 @@ public class SymbolTest {
             // not GS1-formatted input, but actually GS1 data
             // transform GS -> '\<FNC1>' (Okapi representation of FNC1)
             return Symbol.FNC1_STRING + s.replace("\u001d", Symbol.FNC1_STRING);
-        } else if (symbol instanceof AztecCode && ((AztecCode) symbol).getStructuredAppendTotal() > 1) {
+        } else if (symbol instanceof AztecCode aztec && (aztec.getStructuredAppendTotal() > 1 || aztec.getStructuredAppendForced())) {
             // remove first two characters, which actually represent the structured append position and total count information
             // also remove the message ID and the surrounding space characters, if there was a message ID
             String messageId = ((AztecCode) symbol).getStructuredAppendMessageId();

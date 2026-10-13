@@ -620,29 +620,6 @@ public class Pdf417 extends Symbol {
     }
 
     /**
-     * Sets whether the Macro PDF417 control block (segment index, file ID, optional fields and the
-     * last segment terminator) is written even if the structured append series consists of a single
-     * symbol. By default a series size of 1 means that the symbol is not part of a structured append
-     * series, and no control block is written. Forcing the control block is useful when every
-     * document must be read the same way, whether it needs one symbol or several.
-     *
-     * @param structuredAppendForced whether to write the control block for a series of one symbol
-     */
-    public void setStructuredAppendForced(boolean structuredAppendForced) {
-        this.structuredAppendForced = structuredAppendForced;
-    }
-
-    /**
-     * Returns whether the Macro PDF417 control block is written even for a series of a single symbol.
-     *
-     * @return whether the control block is written even for a series of a single symbol
-     * @see #setStructuredAppendForced(boolean)
-     */
-    public boolean getStructuredAppendForced() {
-        return structuredAppendForced;
-    }
-
-    /**
      * If this PDF417 symbol is part of a series of PDF417 symbols appended in a structured format
      * (Macro PDF417), this method sets the position of this symbol in the series. Valid values are
      * 1 through 99,999 inclusive.
@@ -758,6 +735,29 @@ public class Pdf417 extends Symbol {
      */
     public boolean getStructuredAppendIncludeSegmentCount() {
         return structuredAppendIncludeSegmentCount;
+    }
+
+    /**
+     * Sets whether the structured append metadata is encoded even if the structured append series
+     * consists of a single symbol. By default a {@link #setStructuredAppendTotal(int) series size}
+     * of 1 means that the symbol is not part of a structured append series, and no structured append
+     * metadata is encoded. Forcing the metadata to be written is not usually the desired behavior,
+     * but can be useful when the intended client expects to always receive a structured append series,
+     * even if it is a single symbol.
+     *
+     * @param structuredAppendForced whether to always encode the structured append metadata
+     */
+    public void setStructuredAppendForced(boolean structuredAppendForced) {
+        this.structuredAppendForced = structuredAppendForced;
+    }
+
+    /**
+     * Returns whether the structured append metadata is encoded even for a series of a single symbol.
+     *
+     * @return whether the structured append metadata is encoded even for a series of a single symbol
+     */
+    public boolean getStructuredAppendForced() {
+        return structuredAppendForced;
     }
 
     /**
@@ -1811,8 +1811,8 @@ public class Pdf417 extends Symbol {
     /** Adds the Macro PDF417 control block codewords (if any). */
     private int addMacroCodewords() {
 
-        // if the structured append series size is 1, this isn't
-        // actually part of a structured append series (unless the control block is forced)
+        // if the structured append series size is 1, this isn't actually part
+        // of a structured append series (unless the control block is forced)
         if (structuredAppendTotal == 1 && !structuredAppendForced) {
             return 0;
         }

@@ -166,6 +166,11 @@ tests check exact output image pixel values, and there are small differences in 
 #### Okapi Barcode 0.5.7
 - Add support for writing SVG and PostScript output to a `java.io.Writer`
 - GS1 Composite: fix occasional `ArrayIndexOutOfBoundsException` during encoding
+- PDF417: allow structured append metadata to be forced, even for a single symbol
+- QR Code: allow structured append metadata to be forced, even for a single symbol
+- Aztec Code: allow structured append metadata to be forced, even for a single symbol
+- Data Matrix: allow structured append metadata to be forced, even for a single symbol
+- MaxiCode: allow structured append metadata to be forced, even for a single symbol
 
 #### Okapi Barcode 0.5.6
 - Aztec Code: fix occasional `ArrayIndexOutOfBoundsException` during encoding

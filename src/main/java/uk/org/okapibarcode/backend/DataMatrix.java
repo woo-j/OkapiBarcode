@@ -131,6 +131,7 @@ public class DataMatrix extends Symbol {
     private int structuredAppendFileId = 1;
     private int structuredAppendPosition = 1;
     private int structuredAppendTotal = 1;
+    private boolean structuredAppendForced;
     private boolean separatorGs;
 
     // internal state calculated when setContent() is called
@@ -277,7 +278,7 @@ public class DataMatrix extends Symbol {
      * If this Data Matrix symbol is part of a series of Data Matrix symbols appended in a structured
      * format, this method sets the total number of symbols in the series. Valid values are
      * 1 through 16 inclusive. A value of 1 indicates that this symbol is not part of a structured
-     * append series.
+     * append series, unless {@link #setStructuredAppendForced(boolean)} is used.
      *
      * @param total the total number of Data Matrix symbols in the structured append series
      */
@@ -321,6 +322,29 @@ public class DataMatrix extends Symbol {
      */
     public int getStructuredAppendFileId() {
         return structuredAppendFileId;
+    }
+
+    /**
+     * Sets whether the structured append metadata is encoded even if the structured append series
+     * consists of a single symbol. By default a {@link #setStructuredAppendTotal(int) series size}
+     * of 1 means that the symbol is not part of a structured append series, and no structured append
+     * metadata is encoded. Forcing the metadata to be written is not usually the desired behavior,
+     * but can be useful when the intended client expects to always receive a structured append series,
+     * even if it is a single symbol.
+     *
+     * @param structuredAppendForced whether to always encode the structured append metadata
+     */
+    public void setStructuredAppendForced(boolean structuredAppendForced) {
+        this.structuredAppendForced = structuredAppendForced;
+    }
+
+    /**
+     * Returns whether the structured append metadata is encoded even for a series of a single symbol.
+     *
+     * @return whether the structured append metadata is encoded even for a series of a single symbol
+     */
+    public boolean getStructuredAppendForced() {
+        return structuredAppendForced;
     }
 
     /**
@@ -529,7 +553,7 @@ public class DataMatrix extends Symbol {
         current_mode = Mode.DM_ASCII;
         next_mode = Mode.DM_ASCII;
 
-        if (structuredAppendTotal != 1) {
+        if (structuredAppendTotal != 1 || structuredAppendForced) {
 
             /* FNC2 */
             target[tp] = 233;

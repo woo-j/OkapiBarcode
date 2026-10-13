@@ -120,6 +120,7 @@ public class MaxiCode extends Symbol {
     private int mode;
     private int structuredAppendPosition = 1;
     private int structuredAppendTotal = 1;
+    private boolean structuredAppendForced;
     private String primaryData = "";
     private String postalCode; // modes 2 and 3 only
     private int country; // modes 2 and 3 only
@@ -200,7 +201,7 @@ public class MaxiCode extends Symbol {
     /**
      * If this MaxiCode symbol is part of a series of MaxiCode symbols appended in a structured format, this method sets the total
      * number of symbols in the series. Valid values are 1 through 8 inclusive. A value of 1 indicates that this symbol is not
-     * part of a structured append series.
+     * part of a structured append series, unless {@link #setStructuredAppendForced(boolean)} is used.
      *
      * @param total the total number of MaxiCode symbols in the structured append series
      */
@@ -219,6 +220,29 @@ public class MaxiCode extends Symbol {
      */
     public int getStructuredAppendTotal() {
         return structuredAppendTotal;
+    }
+
+    /**
+     * Sets whether the structured append metadata is encoded even if the structured append series
+     * consists of a single symbol. By default a {@link #setStructuredAppendTotal(int) series size}
+     * of 1 means that the symbol is not part of a structured append series, and no structured append
+     * metadata is encoded. Forcing the metadata to be written is not usually the desired behavior,
+     * but can be useful when the intended client expects to always receive a structured append series,
+     * even if it is a single symbol.
+     *
+     * @param structuredAppendForced whether to always encode the structured append metadata
+     */
+    public void setStructuredAppendForced(boolean structuredAppendForced) {
+        this.structuredAppendForced = structuredAppendForced;
+    }
+
+    /**
+     * Returns whether the structured append metadata is encoded even for a series of a single symbol.
+     *
+     * @return whether the structured append metadata is encoded even for a series of a single symbol
+     */
+    public boolean getStructuredAppendForced() {
+        return structuredAppendForced;
     }
 
     /**
@@ -326,7 +350,11 @@ public class MaxiCode extends Symbol {
         }
 
         // insert structured append flag if necessary
-        if (structuredAppendTotal > 1) {
+        if (structuredAppendTotal > 1 || structuredAppendForced) {
+
+            info("Structured Append: ");
+            infoSpace(structuredAppendPosition);
+            infoLine(structuredAppendTotal);
 
             int[] flag = new int[2];
             flag[0] = 33; // padding

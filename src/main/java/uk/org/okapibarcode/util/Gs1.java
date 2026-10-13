@@ -16,7 +16,9 @@
 
 package uk.org.okapibarcode.util;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import uk.org.okapibarcode.backend.OkapiInputException;
@@ -598,10 +600,10 @@ public final class Gs1 {
 
         char[] source = s.toCharArray();
         StringBuilder reduced = new StringBuilder(source.length);
-        int[] ai_value = new int[100];
-        int[] ai_location = new int[100];
-        int[] data_location = new int[100];
-        int[] data_length = new int[100];
+        List< Integer > ai_values = new ArrayList<>();
+        List< Integer > ai_locations = new ArrayList<>();
+        List< Integer > data_locations = new ArrayList<>();
+        List< Integer > data_lengths = new ArrayList<>();
 
         /* Make sure we start with an AI */
         if (source.length == 0 || source[0] != '[') {
@@ -670,36 +672,40 @@ public final class Gs1 {
         int ai_count = 0;
         for (int i = 1; i < source.length; i++) {
             if (source[i - 1] == '[') {
-                ai_location[ai_count] = i;
-                ai_value[ai_count] = 0;
+                int ai_value = 0;
                 for (j = 0; source[i + j] != ']'; j++) {
-                    ai_value[ai_count] *= 10;
-                    ai_value[ai_count] += Character.getNumericValue(source[i + j]);
+                    ai_value *= 10;
+                    ai_value += Character.getNumericValue(source[i + j]);
                 }
+                ai_locations.add(i);
+                ai_values.add(ai_value);
                 ai_count++;
             }
         }
 
         for (int i = 0; i < ai_count; i++) {
-            data_location[i] = ai_location[i] + 3;
-            if (ai_value[i] >= 100) {
-                data_location[i]++;
+            int data_location = ai_locations.get(i) + 3;
+            int ai_value = ai_values.get(i);
+            if (ai_value >= 100) {
+                data_location++;
             }
-            if (ai_value[i] >= 1000) {
-                data_location[i]++;
+            if (ai_value >= 1000) {
+                data_location++;
             }
-            data_length[i] = source.length - data_location[i];
-            for (j = source.length - 1; j >= data_location[i]; j--) {
+            int data_length = source.length - data_location;
+            for (j = source.length - 1; j >= data_location; j--) {
                 if (source[j] == '[') {
-                    data_length[i] = j - data_location[i];
+                    data_length = j - data_location;
                 }
             }
+            data_locations.add(data_location);
+            data_lengths.add(data_length);
         }
 
         /* Check for valid AI values and data lengths according to GS1 General Specification */
         for (int i = 0; i < ai_count; i++) { // loop through AIs
 
-            int ai = ai_value[i];
+            int ai = ai_values.get(i);
             byte[] info = AIS.get(ai);
             if (info == null) {
                 throw new OkapiInputException("Invalid AI value " + ai);
@@ -716,7 +722,7 @@ public final class Gs1 {
                 int limit;
                 if (j + 3 == info.length) {
                     // last segment
-                    limit = data_length[i] - processed;
+                    limit = data_lengths.get(i) - processed;
                     if (limit < min || limit > max) {
                         throw new OkapiInputException("Invalid data length for AI " + ai);
                     }
@@ -724,13 +730,13 @@ public final class Gs1 {
                     // not last segment
                     limit = max;
                     assert min == max;
-                    if (processed + limit > data_length[i]) {
+                    if (processed + limit > data_lengths.get(i)) {
                         throw new OkapiInputException("Invalid data length for AI " + ai);
                     }
                 }
 
                 for (int k = 0; k < limit; k++) { // for each data segment, validate all data
-                    int index = data_location[i] + processed + k;
+                    int index = data_locations.get(i) + processed + k;
                     char c = source[index];
                     boolean valid =
                        (type == DIGITS && c >= '0' && c <= '9') ||

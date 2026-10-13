@@ -820,7 +820,7 @@ public class Pdf417 extends Symbol {
     }
 
     private void processPdf417() {
-        int j, loop, offset;
+        int j, offset;
         int[] mccorrection = new int[520];
         int total;
         int c1, c2, c3;
@@ -974,16 +974,12 @@ public class Pdf417 extends Symbol {
                 break;
         }
 
-        for (loop = 0; loop < 520; loop++) {
-            mccorrection[loop] = 0;
-        }
-
         for (int i = 0; i < codeWordCount; i++) {
             total = (codeWords[i] + mccorrection[k - 1]) % 929;
             for (j = k - 1; j > 0; j--) {
                 mccorrection[j] = (mccorrection[j - 1] + 929 - (total * COEFRS[offset + j]) % 929) % 929;
             }
-            mccorrection[0] = (929 - (total * COEFRS[offset + j]) % 929) % 929;
+            mccorrection[0] = (929 - (total * COEFRS[offset]) % 929) % 929;
         }
 
         /* we add these codes to the string */
@@ -1013,22 +1009,22 @@ public class Pdf417 extends Symbol {
             for (j = 0; j < columns; j++) {
                 dummy[j + 1] = codeWords[i * columns + j];
             }
-            k = (i / 3) * 30;
+            int kk = (i / 3) * 30;
             switch (i % 3) {
                 case 0:
                     offset = 0; // cluster 0
-                    dummy[0] = k + c1; // left row indicator
-                    dummy[columns + 1] = k + c3; // right row indicator
+                    dummy[0] = kk + c1; // left row indicator
+                    dummy[columns + 1] = kk + c3; // right row indicator
                     break;
                 case 1:
                     offset = 929; // cluster 3
-                    dummy[0] = k + c2; // left row indicator
-                    dummy[columns + 1] = k + c1; // right row indicator
+                    dummy[0] = kk + c2; // left row indicator
+                    dummy[columns + 1] = kk + c1; // right row indicator
                     break;
                 case 2:
                     offset = 1858; // cluster 6
-                    dummy[0] = k + c3; // left row indicator
-                    dummy[columns + 1] = k + c2; // right row indicator
+                    dummy[0] = kk + c3; // left row indicator
+                    dummy[columns + 1] = kk + c2; // right row indicator
                     break;
             }
             codebarre.setLength(0);

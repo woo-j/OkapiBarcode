@@ -493,7 +493,7 @@ public class Composite extends Symbol {
     private LinearEncoding symbology = LinearEncoding.CODE_128;
     private int cc_width;
     private int[][] pwr928 = new int[69][7];
-    private int[] codeWords = new int[180];
+    private int[] codeWords = new int[900];
     private int codeWordCount;
     private int[] bitStr = new int[13];
     private int[] inputData;
@@ -578,7 +578,7 @@ public class Composite extends Symbol {
      * This value may be ignored if the amount of data supplied is too big for the selected
      * encoding. Mode CC-C can only be used with a Code 128 linear component.
      *
-     * @param userMode Preferred mode
+     * @param userMode the preferred encoding method for the 2D component of the composite symbol
      */
     public void setPreferredMode(CompositeMode userMode) {
         userPreferredMode = userMode;
@@ -959,7 +959,6 @@ public class Composite extends Symbol {
     }
 
     private boolean calculateSymbolSize() {
-        int i;
         int binary_length = binary_string.length();
         if (cc_mode == CompositeMode.CC_A) {
             /* CC-A 2D component - calculate remaining space */
@@ -1140,7 +1139,7 @@ public class Composite extends Symbol {
 
         if (cc_mode == CompositeMode.CC_C) {
             /* CC-C 2D Component is a bit more complex! */
-            int byte_length, codewords_used, ecc_level, ecc_codewords, rows;
+            int byte_length, codewords_used, ecc_codewords, rows;
             int codewords_total, target_codewords, target_bytesize;
 
             byte_length = binary_length / 8;
@@ -1151,30 +1150,22 @@ public class Composite extends Symbol {
             codewords_used = (byte_length / 6) * 5;
             codewords_used += byte_length % 6;
 
-            ecc_level = 7;
-            if (codewords_used <= 1280) {
-                ecc_level = 6;
-            }
-            if (codewords_used <= 640) {
-                ecc_level = 5;
-            }
-            if (codewords_used <= 320) {
-                ecc_level = 4;
-            }
-            if (codewords_used <= 160) {
-                ecc_level = 3;
-            }
             if (codewords_used <= 40) {
-                ecc_level = 2;
-            }
-            ecc = ecc_level;
-            ecc_codewords = 1;
-            for (i = 1; i <= (ecc_level + 1); i++) {
-                ecc_codewords *= 2;
+                ecc = 2;
+            } else if (codewords_used <= 160) {
+                ecc = 3;
+            } else if (codewords_used <= 320) {
+                ecc = 4;
+            } else if (codewords_used <= 640) {
+                ecc = 5;
+            } else {
+                ecc = 3;
             }
 
+            ecc_codewords = 1 << (ecc + 1);
             codewords_used += ecc_codewords;
             codewords_used += 3;
+            assert codewords_used <= 900;
 
             if (linearWidth == 0) {
                 /* Linear component not yet calculated */
@@ -1183,24 +1174,22 @@ public class Composite extends Symbol {
                 cc_width = (linearWidth - 53) / 17;
             }
 
-            if ((codewords_used / cc_width) > 90) {
-                /* stop the symbol from becoming too high */
-                cc_width = cc_width + 1;
+            rows = (int) Math.ceil(codewords_used / (double) cc_width);
+
+            /* stop the symbol from becoming too high */
+            while (rows > 30 && cc_width < 30) {
+                cc_width++;
+                rows = (int) Math.ceil(codewords_used / (double) cc_width);
             }
 
-            rows = codewords_used / cc_width;
-            if (codewords_used % cc_width != 0) {
-                rows++;
-            }
-
-            while (cc_width > (3 * rows)) {
-                /* stop the symbol from becoming too wide (section 10) */
+            /* stop the symbol from becoming too wide (section 10) */
+            while (cc_width > 3 * rows && cc_width > 1) {
                 cc_width--;
+                rows = (int) Math.ceil(codewords_used / (double) cc_width);
+            }
 
-                rows = codewords_used / cc_width;
-                if (codewords_used % cc_width != 0) {
-                    rows++;
-                }
+            if (rows < 3) {
+                rows = 3;
             }
 
             codewords_total = cc_width * rows;
@@ -1649,7 +1638,7 @@ public class Composite extends Symbol {
         int LeftRAP, RightRAP, CentreRAP, Cluster;
         int[] dummy = new int[5];
         int flip, loop;
-        String codebarre;
+        StringBuilder codebarre = new StringBuilder();
         StringBuilder bin = new StringBuilder();
         StringBuilder local_source; /* A copy of source but with padding zeroes to make 208 bits */
 
@@ -1800,7 +1789,7 @@ public class Composite extends Symbol {
         rowHeight = new int[rowCount];
 
         for (i = 0; i < rows; i++) {
-            codebarre = "";
+            codebarre.setLength(0);
             offset = 929 * Cluster;
             for (j = 0; j < 5; j++) {
                 dummy[j] = 0;
@@ -1810,34 +1799,34 @@ public class Composite extends Symbol {
             }
             /* Copy the data into codebarre */
             if (cc_width != 3) {
-                codebarre += RAPLR[LeftRAP];
+                codebarre.append(RAPLR[LeftRAP]);
             }
-            codebarre += "1";
-            codebarre += CODAGEMC[offset + dummy[1]];
-            codebarre += "1";
+            codebarre.append('1');
+            codebarre.append(CODAGEMC[offset + dummy[1]]);
+            codebarre.append('1');
             if (cc_width == 3) {
-                codebarre += RAPC[CentreRAP];
+                codebarre.append(RAPC[CentreRAP]);
             }
             if (cc_width >= 2) {
-                codebarre += "1";
-                codebarre += CODAGEMC[offset + dummy[2]];
-                codebarre += "1";
+                codebarre.append('1');
+                codebarre.append(CODAGEMC[offset + dummy[2]]);
+                codebarre.append('1');
             }
             if (cc_width == 4) {
-                codebarre += RAPC[CentreRAP];
+                codebarre.append(RAPC[CentreRAP]);
             }
             if (cc_width >= 3) {
-                codebarre += "1";
-                codebarre += CODAGEMC[offset + dummy[3]];
-                codebarre += "1";
+                codebarre.append('1');
+                codebarre.append(CODAGEMC[offset + dummy[3]]);
+                codebarre.append('1');
             }
             if (cc_width == 4) {
-                codebarre += "1";
-                codebarre += CODAGEMC[offset + dummy[4]];
-                codebarre += "1";
+                codebarre.append('1');
+                codebarre.append(CODAGEMC[offset + dummy[4]]);
+                codebarre.append('1');
             }
-            codebarre += RAPLR[RightRAP];
-            codebarre += "1"; /* stop */
+            codebarre.append(RAPLR[RightRAP]);
+            codebarre.append('1'); /* stop */
 
             /* Now codebarre is a mixture of letters and numbers */
 
@@ -1948,7 +1937,7 @@ public class Composite extends Symbol {
         int[] mccorrection = new int[50];
         int total;
         int[] dummy = new int[5];
-        String codebarre;
+        StringBuilder codebarre = new StringBuilder();
         StringBuilder bin = new StringBuilder();
         int variant, LeftRAPStart, CentreRAPStart, RightRAPStart, StartCluster;
         int LeftRAP, CentreRAP, RightRAP, Cluster, flip, loop;
@@ -1959,7 +1948,6 @@ public class Composite extends Symbol {
 
         for (i = 0; i < length; i++) {
             binloc = i * 8;
-
             inputData[i] = 0;
             for (j = 0; j < 8; j++) {
                 if (binary_string.charAt(binloc + j) == '1') {
@@ -2133,7 +2121,7 @@ public class Composite extends Symbol {
         rowHeight = new int[rowCount];
 
         for (i = 0; i < rows; i++) {
-            codebarre = "";
+            codebarre.setLength(0);
             offset = 929 * Cluster;
             for (j = 0; j < 5; j++) {
                 dummy[j] = 0;
@@ -2142,33 +2130,33 @@ public class Composite extends Symbol {
                 dummy[j + 1] = codeWords[i * option_2 + j];
             }
             /* Copy the data into codebarre */
-            codebarre += RAPLR[LeftRAP];
-            codebarre += "1";
-            codebarre += CODAGEMC[offset + dummy[1]];
-            codebarre += "1";
+            codebarre.append(RAPLR[LeftRAP]);
+            codebarre.append('1');
+            codebarre.append(CODAGEMC[offset + dummy[1]]);
+            codebarre.append('1');
             if (cc_width == 3) {
-                codebarre += RAPC[CentreRAP];
+                codebarre.append(RAPC[CentreRAP]);
             }
             if (cc_width >= 2) {
-                codebarre += "1";
-                codebarre += CODAGEMC[offset + dummy[2]];
-                codebarre += "1";
+                codebarre.append('1');
+                codebarre.append(CODAGEMC[offset + dummy[2]]);
+                codebarre.append('1');
             }
             if (cc_width == 4) {
-                codebarre += RAPC[CentreRAP];
+                codebarre.append(RAPC[CentreRAP]);
             }
             if (cc_width >= 3) {
-                codebarre += "1";
-                codebarre += CODAGEMC[offset + dummy[3]];
-                codebarre += "1";
+                codebarre.append('1');
+                codebarre.append(CODAGEMC[offset + dummy[3]]);
+                codebarre.append('1');
             }
             if (cc_width == 4) {
-                codebarre += "1";
-                codebarre += CODAGEMC[offset + dummy[4]];
-                codebarre += "1";
+                codebarre.append('1');
+                codebarre.append(CODAGEMC[offset + dummy[4]]);
+                codebarre.append('1');
             }
-            codebarre += RAPLR[RightRAP];
-            codebarre += "1"; /* stop */
+            codebarre.append(RAPLR[RightRAP]);
+            codebarre.append('1'); /* stop */
 
             /* Now codebarre is a mixture of letters and numbers */
 
@@ -2220,18 +2208,18 @@ public class Composite extends Symbol {
 
     private void cc_c() {
         /* CC-C 2D component - byte compressed PDF417 */
-        int length, i, binloc, k;
-        int offset, longueur, loop, total, j;
+        int length, binloc;
+        int offset, total, j;
         int[] mccorrection = new int[520];
         int c1, c2, c3;
         int[] dummy = new int[35];
-        String codebarre;
+        StringBuilder codebarre = new StringBuilder();
         StringBuilder bin = new StringBuilder();
         inputData = new int[(binary_string.length() / 8) + 4];
 
         length = binary_string.length() / 8;
 
-        for (i = 0; i < length; i++) {
+        for (int i = 0; i < length; i++) {
             binloc = i * 8;
             inputData[i] = 0;
             for (j = 0; j < 8; j++) {
@@ -2250,11 +2238,6 @@ public class Composite extends Symbol {
         byteprocess(0, length);
 
         codeWords[0] = codeWordCount;
-
-        k = 1;
-        for (i = 1; i <= (ecc + 1); i++) {
-            k *= 2;
-        }
 
         /* 796 - we now take care of the Reed Solomon codes */
         switch (ecc) {
@@ -2287,91 +2270,68 @@ public class Composite extends Symbol {
                 break;
         }
 
-        longueur = codeWordCount;
-        for (loop = 0; loop < 520; loop++) {
-            mccorrection[loop] = 0;
-        }
-        total = 0;
         info("Composite Codewords: ");
-        for (i = 0; i < longueur; i++) {
+        int k = 1 << (ecc + 1); // error correction codeword count
+        for (int i = 0; i < codeWordCount; i++) {
             total = (codeWords[i] + mccorrection[k - 1]) % 929;
-            for (j = k - 1; j >= 0; j--) {
-                if (j == 0) {
-                    mccorrection[j] = (929 - (total * COEFRS[offset + j]) % 929) % 929;
-                } else {
-                    mccorrection[j] = (mccorrection[j - 1] + 929 - (total * COEFRS[offset + j]) % 929) % 929;
-                }
+            for (j = k - 1; j > 0; j--) {
+                mccorrection[j] = (mccorrection[j - 1] + 929 - (total * COEFRS[offset + j]) % 929) % 929;
             }
+            mccorrection[0] = (929 - (total * COEFRS[offset]) % 929) % 929;
             infoSpace(codeWords[i]);
         }
         infoLine();
 
-        for (j = 0; j < k; j++) {
-            if (mccorrection[j] != 0) {
-                mccorrection[j] = 929 - mccorrection[j];
-            }
-        }
         /* we add these codes to the string */
-        for (i = k - 1; i >= 0; i--) {
-            codeWords[codeWordCount] = mccorrection[i];
-            codeWordCount++;
+        for (int i = k - 1; i >= 0; i--) {
+            codeWords[codeWordCount++] = mccorrection[i] != 0 ? 929 - mccorrection[i] : 0;
         }
 
         /* 818 - The CW string is finished */
-        c1 = (codeWordCount / cc_width - 1) / 3;
-        c2 = ecc * 3 + (codeWordCount / cc_width - 1) % 3;
-        c3 = cc_width - 1;
+        int columns = cc_width;
+        int rows = codeWordCount / cc_width;
+        c1 = (rows - 1) / 3;
+        c2 = (ecc * 3) + (rows - 1) % 3;
+        c3 = columns - 1;
 
         readable = "";
-        rowCount = codeWordCount / cc_width;
-        pattern = new String[rowCount];
-        rowHeight = new int[rowCount];
+        rowCount = rows;
+        pattern = new String[rows];
+        rowHeight = new int[rows];
 
         /* we now encode each row */
-        for (i = 0; i <= (codeWordCount / cc_width) - 1; i++) {
-            for (j = 0; j < cc_width; j++) {
-                dummy[j + 1] = codeWords[i * cc_width + j];
+        for (int i = 0; i < rows; i++) {
+            for (j = 0; j < columns; j++) {
+                dummy[j + 1] = codeWords[i * columns + j];
             }
-            k = (i / 3) * 30;
+            int kk = (i / 3) * 30;
             switch (i % 3) {
-                /* follows this pattern from US Patent 5,243,655:
-                 Row 0: L0 (row #, # of rows)         R0 (row #, # of columns)
-                 Row 1: L1 (row #, security level)    R1 (row #, # of rows)
-                 Row 2: L2 (row #, # of columns)      R2 (row #, security level)
-                 Row 3: L3 (row #, # of rows)         R3 (row #, # of columns)
-                 etc. */
                 case 0:
-                    dummy[0] = k + c1;
-                    dummy[cc_width + 1] = k + c3;
+                    offset = 0; // cluster 0
+                    dummy[0] = kk + c1; // left row indicator
+                    dummy[columns + 1] = kk + c3; // right row indicator
                     break;
                 case 1:
-                    dummy[0] = k + c2;
-                    dummy[cc_width + 1] = k + c1;
+                    offset = 929; // cluster 3
+                    dummy[0] = kk + c2; // left row indicator
+                    dummy[columns + 1] = kk + c1; // right row indicator
                     break;
                 case 2:
-                    dummy[0] = k + c3;
-                    dummy[cc_width + 1] = k + c2;
+                    offset = 1858; // cluster 6
+                    dummy[0] = kk + c3; // left row indicator
+                    dummy[columns + 1] = kk + c2; // right row indicator
                     break;
             }
-            codebarre = "+*"; /* Start with a start char and a separator */
-
-            for (j = 0; j <= cc_width + 1; j++) {
-                switch (i % 3) {
-                    case 1:
-                        offset = 929; /* cluster(3) */ break;
-                    case 2:
-                        offset = 1858; /* cluster(6) */ break;
-                    default:
-                        offset = 0; /* cluster(0) */ break;
-                }
-                codebarre += CODAGEMC[offset + dummy[j]];
-                codebarre += "*";
+            codebarre.setLength(0);
+            codebarre.append("+*");
+            for (j = 0; j <= columns + 1; j++) {
+                codebarre.append(CODAGEMC[offset + dummy[j]]);
+                codebarre.append('*');
             }
-            codebarre += "-";
-
+            codebarre.append('-');
             bin.setLength(0);
-            for (loop = 0; loop < codebarre.length(); loop++) {
-                bin.append(PDF_TTF[positionOf(codebarre.charAt(loop), BR_SET)]);
+            for (j = 0; j < codebarre.length(); j++) {
+                bin.append(PDF_TTF[positionOf(codebarre.charAt(j), BR_SET)]);
             }
             pattern[i] = bin2pat(bin);
             rowHeight[i] = 3;
@@ -2379,13 +2339,14 @@ public class Composite extends Symbol {
     }
 
     private void byteprocess(int start, int length) {
+
         int len = 0;
         int chunkLen = 0;
         BigInteger mantisa;
         BigInteger total;
         BigInteger word;
 
-        /* select the switch for multiple of 6 bytes */
+        // select the switch for multiple of 6 bytes
         if ((binary_string.length() % 6) == 0) {
             codeWords[codeWordCount++] = 924;
         } else {
@@ -2394,26 +2355,22 @@ public class Composite extends Symbol {
 
         while (len < length) {
             chunkLen = length - len;
-            if (6 <= chunkLen) /* Take groups of 6 */ {
+            if (6 <= chunkLen) { // convert groups of 6 bytes -> 5 codewords
                 chunkLen = 6;
                 len += chunkLen;
                 total = BigInteger.valueOf(0);
-
                 while ((chunkLen--) != 0) {
                     mantisa = BigInteger.valueOf(inputData[start++]);
                     total = total.or(mantisa.shiftLeft(chunkLen * 8));
                 }
-
                 chunkLen = 5;
-
                 while ((chunkLen--) != 0) {
-
                     word = total.mod(BigInteger.valueOf(900));
                     codeWords[codeWordCount + chunkLen] = word.intValue();
                     total = total.divide(BigInteger.valueOf(900));
                 }
                 codeWordCount += 5;
-            } else /*  If it remain a group of less than 6 bytes   */ {
+            } else { // leftover group of less than 6 bytes
                 len += chunkLen;
                 while ((chunkLen--) != 0) {
                     codeWords[codeWordCount++] = inputData[start++];

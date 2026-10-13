@@ -925,7 +925,7 @@ public class SymbolTest {
         DataBuffer expectedBuffer = expected.getRaster().getDataBuffer();
         DataBuffer actualBuffer = actual.getRaster().getDataBuffer();
 
-        if (expectedBuffer instanceof DataBufferByte && actualBuffer instanceof DataBufferByte) {
+        if (expectedBuffer instanceof DataBufferByte && actualBuffer instanceof DataBufferByte && expected.getType() == actual.getType()) {
             // optimize for the 99% case
             byte[] expectedData = ((DataBufferByte) expectedBuffer).getData();
             byte[] actualData = ((DataBufferByte) actualBuffer).getData();

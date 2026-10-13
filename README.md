@@ -165,6 +165,7 @@ tests check exact output image pixel values, and there are small differences in 
 
 #### Okapi Barcode 0.5.7
 - Add support for writing SVG and PostScript output to a `java.io.Writer`
+- GS1 Composite: fix occasional `ArrayIndexOutOfBoundsException` during encoding
 
 #### Okapi Barcode 0.5.6
 - Aztec Code: fix occasional `ArrayIndexOutOfBoundsException` during encoding

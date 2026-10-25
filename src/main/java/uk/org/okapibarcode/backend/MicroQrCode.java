@@ -886,7 +886,9 @@ public class MicroQrCode extends Symbol {
         /* Add terminator */
         switch(version) {
             case 0:
-                binary.append("000");
+                if (binary.length() < 18) {
+                    binary.append("000");
+                }
                 break;
             case 1:
                 if (binary.length() < 37) {
@@ -983,18 +985,19 @@ public class MicroQrCode extends Symbol {
                 data_blocks[i] += 0x01;
             }
         }
+        /* The final codeword has only 4 bits, which fill the upper half of the byte */
         data_blocks[2] = 0;
         if (binary.charAt(16) == '1') {
-            data_blocks[2] += 0x08;
+            data_blocks[2] += 0x80;
         }
         if (binary.charAt(17) == '1') {
-            data_blocks[2] += 0x04;
+            data_blocks[2] += 0x40;
         }
         if (binary.charAt(18) == '1') {
-            data_blocks[2] += 0x02;
+            data_blocks[2] += 0x20;
         }
         if (binary.charAt(19) == '1') {
-            data_blocks[2] += 0x01;
+            data_blocks[2] += 0x10;
         }
 
         info("Codewords: ");
@@ -1184,34 +1187,36 @@ public class MicroQrCode extends Symbol {
         }
 
         if (ecc_mode == EccMode.L) {
+            /* The final codeword has only 4 bits, which fill the upper half of the byte */
             data_blocks[10] = 0;
             if (binary.charAt(80) == '1') {
-                data_blocks[10] += 0x08;
+                data_blocks[10] += 0x80;
             }
             if (binary.charAt(81) == '1') {
-                data_blocks[10] += 0x04;
+                data_blocks[10] += 0x40;
             }
             if (binary.charAt(82) == '1') {
-                data_blocks[10] += 0x02;
+                data_blocks[10] += 0x20;
             }
             if (binary.charAt(83) == '1') {
-                data_blocks[10] += 0x01;
+                data_blocks[10] += 0x10;
             }
         }
 
         if (ecc_mode == EccMode.M) {
+            /* The final codeword has only 4 bits, which fill the upper half of the byte */
             data_blocks[8] = 0;
             if (binary.charAt(64) == '1') {
-                data_blocks[8] += 0x08;
+                data_blocks[8] += 0x80;
             }
             if (binary.charAt(65) == '1') {
-                data_blocks[8] += 0x04;
+                data_blocks[8] += 0x40;
             }
             if (binary.charAt(66) == '1') {
-                data_blocks[8] += 0x02;
+                data_blocks[8] += 0x20;
             }
             if (binary.charAt(67) == '1') {
-                data_blocks[8] += 0x01;
+                data_blocks[8] += 0x10;
             }
         }
 

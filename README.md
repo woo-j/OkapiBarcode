@@ -163,6 +163,9 @@ tests check exact output image pixel values, and there are small differences in 
 
 ### Recent Releases
 
+#### Okapi Barcode 0.5.8
+- Telepen: support NUL and DEL correctly
+
 #### Okapi Barcode 0.5.7
 - Add support for writing SVG and PostScript output to a `java.io.Writer`
 - GS1 Composite: fix occasional `ArrayIndexOutOfBoundsException` during encoding

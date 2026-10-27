@@ -164,6 +164,7 @@ tests check exact output image pixel values, and there are small differences in 
 ### Recent Releases
 
 #### Okapi Barcode 0.5.8
+- Micro QR Code: abbreviate terminator when possible
 - Telepen: support NUL and DEL correctly
 
 #### Okapi Barcode 0.5.7

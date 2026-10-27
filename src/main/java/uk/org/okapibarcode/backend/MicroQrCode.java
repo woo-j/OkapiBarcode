@@ -19,6 +19,7 @@ package uk.org.okapibarcode.backend;
 import static uk.org.okapibarcode.util.Arrays.positionOf;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
 
 /**
  * <p>Implements Micro QR Code according to ISO/IEC 18004:2006.
@@ -149,14 +150,13 @@ public class MicroQrCode extends Symbol {
 
     @Override
     protected void encode() {
-        int i, j, size;
+        int i, size;
         boolean[] version_valid = new boolean[4];
         int n_count, a_count;
         EccMode ecc_level;
         int version, autoversion;
         int bitmask;
         int format, format_full;
-        StringBuilder bin = new StringBuilder();
         boolean byteModeUsed;
         boolean alphanumModeUsed;
         boolean kanjiModeUsed;
@@ -311,7 +311,7 @@ public class MicroQrCode extends Symbol {
         }
 
         binary = new StringBuilder();
-        generateBinary(version);
+        generateBinary(version, ecc_level);
         if (binary.length() > 128) {
             throw OkapiInputException.inputTooLong();
         }
@@ -341,12 +341,6 @@ public class MicroQrCode extends Symbol {
         size = MICRO_QR_SIZES[version];
 
         grid = new int[size * size];
-
-        for (i = 0; i < size; i++) {
-            for (j = 0; j < size; j++) {
-                grid[(i * size) + j] = 0;
-            }
-        }
 
         setupBitGrid(size);
         populateBitGrid(size);
@@ -601,17 +595,18 @@ public class MicroQrCode extends Symbol {
         return binary.toString();
     }
 
+    /**
+     * Calculates the number of data bits needed by each version (M1 to M4). The terminator
+     * is not included, since it may be abbreviated or omitted if the symbol is full.
+     */
     private void getBinaryLength() {
-        int i;
+
         qrMode currentMode = qrMode.NULL;
         int blockLength;
 
-        /* Always include a terminator */
-        for (i = 0; i < 4; i++) {
-            binaryCount[i] = 0;
-        }
+        Arrays.fill(binaryCount, 0);
 
-        for (i = 0; i < content.length(); i++) {
+        for (int i = 0; i < content.length(); i++) {
             if(currentMode != inputMode[i]) {
 
                 blockLength = 0;
@@ -675,22 +670,9 @@ public class MicroQrCode extends Symbol {
                 currentMode = inputMode[i];
             }
         }
-
-        /* Add terminator */
-        if (binaryCount[1] < 37) {
-            binaryCount[1] += 5;
-        }
-
-        if (binaryCount[2] < 81) {
-            binaryCount[2] += 7;
-        }
-
-        if (binaryCount[3] < 125) {
-            binaryCount[3] += 9;
-        }
     }
 
-    private void generateBinary(int version) {
+    private void generateBinary(int version, EccMode ecc_level) {
         int position = 0;
         int blockLength, i;
         qrMode data_block;
@@ -883,31 +865,31 @@ public class MicroQrCode extends Symbol {
             position += blockLength;
         }
 
-        /* Add terminator */
-        switch(version) {
-            case 0:
-                if (binary.length() < 18) {
-                    binary.append("000");
-                }
-                break;
-            case 1:
-                if (binary.length() < 37) {
-                    binary.append("00000");
-                }
-                break;
-            case 2:
-                if (binary.length() < 81) {
-                    binary.append("0000000");
-                }
-                break;
-            case 3:
-                if (binary.length() < 125) {
-                    binary.append("000000000");
-                }
-                break;
+        /* Add terminator (may be omitted or abbreviated if the symbol is full or nearly full). */
+        int dataBits = dataBits(version, ecc_level);
+        int usedBits = binary.length();
+        int unusedBits = dataBits - usedBits;
+        int terminatorMaxBits = 3 + (2 * version);
+        int terminatorBits = Math.min(terminatorMaxBits, unusedBits);
+        for (i = 0; i < terminatorBits; i++) {
+            binary.append('0');
         }
 
         infoLine();
+    }
+
+    /** Returns the number of data bits available in the specified version at the specified ECC level. */
+    private static int dataBits(int version, EccMode ecc_level) {
+        switch (version) {
+            case 0:
+                return 20;
+            case 1:
+                return ecc_level == EccMode.M ? 32 : 40;
+            case 2:
+                return ecc_level == EccMode.M ? 68 : 84;
+            default:
+                return ecc_level == EccMode.Q ? 80 : (ecc_level == EccMode.M ? 112 : 128);
+        }
     }
 
     private void generateM1Symbol() {

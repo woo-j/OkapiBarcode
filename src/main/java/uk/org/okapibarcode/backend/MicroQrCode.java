@@ -154,7 +154,7 @@ public class MicroQrCode extends Symbol {
         boolean[] version_valid = new boolean[4];
         int n_count, a_count;
         EccMode ecc_level;
-        int version, autoversion;
+        int version;
         int bitmask;
         int format, format_full;
         boolean byteModeUsed;
@@ -234,87 +234,45 @@ public class MicroQrCode extends Symbol {
             version_valid[1] = false;
         }
 
-        /* Eliminate possible versions depending on length of binary data */
-        if (binaryCount[0] > 20) {
-            version_valid[0] = false;
+        /* Eliminate possible versions depending on length of binary data and ECC level specified */
+        ecc_level = preferredEccLevel;
+        for (i = 0; i < 4; i++) {
+            if (binaryCount[i] > dataBits(i, ecc_level)) {
+                version_valid[i] = false;
+            }
         }
-        if (binaryCount[1] > 40) {
-            version_valid[1] = false;
-        }
-        if (binaryCount[2] > 84) {
-            version_valid[2] = false;
-        }
-        if (binaryCount[3] > 128) {
+        if (!version_valid[3]) {
             throw OkapiInputException.inputTooLong();
         }
 
-        /* Eliminate possible versions depending on error correction level specified */
-        ecc_level = preferredEccLevel;
-
-        if (ecc_level == EccMode.Q) {
-            version_valid[0] = false;
-            version_valid[1] = false;
-            version_valid[2] = false;
-            if (binaryCount[3] > 80) {
-                throw OkapiInputException.inputTooLong();
-            }
-        }
-
-        if (ecc_level == EccMode.M) {
-            version_valid[0] = false;
-            if (binaryCount[1] > 32) {
-                version_valid[1] = false;
-            }
-            if (binaryCount[2] > 68) {
-                version_valid[2] = false;
-            }
-            if (binaryCount[3] > 112) {
-                throw OkapiInputException.inputTooLong();
-            }
-        }
-
-        autoversion = 3;
+        /* Get best (smallest) calculated version */
+        version = 3;
         if (version_valid[2]) {
-            autoversion = 2;
+            version = 2;
         }
         if (version_valid[1]) {
-            autoversion = 1;
+            version = 1;
         }
         if (version_valid[0]) {
-            autoversion = 0;
+            version = 0;
         }
 
-        version = autoversion;
         /* Get version from user */
-        if(preferredVersion >= 1 && preferredVersion <= 4) {
-            if(preferredVersion - 1 >= autoversion) {
+        if (preferredVersion >= 1 && preferredVersion <= 4) {
+            if (preferredVersion - 1 >= version) {
                 version = preferredVersion - 1;
             }
         }
 
         /* If there is enough unused space then increase the error correction level */
-        if (version == 3) {
-            if (binaryCount[3] <= 112) {
-                ecc_level = EccMode.M;
-            }
-            if (binaryCount[3] <= 80) {
-                ecc_level = EccMode.Q;
-            }
-        }
-
-        if (version == 2 && binaryCount[2] <= 68) {
-            ecc_level = EccMode.M;
-        }
-
-        if (version == 1 && binaryCount[1] <= 32) {
+        if (version == 3 && binaryCount[version] <= dataBits(version, EccMode.Q)) {
+            ecc_level = EccMode.Q;
+        } else if (version > 0 && binaryCount[version] <= dataBits(version, EccMode.M)) {
             ecc_level = EccMode.M;
         }
 
         binary = new StringBuilder();
         generateBinary(version, ecc_level);
-        if (binary.length() > 128) {
-            throw OkapiInputException.inputTooLong();
-        }
 
         switch (version) {
         case 0:
@@ -899,8 +857,8 @@ public class MicroQrCode extends Symbol {
         int[] data_blocks = new int[4];
         int[] ecc_blocks = new int[3];
 
-        bits_total = 20;
         latch = 0;
+        bits_total = dataBits(0, null);
 
         /* Manage last (4-bit) block */
         bits_left = bits_total - binary.length();
@@ -1006,10 +964,7 @@ public class MicroQrCode extends Symbol {
         int[] data_blocks = new int[6];
         int[] ecc_blocks = new int[7];
 
-        bits_total = 40; // ecc_mode == EccMode.L
-        if (ecc_mode == EccMode.M) {
-            bits_total = 32;
-        }
+        bits_total = dataBits(1, ecc_mode);
 
         /* Complete current byte */
         remainder = 8 - (binary.length() % 8);
@@ -1092,11 +1047,7 @@ public class MicroQrCode extends Symbol {
         int[] ecc_blocks = new int[12];
 
         latch = 0;
-
-        bits_total = 84; // ecc_mode == EccMode.L
-        if (ecc_mode == EccMode.M) {
-            bits_total = 68;
-        }
+        bits_total = dataBits(2, ecc_mode);
 
         /* Manage last (4-bit) block */
         bits_left = bits_total - binary.length();
@@ -1226,13 +1177,7 @@ public class MicroQrCode extends Symbol {
         int[] data_blocks = new int[17];
         int[] ecc_blocks = new int[15];
 
-        bits_total = 128; // ecc_mode == EccMode.L
-        if (ecc_mode == EccMode.M) {
-            bits_total = 112;
-        }
-        if (ecc_mode == EccMode.Q) {
-            bits_total = 80;
-        }
+        bits_total = dataBits(3, ecc_mode);
 
         /* Complete current byte */
         remainder = 8 - (binary.length() % 8);

@@ -224,11 +224,9 @@ public class MicroQrCode extends Symbol {
             version_valid[0] = false;
             version_valid[1] = false;
         }
-
         if (alphanumModeUsed) {
             version_valid[0] = false;
         }
-
         if (kanjiModeUsed) {
             version_valid[0] = false;
             version_valid[1] = false;
@@ -244,6 +242,14 @@ public class MicroQrCode extends Symbol {
         if (!version_valid[3]) {
             throw OkapiInputException.inputTooLong();
         }
+        if (ecc_level == EccMode.M) {
+            version_valid[0] = false;
+        }
+        if (ecc_level == EccMode.Q) {
+            version_valid[0] = false;
+            version_valid[1] = false;
+            version_valid[2] = false;
+        }
 
         /* Get best (smallest) calculated version */
         version = 3;
@@ -257,9 +263,9 @@ public class MicroQrCode extends Symbol {
             version = 0;
         }
 
-        /* Get version from user */
+        /* Increase size if user explicitly requested a larger size */
         if (preferredVersion >= 1 && preferredVersion <= 4) {
-            if (preferredVersion - 1 >= version) {
+            if (preferredVersion - 1 > version) {
                 version = preferredVersion - 1;
             }
         }

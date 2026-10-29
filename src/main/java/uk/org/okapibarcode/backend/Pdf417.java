@@ -701,6 +701,14 @@ public class Pdf417 extends Symbol {
      * @param structuredAppendFileName the file name for the series that this symbol is part of
      */
     public void setStructuredAppendFileName(String structuredAppendFileName) {
+        if (structuredAppendFileName != null && !structuredAppendFileName.matches("[\\x20-\\x7E]*")) {
+            // In theory the file name optional macro field starts in text compaction mode, but
+            // allows ECIs and also allows switching to other compaction modes; however, none of
+            // the encoders or decoders out there seem to support anything other than basic text
+            // compaction of the file name, which means that in practice only the printable ASCII
+            // characters can be used reliably.
+            throw new IllegalArgumentException("Invalid PDF417 structured append file name: " + structuredAppendFileName);
+        }
         this.structuredAppendFileName = structuredAppendFileName;
     }
 

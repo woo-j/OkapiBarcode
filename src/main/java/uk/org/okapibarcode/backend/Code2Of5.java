@@ -425,7 +425,7 @@ public class Code2Of5 extends Symbol {
         resetPlotElements();
 
         int baseY;
-        if (humanReadableLocation == TOP) {
+        if (humanReadableLocation == TOP && !readable.isEmpty()) {
             baseY = getTheoreticalHumanReadableHeight();
         } else {
             baseY = 0;

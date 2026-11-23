@@ -98,11 +98,10 @@ public class Code16k extends Symbol {
         int indexchaine, pads_needed;
         char[] set, fset;
         Mode mode;
-        char last_set, current_set;
+        char current_set;
         int i, j, k, m, read;
         int[] values;
         int bar_characters;
-        double glyph_count;
         int first_sum, second_sum;
         int input_length;
         int c_count;
@@ -119,7 +118,7 @@ public class Code16k extends Symbol {
         fset = new char[160]; // space = not extended, f = shift to extended, n = shift from extended, F = latch to extended
         values = new int[160];
 
-        if (input_length > 157) {
+        if (input_length > 154) {
             throw OkapiInputException.inputTooLong();
         }
 
@@ -275,66 +274,6 @@ public class Code16k extends Symbol {
             }
         }
 
-        /* Make sure the data will fit in the symbol */
-        last_set = ' ';
-        glyph_count = 0.0;
-        for (i = 0; i < input_length; i++) {
-            if ((set[i] == 'a' || set[i] == 'b') && toUpperCase(set[i]) != last_set) {
-                glyph_count = glyph_count + 1.0;
-            }
-            if (fset[i] == 'f' || fset[i] == 'n') {
-                glyph_count = glyph_count + 1.0;
-            }
-            if (set[i] == 'A' || set[i] == 'B' || set[i] == 'C') {
-                if (set[i] != last_set) {
-                    last_set = set[i];
-                    glyph_count = glyph_count + 1.0;
-                }
-            }
-            if (i == 0) {
-                if (set[i] == 'B' && set[1] == 'C') {
-                    glyph_count = glyph_count - 1.0;
-                }
-                if (set[i] == 'B' && set[1] == 'B' && set[2] == 'C') {
-                    glyph_count = glyph_count - 1.0;
-                }
-                if (fset[i] == 'F') {
-                    glyph_count = glyph_count + 2.0;
-                }
-            } else {
-                if (fset[i] == 'F' && fset[i - 1] != 'F') {
-                    glyph_count = glyph_count + 2.0;
-                }
-                if (fset[i] != 'F' && fset[i - 1] == 'F') {
-                    glyph_count = glyph_count + 2.0;
-                }
-            }
-            if (set[i] == 'C' && inputData[i] != FNC1) {
-                glyph_count = glyph_count + 0.5;
-            } else {
-                glyph_count = glyph_count + 1.0;
-            }
-        }
-        if (inputDataType == DataType.GS1 && set[0] != 'A') {
-            /* FNC1 can be integrated with mode character */
-            glyph_count--;
-        }
-        if (glyph_count > 77.0) {
-            throw OkapiInputException.inputTooLong();
-        }
-
-        /* Calculate how tall the symbol will be */
-        glyph_count = glyph_count + 2.0;
-        i = (int) glyph_count;
-        rows_needed = (i / 5);
-        if (i % 5 > 0) {
-            rows_needed++;
-        }
-
-        if (rows_needed == 1) {
-            rows_needed = 2;
-        }
-
         /* Start with the mode character - Table 2 */
         m = 0;
         switch (set[0]) {
@@ -350,10 +289,12 @@ public class Code16k extends Symbol {
         }
 
         if (readerInit) {
-            if (m == 2) { m = 5; }
-            if (set[0] == 'B' && set[1] == 'C') { m = 6; }
-            values[bar_characters++] = (7 * (rows_needed - 2)) + m; /* see 4.3.4.2 */
-            values[bar_characters++] = 96; /* FNC3 */
+            if (m == 2) {
+                m = 5;
+            }
+            if (set[0] == 'B' && set[1] == 'C') {
+                m = 6;
+            }
         } else if (inputDataType == DataType.GS1) {
             if (set[0] == 'B') {
                 m = 3; // implicit FNC1
@@ -367,7 +308,11 @@ public class Code16k extends Symbol {
                 m = 6;
             }
         }
-        values[bar_characters++] = (7 * (rows_needed - 2)) + m; /* see 4.3.4.2 */
+
+        values[bar_characters++] = 0; // save space for mode codeword, value added later
+        if (readerInit) {
+            values[bar_characters++] = 96; /* FNC3 */
+        }
 
         read = 0;
         current_set = set[read];
@@ -452,18 +397,27 @@ public class Code16k extends Symbol {
                 read++;
             }
 
+            if (bar_characters > 78) { // includes data and initial mode codeword, but not 2 EC codewords
+                throw OkapiInputException.inputTooLong();
+            }
+
         } while (read < input_length);
 
-        pads_needed = 5 - ((bar_characters + 2) % 5);
+        /* Pad the data */
+        pads_needed = 5 - ((bar_characters + 2) % 5); /* 5 codewords per row */
         if (pads_needed == 5) {
             pads_needed = 0;
         }
-        if ((bar_characters + pads_needed) < 8) {
+        if (bar_characters + pads_needed < 8) { /* 2 rows minimum */
             pads_needed += 8 - (bar_characters + pads_needed);
         }
         for (i = 0; i < pads_needed; i++) {
             values[bar_characters++] = 103; /* PAD */
         }
+
+        /* Set the initial mode codeword value - Table 2 */
+        rows_needed = (bar_characters + 2) / 5;
+        values[0] = (7 * (rows_needed - 2)) + m; /* see 4.3.4.2 */
 
         /* Calculate check digits */
         first_sum = 0;

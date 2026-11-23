@@ -472,7 +472,7 @@ public class Code16k extends Symbol {
             pads_needed += 8 - (bar_characters + pads_needed);
         }
         for (i = 0; i < pads_needed; i++) {
-            values[bar_characters++] = 106;
+            values[bar_characters++] = 103; /* PAD */
         }
 
         /* Calculate check digits */

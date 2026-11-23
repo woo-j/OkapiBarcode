@@ -16,6 +16,8 @@
 
 package uk.org.okapibarcode.backend;
 
+import static java.lang.Character.toUpperCase;
+
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -190,7 +192,7 @@ public class Code16k extends Symbol {
             block_count++;
         } while (indexchaine < input_length);
 
-        reduceSubsetChanges(block_count);
+        reduceSubsetChanges();
 
         /* Put set data into set[] */
         read = 0;
@@ -277,7 +279,7 @@ public class Code16k extends Symbol {
         last_set = ' ';
         glyph_count = 0.0;
         for (i = 0; i < input_length; i++) {
-            if (set[i] == 'a' || set[i] == 'b') {
+            if ((set[i] == 'a' || set[i] == 'b') && toUpperCase(set[i]) != last_set) {
                 glyph_count = glyph_count + 1.0;
             }
             if (fset[i] == 'f' || fset[i] == 'n') {
@@ -367,7 +369,8 @@ public class Code16k extends Symbol {
         }
         values[bar_characters++] = (7 * (rows_needed - 2)) + m; /* see 4.3.4.2 */
 
-        current_set = set[0];
+        read = 0;
+        current_set = set[read];
         boolean extended = false; // extended ASCII mode or ISO/IEC 646 mode
         if (fset[0] == 'F') {
             values[bar_characters++] = fnc4(current_set); /* FNC4 */
@@ -375,26 +378,24 @@ public class Code16k extends Symbol {
             extended = true;
         }
 
-        read = 0;
-
         /* Encode the data */
         do {
 
-            if ((read != 0) && (set[read] != set[read - 1])) { /* Latch different code set */
+            if (set[read] != current_set) { /* Latch different code set */
                 switch (set[read]) {
                 case 'A':
-                    values[bar_characters++] = 101; /* FNC4 */
+                    values[bar_characters++] = 101; /* LATCH A */
                     current_set = 'A';
                     break;
                 case 'B':
-                    values[bar_characters++] = 100; /* FNC4 */
+                    values[bar_characters++] = 100; /* LATCH B */
                     current_set = 'B';
                     break;
                 case 'C':
                     if (!((read == 1) && (set[0] == 'B'))) { /* Not Mode C/Shift B */
                         if (!((read == 2) && ((set[0] == 'B') && (set[1] == 'B')))) {
                             /* Not Mode C/Double Shift B */
-                            values[bar_characters++] = 99;
+                            values[bar_characters++] = 99; /* LATCH C */
                         }
                     }
                     current_set = 'C';
@@ -422,7 +423,7 @@ public class Code16k extends Symbol {
                 values[bar_characters++] = fnc4(current_set); /* FNC4 */
             }
 
-            if (set[read] == 'a' || set[read] == 'b') {
+            if ((set[read] == 'a' || set[read] == 'b') && toUpperCase(set[read]) != current_set) {
                 values[bar_characters++] = 98; /* SHIFT */
             }
 
@@ -560,18 +561,21 @@ public class Code16k extends Symbol {
         }
     }
 
-    private void reduceSubsetChanges(int block_count) { /* Implements rules from ISO 15417 Annex E */
-        int i, length;
-        Mode current, last, next;
+    /* Implements rules from ISO 15417 Annex E */
+    private void reduceSubsetChanges() {
+        for (int i = 0; i < block_count; i++) {
 
-        for (i = 0; i < block_count; i++) {
-            current = block_mode[i];
-            length = block_length[i];
+            int length = block_length[i];
+            Mode current = block_mode[i];
+
+            Mode last;
             if (i != 0) {
                 last = block_mode[i - 1];
             } else {
                 last = Mode.NULL;
             }
+
+            Mode next;
             if (i != block_count - 1) {
                 next = block_mode[i + 1];
             } else {
@@ -579,7 +583,7 @@ public class Code16k extends Symbol {
             }
 
             if (i == 0) { /* first block */
-                if ((block_count == 1) && ((length == 2) && (current == Mode.ABORC))) { /* Rule 1a */
+                if (block_count == 1 && length == 2 && current == Mode.ABORC) { /* Rule 1a */
                     block_mode[i] = Mode.LATCHC;
                 }
                 if (current == Mode.ABORC) {
@@ -593,7 +597,7 @@ public class Code16k extends Symbol {
                 if (current == Mode.SHIFTA) { /* Rule 1c */
                     block_mode[i] = Mode.LATCHA;
                 }
-                if ((current == Mode.AORB) && (next == Mode.SHIFTA)) { /* Rule 1c */
+                if (current == Mode.AORB && next == Mode.SHIFTA) { /* Rule 1c */
                     block_mode[i] = Mode.LATCHA;
                     current = Mode.LATCHA;
                 }
@@ -601,7 +605,7 @@ public class Code16k extends Symbol {
                     block_mode[i] = Mode.LATCHB;
                 }
             } else {
-                if ((current == Mode.ABORC) && (length >= 4)) { /* Rule 3 */
+                if (current == Mode.ABORC && length >= 4) { /* Rule 3 */
                     block_mode[i] = Mode.LATCHC;
                     current = Mode.LATCHC;
                 }
@@ -609,19 +613,19 @@ public class Code16k extends Symbol {
                     block_mode[i] = Mode.AORB;
                     current = Mode.AORB;
                 }
-                if ((current == Mode.AORB) && (last == Mode.LATCHA)) {
+                if (current == Mode.AORB && last == Mode.LATCHA) {
                     block_mode[i] = Mode.LATCHA;
                     current = Mode.LATCHA;
                 }
-                if ((current == Mode.AORB) && (last == Mode.LATCHB)) {
+                if (current == Mode.AORB && last == Mode.LATCHB) {
                     block_mode[i] = Mode.LATCHB;
                     current = Mode.LATCHB;
                 }
-                if ((current == Mode.AORB) && (next == Mode.SHIFTA)) {
+                if (current == Mode.AORB && next == Mode.SHIFTA) {
                     block_mode[i] = Mode.LATCHA;
                     current = Mode.LATCHA;
                 }
-                if ((current == Mode.AORB) && (next == Mode.SHIFTB)) {
+                if (current == Mode.AORB && next == Mode.SHIFTB) {
                     block_mode[i] = Mode.LATCHB;
                     current = Mode.LATCHB;
                 }
@@ -629,37 +633,37 @@ public class Code16k extends Symbol {
                     block_mode[i] = Mode.LATCHB;
                     current = Mode.LATCHB;
                 }
-                if ((current == Mode.SHIFTA) && (length > 1)) { /* Rule 4 */
+                if (current == Mode.SHIFTA && length > 1) { /* Rule 4 */
                     block_mode[i] = Mode.LATCHA;
                     current = Mode.LATCHA;
                 }
-                if ((current == Mode.SHIFTB) && (length > 1)) { /* Rule 5 */
+                if (current == Mode.SHIFTB && length > 1) { /* Rule 5 */
                     block_mode[i] = Mode.LATCHB;
                     current = Mode.LATCHB;
                 }
-                if ((current == Mode.SHIFTA) && (last == Mode.LATCHA)) {
+                if (current == Mode.SHIFTA && last == Mode.LATCHA) {
                     block_mode[i] = Mode.LATCHA;
                     current = Mode.LATCHA;
                 }
-                if ((current == Mode.SHIFTB) && (last == Mode.LATCHB)) {
+                if (current == Mode.SHIFTB && last == Mode.LATCHB) {
                     block_mode[i] = Mode.LATCHB;
                     current = Mode.LATCHB;
                 }
-                if ((current == Mode.SHIFTA) && (last == Mode.LATCHC)) {
+                if (current == Mode.SHIFTA && last == Mode.LATCHC) {
                     block_mode[i] = Mode.LATCHA;
                     current = Mode.LATCHA;
                 }
-                if ((current == Mode.SHIFTB) && (last == Mode.LATCHC)) {
+                if (current == Mode.SHIFTB && last == Mode.LATCHC) {
                     block_mode[i] = Mode.LATCHB;
                     current = Mode.LATCHB;
                 }
             } /* Rule 2 is implemented elsewhere, Rule 6 is implied */
         }
-        combineSubsetBlocks(block_count);
 
+        combineSubsetBlocks();
     }
 
-    private void combineSubsetBlocks(int block_count) {
+    private void combineSubsetBlocks() {
         /* bring together same type blocks */
         if (block_count > 1) {
             int i = 1;
@@ -674,7 +678,7 @@ public class Code16k extends Symbol {
                         block_mode[j - 1] = block_mode[j];
                         j++;
                     }
-                    block_count = block_count - 1;
+                    block_count--;
                     i--;
                 }
                 i++;

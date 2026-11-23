@@ -114,7 +114,7 @@ public class Code16k extends Symbol {
 
         bar_characters = 0;
         set = new char[160]; // a = shift a, A = latch a, b = shift b, B = latch b, C = latch c
-        fset = new char[160]; // space = not extended, f = shift to extended, F = latch to extended
+        fset = new char[160]; // space = not extended, f = shift to extended, n = shift from extended, F = latch to extended
         values = new int[160];
 
         if (input_length > 157) {
@@ -352,24 +352,17 @@ public class Code16k extends Symbol {
             if (set[0] == 'B' && set[1] == 'C') { m = 6; }
             values[bar_characters++] = (7 * (rows_needed - 2)) + m; /* see 4.3.4.2 */
             values[bar_characters++] = 96; /* FNC3 */
+        } else if (inputDataType == DataType.GS1) {
+            if (set[0] == 'B') {
+                m = 3; // implicit FNC1
+            } else if (set[0] == 'C') {
+                m = 4; // implicit FNC1
+            }
         } else {
-            if (inputDataType == DataType.GS1) {
-                /* Integrate FNC1 */
-                switch (set[0]) {
-                case 'B':
-                    m = 3;
-                    break;
-                case 'C':
-                    m = 4;
-                    break;
-                }
-            } else {
-                if (set[0] == 'B' && set[1] == 'C') {
-                    m = 5;
-                }
-                if (set[0] == 'B' && set[1] == 'B' && set[2] == 'C') {
-                    m = 6;
-                }
+            if (set[0] == 'B' && set[1] == 'C') {
+                m = 5;
+            } else if (set[0] == 'B' && set[1] == 'B' && set[2] == 'C') {
+                m = 6;
             }
         }
         values[bar_characters++] = (7 * (rows_needed - 2)) + m; /* see 4.3.4.2 */

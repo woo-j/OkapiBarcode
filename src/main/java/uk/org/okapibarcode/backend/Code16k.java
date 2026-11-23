@@ -113,8 +113,8 @@ public class Code16k extends Symbol {
         input_length = inputData.length;
 
         bar_characters = 0;
-        set = new char[160];
-        fset = new char[160];
+        set = new char[160]; // a = shift a, A = latch a, b = shift b, B = latch b, C = latch c
+        fset = new char[160]; // space = not extended, f = shift to extended, F = latch to extended
         values = new int[160];
 
         if (input_length > 157) {
@@ -225,7 +225,6 @@ public class Code16k extends Symbol {
                 i++;
             } while (set[i] == 'a');
         }
-
         if (set[0] == 'b') {
             i = 0;
             do {
@@ -269,7 +268,7 @@ public class Code16k extends Symbol {
             }
         }
         for (i = 1; i < read - 1; i++) {
-            if ((set[i] == 'C') && ((set[i - 1] == 'B') && (set[i + 1] == 'B'))) {
+            if (set[i] == 'C' && set[i - 1] == 'B' && set[i + 1] == 'B') {
                 set[i] = 'B';
             }
         }
@@ -278,49 +277,46 @@ public class Code16k extends Symbol {
         last_set = ' ';
         glyph_count = 0.0;
         for (i = 0; i < input_length; i++) {
-            if ((set[i] == 'a') || (set[i] == 'b')) {
+            if (set[i] == 'a' || set[i] == 'b') {
                 glyph_count = glyph_count + 1.0;
             }
-            if ((fset[i] == 'f') || (fset[i] == 'n')) {
+            if (fset[i] == 'f' || fset[i] == 'n') {
                 glyph_count = glyph_count + 1.0;
             }
-            if (((set[i] == 'A') || (set[i] == 'B')) || (set[i] == 'C')) {
+            if (set[i] == 'A' || set[i] == 'B' || set[i] == 'C') {
                 if (set[i] != last_set) {
                     last_set = set[i];
                     glyph_count = glyph_count + 1.0;
                 }
             }
             if (i == 0) {
-                if ((set[i] == 'B') && (set[1] == 'C')) {
+                if (set[i] == 'B' && set[1] == 'C') {
                     glyph_count = glyph_count - 1.0;
                 }
-                if ((set[i] == 'B') && (set[1] == 'B') && set[2] == 'C') {
+                if (set[i] == 'B' && set[1] == 'B' && set[2] == 'C') {
                     glyph_count = glyph_count - 1.0;
                 }
                 if (fset[i] == 'F') {
                     glyph_count = glyph_count + 2.0;
                 }
             } else {
-                if ((fset[i] == 'F') && (fset[i - 1] != 'F')) {
+                if (fset[i] == 'F' && fset[i - 1] != 'F') {
                     glyph_count = glyph_count + 2.0;
                 }
-                if ((fset[i] != 'F') && (fset[i - 1] == 'F')) {
+                if (fset[i] != 'F' && fset[i - 1] == 'F') {
                     glyph_count = glyph_count + 2.0;
                 }
             }
-
-            if ((set[i] == 'C') && (inputData[i] != FNC1)) {
+            if (set[i] == 'C' && inputData[i] != FNC1) {
                 glyph_count = glyph_count + 0.5;
             } else {
                 glyph_count = glyph_count + 1.0;
             }
         }
-
-        if ((inputDataType == DataType.GS1) && (set[0] != 'A')) {
+        if (inputDataType == DataType.GS1 && set[0] != 'A') {
             /* FNC1 can be integrated with mode character */
             glyph_count--;
         }
-
         if (glyph_count > 77.0) {
             throw OkapiInputException.inputTooLong();
         }
@@ -337,7 +333,7 @@ public class Code16k extends Symbol {
             rows_needed = 2;
         }
 
-        /* start with the mode character - Table 2 */
+        /* Start with the mode character - Table 2 */
         m = 0;
         switch (set[0]) {
         case 'A':
@@ -351,9 +347,9 @@ public class Code16k extends Symbol {
             break;
         }
 
-        if(readerInit) {
-            if(m == 2) { m = 5; }
-            if((set[0] == 'B') && (set[1] == 'C')) { m = 6; }
+        if (readerInit) {
+            if (m == 2) { m = 5; }
+            if (set[0] == 'B' && set[1] == 'C') { m = 6; }
             values[bar_characters++] = (7 * (rows_needed - 2)) + m; /* see 4.3.4.2 */
             values[bar_characters++] = 96; /* FNC3 */
         } else {
@@ -368,10 +364,10 @@ public class Code16k extends Symbol {
                     break;
                 }
             } else {
-                if ((set[0] == 'B') && (set[1] == 'C')) {
+                if (set[0] == 'B' && set[1] == 'C') {
                     m = 5;
                 }
-                if (((set[0] == 'B') && (set[1] == 'B')) && (set[2] == 'C')) {
+                if (set[0] == 'B' && set[1] == 'B' && set[2] == 'C') {
                     m = 6;
                 }
             }

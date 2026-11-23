@@ -104,7 +104,6 @@ public class Code16k extends Symbol {
         int first_sum, second_sum;
         int input_length;
         int c_count;
-        boolean f_state;
 
         if (!content.matches("[\u0000-\u00FF]+")) {
             throw OkapiInputException.invalidCharactersInInput();
@@ -192,7 +191,6 @@ public class Code16k extends Symbol {
         } while (indexchaine < input_length);
 
         reduceSubsetChanges(block_count);
-
 
         /* Put set data into set[] */
         read = 0;
@@ -356,9 +354,8 @@ public class Code16k extends Symbol {
         if(readerInit) {
             if(m == 2) { m = 5; }
             if((set[0] == 'B') && (set[1] == 'C')) { m = 6; }
-            values[bar_characters] = (7 * (rows_needed - 2)) + m; /* see 4.3.4.2 */
-            values[bar_characters + 1] = 96; /* FNC3 */
-            bar_characters += 2;
+            values[bar_characters++] = (7 * (rows_needed - 2)) + m; /* see 4.3.4.2 */
+            values[bar_characters++] = 96; /* FNC3 */
         } else {
             if (inputDataType == DataType.GS1) {
                 /* Integrate FNC1 */
@@ -379,25 +376,14 @@ public class Code16k extends Symbol {
                 }
             }
         }
-        values[bar_characters] = (7 * (rows_needed - 2)) + m; /* see 4.3.4.2 */
-        bar_characters++;
+        values[bar_characters++] = (7 * (rows_needed - 2)) + m; /* see 4.3.4.2 */
 
         current_set = set[0];
-        f_state = false;
-        /* f_state remembers if we are in Extended ASCII mode (value 1) or in ISO/IEC 646 mode (value 0) */
+        boolean extended = false; // extended ASCII mode or ISO/IEC 646 mode
         if (fset[0] == 'F') {
-            switch (current_set) {
-            case 'A':
-                values[bar_characters] = 101;
-                values[bar_characters + 1] = 101;
-                break;
-            case 'B':
-                values[bar_characters] = 100;
-                values[bar_characters + 1] = 100;
-                break;
-            }
-            bar_characters += 2;
-            f_state = true;
+            values[bar_characters++] = fnc4(current_set); /* FNC4 */
+            values[bar_characters++] = fnc4(current_set); /* FNC4 */
+            extended = true;
         }
 
         read = 0;
@@ -408,77 +394,47 @@ public class Code16k extends Symbol {
             if ((read != 0) && (set[read] != set[read - 1])) { /* Latch different code set */
                 switch (set[read]) {
                 case 'A':
-                    values[bar_characters] = 101;
-                    bar_characters++;
+                    values[bar_characters++] = 101; /* FNC4 */
                     current_set = 'A';
                     break;
                 case 'B':
-                    values[bar_characters] = 100;
-                    bar_characters++;
+                    values[bar_characters++] = 100; /* FNC4 */
                     current_set = 'B';
                     break;
                 case 'C':
                     if (!((read == 1) && (set[0] == 'B'))) { /* Not Mode C/Shift B */
                         if (!((read == 2) && ((set[0] == 'B') && (set[1] == 'B')))) {
                             /* Not Mode C/Double Shift B */
-                            values[bar_characters] = 99;
-                            bar_characters++;
+                            values[bar_characters++] = 99;
                         }
                     }
                     current_set = 'C';
                     break;
                 }
             }
+
             if (read != 0) {
-                if ((fset[read] == 'F') && !f_state) {
+                if (fset[read] == 'F' && !extended) {
                     /* Latch beginning of extended mode */
-                    switch (current_set) {
-                    case 'A':
-                        values[bar_characters] = 101;
-                        values[bar_characters + 1] = 101;
-                        break;
-                    case 'B':
-                        values[bar_characters] = 100;
-                        values[bar_characters + 1] = 100;
-                        break;
-                    }
-                    bar_characters += 2;
-                    f_state = true;
+                    values[bar_characters++] = fnc4(current_set); /* FNC4 */
+                    values[bar_characters++] = fnc4(current_set); /* FNC4 */
+                    extended = true;
                 }
-                if ((fset[read] == ' ') && f_state) {
+                if (fset[read] == ' ' && extended) {
                     /* Latch end of extended mode */
-                    switch (current_set) {
-                    case 'A':
-                        values[bar_characters] = 101;
-                        values[bar_characters + 1] = 101;
-                        break;
-                    case 'B':
-                        values[bar_characters] = 100;
-                        values[bar_characters + 1] = 100;
-                        break;
-                    }
-                    bar_characters += 2;
-                    f_state = false;
+                    values[bar_characters++] = fnc4(current_set); /* FNC4 */
+                    values[bar_characters++] = fnc4(current_set); /* FNC4 */
+                    extended = false;
                 }
             }
 
-            if ((fset[i] == 'f') || (fset[i] == 'n')) {
+            if (fset[i] == 'f' || fset[i] == 'n') {
                 /* Shift extended mode */
-                switch (current_set) {
-                case 'A':
-                    values[bar_characters] = 101; /* FNC 4 */
-                    break;
-                case 'B':
-                    values[bar_characters] = 100; /* FNC 4 */
-                    break;
-                }
-                bar_characters++;
+                values[bar_characters++] = fnc4(current_set); /* FNC4 */
             }
 
-            if ((set[i] == 'a') || (set[i] == 'b')) {
-                /* Insert shift character */
-                values[bar_characters] = 98;
-                bar_characters++;
+            if (set[i] == 'a' || set[i] == 'b') {
+                values[bar_characters++] = 98; /* SHIFT */
             }
 
             if (inputData[read] != FNC1) {
@@ -502,8 +458,7 @@ public class Code16k extends Symbol {
                     break;
                 }
             } else {
-                values[bar_characters] = 102;
-                bar_characters++;
+                values[bar_characters++] = 102; /* FNC1 */
                 read++;
             }
 
@@ -517,8 +472,7 @@ public class Code16k extends Symbol {
             pads_needed += 8 - (bar_characters + pads_needed);
         }
         for (i = 0; i < pads_needed; i++) {
-            values[bar_characters] = 106;
-            bar_characters++;
+            values[bar_characters++] = 106;
         }
 
         /* Calculate check digits */
@@ -531,9 +485,8 @@ public class Code16k extends Symbol {
         first_check = first_sum % 107;
         second_sum += first_check * (bar_characters + 1);
         second_check = second_sum % 107;
-        values[bar_characters] = first_check;
-        values[bar_characters + 1] = second_check;
-        bar_characters += 2;
+        values[bar_characters++] = first_check;
+        values[bar_characters++] = second_check;
 
         readable = "";
         pattern = new String[rows_needed];
@@ -560,7 +513,18 @@ public class Code16k extends Symbol {
         infoLine();
     }
 
-    private void getValueSubsetA(int source, int[] values, int bar_chars) {
+    private static int fnc4(char codeSet) {
+        switch (codeSet) {
+            case 'A':
+                return 101;
+            case 'B':
+                return 100;
+            default:
+                throw new OkapiInternalException("FNC4 is not available in code set " + codeSet);
+        }
+    }
+
+    private static void getValueSubsetA(int source, int[] values, int bar_chars) {
         if (source > 127) {
             if (source < 160) {
                 values[bar_chars] = source + 64 - 128;
@@ -576,7 +540,7 @@ public class Code16k extends Symbol {
         }
     }
 
-    private void getValueSubsetB(int source, int[] values, int bar_chars) {
+    private static void getValueSubsetB(int source, int[] values, int bar_chars) {
         if (source > 127) {
             values[bar_chars] = source - 32 - 128;
         } else {
@@ -584,33 +548,27 @@ public class Code16k extends Symbol {
         }
     }
 
-    private void getValueSubsetC(int source_a, int source_b, int[] values, int bar_chars) {
-        int weight;
-
-        weight = (10 * Character.getNumericValue(source_a)) + Character.getNumericValue(source_b);
+    private static void getValueSubsetC(int source_a, int source_b, int[] values, int bar_chars) {
+        int weight = (10 * Character.getNumericValue(source_a)) + Character.getNumericValue(source_b);
         values[bar_chars] = weight;
     }
 
-    private Mode findSubset(int letter) {
-        Mode mode;
-
+    private static Mode findSubset(int letter) {
         if (letter <= 31) {
-            mode = Mode.SHIFTA;
+            return Mode.SHIFTA;
         } else if ((letter >= 48) && (letter <= 57)) {
-            mode = Mode.ABORC;
+            return Mode.ABORC;
         } else if (letter <= 95) {
-            mode = Mode.AORB;
+            return Mode.AORB;
         } else if (letter <= 127) {
-            mode = Mode.SHIFTB;
+            return Mode.SHIFTB;
         } else if (letter <= 159) {
-            mode = Mode.SHIFTA;
+            return Mode.SHIFTA;
         } else if (letter <= 223) {
-            mode = Mode.AORB;
+            return Mode.AORB;
         } else {
-            mode = Mode.SHIFTB;
+            return Mode.SHIFTB;
         }
-
-        return mode;
     }
 
     private void reduceSubsetChanges(int block_count) { /* Implements rules from ISO 15417 Annex E */
@@ -706,25 +664,22 @@ public class Code16k extends Symbol {
                     block_mode[i] = Mode.LATCHB;
                     current = Mode.LATCHB;
                 }
-            } /* Rule 2 is implimented elsewhere, Rule 6 is implied */
+            } /* Rule 2 is implemented elsewhere, Rule 6 is implied */
         }
         combineSubsetBlocks(block_count);
 
     }
 
     private void combineSubsetBlocks(int block_count) {
-        int i, j;
-
         /* bring together same type blocks */
         if (block_count > 1) {
-            i = 1;
+            int i = 1;
             while (i < block_count) {
                 if (block_mode[i - 1] == block_mode[i]) {
                     /* bring together */
                     block_length[i - 1] = block_length[i - 1] + block_length[i];
-                    j = i + 1;
-
-                    /* decreace the list */
+                    int j = i + 1;
+                    /* decrease the list */
                     while (j < block_count) {
                         block_length[j - 1] = block_length[j];
                         block_mode[j - 1] = block_mode[j];

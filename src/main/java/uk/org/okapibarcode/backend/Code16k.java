@@ -417,12 +417,12 @@ public class Code16k extends Symbol {
                 }
             }
 
-            if (fset[i] == 'f' || fset[i] == 'n') {
+            if (fset[read] == 'f' || fset[read] == 'n') {
                 /* Shift extended mode */
                 values[bar_characters++] = fnc4(current_set); /* FNC4 */
             }
 
-            if (set[i] == 'a' || set[i] == 'b') {
+            if (set[read] == 'a' || set[read] == 'b') {
                 values[bar_characters++] = 98; /* SHIFT */
             }
 

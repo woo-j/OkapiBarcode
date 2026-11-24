@@ -138,7 +138,7 @@ public class Code16k extends Symbol {
                 do {
                     j++;
                 } while (fset[i + j] == 'f');
-                if ((j >= 5) || ((j >= 3) && ((i + j) == (input_length - 1)))) {
+                if (j >= 5 || (j >= 3 && i + j >= input_length - 1)) {
                     for (k = 0; k < j; k++) {
                         fset[i + k] = 'F';
                     }
@@ -147,17 +147,17 @@ public class Code16k extends Symbol {
         }
 
         /* Decide if it is worth reverting to 646 encodation for a few characters */
-        if (input_length > 1) {
-            for (i = 1; i < input_length; i++) {
-                if ((fset[i - 1] == 'F') && (fset[i] == ' ')) {
-                    /* Detected a change from 8859-1 to 646 - count how long for */
-                    for (j = 0;
-                    (fset[i + j] == ' ') && ((i + j) < input_length); j++);
-                    if ((j < 5) || ((j < 3) && ((i + j) == (input_length - 1)))) {
-                        /* Change to shifting back rather than latching back */
-                        for (k = 0; k < j; k++) {
-                            fset[i + k] = 'n';
-                        }
+        for (i = 1; i < input_length; i++) {
+            if (fset[i - 1] == 'F' && fset[i] == ' ') {
+                /* Detected a change from 8859-1 to 646 - count how long for */
+                j = 0;
+                while (fset[i + j] == ' ' && i + j < input_length) {
+                    j++;
+                }
+                if (j < 3 || (j < 5 && i + j != input_length)) {
+                    /* Change to shifting back rather than latching back */
+                    for (k = 0; k < j; k++) {
+                        fset[i + k] = 'n';
                     }
                 }
             }
@@ -555,10 +555,12 @@ public class Code16k extends Symbol {
             if (i == 0) { /* first block */
                 if (block_count == 1 && length == 2 && current == Mode.ABORC) { /* Rule 1a */
                     block_mode[i] = Mode.LATCHC;
+                    current = Mode.LATCHC;
                 }
                 if (current == Mode.ABORC) {
                     if (length >= 4) { /* Rule 1b */
                         block_mode[i] = Mode.LATCHC;
+                        current = Mode.LATCHC;
                     } else {
                         block_mode[i] = Mode.AORB;
                         current = Mode.AORB;
@@ -566,6 +568,7 @@ public class Code16k extends Symbol {
                 }
                 if (current == Mode.SHIFTA) { /* Rule 1c */
                     block_mode[i] = Mode.LATCHA;
+                    current = Mode.LATCHA;
                 }
                 if (current == Mode.AORB && next == Mode.SHIFTA) { /* Rule 1c */
                     block_mode[i] = Mode.LATCHA;
@@ -573,6 +576,7 @@ public class Code16k extends Symbol {
                 }
                 if (current == Mode.AORB) { /* Rule 1d */
                     block_mode[i] = Mode.LATCHB;
+                    current = Mode.LATCHB;
                 }
             } else {
                 if (current == Mode.ABORC && length >= 4) { /* Rule 3 */

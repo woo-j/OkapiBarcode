@@ -348,6 +348,13 @@ public class Code16k extends Symbol {
                     current_set = 'B';
                     break;
                 case 'C':
+                    if (extended) {
+                        /* Latch end of extended mode */
+                        /* This means slightly larger symbols, but is safest for decoder compatibility */
+                        values[bar_characters++] = fnc4(current_set); /* FNC4 */
+                        values[bar_characters++] = fnc4(current_set); /* FNC4 */
+                        extended = false;
+                    }
                     if (read != implicitLatchCAt) {
                         values[bar_characters++] = 99; /* LATCH C */
                     }

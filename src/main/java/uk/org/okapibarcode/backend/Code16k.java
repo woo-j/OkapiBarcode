@@ -213,6 +213,8 @@ public class Code16k extends Symbol {
                 case LATCHC:
                     set[read] = 'C';
                     break;
+                default:
+                    throw new OkapiInternalException("Unexpected block mode: " + block_mode[i]);
                 }
                 read++;
             }

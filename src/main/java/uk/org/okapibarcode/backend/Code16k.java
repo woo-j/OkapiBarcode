@@ -115,7 +115,7 @@ public class Code16k extends Symbol {
 
         bar_characters = 0;
         set = new char[160]; // a = shift a, A = latch a, b = shift b, B = latch b, C = latch c
-        fset = new char[160]; // space = not extended, f = shift to extended, n = shift from extended, F = latch to extended
+        fset = new char[160]; // f = shift to extended, n = shift from extended, F = latch to extended, space = latch from extended
         values = new int[160];
 
         if (input_length > 154) {
@@ -139,7 +139,7 @@ public class Code16k extends Symbol {
                     j++;
                 } while (fset[i + j] == 'f');
                 if ((j >= 5) || ((j >= 3) && ((i + j) == (input_length - 1)))) {
-                    for (k = 0; k <= j; k++) {
+                    for (k = 0; k < j; k++) {
                         fset[i + k] = 'F';
                     }
                 }
@@ -170,7 +170,7 @@ public class Code16k extends Symbol {
         mode = findSubset(inputData[indexchaine]);
         if (inputData[indexchaine] == FNC1) {
             mode = Mode.ABORC;
-        } /* FNC1 */
+        }
 
         for (i = 0; i < 160; i++) {
             block_length[i] = 0;
@@ -290,10 +290,10 @@ public class Code16k extends Symbol {
 
         if (readerInit) {
             if (m == 2) {
-                m = 5;
+                m = 5; // start C, but with an initial Shift B (for the reader init FNC3)
             }
             if (set[0] == 'B' && set[1] == 'C') {
-                m = 6;
+                m = 6; // start C, but with an initial Double Shift B
             }
         } else if (inputDataType == DataType.GS1) {
             if (set[0] == 'B') {
@@ -303,9 +303,9 @@ public class Code16k extends Symbol {
             }
         } else {
             if (set[0] == 'B' && set[1] == 'C') {
-                m = 5;
+                m = 5; // start C, but with an initial Shift B
             } else if (set[0] == 'B' && set[1] == 'B' && set[2] == 'C') {
-                m = 6;
+                m = 6; // start C, but with an initial Double Shift B
             }
         }
 
@@ -337,11 +337,8 @@ public class Code16k extends Symbol {
                     current_set = 'B';
                     break;
                 case 'C':
-                    if (!((read == 1) && (set[0] == 'B'))) { /* Not Mode C/Shift B */
-                        if (!((read == 2) && ((set[0] == 'B') && (set[1] == 'B')))) {
-                            /* Not Mode C/Double Shift B */
-                            values[bar_characters++] = 99; /* LATCH C */
-                        }
+                    if ((read != 1 || m != 5) && (read != 2 || m != 6)) {
+                        values[bar_characters++] = 99; /* LATCH C */
                     }
                     current_set = 'C';
                     break;
@@ -363,8 +360,8 @@ public class Code16k extends Symbol {
                 }
             }
 
-            if (fset[read] == 'f' || fset[read] == 'n') {
-                /* Shift extended mode */
+            if (set[read] != 'C' && inputData[read] != FNC1 && ((inputData[read] >= 128) != extended)) {
+                /* Shift to / from extended mode */
                 values[bar_characters++] = fnc4(current_set); /* FNC4 */
             }
 
@@ -437,6 +434,7 @@ public class Code16k extends Symbol {
         rowHeight = new int[rows_needed];
         rowCount = rows_needed;
 
+        infoLine("Initial Mode: ", m);
         infoLine("Symbol Rows: ", rows_needed);
         infoLine("First Check Digit: ", first_check);
         infoLine("Second Check Digit: ", second_check);

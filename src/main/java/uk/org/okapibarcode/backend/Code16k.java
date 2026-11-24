@@ -350,7 +350,7 @@ public class Code16k extends Symbol {
                 case 'C':
                     if (extended) {
                         /* Latch end of extended mode */
-                        /* This means slightly larger symbols, but is safest for decoder compatibility */
+                        /* This means slightly larger symbols in some cases, but is safest for decoder compatibility */
                         values[bar_characters++] = fnc4(current_set); /* FNC4 */
                         values[bar_characters++] = fnc4(current_set); /* FNC4 */
                         extended = false;

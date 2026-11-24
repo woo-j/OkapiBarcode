@@ -99,7 +99,7 @@ public class Code16k extends Symbol {
         char[] set, fset;
         Mode mode;
         char current_set;
-        int i, j, k, m, read;
+        int i, j, k, read;
         int[] values;
         int bar_characters;
         int first_sum, second_sum;
@@ -275,25 +275,29 @@ public class Code16k extends Symbol {
         }
 
         /* Start with the mode character - Table 2 */
-        m = 0;
+        int implicitLatchCAt = -1;
+        int m;
         switch (set[0]) {
-        case 'A':
-            m = 0;
-            break;
-        case 'B':
-            m = 1;
-            break;
-        case 'C':
-            m = 2;
-            break;
+            case 'A':
+                m = 0;
+                break;
+            case 'B':
+                m = 1;
+                break;
+            case 'C':
+                m = 2;
+                break;
+            default:
+                throw new OkapiInternalException("Unrecognized code set: " + set[0]);
         }
 
         if (readerInit) {
             if (m == 2) {
                 m = 5; // start C, but with an initial Shift B (for the reader init FNC3)
             }
-            if (set[0] == 'B' && set[1] == 'C') {
-                m = 6; // start C, but with an initial Double Shift B
+            if (set[0] == 'B' && set[1] == 'C' && fset[0] == ' ') {
+                m = 6; // start C, but with an initial Double Shift B (one of them for the reader init FNC3)
+                implicitLatchCAt = 1;
             }
         } else if (inputDataType == DataType.GS1) {
             if (set[0] == 'B') {
@@ -303,9 +307,16 @@ public class Code16k extends Symbol {
             }
         } else {
             if (set[0] == 'B' && set[1] == 'C') {
-                m = 5; // start C, but with an initial Shift B
-            } else if (set[0] == 'B' && set[1] == 'B' && set[2] == 'C') {
+                if (fset[0] == ' ') {
+                    m = 5; // start C, but with an initial Shift B
+                    implicitLatchCAt = 1;
+                } else if (fset[0] == 'f') {
+                    m = 6; // start C, but with an initial Double Shift B (FNC4 + data, since data is extended ASCII)
+                    implicitLatchCAt = 1;
+                }
+            } else if (set[0] == 'B' && set[1] == 'B' && set[2] == 'C' && fset[0] == ' ' && fset[1] == ' ') {
                 m = 6; // start C, but with an initial Double Shift B
+                implicitLatchCAt = 2;
             }
         }
 
@@ -337,7 +348,7 @@ public class Code16k extends Symbol {
                     current_set = 'B';
                     break;
                 case 'C':
-                    if ((read != 1 || m != 5) && (read != 2 || m != 6)) {
+                    if (read != implicitLatchCAt) {
                         values[bar_characters++] = 99; /* LATCH C */
                     }
                     current_set = 'C';

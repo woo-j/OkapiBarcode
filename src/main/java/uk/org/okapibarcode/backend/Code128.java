@@ -159,8 +159,7 @@ public class Code128 extends Symbol {
         int i, j, k;
         int input_point = 0;
         Mode mode, last_mode;
-        Mode last_set, current_set;
-        double glyph_count;
+        Mode current_set;
         int bar_characters = 0, total_sum = 0;
         FMode f_state = FMode.LATCHN;
         Mode[] mode_type = new Mode[200];
@@ -308,48 +307,6 @@ public class Code128 extends Symbol {
                     }
                 }
             }
-        }
-
-        /* Now we can calculate how long the barcode is going to be - and stop it from being too long */
-        last_set = Mode.NULL;
-        glyph_count = 0.0;
-        for (i = 0; i < sourcelen; i++) {
-            if ((set[i] == Mode.SHIFTA) || (set[i] == Mode.SHIFTB)) {
-                glyph_count += 1.0;
-            }
-            if ((fset[i] == FMode.SHIFTF) || (fset[i] == FMode.SHIFTN)) {
-                glyph_count += 1.0;
-            }
-            if (((set[i] == Mode.LATCHA) || (set[i] == Mode.LATCHB)) || (set[i] == Mode.LATCHC)) {
-                if (set[i] != last_set) {
-                    last_set = set[i];
-                    glyph_count += 1.0;
-                }
-            }
-            if (i == 0) {
-                if (fset[i] == FMode.LATCHF) {
-                    glyph_count += 2.0;
-                }
-            } else {
-                if ((fset[i] == FMode.LATCHF) && (fset[i - 1] != FMode.LATCHF)) {
-                    glyph_count += 2.0;
-                }
-                if ((fset[i] != FMode.LATCHF) && (fset[i - 1] == FMode.LATCHF)) {
-                    glyph_count += 2.0;
-                }
-            }
-            if (set[i] == Mode.LATCHC) {
-                if (inputData[i] == FNC1) {
-                    glyph_count += 1.0;
-                } else {
-                    glyph_count += 0.5;
-                }
-            } else {
-                glyph_count += 1.0;
-            }
-        }
-        if (glyph_count > 80.0) {
-            throw OkapiInputException.inputTooLong();
         }
 
         info("Encoding: ");
@@ -594,6 +551,9 @@ public class Code128 extends Symbol {
                     break;
             }
 
+            if (bar_characters > 80) {
+                throw OkapiInputException.inputTooLong();
+            }
         }
 
         infoLine();
@@ -769,7 +729,7 @@ public class Code128 extends Symbol {
         return mode;
     }
 
-    private int length(int letter, Mode mode) {
+    private static int length(int letter, Mode mode) {
         if (letter == FNC1 && mode == Mode.ABORC) {
             /* ISO 15417 Annex E Note 2 */
             /* Logical length used for making subset switching decisions, not actual length */
@@ -922,7 +882,7 @@ public class Code128 extends Symbol {
     }
 
     /** Modifies the specified mode and length arrays to combine adjacent modes of the same type, returning the updated index point. */
-    private int combineSubsetBlocks(Mode[] mode_type, int[] mode_length, int index_point) {
+    private static int combineSubsetBlocks(Mode[] mode_type, int[] mode_length, int index_point) {
         /* bring together same type blocks */
         if (index_point > 1) {
             for (int i = 1; i < index_point; i++) {

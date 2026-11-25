@@ -162,8 +162,6 @@ public class Code128 extends Symbol {
         Mode current_set;
         int bar_characters = 0, total_sum = 0;
         FMode f_state = FMode.LATCHN;
-        Mode[] mode_type = new Mode[200];
-        int[] mode_length = new int[200];
         int[] values = new int[200];
         int c;
         int linkage_flag = 0;
@@ -181,6 +179,8 @@ public class Code128 extends Symbol {
         }
 
         /* Decide on mode using same system as PDF417 and rules of ISO 15417 Annex E */
+        Mode[] mode_type = new Mode[sourcelen];
+        int[] mode_length = new int[sourcelen];
         if (sourcelen > 0) {
             int letter = inputData[input_point];
             int numbers = (letter >= '0' && letter <= '9' ? 1 : 0);
@@ -209,7 +209,7 @@ public class Code128 extends Symbol {
         }
 
         /* Put set data into set[] (the calculated mode for each character) */
-        Mode[] set = new Mode[200];
+        Mode[] set = new Mode[sourcelen + 1];
         read = 0;
         if (sourcelen > 0) {
             for (i = 0; i < index_point; i++) {
@@ -258,7 +258,7 @@ public class Code128 extends Symbol {
         }
 
         /* Detect extended ASCII characters */
-        FMode[] fset = new FMode[200];
+        FMode[] fset = new FMode[sourcelen + 1];
         for (i = 0; i < sourcelen; i++) {
             int ch = inputData[i];
             if (ch >= 128 && ch != FNC1 && ch != FNC2 && ch != FNC3 && ch != FNC4) {
@@ -743,6 +743,7 @@ public class Code128 extends Symbol {
     private int reduceSubsetChanges(Mode[] mode_type, int[] mode_length, int index_point) {
 
         int totalLength = 0;
+        int nextShiftIndex = -1;
         int length;
         Mode current, last, next, nextShift;
 
@@ -762,13 +763,17 @@ public class Code128 extends Symbol {
 
             /* The next shift mode is the location of the next fully-known code set. */
             /* Everything between here and there will be either A/B/C or A/B. */
-            nextShift = Mode.NULL;
-            for (int j = i + 1; j < index_point; j++) {
-                if (mode_type[j] == Mode.SHIFTA || mode_type[j] == Mode.SHIFTB || mode_type[j] == Mode.SHIFTC) {
-                    nextShift = mode_type[j];
-                    break;
+            /* We keep track of the next shift location, so we only need to search again when we move past it. */
+            if (nextShiftIndex <= i) {
+                nextShiftIndex = index_point;
+                for (int j = i + 1; j < index_point; j++) {
+                    if (mode_type[j] == Mode.SHIFTA || mode_type[j] == Mode.SHIFTB || mode_type[j] == Mode.SHIFTC) {
+                        nextShiftIndex = j;
+                        break;
+                    }
                 }
             }
+            nextShift = (nextShiftIndex < index_point ? mode_type[nextShiftIndex] : Mode.NULL);
 
             /* ISO 15417 Annex E Note 2 */
             /* Calculate difference between logical length and actual length in this block */
@@ -883,23 +888,20 @@ public class Code128 extends Symbol {
 
     /** Modifies the specified mode and length arrays to combine adjacent modes of the same type, returning the updated index point. */
     private static int combineSubsetBlocks(Mode[] mode_type, int[] mode_length, int index_point) {
-        /* bring together same type blocks */
-        if (index_point > 1) {
-            for (int i = 1; i < index_point; i++) {
-                if (mode_type[i - 1] == mode_type[i]) {
-                    /* bring together */
-                    mode_length[i - 1] = mode_length[i - 1] + mode_length[i];
-                    /* decrease the list */
-                    for (int j = i + 1; j < index_point; j++) {
-                        mode_length[j - 1] = mode_length[j];
-                        mode_type[j - 1] = mode_type[j];
-                    }
-                    index_point--;
-                    i--;
-                }
+        if (index_point <= 1) {
+            return index_point;
+        }
+        int w = 0; // w = write index
+        for (int r = 1; r < index_point; r++) { // r = read index
+            if (mode_type[w] == mode_type[r]) { // combine
+                mode_length[w] += mode_length[r];
+            } else { // start next
+                w++;
+                mode_type[w] = mode_type[r];
+                mode_length[w] = mode_length[r];
             }
         }
-        return index_point;
+        return w + 1;
     }
 
     /** {@inheritDoc} */

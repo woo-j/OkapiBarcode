@@ -16,6 +16,8 @@
 
 package uk.org.okapibarcode.backend;
 
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
+import static java.nio.charset.StandardCharsets.US_ASCII;
 import static uk.org.okapibarcode.backend.HumanReadableLocation.BOTTOM;
 import static uk.org.okapibarcode.backend.HumanReadableLocation.NONE;
 import static uk.org.okapibarcode.backend.HumanReadableLocation.TOP;
@@ -813,6 +815,18 @@ public abstract class Symbol {
 
     protected static int[] toBytes(String s, Charset charset, int... suffix) {
 
+        if (ISO_8859_1.equals(charset)) {
+            // performance optimization: no encoder instantiation, no FNC string
+            // byte conversion, no input string byte conversion
+            return toBytesAsciiOrLatin1(s, 0xFF, suffix);
+        }
+
+        if (US_ASCII.equals(charset)) {
+            // performance optimization: no encoder instantiation, no FNC string
+            // byte conversion, no input string byte conversion
+            return toBytesAsciiOrLatin1(s, 0x7F, suffix);
+        }
+
         if (!charset.newEncoder().canEncode(s)) {
             return null;
         }
@@ -832,25 +846,69 @@ public abstract class Symbol {
                 i += fnc1.length - 1;
             } else if (containsAt(bytes, fnc2, i)) {
                 data[j] = FNC2;
-                i += fnc1.length - 1;
+                i += fnc2.length - 1;
             } else if (containsAt(bytes, fnc3, i)) {
                 data[j] = FNC3;
-                i += fnc1.length - 1;
+                i += fnc3.length - 1;
             } else if (containsAt(bytes, fnc4, i)) {
                 data[j] = FNC4;
-                i += fnc1.length - 1;
+                i += fnc4.length - 1;
             } else {
                 data[j] = bytes[i] & 0xff;
             }
         }
 
-        int k = 0;
-        for (; k < suffix.length; k++) {
-            data[j + k] = suffix[k];
+        System.arraycopy(suffix, 0, data, j, suffix.length);
+        j += suffix.length;
+
+        if (j < i) {
+            data = Arrays.copyOf(data, j);
         }
 
-        if (j + k < i) {
-            data = Arrays.copyOf(data, j + k);
+        return data;
+    }
+
+    /**
+     * This is a faster version of {@link #toBytes(String, Charset, int...)} for ASCII and ISO-8859-1.
+     */
+    private static int[] toBytesAsciiOrLatin1(String s, int max, int... suffix) {
+
+        int len = s.length();
+        int[] data = new int[len + suffix.length];
+
+        int i = 0, j = 0;
+        for (; i < len; i++, j++) {
+            char c = s.charAt(i);
+            if (c > max) {
+                return null;
+            }
+            if (c == '\\') {
+                if (s.startsWith(FNC1_STRING, i)) {
+                    data[j] = FNC1;
+                    i += FNC1_STRING.length() - 1;
+                    continue;
+                } else if (s.startsWith(FNC2_STRING, i)) {
+                    data[j] = FNC2;
+                    i += FNC2_STRING.length() - 1;
+                    continue;
+                } else if (s.startsWith(FNC3_STRING, i)) {
+                    data[j] = FNC3;
+                    i += FNC3_STRING.length() - 1;
+                    continue;
+                } else if (s.startsWith(FNC4_STRING, i)) {
+                    data[j] = FNC4;
+                    i += FNC4_STRING.length() - 1;
+                    continue;
+                }
+            }
+            data[j] = c;
+        }
+
+        System.arraycopy(suffix, 0, data, j, suffix.length);
+        j += suffix.length;
+
+        if (j < i) {
+            data = Arrays.copyOf(data, j);
         }
 
         return data;

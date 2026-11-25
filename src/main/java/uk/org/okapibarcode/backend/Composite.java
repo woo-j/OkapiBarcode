@@ -24,7 +24,6 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import uk.org.okapibarcode.backend.DataBar14.Mode;
 import uk.org.okapibarcode.backend.DataBarExpanded.EncodeMode;
@@ -644,8 +643,8 @@ public class Composite extends Symbol {
     @Override
     protected void encode() {
 
-        List< Rectangle > combine_rect = new ArrayList<>();
-        List< TextBox > combine_txt = new ArrayList<>();
+        ArrayList< Rectangle > combine_rect = new ArrayList<>();
+        ArrayList< TextBox > combine_txt = new ArrayList<>();
         int top_shift = 0; // 2D component x-coordinate shift
         int bottom_shift = 0; // linear component x-coordinate shift
         linearWidth = 0;

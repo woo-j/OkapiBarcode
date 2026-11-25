@@ -113,10 +113,10 @@ public abstract class Symbol {
     protected int symbolHeight = 0;
     protected int symbolWidth = 0;
     protected StringBuilder encodeInfo = new StringBuilder();
-    protected List< TextBox > texts = new ArrayList<>();        // note positions do not account for quiet zones (handled in renderers)
-    protected List< Hexagon > hexagons = new ArrayList<>();     // note positions do not account for quiet zones (handled in renderers)
-    protected List< Circle > target = new ArrayList<>();        // note positions do not account for quiet zones (handled in renderers)
-    protected List< Rectangle > rectangles = new ArrayList<>(); // note positions do not account for quiet zones (handled in renderers)
+    protected ArrayList< TextBox > texts = new ArrayList<>();        // note positions do not account for quiet zones (handled in renderers)
+    protected ArrayList< Hexagon > hexagons = new ArrayList<>();     // note positions do not account for quiet zones (handled in renderers)
+    protected ArrayList< Circle > target = new ArrayList<>();        // note positions do not account for quiet zones (handled in renderers)
+    protected ArrayList< Rectangle > rectangles = new ArrayList<>(); // note positions do not account for quiet zones (handled in renderers)
     protected Map< Double, Rectangle > prevRectangles = new HashMap<>(); // x-position -> last seen rectangle at that position (optimization)
 
     /**
@@ -969,6 +969,7 @@ public abstract class Symbol {
     }
 
     protected void resetPlotElements() {
+
         symbolHeight = 0;
         symbolWidth = 0;
         texts.clear();
@@ -976,6 +977,14 @@ public abstract class Symbol {
         target.clear();
         rectangles.clear();
         prevRectangles.clear();
+
+        // performance optimization: avoid resizing the rectangle list repeatedly by
+        // pre-calculating its maximum size and pre-allocating the necessary space once
+        int maxRectangles = 0;
+        for (int i = 0; i < rowCount; i++) {
+            maxRectangles += (pattern[i].length() + 1) / 2;
+        }
+        rectangles.ensureCapacity(maxRectangles);
     }
 
     /**

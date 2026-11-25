@@ -132,7 +132,7 @@ public class RoyalMail4State extends Symbol {
                     h = 2;
                     break;
             }
-            addRectangle(new Rectangle(x, y, w, h));
+            addRectangle(x, y, w, h);
             x += 2;
         }
 

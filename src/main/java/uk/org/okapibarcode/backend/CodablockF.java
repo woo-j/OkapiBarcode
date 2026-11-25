@@ -844,7 +844,7 @@ public class CodablockF extends Symbol {
                 w = (c - '0') * moduleWidth;
                 if (black) {
                     if (w != 0 && h != 0) {
-                        addRectangle(new Rectangle(x, y, w, h));
+                        addRectangle(x, y, w, h);
                     }
                     if ((x + w) > symbolWidth) {
                         symbolWidth = x + w;
@@ -868,8 +868,8 @@ public class CodablockF extends Symbol {
         }
 
         /* Add top and bottom binding bars */
-        addRectangle(new Rectangle(0, 0, symbolWidth, 2)); // top
-        addRectangle(new Rectangle(0, y - 1, symbolWidth, 2)); // bottom
+        addRectangle(0, 0, symbolWidth, 2); // top
+        addRectangle(0, y - 1, symbolWidth, 2); // bottom
         symbolHeight = (rows * defaultHeight) + 2; // one extra line above, one below
     }
 }

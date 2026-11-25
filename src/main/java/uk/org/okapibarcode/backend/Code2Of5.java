@@ -446,7 +446,7 @@ public class Code2Of5 extends Symbol {
             double w = getModuleWidth(c - '0') * moduleWidth;
             if (black) {
                 if (w != 0 && h != 0) {
-                    addRectangle(new Rectangle(x + offset, y, w, h));
+                    addRectangle(x + offset, y, w, h);
                 }
                 symbolWidth = (int) Math.ceil(x + w + (2 * offset));
             }
@@ -457,15 +457,11 @@ public class Code2Of5 extends Symbol {
         symbolHeight = h;
 
         if (mode == ToFMode.ITF14) {
-            // Add bounding box
-            Rectangle topBar = new Rectangle(0, baseY, symbolWidth, 4);
-            Rectangle bottomBar = new Rectangle(0, baseY + symbolHeight - 4, symbolWidth, 4);
-            Rectangle leftBar = new Rectangle(0, baseY, 4, symbolHeight);
-            Rectangle rightBar = new Rectangle(symbolWidth - 4, baseY, 4, symbolHeight);
-            addRectangle(topBar);
-            addRectangle(bottomBar);
-            addRectangle(leftBar);
-            addRectangle(rightBar);
+            // Add bounding box (top, bottom, left, right)
+            addRectangle(0, baseY, symbolWidth, 4);
+            addRectangle(0, baseY + symbolHeight - 4, symbolWidth, 4);
+            addRectangle(0, baseY, 4, symbolHeight);
+            addRectangle(symbolWidth - 4, baseY, 4, symbolHeight);
         }
 
         if (humanReadableLocation != NONE && !readable.isEmpty()) {

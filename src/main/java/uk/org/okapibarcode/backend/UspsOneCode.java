@@ -581,7 +581,7 @@ public class UspsOneCode extends Symbol {
                 break;
             }
 
-            addRectangle(new Rectangle(x, y, w, h));
+            addRectangle(x, y, w, h);
             x += dx;
         }
 

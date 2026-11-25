@@ -93,7 +93,7 @@ public class UspsPackage extends Symbol {
         for (int xBlock = 0; xBlock < pattern[0].length(); xBlock++) {
             int w = pattern[0].charAt(xBlock) - '0';
             if (black) {
-                addRectangle(new Rectangle(x + offset, y, w, h));
+                addRectangle(x + offset, y, w, h);
                 symbolWidth = x + w + (2 * offset);
             }
             black = !black;
@@ -101,11 +101,9 @@ public class UspsPackage extends Symbol {
         }
         symbolHeight = h + (2 * yoffset);
 
-        // add boundary bars
-        Rectangle topBar = new Rectangle(0, 0, symbolWidth, 2);
-        Rectangle bottomBar = new Rectangle(0, symbolHeight - 2, symbolWidth, 2);
-        addRectangle(topBar);
-        addRectangle(bottomBar);
+        // add top and bottom boundary bars
+        addRectangle(0, 0, symbolWidth, 2);
+        addRectangle(0, symbolHeight - 2, symbolWidth, 2);
 
         // add banner and human-readable text
         texts.add(new TextBox(0, 12.0, symbolWidth, "USPS TRACKING #", humanReadableAlignment));

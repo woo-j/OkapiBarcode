@@ -111,7 +111,7 @@ public class KixCode extends Symbol {
                 default:
                     throw new OkapiInternalException("Unknown pattern character: " + c);
             }
-            addRectangle(new Rectangle(x, y, w, h));
+            addRectangle(x, y, w, h);
             x += 2;
         }
         symbolWidth = ((pattern[0].length() - 1) * 2) + 1; // final bar doesn't need extra whitespace

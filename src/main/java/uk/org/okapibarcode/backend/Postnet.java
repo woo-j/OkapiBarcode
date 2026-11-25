@@ -174,7 +174,7 @@ public class Postnet extends Symbol {
                 y = baseY + defaultHeight - shortHeight;
                 h = shortHeight;
             }
-            addRectangle(new Rectangle(x, y, w, h));
+            addRectangle(x, y, w, h);
             x += dx;
         }
 

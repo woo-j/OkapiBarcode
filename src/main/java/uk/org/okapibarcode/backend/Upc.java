@@ -360,15 +360,15 @@ public class Upc extends Symbol {
         /* Add top separator for composite symbology, if necessary */
         if (linkageFlag) {
             if (mode == Mode.UPCA) {
-                addRectangle(new Rectangle(scale(0),  0, scale(1), 2));
-                addRectangle(new Rectangle(scale(94), 0, scale(1), 2));
-                addRectangle(new Rectangle(scale(-1), 2, scale(1), 2));
-                addRectangle(new Rectangle(scale(95), 2, scale(1), 2));
+                addRectangle(scale(0),  0, scale(1), 2);
+                addRectangle(scale(94), 0, scale(1), 2);
+                addRectangle(scale(-1), 2, scale(1), 2);
+                addRectangle(scale(95), 2, scale(1), 2);
             } else { // UPCE
-                addRectangle(new Rectangle(scale(0),  0, scale(1), 2));
-                addRectangle(new Rectangle(scale(50), 0, scale(1), 2));
-                addRectangle(new Rectangle(scale(-1), 2, scale(1), 2));
-                addRectangle(new Rectangle(scale(51), 2, scale(1), 2));
+                addRectangle(scale(0),  0, scale(1), 2);
+                addRectangle(scale(50), 0, scale(1), 2);
+                addRectangle(scale(-1), 2, scale(1), 2);
+                addRectangle(scale(51), 2, scale(1), 2);
             }
         }
 
@@ -398,10 +398,13 @@ public class Upc extends Symbol {
                         y -= 2;
                     }
                 }
-                Rectangle rect = new Rectangle(scale(x), y + compositeOffset + hrtOffset, scale(w), h);
-                addRectangle(rect);
-                symbolWidth = Math.max(symbolWidth, (int) (rect.x + rect.width));
-                symbolHeight = Math.max(symbolHeight, (int) (rect.y + rect.height - hrtOffset));
+                double rectX = scale(x);
+                double rectY = y + compositeOffset + hrtOffset;
+                double rectW = scale(w);
+                double rectH = h;
+                addRectangle(rectX, rectY, rectW, rectH);
+                symbolWidth = Math.max(symbolWidth, (int) (rectX + rectW));
+                symbolHeight = Math.max(symbolHeight, (int) (rectY + rectH - hrtOffset));
             }
 
             black = !black;
@@ -443,7 +446,7 @@ public class Upc extends Symbol {
                 texts.add(new TextBox(baseX + t.x, baseY + t.y, t.width, t.text, t.alignment));
             }
             for (Rectangle r : addOn.getRectangles()) {
-                addRectangle(new Rectangle(baseX + r.x, baseY + r.y, r.width, r.height));
+                addRectangle(baseX + r.x, baseY + r.y, r.width, r.height);
             }
             symbolWidth += scale(gap) + addOn.symbolWidth;
             pattern[0] = pattern[0] + gap + addOn.pattern[0];

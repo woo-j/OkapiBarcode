@@ -501,10 +501,41 @@ public abstract class Symbol {
     /**
      * <p>Adds the specified rectangle to this symbol. If the specified rectangle cleanly
      * extends another rectangle immediately above it, the rectangles are instead merged,
-     * so as to minimize the number of rectangles which must be drawn.
+     * so as to minimize the number of rectangles which must be instantiated and drawn.
      *
      * <p>IMPORTANT: Rectangle merging requires that rectangles be added in order, from
      * top to bottom.
+     *
+     * @param x the X position of the rectangle's left boundary
+     * @param y the Y position of the rectangle's top boundary
+     * @param w the width of the rectangle
+     * @param h the height of the rectangle
+     */
+    protected void addRectangle(double x, double y, double w, double h) {
+
+        // if this is a 1D linear barcode, exit early (nothing to merge vertically)
+        if (rowCount == 1) {
+            rectangles.add(new Rectangle(x, y, w, h));
+            return;
+        }
+
+        // if this is a 2D barcode, try to merge rectangles
+        Rectangle prev = prevRectangles.get(x);
+        if (prev != null &&
+            roughlyEqual(prev.width, w) &&
+            roughlyEqual(prev.y + prev.height, y)) {
+            prev.height += h;
+        } else {
+            Rectangle rect = new Rectangle(x, y, w, h);
+            rectangles.add(rect);
+            prevRectangles.put(rect.x, rect);
+        }
+    }
+
+    /**
+     * Variant of {@link #addRectangle(double, double, double, double)} which accepts
+     * a rectangle directly. This method should only be used when the caller cannot
+     * avoid eager rectangle creation.
      *
      * @param rect the rectangle to add
      */
@@ -942,7 +973,7 @@ public abstract class Symbol {
                 w = getModuleWidth(c - '0') * moduleWidth;
                 if (black) {
                     if (w != 0 && h != 0) {
-                        addRectangle(new Rectangle(x, y, w, h));
+                        addRectangle(x, y, w, h);
                     }
                     if (x + w > symbolWidth) {
                         symbolWidth = (int) Math.ceil(x + w);

@@ -49,12 +49,12 @@ public class Code128 extends Symbol {
         NULL, SHIFTA, LATCHA, SHIFTB, LATCHB, SHIFTC, LATCHC, AORB, ABORC
     }
 
-    /** The available extended ASCII modes. Code 128 can be moved into and out of extended ASCII mode using FNC4.*/
+    /** The available extended ASCII modes. Code 128 can be moved into and out of extended ASCII mode using FNC4. */
     private enum FMode {
         SHIFTN, LATCHN, SHIFTF, LATCHF
     }
 
-    /* The composite modes, used when Code 128 is used as part of a composite symbology. */
+    /** The composite modes, used when Code 128 is used as part of a composite symbology. */
     private enum Composite {
         OFF, CCA, CCB, CCC
     }

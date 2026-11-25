@@ -46,7 +46,7 @@ import uk.org.okapibarcode.util.EciMode;
 import uk.org.okapibarcode.util.Gs1;
 
 /**
- * Generic barcode symbology class.
+ * Generic barcode symbology base class.
  *
  * @author <a href="mailto:rstuart114@gmail.com">Robin Stuart</a>
  */

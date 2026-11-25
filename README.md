@@ -13,6 +13,10 @@ been invested in that project.
 
 ### Supported Symbologies
 
+<table>
+<tr>
+<td valign="top" width="50%">
+
 * [Australia Post](src/main/java/uk/org/okapibarcode/backend/AustraliaPost.java) variants:
   * Standard Customer
   * Reply Paid
@@ -48,6 +52,10 @@ been invested in that project.
   * EAN-13
   * EAN-8
 * [Grid Matrix](src/main/java/uk/org/okapibarcode/backend/GridMatrix.java)
+
+</td>
+<td valign="top" width="50%">
+
 * [GS1 Composite](src/main/java/uk/org/okapibarcode/backend/Composite.java)
 * [GS1 DataBar](src/main/java/uk/org/okapibarcode/backend/DataBar14.java) variants:
   * GS1 DataBar
@@ -82,6 +90,10 @@ been invested in that project.
   * UPC-E
 * [UPN QR](src/main/java/uk/org/okapibarcode/backend/UpnQr.java)
 * [USPS OneCode](src/main/java/uk/org/okapibarcode/backend/UspsOneCode.java) (Intelligent Mail)
+
+</td>
+</tr>
+</table>
 
 ### Library Usage (Java)
 

@@ -861,7 +861,7 @@ public abstract class Symbol {
         System.arraycopy(suffix, 0, data, j, suffix.length);
         j += suffix.length;
 
-        if (j < i) {
+        if (j < data.length) {
             data = Arrays.copyOf(data, j);
         }
 
@@ -907,7 +907,7 @@ public abstract class Symbol {
         System.arraycopy(suffix, 0, data, j, suffix.length);
         j += suffix.length;
 
-        if (j < i) {
+        if (j < data.length) {
             data = Arrays.copyOf(data, j);
         }
 

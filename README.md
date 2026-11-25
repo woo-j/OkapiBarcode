@@ -180,7 +180,7 @@ tests check exact output image pixel values, and there are small differences in 
 - Micro QR Code: fix occasional encoding failure
 - Telepen: support NUL and DEL correctly
 - Code 16k: fix various encoding errors
-- Code 128: simplify max size check
+- Code 128: simplify max size check, various small performance improvements
 - Do not shift barcode down if user requests text above symbol but there is no text
 
 #### Okapi Barcode 0.5.7

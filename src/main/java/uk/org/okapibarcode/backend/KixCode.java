@@ -81,7 +81,6 @@ public class KixCode extends Symbol {
 
     @Override
     protected void plotSymbol() {
-        int xBlock;
         int x, y, w, h;
 
         resetPlotElements();
@@ -90,7 +89,7 @@ public class KixCode extends Symbol {
         w = 1;
         y = 0;
         h = 0;
-        for (xBlock = 0; xBlock < pattern[0].length(); xBlock++) {
+        for (int xBlock = 0; xBlock < pattern[0].length(); xBlock++) {
             char c = pattern[0].charAt(xBlock);
             switch (c) {
                 case 'A':

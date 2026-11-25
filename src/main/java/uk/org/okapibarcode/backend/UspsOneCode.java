@@ -541,7 +541,7 @@ public class UspsOneCode extends Symbol {
 
     @Override
     protected void plotSymbol() {
-        int xBlock, shortHeight, longHeight;
+        int shortHeight, longHeight;
         double x, y, w, h, dx;
 
         resetPlotElements();
@@ -560,7 +560,7 @@ public class UspsOneCode extends Symbol {
         dx = (1 + moduleWidthRatio) * w;
         shortHeight = (int) (shortHeightPercentage * defaultHeight);
         longHeight = (int) (longHeightPercentage * defaultHeight);
-        for (xBlock = 0; xBlock < pattern[0].length(); xBlock++) {
+        for (int xBlock = 0; xBlock < pattern[0].length(); xBlock++) {
 
             switch (pattern[0].charAt(xBlock)) {
             case 'A':

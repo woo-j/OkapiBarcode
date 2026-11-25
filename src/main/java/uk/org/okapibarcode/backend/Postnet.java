@@ -150,7 +150,7 @@ public class Postnet extends Symbol {
 
     @Override
     protected void plotSymbol() {
-        int xBlock, shortHeight;
+        int shortHeight;
         double x, y, w, h, dx;
 
         resetPlotElements();
@@ -166,7 +166,7 @@ public class Postnet extends Symbol {
         w = moduleWidth;
         dx = (1 + moduleWidthRatio) * w;
         shortHeight = (int) (0.4 * defaultHeight);
-        for (xBlock = 0; xBlock < pattern[0].length(); xBlock++) {
+        for (int xBlock = 0; xBlock < pattern[0].length(); xBlock++) {
             if (pattern[0].charAt(xBlock) == 'L') {
                 y = baseY;
                 h = defaultHeight;

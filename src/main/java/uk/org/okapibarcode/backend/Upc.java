@@ -350,7 +350,6 @@ public class Upc extends Symbol {
 
         resetPlotElements();
 
-        int xBlock;
         int x, y, w, h;
         boolean black = true;
         int compositeOffset = (linkageFlag ? 6 : 0); // space for composite separator above
@@ -374,7 +373,7 @@ public class Upc extends Symbol {
         }
 
         /* Draw the bars in the symbology */
-        for (xBlock = 0; xBlock < pattern[0].length(); xBlock++) {
+        for (int xBlock = 0; xBlock < pattern[0].length(); xBlock++) {
 
             w = pattern[0].charAt(xBlock) - '0';
 

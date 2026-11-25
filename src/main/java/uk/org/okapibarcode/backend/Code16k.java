@@ -666,7 +666,6 @@ public class Code16k extends Symbol {
     protected void plotSymbol() {
 
         List< Rectangle > dividers = new ArrayList<>();
-        int xBlock, yBlock;
         int x, y, w, h;
         boolean black;
 
@@ -674,14 +673,15 @@ public class Code16k extends Symbol {
 
         y = 1;
         h = 1;
-        for (yBlock = 0; yBlock < rowCount; yBlock++) {
+        for (int yBlock = 0; yBlock < rowCount; yBlock++) {
             black = true;
             x = 15;
             h = rowHeight[yBlock];
-            for (xBlock = 0; xBlock < pattern[yBlock].length(); xBlock++) {
+            String p = pattern[yBlock];
+            for (int xBlock = 0; xBlock < p.length(); xBlock++) {
+                w = p.charAt(xBlock) - '0';
                 if (black) {
                     black = false;
-                    w = pattern[yBlock].charAt(xBlock) - '0';
                     if (w != 0 && h != 0) {
                         addRectangle(new Rectangle(x, y, w, h));
                     }
@@ -691,7 +691,7 @@ public class Code16k extends Symbol {
                 } else {
                     black = true;
                 }
-                x += pattern[yBlock].charAt(xBlock) - '0';
+                x += w;
             }
             y += h;
             if (y > symbolHeight) {

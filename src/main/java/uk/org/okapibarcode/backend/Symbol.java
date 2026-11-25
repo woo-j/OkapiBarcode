@@ -917,7 +917,6 @@ public abstract class Symbol {
     protected abstract void encode();
 
     protected void plotSymbol() {
-        int xBlock, yBlock;
         double x, y, w, h;
         boolean black;
 
@@ -933,12 +932,13 @@ public abstract class Symbol {
         h = 0;
         y = baseY;
 
-        for (yBlock = 0; yBlock < rowCount; yBlock++) {
+        for (int yBlock = 0; yBlock < rowCount; yBlock++) {
             black = true;
             x = 0;
             h = rowHeight[yBlock];
-            for (xBlock = 0; xBlock < pattern[yBlock].length(); xBlock++) {
-                char c = pattern[yBlock].charAt(xBlock);
+            String p = pattern[yBlock];
+            for (int xBlock = 0; xBlock < p.length(); xBlock++) {
+                char c = p.charAt(xBlock);
                 w = getModuleWidth(c - '0') * moduleWidth;
                 if (black) {
                     if (w != 0 && h != 0) {

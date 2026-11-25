@@ -827,7 +827,6 @@ public class CodablockF extends Symbol {
     protected void plotSymbol() {
 
         List< Rectangle > dividers = new ArrayList<>();
-        int xBlock, yBlock;
         int x, y, w, h;
         boolean black;
 
@@ -835,12 +834,13 @@ public class CodablockF extends Symbol {
 
         y = 1;
         h = 1;
-        for (yBlock = 0; yBlock < rowCount; yBlock++) {
+        for (int yBlock = 0; yBlock < rowCount; yBlock++) {
             black = true;
             x = 0;
             h = rowHeight[yBlock];
-            for (xBlock = 0; xBlock < pattern[yBlock].length(); xBlock++) {
-                char c = pattern[yBlock].charAt(xBlock);
+            String p = pattern[yBlock];
+            for (int xBlock = 0; xBlock < p.length(); xBlock++) {
+                char c = p.charAt(xBlock);
                 w = (c - '0') * moduleWidth;
                 if (black) {
                     if (w != 0 && h != 0) {

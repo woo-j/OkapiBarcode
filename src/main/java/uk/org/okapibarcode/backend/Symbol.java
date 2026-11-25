@@ -978,13 +978,19 @@ public abstract class Symbol {
         rectangles.clear();
         prevRectangles.clear();
 
-        // performance optimization: avoid resizing the rectangle list repeatedly by
-        // pre-calculating its maximum size and pre-allocating the necessary space once
-        int maxRectangles = 0;
+        ensurePlotElementCapacity();
+    }
+
+    /**
+     * This is a performance optimization. We want to avoid resizing the rectangle list repeatedly, so we pre-calculate
+     * its maximum size and pre-allocate the necessary space.
+     */
+    protected void ensurePlotElementCapacity() {
+        int max = 0;
         for (int i = 0; i < rowCount; i++) {
-            maxRectangles += (pattern[i].length() + 1) / 2;
+            max += (pattern[i].length() + 1) / 2;
         }
-        rectangles.ensureCapacity(maxRectangles);
+        rectangles.ensureCapacity(max);
     }
 
     /**

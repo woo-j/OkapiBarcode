@@ -975,6 +975,13 @@ public class MaxiCode extends Symbol {
 
     /** {@inheritDoc} */
     @Override
+    protected void ensurePlotElementCapacity() {
+        // this class uses hexagons instead of rectangles, so pre-size the hexagon list instead
+        hexagons.ensureCapacity(33 * 30);
+    }
+
+    /** {@inheritDoc} */
+    @Override
     protected void plotSymbol() {
 
         resetPlotElements();

@@ -16,6 +16,7 @@
 
 package uk.org.okapibarcode.output;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static uk.org.okapibarcode.graphics.TextAlignment.CENTER;
 import static uk.org.okapibarcode.graphics.TextAlignment.JUSTIFY;
 import static uk.org.okapibarcode.util.Integers.normalizeRotation;
@@ -24,24 +25,8 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.StringWriter;
 import java.io.Writer;
-import java.nio.charset.StandardCharsets;
-import java.util.Locale;
 import java.util.Objects;
-
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerFactoryConfigurationError;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Text;
 
 import uk.org.okapibarcode.backend.OkapiInternalException;
 import uk.org.okapibarcode.backend.Symbol;
@@ -59,6 +44,9 @@ import uk.org.okapibarcode.graphics.TextBox;
  * @author Daniel Gredler
  */
 public final class SvgRenderer implements SymbolRenderer {
+
+    /** Hex digits, for hex string conversion. */
+    private static final char[] HEX_DIGITS = "0123456789ABCDEF".toCharArray();
 
     /** The writer to render to. */
     private final Writer writer;
@@ -138,7 +126,7 @@ public final class SvgRenderer implements SymbolRenderer {
      * @param rotation the clockwise rotation of the symbol in degrees (must be a multiple of 90)
      */
     public SvgRenderer(OutputStream out, double magnification, Color paper, Color ink, boolean xmlProlog, int rotation) {
-        this(new BufferedWriter(new OutputStreamWriter(Objects.requireNonNull(out), StandardCharsets.UTF_8)),
+        this(new BufferedWriter(new OutputStreamWriter(Objects.requireNonNull(out), UTF_8), 512),
              magnification, paper, ink, xmlProlog, rotation);
     }
 
@@ -159,15 +147,10 @@ public final class SvgRenderer implements SymbolRenderer {
             title = content;
         }
 
-        String fgColour = String.format("%02X", ink.red)
-                        + String.format("%02X", ink.green)
-                        + String.format("%02X", ink.blue);
+        String fgColour = hex(ink);
+        String bgColour = hex(paper);
 
-        String bgColour = String.format("%02X", paper.red)
-                        + String.format("%02X", paper.green)
-                        + String.format("%02X", paper.blue);
-
-        try {
+        try (CustomWriter writer = new CustomWriter(this.writer)) {
 
             // XML Prolog
             if(xmlProlog) {
@@ -200,22 +183,22 @@ public final class SvgRenderer implements SymbolRenderer {
             }
 
             // Header
-            writer.append("<svg width=\"").append(i2s(rotatedWidth))
-                  .append("\" height=\"").append(i2s(rotatedHeight))
+            writer.append("<svg width=\"").append(rotatedWidth)
+                  .append("\" height=\"").append(rotatedHeight)
                   .append("\" version=\"1.1")
                   .append("\" xmlns=\"http://www.w3.org/2000/svg\">\n");
             writer.append("   <desc>").append(clean(title)).append("</desc>\n");
             writer.append("   <g id=\"barcode\" fill=\"#").append(fgColour).append("\"").append(transform).append(">\n");
-            writer.append("      <rect x=\"0\" y=\"0\" width=\"").append(i2s(width))
-                  .append("\" height=\"").append(i2s(height))
+            writer.append("      <rect x=\"0\" y=\"0\" width=\"").append(width)
+                  .append("\" height=\"").append(height)
                   .append("\" fill=\"#").append(bgColour).append("\" />\n");
 
             // Rectangles
             for (Rectangle rect : symbol.getRectangles()) {
-                writer.append("      <rect x=\"").append(d2s((rect.x * magnification) + marginX))
-                      .append("\" y=\"").append(d2s((rect.y * magnification) + marginY))
-                      .append("\" width=\"").append(d2s(rect.width * magnification))
-                      .append("\" height=\"").append(d2s(rect.height * magnification))
+                writer.append("      <rect x=\"").append((rect.x * magnification) + marginX)
+                      .append("\" y=\"").append((rect.y * magnification) + marginY)
+                      .append("\" width=\"").append(rect.width * magnification)
+                      .append("\" height=\"").append(rect.height * magnification)
                       .append("\" />\n");
             }
 
@@ -241,16 +224,16 @@ public final class SvgRenderer implements SymbolRenderer {
                     default:
                         throw new OkapiInternalException("Unknown alignment: " + alignment);
                 }
-                writer.append("      <text x=\"").append(d2s(x))
-                      .append("\" y=\"").append(d2s((text.y * magnification) + marginY))
+                writer.append("      <text x=\"").append(x)
+                      .append("\" y=\"").append((text.y * magnification) + marginY)
                       .append("\" text-anchor=\"").append(anchor).append("\"\n");
                 if (alignment == JUSTIFY) {
                     writer.append("         textLength=\"")
-                          .append(d2s(text.width * magnification))
+                          .append(text.width * magnification)
                           .append("\" lengthAdjust=\"spacing\"\n");
                 }
                 writer.append("         font-family=\"").append(clean(symbol.getFontName()))
-                      .append("\" font-size=\"").append(d2s(symbol.getFontSize() * magnification))
+                      .append("\" font-size=\"").append(symbol.getFontSize() * magnification)
                       .append("\" fill=\"#").append(fgColour).append("\">\n");
                 writer.append("         ").append(clean(text.text)).append("\n");
                 writer.append("      </text>\n");
@@ -265,9 +248,9 @@ public final class SvgRenderer implements SymbolRenderer {
                 } else {
                     color = bgColour;
                 }
-                writer.append("      <circle cx=\"").append(d2s((circle.centreX * magnification) + marginX))
-                      .append("\" cy=\"").append(d2s((circle.centreY * magnification) + marginY))
-                      .append("\" r=\"").append(d2s(circle.radius * magnification))
+                writer.append("      <circle cx=\"").append((circle.centreX * magnification) + marginX)
+                      .append("\" cy=\"").append((circle.centreY * magnification) + marginY)
+                      .append("\" r=\"").append(circle.radius * magnification)
                       .append("\" fill=\"#").append(color).append("\" />\n");
             }
 
@@ -280,8 +263,8 @@ public final class SvgRenderer implements SymbolRenderer {
                     } else {
                         writer.append("L ");
                     }
-                    writer.append(d2s((hexagon.getX(j) * magnification) + marginX)).append(" ")
-                          .append(d2s((hexagon.getY(j) * magnification) + marginY)).append(" ");
+                    writer.append((hexagon.getX(j) * magnification) + marginX).append(" ")
+                          .append((hexagon.getY(j) * magnification) + marginY).append(" ");
                 }
                 writer.append("Z\" />\n");
             }
@@ -289,45 +272,54 @@ public final class SvgRenderer implements SymbolRenderer {
             // Footer
             writer.append("   </g>\n");
             writer.append("</svg>\n");
-
-        } finally {
-            writer.close();
         }
     }
 
     /**
-     * Cleans / sanitizes the specified string for inclusion in XML. A bit convoluted, but we're
-     * trying to do it without adding an external dependency just for this...
+     * Cleans / sanitizes the specified string for inclusion in XML.
      *
      * @param s the string to be cleaned / sanitized
      * @return the cleaned / sanitized string
      */
-    protected String clean(String s) {
-
-        // remove control characters
-        s = s.replaceAll("[\u0000-\u001f]", "");
-
-        // escape XML characters
-        try {
-            Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
-            Text text = document.createTextNode(s);
-            Transformer transformer = TransformerFactory.newInstance().newTransformer();
-            DOMSource source = new DOMSource(text);
-            StringWriter writer = new StringWriter();
-            StreamResult result = new StreamResult(writer);
-            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-            transformer.transform(source, result);
-            return writer.toString();
-        } catch (ParserConfigurationException | TransformerException | TransformerFactoryConfigurationError e) {
-            return s;
+    protected CharSequence clean(String s) {
+        int len = s.length();
+        StringBuilder output = new StringBuilder(len);
+        for (int i = 0 ; i < len;) {
+            char c = s.charAt(i++);
+            if (c == '&') {
+                output.append("&amp;");
+            } else if (c == '<') {
+                output.append("&lt;");
+            } else if (c == '>') {
+                output.append("&gt;");
+            } else if (c == '"') {
+                output.append("&quot;");
+            } else if (Character.isHighSurrogate(c)) {
+                if (i < len) { // exclude dangling high surrogates
+                    char low = s.charAt(i++);
+                    if (Character.isLowSurrogate(low)) { // exclude high surrogates without a low surrogate
+                        output.append("&#");
+                        output.append(Character.toCodePoint(c, low));
+                        output.append(';');
+                    } else {
+                        i--; // go back so that "low" can be checked in isolation
+                    }
+                }
+            } else if ((c > '\u001F') &&                 // exclude control chars U+0000 through U+001F
+                       (c < '\u007F' || c > '\u009F') && // exclude control chars U+007F through U+009F
+                       (c < '\uFFFE') &&                 // exclude non-characters U+FFFE and U+FFFF
+                       (!Character.isLowSurrogate(c))) { // exclude dangling low surrogates
+                output.append(c);
+            }
         }
+        return output;
     }
 
-    private static String i2s(int i) {
-        return String.valueOf(i);
-    }
-
-    private static String d2s(double d) {
-        return String.format(Locale.ROOT, "%.2f", d);
+    private static String hex(Color color) {
+        return new String(new char[] {
+            HEX_DIGITS[color.red >>> 4], HEX_DIGITS[color.red & 0x0F],
+            HEX_DIGITS[color.green >>> 4], HEX_DIGITS[color.green & 0x0F],
+            HEX_DIGITS[color.blue >>> 4], HEX_DIGITS[color.blue & 0x0F]
+        });
     }
 }

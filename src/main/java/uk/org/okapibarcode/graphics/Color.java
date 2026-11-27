@@ -36,9 +36,16 @@ public final class Color {
     public final int blue;
 
     public Color(int red, int green, int blue) {
-        this.red = red;
-        this.green = green;
-        this.blue = blue;
+        this.red = checkComponent(red);
+        this.green = checkComponent(green);
+        this.blue = checkComponent(blue);
+    }
+
+    private static int checkComponent(int component) {
+        if (component < 0 || component > 255) {
+            throw new IllegalArgumentException("Invalid color component value: " + component);
+        }
+        return component;
     }
 
     public Color(int rgb) {

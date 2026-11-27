@@ -176,12 +176,13 @@ tests check exact output image pixel values, and there are small differences in 
 ### Recent Releases
 
 #### Okapi Barcode 0.5.8
+- Do not shift barcodes down if user requests text above symbol but there is no text
 - Micro QR Code: abbreviate terminator when possible
 - Micro QR Code: fix occasional encoding failure
 - Telepen: support NUL and DEL correctly
 - Code 16k: fix various encoding errors
-- Code 128: simplify max size check, various small performance improvements
-- Do not shift barcode down if user requests text above symbol but there is no text
+- Code 128: simplify max size check
+- Various performance improvements
 
 #### Okapi Barcode 0.5.7
 - Add support for writing SVG and PostScript output to a `java.io.Writer`
